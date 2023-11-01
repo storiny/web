@@ -4,7 +4,7 @@ use crate::{
     constants::sql_states::SqlState, error::AppError, middleware::identity::identity::Identity,
     AppState,
 };
-use actix_web::{patch, post, web, HttpResponse};
+use actix_web::{patch, web, HttpResponse};
 use actix_web_validator::Json;
 use lazy_static::lazy_static;
 use regex::Regex;
@@ -21,7 +21,7 @@ struct Fragments {
     story_id: String,
 }
 
-#[derive(Debug, Validate, Serialize)]
+#[derive(Debug, Validate, Serialize, Deserialize)]
 struct Tag {
     #[validate(regex = "TAG_REGEX")]
     #[validate(length(min = 1, max = 32, message = "Invalid tag name length"))]
@@ -85,9 +85,9 @@ async fn patch(
                     }
 
                     // Check if the splash is valid
-                    if &payload.splash_id.is_some() {
+                    if payload.splash_id.is_some() {
                         // `splash_hex` must be present with `splash_id`
-                        if &payload.splash_hex.is_none() {
+                        if payload.splash_hex.is_none() {
                             return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
                                 "Splash hex is missing".to_string(),
                             )));
@@ -117,7 +117,7 @@ async fn patch(
                     }
 
                     // Check if the preview image is valid
-                    if &payload.preview_image.is_some() {
+                    if payload.preview_image.is_some() {
                         let result = sqlx::query(
                             r#"
                             SELECT EXISTS(
@@ -192,137 +192,137 @@ async fn patch(
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
-    cfg.service(post);
+    cfg.service(patch);
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::test_utils::{assert_response_body_text, init_app_for_test};
-    use actix_web::test;
-    use sqlx::{PgPool, Row};
-
-    #[sqlx::test(fixtures("user"))]
-    async fn can_block_a_user(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
-
-        let req = test::TestRequest::post()
-            .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/blocked-users/{}", 2))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // Block should be present in the database
-        let result = sqlx::query(
-            r#"
-            SELECT EXISTS(
-                SELECT 1 FROM blocks
-                WHERE blocker_id = $1 AND blocked_id = $2
-            )
-            "#,
-        )
-        .bind(user_id)
-        .bind(2_i64)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(result.get::<bool, _>("exists"));
-
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("user"))]
-    async fn should_not_throw_when_blocking_an_already_blocked_user(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
-
-        // Block the user for the first time
-        let req = test::TestRequest::post()
-            .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/me/blocked-users/{}", 2))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // Try blocking the user again
-        let req = test::TestRequest::post()
-            .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/blocked-users/{}", 2))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        // Should not throw
-        assert!(res.status().is_success());
-
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("user"))]
-    async fn should_not_block_a_soft_deleted_user(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
-
-        // Soft-delete the target user
-        let result = sqlx::query(
-            r#"
-            UPDATE users
-            SET deleted_at = now()
-            WHERE id = $1
-            "#,
-        )
-        .bind(2_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        // Try blocking the user
-        let req = test::TestRequest::post()
-            .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/me/blocked-users/{}", 2))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_client_error());
-        assert_response_body_text(res, "User being blocked is either deleted or deactivated").await;
-
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("user"))]
-    async fn should_not_block_a_deactivated_user(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
-
-        // Deactivate the target user
-        let result = sqlx::query(
-            r#"
-            UPDATE users
-            SET deactivated_at = now()
-            WHERE id = $1
-            "#,
-        )
-        .bind(2_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        // Try blocking the user
-        let req = test::TestRequest::post()
-            .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/me/blocked-users/{}", 2))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_client_error());
-        assert_response_body_text(res, "User being blocked is either deleted or deactivated").await;
-
-        Ok(())
-    }
-}
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     use crate::test_utils::{assert_response_body_text, init_app_for_test};
+//     use actix_web::test;
+//     use sqlx::{PgPool, Row};
+//
+//     #[sqlx::test(fixtures("user"))]
+//     async fn can_block_a_user(pool: PgPool) -> sqlx::Result<()> {
+//         let mut conn = pool.acquire().await?;
+//         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+//
+//         let req = test::TestRequest::post()
+//             .cookie(cookie.unwrap())
+//             .uri(&format!("/v1/me/blocked-users/{}", 2))
+//             .to_request();
+//         let res = test::call_service(&app, req).await;
+//
+//         assert!(res.status().is_success());
+//
+//         // Block should be present in the database
+//         let result = sqlx::query(
+//             r#"
+//             SELECT EXISTS(
+//                 SELECT 1 FROM blocks
+//                 WHERE blocker_id = $1 AND blocked_id = $2
+//             )
+//             "#,
+//         )
+//         .bind(user_id)
+//         .bind(2_i64)
+//         .fetch_one(&mut *conn)
+//         .await?;
+//
+//         assert!(result.get::<bool, _>("exists"));
+//
+//         Ok(())
+//     }
+//
+//     #[sqlx::test(fixtures("user"))]
+//     async fn should_not_throw_when_blocking_an_already_blocked_user(
+//         pool: PgPool,
+//     ) -> sqlx::Result<()> {
+//         let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+//
+//         // Block the user for the first time
+//         let req = test::TestRequest::post()
+//             .cookie(cookie.clone().unwrap())
+//             .uri(&format!("/v1/me/blocked-users/{}", 2))
+//             .to_request();
+//         let res = test::call_service(&app, req).await;
+//
+//         assert!(res.status().is_success());
+//
+//         // Try blocking the user again
+//         let req = test::TestRequest::post()
+//             .cookie(cookie.unwrap())
+//             .uri(&format!("/v1/me/blocked-users/{}", 2))
+//             .to_request();
+//         let res = test::call_service(&app, req).await;
+//
+//         // Should not throw
+//         assert!(res.status().is_success());
+//
+//         Ok(())
+//     }
+//
+//     #[sqlx::test(fixtures("user"))]
+//     async fn should_not_block_a_soft_deleted_user(pool: PgPool) -> sqlx::Result<()> {
+//         let mut conn = pool.acquire().await?;
+//         let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+//
+//         // Soft-delete the target user
+//         let result = sqlx::query(
+//             r#"
+//             UPDATE users
+//             SET deleted_at = now()
+//             WHERE id = $1
+//             "#,
+//         )
+//         .bind(2_i64)
+//         .execute(&mut *conn)
+//         .await?;
+//
+//         assert_eq!(result.rows_affected(), 1);
+//
+//         // Try blocking the user
+//         let req = test::TestRequest::post()
+//             .cookie(cookie.clone().unwrap())
+//             .uri(&format!("/v1/me/blocked-users/{}", 2))
+//             .to_request();
+//         let res = test::call_service(&app, req).await;
+//
+//         assert!(res.status().is_client_error());
+//         assert_response_body_text(res, "User being blocked is either deleted or deactivated").await;
+//
+//         Ok(())
+//     }
+//
+//     #[sqlx::test(fixtures("user"))]
+//     async fn should_not_block_a_deactivated_user(pool: PgPool) -> sqlx::Result<()> {
+//         let mut conn = pool.acquire().await?;
+//         let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+//
+//         // Deactivate the target user
+//         let result = sqlx::query(
+//             r#"
+//             UPDATE users
+//             SET deactivated_at = now()
+//             WHERE id = $1
+//             "#,
+//         )
+//         .bind(2_i64)
+//         .execute(&mut *conn)
+//         .await?;
+//
+//         assert_eq!(result.rows_affected(), 1);
+//
+//         // Try blocking the user
+//         let req = test::TestRequest::post()
+//             .cookie(cookie.clone().unwrap())
+//             .uri(&format!("/v1/me/blocked-users/{}", 2))
+//             .to_request();
+//         let res = test::call_service(&app, req).await;
+//
+//         assert!(res.status().is_client_error());
+//         assert_response_body_text(res, "User being blocked is either deleted or deactivated").await;
+//
+//         Ok(())
+//     }
+// }

@@ -127,6 +127,53 @@ mod tests {
         Ok(())
     }
 
+    #[sqlx::test]
+    async fn can_reject_updating_username_on_a_cooldown_period(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let result = insert_sample_user(&mut conn).await?;
+        let user_id = result.get::<i64, _>("id");
+
+        // Update the `username_modified_at` column
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET username_modified_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Try updating the username
+        let result = sqlx::query(
+            r#"
+            UPDATE users
+            SET
+                username = $2,
+                username_modified_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .bind("new_username".to_string())
+        .execute(&mut *conn)
+        .await;
+
+        // Should reject with `52004` SQLSTATE
+        assert_eq!(
+            result
+                .unwrap_err()
+                .into_database_error()
+                .unwrap()
+                .code()
+                .unwrap(),
+            "52004"
+        );
+
+        Ok(())
+    }
+
     // Stories
 
     #[sqlx::test]

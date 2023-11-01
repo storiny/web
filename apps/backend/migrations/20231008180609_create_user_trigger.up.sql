@@ -27,7 +27,35 @@ EXECUTE PROCEDURE user_insert_trigger_proc();
 
 -- Update
 --
-CREATE OR REPLACE FUNCTION user_update_trigger_proc(
+CREATE OR REPLACE FUNCTION user_before_update_trigger_proc(
+)
+	RETURNS TRIGGER
+AS
+$$
+BEGIN
+	-- Check whether the username is on a cooldown period (modified within the last 30 days)
+	IF (
+			OLD.username_modified_at IS NOT NULL
+			AND OLD.username_modified_at > NOW() - INTERVAL '30 days'
+		) THEN
+		RAISE 'Username is on a cooldown period'
+			USING ERRCODE = '52004';
+	END IF;
+	--
+	RETURN NEW;
+END;
+$$
+	LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER user_before_update_trigger
+	BEFORE UPDATE
+	ON users
+	FOR EACH ROW
+	WHEN (OLD.username IS DISTINCT FROM NEW.username)
+EXECUTE PROCEDURE user_before_update_trigger_proc();
+
+--
+CREATE OR REPLACE FUNCTION user_after_update_trigger_proc(
 )
 	RETURNS TRIGGER
 AS
@@ -444,12 +472,12 @@ END;
 $$
 	LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER user_update_trigger
+CREATE OR REPLACE TRIGGER user_after_update_trigger
 	AFTER UPDATE
 	ON users
 	FOR EACH ROW
 	WHEN (OLD.deleted_at IS DISTINCT FROM NEW.deleted_at OR OLD.deactivated_at IS DISTINCT FROM NEW.deactivated_at)
-EXECUTE PROCEDURE user_update_trigger_proc();
+EXECUTE PROCEDURE user_after_update_trigger_proc();
 
 -- Delete
 --

@@ -1,6 +1,12 @@
+use lazy_static::lazy_static;
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use time::OffsetDateTime;
+
+lazy_static! {
+    pub static ref USERNAME_REGEX: Regex = Regex::new(r"^[\w_]+$").unwrap();
+}
 
 #[derive(Debug, sqlx::Type, Serialize, Deserialize, Copy, Clone)]
 pub enum UserFlag {
