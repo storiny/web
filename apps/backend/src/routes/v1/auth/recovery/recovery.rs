@@ -62,7 +62,7 @@ async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpR
             {
                 Ok(hashed_token) => {
                     let pg_pool = &data.db_pool;
-                    let mut transaction = pg_pool.begin().await?;
+                    let mut txn = pg_pool.begin().await?;
 
                     // Delete previous password reset tokens for the user
                     sqlx::query(
@@ -73,7 +73,7 @@ async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpR
                     )
                     .bind(TokenType::PasswordReset.to_string())
                     .bind(user.get::<i64, _>("id"))
-                    .execute(&mut *transaction)
+                    .execute(&mut *txn)
                     .await?;
 
                     // Insert a new password-reset token
@@ -87,10 +87,10 @@ async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpR
                     .bind(TokenType::PasswordReset.to_string())
                     .bind(user.get::<i64, _>("id"))
                     .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
-                    .execute(&mut *transaction)
+                    .execute(&mut *txn)
                     .await?;
 
-                    transaction.commit().await?;
+                    txn.commit().await?;
 
                     match serde_json::to_string(&ResetPasswordEmailTemplateData {
                         link: format!("https://storiny.com/auth/reset-password/{}", token_id),

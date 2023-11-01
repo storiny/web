@@ -139,7 +139,7 @@ async fn post(
             {
                 Ok(hashed_token) => {
                     let pg_pool = &data.db_pool;
-                    let mut transaction = pg_pool.begin().await?;
+                    let mut txn = pg_pool.begin().await?;
 
                     // Insert the user
                     let user_insert_result = sqlx::query(
@@ -154,7 +154,7 @@ async fn post(
                     .bind(&slugged_username)
                     .bind(hashed_password.to_string())
                     .bind((&payload.wpm).clone() as i32)
-                    .fetch_one(&mut *transaction)
+                    .fetch_one(&mut *txn)
                     .await?;
 
                     let user_id = user_insert_result.get::<i64, _>("id");
@@ -170,10 +170,10 @@ async fn post(
                     .bind(TokenType::EmailVerify.to_string())
                     .bind(user_id)
                     .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
-                    .execute(&mut *transaction)
+                    .execute(&mut *txn)
                     .await?;
 
-                    transaction.commit().await?;
+                    txn.commit().await?;
 
                     let full_name = payload.name.clone();
                     let first_name = full_name.split(" ").collect::<Vec<_>>()[0];

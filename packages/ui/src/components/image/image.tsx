@@ -13,6 +13,8 @@ import Button from "~/components/button";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import WarningIcon from "~/icons/warning";
+import { select_user } from "~/redux/features";
+import { use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 import { get_cdn_url } from "~/utils/get-cdn-url";
@@ -48,6 +50,7 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
     children,
     ...rest
   } = props;
+  const user = use_app_selector(select_user);
   const [loaded, set_loaded] = React.useState<boolean>(false);
   const [show_overlay, set_show_overlay] = React.useState<boolean>(
     typeof rating !== "undefined" &&
@@ -62,6 +65,12 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
   if (img_key) {
     final_src = get_cdn_url(img_key, size);
   }
+
+  React.useEffect(() => {
+    if (user?.allow_sensitive_content) {
+      set_show_overlay(false);
+    }
+  }, [user?.allow_sensitive_content]);
 
   return (
     <Root

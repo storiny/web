@@ -10,8 +10,10 @@
 />
 <mj-all font-family="Helvetica" />
 
+<mj-class name="t-large" font-size="32px" line-height="48px" />
 <mj-class name="t-body1" font-size="16px" line-height="24px" />
 <mj-class name="t-body2" font-size="14px" line-height="19px" />
+
 <mj-class name="t-major" color="#1a1a1a" />
 <mj-class name="t-minor" color="#6b6b6b" />
 <mj-class name="t-muted" color="#8c8c8c" />

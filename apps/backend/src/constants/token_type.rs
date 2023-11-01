@@ -1,7 +1,4 @@
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use serde::{Deserialize, Serialize};
 use strum::Display;
 
 /// User token type.
@@ -11,4 +8,6 @@ pub enum TokenType {
     EmailVerify,
     #[strum(serialize = "pwd_reset")]
     PasswordReset,
+    #[strum(serialize = "pwd_add_verify")]
+    PasswordAddVerification,
 }

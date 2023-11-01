@@ -9,17 +9,17 @@ use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
 struct Request {
-    #[validate(length(min = 0, max = 128, message = "Invalid avatar ID"))]
-    avatar_id: Option<String>,
+    #[validate(length(min = 0, max = 128, message = "Invalid banner ID"))]
+    banner_id: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Response {
-    avatar_id: Option<String>,
-    avatar_hex: Option<String>,
+    banner_id: Option<String>,
+    banner_hex: Option<String>,
 }
 
-#[patch("/v1/me/settings/avatar")]
+#[patch("/v1/me/settings/banner")]
 async fn patch(
     payload: Json<Request>,
     data: web::Data<AppState>,
@@ -27,13 +27,13 @@ async fn patch(
 ) -> Result<HttpResponse, AppError> {
     match user.id() {
         Ok(user_id) => {
-            if payload.avatar_id.is_none() {
+            if payload.banner_id.is_none() {
                 sqlx::query(
                     r#"
                     UPDATE users
                     SET
-                        avatar_id = NULL,
-                        avatar_hex = NULL
+                        banner_id = NULL,
+                        banner_hex = NULL
                     WHERE id = $1
                     "#,
                 )
@@ -42,8 +42,8 @@ async fn patch(
                 .await?;
 
                 Ok(HttpResponse::NoContent().json(Response {
-                    avatar_id: None,
-                    avatar_hex: None,
+                    banner_id: None,
+                    banner_hex: None,
                 }))
             } else {
                 match sqlx::query(
@@ -57,26 +57,26 @@ async fn patch(
                         )
                     UPDATE users
                     SET
-                        avatar_id  = (SELECT key FROM asset),
-                        avatar_hex = (SELECT hex FROM asset)
+                        banner_id  = (SELECT key FROM asset),
+                        banner_hex = (SELECT hex FROM asset)
                     WHERE
                         id = $1
                         AND (SELECT key FROM asset) IS NOT NULL
-                    RETURNING avatar_id, avatar_hex
+                    RETURNING banner_id, banner_hex
                     "#,
                 )
                 .bind(user_id)
-                .bind(&payload.avatar_id)
+                .bind(&payload.banner_id)
                 .fetch_one(&data.db_pool)
                 .await
                 {
                     Ok(row) => Ok(HttpResponse::NoContent().json(Response {
-                        avatar_id: row.get::<Option<String>, _>("avatar_id"),
-                        avatar_hex: row.get::<Option<String>, _>("avatar_hex"),
+                        banner_id: row.get::<Option<String>, _>("banner_id"),
+                        banner_hex: row.get::<Option<String>, _>("banner_hex"),
                     })),
                     Err(kind) => match kind {
                         sqlx::Error::RowNotFound => Ok(HttpResponse::BadRequest()
-                            .json(ToastErrorResponse::new("Invalid avatar ID".to_string()))),
+                            .json(ToastErrorResponse::new("Invalid banner ID".to_string()))),
                         _ => Ok(HttpResponse::InternalServerError().finish()),
                     },
                 }
@@ -98,7 +98,7 @@ mod tests {
     use sqlx::{PgPool, Row};
 
     #[sqlx::test]
-    async fn can_set_an_avatar(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_set_a_banner(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
 
@@ -122,9 +122,9 @@ mod tests {
 
         let req = test::TestRequest::patch()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/settings/avatar")
+            .uri("/v1/me/settings/banner")
             .set_json(Request {
-                avatar_id: Some("some_key".to_string()),
+                banner_id: Some("some_key".to_string()),
             })
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -133,13 +133,13 @@ mod tests {
 
         let json = serde_json::from_str::<Response>(&res_to_string(res).await).unwrap();
 
-        assert_eq!(json.avatar_id, Some("some_key".to_string()));
-        assert_eq!(json.avatar_hex, Some("000000".to_string()));
+        assert_eq!(json.banner_id, Some("some_key".to_string()));
+        assert_eq!(json.banner_hex, Some("000000".to_string()));
 
-        // Avatar should get updated in the database
+        // Banner should get updated in the database
         let result = sqlx::query(
             r#"
-            SELECT avatar_id, avatar_hex FROM users
+            SELECT banner_id, banner_hex FROM users
             WHERE id = $1
             "#,
         )
@@ -148,11 +148,11 @@ mod tests {
         .await?;
 
         assert_eq!(
-            result.get::<Option<String>, _>("avatar_id").unwrap(),
+            result.get::<Option<String>, _>("banner_id").unwrap(),
             "some_key".to_string()
         );
         assert_eq!(
-            result.get::<Option<String>, _>("avatar_hex").unwrap(),
+            result.get::<Option<String>, _>("banner_hex").unwrap(),
             "000000".to_string()
         );
 
@@ -160,18 +160,18 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_remove_an_avatar(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_remove_a_banner(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
 
-        // Set avatar for the user
+        // Set banner for the user
         let result = sqlx::query(
             r#"
             UPDATE users
-            SET avatar_id = $1,
-                avatar_hex = $2
+            SET banner_id = $1,
+                banner_hex = $2
             WHERE id = $3
-            RETURNING avatar_id, avatar_hex
+            RETURNING banner_id, banner_hex
             "#,
         )
         .bind("some_key".to_string())
@@ -181,19 +181,19 @@ mod tests {
         .await?;
 
         assert_eq!(
-            result.get::<Option<String>, _>("avatar_id").unwrap(),
+            result.get::<Option<String>, _>("banner_id").unwrap(),
             "some_key".to_string()
         );
         assert_eq!(
-            result.get::<Option<String>, _>("avatar_hex").unwrap(),
+            result.get::<Option<String>, _>("banner_hex").unwrap(),
             "000000".to_string()
         );
 
-        // Reset the avatar
+        // Reset the banner
         let req = test::TestRequest::patch()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/settings/avatar")
-            .set_json(Request { avatar_id: None })
+            .uri("/v1/me/settings/banner")
+            .set_json(Request { banner_id: None })
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -201,13 +201,13 @@ mod tests {
 
         let json = serde_json::from_str::<Response>(&res_to_string(res).await).unwrap();
 
-        assert!(json.avatar_id.is_none());
-        assert!(json.avatar_hex.is_none());
+        assert!(json.banner_id.is_none());
+        assert!(json.banner_hex.is_none());
 
-        // Avatar should get updated in the database
+        // Banner should get updated in the database
         let result = sqlx::query(
             r#"
-            SELECT avatar_id, avatar_hex FROM users
+            SELECT banner_id, banner_hex FROM users
             WHERE id = $1
             "#,
         )
@@ -215,29 +215,29 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(result.get::<Option<String>, _>("avatar_id").is_none());
-        assert!(result.get::<Option<String>, _>("avatar_hex").is_none());
+        assert!(result.get::<Option<String>, _>("banner_id").is_none());
+        assert!(result.get::<Option<String>, _>("banner_hex").is_none());
 
         Ok(())
     }
 
     #[sqlx::test]
-    async fn can_return_an_error_response_for_an_invalid_avatar_id(
+    async fn can_return_an_error_response_for_an_invalid_banner_id(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(patch, pool, true, false).await;
 
         let req = test::TestRequest::patch()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/settings/avatar")
+            .uri("/v1/me/settings/banner")
             .set_json(Request {
-                avatar_id: Some("invalid_key".to_string()),
+                banner_id: Some("invalid_key".to_string()),
             })
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Invalid avatar ID").await;
+        assert_toast_error_response(res, "Invalid banner ID").await;
 
         Ok(())
     }

@@ -71,7 +71,7 @@ async fn post(
                                                     "You are being blocked by the user".to_string(),
                                                 ),
                                             ))
-                                        // Check wether the receiver is accepting friend requests from the transmitter
+                                        // Check whether the receiver is accepting friend requests from the transmitter
                                         } else if err_code
                                             == SqlState::ReceiverNotAcceptingFriendRequest
                                                 .to_string()

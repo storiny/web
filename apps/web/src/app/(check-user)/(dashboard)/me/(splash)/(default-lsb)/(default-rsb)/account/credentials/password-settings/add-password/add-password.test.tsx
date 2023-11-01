@@ -58,10 +58,7 @@ describe("<AddPassword />", () => {
     });
 
     await act(async () => {
-      await user.type(
-        screen.getByTestId("verification-code-input"),
-        "test-code"
-      );
+      await user.type(screen.getByTestId("verification-code-input"), "000000");
       await user.click(screen.getByRole("button", { name: /continue/i })); // Enter password screen
     });
 
@@ -75,7 +72,7 @@ describe("<AddPassword />", () => {
 
     await wait_for(() => {
       expect(mock_submit).toHaveBeenCalledWith({
-        verification_code: "test-code",
+        verification_code: "000000",
         new_password: "test-password"
       });
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
