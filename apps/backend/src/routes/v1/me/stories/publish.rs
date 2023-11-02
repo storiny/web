@@ -127,11 +127,8 @@ async fn post(
                         .await?
                         .rows_affected()
                         {
-                            0 => {
-                                txn.rollback().await?;
-                                Ok(HttpResponse::BadRequest()
-                                    .json(ToastErrorResponse::new("Story not found".to_string())))
-                            }
+                            0 => Ok(HttpResponse::BadRequest()
+                                .json(ToastErrorResponse::new("Story not found".to_string()))),
                             _ => {
                                 txn.commit().await?;
                                 Ok(HttpResponse::NoContent().finish())
