@@ -17,7 +17,8 @@ BEGIN
 	  AND s.user_id = user_id_arg
 	  AND s.deleted_at IS NULL;
 	IF NOT FOUND THEN
-		RAISE EXCEPTION 'Story not found';
+		RAISE 'Story not found'
+			USING ERRCODE = '52001';
 	END IF;
 	--
 	-- Draft

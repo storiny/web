@@ -1,3 +1,4 @@
+use crate::constants::sql_states::SqlState;
 use crate::{
     error::{AppError, FormErrorResponse, ToastErrorResponse},
     middleware::identity::identity::Identity,
@@ -165,6 +166,7 @@ async fn patch(
                               user_id = $1
                           AND id = $2
                           AND deleted_at IS NULL
+                          AND EXISTS (SELECT 1 FROM updated_tags)
                         "#,
                     )
                     .bind(user_id)
@@ -186,14 +188,31 @@ async fn patch(
                     .bind(&payload.preview_image)
                     .bind(&payload.tags)
                     .execute(&mut *txn)
-                    .await?
-                    .rows_affected()
+                    .await
                     {
-                        0 => Ok(HttpResponse::BadRequest()
-                            .json(ToastErrorResponse::new("Story not found".to_string()))),
-                        _ => {
-                            txn.commit().await?;
-                            Ok(HttpResponse::NoContent().finish())
+                        Ok(result) => match result.rows_affected() {
+                            0 => Ok(HttpResponse::BadRequest()
+                                .json(ToastErrorResponse::new("Story not found".to_string()))),
+                            _ => {
+                                txn.commit().await?;
+                                Ok(HttpResponse::NoContent().finish())
+                            }
+                        },
+                        Err(err) => {
+                            if let Some(db_err) = err.into_database_error() {
+                                // Check for error returned from `update_draft_or_story_tags` function.
+                                if db_err.code().unwrap_or_default()
+                                    == SqlState::EntityUnavailable.to_string()
+                                {
+                                    Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
+                                        "Story not found".to_string(),
+                                    )))
+                                } else {
+                                    Ok(HttpResponse::InternalServerError().finish())
+                                }
+                            } else {
+                                Ok(HttpResponse::InternalServerError().finish())
+                            }
                         }
                     }
                 }
@@ -211,9 +230,11 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::models::story::StoryCategory;
-    use crate::story_def::v1::{StoryAgeRestriction, StoryLicense, StoryVisibility};
-    use crate::test_utils::{init_app_for_test, res_to_string};
+    use crate::{
+        models::story::StoryCategory,
+        story_def::v1::{StoryAgeRestriction, StoryLicense, StoryVisibility},
+        test_utils::{assert_form_error_response, assert_toast_error_response, init_app_for_test},
+    };
     use actix_web::test;
     use sqlx::{FromRow, PgPool, Row};
 
@@ -371,41 +392,195 @@ mod tests {
         Ok(())
     }
 
-    // #[sqlx::test(fixtures("story"))]
-    // async fn can_update_story_description(pool: PgPool) -> sqlx::Result<()> {
-    //     let mut conn = pool.acquire().await?;
-    //     let (app, cookie, _) = init_app_for_test(patch, pool, true, true).await;
-    //
-    //     let req = test::TestRequest::patch()
-    //         .cookie(cookie.unwrap())
-    //         .uri(&format!("/v1/me/stories/{}/metadata", 2))
-    //         .set_json(Request {
-    //             title: "Untitled story".to_string(),
-    //             description: "New description".to_string(),
-    //             license: 1,
-    //             visibility: 1,
-    //             age_restriction: 1,
-    //             category: "others".to_string(),
-    //             ..Default::default()
-    //         })
-    //         .to_request();
-    //     let res = test::call_service(&app, req).await;
-    //
-    //     assert!(res.status().is_success());
-    //
-    //     // Title should get updated in the database
-    //     let result = sqlx::query(
-    //         r#"
-    //         SELECT title FROM stories
-    //         WHERE id = $1
-    //         "#,
-    //     )
-    //     .bind(2_i64)
-    //     .fetch_one(&mut *conn)
-    //     .await?;
-    //
-    //     assert_eq!(result.get::<String, _>("title"), "New title".to_string());
-    //
-    //     Ok(())
-    // }
+    #[sqlx::test(fixtures("story"))]
+    async fn can_update_story_tags(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, _) = init_app_for_test(patch, pool, true, true).await;
+
+        let req = test::TestRequest::patch()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/stories/{}/metadata", 2))
+            .set_json(Request {
+                title: "Untitled story".to_string(),
+                license: StoryLicense::Reserved as i16,
+                visibility: StoryVisibility::Public as i16,
+                age_restriction: StoryAgeRestriction::NotRated as i16,
+                category: StoryCategory::Others.to_string(),
+                tags: vec![
+                    "tag-1".to_string(),
+                    "tag-2".to_string(),
+                    "tag-3".to_string(),
+                ],
+                ..Default::default()
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        // Tags should get inserted in the database
+        let result = sqlx::query(
+            r#"
+            SELECT name FROM draft_tags
+            WHERE story_id = $1
+            ORDER BY name
+            "#,
+        )
+        .bind(2_i64)
+        .fetch_all(&mut *conn)
+        .await?;
+
+        assert_eq!(result.len(), 3);
+        assert_eq!(result[0].get::<String, _>("name"), "tag-1".to_string());
+        assert_eq!(result[1].get::<String, _>("name"), "tag-2".to_string());
+        assert_eq!(result[2].get::<String, _>("name"), "tag-3".to_string());
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_invalid_story_category(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(patch, pool, true, true).await;
+
+        let req = test::TestRequest::patch()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/stories/{}/metadata", 2))
+            .set_json(Request {
+                title: "Untitled story".to_string(),
+                license: StoryLicense::Reserved as i16,
+                visibility: StoryVisibility::Public as i16,
+                age_restriction: StoryAgeRestriction::NotRated as i16,
+                category: "invalid".to_string(),
+                ..Default::default()
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_form_error_response(
+            res,
+            vec![vec!["category".to_string(), "Invalid category".to_string()]],
+        )
+        .await;
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_invalid_story_tags(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(patch, pool, true, true).await;
+
+        let req = test::TestRequest::patch()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/stories/{}/metadata", 2))
+            .set_json(Request {
+                title: "Untitled story".to_string(),
+                license: StoryLicense::Reserved as i16,
+                visibility: StoryVisibility::Public as i16,
+                age_restriction: StoryAgeRestriction::NotRated as i16,
+                category: StoryCategory::Others.to_string(),
+                tags: vec!["SOME INVALID TAG".to_string()],
+                ..Default::default()
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_form_error_response(
+            res,
+            vec![vec!["tags".to_string(), "Invalid tags".to_string()]],
+        )
+        .await;
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_invalid_story_splash(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(patch, pool, true, true).await;
+
+        let req = test::TestRequest::patch()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/stories/{}/metadata", 2))
+            .set_json(Request {
+                splash_id: Some("invalid_key".to_string()),
+                title: "Untitled story".to_string(),
+                license: StoryLicense::Reserved as i16,
+                visibility: StoryVisibility::Public as i16,
+                age_restriction: StoryAgeRestriction::NotRated as i16,
+                category: StoryCategory::Others.to_string(),
+                ..Default::default()
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Invalid splash ID").await;
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_invalid_preview_image(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(patch, pool, true, true).await;
+
+        let req = test::TestRequest::patch()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/stories/{}/metadata", 2))
+            .set_json(Request {
+                preview_image: Some("invalid_key".to_string()),
+                title: "Untitled story".to_string(),
+                license: StoryLicense::Reserved as i16,
+                visibility: StoryVisibility::Public as i16,
+                age_restriction: StoryAgeRestriction::NotRated as i16,
+                category: StoryCategory::Others.to_string(),
+                ..Default::default()
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Invalid preview image").await;
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("story"))]
+    async fn should_not_update_metadata_for_soft_deleted_story(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, _) = init_app_for_test(patch, pool, true, true).await;
+
+        // Soft-delete the story
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let req = test::TestRequest::patch()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/stories/{}/metadata", 2))
+            .set_json(Request {
+                title: "Untitled story".to_string(),
+                license: StoryLicense::Reserved as i16,
+                visibility: StoryVisibility::Public as i16,
+                age_restriction: StoryAgeRestriction::NotRated as i16,
+                category: StoryCategory::Others.to_string(),
+                ..Default::default()
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Story not found").await;
+
+        Ok(())
+    }
 }
