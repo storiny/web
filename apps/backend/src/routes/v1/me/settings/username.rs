@@ -9,6 +9,7 @@ use actix_web::{patch, web, HttpResponse};
 use actix_web_validator::Json;
 use argon2::{Argon2, PasswordHash, PasswordVerifier};
 use serde::{Deserialize, Serialize};
+use slugify::slugify;
 use sqlx::Row;
 use validator::Validate;
 
@@ -53,6 +54,9 @@ async fn patch(
                         .verify_password(&payload.current_password.as_bytes(), &hash)
                     {
                         Ok(_) => {
+                            let slugged_username =
+                                slugify!(&payload.new_username, separator = "_", max_length = 24);
+
                             match sqlx::query(
                                 r#"
                                 WITH
@@ -74,7 +78,7 @@ async fn patch(
                                 "#,
                             )
                             .bind(user_id)
-                            .bind(&payload.new_username)
+                            .bind(slugged_username)
                             .bind(AccountActivityType::Username as i16)
                             .execute(&data.db_pool)
                             .await

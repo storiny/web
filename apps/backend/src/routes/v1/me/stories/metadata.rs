@@ -1,7 +1,7 @@
-use crate::error::{FormErrorResponse, ToastErrorResponse};
-use crate::models::story::STORY_CATEGORY_VEC;
 use crate::{
-    constants::sql_states::SqlState, error::AppError, middleware::identity::identity::Identity,
+    error::{AppError, FormErrorResponse, ToastErrorResponse},
+    middleware::identity::identity::Identity,
+    models::story::STORY_CATEGORY_VEC,
     AppState,
 };
 use actix_web::{patch, web, HttpResponse};
@@ -36,8 +36,6 @@ struct Request {
     description: Option<String>,
     #[validate(length(min = 0, max = 128, message = "Invalid splash ID length"))]
     splash_id: Option<String>,
-    #[validate(length(min = 0, max = 6, message = "Invalid splash hex length"))]
-    splash_hex: Option<String>,
     #[validate]
     #[validate(required)]
     #[validate(length(min = 0, max = 5, message = "Invalid story tags"))]
@@ -84,36 +82,36 @@ async fn patch(
                         ])));
                     }
 
+                    let mut splash_hex: Option<String> = None;
+
                     // Check if the splash is valid
                     if payload.splash_id.is_some() {
-                        // `splash_hex` must be present with `splash_id`
-                        if payload.splash_hex.is_none() {
-                            return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                                "Splash hex is missing".to_string(),
-                            )));
-                        }
-
-                        let result = sqlx::query(
+                        match sqlx::query(
                             r#"
-                            SELECT EXISTS(
-                                SELECT 1 FROM assets
-                                WHERE
-                                    user_id = $1
-                                    AND key = $2
-                                    AND hex = $3
-                            )
+                            SELECT hex FROM assets
+                            WHERE
+                                user_id = $1
+                                AND key = $2
                             "#,
                         )
                         .bind(user_id)
                         .bind(&payload.splash_id)
-                        .bind(&payload.splash_hex)
                         .fetch_one(&data.db_pool)
-                        .await?;
-
-                        if !result.get::<bool, _>("exists") {
-                            return Ok(HttpResponse::BadRequest()
-                                .json(ToastErrorResponse::new("Invalid splash ID".to_string())));
-                        }
+                        .await
+                        {
+                            Ok(asset) => {
+                                splash_hex = Some(asset.get::<String, _>("hex"));
+                            }
+                            Err(kind) => {
+                                return match kind {
+                                    sqlx::Error::RowNotFound => Ok(HttpResponse::BadRequest()
+                                        .json(ToastErrorResponse::new(
+                                            "Invalid splash ID".to_string(),
+                                        ))),
+                                    _ => Ok(HttpResponse::InternalServerError().finish()),
+                                }
+                            }
+                        };
                     }
 
                     // Check if the preview image is valid
@@ -140,14 +138,27 @@ async fn patch(
                         }
                     }
 
+                    // TODO: UPDATE TAGS
+
                     match sqlx::query(
                         r#"
                         UPDATE stories
                         SET
-                            title,
-                            description,
-                            splash_id,
-                            splash_hex
+                            title = $3,
+                            description = $4,
+                            splash_id = $5,
+                            splash_hex = $6,
+                            license = $7,
+                            visibility = $8,
+                            age_restriction = $9,
+                            category = $10::story_category,
+                            disable_toc = $11,
+                            disable_comments = $12,
+                            disable_public_revision_history = $13,
+                            seo_title = $14,
+                            seo_description = $15,
+                            canonical_url = $16,
+                            preview_image = $17
                         WHERE
                             user_id = $1
                             AND id = $2
@@ -156,35 +167,31 @@ async fn patch(
                     )
                     .bind(user_id)
                     .bind(story_id)
+                    .bind(&payload.title)
+                    .bind(&payload.description)
+                    .bind(&payload.splash_id)
+                    .bind(splash_hex)
+                    .bind(&payload.license)
+                    .bind(&payload.visibility)
+                    .bind(&payload.age_restriction)
+                    .bind(&payload.category)
+                    .bind(&payload.disable_toc)
+                    .bind(&payload.disable_comments)
+                    .bind(&payload.disable_public_revision_history)
+                    .bind(&payload.seo_title)
+                    .bind(&payload.seo_description)
+                    .bind(&payload.canonical_url)
+                    .bind(&payload.preview_image)
                     .execute(&data.db_pool)
-                    .await
+                    .await?
+                    .rows_affected()
                     {
-                        Ok(_) => Ok(HttpResponse::Created().finish()),
-                        Err(err) => {
-                            if let Some(db_err) = err.into_database_error() {
-                                match db_err.kind() {
-                                    // Do not throw if already blocked
-                                    sqlx::error::ErrorKind::UniqueViolation => {
-                                        Ok(HttpResponse::NoContent().finish())
-                                    }
-                                    _ => {
-                                        // Check if the blocked user is soft-deleted or deactivated
-                                        if db_err.code().unwrap_or_default()
-                                            == SqlState::EntityUnavailable.to_string()
-                                        {
-                                            Ok(HttpResponse::BadRequest().body("User being blocked is either deleted or deactivated"))
-                                        } else {
-                                            Ok(HttpResponse::InternalServerError().finish())
-                                        }
-                                    }
-                                }
-                            } else {
-                                Ok(HttpResponse::InternalServerError().finish())
-                            }
-                        }
+                        0 => Ok(HttpResponse::BadRequest()
+                            .json(ToastErrorResponse::new("Story not found".to_string()))),
+                        _ => Ok(HttpResponse::NoContent().finish()),
                     }
                 }
-                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid user ID")),
+                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid story ID")),
             }
         }
         Err(_) => Ok(HttpResponse::InternalServerError().finish()),

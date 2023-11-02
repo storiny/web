@@ -13,8 +13,8 @@ mod tests {
     ) -> Result<PgRow, Error> {
         sqlx::query(
             r#"
-            INSERT INTO stories(user_id, published_at)
-            VALUES ($1, $2)
+            INSERT INTO stories(user_id, published_at, first_published_at)
+            VALUES ($1, $2, $2)
             RETURNING id
             "#,
         )
@@ -448,26 +448,29 @@ mod tests {
         Ok(())
     }
 
-    // Story tags
+    // Story/draft tags
 
     #[sqlx::test(fixtures("user", "tag"))]
-    async fn can_delete_story_tag_when_story_is_soft_deleted(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_convert_story_tags_to_draft_tags_when_the_story_is_soft_deleted(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
 
-        // Insert a story tag
+        // Insert some story tags
         let insert_result = sqlx::query(
             r#"
             INSERT INTO story_tags(tag_id, story_id)
-            VALUES ($1, $2)
+            VALUES ($2, $1), ($3, $1)
             "#,
         )
-        .bind(2_i64)
         .bind(story_id)
+        .bind(2_i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
-        assert_eq!(insert_result.rows_affected(), 1);
+        assert_eq!(insert_result.rows_affected(), 2);
 
         // Soft-delete the story
         sqlx::query(
@@ -481,17 +484,49 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
+        // Draft tags should get inserted
+        let result = sqlx::query(
+            r#"
+            SELECT name FROM draft_tags
+            WHERE story_id = $1
+            ORDER BY
+                name
+            "#,
+        )
+        .bind(story_id)
+        .fetch_all(&mut *conn)
+        .await?;
+
+        assert_eq!(result[0].get::<String, _>("name"), "one");
+        assert_eq!(result[1].get::<String, _>("name"), "two");
+
         // Story tag should get deleted
         let result = sqlx::query(
             r#"
             SELECT EXISTS(
                 SELECT 1 FROM story_tags
-                WHERE tag_id = $1 AND story_id = $2
+                WHERE tag_id IN ($1, $2) AND story_id = $2
             )
             "#,
         )
         .bind(2_i64)
+        .bind(3_i64)
         .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
+
+        // Tag with 0 story count should get deleted
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS(
+                SELECT 1 FROM tags
+                WHERE name = $1
+            )
+            "#,
+        )
+        .bind("two".to_string())
         .fetch_one(&mut *conn)
         .await?;
 
@@ -501,23 +536,26 @@ mod tests {
     }
 
     #[sqlx::test(fixtures("user", "tag"))]
-    async fn can_delete_story_tag_when_the_story_is_unpublished(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_convert_story_tags_to_draft_tags_when_the_story_is_unpublished(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
 
-        // Insert a story tag
+        // Insert some story tags
         let insert_result = sqlx::query(
             r#"
             INSERT INTO story_tags(tag_id, story_id)
-            VALUES ($1, $2)
+            VALUES ($2, $1), ($3, $1)
             "#,
         )
-        .bind(2_i64)
         .bind(story_id)
+        .bind(2_i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
-        assert_eq!(insert_result.rows_affected(), 1);
+        assert_eq!(insert_result.rows_affected(), 2);
 
         // Unpublish the story
         sqlx::query(
@@ -531,21 +569,179 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
+        // Draft tags should get inserted
+        let result = sqlx::query(
+            r#"
+            SELECT name FROM draft_tags
+            WHERE story_id = $1
+            ORDER BY
+                name
+            "#,
+        )
+        .bind(story_id)
+        .fetch_all(&mut *conn)
+        .await?;
+
+        assert_eq!(result[0].get::<String, _>("name"), "one");
+        assert_eq!(result[1].get::<String, _>("name"), "two");
+
         // Story tag should get deleted
         let result = sqlx::query(
             r#"
             SELECT EXISTS(
                 SELECT 1 FROM story_tags
-                WHERE tag_id = $1 AND story_id = $2
+                WHERE tag_id IN ($1, $2) AND story_id = $2
             )
             "#,
         )
         .bind(2_i64)
+        .bind(3_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
 
         assert!(!result.get::<bool, _>("exists"));
+
+        // Tag with 0 story count should get deleted
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS(
+                SELECT 1 FROM tags
+                WHERE name = $1
+            )
+            "#,
+        )
+        .bind("two".to_string())
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user", "tag"))]
+    async fn can_convert_draft_tags_to_story_tags_when_the_story_is_restored(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
+
+        // Soft-delete the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Insert some draft tags
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO draft_tags(name, story_id)
+            VALUES ($2, $1), ($3, $1)
+            "#,
+        )
+        .bind(story_id)
+        .bind("one".to_string()) // Existing tag
+        .bind("new".to_string()) // Should create a new tag
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        // Restore the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Story tags and tags should get inserted
+        let result = sqlx::query(
+            r#"
+            SELECT
+                t.name
+            FROM story_tags st
+                INNER JOIN tags t
+                    ON st.tag_id = t.id
+            WHERE st.story_id = $1
+            ORDER BY
+                t.name
+            "#,
+        )
+        .bind(story_id)
+        .fetch_all(&mut *conn)
+        .await?;
+
+        assert_eq!(result[0].get::<String, _>("name"), "new"); // New tag
+        assert_eq!(result[1].get::<String, _>("name"), "one"); // Existing
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user", "tag"))]
+    async fn can_convert_draft_tags_to_story_tags_when_the_story_is_published(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let story_id = (insert_sample_story(&mut conn, false).await?).get::<i64, _>("id");
+
+        // Insert some draft tags
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO draft_tags(name, story_id)
+            VALUES ($2, $1), ($3, $1)
+            "#,
+        )
+        .bind(story_id)
+        .bind("one".to_string()) // Existing tag
+        .bind("new".to_string()) // Should create a new tag
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        // Publish the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Story tags and tags should get inserted
+        let result = sqlx::query(
+            r#"
+            SELECT
+                t.name
+            FROM story_tags st
+                INNER JOIN tags t
+                    ON st.tag_id = t.id
+            WHERE st.story_id = $1
+            ORDER BY
+                t.name
+            "#,
+        )
+        .bind(story_id)
+        .fetch_all(&mut *conn)
+        .await?;
+
+        assert_eq!(result[0].get::<String, _>("name"), "new"); // New tag
+        assert_eq!(result[1].get::<String, _>("name"), "one"); // Existing
 
         Ok(())
     }

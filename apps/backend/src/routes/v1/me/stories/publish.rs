@@ -1,8 +1,15 @@
 use crate::error::ToastErrorResponse;
 use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
 use actix_web::{post, put, web, HttpResponse};
+use nanoid::nanoid;
 use serde::Deserialize;
+use slugify::slugify;
+use sqlx::{Postgres, Row, Transaction};
 use validator::Validate;
+
+/// The maximum number of retries before a random fixed-length ID suffix is used
+/// for the story slug generation procedure.
+const MAX_SLUG_GENERATE_ATTEMPTS: u8 = 10;
 
 #[derive(Deserialize, Validate)]
 struct Fragments {
@@ -10,6 +17,59 @@ struct Fragments {
 }
 
 // TODO: Handle publishing and editing logic
+
+/// Generates a unique slug for the story.
+///
+/// * `txn` - A Postgres transaction.
+/// * `story_id` - The ID of the story.
+/// * `title` - The title of the story.
+async fn generate_story_slug<'a>(
+    txn: &mut Transaction<'a, Postgres>,
+    story_id: &i64,
+    title: &str,
+) -> Result<String, sqlx::Error> {
+    let character_set: [char; 16] = [
+        '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'a', 'b', 'c', 'd', 'e', 'f',
+    ];
+
+    // Use a larger ID length for "Untitled story" as it is the default title
+    // used for the stories.
+    let mut id_length = if title == "Untitled story" { 9 } else { 3 };
+    let mut slug_retries: u8 = 0;
+    let slugged_title = slugify!(&title, separator = "-", max_length = 64);
+    let mut story_slug = format!("{}-{}", slugged_title, nanoid!(id_length, &character_set));
+
+    while match sqlx::query(
+        r#"
+        SELECT 1 FROM stories
+        WHERE slug = $1
+        "#,
+    )
+    .bind(&story_slug)
+    .fetch_one(&mut **txn)
+    .await
+    {
+        Ok(_) => true,
+        Err(kind) => match kind {
+            sqlx::Error::RowNotFound => false,
+            _ => return Err(kind),
+        },
+    } {
+        if slug_retries < MAX_SLUG_GENERATE_ATTEMPTS {
+            id_length += 1;
+            slug_retries += 1;
+
+            // Generate a new slug with bigger ID suffix.
+            story_slug = format!("{}-{}", slugged_title, nanoid!(id_length, &character_set));
+        } else {
+            // Use the `story_id` as the suffix when we run out of all
+            // the slug generation attempts.
+            story_slug = format!("{}-{}", slugged_title, story_id);
+        }
+    }
+
+    Ok(story_slug)
+}
 
 // Publish a new story
 #[post("/v1/me/stories/{story_id}/publish")]
@@ -21,10 +81,12 @@ async fn post(
     match user.id() {
         Ok(user_id) => match path.story_id.parse::<i64>() {
             Ok(story_id) => {
+                let pg_pool = &data.db_pool;
+                let mut txn = pg_pool.begin().await?;
+
                 match sqlx::query(
                     r#"
-                    UPDATE stories
-                    SET published_at = now()
+                    SELECT title FROM stories
                     WHERE
                         user_id = $1
                         AND id = $2
@@ -34,13 +96,50 @@ async fn post(
                 )
                 .bind(user_id)
                 .bind(story_id)
-                .execute(&data.db_pool)
-                .await?
-                .rows_affected()
+                .fetch_one(&mut *txn)
+                .await
                 {
-                    0 => Ok(HttpResponse::BadRequest()
+                    Ok(story) => {
+                        let story_slug = generate_story_slug(
+                            &mut txn,
+                            &story_id,
+                            &story.get::<String, _>("title"),
+                        )
+                        .await?;
+
+                        match sqlx::query(
+                            r#"
+                            UPDATE stories
+                            SET
+                                published_at = now(),
+                                slug = $3
+                            WHERE
+                                user_id = $1
+                                AND id = $2
+                                AND published_at IS NULL
+                                AND deleted_at IS NULL
+                            "#,
+                        )
+                        .bind(user_id)
+                        .bind(story_id)
+                        .bind(story_slug)
+                        .execute(&mut *txn)
+                        .await?
+                        .rows_affected()
+                        {
+                            0 => {
+                                txn.rollback().await?;
+                                Ok(HttpResponse::BadRequest()
+                                    .json(ToastErrorResponse::new("Story not found".to_string())))
+                            }
+                            _ => {
+                                txn.commit().await?;
+                                Ok(HttpResponse::NoContent().finish())
+                            }
+                        }
+                    }
+                    Err(_) => Ok(HttpResponse::BadRequest()
                         .json(ToastErrorResponse::new("Story not found".to_string()))),
-                    _ => Ok(HttpResponse::NoContent().finish()),
                 }
             }
             Err(_) => Ok(HttpResponse::BadRequest().body("Invalid story ID")),
@@ -133,7 +232,7 @@ mod tests {
         // Story should get updated in the database
         let result = sqlx::query(
             r#"
-            SELECT published_at FROM stories
+            SELECT slug, published_at FROM stories
             WHERE id = $1
             "#,
         )
@@ -141,6 +240,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
+        assert!(result.get::<Option<String>, _>("slug").is_some());
         assert!(result
             .get::<Option<OffsetDateTime>, _>("published_at")
             .is_some());

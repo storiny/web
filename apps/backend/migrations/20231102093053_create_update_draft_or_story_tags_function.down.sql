@@ -1,0 +1,1 @@
+drop FUNCTION if EXISTS "public"."update_draft_or_story_tags";
