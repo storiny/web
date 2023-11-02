@@ -4212,6 +4212,54 @@ mod tests {
     }
 
     #[sqlx::test(fixtures("user"))]
+    async fn can_delete_draft_tag_on_story_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let story_id = (insert_sample_story(&mut conn, false).await?).get::<i64, _>("id");
+
+        // Insert a draft tag
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO draft_tags(name, story_id)
+            VALUES ($1, $2)
+            "#,
+        )
+        .bind("one")
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        // Delete the story
+        sqlx::query(
+            r#"
+            DELETE FROM stories
+            WHERE id = $1
+            "#,
+        )
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Draft tag should get deleted
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS(
+                SELECT 1 FROM draft_tags
+                WHERE name = $1
+            )
+            "#,
+        )
+        .bind("one")
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
     async fn can_delete_notification_on_story_hard_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
