@@ -1,3 +1,5 @@
+DROP FUNCTION IF EXISTS convert_draft_tags_to_story_tags;
+
 DROP TRIGGER IF EXISTS story_insert_trigger ON stories;
 
 DROP FUNCTION IF EXISTS story_insert_trigger_proc;

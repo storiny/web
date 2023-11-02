@@ -9,6 +9,7 @@ use crate::{
 use actix_web::{patch, web, HttpResponse};
 use actix_web_validator::Json;
 use argon2::{Argon2, PasswordHash, PasswordVerifier};
+use email_address::EmailAddress;
 use serde::{Deserialize, Serialize};
 use sqlx::Row;
 use validator::Validate;
@@ -47,6 +48,16 @@ async fn patch(
                 return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
                     "You need to set a password to change your e-mail".to_string(),
                 )));
+            }
+
+            // Check for valid e-mail
+            if !EmailAddress::is_valid(&payload.new_email) {
+                return Ok(
+                    HttpResponse::BadRequest().json(FormErrorResponse::new(vec![vec![
+                        "new_email".to_string(),
+                        "Invalid e-mail".to_string(),
+                    ]])),
+                );
             }
 
             match PasswordHash::new(&user_password.unwrap()) {

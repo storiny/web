@@ -83,7 +83,8 @@ const StoryMetadataModalImpl = (
   );
 
   const handle_submit: SubmitHandler<StoryMetadataSchema> = (values) => {
-    mutate_story_metadata({ ...values, id: story.id })
+    // `splash_hex` is not needed in the request
+    mutate_story_metadata({ ...values, splash_hex: undefined, id: story.id })
       .unwrap()
       .then((res) => {
         set_open(false);

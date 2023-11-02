@@ -1,3 +1,52 @@
+-- Converts `draft_tags` to `story_tags` for a story.
+CREATE OR REPLACE FUNCTION convert_draft_tags_to_story_tags(
+	story_id_arg BIGINT
+) RETURNS VOID AS
+$$
+DECLARE
+	dt_row RECORD;
+BEGIN
+	FOR dt_row IN
+		SELECT
+			name
+		FROM
+			draft_tags dt
+		WHERE
+			story_id = story_id_arg
+		-- Maximum 5 tags (sanity)
+		LIMIT 5
+		LOOP
+			WITH
+				found_tag    AS (SELECT
+									 id
+								 FROM
+									 tags
+								 WHERE
+									 name = dt_row.name
+				),
+				-- Insert tag if not exist
+				inserted_tag AS (
+					INSERT INTO tags (name)
+						SELECT
+							dt_row.name
+						WHERE
+							NOT EXISTS (SELECT
+											1
+										FROM
+											found_tag
+									   )
+						RETURNING id
+				)
+			INSERT
+			INTO
+				story_tags (story_id, tag_id)
+			SELECT
+				story_id_arg,
+				COALESCE((SELECT id FROM found_tag), (SELECT id FROM inserted_tag));
+		END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
 -- Insert
 --
 CREATE OR REPLACE FUNCTION story_insert_trigger_proc(
@@ -97,51 +146,69 @@ CREATE OR REPLACE FUNCTION story_after_update_trigger_proc(
 AS
 $$
 BEGIN
-	-- Story soft-deleted or unpublished
+	-- Story (published) soft-deleted or unpublished
 	IF ((OLD.deleted_at IS NULL AND NEW.deleted_at IS NOT NULL) OR
 		(OLD.published_at IS NOT NULL AND NEW.published_at IS NULL)) THEN
-		-- Soft-delete comments
-		UPDATE
-			comments
-		SET
-			deleted_at = NOW()
-		WHERE
-			  deleted_at IS NULL
-		  AND story_id = NEW.id;
-		--
-		-- Soft-delete story likes
-		UPDATE
-			story_likes
-		SET
-			deleted_at = NOW()
-		WHERE
-			  deleted_at IS NULL
-		  AND story_id = NEW.id;
-		--
-		-- Soft-delete bookmarks
-		UPDATE
-			bookmarks
-		SET
-			deleted_at = NOW()
-		WHERE
-			  deleted_at IS NULL
-		  AND story_id = NEW.id;
-		--
-		-- Soft-delete histories
-		UPDATE
-			histories
-		SET
-			deleted_at = NOW()
-		WHERE
-			  deleted_at IS NULL
-		  AND story_id = NEW.id;
-		--
-		-- Delete story tags
-		DELETE
-		FROM
-			story_tags
-		WHERE
-			story_id = NEW.id;
+		-- Drop relations for published (now soft-deleted or unpublished) story
+		IF (OLD.published_at IS NOT NULL) THEN
+			-- Soft-delete comments
+			UPDATE
+				comments
+			SET
+				deleted_at = NOW()
+			WHERE
+				  deleted_at IS NULL
+			  AND story_id = NEW.id;
+			--
+			-- Soft-delete story likes
+			UPDATE
+				story_likes
+			SET
+				deleted_at = NOW()
+			WHERE
+				  deleted_at IS NULL
+			  AND story_id = NEW.id;
+			--
+			-- Soft-delete bookmarks
+			UPDATE
+				bookmarks
+			SET
+				deleted_at = NOW()
+			WHERE
+				  deleted_at IS NULL
+			  AND story_id = NEW.id;
+			--
+			-- Soft-delete histories
+			UPDATE
+				histories
+			SET
+				deleted_at = NOW()
+			WHERE
+				  deleted_at IS NULL
+			  AND story_id = NEW.id;
+			--
+			-- Convert `story_tags` to `draft_tags`
+			INSERT INTO draft_tags (name, story_id)
+			SELECT
+				t.name,
+				NEW.id
+			FROM
+				story_tags st
+					INNER JOIN tags t
+							   ON st.tag_id = t.id
+			WHERE
+				st.story_id = NEW.id
+			-- Maximum 5 tags (sanity)
+			LIMIT 5;
+			--
+			-- Delete story tags
+			DELETE
+			FROM
+				story_tags
+			WHERE
+				story_id = NEW.id;
+			--
+		END IF;
 		--
 		-- Delete notifications
 		DELETE
@@ -154,8 +221,8 @@ BEGIN
 		--
 	END IF;
 	--
-	-- Story recovered or published
-	IF ((OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL) OR
+	-- Story (published) recovered or published
+	IF ((NEW.published_at IS NOT NULL AND OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL) OR
 		(OLD.published_at IS NULL AND NEW.published_at IS NOT NULL)) THEN
 		-- Restore comments
 		UPDATE
@@ -228,6 +295,17 @@ BEGIN
 					   AND u.deleted_at IS NULL
 					   AND u.deactivated_at IS NULL
 					);
+		--
+		-- Convert `draft_tags` to `story_tags`
+		PERFORM convert_draft_tags_to_story_tags(NEW.id);
+		--
+		-- Delete draft tags
+		DELETE
+		FROM
+			draft_tags
+		WHERE
+			story_id = NEW.id;
+		--
 	END IF;
 	--
 	RETURN NEW;

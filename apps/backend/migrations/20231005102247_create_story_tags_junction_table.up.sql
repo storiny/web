@@ -9,4 +9,3 @@ CREATE TABLE IF NOT EXISTS story_tags
 			ON DELETE CASCADE,
 	UNIQUE (story_id, tag_id)
 );
-
