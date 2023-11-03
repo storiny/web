@@ -39,12 +39,11 @@ export const fetch_user = create_async_thunk<User>(
   {
     condition: (_, { getState: get_state }) => {
       const {
-        auth: { logged_in, status, user }
+        auth: { logged_in, status }
       } = get_state() as AppState;
 
-      if (!logged_in || user !== null || status === "loading") {
-        // Do not send a request if logged out, a user object is already populated,
-        // Or the status is `loading`
+      if (!logged_in || status === "loading") {
+        // Do not send a request if logged out or the status is `loading`
         return false;
       }
     }
@@ -123,8 +122,9 @@ export const auth_slice = create_slice({
         state.user = action.payload;
       })
       .addCase(fetch_user.pending, (state) => {
-        state.status = "loading";
-        state.user = null;
+        if (state.user === null) {
+          state.status = "loading";
+        }
       })
       .addCase(fetch_user.rejected, (state) => {
         state.status = "error";

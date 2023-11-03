@@ -1,0 +1,223 @@
+use crate::{
+    error::{AppError, ToastErrorResponse},
+    middleware::identity::identity::Identity,
+    AppState,
+};
+use actix_web::{post, web, HttpResponse};
+use actix_web_validator::Json;
+use serde::{Deserialize, Serialize};
+use validator::Validate;
+
+#[derive(Deserialize, Validate)]
+struct Fragments {
+    reply_id: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Validate)]
+struct Request {
+    hidden: bool,
+}
+
+#[post("/v1/public/replies/{reply_id}/visibility")]
+async fn post(
+    payload: Json<Request>,
+    path: web::Path<Fragments>,
+    data: web::Data<AppState>,
+    user: Identity,
+) -> Result<HttpResponse, AppError> {
+    match user.id() {
+        Ok(user_id) => match path.reply_id.parse::<i64>() {
+            Ok(reply_id) => {
+                match sqlx::query(
+                    r#"
+                    WITH
+                        comment AS (SELECT
+                                      id
+                                  FROM
+                                      comments
+                                  WHERE
+                                        user_id = $1
+                                    AND deleted_at IS NULL
+                        )
+                    UPDATE replies
+                    SET
+                        hidden = $3
+                    WHERE
+                          id = $2
+                      AND comment_id = (SELECT id FROM comment)
+                      AND deleted_at IS NULL
+                    "#,
+                )
+                .bind(user_id)
+                .bind(reply_id)
+                .bind(&payload.hidden)
+                .execute(&data.db_pool)
+                .await?
+                .rows_affected()
+                {
+                    0 => Ok(HttpResponse::BadRequest()
+                        .json(ToastErrorResponse::new("Reply not found".to_string()))),
+                    _ => Ok(HttpResponse::NoContent().finish()),
+                }
+            }
+            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid reply ID")),
+        },
+        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    }
+}
+
+pub fn init_routes(cfg: &mut web::ServiceConfig) {
+    cfg.service(post);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::test_utils::{assert_toast_error_response, init_app_for_test};
+    use actix_web::test;
+    use sqlx::{PgPool, Row};
+
+    #[sqlx::test(fixtures("visibility"))]
+    async fn can_hide_and_unhide_a_reply(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, true).await;
+
+        // Hide the reply
+        let req = test::TestRequest::post()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/public/replies/{}/visibility", 2))
+            .set_json(Request { hidden: true })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        // `hidden` should get updated in the database
+        let asset = sqlx::query(
+            r#"
+            SELECT hidden FROM replies
+            WHERE id = $1
+            "#,
+        )
+        .bind(2_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(asset.get::<bool, _>("hidden"));
+
+        // Unhide the reply
+        let req = test::TestRequest::post()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/public/replies/{}/visibility", 2))
+            .set_json(Request { hidden: false })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        // `hidden` should get updated in the database
+        let asset = sqlx::query(
+            r#"
+            SELECT hidden FROM replies
+            WHERE id = $1
+            "#,
+        )
+        .bind(2_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!asset.get::<bool, _>("hidden"));
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_handle_a_missing_reply(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/public/replies/12345/visibility")
+            .set_json(Request { hidden: false })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Reply not found").await;
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("visibility"))]
+    async fn should_not_hide_reply_on_a_comment_posted_by_a_different_user(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true).await;
+
+        // Change the writer of the comment
+        let result = sqlx::query(
+            r#"
+            WITH new_user AS (
+                INSERT INTO users(name, username, email)
+                VALUES ('New user', 'new_user', 'new@example.com')
+                RETURNING id
+            )
+            UPDATE comments
+            SET user_id = (SELECT id FROM new_user)
+            WHERE user_id = $1
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Try hiding the reply
+        let req = test::TestRequest::post()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/public/replies/{}/visibility", 2))
+            .set_json(Request { hidden: true })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Reply not found").await;
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("visibility"))]
+    async fn should_not_hide_a_soft_deleted_reply(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, true).await;
+
+        // Soft-delete the reply
+        let result = sqlx::query(
+            r#"
+            UPDATE replies
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Try hiding the reply
+        let req = test::TestRequest::post()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/public/replies/{}/visibility", 2))
+            .set_json(Request { hidden: true })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Reply not found").await;
+
+        Ok(())
+    }
+}

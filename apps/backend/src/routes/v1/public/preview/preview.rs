@@ -1,0 +1,238 @@
+use crate::{
+    error::{AppError, ToastErrorResponse},
+    middleware::identity::identity::Identity,
+    AppState,
+};
+use actix_web::{post, web, HttpResponse};
+use actix_web_validator::Json;
+use serde::{Deserialize, Serialize};
+use validator::Validate;
+
+#[derive(Deserialize, Validate)]
+struct Fragments {
+    story_id: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct User {
+    id: i64,
+    username: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct Story {
+    id: i64,
+    slug: String,
+    title: String,
+    splash_id: Option<String>,
+    splash_hex: Option<String>,
+    description: Option<String>,
+    user_id: i64,
+    // Joins
+    user: Json<User>,
+}
+
+#[post("/v1/public/preview/{story_id}")]
+async fn post(
+    payload: Json<Request>,
+    path: web::Path<Fragments>,
+    data: web::Data<AppState>,
+    user: Identity,
+) -> Result<HttpResponse, AppError> {
+    match user.id() {
+        Ok(user_id) => match path.comment_id.parse::<i64>() {
+            Ok(comment_id) => {
+                match sqlx::query(
+                    r#"
+                    WITH
+                        story AS (SELECT
+                                      id
+                                  FROM
+                                      stories
+                                  WHERE
+                                        user_id = $1
+                                    AND published_at IS NOT NULL
+                                    AND deleted_at IS NULL
+                        )
+                    UPDATE comments
+                    SET
+                        hidden = $3
+                    WHERE
+                          id = $2
+                      AND story_id = (SELECT id FROM story)
+                      AND deleted_at IS NULL
+                    "#,
+                )
+                .bind(user_id)
+                .bind(comment_id)
+                .bind(&payload.hidden)
+                .execute(&data.db_pool)
+                .await?
+                .rows_affected()
+                {
+                    0 => Ok(HttpResponse::BadRequest()
+                        .json(ToastErrorResponse::new("Comment not found".to_string()))),
+                    _ => Ok(HttpResponse::NoContent().finish()),
+                }
+            }
+            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid comment ID")),
+        },
+        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    }
+}
+
+pub fn init_routes(cfg: &mut web::ServiceConfig) {
+    cfg.service(post);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::test_utils::{assert_toast_error_response, init_app_for_test};
+    use actix_web::test;
+    use sqlx::{PgPool, Row};
+
+    #[sqlx::test(fixtures("visibility"))]
+    async fn can_hide_and_unhide_a_comment(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, true).await;
+
+        // Hide the comment
+        let req = test::TestRequest::post()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/public/comments/{}/visibility", 2))
+            .set_json(Request { hidden: true })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        // `hidden` should get updated in the database
+        let asset = sqlx::query(
+            r#"
+            SELECT hidden FROM comments
+            WHERE id = $1
+            "#,
+        )
+        .bind(2_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(asset.get::<bool, _>("hidden"));
+
+        // Unhide the comment
+        let req = test::TestRequest::post()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/public/comments/{}/visibility", 2))
+            .set_json(Request { hidden: false })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        // `hidden` should get updated in the database
+        let asset = sqlx::query(
+            r#"
+            SELECT hidden FROM comments
+            WHERE id = $1
+            "#,
+        )
+        .bind(2_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!asset.get::<bool, _>("hidden"));
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_handle_a_missing_comment(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/public/comments/12345/visibility")
+            .set_json(Request { hidden: false })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Comment not found").await;
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("visibility"))]
+    async fn should_not_hide_comment_on_a_story_published_by_a_different_user(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true).await;
+
+        // Change the writer of the story
+        let result = sqlx::query(
+            r#"
+            WITH new_user AS (
+                INSERT INTO users(name, username, email)
+                VALUES ('New user', 'new_user', 'new@example.com')
+                RETURNING id
+            )
+            UPDATE stories
+            SET user_id = (SELECT id FROM new_user)
+            WHERE user_id = $1
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Try hiding the comment
+        let req = test::TestRequest::post()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/public/comments/{}/visibility", 2))
+            .set_json(Request { hidden: true })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Comment not found").await;
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("visibility"))]
+    async fn should_not_hide_a_soft_deleted_comment(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, true).await;
+
+        // Soft-delete the comment
+        let result = sqlx::query(
+            r#"
+            UPDATE comments
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Try hiding the comment
+        let req = test::TestRequest::post()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/public/comments/{}/visibility", 2))
+            .set_json(Request { hidden: true })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Comment not found").await;
+
+        Ok(())
+    }
+}
