@@ -11,6 +11,7 @@ pub mod following;
 pub mod friend_requests;
 pub mod friends;
 pub mod gallery;
+pub mod get;
 pub mod history;
 pub mod liked_comments;
 pub mod liked_replies;

@@ -28,101 +28,103 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::auth::recovery::init_routes(cfg);
     // Feed
     v1::feed::feed::init_routes(cfg);
-    // User activity
+    // Me
+    v1::me::get::init_routes(cfg);
+    // Me - User activity
     v1::me::account_activity::init_routes(cfg);
-    // Assets
+    // Me - Assets
     v1::me::assets::get::init_routes(cfg);
     v1::me::assets::post::init_routes(cfg);
     v1::me::assets::delete::init_routes(cfg);
     v1::me::assets::alt::init_routes(cfg);
     v1::me::assets::favourite::init_routes(cfg);
     v1::me::assets::rating::init_routes(cfg);
-    // Blocked users
+    // Me - Blocked users
     v1::me::blocked_users::get::init_routes(cfg);
     v1::me::blocked_users::post::init_routes(cfg);
     v1::me::blocked_users::delete::init_routes(cfg);
-    // Bookmarks
+    // Me - Bookmarks
     v1::me::bookmarks::get::init_routes(cfg);
     v1::me::bookmarks::post::init_routes(cfg);
     v1::me::bookmarks::delete::init_routes(cfg);
-    // Comments
+    // Me - Comments
     v1::me::comments::get::init_routes(cfg);
     v1::me::comments::post::init_routes(cfg);
     v1::me::comments::patch::init_routes(cfg);
     v1::me::comments::delete::init_routes(cfg);
-    // Replies
+    // Me - Replies
     v1::me::replies::get::init_routes(cfg);
     v1::me::replies::post::init_routes(cfg);
     v1::me::replies::patch::init_routes(cfg);
     v1::me::replies::delete::init_routes(cfg);
-    // Drafts
+    // Me - Drafts
     v1::me::drafts::get::init_routes(cfg);
     v1::me::drafts::recover::init_routes(cfg);
     v1::me::drafts::delete::init_routes(cfg);
-    // Flow
+    // Me - Flow
     v1::me::flow::onboarding::tags::init_routes(cfg);
     v1::me::flow::onboarding::writers::init_routes(cfg);
-    // Followed tags
+    // Me - Followed tags
     v1::me::followed_tags::get::init_routes(cfg);
     v1::me::followed_tags::post::init_routes(cfg);
     v1::me::followed_tags::delete::init_routes(cfg);
-    // Followers
+    // Me - Followers
     v1::me::followers::get::init_routes(cfg);
     v1::me::followers::delete::init_routes(cfg);
-    // Following
+    // Me - Following
     v1::me::following::get::init_routes(cfg);
     v1::me::following::post::init_routes(cfg);
     v1::me::following::delete::init_routes(cfg);
-    // Friend requests
+    // Me - Friend requests
     v1::me::friend_requests::get::init_routes(cfg);
     v1::me::friend_requests::post::init_routes(cfg);
     v1::me::friend_requests::delete::init_routes(cfg);
-    // Friends
+    // Me - Friends
     v1::me::friends::get::init_routes(cfg);
     v1::me::friends::post::init_routes(cfg);
     v1::me::friends::delete::init_routes(cfg);
-    // Gallery
+    // Me - Gallery
     v1::me::gallery::get::init_routes(cfg);
     v1::me::gallery::post::init_routes(cfg);
-    // History
+    // Me - History
     v1::me::history::history::init_routes(cfg);
-    // Liked comments
+    // Me - Liked comments
     v1::me::liked_comments::post::init_routes(cfg);
     v1::me::liked_comments::delete::init_routes(cfg);
-    // Liked replies
+    // Me - Liked replies
     v1::me::liked_replies::post::init_routes(cfg);
     v1::me::liked_replies::delete::init_routes(cfg);
-    // Liked stories
+    // Me - Liked stories
     v1::me::liked_stories::get::init_routes(cfg);
     v1::me::liked_stories::post::init_routes(cfg);
     v1::me::liked_stories::delete::init_routes(cfg);
-    // Muted users
+    // Me - Muted users
     v1::me::muted_users::get::init_routes(cfg);
     v1::me::muted_users::post::init_routes(cfg);
     v1::me::muted_users::delete::init_routes(cfg);
-    // Notifications
+    // Me - Notifications
     v1::me::notifications::get::init_routes(cfg);
     v1::me::notifications::read::init_routes(cfg);
-    // Settings - Accounts
+    // Me - Settings - Accounts
     v1::me::settings::accounts::remove::init_routes(cfg);
-    // Settings - Avatar
+    // Me - Settings - Avatar
     v1::me::settings::avatar::init_routes(cfg);
-    // Settings - Banner
+    // Me - Settings - Banner
     v1::me::settings::banner::init_routes(cfg);
-    // Settings - Connections
+    // Me - Settings - Connections
     v1::me::settings::connections::visibility::init_routes(cfg);
     v1::me::settings::connections::remove::init_routes(cfg);
-    // Settings - Notifications
+    // Me - Settings - Notifications
     v1::me::settings::notifications::mail::init_routes(cfg);
     v1::me::settings::notifications::site::init_routes(cfg);
     v1::me::settings::notifications::unsubscribe::init_routes(cfg);
-    // Settings - Email
+    // Me - Settings - Email
     v1::me::settings::email::init_routes(cfg);
-    // Settings - Password
+    // Me - Settings - Password
     v1::me::settings::password::add::init_routes(cfg);
     v1::me::settings::password::update::init_routes(cfg);
     v1::me::settings::password::request_verification::init_routes(cfg);
-    // Settings - Privacy
+    // Me - Settings - Privacy
     v1::me::settings::privacy::delete_account::init_routes(cfg);
     v1::me::settings::privacy::disable_account::init_routes(cfg);
     v1::me::settings::privacy::following_list::init_routes(cfg);
@@ -131,23 +133,33 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::settings::privacy::private_account::init_routes(cfg);
     v1::me::settings::privacy::read_history::init_routes(cfg);
     v1::me::settings::privacy::sensitive_content::init_routes(cfg);
-    // Settings - Profile
+    // Me - Settings - Profile
     v1::me::settings::profile::init_routes(cfg);
-    // Settings - Sessions
+    // Me - Settings - Sessions
     v1::me::settings::sessions::destroy::init_routes(cfg);
     v1::me::settings::sessions::logout::init_routes(cfg);
-    // Settings - Username
+    // Me - Settings - Username
     v1::me::settings::username::init_routes(cfg);
-    // Status
+    // Me - Status
     v1::me::status::post::init_routes(cfg);
     v1::me::status::delete::init_routes(cfg);
-    // Stories
+    // Me - Stories
     v1::me::stories::get::init_routes(cfg);
     v1::me::stories::metadata::init_routes(cfg);
     v1::me::stories::publish::init_routes(cfg);
     v1::me::stories::recover::init_routes(cfg);
     v1::me::stories::unpublish::init_routes(cfg);
     v1::me::stories::delete::init_routes(cfg);
-    // Unread notifications
+    // Me - Unread notifications
     v1::me::unread_notifications::init_routes(cfg);
+    // Public - Comments
+    v1::public::comments::replies::init_routes(cfg);
+    v1::public::comments::visibility::init_routes(cfg);
+    // Public - Preview
+    v1::public::preview::init_routes(cfg);
+    // Public - Replies
+    v1::public::replies::visibility::init_routes(cfg);
+    // Public - Stories
+    v1::public::stories::comments::init_routes(cfg);
+    v1::public::stories::recommendations::init_routes(cfg);
 }
