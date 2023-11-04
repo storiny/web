@@ -74,13 +74,13 @@ async fn get(
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    let page = query.page.clone().unwrap_or(1) - 1;
-    let sort = query.sort.clone().unwrap_or("recent".to_string());
-    let search_query = query.query.clone().unwrap_or_default();
-    let has_search_query = !search_query.trim().is_empty();
-
     match user.id() {
         Ok(user_id) => {
+            let page = query.page.clone().unwrap_or(1) - 1;
+            let sort = query.sort.clone().unwrap_or("recent".to_string());
+            let search_query = query.query.clone().unwrap_or_default();
+            let has_search_query = !search_query.trim().is_empty();
+
             if has_search_query {
                 let result = sqlx::query_file_as!(
                     Bookmark,

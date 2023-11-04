@@ -9,12 +9,12 @@ worker.use(
       const { username } = await req.json();
 
       if (unavailableUsernames.includes(username)) {
-        return res(ctx.delay(500), ctx.status(400));
+        return res(ctx.delay(750), ctx.status(400));
       }
 
       return res(ctx.delay(750), ctx.status(200));
-    }
-  )
+    },
+  ),
 );
 
 export {};

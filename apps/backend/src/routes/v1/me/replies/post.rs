@@ -13,6 +13,7 @@ use validator::Validate;
 struct Request {
     #[validate(length(min = 1, max = 1024, message = "Invalid content length"))]
     content: String,
+    #[validate(length(min = 1, max = 64, message = "Invalid comment ID"))]
     comment_id: String,
 }
 

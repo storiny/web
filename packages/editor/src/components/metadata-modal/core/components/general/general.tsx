@@ -167,7 +167,7 @@ const Tags = (): React.ReactElement => {
         callback: Parameters<NonNullable<MultiSelectProps["loadOptions"]>>[1]
       ) => {
         get_tags({ query: input_value || "" }, true).then(({ data = [] }) =>
-          callback(data)
+          callback(data.map((value) => ({ label: value, value })))
         );
       },
       500

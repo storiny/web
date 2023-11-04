@@ -155,11 +155,21 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     // Public - Comments
     v1::public::comments::replies::init_routes(cfg);
     v1::public::comments::visibility::init_routes(cfg);
+    // Public - Explore
+    v1::public::explore::stories::init_routes(cfg);
+    v1::public::explore::tags::init_routes(cfg);
+    v1::public::explore::writers::init_routes(cfg);
     // Public - Preview
     v1::public::preview::init_routes(cfg);
     // Public - Replies
     v1::public::replies::visibility::init_routes(cfg);
+    // Public - Reports
+    v1::public::reports::init_routes(cfg);
     // Public - Stories
     v1::public::stories::comments::init_routes(cfg);
     v1::public::stories::recommendations::init_routes(cfg);
+    // Public - Tags
+    v1::public::tags::init_routes(cfg);
+    // Public - Validation - Username
+    v1::public::validation::username::init_routes(cfg);
 }

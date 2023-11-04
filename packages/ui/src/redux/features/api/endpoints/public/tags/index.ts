@@ -2,7 +2,7 @@ import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = "public/tags";
 
-export type GetTagsResponse = { label: string; value: string }[];
+export type GetTagsResponse = string[];
 
 export const { useLazyGetTagsQuery: use_lazy_get_tags_query } =
   api_slice.injectEndpoints({

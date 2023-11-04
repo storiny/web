@@ -1,3 +1,4 @@
+use crate::models::story::STORY_CATEGORY_VEC;
 use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
 use actix_web::{get, web, HttpResponse};
 use actix_web_validator::QsQuery;
@@ -10,11 +11,10 @@ use validator::Validate;
 struct QueryParams {
     #[validate(range(min = 1, max = 1000))]
     page: Option<u16>,
-}
-
-#[derive(Deserialize, Validate)]
-struct Fragments {
-    story_id: String,
+    #[validate(length(min = 0, max = 256, message = "Invalid category"))]
+    category: String,
+    #[validate(length(min = 0, max = 160, message = "Invalid query length"))]
+    query: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -63,50 +63,87 @@ struct Story {
     is_bookmarked: bool,
 }
 
-#[get("/v1/public/stories/{story_id}/recommendations")]
+#[get("/v1/public/explore/stories")]
 async fn get(
     query: QsQuery<QueryParams>,
-    path: web::Path<Fragments>,
     data: web::Data<AppState>,
     maybe_user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    match path.story_id.parse::<i64>() {
-        Ok(story_id) => {
-            let page = query.page.clone().unwrap_or(1) - 1;
+    let page = query.page.clone().unwrap_or(1) - 1;
+    let category = if query.category == "all" {
+        "others".to_string()
+    } else {
+        query.category.clone()
+    };
+    let search_query = query.query.clone().unwrap_or_default();
+    let has_search_query = !search_query.trim().is_empty();
 
-            if let Some(user) = maybe_user {
-                match user.id() {
-                    Ok(user_id) => {
-                        let result = sqlx::query_file_as!(
-                            Story,
-                            "queries/public/recommendations/logged_in.sql",
-                            story_id,
-                            10 as i16,
-                            (page * 10) as i16,
-                            user_id
-                        )
-                        .fetch_all(&data.db_pool)
-                        .await?;
+    // Validate story category
+    if !STORY_CATEGORY_VEC.contains(&category) {
+        return Ok(HttpResponse::BadRequest().body("Invalid story category"));
+    }
 
-                        Ok(HttpResponse::Ok().json(result))
-                    }
-                    Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    if let Some(user) = maybe_user {
+        match user.id() {
+            Ok(user_id) => {
+                if has_search_query {
+                    let result = sqlx::query_file_as!(
+                        Story,
+                        "queries/public/explore/stories/logged_in_with_query.sql",
+                        search_query,
+                        category,
+                        10 as i16,
+                        (page * 10) as i16,
+                        user_id
+                    )
+                    .fetch_all(&data.db_pool)
+                    .await?;
+
+                    Ok(HttpResponse::Ok().json(result))
+                } else {
+                    let result = sqlx::query_file_as!(
+                        Story,
+                        "queries/public/explore/stories/logged_in.sql",
+                        category,
+                        10 as i16,
+                        (page * 10) as i16,
+                        user_id
+                    )
+                    .fetch_all(&data.db_pool)
+                    .await?;
+
+                    Ok(HttpResponse::Ok().json(result))
                 }
-            } else {
-                let result = sqlx::query_file_as!(
-                    Story,
-                    "queries/public/recommendations/default.sql",
-                    story_id,
-                    10 as i16,
-                    (page * 10) as i16
-                )
-                .fetch_all(&data.db_pool)
-                .await?;
-
-                Ok(HttpResponse::Ok().json(result))
             }
+            Err(_) => Ok(HttpResponse::InternalServerError().finish()),
         }
-        Err(_) => Ok(HttpResponse::BadRequest().body("Invalid story ID")),
+    } else {
+        if has_search_query {
+            let result = sqlx::query_file_as!(
+                Story,
+                "queries/public/explore/stories/with_query.sql",
+                search_query,
+                category,
+                10 as i16,
+                (page * 10) as i16,
+            )
+            .fetch_all(&data.db_pool)
+            .await?;
+
+            Ok(HttpResponse::Ok().json(result))
+        } else {
+            let result = sqlx::query_file_as!(
+                Story,
+                "queries/public/explore/stories/default.sql",
+                category,
+                10 as i16,
+                (page * 10) as i16,
+            )
+            .fetch_all(&data.db_pool)
+            .await?;
+
+            Ok(HttpResponse::Ok().json(result))
+        }
     }
 }
 
@@ -157,18 +194,34 @@ impl ::sqlx::Type<::sqlx::Postgres> for User {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{init_app_for_test, res_to_string};
+    use crate::test_utils::{assert_response_body_text, init_app_for_test, res_to_string};
     use actix_web::test;
     use sqlx::PgPool;
+    use urlencoding::encode;
 
-    // Logged-out
-
-    #[sqlx::test(fixtures("recommendation"))]
-    async fn can_return_recommended_stories(pool: PgPool) -> sqlx::Result<()> {
+    #[sqlx::test]
+    async fn can_reject_invalid_story_category(pool: PgPool) -> sqlx::Result<()> {
         let app = init_app_for_test(get, pool, false, false).await.0;
 
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/public/stories/{}/recommendations", 4))
+            .uri("/v1/public/explore/stories?category=invalid")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_response_body_text(res, "Invalid story category").await;
+
+        Ok(())
+    }
+
+    // Logged-out
+
+    #[sqlx::test(fixtures("story"))]
+    async fn can_return_explore_stories(pool: PgPool) -> sqlx::Result<()> {
+        let app = init_app_for_test(get, pool, false, false).await.0;
+
+        let req = test::TestRequest::get()
+            .uri("/v1/public/explore/stories?category=diy")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -177,12 +230,35 @@ mod tests {
         let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 3);
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("recommendation"))]
-    async fn should_not_include_soft_deleted_stories_in_recommendations(
+    #[sqlx::test(fixtures("story"))]
+    async fn can_search_explore_stories(pool: PgPool) -> sqlx::Result<()> {
+        let app = init_app_for_test(get, pool, false, false).await.0;
+
+        let req = test::TestRequest::get()
+            .uri(&format!(
+                "/v1/public/explore/stories?category=diy&query={}",
+                encode("two")
+            ))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
+
+        assert!(json[0].title.contains("two"));
+        assert_eq!(json.len(), 1);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("story"))]
+    async fn should_not_include_soft_deleted_stories_in_explore_stories(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -190,7 +266,7 @@ mod tests {
 
         // Should return all the stories initially
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/public/stories/{}/recommendations", 4))
+            .uri("/v1/public/explore/stories?category=diy")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -211,7 +287,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(5_i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -219,7 +295,7 @@ mod tests {
 
         // Should return only two stories
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/public/stories/{}/recommendations", 4))
+            .uri("/v1/public/explore/stories?category=diy")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -240,7 +316,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(5_i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -248,7 +324,7 @@ mod tests {
 
         // Should return all the stories again
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/public/stories/{}/recommendations", 4))
+            .uri("/v1/public/explore/stories?category=diy")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -262,8 +338,8 @@ mod tests {
         Ok(())
     }
 
-    #[sqlx::test(fixtures("recommendation"))]
-    async fn should_not_include_unpublished_stories_in_recommendations(
+    #[sqlx::test(fixtures("story"))]
+    async fn should_not_include_unpublished_stories_in_explore_stories(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -271,7 +347,7 @@ mod tests {
 
         // Should return all the stories initially
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/public/stories/{}/recommendations", 4))
+            .uri("/v1/public/explore/stories?category=diy")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -290,7 +366,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(5_i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -298,7 +374,7 @@ mod tests {
 
         // Should return only two stories
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/public/stories/{}/recommendations", 4))
+            .uri("/v1/public/explore/stories?category=diy")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -317,7 +393,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(5_i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -325,7 +401,7 @@ mod tests {
 
         // Should return all the stories again
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/public/stories/{}/recommendations", 4))
+            .uri("/v1/public/explore/stories?category=diy")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -341,13 +417,13 @@ mod tests {
 
     // Logged-in
 
-    #[sqlx::test(fixtures("recommendation"))]
-    async fn can_return_recommended_stories_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
+    #[sqlx::test(fixtures("story"))]
+    async fn can_return_explore_stories_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/public/stories/{}/recommendations", 4))
+            .uri("/v1/public/explore/stories?category=diy")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -356,12 +432,36 @@ mod tests {
         let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 3);
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("recommendation"))]
-    async fn should_not_include_soft_deleted_stories_in_recommendations_when_logged_in(
+    #[sqlx::test(fixtures("story"))]
+    async fn can_search_explore_stories_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri(&format!(
+                "/v1/public/explore/stories?category=diy&query={}",
+                encode("two")
+            ))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
+
+        assert!(json[0].title.contains("two"));
+        assert_eq!(json.len(), 1);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("story"))]
+    async fn should_not_include_soft_deleted_stories_in_explore_stories_when_logged_in(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -370,7 +470,7 @@ mod tests {
         // Should return all the stories initially
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/public/stories/{}/recommendations", 4))
+            .uri("/v1/public/explore/stories?category=diy")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -385,11 +485,13 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET
+                deleted_at = now(),
+                published_at = NULL
             WHERE id = $1
             "#,
         )
-        .bind(5_i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -398,7 +500,7 @@ mod tests {
         // Should return only two stories
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/public/stories/{}/recommendations", 4))
+            .uri("/v1/public/explore/stories?category=diy")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -413,11 +515,13 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = NULL
+            SET
+                deleted_at = NULL,
+                published_at = now()
             WHERE id = $1
             "#,
         )
-        .bind(5_i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -426,7 +530,7 @@ mod tests {
         // Should return all the stories again
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/public/stories/{}/recommendations", 4))
+            .uri("/v1/public/explore/stories?category=diy")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -440,8 +544,8 @@ mod tests {
         Ok(())
     }
 
-    #[sqlx::test(fixtures("recommendation"))]
-    async fn should_not_include_unpublished_stories_in_recommendations_when_logged_in(
+    #[sqlx::test(fixtures("story"))]
+    async fn should_not_include_unpublished_stories_in_explore_stories_when_logged_in(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -450,7 +554,7 @@ mod tests {
         // Should return all the stories initially
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/public/stories/{}/recommendations", 4))
+            .uri("/v1/public/explore/stories?category=diy")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -469,7 +573,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(5_i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -478,7 +582,7 @@ mod tests {
         // Should return only two stories
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/public/stories/{}/recommendations", 4))
+            .uri("/v1/public/explore/stories?category=diy")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -497,7 +601,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(5_i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -506,7 +610,7 @@ mod tests {
         // Should return all the stories again
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/public/stories/{}/recommendations", 4))
+            .uri("/v1/public/explore/stories?category=diy")
             .to_request();
         let res = test::call_service(&app, req).await;
 

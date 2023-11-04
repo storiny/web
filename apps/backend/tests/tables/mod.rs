@@ -15,6 +15,7 @@ pub mod notifications;
 pub mod relations;
 pub mod replies;
 pub mod reply_likes;
+pub mod reports;
 pub mod stories;
 pub mod story_likes;
 pub mod story_tags;
