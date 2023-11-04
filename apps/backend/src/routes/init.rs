@@ -172,4 +172,6 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::public::tags::init_routes(cfg);
     // Public - Validation - Username
     v1::public::validation::username::init_routes(cfg);
+    // Right sidebar content
+    v1::rsb_content::init_routes(cfg);
 }

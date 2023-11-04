@@ -1,27 +1,16 @@
-SELECT
-	-- Story
-	s.id,
-	s.title,
-	s.slug,
-	s.read_count,
-	-- User
-	JSON_BUILD_OBJECT(
-			'id', u.id,
-			'name', u.name,
-			'username', u.username,
-			'avatar_id', u.avatar_id,
-			'avatar_hex', u.avatar_hex,
-			'public_flags', u.public_flags
-	) AS "user"
-FROM
-	stories s
-		INNER JOIN users u
-				   ON u.id = s.user_id
-					   -- Ignore stories from private users
-					   AND u.is_private IS FALSE
-WHERE
-	  -- Public
-	  s.visibility = 2
-  AND s.published_at IS NOT NULL
-  AND s.deleted_at IS NULL
-LIMIT 3;
+WITH
+	inserted_users AS (
+		INSERT INTO users (id, name, username, email) VALUES (1, 'Sample user', 'sample_user', 'sample@example.com'),
+		                                                     (2, 'New user', 'someone', 'someone@example.com')
+
+	),
+	inserted_tags  AS (
+		INSERT INTO tags (name) VALUES ('tag-1'), ('tag-2'), ('tag-3')
+	)
+INSERT
+INTO
+	stories (id, title, slug,  user_id, published_at, first_published_at)
+VALUES
+	(2, 'one', 'sample-story-1',NOW(), NOW()),
+	(3, 'two', 'sample-story-2',2, NOW(), NOW()),
+	(4, 'three', 'sample-story-3',3, NOW(), NOW());
