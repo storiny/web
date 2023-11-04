@@ -123,7 +123,7 @@ WITH
 								  INNER JOIN tags AS "s->story_tags->tag"
 												   ON "s->story_tags->tag".id = "s->story_tags".tag_id)
 												  ON "s->story_tags".story_id = s.id
--- Join followed tags for current user
+								  -- Join followed tags for current user
 								  LEFT OUTER JOIN tag_followers AS "s->story_tags->follower"
 												  ON "s->story_tags->follower".tag_id = "s->story_tags".tag_id
 													  AND "s->story_tags->follower".user_id = $1

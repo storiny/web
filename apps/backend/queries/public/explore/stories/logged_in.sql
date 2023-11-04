@@ -49,8 +49,34 @@ WITH
 										   ON u.id = s.user_id
 											   AND u.deleted_at IS NULL
 											   AND u.deactivated_at IS NULL
-											   -- Skip stories from private users
-											   AND u.is_private IS FALSE
+											   -- Make sure to handle stories from private users
+											   AND (
+													  NOT u.is_private OR
+													  EXISTS (SELECT
+																  1
+															  FROM
+																  friends
+															  WHERE
+																   (transmitter_id = u.id AND receiver_id = $4)
+																OR (transmitter_id = $4 AND receiver_id = u.id)
+																	   AND accepted_at IS NOT NULL
+															 )
+												  )
+											   -- Filter out stories from blocked and muted users
+											   AND u.id NOT IN (SELECT
+																	b.blocked_id
+																FROM
+																	blocks b
+																WHERE
+																	b.blocker_id = $4
+																UNION
+																SELECT
+																	m.muted_id
+																FROM
+																	mutes m
+																WHERE
+																	m.muter_id = $4
+															   )
 								--
 								-- Join story tags
 								LEFT OUTER JOIN (story_tags AS "s->story_tags"
