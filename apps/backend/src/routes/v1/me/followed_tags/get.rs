@@ -24,15 +24,15 @@ struct QueryParams {
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 struct Tag {
-    pub id: i64,
-    pub name: String,
-    pub follower_count: i32,
-    pub story_count: i32,
+    id: i64,
+    name: String,
+    follower_count: i32,
+    story_count: i32,
     // Timestamps
     #[serde(with = "crate::iso8601::time")]
-    pub created_at: OffsetDateTime,
+    created_at: OffsetDateTime,
     // Boolean flags
-    pub is_followed: bool,
+    is_followed: bool,
 }
 
 #[get("/v1/me/followed-tags")]
