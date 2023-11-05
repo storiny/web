@@ -1,7 +1,5 @@
 use serde::{Deserialize, Serialize};
-use sqlx::pool::PoolConnection;
-use sqlx::{types::Json, FromRow, PgConnection, PgPool, Postgres, QueryBuilder};
-use validator::Validate;
+use sqlx::{types::Json, FromRow, Pool, Postgres, QueryBuilder};
 
 #[derive(Debug, Serialize, Deserialize)]
 struct User {
@@ -14,7 +12,7 @@ struct User {
 }
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
-struct Story {
+pub struct Story {
     id: i64,
     slug: String,
     title: String,
@@ -25,7 +23,7 @@ struct Story {
 
 pub async fn get_rsb_content_stories(
     user_id: Option<i64>,
-    pg_pool: &mut PgConnection,
+    pg_pool: &Pool<Postgres>,
 ) -> Result<Vec<Story>, sqlx::Error> {
     let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
         r#"
@@ -136,11 +134,21 @@ pub async fn get_rsb_content_stories(
               AND s.deleted_at IS NULL
             GROUP BY
                 s.id,
+                u.id,
                 s.published_at,
                 s.read_count
             ORDER BY
                 published_at_date_only DESC,
-                followed_tags_weight   DESC,
+        "#,
+    );
+
+    if user_id.is_some() {
+        query_builder.push(r#"followed_tags_weight DESC"#);
+        query_builder.push(",");
+    }
+
+    query_builder.push(
+        r#"
                 s.read_count           DESC
             LIMIT 3
         )
@@ -167,15 +175,13 @@ pub async fn get_rsb_content_stories(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use actix_web::test;
     use sqlx::PgPool;
 
     // Logged-out
 
     #[sqlx::test(fixtures("rsb_content"))]
     async fn can_return_rsb_content_stories(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let result = get_rsb_content_stories(None, &mut *conn).await?;
+        let result = get_rsb_content_stories(None, &pool).await?;
 
         assert_eq!(result.len(), 3);
 
@@ -184,10 +190,8 @@ mod tests {
 
     #[sqlx::test(fixtures("rsb_content"))]
     async fn should_not_include_soft_deleted_stories(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-
         // Should return all the stories initially
-        let result = get_rsb_content_stories(None, &mut *conn).await?;
+        let result = get_rsb_content_stories(None, &pool).await?;
         assert_eq!(result.len(), 3);
 
         // Soft-delete one of the stories
@@ -199,13 +203,13 @@ mod tests {
             "#,
         )
         .bind(4_i64)
-        .execute(&mut *conn)
+        .execute(&pool)
         .await?;
 
         assert_eq!(result.rows_affected(), 1);
 
         // Should return only two stories
-        let result = get_rsb_content_stories(None, &mut *conn).await?;
+        let result = get_rsb_content_stories(None, &pool).await?;
         assert_eq!(result.len(), 2);
 
         // Recover the story
@@ -217,13 +221,13 @@ mod tests {
             "#,
         )
         .bind(4_i64)
-        .execute(&mut *conn)
+        .execute(&pool)
         .await?;
 
         assert_eq!(result.rows_affected(), 1);
 
         // Should return all the stories again
-        let result = get_rsb_content_stories(None, &mut *conn).await?;
+        let result = get_rsb_content_stories(None, &pool).await?;
         assert_eq!(result.len(), 3);
 
         Ok(())
@@ -231,10 +235,8 @@ mod tests {
 
     #[sqlx::test(fixtures("rsb_content"))]
     async fn should_not_include_unpublished_stories(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-
         // Should return all the stories initially
-        let result = get_rsb_content_stories(None, &mut *conn).await?;
+        let result = get_rsb_content_stories(None, &pool).await?;
         assert_eq!(result.len(), 3);
 
         // Unpublish one of the stories
@@ -246,13 +248,13 @@ mod tests {
             "#,
         )
         .bind(4_i64)
-        .execute(&mut *conn)
+        .execute(&pool)
         .await?;
 
         assert_eq!(result.rows_affected(), 1);
 
         // Should return only two stories
-        let result = get_rsb_content_stories(None, &mut *conn).await?;
+        let result = get_rsb_content_stories(None, &pool).await?;
         assert_eq!(result.len(), 2);
 
         // Republish the story
@@ -264,13 +266,13 @@ mod tests {
             "#,
         )
         .bind(4_i64)
-        .execute(&mut *conn)
+        .execute(&pool)
         .await?;
 
         assert_eq!(result.rows_affected(), 1);
 
         // Should return all the stories again
-        let result = get_rsb_content_stories(None, &mut *conn).await?;
+        let result = get_rsb_content_stories(None, &pool).await?;
         assert_eq!(result.len(), 3);
 
         Ok(())
@@ -279,9 +281,8 @@ mod tests {
     // Logged-in
 
     #[sqlx::test(fixtures("rsb_content"))]
-    async fn can_return_rsb_content_stories(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let result = get_rsb_content_stories(Some(1_i64), &mut *conn).await?;
+    async fn can_return_rsb_content_stories_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
+        let result = get_rsb_content_stories(Some(1_i64), &pool).await?;
 
         assert_eq!(result.len(), 3);
 
@@ -289,11 +290,11 @@ mod tests {
     }
 
     #[sqlx::test(fixtures("rsb_content"))]
-    async fn should_not_include_soft_deleted_stories(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-
+    async fn should_not_include_soft_deleted_stories_when_logged_in(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         // Should return all the stories initially
-        let result = get_rsb_content_stories(Some(1_i64), &mut *conn).await?;
+        let result = get_rsb_content_stories(Some(1_i64), &pool).await?;
         assert_eq!(result.len(), 3);
 
         // Soft-delete one of the stories
@@ -305,13 +306,13 @@ mod tests {
             "#,
         )
         .bind(4_i64)
-        .execute(&mut *conn)
+        .execute(&pool)
         .await?;
 
         assert_eq!(result.rows_affected(), 1);
 
         // Should return only two stories
-        let result = get_rsb_content_stories(Some(1_i64), &mut *conn).await?;
+        let result = get_rsb_content_stories(Some(1_i64), &pool).await?;
         assert_eq!(result.len(), 2);
 
         // Recover the story
@@ -323,24 +324,24 @@ mod tests {
             "#,
         )
         .bind(4_i64)
-        .execute(&mut *conn)
+        .execute(&pool)
         .await?;
 
         assert_eq!(result.rows_affected(), 1);
 
         // Should return all the stories again
-        let result = get_rsb_content_stories(Some(1_i64), &mut *conn).await?;
+        let result = get_rsb_content_stories(Some(1_i64), &pool).await?;
         assert_eq!(result.len(), 3);
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("rsb_content"))]
-    async fn should_not_include_unpublished_stories(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-
+    async fn should_not_include_unpublished_stories_when_logged_in(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         // Should return all the stories initially
-        let result = get_rsb_content_stories(Some(1_i64), &mut *conn).await?;
+        let result = get_rsb_content_stories(Some(1_i64), &pool).await?;
         assert_eq!(result.len(), 3);
 
         // Unpublish one of the stories
@@ -352,13 +353,13 @@ mod tests {
             "#,
         )
         .bind(4_i64)
-        .execute(&mut *conn)
+        .execute(&pool)
         .await?;
 
         assert_eq!(result.rows_affected(), 1);
 
         // Should return only two stories
-        let result = get_rsb_content_stories(Some(1_i64), &mut *conn).await?;
+        let result = get_rsb_content_stories(Some(1_i64), &pool).await?;
         assert_eq!(result.len(), 2);
 
         // Republish the story
@@ -370,13 +371,13 @@ mod tests {
             "#,
         )
         .bind(4_i64)
-        .execute(&mut *conn)
+        .execute(&pool)
         .await?;
 
         assert_eq!(result.rows_affected(), 1);
 
         // Should return all the stories again
-        let result = get_rsb_content_stories(Some(1_i64), &mut *conn).await?;
+        let result = get_rsb_content_stories(Some(1_i64), &pool).await?;
         assert_eq!(result.len(), 3);
 
         Ok(())

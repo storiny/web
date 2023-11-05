@@ -174,4 +174,12 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::public::validation::username::init_routes(cfg);
     // Right sidebar content
     v1::rsb_content::init_routes(cfg);
+    // Tag
+    v1::tag::stories::init_routes(cfg);
+    v1::tag::writers::init_routes(cfg);
+    // User
+    v1::user::stories::init_routes(cfg);
+    v1::user::followers::init_routes(cfg);
+    v1::user::following::init_routes(cfg);
+    v1::user::friends::init_routes(cfg);
 }

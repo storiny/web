@@ -37,8 +37,8 @@ BEGIN
 								blocker_id = NEW.notified_id
 							AND blocked_id = n.notifier_id
 						 )) THEN
-		RAISE 'Notified user has muted/blocked the notifier user'
-			USING ERRCODE = '52003';
+		-- Skip inserting the row
+		RETURN NULL;
 	END IF;
 	--
 	-- Check notification settings of the notified user
@@ -61,7 +61,7 @@ BEGIN
 							 (ns.push_replies IS FALSE AND n.entity_type = 7) OR
 							 -- 10 = Story add by user, 11 = Story add by tag
 							 (ns.push_stories IS FALSE AND n.entity_type IN (10, 11)) OR
--- 9 = Story like
+							 -- 9 = Story like
 							 (ns.push_story_likes IS FALSE AND n.entity_type = 9))
 			  )) THEN
 		-- Skip inserting the row

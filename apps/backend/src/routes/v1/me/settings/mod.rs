@@ -3,6 +3,7 @@ pub mod avatar;
 pub mod banner;
 pub mod connections;
 pub mod email;
+pub mod mfa;
 pub mod notifications;
 pub mod password;
 pub mod privacy;
