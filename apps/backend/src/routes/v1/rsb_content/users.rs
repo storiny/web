@@ -1,9 +1,8 @@
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, PgConnection, PgPool, Postgres, QueryBuilder};
-use validator::Validate;
+use sqlx::{FromRow, Pool, Postgres, QueryBuilder};
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
-struct User {
+pub struct User {
     id: i64,
     name: String,
     username: String,
@@ -16,7 +15,7 @@ struct User {
 
 pub async fn get_rsb_content_users(
     user_id: Option<i64>,
-    pg_pool: &mut PgConnection,
+    pg_pool: &Pool<Postgres>,
 ) -> Result<Vec<User>, sqlx::Error> {
     let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
         r#"
@@ -91,7 +90,7 @@ pub async fn get_rsb_content_users(
 
     query_builder.push(if user_id.is_some() {
         r#"
-        -- Make sure to handle stories from private users
+        -- Make sure to handle private users
         AND (
                     NOT u.is_private OR
                     EXISTS (SELECT
@@ -104,7 +103,7 @@ pub async fn get_rsb_content_users(
                                      AND accepted_at IS NOT NULL
                            )
                 )
-            -- Filter out stories from blocked and muted users
+            -- Filter out blocked and muted users
         AND u.id NOT IN (SELECT
                              b.blocked_id
                          FROM
@@ -165,7 +164,7 @@ pub async fn get_rsb_content_users(
         "#,
     );
 
-    let mut db_query = query_builder.build_query_as::<Story>();
+    let mut db_query = query_builder.build_query_as::<User>();
 
     if user_id.is_some() {
         db_query = db_query.bind(user_id.unwrap());
@@ -177,28 +176,24 @@ pub async fn get_rsb_content_users(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use actix_web::test;
     use sqlx::PgPool;
 
     // Logged-out
 
     #[sqlx::test(fixtures("rsb_content"))]
-    async fn can_return_rsb_content_userspool(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let result = get_rsb_content_users(None, &mut *conn).await?;
+    async fn can_return_rsb_content_users(pool: PgPool) -> sqlx::Result<()> {
+        let result = get_rsb_content_users(None, &pool).await?;
 
-        assert_eq!(result.len(), 1);
+        assert_eq!(result.len(), 2);
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("rsb_content"))]
     async fn should_not_include_soft_deleted_users(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-
         // Should return all the users initially
-        let result = get_rsb_content_users(None, &mut *conn).await?;
-        assert_eq!(result.len(), 3);
+        let result = get_rsb_content_users(None, &pool).await?;
+        assert_eq!(result.len(), 2);
 
         // Soft-delete one of the users
         let result = sqlx::query(
@@ -208,15 +203,15 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(5_i64)
-        .execute(&mut *conn)
+        .bind(2_i64)
+        .execute(&pool)
         .await?;
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only two writers
-        let result = get_rsb_content_users(None, &mut *conn).await?;
-        assert_eq!(result.len(), 2);
+        // Should return only one user
+        let result = get_rsb_content_users(None, &pool).await?;
+        assert_eq!(result.len(), 1);
 
         // Recover the user
         let result = sqlx::query(
@@ -227,61 +222,59 @@ mod tests {
             "#,
         )
         .bind(2_i64)
-        .execute(&mut *conn)
+        .execute(&pool)
         .await?;
 
         assert_eq!(result.rows_affected(), 1);
 
         // Should return all the users again
-        let result = get_rsb_content_users(None, &mut *conn).await?;
-        assert_eq!(result.len(), 3);
+        let result = get_rsb_content_users(None, &pool).await?;
+        assert_eq!(result.len(), 2);
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("rsb_content"))]
-    async fn should_not_include_unpublished_stories(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-
-        // Should return all the stories initially
-        let result = get_rsb_content_users(None, &mut *conn).await?;
-        assert_eq!(result.len(), 3);
-
-        // Unpublish one of the stories
-        let result = sqlx::query(
-            r#"
-            UPDATE stories
-            SET published_at = NULL
-            WHERE id = $1
-            "#,
-        )
-        .bind(2_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        // Should return only two stories
-        let result = get_rsb_content_users(None, &mut *conn).await?;
+    async fn should_not_include_deactivated_users(pool: PgPool) -> sqlx::Result<()> {
+        // Should return all the users initially
+        let result = get_rsb_content_users(None, &pool).await?;
         assert_eq!(result.len(), 2);
 
-        // Republish the story
+        // Deactivate one of the users
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = now()
+            UPDATE users
+            SET deactivated_at = now()
             WHERE id = $1
             "#,
         )
         .bind(2_i64)
-        .execute(&mut *conn)
+        .execute(&pool)
         .await?;
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the stories again
-        let result = get_rsb_content_users(None, &mut *conn).await?;
-        assert_eq!(result.len(), 3);
+        // Should return only one user
+        let result = get_rsb_content_users(None, &pool).await?;
+        assert_eq!(result.len(), 1);
+
+        // Reactivate the user
+        let result = sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(2_i64)
+        .execute(&pool)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return all the users again
+        let result = get_rsb_content_users(None, &pool).await?;
+        assert_eq!(result.len(), 2);
 
         Ok(())
     }
@@ -289,105 +282,102 @@ mod tests {
     // Logged-in
 
     #[sqlx::test(fixtures("rsb_content"))]
-    async fn can_return_rsb_content_stories(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let result = get_rsb_content_users(Some(1_i64), &mut *conn).await?;
+    async fn can_return_rsb_content_users_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
+        let result = get_rsb_content_users(Some(1_i64), &pool).await?;
 
-        assert_eq!(result.len(), 3);
+        assert_eq!(result.len(), 2);
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("rsb_content"))]
-    async fn should_not_include_soft_deleted_stories(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
+    async fn should_not_include_soft_deleted_users_when_logged_in(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        // Should return all the users initially
+        let result = get_rsb_content_users(Some(1_i64), &pool).await?;
+        assert_eq!(result.len(), 2);
 
-        // Should return all the stories initially
-        let result = get_rsb_content_users(Some(1_i64), &mut *conn).await?;
-        assert_eq!(result.len(), 3);
-
-        // Soft-delete one of the stories
+        // Soft-delete one of the users
         let result = sqlx::query(
             r#"
-            UPDATE stories
+            UPDATE users
             SET deleted_at = now()
             WHERE id = $1
             "#,
         )
         .bind(2_i64)
-        .execute(&mut *conn)
+        .execute(&pool)
         .await?;
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only two stories
-        let result = get_rsb_content_users(Some(1_i64), &mut *conn).await?;
-        assert_eq!(result.len(), 2);
+        // Should return only one user
+        let result = get_rsb_content_users(Some(1_i64), &pool).await?;
+        assert_eq!(result.len(), 1);
 
-        // Recover the story
+        // Recover the user
         let result = sqlx::query(
             r#"
-            UPDATE stories
+            UPDATE users
             SET deleted_at = NULL
             WHERE id = $1
             "#,
         )
         .bind(2_i64)
-        .execute(&mut *conn)
+        .execute(&pool)
         .await?;
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the stories again
-        let result = get_rsb_content_users(Some(1_i64), &mut *conn).await?;
-        assert_eq!(result.len(), 3);
+        // Should return all the users again
+        let result = get_rsb_content_users(Some(1_i64), &pool).await?;
+        assert_eq!(result.len(), 2);
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("rsb_content"))]
-    async fn should_not_include_unpublished_stories(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-
-        // Should return all the stories initially
-        let result = get_rsb_content_users(Some(1_i64), &mut *conn).await?;
-        assert_eq!(result.len(), 3);
-
-        // Unpublish one of the stories
-        let result = sqlx::query(
-            r#"
-            UPDATE stories
-            SET published_at = NULL
-            WHERE id = $1
-            "#,
-        )
-        .bind(2_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        // Should return only two stories
-        let result = get_rsb_content_users(Some(1_i64), &mut *conn).await?;
+    async fn should_not_include_deactivated_users_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
+        // Should return all the users initially
+        let result = get_rsb_content_users(Some(1_i64), &pool).await?;
         assert_eq!(result.len(), 2);
 
-        // Republish the story
+        // Deactivate one of the users
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = now()
+            UPDATE users
+            SET deactivated_at = now()
             WHERE id = $1
             "#,
         )
         .bind(2_i64)
-        .execute(&mut *conn)
+        .execute(&pool)
         .await?;
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the stories again
-        let result = get_rsb_content_users(Some(1_i64), &mut *conn).await?;
-        assert_eq!(result.len(), 3);
+        // Should return only one user
+        let result = get_rsb_content_users(Some(1_i64), &pool).await?;
+        assert_eq!(result.len(), 1);
+
+        // Reactivate the user
+        let result = sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(2_i64)
+        .execute(&pool)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return all the users again
+        let result = get_rsb_content_users(Some(1_i64), &pool).await?;
+        assert_eq!(result.len(), 2);
 
         Ok(())
     }

@@ -113,7 +113,7 @@ mod tests {
     //
 
     #[sqlx::test(fixtures("user", "notification"))]
-    async fn can_reject_notification_out_when_the_notified_user_has_muted_the_notifier_user(
+    async fn can_skip_notification_out_when_the_notified_user_has_muted_the_notifier_user(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -139,24 +139,16 @@ mod tests {
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
-        .await;
+        .await?;
 
-        // Should reject with `52003` SQLSTATE
-        assert_eq!(
-            result
-                .unwrap_err()
-                .into_database_error()
-                .unwrap()
-                .code()
-                .unwrap(),
-            "52003"
-        );
+        // Should not insert the notification
+        assert_eq!(result.rows_affected(), 0);
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("user", "notification"))]
-    async fn can_reject_notification_out_when_the_notified_user_has_blocked_the_notifier_user(
+    async fn can_skip_notification_out_when_the_notified_user_has_blocked_the_notifier_user(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -182,18 +174,10 @@ mod tests {
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
-        .await;
+        .await?;
 
-        // Should reject with `52003` SQLSTATE
-        assert_eq!(
-            result
-                .unwrap_err()
-                .into_database_error()
-                .unwrap()
-                .code()
-                .unwrap(),
-            "52003"
-        );
+        // Should not insert the notification
+        assert_eq!(result.rows_affected(), 0);
 
         Ok(())
     }

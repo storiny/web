@@ -23,7 +23,5 @@ pub enum SqlState {
     #[strum(serialize = "52002")]
     ReadHistoryDisabled,
     #[strum(serialize = "52003")]
-    CannotReceiveNotification,
-    #[strum(serialize = "52004")]
     UsernameCooldown,
 }

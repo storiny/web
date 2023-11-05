@@ -1,21 +1,15 @@
-use crate::constants::sql_states::SqlState;
 use crate::{
+    constants::sql_states::SqlState,
     error::{AppError, FormErrorResponse, ToastErrorResponse},
     middleware::identity::identity::Identity,
-    models::story::STORY_CATEGORY_VEC,
+    models::{story::STORY_CATEGORY_VEC, tag::TAG_REGEX},
     AppState,
 };
 use actix_web::{patch, web, HttpResponse};
 use actix_web_validator::Json;
-use lazy_static::lazy_static;
-use regex::Regex;
 use serde::{Deserialize, Serialize};
 use sqlx::Row;
 use validator::Validate;
-
-lazy_static! {
-    static ref TAG_REGEX: Regex = Regex::new(r"^[a-z0-9-]{1,32}$").unwrap();
-}
 
 #[derive(Deserialize, Validate)]
 struct Fragments {
