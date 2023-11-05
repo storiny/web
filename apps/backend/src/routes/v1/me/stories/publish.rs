@@ -9,7 +9,7 @@ use validator::Validate;
 
 /// The maximum number of retries before a random fixed-length ID suffix is used
 /// for the story slug generation procedure.
-const MAX_SLUG_GENERATE_ATTEMPTS: u8 = 10;
+static MAX_SLUG_GENERATE_ATTEMPTS: u8 = 10;
 
 #[derive(Deserialize, Validate)]
 struct Fragments {

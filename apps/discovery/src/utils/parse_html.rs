@@ -10,8 +10,8 @@ use visdom::{
     Vis,
 };
 
-const DEFAULT_HEIGHT: u16 = 360;
-const DEFAULT_WIDTH: u16 = 640;
+static DEFAULT_HEIGHT: u16 = 360;
+static DEFAULT_WIDTH: u16 = 640;
 
 /// Converts an element attribute to a string.
 ///

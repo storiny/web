@@ -1,27 +1,13 @@
 use super::error::{
-    GetIdentityError,
-    LoginError,
-    LostIdentityError,
-    MissingIdentityError,
-    SessionExpiryError,
+    GetIdentityError, LoginError, LostIdentityError, MissingIdentityError, SessionExpiryError,
 };
 use crate::middleware::session::session::Session;
-use actix_utils::future::{
-    ready,
-    Ready,
-};
+use actix_utils::future::{ready, Ready};
 use actix_web::{
     cookie::time::OffsetDateTime,
-    dev::{
-        Extensions,
-        Payload,
-    },
+    dev::{Extensions, Payload},
     http::StatusCode,
-    Error,
-    FromRequest,
-    HttpMessage,
-    HttpRequest,
-    HttpResponse,
+    Error, FromRequest, HttpMessage, HttpRequest, HttpResponse,
 };
 
 /// A verified user identity. It can be used as a request extractor.
@@ -62,8 +48,8 @@ impl IdentityInner {
     }
 }
 
-const ID_KEY: &str = "user_id";
-const LOGIN_UNIX_TIMESTAMP_KEY: &str = "created_at";
+static ID_KEY: &str = "user_id";
+static LOGIN_UNIX_TIMESTAMP_KEY: &str = "created_at";
 
 #[allow(dead_code)]
 impl Identity {

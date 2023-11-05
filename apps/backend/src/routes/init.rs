@@ -114,6 +114,8 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     // Me - Settings - Connections
     v1::me::settings::connections::visibility::init_routes(cfg);
     v1::me::settings::connections::remove::init_routes(cfg);
+    // Me - Settings - MFA
+    v1::me::settings::mfa::generate_codes::init_routes(cfg);
     // Me - Settings - Notifications
     v1::me::settings::notifications::mail::init_routes(cfg);
     v1::me::settings::notifications::site::init_routes(cfg);

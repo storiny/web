@@ -9308,4 +9308,52 @@ mod tests {
 
         Ok(())
     }
+
+    #[sqlx::test]
+    async fn can_delete_mfa_recovery_codes_on_user_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert a recovery code
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO mfa_recovery_codes(code, user_id)
+            VALUES ($1, $2)
+            "#,
+        )
+        .bind("00000000")
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        // Delete the current user
+        sqlx::query(
+            r#"
+            DELETE FROM users
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Recovery code should get deleted
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS(
+                SELECT 1 FROM mfa_recovery_codes
+                WHERE code = $1
+            )
+            "#,
+        )
+        .bind("00000000")
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
 }

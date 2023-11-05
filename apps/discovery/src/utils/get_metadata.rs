@@ -33,9 +33,9 @@ use url::{
 };
 
 /// Minimum width for a large image.
-const LARGE_IMAGE_WIDTH_LOWER_BOUND: u16 = 600;
+static LARGE_IMAGE_WIDTH_LOWER_BOUND: u16 = 600;
 /// Minimum height for a large image.
-const LARGE_IMAGE_HEIGHT_LOWER_BOUND: u16 = 300;
+static LARGE_IMAGE_HEIGHT_LOWER_BOUND: u16 = 300;
 
 /// Metadata client
 #[derive(Clone)]

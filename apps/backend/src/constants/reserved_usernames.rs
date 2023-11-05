@@ -1,5 +1,5 @@
 /// List of reserved usernames.
-pub const RESERVED_USERNAMES: &'static [&'static str] = &[
+pub static RESERVED_USERNAMES: &'static [&'static str] = &[
     "401",
     "404",
     "500",
