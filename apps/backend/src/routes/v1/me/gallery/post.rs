@@ -15,7 +15,7 @@ use sqlx::Row;
 use std::{io::Cursor, time::Duration};
 use validator::Validate;
 
-const MAX_FILE_SIZE: u64 = 1024 * 1024 * 25; // 25 MB
+static MAX_FILE_SIZE: u64 = 1024 * 1024 * 25; // 25 MB
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
 struct Request {

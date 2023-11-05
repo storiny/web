@@ -9,6 +9,7 @@ pub mod documents;
 pub mod draft_tags;
 pub mod friends;
 pub mod histories;
+pub mod mfa_recovery_codes;
 pub mod mutes;
 pub mod notification_outs;
 pub mod notifications;

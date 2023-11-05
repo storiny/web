@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::Row;
 use std::io::{BufReader, Cursor, Read};
 
-const MAX_FILE_SIZE: usize = 1024 * 1024 * 10; // 10 MB
+static MAX_FILE_SIZE: usize = 1024 * 1024 * 10; // 10 MB
 
 #[derive(MultipartForm)]
 struct UploadAsset {
