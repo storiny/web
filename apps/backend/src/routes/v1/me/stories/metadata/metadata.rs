@@ -63,15 +63,14 @@ async fn patch(
                     // Validate story category
                     if !STORY_CATEGORY_VEC.contains(&payload.category) {
                         return Ok(HttpResponse::BadRequest().json(FormErrorResponse::new(vec![
-                            vec!["category".to_string(), "Invalid category".to_string()],
+                            ("category", "Invalid category"),
                         ])));
                     }
 
                     // Validate tags
                     if payload.tags.iter().any(|tag| !TAG_REGEX.is_match(tag)) {
-                        return Ok(HttpResponse::BadRequest().json(FormErrorResponse::new(vec![
-                            vec!["tags".to_string(), "Invalid tags".to_string()],
-                        ])));
+                        return Ok(HttpResponse::BadRequest()
+                            .json(FormErrorResponse::new(vec![("tags", "Invalid tags")])));
                     }
 
                     let mut splash_hex: Option<String> = None;
@@ -99,9 +98,7 @@ async fn patch(
                             Err(kind) => {
                                 return match kind {
                                     sqlx::Error::RowNotFound => Ok(HttpResponse::BadRequest()
-                                        .json(ToastErrorResponse::new(
-                                            "Invalid splash ID".to_string(),
-                                        ))),
+                                        .json(ToastErrorResponse::new("Invalid splash ID"))),
                                     _ => Ok(HttpResponse::InternalServerError().finish()),
                                 }
                             }
@@ -126,9 +123,8 @@ async fn patch(
                         .await?;
 
                         if !result.get::<bool, _>("exists") {
-                            return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                                "Invalid preview image".to_string(),
-                            )));
+                            return Ok(HttpResponse::BadRequest()
+                                .json(ToastErrorResponse::new("Invalid preview image")));
                         }
                     }
 
@@ -185,7 +181,7 @@ async fn patch(
                     {
                         Ok(result) => match result.rows_affected() {
                             0 => Ok(HttpResponse::BadRequest()
-                                .json(ToastErrorResponse::new("Story not found".to_string()))),
+                                .json(ToastErrorResponse::new("Story not found"))),
                             _ => {
                                 txn.commit().await?;
                                 Ok(HttpResponse::NoContent().finish())
@@ -197,9 +193,8 @@ async fn patch(
                                 if db_err.code().unwrap_or_default()
                                     == SqlState::EntityUnavailable.to_string()
                                 {
-                                    Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                                        "Story not found".to_string(),
-                                    )))
+                                    Ok(HttpResponse::BadRequest()
+                                        .json(ToastErrorResponse::new("Story not found")))
                                 } else {
                                     Ok(HttpResponse::InternalServerError().finish())
                                 }
@@ -468,11 +463,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_form_error_response(
-            res,
-            vec![vec!["category".to_string(), "Invalid category".to_string()]],
-        )
-        .await;
+        assert_form_error_response(res, vec![("category", "Invalid category")]).await;
 
         Ok(())
     }
@@ -497,11 +488,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_form_error_response(
-            res,
-            vec![vec!["tags".to_string(), "Invalid tags".to_string()]],
-        )
-        .await;
+        assert_form_error_response(res, vec![("tags", "Invalid tags")]).await;
 
         Ok(())
     }

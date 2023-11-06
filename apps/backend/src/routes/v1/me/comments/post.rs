@@ -51,11 +51,10 @@ async fn post(
                         Err(err) => {
                             if let Some(db_err) = err.into_database_error() {
                                 match db_err.kind() {
-                                    sqlx::error::ErrorKind::ForeignKeyViolation => Ok(
-                                        HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                                            "Story does not exist".to_string(),
-                                        )),
-                                    ),
+                                    sqlx::error::ErrorKind::ForeignKeyViolation => {
+                                        Ok(HttpResponse::BadRequest()
+                                            .json(ToastErrorResponse::new("Story does not exist")))
+                                    }
                                     _ => {
                                         let err_code = db_err.code().unwrap_or_default();
 
@@ -63,8 +62,7 @@ async fn post(
                                         if err_code == SqlState::EntityUnavailable.to_string() {
                                             Ok(HttpResponse::BadRequest().json(
                                                 ToastErrorResponse::new(
-                                                    "Story is either deleted or unpublished"
-                                                        .to_string(),
+                                                    "Story is either deleted or unpublished",
                                                 ),
                                             ))
                                         // Check if the comment writer is blocked by the story writer
@@ -74,8 +72,7 @@ async fn post(
                                         {
                                             Ok(HttpResponse::Forbidden().json(
                                                 ToastErrorResponse::new(
-                                                    "You are being blocked by the story writer"
-                                                        .to_string(),
+                                                    "You are being blocked by the story writer",
                                                 ),
                                             ))
                                         } else {

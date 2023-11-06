@@ -57,9 +57,9 @@ async fn handle_upload(
 
     // Validate alt length
     if img_alt.chars().count() > 128 {
-        return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-            "Invalid alt text length".to_string(),
-        )));
+        return Ok(
+            HttpResponse::BadRequest().json(ToastErrorResponse::new("Invalid alt text length"))
+        );
     }
 
     let img_file = &form.file;
@@ -149,9 +149,7 @@ async fn handle_upload(
                                     Ok(_) => {}
                                     Err(_) => {
                                         return Ok(HttpResponse::UnprocessableEntity().json(
-                                            ToastErrorResponse::new(
-                                                "Could not upload the image".to_string(),
-                                            ),
+                                            ToastErrorResponse::new("Could not upload the image"),
                                         ));
                                     }
                                 };
@@ -173,9 +171,7 @@ async fn handle_upload(
                                     Ok(_) => {}
                                     Err(_) => {
                                         return Ok(HttpResponse::UnprocessableEntity().json(
-                                            ToastErrorResponse::new(
-                                                "Could not upload the image".to_string(),
-                                            ),
+                                            ToastErrorResponse::new("Could not upload the image"),
                                         ));
                                     }
                                 };

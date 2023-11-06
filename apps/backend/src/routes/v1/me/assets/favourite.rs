@@ -19,28 +19,30 @@ async fn post(
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
     match user.id() {
-        Ok(user_id) => match path.id.parse::<i64>() {
-            Ok(asset_id) => {
-                match sqlx::query(
-                    r#"
+        Ok(user_id) => {
+            match path.id.parse::<i64>() {
+                Ok(asset_id) => {
+                    match sqlx::query(
+                        r#"
                     UPDATE assets
                     SET favourited_at = now()
                     WHERE id = $1 AND user_id = $2
                     "#,
-                )
-                .bind(asset_id)
-                .bind(user_id)
-                .execute(&data.db_pool)
-                .await?
-                .rows_affected()
-                {
-                    0 => Ok(HttpResponse::BadRequest()
-                        .json(ToastErrorResponse::new("Asset not found".to_string()))),
-                    _ => Ok(HttpResponse::NoContent().finish()),
+                    )
+                    .bind(asset_id)
+                    .bind(user_id)
+                    .execute(&data.db_pool)
+                    .await?
+                    .rows_affected()
+                    {
+                        0 => Ok(HttpResponse::BadRequest()
+                            .json(ToastErrorResponse::new("Asset not found"))),
+                        _ => Ok(HttpResponse::NoContent().finish()),
+                    }
                 }
+                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid asset ID")),
             }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid asset ID")),
-        },
+        }
         Err(_) => Ok(HttpResponse::InternalServerError().finish()),
     }
 }
@@ -52,28 +54,30 @@ async fn delete(
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
     match user.id() {
-        Ok(user_id) => match path.id.parse::<i64>() {
-            Ok(asset_id) => {
-                match sqlx::query(
-                    r#"
+        Ok(user_id) => {
+            match path.id.parse::<i64>() {
+                Ok(asset_id) => {
+                    match sqlx::query(
+                        r#"
                     UPDATE assets
                     SET favourited_at = NULL
                     WHERE id = $1 AND user_id = $2
                     "#,
-                )
-                .bind(asset_id)
-                .bind(user_id)
-                .execute(&data.db_pool)
-                .await?
-                .rows_affected()
-                {
-                    0 => Ok(HttpResponse::BadRequest()
-                        .json(ToastErrorResponse::new("Asset not found".to_string()))),
-                    _ => Ok(HttpResponse::NoContent().finish()),
+                    )
+                    .bind(asset_id)
+                    .bind(user_id)
+                    .execute(&data.db_pool)
+                    .await?
+                    .rows_affected()
+                    {
+                        0 => Ok(HttpResponse::BadRequest()
+                            .json(ToastErrorResponse::new("Asset not found"))),
+                        _ => Ok(HttpResponse::NoContent().finish()),
+                    }
                 }
+                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid asset ID")),
             }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid asset ID")),
-        },
+        }
         Err(_) => Ok(HttpResponse::InternalServerError().finish()),
     }
 }

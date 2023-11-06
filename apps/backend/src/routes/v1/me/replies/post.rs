@@ -51,20 +51,18 @@ async fn post(
                         Err(err) => {
                             if let Some(db_err) = err.into_database_error() {
                                 match db_err.kind() {
-                                    sqlx::error::ErrorKind::ForeignKeyViolation => Ok(
-                                        HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                                            "Comment does not exist".to_string(),
-                                        )),
-                                    ),
+                                    sqlx::error::ErrorKind::ForeignKeyViolation => {
+                                        Ok(HttpResponse::BadRequest().json(
+                                            ToastErrorResponse::new("Comment does not exist"),
+                                        ))
+                                    }
                                     _ => {
                                         let err_code = db_err.code().unwrap_or_default();
 
                                         // Check if the comment is soft-deleted
                                         if err_code == SqlState::EntityUnavailable.to_string() {
                                             Ok(HttpResponse::BadRequest().json(
-                                                ToastErrorResponse::new(
-                                                    "Comment is deleted".to_string(),
-                                                ),
+                                                ToastErrorResponse::new("Comment is deleted"),
                                             ))
                                         // Check if the reply writer is blocked by the comment writer
                                         } else if err_code
@@ -73,8 +71,7 @@ async fn post(
                                         {
                                             Ok(HttpResponse::Forbidden().json(
                                                 ToastErrorResponse::new(
-                                                    "You are being blocked by the comment writer"
-                                                        .to_string(),
+                                                    "You are being blocked by the comment writer",
                                                 ),
                                             ))
                                         } else {

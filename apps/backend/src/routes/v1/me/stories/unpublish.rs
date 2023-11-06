@@ -16,10 +16,11 @@ async fn post(
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
     match user.id() {
-        Ok(user_id) => match path.story_id.parse::<i64>() {
-            Ok(story_id) => {
-                match sqlx::query(
-                    r#"
+        Ok(user_id) => {
+            match path.story_id.parse::<i64>() {
+                Ok(story_id) => {
+                    match sqlx::query(
+                        r#"
                     UPDATE stories
                     SET published_at = NULL
                     WHERE
@@ -28,20 +29,21 @@ async fn post(
                         AND published_at IS NOT NULL
                         AND deleted_at IS NULL
                     "#,
-                )
-                .bind(user_id)
-                .bind(story_id)
-                .execute(&data.db_pool)
-                .await?
-                .rows_affected()
-                {
-                    0 => Ok(HttpResponse::BadRequest()
-                        .json(ToastErrorResponse::new("Story not found".to_string()))),
-                    _ => Ok(HttpResponse::NoContent().finish()),
+                    )
+                    .bind(user_id)
+                    .bind(story_id)
+                    .execute(&data.db_pool)
+                    .await?
+                    .rows_affected()
+                    {
+                        0 => Ok(HttpResponse::BadRequest()
+                            .json(ToastErrorResponse::new("Story not found"))),
+                        _ => Ok(HttpResponse::NoContent().finish()),
+                    }
                 }
+                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid story ID")),
             }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid story ID")),
-        },
+        }
         Err(_) => Ok(HttpResponse::InternalServerError().finish()),
     }
 }

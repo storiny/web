@@ -76,7 +76,7 @@ async fn patch(
                     })),
                     Err(kind) => match kind {
                         sqlx::Error::RowNotFound => Ok(HttpResponse::BadRequest()
-                            .json(ToastErrorResponse::new("Invalid banner ID".to_string()))),
+                            .json(ToastErrorResponse::new("Invalid banner ID"))),
                         _ => Ok(HttpResponse::InternalServerError().finish()),
                     },
                 }
@@ -165,6 +165,23 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
         let banner_id = Uuid::new_v4();
+
+        // Insert an asset
+        let result = sqlx::query(
+            r#"
+            INSERT INTO assets(key, hex, height, width, user_id) 
+            VALUES ($1, $2, $3, $4, $5)
+            "#,
+        )
+        .bind(&banner_id)
+        .bind("000000".to_string())
+        .bind(0)
+        .bind(0)
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
 
         // Set banner for the user
         let result = sqlx::query(

@@ -43,9 +43,8 @@ async fn post(data: web::Data<AppState>, user: Identity) -> Result<HttpResponse,
             let user_password = db_user.get::<Option<String>, _>("password");
 
             if user_password.is_some() {
-                return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                    "You have already set a password".to_string(),
-                )));
+                return Ok(HttpResponse::BadRequest()
+                    .json(ToastErrorResponse::new("You have already set a password")));
             }
 
             let verification_code = generate_verification_code();

@@ -33,19 +33,15 @@ async fn post(
 ) -> Result<HttpResponse, AppError> {
     // Return if the user is already logged-in
     if user.is_some() {
-        return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-            "You are already logged-in".to_string(),
-        )));
+        return Ok(
+            HttpResponse::BadRequest().json(ToastErrorResponse::new("You are already logged-in"))
+        );
     }
 
     // Check for valid e-mail
     if !EmailAddress::is_valid(&payload.email) {
-        return Ok(
-            HttpResponse::BadRequest().json(FormErrorResponse::new(vec![vec![
-                "email".to_string(),
-                "Invalid e-mail".to_string(),
-            ]])),
-        );
+        return Ok(HttpResponse::BadRequest()
+            .json(FormErrorResponse::new(vec![("email", "Invalid e-mail")])));
     }
 
     let query_result = sqlx::query(
@@ -67,7 +63,7 @@ async fn post(
             // User has created account using a third-party service, such as Apple or Google
             if user_password.is_none() {
                 return Ok(HttpResponse::Unauthorized()
-                    .json(ToastErrorResponse::new("Invalid credentials".to_string())));
+                    .json(ToastErrorResponse::new("Invalid credentials")));
             }
 
             match PasswordHash::new(&user_password.unwrap()) {
@@ -77,16 +73,15 @@ async fn post(
                             mfa_enabled: user.get::<bool, _>("mfa_enabled"),
                         })),
                         Err(_) => Ok(HttpResponse::Unauthorized()
-                            .json(ToastErrorResponse::new("Invalid credentials".to_string()))),
+                            .json(ToastErrorResponse::new("Invalid credentials"))),
                     }
                 }
                 Err(_) => Ok(HttpResponse::InternalServerError().finish()),
             }
         }
         Err(kind) => match kind {
-            Error::RowNotFound => Ok(HttpResponse::Unauthorized().json(ToastErrorResponse::new(
-                "Invalid e-mail or password".to_string(),
-            ))),
+            Error::RowNotFound => Ok(HttpResponse::Unauthorized()
+                .json(ToastErrorResponse::new("Invalid e-mail or password"))),
             _ => Ok(HttpResponse::InternalServerError().finish()),
         },
     }

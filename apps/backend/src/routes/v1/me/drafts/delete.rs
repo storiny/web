@@ -16,10 +16,11 @@ async fn delete(
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
     match user.id() {
-        Ok(user_id) => match path.draft_id.parse::<i64>() {
-            Ok(draft_id) => {
-                match sqlx::query(
-                    r#"
+        Ok(user_id) => {
+            match path.draft_id.parse::<i64>() {
+                Ok(draft_id) => {
+                    match sqlx::query(
+                        r#"
                     UPDATE stories
                     SET deleted_at = now()
                     WHERE
@@ -28,20 +29,21 @@ async fn delete(
                         AND published_at IS NULL
                         AND deleted_at IS NULL
                     "#,
-                )
-                .bind(user_id)
-                .bind(draft_id)
-                .execute(&data.db_pool)
-                .await?
-                .rows_affected()
-                {
-                    0 => Ok(HttpResponse::BadRequest()
-                        .json(ToastErrorResponse::new("Draft not found".to_string()))),
-                    _ => Ok(HttpResponse::NoContent().finish()),
+                    )
+                    .bind(user_id)
+                    .bind(draft_id)
+                    .execute(&data.db_pool)
+                    .await?
+                    .rows_affected()
+                    {
+                        0 => Ok(HttpResponse::BadRequest()
+                            .json(ToastErrorResponse::new("Draft not found"))),
+                        _ => Ok(HttpResponse::NoContent().finish()),
+                    }
                 }
+                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid draft ID")),
             }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid draft ID")),
-        },
+        }
         Err(_) => Ok(HttpResponse::InternalServerError().finish()),
     }
 }

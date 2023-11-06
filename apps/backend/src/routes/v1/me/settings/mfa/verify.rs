@@ -50,13 +50,13 @@ async fn post(
 
             if db_user.get::<bool, _>("mfa_enabled") {
                 return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                    "2-factor authentication is already enabled for your account".to_string(),
+                    "2-factor authentication is already enabled for your account",
                 )));
             }
 
             if db_user.get::<Option<String>, _>("mfa_secret").is_none() {
                 return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                    "2-factor authentication has not been requested for your account".to_string(),
+                    "2-factor authentication has not been requested for your account",
                 )));
             }
 
@@ -80,7 +80,7 @@ async fn post(
 
                     if !is_valid.unwrap() {
                         return Ok(HttpResponse::BadRequest().json(FormErrorResponse::new(vec![
-                            vec!["code".to_string(), "Invalid verification code".to_string()],
+                            ("code", "Invalid verification code"),
                         ])));
                     }
 
@@ -120,9 +120,7 @@ async fn post(
                             .rows_affected()
                             {
                                 0 => Ok(HttpResponse::InternalServerError().json(
-                                    ToastErrorResponse::new(
-                                        "Unable to generate recovery codes".to_string(),
-                                    ),
+                                    ToastErrorResponse::new("Unable to generate recovery codes"),
                                 )),
                                 _ => {
                                     txn.commit().await?;
@@ -131,11 +129,8 @@ async fn post(
                                 }
                             }
                         }
-                        Err(_) => Ok(HttpResponse::InternalServerError().json(
-                            ToastErrorResponse::new(
-                                "Unable to generate recovery codes".to_string(),
-                            ),
-                        )),
+                        Err(_) => Ok(HttpResponse::InternalServerError()
+                            .json(ToastErrorResponse::new("Unable to generate recovery codes"))),
                     }
                 }
                 Err(_) => Ok(HttpResponse::InternalServerError().finish()),
@@ -376,14 +371,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_form_error_response(
-            res,
-            vec![vec![
-                "code".to_string(),
-                "Invalid verification code".to_string(),
-            ]],
-        )
-        .await;
+        assert_form_error_response(res, vec![("code", "Invalid verification code")]).await;
 
         Ok(())
     }

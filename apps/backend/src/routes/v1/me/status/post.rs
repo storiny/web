@@ -43,10 +43,10 @@ async fn post(
 
             if status_emoji.is_empty() && status_text.is_empty() {
                 return Ok(
-                    HttpResponse::BadRequest().json(FormErrorResponse::new(vec![vec![
-                        "status_text".to_string(),
-                        "Cannot set an empty status".to_string(),
-                    ]])),
+                    HttpResponse::BadRequest().json(FormErrorResponse::new(vec![(
+                        "status_text",
+                        "Cannot set an empty status",
+                    )])),
                 );
             }
 
@@ -199,14 +199,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_form_error_response(
-            res,
-            vec![vec![
-                "status_text".to_string(),
-                "Cannot set an empty status".to_string(),
-            ]],
-        )
-        .await;
+        assert_form_error_response(res, vec![("status_text", "Cannot set an empty status")]).await;
 
         Ok(())
     }

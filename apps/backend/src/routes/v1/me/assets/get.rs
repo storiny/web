@@ -4,6 +4,7 @@ use actix_web_validator::QsQuery;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use time::OffsetDateTime;
+use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Serialize, Deserialize, Validate)]
@@ -15,7 +16,7 @@ struct QueryParams {
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 struct Asset {
     id: i64,
-    key: String,
+    key: Uuid,
     hex: String,
     alt: String,
     rating: i16,
@@ -84,7 +85,6 @@ mod tests {
     use crate::test_utils::{init_app_for_test, res_to_string};
     use actix_web::test;
     use sqlx::PgPool;
-    use uuid::Uuid;
 
     #[sqlx::test]
     async fn can_return_assets(pool: PgPool) -> sqlx::Result<()> {
@@ -105,7 +105,7 @@ mod tests {
         .bind(0)
         .bind(0)
         .bind(user_id)
-        .bind("other_key".to_string())
+        .bind(Uuid::new_v4())
         .execute(&mut *conn)
         .await?;
 

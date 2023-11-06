@@ -48,8 +48,7 @@ async fn post(
                                         if err_code == SqlState::EntityUnavailable.to_string() {
                                             Ok(HttpResponse::BadRequest().json(
                                                 ToastErrorResponse::new(
-                                                    "User is either deleted or deactivated"
-                                                        .to_string(),
+                                                    "User is either deleted or deactivated",
                                                 ),
                                             ))
                                         // Check if `transmitter_id` is same as `receiver_id`
@@ -57,8 +56,7 @@ async fn post(
                                         {
                                             Ok(HttpResponse::BadRequest().json(
                                                 ToastErrorResponse::new(
-                                                    "You cannot send a friend request to yourself"
-                                                        .to_string(),
+                                                    "You cannot send a friend request to yourself",
                                                 ),
                                             ))
                                         // Check if the user is being blocked by the followed user
@@ -68,7 +66,7 @@ async fn post(
                                         {
                                             Ok(HttpResponse::Forbidden().json(
                                                 ToastErrorResponse::new(
-                                                    "You are being blocked by the user".to_string(),
+                                                    "You are being blocked by the user",
                                                 ),
                                             ))
                                         // Check whether the receiver is accepting friend requests from the transmitter
@@ -78,8 +76,7 @@ async fn post(
                                         {
                                             Ok(HttpResponse::Forbidden()
                                                 .json(ToastErrorResponse::new(
-                                                "User is not accepting friend requests from you"
-                                                    .to_string(),
+                                                "User is not accepting friend requests from you",
                                             )))
                                         } else {
                                             Ok(HttpResponse::InternalServerError().finish())

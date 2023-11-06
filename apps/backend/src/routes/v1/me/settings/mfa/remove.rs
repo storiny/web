@@ -43,7 +43,7 @@ async fn post(
 
             if !db_user.get::<bool, _>("mfa_enabled") {
                 return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                    "2-factor authentication is not enabled for your account".to_string(),
+                    "2-factor authentication is not enabled for your account",
                 )));
             }
 
@@ -67,7 +67,7 @@ async fn post(
 
                     if !is_valid.unwrap() {
                         return Ok(HttpResponse::BadRequest().json(FormErrorResponse::new(vec![
-                            vec!["code".to_string(), "Invalid verification code".to_string()],
+                            ("code", "Invalid verification code"),
                         ])));
                     }
 
@@ -286,14 +286,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_form_error_response(
-            res,
-            vec![vec![
-                "code".to_string(),
-                "Invalid verification code".to_string(),
-            ]],
-        )
-        .await;
+        assert_form_error_response(res, vec![("code", "Invalid verification code")]).await;
 
         Ok(())
     }

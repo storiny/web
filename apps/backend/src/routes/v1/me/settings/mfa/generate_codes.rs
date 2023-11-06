@@ -38,7 +38,7 @@ async fn post(data: web::Data<AppState>, user: Identity) -> Result<HttpResponse,
 
             if !db_user.get::<bool, _>("mfa_enabled") {
                 return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                    "2-factor authentication is not enabled for your account".to_string(),
+                    "2-factor authentication is not enabled for your account",
                 )));
             }
 
@@ -64,11 +64,8 @@ async fn post(data: web::Data<AppState>, user: Identity) -> Result<HttpResponse,
                     .await?
                     .rows_affected()
                     {
-                        0 => Ok(
-                            HttpResponse::InternalServerError().json(ToastErrorResponse::new(
-                                "Unable to generate recovery codes".to_string(),
-                            )),
-                        ),
+                        0 => Ok(HttpResponse::InternalServerError()
+                            .json(ToastErrorResponse::new("Unable to generate recovery codes"))),
                         _ => {
                             txn.commit().await?;
 
@@ -81,11 +78,8 @@ async fn post(data: web::Data<AppState>, user: Identity) -> Result<HttpResponse,
                         }
                     }
                 }
-                Err(_) => Ok(
-                    HttpResponse::InternalServerError().json(ToastErrorResponse::new(
-                        "Unable to generate recovery codes".to_string(),
-                    )),
-                ),
+                Err(_) => Ok(HttpResponse::InternalServerError()
+                    .json(ToastErrorResponse::new("Unable to generate recovery codes"))),
             }
         }
         Err(_) => Ok(HttpResponse::InternalServerError().finish()),

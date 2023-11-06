@@ -30,12 +30,8 @@ struct Request {
 #[post("/v1/auth/reset-password")]
 async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpResponse, AppError> {
     if !EmailAddress::is_valid(&payload.email) {
-        return Ok(
-            HttpResponse::Conflict().json(FormErrorResponse::new(vec![vec![
-                "email".to_string(),
-                "Invalid e-mail".to_string(),
-            ]])),
-        );
+        return Ok(HttpResponse::Conflict()
+            .json(FormErrorResponse::new(vec![("email", "Invalid e-mail")])));
     }
 
     match sqlx::query(
@@ -73,9 +69,8 @@ async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpR
 
                                 // Check if the token has expired
                                 if expires_at < OffsetDateTime::now_utc() {
-                                    return Ok(HttpResponse::BadRequest().json(
-                                        ToastErrorResponse::new("Token has expired".to_string()),
-                                    ));
+                                    return Ok(HttpResponse::BadRequest()
+                                        .json(ToastErrorResponse::new("Token has expired")));
                                 }
 
                                 // Generate a hash from the new password
@@ -124,26 +119,25 @@ async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpR
                                 }
                             }
                             Err(_) => Ok(HttpResponse::BadRequest()
-                                .json(ToastErrorResponse::new("Invalid token".to_string()))),
+                                .json(ToastErrorResponse::new("Invalid token"))),
                         }
                     }
                     Err(_) => Ok(HttpResponse::InternalServerError().finish()),
                 }
             }
             Err(kind) => match kind {
-                sqlx::Error::RowNotFound => Ok(HttpResponse::BadRequest()
-                    .json(ToastErrorResponse::new("Invalid token".to_string()))),
+                sqlx::Error::RowNotFound => {
+                    Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new("Invalid token")))
+                }
                 _ => Ok(HttpResponse::InternalServerError().finish()),
             },
         },
         Err(kind) => match kind {
             sqlx::Error::RowNotFound => {
-                return Ok(
-                    HttpResponse::Conflict().json(FormErrorResponse::new(vec![vec![
-                        "email".to_string(),
-                        "Could not find any account associated with this e-mail".to_string(),
-                    ]])),
-                );
+                return Ok(HttpResponse::Conflict().json(FormErrorResponse::new(vec![(
+                    "email",
+                    "Could not find any account associated with this e-mail",
+                )])));
             }
             _ => Ok(HttpResponse::InternalServerError().finish()),
         },
@@ -273,10 +267,10 @@ mod tests {
         assert!(res.status().is_client_error());
         assert_form_error_response(
             res,
-            vec![vec![
-                "email".to_string(),
-                "Could not find any account associated with this e-mail".to_string(),
-            ]],
+            vec![(
+                "email",
+                "Could not find any account associated with this e-mail",
+            )],
         )
         .await;
 

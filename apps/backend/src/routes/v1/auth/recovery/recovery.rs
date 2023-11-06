@@ -34,12 +34,8 @@ struct ResetPasswordEmailTemplateData {
 #[post("/v1/auth/recovery")]
 async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpResponse, AppError> {
     if !EmailAddress::is_valid(&payload.email) {
-        return Ok(
-            HttpResponse::Conflict().json(FormErrorResponse::new(vec![vec![
-                "email".to_string(),
-                "Invalid e-mail".to_string(),
-            ]])),
-        );
+        return Ok(HttpResponse::Conflict()
+            .json(FormErrorResponse::new(vec![("email", "Invalid e-mail")])));
     }
 
     match sqlx::query(
@@ -119,12 +115,12 @@ async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpR
             }
         }
         Err(kind) => match kind {
-            sqlx::Error::RowNotFound => Ok(HttpResponse::Conflict().json(FormErrorResponse::new(
-                vec![vec![
-                    "email".to_string(),
-                    "Could not find any account associated with this e-mail".to_string(),
-                ]],
-            ))),
+            sqlx::Error::RowNotFound => {
+                Ok(HttpResponse::Conflict().json(FormErrorResponse::new(vec![(
+                    "email",
+                    "Could not find any account associated with this e-mail",
+                )])))
+            }
             _ => Ok(HttpResponse::InternalServerError().finish()),
         },
     }
@@ -189,10 +185,10 @@ mod tests {
         assert!(res.status().is_client_error());
         assert_form_error_response(
             res,
-            vec![vec![
-                "email".to_string(),
-                "Could not find any account associated with this e-mail".to_string(),
-            ]],
+            vec![(
+                "email",
+                "Could not find any account associated with this e-mail",
+            )],
         )
         .await;
 

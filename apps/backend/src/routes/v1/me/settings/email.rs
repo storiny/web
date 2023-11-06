@@ -46,17 +46,17 @@ async fn patch(
 
             if user_password.is_none() {
                 return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                    "You need to set a password to change your e-mail".to_string(),
+                    "You need to set a password to change your e-mail",
                 )));
             }
 
             // Check for valid e-mail
             if !EmailAddress::is_valid(&payload.new_email) {
                 return Ok(
-                    HttpResponse::BadRequest().json(FormErrorResponse::new(vec![vec![
-                        "new_email".to_string(),
-                        "Invalid e-mail".to_string(),
-                    ]])),
+                    HttpResponse::BadRequest().json(FormErrorResponse::new(vec![(
+                        "new_email",
+                        "Invalid e-mail",
+                    )])),
                 );
             }
 
@@ -105,10 +105,10 @@ async fn patch(
                                             // Check whether the new email is already in use
                                             sqlx::error::ErrorKind::UniqueViolation => {
                                                 Ok(HttpResponse::Conflict().json(
-                                                    FormErrorResponse::new(vec![vec![
-                                                        "new_email".to_string(),
-                                                        "This e-mail is already in use".to_string(),
-                                                    ]]),
+                                                    FormErrorResponse::new(vec![(
+                                                        "new_email",
+                                                        "This e-mail is already in use",
+                                                    )]),
                                                 ))
                                             }
                                             _ => Ok(HttpResponse::InternalServerError().finish()),
@@ -120,12 +120,10 @@ async fn patch(
                             }
                         }
                         Err(_) => {
-                            Ok(
-                                HttpResponse::Forbidden().json(FormErrorResponse::new(vec![vec![
-                                    "current_password".to_string(),
-                                    "Invalid password".to_string(),
-                                ]])),
-                            )
+                            Ok(HttpResponse::Forbidden().json(FormErrorResponse::new(vec![(
+                                "current_password",
+                                "Invalid password",
+                            )])))
                         }
                     }
                 }
@@ -294,14 +292,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_form_error_response(
-            res,
-            vec![vec![
-                "current_password".to_string(),
-                "Invalid password".to_string(),
-            ]],
-        )
-        .await;
+        assert_form_error_response(res, vec![("current_password", "Invalid password")]).await;
 
         Ok(())
     }
@@ -356,14 +347,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_form_error_response(
-            res,
-            vec![vec![
-                "new_email".to_string(),
-                "This e-mail is already in use".to_string(),
-            ]],
-        )
-        .await;
+        assert_form_error_response(res, vec![("new_email", "This e-mail is already in use")]).await;
 
         // Should not insert an account activity
         let result = sqlx::query(

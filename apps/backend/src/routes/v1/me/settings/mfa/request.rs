@@ -40,7 +40,7 @@ async fn post(data: web::Data<AppState>, user: Identity) -> Result<HttpResponse,
 
             if db_user.get::<bool, _>("mfa_enabled") {
                 return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                    "2-factor authentication is already enabled for your account".to_string(),
+                    "2-factor authentication is already enabled for your account",
                 )));
             }
 

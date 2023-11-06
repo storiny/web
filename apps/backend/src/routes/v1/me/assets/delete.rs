@@ -8,6 +8,7 @@ use actix_web::{delete, web, HttpResponse};
 use rusoto_s3::{DeleteObjectRequest, S3};
 use serde::Deserialize;
 use sqlx::Row;
+use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Validate)]
@@ -37,13 +38,13 @@ async fn delete(
                 {
                     Ok(result) => {
                         let s3_client = &data.s3_client;
-                        let asset_key = result.get::<String, _>("key");
+                        let asset_key = result.get::<Uuid, _>("key");
 
                         // Delete the object from S3
                         let delete_result = s3_client
                             .delete_object(DeleteObjectRequest {
                                 bucket: S3_UPLOADS_BUCKET.to_string(),
-                                key: asset_key,
+                                key: asset_key.to_string(),
                                 ..Default::default()
                             })
                             .await;
@@ -67,7 +68,7 @@ async fn delete(
                     }
                     Err(kind) => match kind {
                         sqlx::Error::RowNotFound => Ok(HttpResponse::BadRequest()
-                            .json(ToastErrorResponse::new("Asset not found".to_string()))),
+                            .json(ToastErrorResponse::new("Asset not found"))),
                         _ => Ok(HttpResponse::InternalServerError().finish()),
                     },
                 }
@@ -88,7 +89,6 @@ mod tests {
     use crate::test_utils::{assert_toast_error_response, init_app_for_test};
     use actix_web::test;
     use sqlx::PgPool;
-    use uuid::Uuid;
 
     #[sqlx::test]
     async fn can_delete_an_asset(pool: PgPool) -> sqlx::Result<()> {

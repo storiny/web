@@ -34,7 +34,7 @@ async fn delete(
                 .rows_affected()
                 {
                     0 => Ok(HttpResponse::BadRequest()
-                        .json(ToastErrorResponse::new("Connection not found".to_string()))),
+                        .json(ToastErrorResponse::new("Connection not found"))),
                     _ => Ok(HttpResponse::NoContent().finish()),
                 }
             }

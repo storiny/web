@@ -55,19 +55,15 @@ async fn post(
 ) -> Result<HttpResponse, AppError> {
     // Return if the user is already logged-in
     if user.is_some() {
-        return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-            "You are already logged-in".to_string(),
-        )));
+        return Ok(
+            HttpResponse::BadRequest().json(ToastErrorResponse::new("You are already logged-in"))
+        );
     }
 
     // Check for valid e-mail
     if !EmailAddress::is_valid(&payload.email) {
-        return Ok(
-            HttpResponse::BadRequest().json(FormErrorResponse::new(vec![vec![
-                "email".to_string(),
-                "Invalid e-mail".to_string(),
-            ]])),
-        );
+        return Ok(HttpResponse::BadRequest()
+            .json(FormErrorResponse::new(vec![("email", "Invalid e-mail")])));
     }
 
     let pg_pool = &data.db_pool;
@@ -100,9 +96,8 @@ async fn post(
             // MFA check
             if user.get::<bool, _>("mfa_enabled") {
                 if payload.code.is_none() {
-                    return Ok(HttpResponse::Unauthorized().json(ToastErrorResponse::new(
-                        "Missing verification code".to_string(),
-                    )));
+                    return Ok(HttpResponse::Unauthorized()
+                        .json(ToastErrorResponse::new("Missing verification code")));
                 }
 
                 let verification_code = payload.code.clone().unwrap_or_default();
@@ -128,10 +123,7 @@ async fn post(
 
                         if !result.get::<bool, _>("exists") {
                             return Ok(HttpResponse::BadRequest().json(FormErrorResponse::new(
-                                vec![vec![
-                                    "code".to_string(),
-                                    "Invalid verification code".to_string(),
-                                ]],
+                                vec![("code", "Invalid verification code")],
                             )));
                         }
 
@@ -169,17 +161,17 @@ async fn post(
                                 if is_valid.is_err() {
                                     return Ok(HttpResponse::InternalServerError().json(
                                         ToastErrorResponse::new(
-                                            "Unable to validate the verification code".to_string(),
+                                            "Unable to validate the verification code",
                                         ),
                                     ));
                                 }
 
                                 if !is_valid.unwrap() {
                                     return Ok(HttpResponse::BadRequest().json(
-                                        FormErrorResponse::new(vec![vec![
-                                            "code".to_string(),
-                                            "Invalid verification code".to_string(),
-                                        ]]),
+                                        FormErrorResponse::new(vec![(
+                                            "code",
+                                            "Invalid verification code",
+                                        )]),
                                     ));
                                 }
                             }
@@ -187,9 +179,12 @@ async fn post(
                         }
                     }
                     _ => {
-                        return Ok(HttpResponse::BadRequest().json(FormErrorResponse::new(vec![
-                            vec!["code".to_string(), "Invalid verification code".to_string()],
-                        ])))
+                        return Ok(
+                            HttpResponse::BadRequest().json(FormErrorResponse::new(vec![(
+                                "code",
+                                "Invalid verification code",
+                            )])),
+                        )
                     }
                 };
             }
@@ -198,7 +193,7 @@ async fn post(
             // User has created account using a third-party service, such as Apple or Google
             if user_password.is_none() {
                 return Ok(HttpResponse::Unauthorized()
-                    .json(ToastErrorResponse::new("Invalid credentials".to_string())));
+                    .json(ToastErrorResponse::new("Invalid credentials")));
             }
 
             match PasswordHash::new(&user_password.unwrap()) {
@@ -332,16 +327,15 @@ async fn post(
                             }
                         }
                         Err(_) => Ok(HttpResponse::Unauthorized()
-                            .json(ToastErrorResponse::new("Invalid credentials".to_string()))),
+                            .json(ToastErrorResponse::new("Invalid credentials"))),
                     }
                 }
                 Err(_) => Ok(HttpResponse::InternalServerError().finish()),
             }
         }
         Err(kind) => match kind {
-            Error::RowNotFound => Ok(HttpResponse::Unauthorized().json(ToastErrorResponse::new(
-                "Invalid e-mail or password".to_string(),
-            ))),
+            Error::RowNotFound => Ok(HttpResponse::Unauthorized()
+                .json(ToastErrorResponse::new("Invalid e-mail or password"))),
             _ => Ok(HttpResponse::InternalServerError().finish()),
         },
     }
@@ -997,14 +991,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_form_error_response(
-            res,
-            vec![vec![
-                "code".to_string(),
-                "Invalid verification code".to_string(),
-            ]],
-        )
-        .await;
+        assert_form_error_response(res, vec![("code", "Invalid verification code")]).await;
 
         Ok(())
     }
@@ -1040,14 +1027,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_form_error_response(
-            res,
-            vec![vec![
-                "code".to_string(),
-                "Invalid verification code".to_string(),
-            ]],
-        )
-        .await;
+        assert_form_error_response(res, vec![("code", "Invalid verification code")]).await;
 
         Ok(())
     }
@@ -1085,14 +1065,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_form_error_response(
-            res,
-            vec![vec![
-                "code".to_string(),
-                "Invalid verification code".to_string(),
-            ]],
-        )
-        .await;
+        assert_form_error_response(res, vec![("code", "Invalid verification code")]).await;
 
         Ok(())
     }
@@ -1142,14 +1115,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_form_error_response(
-            res,
-            vec![vec![
-                "code".to_string(),
-                "Invalid verification code".to_string(),
-            ]],
-        )
-        .await;
+        assert_form_error_response(res, vec![("code", "Invalid verification code")]).await;
 
         Ok(())
     }
