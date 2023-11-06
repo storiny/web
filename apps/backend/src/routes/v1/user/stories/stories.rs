@@ -6,6 +6,7 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use sqlx::{types::Json, FromRow};
 use time::OffsetDateTime;
+use uuid::Uuid;
 use validator::Validate;
 
 lazy_static! {
@@ -32,7 +33,7 @@ struct User {
     id: i64,
     name: String,
     username: String,
-    avatar_id: Option<String>,
+    avatar_id: Option<Uuid>,
     avatar_hex: Option<String>,
     public_flags: i32,
 }
@@ -49,7 +50,7 @@ struct Story {
     title: String,
     slug: String,
     description: Option<String>,
-    splash_id: Option<String>,
+    splash_id: Option<Uuid>,
     splash_hex: Option<String>,
     category: String,
     age_restriction: i16,
@@ -217,6 +218,8 @@ where
     String: ::sqlx::types::Type<::sqlx::Postgres>,
     Option<String>: ::sqlx::decode::Decode<'static, ::sqlx::Postgres>,
     Option<String>: ::sqlx::types::Type<::sqlx::Postgres>,
+    Option<Uuid>: ::sqlx::decode::Decode<'static, ::sqlx::Postgres>,
+    Option<Uuid>: ::sqlx::types::Type<::sqlx::Postgres>,
     i32: ::sqlx::decode::Decode<'static, ::sqlx::Postgres>,
     i32: ::sqlx::types::Type<::sqlx::Postgres>,
 {
@@ -227,7 +230,7 @@ where
         let id = decoder.try_decode::<i64>()?;
         let name = decoder.try_decode::<String>()?;
         let username = decoder.try_decode::<String>()?;
-        let avatar_id = decoder.try_decode::<Option<String>>()?;
+        let avatar_id = decoder.try_decode::<Option<Uuid>>()?;
         let avatar_hex = decoder.try_decode::<Option<String>>()?;
         let public_flags = decoder.try_decode::<i32>()?;
 

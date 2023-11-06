@@ -3,6 +3,7 @@ mod tests {
     use nanoid::nanoid;
     use sqlx::{pool::PoolConnection, postgres::PgRow, Error, PgPool, Postgres, Row};
     use time::OffsetDateTime;
+    use uuid::Uuid;
 
     /// Inserts a sample user into the database.
     ///
@@ -3368,7 +3369,7 @@ mod tests {
             RETURNING id
             "#,
         )
-        .bind("sample_key".to_string())
+        .bind(Uuid::new_v4())
         .bind("000000".to_string())
         .bind(0)
         .bind(0)
@@ -3419,7 +3420,7 @@ mod tests {
             RETURNING id
             "#,
         )
-        .bind("sample_key".to_string())
+        .bind(Uuid::new_v4())
         .bind("000000".to_string())
         .bind(0)
         .bind(0)
@@ -8444,7 +8445,7 @@ mod tests {
             RETURNING id
             "#,
         )
-        .bind("sample_key".to_string())
+        .bind(Uuid::new_v4())
         .bind("000000".to_string())
         .bind(0)
         .bind(0)
@@ -8477,6 +8478,168 @@ mod tests {
         .await?;
 
         assert!(result.get::<Option<i64>, _>("user_id").is_none());
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_set_user_avatar_id_as_null_on_asset_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert an asset
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO assets(key, hex, height, width, user_id)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING id
+            "#,
+        )
+        .bind(Uuid::new_v4())
+        .bind("000000".to_string())
+        .bind(0)
+        .bind(0)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(insert_result.try_get::<i64, _>("id").is_ok());
+
+        // Set `avatar_id` and `avatar_hex` on the user
+        let update_result = sqlx::query(
+            r#"
+            WITH asset AS (
+                SELECT key, hex FROM assets
+                WHERE id = $1
+            )
+            UPDATE users
+            SET
+                avatar_id = (SELECT key FROM asset),
+                avatar_hex = (SELECT hex FROM asset)
+            WHERE id = $2
+            RETURNING avatar_id, avatar_hex
+            "#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(update_result.get::<Option<Uuid>, _>("avatar_id").is_some());
+        assert!(update_result
+            .get::<Option<String>, _>("avatar_hex")
+            .is_some());
+
+        // Delete the asset
+        sqlx::query(
+            r#"
+            DELETE FROM assets
+            WHERE id = $1
+            "#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .execute(&mut *conn)
+        .await?;
+
+        // `avatar_id` and `avatar_hex` should be NULL
+        let update_result = sqlx::query(
+            r#"
+            SELECT
+                avatar_id,
+                avatar_hex
+            FROM users
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(update_result.get::<Option<Uuid>, _>("avatar_id").is_none());
+        assert!(update_result
+            .get::<Option<String>, _>("avatar_hex")
+            .is_none());
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_set_user_banner_id_as_null_on_asset_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert an asset
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO assets(key, hex, height, width, user_id)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING id
+            "#,
+        )
+        .bind(Uuid::new_v4())
+        .bind("000000".to_string())
+        .bind(0)
+        .bind(0)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(insert_result.try_get::<i64, _>("id").is_ok());
+
+        // Set `banner_id` and `banner_hex` on the user
+        let update_result = sqlx::query(
+            r#"
+            WITH asset AS (
+                SELECT key, hex FROM assets
+                WHERE id = $1
+            )
+            UPDATE users
+            SET
+                banner_id = (SELECT key FROM asset),
+                banner_hex = (SELECT hex FROM asset)
+            WHERE id = $2
+            RETURNING banner_id, banner_hex
+            "#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(update_result.get::<Option<Uuid>, _>("banner_id").is_some());
+        assert!(update_result
+            .get::<Option<String>, _>("banner_hex")
+            .is_some());
+
+        // Delete the asset
+        sqlx::query(
+            r#"
+            DELETE FROM assets
+            WHERE id = $1
+            "#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .execute(&mut *conn)
+        .await?;
+
+        // `banner_id` and `banner_hex` should be NULL
+        let update_result = sqlx::query(
+            r#"
+            SELECT
+                banner_id,
+                banner_hex
+            FROM users
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(update_result.get::<Option<Uuid>, _>("banner_id").is_none());
+        assert!(update_result
+            .get::<Option<String>, _>("banner_hex")
+            .is_none());
 
         Ok(())
     }

@@ -3,6 +3,7 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use time::OffsetDateTime;
+use uuid::Uuid;
 
 lazy_static! {
     pub static ref USERNAME_REGEX: Regex = Regex::new(r"^[\w_]+$").unwrap();
@@ -22,9 +23,9 @@ pub struct User {
     pub id: i64,
     pub name: String,
     pub username: String,
-    pub avatar_id: Option<String>,
+    pub avatar_id: Option<Uuid>,
     pub avatar_hex: Option<String>,
-    pub banner_id: Option<String>,
+    pub banner_id: Option<Uuid>,
     pub banner_hex: Option<String>,
     pub bio: String,
     pub rendered_bio: String,

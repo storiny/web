@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod tests {
     use sqlx::PgPool;
+    use uuid::Uuid;
 
     #[sqlx::test(fixtures("user"))]
     async fn can_insert_an_asset(pool: PgPool) -> sqlx::Result<()> {
@@ -11,7 +12,7 @@ mod tests {
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
-        .bind("some_key".to_string())
+        .bind(Uuid::new_v4())
         .bind("000000".to_string())
         .bind(0)
         .bind(0)
@@ -48,7 +49,7 @@ mod tests {
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
-        .bind("some_key".to_string())
+        .bind(Uuid::new_v4())
         .bind("000000".to_string())
         .bind(0)
         .bind(0)
@@ -92,7 +93,7 @@ mod tests {
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
-        .bind("some_key".to_string())
+        .bind(Uuid::new_v4())
         .bind("000000".to_string())
         .bind(0)
         .bind(0)

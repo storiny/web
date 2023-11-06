@@ -2,6 +2,7 @@
 mod tests {
     use sqlx::{pool::PoolConnection, postgres::PgRow, Error, PgPool, Postgres, Row};
     use time::OffsetDateTime;
+    use uuid::Uuid;
 
     /// Inserts a sample story into the database.
     ///
@@ -1202,7 +1203,7 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind("sample".to_string())
+        .bind(Uuid::new_v4())
         .bind(story_id)
         .execute(&mut *conn)
         .await?;
@@ -1253,7 +1254,7 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind("sample".to_string())
+        .bind(Uuid::new_v4())
         .bind(story_id)
         .execute(&mut *conn)
         .await?;
@@ -4029,12 +4030,12 @@ mod tests {
             RETURNING key
             "#,
         )
-        .bind("sample".to_string())
+        .bind(Uuid::new_v4())
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(insert_result.try_get::<String, _>("key").is_ok());
+        assert!(insert_result.try_get::<Uuid, _>("key").is_ok());
 
         // Delete the story
         sqlx::query(
@@ -4054,11 +4055,170 @@ mod tests {
             WHERE key = $1
             "#,
         )
-        .bind(insert_result.get::<String, _>("key"))
+        .bind(insert_result.get::<Uuid, _>("key"))
         .fetch_one(&mut *conn)
         .await?;
 
         assert!(result.get::<Option<i64>, _>("story_id").is_none());
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_set_story_splash_id_as_null_on_asset_hard_delete(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
+
+        // Insert an asset
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO assets(key, hex, height, width, user_id)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING id
+            "#,
+        )
+        .bind(Uuid::new_v4())
+        .bind("000000".to_string())
+        .bind(0)
+        .bind(0)
+        .bind(1_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(insert_result.try_get::<i64, _>("id").is_ok());
+
+        // Set `splash_id` and `splash_hex` on the story
+        let update_result = sqlx::query(
+            r#"
+            WITH asset AS (
+                SELECT key, hex FROM assets
+                WHERE id = $1
+            )
+            UPDATE stories
+            SET
+                splash_id = (SELECT key FROM asset),
+                splash_hex = (SELECT hex FROM asset)
+            WHERE id = $2
+            RETURNING splash_id, splash_hex
+            "#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(update_result.get::<Option<Uuid>, _>("splash_id").is_some());
+        assert!(update_result
+            .get::<Option<String>, _>("splash_hex")
+            .is_some());
+
+        // Delete the asset
+        sqlx::query(
+            r#"
+            DELETE FROM assets
+            WHERE id = $1
+            "#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .execute(&mut *conn)
+        .await?;
+
+        // `splash_id` and `splash_hex` should be NULL
+        let update_result = sqlx::query(
+            r#"
+            SELECT
+                splash_id,
+                splash_hex
+            FROM stories
+            WHERE id = $1
+            "#,
+        )
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(update_result.get::<Option<Uuid>, _>("splash_id").is_none());
+        assert!(update_result
+            .get::<Option<String>, _>("splash_hex")
+            .is_none());
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_set_preview_image_as_null_on_asset_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
+
+        // Insert an asset
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO assets(key, hex, height, width, user_id)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING id
+            "#,
+        )
+        .bind(Uuid::new_v4())
+        .bind("000000".to_string())
+        .bind(0)
+        .bind(0)
+        .bind(1_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(insert_result.try_get::<i64, _>("id").is_ok());
+
+        // Set `preview_image` on the story
+        let update_result = sqlx::query(
+            r#"
+            WITH asset AS (
+                SELECT key FROM assets
+                WHERE id = $1
+            )
+            UPDATE stories
+            SET
+                preview_image = (SELECT key FROM asset)
+            WHERE id = $2
+            RETURNING preview_image
+            "#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(update_result
+            .get::<Option<Uuid>, _>("preview_image")
+            .is_some());
+
+        // Delete the asset
+        sqlx::query(
+            r#"
+            DELETE FROM assets
+            WHERE id = $1
+            "#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .execute(&mut *conn)
+        .await?;
+
+        // `preview_image` should be NULL
+        let update_result = sqlx::query(
+            r#"
+            SELECT preview_image
+            FROM stories
+            WHERE id = $1
+            "#,
+        )
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(update_result
+            .get::<Option<Uuid>, _>("preview_image")
+            .is_none());
 
         Ok(())
     }

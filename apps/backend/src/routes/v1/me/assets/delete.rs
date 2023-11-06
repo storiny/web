@@ -88,6 +88,7 @@ mod tests {
     use crate::test_utils::{assert_toast_error_response, init_app_for_test};
     use actix_web::test;
     use sqlx::PgPool;
+    use uuid::Uuid;
 
     #[sqlx::test]
     async fn can_delete_an_asset(pool: PgPool) -> sqlx::Result<()> {
@@ -102,7 +103,7 @@ mod tests {
             RETURNING id
             "#,
         )
-        .bind("some_key".to_string())
+        .bind(Uuid::new_v4())
         .bind("000000".to_string())
         .bind(0)
         .bind(0)

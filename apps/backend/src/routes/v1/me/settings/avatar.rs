@@ -5,17 +5,17 @@ use actix_web::{patch, web, HttpResponse};
 use actix_web_validator::Json;
 use serde::{Deserialize, Serialize};
 use sqlx::Row;
+use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
 struct Request {
-    #[validate(length(min = 0, max = 128, message = "Invalid avatar ID"))]
-    avatar_id: Option<String>,
+    avatar_id: Option<Uuid>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Response {
-    avatar_id: Option<String>,
+    avatar_id: Option<Uuid>,
     avatar_hex: Option<String>,
 }
 
@@ -71,7 +71,7 @@ async fn patch(
                 .await
                 {
                     Ok(row) => Ok(HttpResponse::NoContent().json(Response {
-                        avatar_id: row.get::<Option<String>, _>("avatar_id"),
+                        avatar_id: row.get::<Option<Uuid>, _>("avatar_id"),
                         avatar_hex: row.get::<Option<String>, _>("avatar_hex"),
                     })),
                     Err(kind) => match kind {
@@ -101,6 +101,7 @@ mod tests {
     async fn can_set_an_avatar(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
+        let avatar_id = Uuid::new_v4();
 
         // Insert an asset
         let result = sqlx::query(
@@ -110,7 +111,7 @@ mod tests {
             RETURNING id
             "#,
         )
-        .bind("some_key".to_string())
+        .bind(&avatar_id)
         .bind("000000".to_string())
         .bind(0)
         .bind(0)
@@ -124,7 +125,7 @@ mod tests {
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/settings/avatar")
             .set_json(Request {
-                avatar_id: Some("some_key".to_string()),
+                avatar_id: Some(avatar_id),
             })
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -133,7 +134,7 @@ mod tests {
 
         let json = serde_json::from_str::<Response>(&res_to_string(res).await).unwrap();
 
-        assert_eq!(json.avatar_id, Some("some_key".to_string()));
+        assert_eq!(json.avatar_id, Some(avatar_id));
         assert_eq!(json.avatar_hex, Some("000000".to_string()));
 
         // Avatar should get updated in the database
@@ -148,8 +149,8 @@ mod tests {
         .await?;
 
         assert_eq!(
-            result.get::<Option<String>, _>("avatar_id").unwrap(),
-            "some_key".to_string()
+            result.get::<Option<Uuid>, _>("avatar_id").unwrap(),
+            avatar_id
         );
         assert_eq!(
             result.get::<Option<String>, _>("avatar_hex").unwrap(),
@@ -163,6 +164,7 @@ mod tests {
     async fn can_remove_an_avatar(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
+        let avatar_id = Uuid::new_v4();
 
         // Set avatar for the user
         let result = sqlx::query(
@@ -174,15 +176,15 @@ mod tests {
             RETURNING avatar_id, avatar_hex
             "#,
         )
-        .bind("some_key".to_string())
+        .bind(&avatar_id)
         .bind("000000".to_string())
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
         .await?;
 
         assert_eq!(
-            result.get::<Option<String>, _>("avatar_id").unwrap(),
-            "some_key".to_string()
+            result.get::<Option<Uuid>, _>("avatar_id").unwrap(),
+            avatar_id
         );
         assert_eq!(
             result.get::<Option<String>, _>("avatar_hex").unwrap(),
@@ -215,7 +217,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(result.get::<Option<String>, _>("avatar_id").is_none());
+        assert!(result.get::<Option<Uuid>, _>("avatar_id").is_none());
         assert!(result.get::<Option<String>, _>("avatar_hex").is_none());
 
         Ok(())
@@ -231,7 +233,7 @@ mod tests {
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/settings/avatar")
             .set_json(Request {
-                avatar_id: Some("invalid_key".to_string()),
+                avatar_id: Some(Uuid::new_v4()),
             })
             .to_request();
         let res = test::call_service(&app, req).await;

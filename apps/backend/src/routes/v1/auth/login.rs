@@ -1,3 +1,4 @@
+use crate::utils::generate_totp::generate_totp;
 use crate::{
     error::{AppError, FormErrorResponse, ToastErrorResponse},
     middleware::{identity::identity::Identity, session::session::Session},
@@ -18,6 +19,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::{Error, Row};
 use std::net::IpAddr;
 use time::OffsetDateTime;
+use totp_rs::Secret;
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
@@ -28,6 +30,8 @@ struct Request {
     #[validate(length(min = 6, max = 64, message = "Invalid password length"))]
     password: String,
     remember_me: bool,
+    #[validate(length(min = 6, max = 8, message = "Invalid verification code"))]
+    code: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -66,19 +70,130 @@ async fn post(
         );
     }
 
+    let pg_pool = &data.db_pool;
+    let mut txn = pg_pool.begin().await?;
     let should_bypass = query.bypass.is_some();
     let query_result = sqlx::query(
         r#"
-        SELECT id, password, email_verified, public_flags, deactivated_at, deleted_at FROM users
+        SELECT
+            id,
+            username,
+            password,
+            email_verified,
+            public_flags,
+            deactivated_at,
+            deleted_at,
+            mfa_enabled,
+            mfa_secret
+        FROM users
         WHERE email = $1
         "#,
     )
     .bind(&payload.email)
-    .fetch_one(&data.db_pool)
+    .fetch_one(&mut *txn)
     .await;
 
     match query_result {
         Ok(user) => {
+            let user_id = user.get::<i64, _>("id");
+
+            // MFA check
+            if user.get::<bool, _>("mfa_enabled") {
+                if payload.code.is_none() {
+                    return Ok(HttpResponse::Unauthorized().json(ToastErrorResponse::new(
+                        "Missing verification code".to_string(),
+                    )));
+                }
+
+                let verification_code = payload.code.clone().unwrap_or_default();
+
+                match verification_code.chars().count() {
+                    // Recovery code
+                    8 => {
+                        let result = sqlx::query(
+                            r#"
+                            SELECT EXISTS(
+                                SELECT 1 FROM mfa_recovery_codes
+                                WHERE
+                                    code = $1
+                                    AND user_id = $2
+                                    AND used_at IS NULL
+                            )
+                            "#,
+                        )
+                        .bind(&verification_code)
+                        .bind(&user_id)
+                        .fetch_one(&mut *txn)
+                        .await?;
+
+                        if !result.get::<bool, _>("exists") {
+                            return Ok(HttpResponse::BadRequest().json(FormErrorResponse::new(
+                                vec![vec![
+                                    "code".to_string(),
+                                    "Invalid verification code".to_string(),
+                                ]],
+                            )));
+                        }
+
+                        // Mark the code as used
+                        sqlx::query(
+                            r#"
+                            UPDATE mfa_recovery_codes
+                            SET used_at = now()
+                            WHERE code = $1 AND user_id = $2
+                            "#,
+                        )
+                        .bind(&verification_code)
+                        .bind(&user_id)
+                        .execute(&mut *txn)
+                        .await?;
+                    }
+                    // TOTP code
+                    6 => {
+                        let mfa_secret = user
+                            .get::<Option<String>, _>("mfa_secret")
+                            .unwrap_or_default();
+                        let secret_as_bytes = Secret::Encoded(mfa_secret).to_bytes();
+
+                        if secret_as_bytes.is_err() {
+                            return Ok(HttpResponse::InternalServerError().finish());
+                        }
+
+                        match generate_totp(
+                            secret_as_bytes.unwrap(),
+                            &user.get::<String, _>("username"),
+                        ) {
+                            Ok(totp) => {
+                                let is_valid = totp.check_current(&verification_code);
+
+                                if is_valid.is_err() {
+                                    return Ok(HttpResponse::InternalServerError().json(
+                                        ToastErrorResponse::new(
+                                            "Unable to validate the verification code".to_string(),
+                                        ),
+                                    ));
+                                }
+
+                                if !is_valid.unwrap() {
+                                    return Ok(HttpResponse::BadRequest().json(
+                                        FormErrorResponse::new(vec![vec![
+                                            "code".to_string(),
+                                            "Invalid verification code".to_string(),
+                                        ]]),
+                                    ));
+                                }
+                            }
+                            Err(_) => return Ok(HttpResponse::InternalServerError().finish()),
+                        }
+                    }
+                    _ => {
+                        return Ok(HttpResponse::BadRequest().json(FormErrorResponse::new(vec![
+                            vec!["code".to_string(), "Invalid verification code".to_string()],
+                        ])))
+                    }
+                };
+            }
+
             let user_password = user.get::<Option<String>, _>("password");
             // User has created account using a third-party service, such as Apple or Google
             if user_password.is_none() {
@@ -86,7 +201,7 @@ async fn post(
                     .json(ToastErrorResponse::new("Invalid credentials".to_string())));
             }
 
-            return match PasswordHash::new(&user_password.unwrap()) {
+            match PasswordHash::new(&user_password.unwrap()) {
                 Ok(hash) => {
                     match Argon2::default().verify_password(&payload.password.as_bytes(), &hash) {
                         Ok(_) => {
@@ -118,11 +233,11 @@ async fn post(
                                             r#"
                                             UPDATE users
                                             SET deleted_at = NULL
-                                            WHERE email = $1
+                                            WHERE id = $1
                                             "#,
                                         )
-                                        .bind(&payload.email)
-                                        .execute(&data.db_pool)
+                                        .bind(&user_id)
+                                        .execute(&mut *txn)
                                         .await?;
                                     } else {
                                         return Ok(HttpResponse::Ok().json(Response {
@@ -144,11 +259,11 @@ async fn post(
                                             r#"
                                             UPDATE users
                                             SET deactivated_at = NULL
-                                            WHERE email = $1
+                                            WHERE id = $1
                                             "#,
                                         )
-                                        .bind(&payload.email)
-                                        .execute(&data.db_pool)
+                                        .bind(&user_id)
+                                        .execute(&mut *txn)
                                         .await?;
                                     } else {
                                         return Ok(HttpResponse::Ok().json(Response {
@@ -157,6 +272,9 @@ async fn post(
                                     }
                                 }
                             }
+
+                            // Commit the transaction
+                            txn.commit().await?;
 
                             // Check if the email is verified
                             {
@@ -218,7 +336,7 @@ async fn post(
                     }
                 }
                 Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-            };
+            }
         }
         Err(kind) => match kind {
             Error::RowNotFound => Ok(HttpResponse::Unauthorized().json(ToastErrorResponse::new(
@@ -236,6 +354,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_utils::assert_form_error_response;
     use crate::{
         test_utils::{assert_response_body_text, assert_toast_error_response, init_app_for_test},
         utils::{get_client_device::ClientDevice, get_client_location::ClientLocation},
@@ -299,6 +418,135 @@ mod tests {
                 email: email.to_string(),
                 password: password.to_string(),
                 remember_me: true,
+                code: None,
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+        assert_response_body_text(
+            res,
+            &serde_json::to_string(&Response {
+                result: "success".to_string(),
+            })
+            .unwrap_or_default(),
+        )
+        .await;
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_login_using_recovery_code(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let app = init_app_for_test(post, pool, false, false).await.0;
+        let (email, password_hash, password) = get_sample_email_and_password();
+
+        // Insert the user
+        sqlx::query(
+            r#"
+            INSERT INTO users(id, name, username, email, password, email_verified, mfa_enabled)
+            VALUES ($1, $2, $3, $4, $5, TRUE, TRUE)
+            "#,
+        )
+        .bind(1_i64)
+        .bind("Sample user".to_string())
+        .bind("sample_user".to_string())
+        .bind((&email).to_string())
+        .bind(password_hash)
+        .execute(&mut *conn)
+        .await?;
+
+        // Insert recovery code
+        sqlx::query(
+            r#"
+            INSERT INTO mfa_recovery_codes(code, user_id)
+            VALUES ($1, $2)
+            "#,
+        )
+        .bind("0".repeat(8))
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::post()
+            .uri("/v1/auth/login")
+            .set_json(Request {
+                email: email.to_string(),
+                password: password.to_string(),
+                remember_me: true,
+                code: Some("0".repeat(8)),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+        assert_response_body_text(
+            res,
+            &serde_json::to_string(&Response {
+                result: "success".to_string(),
+            })
+            .unwrap_or_default(),
+        )
+        .await;
+
+        // Should mark the recovery code as used
+        let result = sqlx::query(
+            r#"
+            SELECT used_at FROM mfa_recovery_codes
+            WHERE code = $1 AND user_id = $2
+            "#,
+        )
+        .bind("0".repeat(8))
+        .bind(1_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(result.get::<Option<OffsetDateTime>, _>("used_at").is_some());
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_login_using_authentication_code(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let app = init_app_for_test(post, pool, false, false).await.0;
+        let (email, password_hash, password) = get_sample_email_and_password();
+        let mfa_secret = Secret::generate_secret();
+
+        // Insert the user
+        sqlx::query(
+            r#"
+            INSERT INTO users(
+                name,
+                username,
+                email,
+                password,
+                email_verified,
+                mfa_enabled,
+                mfa_secret
+            )
+            VALUES ($1, $2, $3, $4, TRUE, TRUE, $5)
+            "#,
+        )
+        .bind("Sample user".to_string())
+        .bind("sample_user".to_string())
+        .bind((&email).to_string())
+        .bind(password_hash)
+        .bind(mfa_secret.to_encoded().to_string())
+        .execute(&mut *conn)
+        .await?;
+
+        // Generate a TOTP instance for verification code
+        let totp = generate_totp(mfa_secret.to_bytes().unwrap(), "sample_user").unwrap();
+
+        let req = test::TestRequest::post()
+            .uri("/v1/auth/login")
+            .set_json(Request {
+                email: email.to_string(),
+                password: password.to_string(),
+                remember_me: true,
+                code: Some(totp.generate_current().unwrap()),
             })
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -342,6 +590,7 @@ mod tests {
                 email: "some_invalid_email@example.com".to_string(),
                 password: password.to_string(),
                 remember_me: true,
+                code: None,
             })
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -377,6 +626,7 @@ mod tests {
                 email: email.to_string(),
                 password: password.to_string(),
                 remember_me: true,
+                code: None,
             })
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -413,6 +663,7 @@ mod tests {
                 email: email.to_string(),
                 password: "some_invalid_password".to_string(),
                 remember_me: true,
+                code: None,
             })
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -454,6 +705,7 @@ mod tests {
                 email: email.to_string(),
                 password: password.to_string(),
                 remember_me: true,
+                code: None,
             })
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -502,6 +754,7 @@ mod tests {
                 email: email.to_string(),
                 password: password.to_string(),
                 remember_me: true,
+                code: None,
             })
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -557,6 +810,7 @@ mod tests {
                 email: email.to_string(),
                 password: password.to_string(),
                 remember_me: true,
+                code: None,
             })
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -612,6 +866,7 @@ mod tests {
                 email: email.to_string(),
                 password: password.to_string(),
                 remember_me: true,
+                code: None,
             })
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -655,6 +910,7 @@ mod tests {
                 email: email.to_string(),
                 password: password.to_string(),
                 remember_me: true,
+                code: None,
             })
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -666,6 +922,232 @@ mod tests {
                 result: "email_confirmation".to_string(),
             })
             .unwrap(),
+        )
+        .await;
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_login_for_missing_verification_code(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let app = init_app_for_test(post, pool, false, false).await.0;
+        let (email, _, password) = get_sample_email_and_password();
+
+        // Insert the user
+        sqlx::query(
+            r#"
+            INSERT INTO users(name, username, email, mfa_enabled)
+            VALUES ($1, $2, $3, TRUE)
+            "#,
+        )
+        .bind("Sample user".to_string())
+        .bind("sample_user".to_string())
+        .bind((&email).to_string())
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::post()
+            .uri("/v1/auth/login")
+            .set_json(Request {
+                email: email.to_string(),
+                password: password.to_string(),
+                remember_me: true,
+                code: None,
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Missing verification code").await;
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_login_for_invalid_verification_code_length(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let app = init_app_for_test(post, pool, false, false).await.0;
+        let (email, _, password) = get_sample_email_and_password();
+
+        // Insert the user
+        sqlx::query(
+            r#"
+            INSERT INTO users(name, username, email, mfa_enabled)
+            VALUES ($1, $2, $3, TRUE)
+            "#,
+        )
+        .bind("Sample user".to_string())
+        .bind("sample_user".to_string())
+        .bind((&email).to_string())
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::post()
+            .uri("/v1/auth/login")
+            .set_json(Request {
+                email: email.to_string(),
+                password: password.to_string(),
+                remember_me: true,
+                code: Some("0".repeat(7)),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_form_error_response(
+            res,
+            vec![vec![
+                "code".to_string(),
+                "Invalid verification code".to_string(),
+            ]],
+        )
+        .await;
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_login_for_invalid_recovery_code(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let app = init_app_for_test(post, pool, false, false).await.0;
+        let (email, _, password) = get_sample_email_and_password();
+
+        // Insert the user
+        sqlx::query(
+            r#"
+            INSERT INTO users(name, username, email, mfa_enabled)
+            VALUES ($1, $2, $3, TRUE)
+            "#,
+        )
+        .bind("Sample user".to_string())
+        .bind("sample_user".to_string())
+        .bind((&email).to_string())
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::post()
+            .uri("/v1/auth/login")
+            .set_json(Request {
+                email: email.to_string(),
+                password: password.to_string(),
+                remember_me: true,
+                code: Some("0".repeat(8)),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_form_error_response(
+            res,
+            vec![vec![
+                "code".to_string(),
+                "Invalid verification code".to_string(),
+            ]],
+        )
+        .await;
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_login_for_invalid_authentication_code(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let app = init_app_for_test(post, pool, false, false).await.0;
+        let (email, _, password) = get_sample_email_and_password();
+        let mfa_secret = Secret::generate_secret();
+
+        // Insert the user
+        sqlx::query(
+            r#"
+            INSERT INTO users(name, username, email, mfa_enabled, mfa_secret)
+            VALUES ($1, $2, $3, TRUE, $4)
+            "#,
+        )
+        .bind("Sample user".to_string())
+        .bind("sample_user".to_string())
+        .bind((&email).to_string())
+        .bind(mfa_secret.to_encoded().to_string())
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::post()
+            .uri("/v1/auth/login")
+            .set_json(Request {
+                email: email.to_string(),
+                password: password.to_string(),
+                remember_me: true,
+                code: Some("0".repeat(6)),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_form_error_response(
+            res,
+            vec![vec![
+                "code".to_string(),
+                "Invalid verification code".to_string(),
+            ]],
+        )
+        .await;
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_login_for_used_recovery_code(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let app = init_app_for_test(post, pool, false, false).await.0;
+        let (email, password_hash, password) = get_sample_email_and_password();
+
+        // Insert the user
+        sqlx::query(
+            r#"
+            INSERT INTO users(id, name, username, email, password, email_verified, mfa_enabled)
+            VALUES ($1, $2, $3, $4, $5, TRUE, TRUE)
+            "#,
+        )
+        .bind(1_i64)
+        .bind("Sample user".to_string())
+        .bind("sample_user".to_string())
+        .bind((&email).to_string())
+        .bind(password_hash)
+        .execute(&mut *conn)
+        .await?;
+
+        // Insert a used recovery code
+        sqlx::query(
+            r#"
+            INSERT INTO mfa_recovery_codes(code, user_id, used_at)
+            VALUES ($1, $2, now())
+            "#,
+        )
+        .bind("0".repeat(8))
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::post()
+            .uri("/v1/auth/login")
+            .set_json(Request {
+                email: email.to_string(),
+                password: password.to_string(),
+                remember_me: true,
+                code: Some("0".repeat(8)),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_form_error_response(
+            res,
+            vec![vec![
+                "code".to_string(),
+                "Invalid verification code".to_string(),
+            ]],
         )
         .await;
 
@@ -707,6 +1189,7 @@ mod tests {
                 email: email.to_string(),
                 password: password.to_string(),
                 remember_me: true,
+                code:None
             })
             .to_request();
         let post_res = test::call_service(&app, post_req).await;
@@ -767,6 +1250,7 @@ mod tests {
                 email: email.to_string(),
                 password: password.to_string(),
                 remember_me: false,
+                code: None,
             })
             .to_request();
         let post_res = test::call_service(&app, post_req).await;
@@ -813,6 +1297,7 @@ mod tests {
                 email: email.to_string(),
                 password: password.to_string(),
                 remember_me: true,
+                code: None,
             })
             .to_request();
         let post_res = test::call_service(&app, post_req).await;
@@ -869,6 +1354,7 @@ mod tests {
                 email: email.to_string(),
                 password: password.to_string(),
                 remember_me: true,
+                code: None,
             })
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -943,6 +1429,7 @@ mod tests {
                 email: email.to_string(),
                 password: password.to_string(),
                 remember_me: true,
+                code: None,
             })
             .to_request();
         let res = test::call_service(&app, req).await;

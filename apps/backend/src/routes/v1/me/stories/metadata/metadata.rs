@@ -9,6 +9,7 @@ use actix_web::{patch, web, HttpResponse};
 use actix_web_validator::Json;
 use serde::{Deserialize, Serialize};
 use sqlx::Row;
+use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Validate)]
@@ -22,8 +23,7 @@ struct Request {
     title: String,
     #[validate(length(min = 0, max = 256, message = "Invalid description length"))]
     description: Option<String>,
-    #[validate(length(min = 0, max = 128, message = "Invalid splash ID length"))]
-    splash_id: Option<String>,
+    splash_id: Option<Uuid>,
     #[validate(length(min = 0, max = 5, message = "Invalid story tags"))]
     tags: Vec<String>,
     #[validate(range(min = 1, max = 8, message = "Invalid story license"))]
@@ -46,8 +46,7 @@ struct Request {
     #[validate(url(message = "Invalid canonical URL"))]
     #[validate(length(min = 0, max = 1024, message = "Invalid canonical URL length"))]
     canonical_url: Option<String>,
-    #[validate(length(min = 0, max = 128, message = "Invalid preview image source length"))]
-    preview_image: Option<String>,
+    preview_image: Option<Uuid>,
 }
 
 #[patch("/v1/me/stories/{story_id}/metadata")]
@@ -237,7 +236,7 @@ mod tests {
     struct Metadata {
         title: String,
         description: Option<String>,
-        splash_id: Option<String>,
+        splash_id: Option<Uuid>,
         splash_hex: Option<String>,
         license: i16,
         visibility: i16,
@@ -251,13 +250,13 @@ mod tests {
         seo_title: Option<String>,
         seo_description: Option<String>,
         canonical_url: Option<String>,
-        preview_image: Option<String>,
+        preview_image: Option<Uuid>,
     }
 
-    #[sqlx::test(fixtures("story", "asset"))]
+    #[sqlx::test(fixtures("story"))]
     async fn can_update_story_metadata(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(patch, pool, true, true).await;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, true).await;
 
         // Assert initial metadata
         let result = sqlx::query_as::<_, Metadata>(
@@ -305,6 +304,24 @@ mod tests {
         assert!(result.canonical_url.is_none());
         assert!(result.preview_image.is_none());
 
+        // Insert an asset for splash and preview image
+        let asset_key = Uuid::new_v4();
+        let result = sqlx::query(
+            r#"
+            INSERT INTO assets(key, hex, height, width, user_id)
+            VALUES ($1, $2, $3, $4, $5)
+            "#,
+        )
+        .bind(&asset_key)
+        .bind("000000")
+        .bind(0)
+        .bind(0)
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
         // Update the metadata
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
@@ -312,7 +329,7 @@ mod tests {
             .set_json(Request {
                 title: "New title".to_string(),
                 description: Some("New description".to_string()),
-                splash_id: Some("sample_key".to_string()),
+                splash_id: Some(asset_key),
                 tags: vec![],
                 license: StoryLicense::CcZero as i16,
                 visibility: StoryVisibility::Unlisted as i16,
@@ -324,7 +341,7 @@ mod tests {
                 seo_title: Some("New SEO title".to_string()),
                 seo_description: Some("New SEO description".to_string()),
                 canonical_url: Some("https://storiny.com".to_string()),
-                preview_image: Some("sample_key".to_string()),
+                preview_image: Some(asset_key),
             })
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -360,7 +377,7 @@ mod tests {
 
         assert_eq!(result.title, "New title".to_string());
         assert_eq!(result.description.unwrap(), "New description".to_string());
-        assert_eq!(result.splash_id.unwrap(), "sample_key".to_string());
+        assert_eq!(result.splash_id.unwrap(), asset_key);
         assert_eq!(result.splash_hex.unwrap(), "000000".to_string());
 
         assert_eq!(result.license, StoryLicense::CcZero as i16);
@@ -381,7 +398,7 @@ mod tests {
             result.canonical_url.unwrap(),
             "https://storiny.com".to_string()
         );
-        assert_eq!(result.preview_image.unwrap(), "sample_key".to_string());
+        assert_eq!(result.preview_image.unwrap(), asset_key);
 
         Ok(())
     }
@@ -497,7 +514,7 @@ mod tests {
             .cookie(cookie.unwrap())
             .uri(&format!("/v1/me/stories/{}/metadata", 2))
             .set_json(Request {
-                splash_id: Some("invalid_key".to_string()),
+                splash_id: Some(Uuid::new_v4()),
                 title: "Untitled story".to_string(),
                 license: StoryLicense::Reserved as i16,
                 visibility: StoryVisibility::Public as i16,
@@ -522,7 +539,7 @@ mod tests {
             .cookie(cookie.unwrap())
             .uri(&format!("/v1/me/stories/{}/metadata", 2))
             .set_json(Request {
-                preview_image: Some("invalid_key".to_string()),
+                preview_image: Some(Uuid::new_v4()),
                 title: "Untitled story".to_string(),
                 license: StoryLicense::Reserved as i16,
                 visibility: StoryVisibility::Public as i16,

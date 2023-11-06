@@ -23,6 +23,7 @@ pub fn init_common_routes(cfg: &mut web::ServiceConfig) {
 pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     // Auth
     v1::auth::login::init_routes(cfg);
+    v1::auth::mfa_preflight::init_routes(cfg);
     v1::auth::signup::init_routes(cfg);
     v1::auth::reset_password::init_routes(cfg);
     v1::auth::recovery::init_routes(cfg);
@@ -116,6 +117,10 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::settings::connections::remove::init_routes(cfg);
     // Me - Settings - MFA
     v1::me::settings::mfa::generate_codes::init_routes(cfg);
+    v1::me::settings::mfa::recovery_codes::init_routes(cfg);
+    v1::me::settings::mfa::request::init_routes(cfg);
+    v1::me::settings::mfa::verify::init_routes(cfg);
+    v1::me::settings::mfa::remove::init_routes(cfg);
     // Me - Settings - Notifications
     v1::me::settings::notifications::mail::init_routes(cfg);
     v1::me::settings::notifications::site::init_routes(cfg);

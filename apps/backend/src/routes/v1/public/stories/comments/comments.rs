@@ -6,6 +6,7 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use sqlx::{types::Json, FromRow, Postgres, QueryBuilder};
 use time::OffsetDateTime;
+use uuid::Uuid;
 use validator::Validate;
 
 lazy_static! {
@@ -36,7 +37,7 @@ struct CommentUser {
     id: i64,
     name: String,
     username: String,
-    avatar_id: Option<String>,
+    avatar_id: Option<Uuid>,
     avatar_hex: Option<String>,
     public_flags: i32,
 }

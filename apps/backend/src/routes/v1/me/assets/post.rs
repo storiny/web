@@ -2,7 +2,6 @@ use crate::{
     constants::buckets::S3_UPLOADS_BUCKET,
     error::{AppError, ToastErrorResponse},
     middleware::identity::identity::Identity,
-    utils::generate_random_object_key::generate_random_object_key,
     AppState,
 };
 use actix_multipart::form::{tempfile::TempFile, text::Text, MultipartForm};
@@ -15,6 +14,7 @@ use rusoto_s3::{DeleteObjectRequest, PutObjectRequest, S3};
 use serde::{Deserialize, Serialize};
 use sqlx::Row;
 use std::io::{BufReader, Cursor, Read};
+use uuid::Uuid;
 
 static MAX_FILE_SIZE: usize = 1024 * 1024 * 10; // 10 MB
 
@@ -131,7 +131,7 @@ async fn handle_upload(
                             };
 
                             let s3_client = &data.s3_client;
-                            let object_key = generate_random_object_key();
+                            let object_key = Uuid::new_v4();
 
                             // TODO: Handle GIFs using `image` crate (requires
                             // encoder/decoder)
@@ -139,7 +139,7 @@ async fn handle_upload(
                                 match s3_client
                                     .put_object(PutObjectRequest {
                                         bucket: S3_UPLOADS_BUCKET.to_string(),
-                                        key: object_key.clone(),
+                                        key: object_key.to_string(),
                                         content_type: Some(IMAGE_GIF.to_string()),
                                         body: Some(img_bytes.into()),
                                         ..Default::default()
@@ -163,7 +163,7 @@ async fn handle_upload(
                                 match s3_client
                                     .put_object(PutObjectRequest {
                                         bucket: S3_UPLOADS_BUCKET.to_string(),
-                                        key: object_key.clone(),
+                                        key: object_key.to_string(),
                                         content_type: Some(output_mime),
                                         body: Some(bytes.into()),
                                         ..Default::default()
@@ -200,7 +200,7 @@ async fn handle_upload(
                             {
                                 Ok(asset) => Ok(HttpResponse::Created().json(Response {
                                     id: asset.get::<i64, _>("id"),
-                                    key: object_key,
+                                    key: object_key.to_string(),
                                     alt: img_alt.to_string(),
                                     hex: hex_color,
                                     width: img_w as i16,
@@ -213,7 +213,7 @@ async fn handle_upload(
                                     let _ = s3_client
                                         .delete_object(DeleteObjectRequest {
                                             bucket: S3_UPLOADS_BUCKET.to_string(),
-                                            key: object_key.clone(),
+                                            key: object_key.to_string(),
                                             ..Default::default()
                                         })
                                         .await;

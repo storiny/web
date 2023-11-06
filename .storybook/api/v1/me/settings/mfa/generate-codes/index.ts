@@ -9,12 +9,12 @@ worker.use(
         ctx.json(
           [...Array(10)].map((_, index) => ({
             used: index % 2 === 0,
-            value: `0000-0000`,
-          }))
-        )
+            value: `00000000`,
+          })),
+        ),
       );
-    }
-  )
+    },
+  ),
 );
 
 export {};

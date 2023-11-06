@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod tests {
     use sqlx::PgPool;
+    use uuid::Uuid;
 
     #[sqlx::test(fixtures("user", "story"))]
     async fn can_insert_a_document(pool: PgPool) -> sqlx::Result<()> {
@@ -11,7 +12,7 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind("some_key".to_string())
+        .bind(Uuid::new_v4())
         .bind(2_i64)
         .execute(&mut *conn)
         .await?;
@@ -43,7 +44,7 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind("some_key".to_string())
+        .bind(Uuid::new_v4())
         .bind(2_i64)
         .execute(&mut *conn)
         .await;

@@ -6,6 +6,7 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, Postgres, QueryBuilder};
 use time::OffsetDateTime;
+use uuid::Uuid;
 use validator::Validate;
 
 lazy_static! {
@@ -30,7 +31,7 @@ struct Draft {
     id: i64,
     title: String,
     description: Option<String>,
-    splash_id: Option<String>,
+    splash_id: Option<Uuid>,
     splash_hex: Option<String>,
     category: String,
     age_restriction: i16,

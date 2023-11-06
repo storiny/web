@@ -2,6 +2,7 @@ use crate::{error::AppError, AppState};
 use actix_web::{get, web, HttpResponse};
 use serde::{Deserialize, Serialize};
 use sqlx::{types::Json, FromRow};
+use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Validate)]
@@ -20,7 +21,7 @@ struct Story {
     id: i64,
     slug: String,
     title: String,
-    splash_id: Option<String>,
+    splash_id: Option<Uuid>,
     splash_hex: Option<String>,
     description: Option<String>,
     // Stats

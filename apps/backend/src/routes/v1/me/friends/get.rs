@@ -5,6 +5,7 @@ use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, Postgres, QueryBuilder};
+use uuid::Uuid;
 use validator::Validate;
 
 lazy_static! {
@@ -26,7 +27,7 @@ struct Friend {
     id: i64,
     name: String,
     username: String,
-    avatar_id: Option<String>,
+    avatar_id: Option<Uuid>,
     avatar_hex: Option<String>,
     public_flags: i32,
     // Boolean flags
