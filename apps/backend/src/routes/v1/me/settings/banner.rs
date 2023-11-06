@@ -5,17 +5,17 @@ use actix_web::{patch, web, HttpResponse};
 use actix_web_validator::Json;
 use serde::{Deserialize, Serialize};
 use sqlx::Row;
+use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
 struct Request {
-    #[validate(length(min = 0, max = 128, message = "Invalid banner ID"))]
-    banner_id: Option<String>,
+    banner_id: Option<Uuid>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Response {
-    banner_id: Option<String>,
+    banner_id: Option<Uuid>,
     banner_hex: Option<String>,
 }
 
@@ -71,7 +71,7 @@ async fn patch(
                 .await
                 {
                     Ok(row) => Ok(HttpResponse::NoContent().json(Response {
-                        banner_id: row.get::<Option<String>, _>("banner_id"),
+                        banner_id: row.get::<Option<Uuid>, _>("banner_id"),
                         banner_hex: row.get::<Option<String>, _>("banner_hex"),
                     })),
                     Err(kind) => match kind {
@@ -101,6 +101,7 @@ mod tests {
     async fn can_set_a_banner(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
+        let banner_id = Uuid::new_v4();
 
         // Insert an asset
         let result = sqlx::query(
@@ -110,7 +111,7 @@ mod tests {
             RETURNING id
             "#,
         )
-        .bind("some_key".to_string())
+        .bind(&banner_id)
         .bind("000000".to_string())
         .bind(0)
         .bind(0)
@@ -124,7 +125,7 @@ mod tests {
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/settings/banner")
             .set_json(Request {
-                banner_id: Some("some_key".to_string()),
+                banner_id: Some(banner_id),
             })
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -133,7 +134,7 @@ mod tests {
 
         let json = serde_json::from_str::<Response>(&res_to_string(res).await).unwrap();
 
-        assert_eq!(json.banner_id, Some("some_key".to_string()));
+        assert_eq!(json.banner_id, Some(banner_id));
         assert_eq!(json.banner_hex, Some("000000".to_string()));
 
         // Banner should get updated in the database
@@ -148,8 +149,8 @@ mod tests {
         .await?;
 
         assert_eq!(
-            result.get::<Option<String>, _>("banner_id").unwrap(),
-            "some_key".to_string()
+            result.get::<Option<Uuid>, _>("banner_id").unwrap(),
+            banner_id
         );
         assert_eq!(
             result.get::<Option<String>, _>("banner_hex").unwrap(),
@@ -163,6 +164,7 @@ mod tests {
     async fn can_remove_a_banner(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
+        let banner_id = Uuid::new_v4();
 
         // Set banner for the user
         let result = sqlx::query(
@@ -174,15 +176,15 @@ mod tests {
             RETURNING banner_id, banner_hex
             "#,
         )
-        .bind("some_key".to_string())
+        .bind(&banner_id)
         .bind("000000".to_string())
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
         .await?;
 
         assert_eq!(
-            result.get::<Option<String>, _>("banner_id").unwrap(),
-            "some_key".to_string()
+            result.get::<Option<Uuid>, _>("banner_id").unwrap(),
+            banner_id
         );
         assert_eq!(
             result.get::<Option<String>, _>("banner_hex").unwrap(),
@@ -215,7 +217,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(result.get::<Option<String>, _>("banner_id").is_none());
+        assert!(result.get::<Option<Uuid>, _>("banner_id").is_none());
         assert!(result.get::<Option<String>, _>("banner_hex").is_none());
 
         Ok(())
@@ -231,7 +233,7 @@ mod tests {
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/settings/banner")
             .set_json(Request {
-                banner_id: Some("invalid_key".to_string()),
+                banner_id: Some(Uuid::new_v4()),
             })
             .to_request();
         let res = test::call_service(&app, req).await;

@@ -64,6 +64,7 @@ mod tests {
     use crate::test_utils::{assert_toast_error_response, init_app_for_test};
     use actix_web::test;
     use sqlx::{PgPool, Row};
+    use uuid::Uuid;
 
     #[sqlx::test]
     async fn can_update_rating_for_an_asset(pool: PgPool) -> sqlx::Result<()> {
@@ -78,7 +79,7 @@ mod tests {
             RETURNING id, rating
             "#,
         )
-        .bind("some_key".to_string())
+        .bind(Uuid::new_v4())
         .bind("000000".to_string())
         .bind(0)
         .bind(0)

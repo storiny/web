@@ -1,12 +1,13 @@
 use serde::{Deserialize, Serialize};
 use sqlx::{types::Json, FromRow, Pool, Postgres, QueryBuilder};
+use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct User {
     id: i64,
     name: String,
     username: String,
-    avatar_id: Option<String>,
+    avatar_id: Option<Uuid>,
     avatar_hex: Option<String>,
     public_flags: i32,
 }

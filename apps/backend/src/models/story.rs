@@ -7,6 +7,7 @@ use std::string::ToString;
 use strum::{Display, IntoEnumIterator};
 use strum_macros::{EnumCount as EnumCountMacro, EnumIter};
 use time::OffsetDateTime;
+use uuid::Uuid;
 
 lazy_static! {
     pub static ref STORY_CATEGORY_VEC: Vec<String> = StoryCategory::iter()
@@ -54,7 +55,7 @@ pub struct Story {
     pub title: String,
     pub slug: Option<String>,
     pub description: Option<String>,
-    pub splash_id: Option<String>,
+    pub splash_id: Option<Uuid>,
     pub splash_hex: Option<String>,
     pub category: StoryCategory,
     pub license: StoryLicense,

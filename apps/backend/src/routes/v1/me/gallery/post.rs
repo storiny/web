@@ -1,7 +1,6 @@
 use crate::{
     constants::buckets::S3_UPLOADS_BUCKET, constants::pexels::PEXELS_API_URL, error::AppError,
-    middleware::identity::identity::Identity, models::photo::Photo,
-    utils::generate_random_object_key::generate_random_object_key, AppState,
+    middleware::identity::identity::Identity, models::photo::Photo, AppState,
 };
 use actix_web::{post, web, HttpResponse};
 use actix_web_validator::Json;
@@ -13,6 +12,7 @@ use rusoto_s3::{DeleteObjectRequest, PutObjectRequest, S3};
 use serde::{Deserialize, Serialize};
 use sqlx::Row;
 use std::{io::Cursor, time::Duration};
+use uuid::Uuid;
 use validator::Validate;
 
 static MAX_FILE_SIZE: u64 = 1024 * 1024 * 25; // 25 MB
@@ -141,7 +141,7 @@ async fn post(
                                                 };
 
                                                 let s3_client = &data.s3_client;
-                                                let object_key = generate_random_object_key();
+                                                let object_key = Uuid::new_v4();
 
                                                 let mut bytes: Vec<u8> = Vec::new();
                                                 img.write_to(
@@ -153,7 +153,7 @@ async fn post(
                                                 match s3_client
                                                     .put_object(PutObjectRequest {
                                                         bucket: S3_UPLOADS_BUCKET.to_string(),
-                                                        key: object_key.clone(),
+                                                        key: object_key.to_string(),
                                                         content_type: Some(IMAGE_JPEG.to_string()),
                                                         body: Some(bytes.into()),
                                                         ..Default::default()
@@ -196,7 +196,7 @@ async fn post(
                                                     Ok(asset) => {
                                                         Ok(HttpResponse::Created().json(Response {
                                                             id: asset.get::<i64, _>("id"),
-                                                            key: object_key,
+                                                            key: object_key.to_string(),
                                                             alt: img_alt.to_string(),
                                                             hex: hex_color,
                                                             width: img_w as i16,
@@ -211,7 +211,7 @@ async fn post(
                                                             .delete_object(DeleteObjectRequest {
                                                                 bucket: S3_UPLOADS_BUCKET
                                                                     .to_string(),
-                                                                key: object_key.clone(),
+                                                                key: object_key.to_string(),
                                                                 ..Default::default()
                                                             })
                                                             .await;

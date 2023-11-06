@@ -20,8 +20,8 @@ CREATE TABLE IF NOT EXISTS users
 		CONSTRAINT location_length CHECK (CHAR_LENGTH(location) <= 36),
 	wpm                       SMALLINT       NOT NULL DEFAULT 225
 		CONSTRAINT wpm_size CHECK (wpm <= 320 AND wpm >= 70),
-	avatar_id                 asset_key,
-	banner_id                 asset_key,
+	avatar_id                 UUID,
+	banner_id                 UUID,
 	avatar_hex                hex_color,
 	banner_hex                hex_color,
 	public_flags              unsigned_int32 NOT NULL DEFAULT 0,
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS users
 	following_list_visibility SMALLINT       NOT NULL DEFAULT 1, -- 1 (everyone) by default
 	friend_list_visibility    SMALLINT       NOT NULL DEFAULT 1, -- 1 (everyone) by default
 	disable_read_history      BOOL           NOT NULL DEFAULT FALSE,
-	allow_sensitive_content BOOL NOT NULL DEFAULT FALSE,
+	allow_sensitive_content   BOOL           NOT NULL DEFAULT FALSE,
 	-- Third-party login credentials
 	login_apple_id            TEXT
 		CONSTRAINT login_apple_id_length CHECK (CHAR_LENGTH(login_apple_id) <= 256),
@@ -52,7 +52,10 @@ CREATE TABLE IF NOT EXISTS users
 	deleted_at                TIMESTAMPTZ,
 	-- FTS
 	search_vec                TSVECTOR GENERATED ALWAYS AS (SETWEIGHT(TO_TSVECTOR('english', "username"), 'A') ||
-															SETWEIGHT(TO_TSVECTOR('english', "name"), 'B')) STORED
+															SETWEIGHT(TO_TSVECTOR('english', "name"), 'B')) STORED,
+	-- Foreign keys
+	FOREIGN KEY (avatar_id, avatar_hex) REFERENCES assets (key, hex) ON UPDATE CASCADE ON DELETE SET NULL,
+	FOREIGN KEY (banner_id, banner_hex) REFERENCES assets (key, hex) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
 CREATE INDEX follower_count_on_users ON users (follower_count);

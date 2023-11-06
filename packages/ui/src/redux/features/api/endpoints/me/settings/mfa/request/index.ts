@@ -14,7 +14,7 @@ export const { useRequestMfaMutation: use_request_mfa_mutation } =
       requestMfa: builder.mutation<RequestMFAResponse, void>({
         query: () => ({
           url: `/${SEGMENT}`,
-          method: "GET"
+          method: "POST"
         })
       })
     })

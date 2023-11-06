@@ -6,6 +6,7 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use sqlx::{types::Json, FromRow, Postgres, QueryBuilder};
 use time::OffsetDateTime;
+use uuid::Uuid;
 use validator::Validate;
 
 lazy_static! {
@@ -34,7 +35,7 @@ struct Story {
     id: i64,
     slug: String,
     title: String,
-    splash_id: Option<String>,
+    splash_id: Option<Uuid>,
     splash_hex: Option<String>,
     user_id: i64,
     // Joins

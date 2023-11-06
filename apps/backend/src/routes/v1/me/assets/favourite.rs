@@ -90,6 +90,7 @@ mod tests {
     use actix_web::{services, test};
     use sqlx::{PgPool, Row};
     use time::OffsetDateTime;
+    use uuid::Uuid;
 
     #[sqlx::test]
     async fn can_favourite_and_unfavourite_an_asset(pool: PgPool) -> sqlx::Result<()> {
@@ -105,7 +106,7 @@ mod tests {
             RETURNING id, favourited_at
             "#,
         )
-        .bind("some_key".to_string())
+        .bind(Uuid::new_v4())
         .bind("000000".to_string())
         .bind(0)
         .bind(0)
@@ -215,7 +216,7 @@ mod tests {
             RETURNING id, favourited_at
             "#,
         )
-        .bind("some_key".to_string())
+        .bind(Uuid::new_v4())
         .bind("000000".to_string())
         .bind(0)
         .bind(0)

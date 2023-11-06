@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::postgres::PgRow;
 use sqlx::{FromRow, Row};
 use time::OffsetDateTime;
+use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Status {
@@ -23,9 +24,9 @@ struct User {
     bio: String,
     wpm: i16,
     location: String,
-    avatar_id: Option<String>,
+    avatar_id: Option<Uuid>,
     avatar_hex: Option<String>,
-    banner_id: Option<String>,
+    banner_id: Option<Uuid>,
     banner_hex: Option<String>,
     allow_sensitive_content: bool,
     public_flags: i32,

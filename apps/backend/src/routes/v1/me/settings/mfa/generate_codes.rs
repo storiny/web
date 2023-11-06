@@ -1,43 +1,12 @@
+use crate::utils::generate_recovery_codes::generate_recovery_codes;
 use crate::{
     error::{AppError, ToastErrorResponse},
     middleware::identity::identity::Identity,
     AppState,
 };
 use actix_web::{post, web, HttpResponse};
-use nanoid::nanoid;
 use serde::{Deserialize, Serialize};
 use sqlx::Row;
-
-static RECOVERY_CODE_LENGTH: usize = 8;
-
-/// Generates a unique set of 10 random 8-character recovery codes.
-fn generate_recovery_codes() -> Result<[String; 10], ()> {
-    let character_set: [char; 16] = [
-        '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'a', 'b', 'c', 'd', 'e', 'f',
-    ];
-    let mut recovery_codes: Vec<String> = vec![];
-
-    // Generate recovery codes.
-    while recovery_codes.len() < 10 {
-        let mut next_recovery_code = nanoid!(RECOVERY_CODE_LENGTH, &character_set).to_string();
-        let mut generate_attempts = 0;
-
-        // Make sure the recovery code is unique in the set.
-        while recovery_codes.contains(&next_recovery_code) {
-            // This case should be rare.
-            if generate_attempts >= 100 {
-                return Err(());
-            }
-
-            generate_attempts = generate_attempts + 1;
-            next_recovery_code = nanoid!(RECOVERY_CODE_LENGTH, &character_set).to_string();
-        }
-
-        recovery_codes.push(next_recovery_code);
-    }
-
-    recovery_codes.try_into().map_err(|_| ())
-}
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Response {
@@ -49,19 +18,28 @@ struct Response {
 async fn post(data: web::Data<AppState>, user: Identity) -> Result<HttpResponse, AppError> {
     match user.id() {
         Ok(user_id) => {
+            let pg_pool = &data.db_pool;
+            let mut txn = pg_pool.begin().await?;
+
             let db_user = sqlx::query(
                 r#"
-                SELECT password FROM users
+                SELECT mfa_enabled, password FROM users
                 WHERE id = $1
                 "#,
             )
             .bind(user_id)
-            .fetch_one(&data.db_pool)
+            .fetch_one(&mut *txn)
             .await?;
 
             if db_user.get::<Option<String>, _>("password").is_none() {
                 return Ok(HttpResponse::BadRequest()
                     .body("You need to set a password to generate recovery codes"));
+            }
+
+            if !db_user.get::<bool, _>("mfa_enabled") {
+                return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
+                    "2-factor authentication is not enabled for your account".to_string(),
+                )));
             }
 
             match generate_recovery_codes() {
@@ -82,7 +60,7 @@ async fn post(data: web::Data<AppState>, user: Identity) -> Result<HttpResponse,
                     )
                     .bind(user_id)
                     .bind(&new_recovery_codes[..])
-                    .execute(&data.db_pool)
+                    .execute(&mut *txn)
                     .await?
                     .rows_affected()
                     {
@@ -91,12 +69,16 @@ async fn post(data: web::Data<AppState>, user: Identity) -> Result<HttpResponse,
                                 "Unable to generate recovery codes".to_string(),
                             )),
                         ),
-                        _ => Ok(HttpResponse::Created().json(new_recovery_codes.map(|code| {
-                            Response {
-                                used: false,
-                                value: code,
-                            }
-                        }))),
+                        _ => {
+                            txn.commit().await?;
+
+                            Ok(HttpResponse::Created().json(new_recovery_codes.map(|code| {
+                                Response {
+                                    used: false,
+                                    value: code,
+                                }
+                            })))
+                        }
                     }
                 }
                 Err(_) => Ok(
@@ -117,7 +99,9 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_response_body_text, init_app_for_test, res_to_string};
+    use crate::test_utils::{
+        assert_response_body_text, assert_toast_error_response, init_app_for_test, res_to_string,
+    };
     use actix_web::test;
     use sqlx::{PgPool, Row};
 
@@ -129,8 +113,8 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password)
-            VALUES ($1, $2, $3, $4, $5)
+            INSERT INTO users(id, name, username, email, password, mfa_enabled)
+            VALUES ($1, $2, $3, $4, $5, TRUE)
             "#,
         )
         .bind(user_id.unwrap())
@@ -157,6 +141,19 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 10);
 
+        // Should insert recovery codes into the database
+        let result = sqlx::query(
+            r#"
+            SELECT * FROM mfa_recovery_codes
+            WHERE user_id = $1
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .fetch_all(&mut *conn)
+        .await?;
+
+        assert_eq!(result.len(), 10);
+
         Ok(())
     }
 
@@ -168,8 +165,8 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password)
-            VALUES ($1, $2, $3, $4, $5)
+            INSERT INTO users(id, name, username, email, password, mfa_enabled)
+            VALUES ($1, $2, $3, $4, $5, TRUE)
             "#,
         )
         .bind(user_id.unwrap())
@@ -189,7 +186,7 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind("0".repeat(RECOVERY_CODE_LENGTH))
+        .bind("0".repeat(8))
         .bind(user_id.unwrap())
         .execute(&mut *conn)
         .await?;
@@ -219,7 +216,7 @@ mod tests {
             )
             "#,
         )
-        .bind("0".repeat(RECOVERY_CODE_LENGTH))
+        .bind("0".repeat(8))
         .fetch_one(&mut *conn)
         .await?;
 
@@ -243,6 +240,46 @@ mod tests {
         assert!(res.status().is_client_error());
         assert_response_body_text(res, "You need to set a password to generate recovery codes")
             .await;
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_generate_recovery_codes_request_for_a_user_with_mfa_disabled(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true).await;
+
+        // Insert the user
+        let result = sqlx::query(
+            r#"
+            INSERT INTO users(id, name, username, email, password, mfa_enabled)
+            VALUES ($1, $2, $3, $4, $5, FALSE)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind("Sample user")
+        .bind("sample_user")
+        .bind("sample@example.com")
+        .bind("sample_hashed_password")
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/settings/mfa/generate-codes")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(
+            res,
+            "2-factor authentication is not enabled for your account",
+        )
+        .await;
 
         Ok(())
     }
