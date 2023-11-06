@@ -33,9 +33,8 @@ async fn delete(
                 .await?
                 .rows_affected()
                 {
-                    0 => Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                        "Friend request not found".to_string(),
-                    ))),
+                    0 => Ok(HttpResponse::BadRequest()
+                        .json(ToastErrorResponse::new("Friend request not found"))),
                     _ => Ok(HttpResponse::NoContent().finish()),
                 }
             }

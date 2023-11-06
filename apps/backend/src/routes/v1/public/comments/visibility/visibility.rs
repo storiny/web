@@ -57,7 +57,7 @@ async fn post(
                 .rows_affected()
                 {
                     0 => Ok(HttpResponse::BadRequest()
-                        .json(ToastErrorResponse::new("Comment not found".to_string()))),
+                        .json(ToastErrorResponse::new("Comment not found"))),
                     _ => Ok(HttpResponse::NoContent().finish()),
                 }
             }

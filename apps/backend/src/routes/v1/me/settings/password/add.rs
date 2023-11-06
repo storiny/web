@@ -44,9 +44,8 @@ async fn post(
             let user_password = db_user.get::<Option<String>, _>("password");
 
             if user_password.is_some() {
-                return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                    "You have already set a password".to_string(),
-                )));
+                return Ok(HttpResponse::BadRequest()
+                    .json(ToastErrorResponse::new("You have already set a password")));
             }
 
             match sqlx::query(
@@ -75,7 +74,7 @@ async fn post(
                                     if expires_at < OffsetDateTime::now_utc() {
                                         return Ok(HttpResponse::BadRequest().json(
                                             ToastErrorResponse::new(
-                                                "Verification code has expired".to_string(),
+                                                "Verification code has expired",
                                             ),
                                         ));
                                     }
@@ -141,20 +140,16 @@ async fn post(
                                         Err(_) => Ok(HttpResponse::InternalServerError().finish()),
                                     }
                                 }
-                                Err(_) => {
-                                    Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                                        "Invalid verification code".to_string(),
-                                    )))
-                                }
+                                Err(_) => Ok(HttpResponse::BadRequest()
+                                    .json(ToastErrorResponse::new("Invalid verification code"))),
                             }
                         }
                         Err(_) => Ok(HttpResponse::InternalServerError().finish()),
                     }
                 }
                 Err(kind) => match kind {
-                    sqlx::Error::RowNotFound => Ok(HttpResponse::BadRequest().json(
-                        ToastErrorResponse::new("Invalid verification code".to_string()),
-                    )),
+                    sqlx::Error::RowNotFound => Ok(HttpResponse::BadRequest()
+                        .json(ToastErrorResponse::new("Invalid verification code"))),
                     _ => Ok(HttpResponse::InternalServerError().finish()),
                 },
             }

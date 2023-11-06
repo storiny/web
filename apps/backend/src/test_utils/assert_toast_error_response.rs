@@ -9,8 +9,7 @@ use actix_web::dev::ServiceResponse;
 pub async fn assert_toast_error_response(res: ServiceResponse, err_message: &str) {
     assert_response_body_text(
         res,
-        &serde_json::to_string(&ToastErrorResponse::new(err_message.to_string()))
-            .unwrap_or_default(),
+        &serde_json::to_string(&ToastErrorResponse::new(err_message)).unwrap_or_default(),
     )
     .await;
 }

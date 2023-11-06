@@ -54,15 +54,15 @@ async fn post(
 ) -> Result<HttpResponse, AppError> {
     // Return if the user maintains a valid session
     if user.is_some() {
-        return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-            "You are already logged-in".to_string(),
-        )));
+        return Ok(
+            HttpResponse::BadRequest().json(ToastErrorResponse::new("You are already logged-in"))
+        );
     }
 
-    let mut form_errors: Vec<Vec<String>> = vec![];
+    let mut form_errors: Vec<(&str, &str)> = vec![];
 
     if !EmailAddress::is_valid(&payload.email) {
-        form_errors.push(vec!["email".to_string(), "Invalid e-mail".to_string()]);
+        form_errors.push(("email", "Invalid e-mail"));
     } else {
         // Check for duplicate e-mail
         let email_check = sqlx::query(
@@ -78,10 +78,7 @@ async fn post(
         .await?;
 
         if email_check.get::<bool, _>("exists") {
-            form_errors.push(vec![
-                "email".to_string(),
-                "This e-mail is already in use".to_string(),
-            ]);
+            form_errors.push(("email", "This e-mail is already in use"));
         }
     }
 
@@ -89,10 +86,7 @@ async fn post(
 
     // Chekc if username is reserved
     if RESERVED_USERNAMES.contains(&slugged_username.as_str()) {
-        form_errors.push(vec![
-            "username".to_string(),
-            "This username is not available".to_string(),
-        ]);
+        form_errors.push(("username", "This username is not available"));
     } else {
         // Check for duplicate username
         let username_check = sqlx::query(
@@ -108,10 +102,7 @@ async fn post(
         .await?;
 
         if username_check.get::<bool, _>("exists") {
-            form_errors.push(vec![
-                "username".to_string(),
-                "This username is already in use".to_string(),
-            ]);
+            form_errors.push(("username", "This username is already in use"));
         }
     }
 
@@ -309,14 +300,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_form_error_response(
-            res,
-            vec![vec![
-                "email".to_string(),
-                "This e-mail is already in use".to_string(),
-            ]],
-        )
-        .await;
+        assert_form_error_response(res, vec![("email", "This e-mail is already in use")]).await;
 
         Ok(())
     }
@@ -352,14 +336,8 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_form_error_response(
-            res,
-            vec![vec![
-                "username".to_string(),
-                "This username is already in use".to_string(),
-            ]],
-        )
-        .await;
+        assert_form_error_response(res, vec![("username", "This username is already in use")])
+            .await;
 
         Ok(())
     }
@@ -381,14 +359,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_form_error_response(
-            res,
-            vec![vec![
-                "username".to_string(),
-                "This username is not available".to_string(),
-            ]],
-        )
-        .await;
+        assert_form_error_response(res, vec![("username", "This username is not available")]).await;
 
         Ok(())
     }

@@ -45,7 +45,7 @@ async fn post(
 
             if user_password.is_none() {
                 return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                    "You need to set a password to remove your login accounts".to_string(),
+                    "You need to set a password to remove your login accounts",
                 )));
             }
 
@@ -104,7 +104,7 @@ async fn post(
                             Ok(HttpResponse::NoContent().finish())
                         }
                         Err(_) => Ok(HttpResponse::Forbidden()
-                            .json(ToastErrorResponse::new("Invalid password".to_string()))),
+                            .json(ToastErrorResponse::new("Invalid password"))),
                     }
                 }
                 Err(_) => Ok(HttpResponse::InternalServerError().finish()),

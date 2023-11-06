@@ -37,9 +37,8 @@ async fn post(
             let user_password = db_user.get::<Option<String>, _>("password");
 
             if user_password.is_none() {
-                return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                    "You have not set a password yet".to_string(),
-                )));
+                return Ok(HttpResponse::BadRequest()
+                    .json(ToastErrorResponse::new("You have not set a password yet")));
             }
 
             match PasswordHash::new(&user_password.unwrap()) {
@@ -72,7 +71,7 @@ async fn post(
                             }
                         }
                         Err(_) => Ok(HttpResponse::Forbidden()
-                            .json(ToastErrorResponse::new("Invalid password".to_string()))),
+                            .json(ToastErrorResponse::new("Invalid password"))),
                     }
                 }
                 Err(_) => Ok(HttpResponse::InternalServerError().finish()),

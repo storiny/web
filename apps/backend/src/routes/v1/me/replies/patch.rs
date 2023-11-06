@@ -25,37 +25,39 @@ async fn patch(
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
     match user.id() {
-        Ok(user_id) => match path.reply_id.parse::<i64>() {
-            Ok(reply_id) => {
-                let content = payload.content.trim();
-                let rendered_content = if content.is_empty() {
-                    "".to_string()
-                } else {
-                    md_to_html(MarkdownSource::Response(content))
-                };
+        Ok(user_id) => {
+            match path.reply_id.parse::<i64>() {
+                Ok(reply_id) => {
+                    let content = payload.content.trim();
+                    let rendered_content = if content.is_empty() {
+                        "".to_string()
+                    } else {
+                        md_to_html(MarkdownSource::Response(content))
+                    };
 
-                match sqlx::query(
-                    r#"
+                    match sqlx::query(
+                        r#"
                     UPDATE replies
                     SET content = $1, rendered_content = $2, edited_at = now()
                     WHERE user_id = $3 AND id = $4 AND deleted_at IS NULL
                     "#,
-                )
-                .bind(content)
-                .bind(rendered_content)
-                .bind(user_id)
-                .bind(reply_id)
-                .execute(&data.db_pool)
-                .await?
-                .rows_affected()
-                {
-                    0 => Ok(HttpResponse::BadRequest()
-                        .json(ToastErrorResponse::new("Reply not found".to_string()))),
-                    _ => Ok(HttpResponse::NoContent().finish()),
+                    )
+                    .bind(content)
+                    .bind(rendered_content)
+                    .bind(user_id)
+                    .bind(reply_id)
+                    .execute(&data.db_pool)
+                    .await?
+                    .rows_affected()
+                    {
+                        0 => Ok(HttpResponse::BadRequest()
+                            .json(ToastErrorResponse::new("Reply not found"))),
+                        _ => Ok(HttpResponse::NoContent().finish()),
+                    }
                 }
+                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid reply ID")),
             }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid reply ID")),
-        },
+        }
         Err(_) => Ok(HttpResponse::InternalServerError().finish()),
     }
 }

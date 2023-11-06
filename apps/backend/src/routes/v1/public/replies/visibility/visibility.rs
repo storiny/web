@@ -26,10 +26,11 @@ async fn post(
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
     match user.id() {
-        Ok(user_id) => match path.reply_id.parse::<i64>() {
-            Ok(reply_id) => {
-                match sqlx::query(
-                    r#"
+        Ok(user_id) => {
+            match path.reply_id.parse::<i64>() {
+                Ok(reply_id) => {
+                    match sqlx::query(
+                        r#"
                     WITH
                         comment AS (SELECT
                                       id
@@ -47,21 +48,22 @@ async fn post(
                       AND comment_id = (SELECT id FROM comment)
                       AND deleted_at IS NULL
                     "#,
-                )
-                .bind(user_id)
-                .bind(reply_id)
-                .bind(&payload.hidden)
-                .execute(&data.db_pool)
-                .await?
-                .rows_affected()
-                {
-                    0 => Ok(HttpResponse::BadRequest()
-                        .json(ToastErrorResponse::new("Reply not found".to_string()))),
-                    _ => Ok(HttpResponse::NoContent().finish()),
+                    )
+                    .bind(user_id)
+                    .bind(reply_id)
+                    .bind(&payload.hidden)
+                    .execute(&data.db_pool)
+                    .await?
+                    .rows_affected()
+                    {
+                        0 => Ok(HttpResponse::BadRequest()
+                            .json(ToastErrorResponse::new("Reply not found"))),
+                        _ => Ok(HttpResponse::NoContent().finish()),
+                    }
                 }
+                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid reply ID")),
             }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid reply ID")),
-        },
+        }
         Err(_) => Ok(HttpResponse::InternalServerError().finish()),
     }
 }

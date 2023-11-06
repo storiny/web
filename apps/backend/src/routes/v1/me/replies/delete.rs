@@ -16,27 +16,29 @@ async fn delete(
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
     match user.id() {
-        Ok(user_id) => match path.reply_id.parse::<i64>() {
-            Ok(reply_id) => {
-                match sqlx::query(
-                    r#"
+        Ok(user_id) => {
+            match path.reply_id.parse::<i64>() {
+                Ok(reply_id) => {
+                    match sqlx::query(
+                        r#"
                     DELETE FROM replies
                     WHERE user_id = $1 AND id = $2
                     "#,
-                )
-                .bind(user_id)
-                .bind(reply_id)
-                .execute(&data.db_pool)
-                .await?
-                .rows_affected()
-                {
-                    0 => Ok(HttpResponse::BadRequest()
-                        .json(ToastErrorResponse::new("Reply not found".to_string()))),
-                    _ => Ok(HttpResponse::NoContent().finish()),
+                    )
+                    .bind(user_id)
+                    .bind(reply_id)
+                    .execute(&data.db_pool)
+                    .await?
+                    .rows_affected()
+                    {
+                        0 => Ok(HttpResponse::BadRequest()
+                            .json(ToastErrorResponse::new("Reply not found"))),
+                        _ => Ok(HttpResponse::NoContent().finish()),
+                    }
                 }
+                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid reply ID")),
             }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid reply ID")),
-        },
+        }
         Err(_) => Ok(HttpResponse::InternalServerError().finish()),
     }
 }

@@ -44,7 +44,7 @@ async fn patch(
 
             if user_password.is_none() {
                 return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                    "You need to set a password to change your username".to_string(),
+                    "You need to set a password to change your username",
                 )));
             }
 
@@ -90,11 +90,10 @@ async fn patch(
                                             // Check whether the new username is already in use
                                             sqlx::error::ErrorKind::UniqueViolation => {
                                                 Ok(HttpResponse::Conflict().json(
-                                                    FormErrorResponse::new(vec![vec![
-                                                        "new_username".to_string(),
-                                                        "This username is already in use"
-                                                            .to_string(),
-                                                    ]]),
+                                                    FormErrorResponse::new(vec![(
+                                                        "new_username",
+                                                        "This username is already in use",
+                                                    )]),
                                                 ))
                                             }
                                             _ => {
@@ -103,11 +102,12 @@ async fn patch(
                                                     == SqlState::UsernameCooldown.to_string()
                                                 {
                                                     Ok(HttpResponse::TooManyRequests().json(
-                                                        FormErrorResponse::new(vec![vec![
-                                                            "new_username".to_string(),
-                                                            "You can only change your username once a month"
-                                                                .to_string(),
-                                                        ]]),
+                                                        FormErrorResponse::new(vec![
+                                                                (
+                                                                    "new_username",
+                                                                    "You can only change your username once a month"
+                                                                )
+                                                        ]),
                                                     ))
                                                 } else {
                                                     Ok(HttpResponse::InternalServerError().finish())
@@ -121,12 +121,10 @@ async fn patch(
                             }
                         }
                         Err(_) => {
-                            Ok(
-                                HttpResponse::Forbidden().json(FormErrorResponse::new(vec![vec![
-                                    "current_password".to_string(),
-                                    "Invalid password".to_string(),
-                                ]])),
-                            )
+                            Ok(HttpResponse::Forbidden().json(FormErrorResponse::new(vec![(
+                                "current_password",
+                                "Invalid password",
+                            )])))
                         }
                     }
                 }
@@ -299,14 +297,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_form_error_response(
-            res,
-            vec![vec![
-                "current_password".to_string(),
-                "Invalid password".to_string(),
-            ]],
-        )
-        .await;
+        assert_form_error_response(res, vec![("current_password", "Invalid password")]).await;
 
         Ok(())
     }
@@ -363,10 +354,7 @@ mod tests {
         assert!(res.status().is_client_error());
         assert_form_error_response(
             res,
-            vec![vec![
-                "new_username".to_string(),
-                "This username is already in use".to_string(),
-            ]],
+            vec![("new_username", "This username is already in use")],
         )
         .await;
 
@@ -425,10 +413,10 @@ mod tests {
         assert!(res.status().is_client_error());
         assert_form_error_response(
             res,
-            vec![vec![
-                "new_username".to_string(),
-                "You can only change your username once a month".to_string(),
-            ]],
+            vec![(
+                "new_username",
+                "You can only change your username once a month",
+            )],
         )
         .await;
 
