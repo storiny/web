@@ -2,29 +2,17 @@ use crate::{
     error::Error,
     spec::EmbedType,
     utils::{
-        decompress_url,
-        fetch_embed,
-        get_metadata,
-        parse_html,
-        resolve_provider,
-        ConsumerRequest,
-        ParseResult,
+        decompress_url::decompress_url,
+        fetch_embed::{fetch_embed, ConsumerRequest},
+        get_metadata::get_metadata,
+        parse_html::{parse_html, ParseResult},
+        resolve_provider::resolve_provider,
     },
-    IframeTemplate,
-    PhotoTemplate,
+    IframeTemplate, PhotoTemplate,
 };
-use actix_web::{
-    get,
-    http::header::ContentType,
-    web,
-    HttpResponse,
-    Responder,
-};
+use actix_web::{get, http::header::ContentType, web, HttpResponse, Responder};
 use sailfish::TemplateOnce;
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use serde::{Deserialize, Serialize};
 use url::Url;
 
 /// Embed endpoint query params
@@ -68,9 +56,7 @@ async fn respond_with_metadata(url: &str) -> HttpResponse {
     let metadata = get_metadata(url, false).await;
 
     if let Ok(metadata) = metadata {
-        HttpResponse::Ok()
-
-            .json(metadata)
+        HttpResponse::Ok().json(metadata)
     } else {
         HttpResponse::UnprocessableEntity()
             .content_type(ContentType::plaintext())
@@ -203,9 +189,7 @@ async fn get(
                                     &provider.iframe_attrs,
                                     &provider.supports_binary_theme,
                                 ) {
-                                    None => HttpResponse::Ok()
-
-                                        .json(&json),
+                                    None => HttpResponse::Ok().json(&json),
                                     Some(parsed) => {
                                         match parsed {
                                             ParseResult::IframeResult(result) => {
@@ -248,9 +232,7 @@ async fn get(
                                             }
                                             ParseResult::ScriptResult(result) => {
                                                 // Handle responses without iframes
-                                                HttpResponse::Ok()
-
-                                                    .json(&result)
+                                                HttpResponse::Ok().json(&result)
                                             }
                                         }
                                     }

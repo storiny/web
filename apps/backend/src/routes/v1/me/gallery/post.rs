@@ -51,7 +51,7 @@ async fn post(
         Ok(user_id) => match payload.id.parse::<i64>() {
             Ok(photo_id) => {
                 let reqwest_client = &data.reqwest_client;
-                let api_key = (&data.pexels_api_key).to_owned();
+                let api_key = &data.config.pexels_api_key.to_string();
 
                 match reqwest_client
                     .get(format!("{}/{}/{}", PEXELS_API_URL, "v1/photos", photo_id))

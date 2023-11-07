@@ -1,8 +1,10 @@
 use crate::{
+    config::Config,
     middleware::{
         identity::{identity::Identity, middleware::IdentityMiddleware},
         session::{middleware::SessionMiddleware, storage::RedisSessionStore},
     },
+    oauth::get_oauth_client_map,
     AppState,
 };
 use actix_http::{HttpMessage, Request};
@@ -16,7 +18,6 @@ use rusoto_s3::S3Client;
 use rusoto_ses::SesClient;
 use rusoto_signature::Region;
 use sqlx::PgPool;
-use std::env;
 use user_agent_parser::UserAgentParser;
 
 // Private login route
@@ -43,90 +44,92 @@ pub async fn init_app_for_test(
     Option<Cookie<'static>>,
     Option<i64>, // User ID
 ) {
-    let redis_host = env::var("REDIS_HOST").unwrap_or("localhost".to_string());
-    let redis_port = env::var("REDIS_PORT").unwrap_or("7001".to_string());
-    let redis_connection_string = format!("redis://{redis_host}:{redis_port}");
-    let secret_key = Key::generate();
-    let redis_store = RedisSessionStore::new(&redis_connection_string)
-        .await
-        .unwrap();
+    match envy::from_env::<Config>() {
+        Ok(config) => {
+            let redis_connection_string =
+                format!("redis://{}:{}", config.redis_host, config.redis_port);
+            let secret_key = Key::generate();
+            let redis_store = RedisSessionStore::new(&redis_connection_string)
+                .await
+                .unwrap();
 
-    // GeoIP service
-    let geo_db = maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();
+            // GeoIP service
+            let geo_db = maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();
 
-    // User-agent parser
-    let ua_parser = UserAgentParser::from_path("./data/ua_parser/regexes.yaml")
-        .expect("Cannot build user-agent parser");
+            // User-agent parser
+            let ua_parser = UserAgentParser::from_path("./data/ua_parser/regexes.yaml")
+                .expect("Cannot build user-agent parser");
 
-    // Pexels
-    let pexels_api_key = env::var("PEXELS_API_KEY").expect("Pexels API key not set");
-
-    let service = test::init_service(
-        App::new()
-            .wrap(IdentityMiddleware::default())
-            .wrap(
-                SessionMiddleware::builder(redis_store.clone(), secret_key.clone())
-                    .cookie_name("_storiny_sess".into())
-                    .cookie_same_site(SameSite::None)
-                    .cookie_domain("storiny.com".into())
-                    .cookie_path("/".to_string())
-                    .cookie_max_age(Duration::weeks(1))
-                    .cookie_secure(true)
-                    .cookie_http_only(true)
-                    .build(),
+            let service = test::init_service(
+                App::new()
+                    .wrap(IdentityMiddleware::default())
+                    .wrap(
+                        SessionMiddleware::builder(redis_store.clone(), secret_key.clone())
+                            .cookie_name("_storiny_sess".into())
+                            .cookie_same_site(SameSite::None)
+                            .cookie_domain("storiny.com".into())
+                            .cookie_path("/".to_string())
+                            .cookie_max_age(Duration::weeks(1))
+                            .cookie_secure(true)
+                            .cookie_http_only(true)
+                            .build(),
+                    )
+                    .app_data(web::Data::new(AppState {
+                        config,
+                        redis: None,
+                        db_pool: db_pool.clone(),
+                        geo_db,
+                        ua_parser,
+                        ses_client: SesClient::new_with(
+                            MockRequestDispatcher::default(),
+                            MockCredentialsProvider,
+                            Region::UsEast1,
+                        ),
+                        s3_client: S3Client::new_with(
+                            MockRequestDispatcher::default(),
+                            MockCredentialsProvider,
+                            Region::UsEast1,
+                        ),
+                        reqwest_client: reqwest::Client::new(),
+                        oauth_client_map: get_oauth_client_map(),
+                    }))
+                    .service(post)
+                    .service(service_factory),
             )
-            .app_data(web::Data::new(AppState {
-                redis: None,
-                db_pool: db_pool.clone(),
-                geo_db,
-                ua_parser,
-                ses_client: SesClient::new_with(
-                    MockRequestDispatcher::default(),
-                    MockCredentialsProvider,
-                    Region::UsEast1,
-                ),
-                s3_client: S3Client::new_with(
-                    MockRequestDispatcher::default(),
-                    MockCredentialsProvider,
-                    Region::UsEast1,
-                ),
-                reqwest_client: reqwest::Client::new(),
-                pexels_api_key: pexels_api_key.to_owned(),
-            }))
-            .service(post)
-            .service(service_factory),
-    )
-    .await;
+            .await;
 
-    if logged_in {
-        if !skip_inserting_user {
-            // Insert the user
-            sqlx::query(
-                r#"
-                    INSERT INTO users(id, name, username, email)
-                    VALUES ($1, $2, $3, $4)
-                    "#,
-            )
-            .bind(1_i64)
-            .bind("Some user".to_string())
-            .bind("some_user".to_string())
-            .bind("someone@example.com".to_string())
-            .execute(&db_pool)
-            .await
-            .unwrap();
+            if logged_in {
+                if !skip_inserting_user {
+                    // Insert the user
+                    sqlx::query(
+                        r#"
+                        INSERT INTO users(id, name, username, email)
+                        VALUES ($1, $2, $3, $4)
+                        "#,
+                    )
+                    .bind(1_i64)
+                    .bind("Some user".to_string())
+                    .bind("some_user".to_string())
+                    .bind("someone@example.com".to_string())
+                    .execute(&db_pool)
+                    .await
+                    .unwrap();
+                }
+
+                // Log the user in
+                let req = test::TestRequest::post().uri("/__login__").to_request();
+                let res = test::call_service(&service, req).await;
+                let cookie = res
+                    .response()
+                    .cookies()
+                    .find(|cookie| cookie.name() == "_storiny_sess")
+                    .unwrap();
+
+                return (service, Some(cookie.into_owned()), Some(1_i64));
+            }
+
+            (service, None, None)
         }
-
-        // Log the user in
-        let req = test::TestRequest::post().uri("/__login__").to_request();
-        let res = test::call_service(&service, req).await;
-        let cookie = res
-            .response()
-            .cookies()
-            .find(|cookie| cookie.name() == "_storiny_sess")
-            .unwrap();
-
-        return (service, Some(cookie.into_owned()), Some(1_i64));
+        Err(error) => eprintln!("Environment configuration error: {:#?}", error),
     }
-
-    (service, None, None)
 }

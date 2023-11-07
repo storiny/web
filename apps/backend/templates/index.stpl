@@ -6,6 +6,13 @@
     <meta content="initial-scale=1,width=device-width,shrink-to-fit=no" name="viewport">
     <meta content="noindex,nofollow" name="robots">
     <style>
+        @font-face {
+          font-family: satoshi;
+          font-weight: 100 900;
+          font-style: normal;
+          src: url("https://cdn.storiny.com/web-assets/raw/fonts/satoshi.woff") format("woff2");
+        }
+
         html,
         body {
             color-scheme: dark;
@@ -41,7 +48,7 @@
         }
 
         h1 {
-            font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
+            font-family: satoshi, -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
             font-size: 24px;
             font-weight: bold;
         }
@@ -58,7 +65,7 @@
 </head>
 <body dir="ltr">
     <main>
-        <h1>Storiny API Server</h1>
+        <h1>Storiny API</h1>
         <p>Request ID: <span><%= req_id %></span></p>
     </main>
 </body>

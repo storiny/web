@@ -1,36 +1,19 @@
 use crate::{
     error::Error,
-    request::{
-        REQUEST_CLIENT,
-        USER_AGENT,
-    },
-    utils::encode_cdn_url,
+    request::{REQUEST_CLIENT, USER_AGENT},
+    utils::encode_cdn_url::encode_cdn_url,
 };
 use html5ever::{
     driver::ParseOpts,
     parse_document,
-    tendril::{
-        fmt::UTF8,
-        Tendril,
-        TendrilSink,
-    },
+    tendril::{fmt::UTF8, Tendril, TendrilSink},
     Attribute,
 };
-use markup5ever_rcdom::{
-    Handle,
-    NodeData,
-    RcDom,
-};
+use markup5ever_rcdom::{Handle, NodeData, RcDom};
 use reqwest::header;
 use serde::Serialize;
-use std::{
-    default::Default,
-    io,
-};
-use url::{
-    ParseError,
-    Url,
-};
+use std::{default::Default, io};
+use url::{ParseError, Url};
 
 /// Minimum width for a large image.
 static LARGE_IMAGE_WIDTH_LOWER_BOUND: u16 = 600;

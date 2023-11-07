@@ -1,17 +1,20 @@
 use actix::Addr;
 use actix_redis::RedisActor;
 use maxminddb::Reader;
+use oauth2::basic::BasicClient;
 use rusoto_s3::S3Client;
 use rusoto_ses::SesClient;
 use sailfish::TemplateOnce;
 use sqlx::{Pool, Postgres};
 use user_agent_parser::UserAgentParser;
 
+pub mod config;
 pub mod constants;
 pub mod error;
 pub mod iso8601;
 pub mod middleware;
 pub mod models;
+pub mod oauth;
 pub mod routes;
 pub mod utils;
 
@@ -25,8 +28,24 @@ pub struct IndexTemplate {
     req_id: String,
 }
 
+/// Connection page template
+#[derive(TemplateOnce)]
+#[template(path = "connection.stpl")]
+pub struct ConnectionTemplate {
+    provider_icon: String,
+    provider_name: String,
+    is_error: bool,
+}
+
+/// OAuth client instances.
+pub struct OAuthClientMap {
+    youtube: BasicClient,
+}
+
 /// Application state
 pub struct AppState {
+    /// Environment configuration
+    pub config: config::Config,
     /// Redis connection instance
     pub redis: Option<Addr<RedisActor>>,
     /// Postgres connection pool
@@ -41,8 +60,8 @@ pub struct AppState {
     pub s3_client: S3Client,
     /// Reqwest client instance
     pub reqwest_client: reqwest::Client,
-    /// Pexels API key
-    pub pexels_api_key: String,
+    /// OAuth client map
+    pub oauth_client_map: OAuthClientMap,
 }
 
 // GRPC

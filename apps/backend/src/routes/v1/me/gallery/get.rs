@@ -22,7 +22,7 @@ async fn get(
     _user: Identity,
 ) -> Result<HttpResponse, AppError> {
     let reqwest_client = &data.reqwest_client;
-    let api_key = (&data.pexels_api_key).to_owned();
+    let api_key = &data.config.pexels_api_key.to_string();
     let page = query.page.clone().unwrap_or(1);
     let search_query = query.query.clone().unwrap_or_default();
     let has_search_query = !search_query.trim().is_empty();

@@ -1,14 +1,5 @@
-use crate::utils::{
-    decompress_url,
-    resolve_provider,
-};
-use actix_web::{
-    get,
-    http::header::ContentType,
-    web,
-    HttpResponse,
-    Responder,
-};
+use crate::utils::{decompress_url::decompress_url, resolve_provider::resolve_provider};
+use actix_web::{get, http::header::ContentType, web, HttpResponse, Responder};
 
 #[get("/provider_check/{compressed_url}")]
 async fn get(compressed_url: web::Path<String>) -> impl Responder {

@@ -1,3 +1,3 @@
-pub mod providers;
+mod providers;
 
 pub use providers::*;
