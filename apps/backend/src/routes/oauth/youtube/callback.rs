@@ -31,25 +31,20 @@ struct Response {
     items: Vec<Item>,
 }
 
-#[get("/oauth/youtube/callback")]
-async fn get(
-    data: web::Data<AppState>,
-    params: QsQuery<AuthRequest>,
-    // user: Identity
-) -> Result<HttpResponse, AppError> {
+async fn handle_oauth_request(
+    data: &web::Data<AppState>,
+    params: &QsQuery<AuthRequest>,
+) -> Result<(), ()> {
     let reqwest_client = &data.reqwest_client;
     let code = AuthorizationCode::new(params.code.clone());
     let state = CsrfToken::new(params.state.clone());
     let _scope = params.scope.clone();
 
     let token = (&data.oauth_client_map.youtube).exchange_code(code);
-    let token_res = token.request_async(async_http_client).await;
-
-    if token_res.is_err() {
-        // TODO: redirect to social page
-        // account/connections/failure?provider=youtube&
-        return Ok(HttpResponse::InternalServerError().finish());
-    }
+    let token_res = token
+        .request_async(async_http_client)
+        .await
+        .map_err(|_| ())?;
 
     let res = reqwest_client
         .get(&format!(
@@ -66,14 +61,27 @@ async fn get(
         )
         .send()
         .await
-        .unwrap()
+        .map_err(|_| ())?
         .json::<Response>()
         .await
-        .unwrap();
+        .map_err(|_| ())?;
+
+    // TODO: Save to DB
+
+    Ok(())
+}
+
+#[get("/oauth/youtube/callback")]
+async fn get(
+    data: web::Data<AppState>,
+    params: QsQuery<AuthRequest>,
+    // user: Identity
+) -> Result<HttpResponse, AppError> {
+    let result = handle_oauth_request(&data, &params).await;
 
     Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
         ConnectionTemplate {
-            is_error: true,
+            is_error: result.is_err(),
             provider_icon: YOUTUBE_LOGO.to_string(),
             provider_name: "YouTube".to_string(),
         }
