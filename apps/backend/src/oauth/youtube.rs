@@ -1,7 +1,10 @@
 use oauth2::{basic::BasicClient, AuthUrl, ClientId, ClientSecret, RedirectUrl, TokenUrl};
 use std::env;
 
-pub fn get_youtube_oauth_client() -> BasicClient {
+pub fn get_youtube_oauth_client(
+    google_client_id: String,
+    google_client_secret: String,
+) -> BasicClient {
     BasicClient::new(
         ClientId::new(env::var("GOOGLE_CLIENT_ID").expect("GOOGLE_CLIENT_ID not set")),
         Some(ClientSecret::new(
