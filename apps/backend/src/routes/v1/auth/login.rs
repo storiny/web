@@ -12,7 +12,7 @@ use crate::{
 };
 use actix_http::HttpMessage;
 use actix_web::{post, web, HttpRequest, HttpResponse};
-use actix_web_validator::Json;
+use actix_web_validator::{Json, QsQuery};
 use argon2::{Argon2, PasswordHash, PasswordVerifier};
 use email_address::EmailAddress;
 use serde::{Deserialize, Serialize};
@@ -39,7 +39,7 @@ struct Response {
     result: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Validate)]
 struct QueryParams {
     bypass: Option<String>,
 }
@@ -48,7 +48,7 @@ struct QueryParams {
 async fn post(
     payload: Json<Request>,
     req: HttpRequest,
-    query: web::Query<QueryParams>,
+    query: QsQuery<QueryParams>,
     data: web::Data<AppState>,
     user: Option<Identity>,
     session: Session,

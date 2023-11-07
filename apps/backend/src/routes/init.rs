@@ -9,12 +9,22 @@ mod index;
 #[path = "v1/mod.rs"]
 mod v1;
 
+#[path = "oauth/mod.rs"]
+mod oauth;
+
 /// Registers common API routes.
 ///
 /// * `cfg` - Web service config
 pub fn init_common_routes(cfg: &mut web::ServiceConfig) {
     index::init_routes(cfg);
     health::init_routes(cfg);
+}
+
+/// Registers oauth API routes.
+///
+/// * `cfg` - Web service config
+pub fn init_oauth_routes(cfg: &mut web::ServiceConfig) {
+    oauth::youtube::init_routes(cfg);
 }
 
 /// Registers v1 API routes.

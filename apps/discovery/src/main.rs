@@ -1,58 +1,17 @@
 use actix_cors::Cors;
-use actix_extensible_rate_limit::{
-    backend::SimpleInputFunctionBuilder,
-    RateLimiter,
-};
+use actix_extensible_rate_limit::{backend::SimpleInputFunctionBuilder, RateLimiter};
 use actix_files as fs;
 use actix_web::{
-    http::{
-        header,
-        header::ContentType,
-    },
+    http::{header, header::ContentType},
     middleware::Logger,
-    web,
-    App,
-    HttpResponse,
-    HttpServer,
-    Responder,
+    web, App, HttpResponse, HttpServer, Responder,
 };
 use dotenv::dotenv;
 use redis::aio::ConnectionManager;
-use sailfish::TemplateOnce;
-use std::{
-    env,
-    io,
-    time::Duration,
-};
+use std::{env, io, time::Duration};
+use storiny_discovery::routes;
 
-mod error;
 mod middleware;
-mod providers;
-mod request;
-mod routes;
-mod spec;
-mod utils;
-
-/// Iframe embed template
-#[derive(TemplateOnce)]
-#[template(path = "iframe.stpl")]
-pub struct IframeTemplate {
-    iframe_html: String,
-    wrapper_styles: String,
-    title: String,
-    embed_data: String,
-    theme: String,
-}
-
-/// Photo embed template
-#[derive(TemplateOnce)]
-#[template(path = "photo.stpl")]
-pub struct PhotoTemplate {
-    photo_html: String,
-    title: String,
-    embed_data: String,
-    theme: String,
-}
 
 /// 404 response
 async fn not_found() -> impl Responder {
