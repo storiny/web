@@ -3,6 +3,8 @@ use serde::Deserialize;
 /// Environment configuration.
 #[derive(Deserialize, Debug, Clone)]
 pub struct Config {
+    /// Development environment flag
+    pub is_dev: bool,
     /// App host
     pub host: String,
     /// App port

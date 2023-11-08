@@ -1,7 +1,7 @@
 use super::error::{
     GetIdentityError, LoginError, LostIdentityError, MissingIdentityError, SessionExpiryError,
 };
-use crate::middleware::session::session::Session;
+use actix_session::Session;
 use actix_utils::future::{ready, Ready};
 use actix_web::{
     cookie::time::OffsetDateTime,
@@ -32,10 +32,7 @@ impl IdentityInner {
             .expect(
                 "No `IdentityInner` instance was found in the extensions attached to the \
                 incoming request. This usually means that `IdentityMiddleware` has not been \
-                registered as an application middleware via `App::wrap`. `Identity` cannot be used \
-                unless the identity machine is properly mounted: register `IdentityMiddleware` as \
-                a middleware for your application to fix this panic. If the problem persists, \
-                please file an issue on GitHub.",
+                registered as a middleware via `App::wrap`.",
             )
             .to_owned()
     }
@@ -76,6 +73,7 @@ impl Identity {
         let now = OffsetDateTime::now_utc().unix_timestamp();
         inner.session.insert(LOGIN_UNIX_TIMESTAMP_KEY, now)?;
         inner.session.renew();
+
         Ok(Self(inner))
     }
 

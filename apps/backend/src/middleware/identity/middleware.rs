@@ -1,23 +1,10 @@
-use super::{
-    config::IdentityMiddlewareBuilder,
-    identity::IdentityInner,
-};
-use crate::middleware::session::session_ext::SessionExt;
-use actix_utils::future::{
-    ready,
-    Ready,
-};
+use super::{config::IdentityMiddlewareBuilder, identity::IdentityInner};
+use actix_session::SessionExt;
+use actix_utils::future::{ready, Ready};
 use actix_web::{
     body::MessageBody,
-    dev::{
-        Service,
-        ServiceRequest,
-        ServiceResponse,
-        Transform,
-    },
-    Error,
-    HttpMessage as _,
-    Result,
+    dev::{Service, ServiceRequest, ServiceResponse, Transform},
+    Error, HttpMessage as _, Result,
 };
 use futures_core::future::LocalBoxFuture;
 use std::rc::Rc;

@@ -9384,8 +9384,8 @@ mod tests {
         // Insert a connection
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO connections(provider, provider_identifier, user_id)
-            VALUES (0, 'sample', $1)
+            INSERT INTO connections(provider, provider_identifier, display_name, user_id)
+            VALUES (0, 'sample', 'sample', $1)
             RETURNING id
             "#,
         )

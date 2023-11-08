@@ -14,9 +14,10 @@ actix-redis = "0.13.0"
 actix-request-identifier = "4.1.0"
 actix-rt = "2.9.0"
 actix-service = "2.0.2"
+actix-session = { version = "0.8.0", features = ["redis-rs-session"] }
 actix-test = "0.1.2"
 actix-utils = "3.0.1"
-actix-web = { version = "4.4.0", features = ["cookies", "secure-cookies"] }
+actix-web = { version = "4.4.0", features = ["cookies", "secure-cookies", "__compress"] }
 actix-web-validator = "5.0.1"
 anyhow = "1.0.75"
 argon2 = "0.5.2"

@@ -1,15 +1,14 @@
 use crate::{
     config::Config,
-    middleware::{
-        identity::{identity::Identity, middleware::IdentityMiddleware},
-        session::{middleware::SessionMiddleware, storage::RedisSessionStore},
-    },
+    middleware::identity::{identity::Identity, middleware::IdentityMiddleware},
     oauth::get_oauth_client_map,
     AppState,
 };
 use actix_http::{HttpMessage, Request};
+use actix_session::config::{CookieContentSecurity, PersistentSession};
+use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{
-    cookie::{time::Duration, Cookie, Key, SameSite},
+    cookie::{Cookie, Key, SameSite},
     dev::{HttpServiceFactory, Service, ServiceResponse},
     post, test, web, App, Error, HttpRequest, HttpResponse, Responder,
 };
@@ -44,92 +43,91 @@ pub async fn init_app_for_test(
     Option<Cookie<'static>>,
     Option<i64>, // User ID
 ) {
-    match envy::from_env::<Config>() {
-        Ok(config) => {
-            let redis_connection_string =
-                format!("redis://{}:{}", config.redis_host, config.redis_port);
-            let secret_key = Key::generate();
-            let redis_store = RedisSessionStore::new(&redis_connection_string)
-                .await
-                .unwrap();
+    let config = envy::from_env::<Config>().expect("Unable to load environment configuration");
+    let redis_connection_string = format!("redis://{}:{}", config.redis_host, config.redis_port);
+    let secret_key = Key::generate();
+    let redis_store = RedisSessionStore::new(&redis_connection_string)
+        .await
+        .unwrap();
 
-            // GeoIP service
-            let geo_db = maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();
+    // GeoIP service
+    let geo_db = maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();
 
-            // User-agent parser
-            let ua_parser = UserAgentParser::from_path("./data/ua_parser/regexes.yaml")
-                .expect("Cannot build user-agent parser");
+    // User-agent parser
+    let ua_parser = UserAgentParser::from_path("./data/ua_parser/regexes.yaml")
+        .expect("Cannot build user-agent parser");
 
-            let service = test::init_service(
-                App::new()
-                    .wrap(IdentityMiddleware::default())
-                    .wrap(
-                        SessionMiddleware::builder(redis_store.clone(), secret_key.clone())
-                            .cookie_name("_storiny_sess".into())
-                            .cookie_same_site(SameSite::None)
-                            .cookie_domain("storiny.com".into())
-                            .cookie_path("/".to_string())
-                            .cookie_max_age(Duration::weeks(1))
-                            .cookie_secure(true)
-                            .cookie_http_only(true)
-                            .build(),
+    let service = test::init_service(
+        App::new()
+            .wrap(IdentityMiddleware::default())
+            .wrap(
+                SessionMiddleware::builder(redis_store.clone(), secret_key.clone())
+                    .session_lifecycle(
+                        PersistentSession::default().session_ttl(time::Duration::weeks(1)),
                     )
-                    .app_data(web::Data::new(AppState {
-                        config,
-                        redis: None,
-                        db_pool: db_pool.clone(),
-                        geo_db,
-                        ua_parser,
-                        ses_client: SesClient::new_with(
-                            MockRequestDispatcher::default(),
-                            MockCredentialsProvider,
-                            Region::UsEast1,
-                        ),
-                        s3_client: S3Client::new_with(
-                            MockRequestDispatcher::default(),
-                            MockCredentialsProvider,
-                            Region::UsEast1,
-                        ),
-                        reqwest_client: reqwest::Client::new(),
-                        oauth_client_map: get_oauth_client_map(),
-                    }))
-                    .service(post)
-                    .service(service_factory),
+                    .cookie_content_security(CookieContentSecurity::Signed)
+                    .cookie_name("_storiny_sess".into())
+                    .cookie_same_site(SameSite::None)
+                    .cookie_domain(None)
+                    .cookie_path("/".to_string())
+                    .cookie_secure(true)
+                    .cookie_http_only(true)
+                    .build(),
             )
-            .await;
+            .wrap(actix_web::middleware::NormalizePath::trim())
+            .app_data(web::Data::new(AppState {
+                config,
+                redis: None,
+                db_pool: db_pool.clone(),
+                geo_db,
+                ua_parser,
+                ses_client: SesClient::new_with(
+                    MockRequestDispatcher::default(),
+                    MockCredentialsProvider,
+                    Region::UsEast1,
+                ),
+                s3_client: S3Client::new_with(
+                    MockRequestDispatcher::default(),
+                    MockCredentialsProvider,
+                    Region::UsEast1,
+                ),
+                reqwest_client: reqwest::Client::new(),
+                oauth_client_map: get_oauth_client_map(envy::from_env::<Config>().unwrap()),
+            }))
+            .service(post)
+            .service(service_factory),
+    )
+    .await;
 
-            if logged_in {
-                if !skip_inserting_user {
-                    // Insert the user
-                    sqlx::query(
-                        r#"
-                        INSERT INTO users(id, name, username, email)
-                        VALUES ($1, $2, $3, $4)
-                        "#,
-                    )
-                    .bind(1_i64)
-                    .bind("Some user".to_string())
-                    .bind("some_user".to_string())
-                    .bind("someone@example.com".to_string())
-                    .execute(&db_pool)
-                    .await
-                    .unwrap();
-                }
-
-                // Log the user in
-                let req = test::TestRequest::post().uri("/__login__").to_request();
-                let res = test::call_service(&service, req).await;
-                let cookie = res
-                    .response()
-                    .cookies()
-                    .find(|cookie| cookie.name() == "_storiny_sess")
-                    .unwrap();
-
-                return (service, Some(cookie.into_owned()), Some(1_i64));
-            }
-
-            (service, None, None)
+    if logged_in {
+        if !skip_inserting_user {
+            // Insert the user
+            sqlx::query(
+                r#"
+                INSERT INTO users(id, name, username, email)
+                VALUES ($1, $2, $3, $4)
+                "#,
+            )
+            .bind(1_i64)
+            .bind("Some user".to_string())
+            .bind("some_user".to_string())
+            .bind("someone@example.com".to_string())
+            .execute(&db_pool)
+            .await
+            .unwrap();
         }
-        Err(error) => eprintln!("Environment configuration error: {:#?}", error),
+
+        // Log the user in
+        let req = test::TestRequest::post().uri("/__login__").to_request();
+        let res = test::call_service(&service, req).await;
+        let cookie = res
+            .response()
+            .cookies()
+            .find(|cookie| cookie.name() == "_storiny_sess")
+            .unwrap();
+
+        return (service, Some(cookie.into_owned()), Some(1_i64));
     }
+
+    (service, None, None)
 }
