@@ -1,12 +1,6 @@
 use crate::IndexTemplate;
 use actix_request_identifier::RequestId;
-use actix_web::{
-    get,
-    http::header::ContentType,
-    web,
-    HttpResponse,
-    Responder,
-};
+use actix_web::{get, http::header::ContentType, web, HttpResponse, Responder};
 use sailfish::TemplateOnce;
 
 #[get("/")]

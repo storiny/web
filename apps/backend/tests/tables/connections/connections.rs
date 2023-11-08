@@ -7,12 +7,13 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO connections(provider, provider_identifier, user_id)
-            VALUES ($1, $2, $3)
+            INSERT INTO connections(provider, provider_identifier, display_name, user_id)
+            VALUES ($1, $2, $3, $4)
             "#,
         )
         .bind(0)
-        .bind("some-id".to_string())
+        .bind("some-id")
+        .bind("Some name")
         .bind(1_i64)
         .execute(&mut *conn)
         .await?;
@@ -42,12 +43,13 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO connections(provider, provider_identifier, user_id)
-            VALUES ($1, $2, $3)
+            INSERT INTO connections(provider, provider_identifier, display_name, user_id)
+            VALUES ($1, $2, $3, $4)
             "#,
         )
         .bind(0)
-        .bind("some-id".to_string())
+        .bind("some-id")
+        .bind("Some name")
         .bind(1_i64)
         .execute(&mut *conn)
         .await;
@@ -84,12 +86,13 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO connections(provider, provider_identifier, user_id)
-            VALUES ($1, $2, $3)
+            INSERT INTO connections(provider, provider_identifier, display_name, user_id)
+            VALUES ($1, $2, $3, $4)
             "#,
         )
         .bind(0)
-        .bind("some-id".to_string())
+        .bind("some-id")
+        .bind("Some name")
         .bind(1_i64)
         .execute(&mut *conn)
         .await;

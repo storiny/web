@@ -1,19 +1,8 @@
 //! Failure modes of identity operations.
 
-use crate::middleware::session::session::{
-    SessionGetError,
-    SessionInsertError,
-};
-use actix_web::{
-    cookie::time::error::ComponentRange,
-    http::StatusCode,
-    ResponseError,
-};
-use derive_more::{
-    Display,
-    Error,
-    From,
-};
+use actix_session::{SessionGetError, SessionInsertError};
+use actix_web::{cookie::time::error::ComponentRange, http::StatusCode, ResponseError};
+use derive_more::{Display, Error, From};
 
 /// Error that can occur during login attempts.
 #[derive(Debug, Display, Error, From)]
@@ -32,8 +21,6 @@ impl ResponseError for LoginError {
 pub struct SessionExpiryError(#[error(not(source))] pub ComponentRange);
 
 /// The identity information has been lost.
-///
-/// Seeing this error in user code indicates a bug in actix-identity.
 #[derive(Debug, Display, Error)]
 #[display(
     fmt = "The identity information in the current session has disappeared after having been \
@@ -65,8 +52,6 @@ pub enum GetIdentityError {
     SessionGetError(SessionGetError),
 
     /// Identity info was lost after being validated.
-    ///
-    /// Seeing this error indicates a bug in actix-identity.
     #[display(fmt = "{_0}")]
     LostIdentityError(LostIdentityError),
 }

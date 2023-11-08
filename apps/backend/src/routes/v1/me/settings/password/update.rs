@@ -1,10 +1,8 @@
 use crate::constants::account_activity_type::AccountActivityType;
 use crate::{
-    error::AppError,
-    error::ToastErrorResponse,
-    middleware::{identity::identity::Identity, session::session::Session},
-    AppState,
+    error::AppError, error::ToastErrorResponse, middleware::identity::identity::Identity, AppState,
 };
+use actix_session::Session;
 use actix_web::{patch, web, HttpResponse};
 use actix_web_validator::Json;
 use argon2::password_hash::rand_core::OsRng;
@@ -27,7 +25,7 @@ async fn patch(
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Identity,
-    session: Session,
+    _session: Session,
 ) -> Result<HttpResponse, AppError> {
     match user.id() {
         Ok(user_id) => {
@@ -87,7 +85,7 @@ async fn patch(
                                     .await?;
 
                                     // Log the user out and destroy all the sessions
-                                    session.purge_all();
+                                    // TODO: session.purge_all();
                                     user.logout();
 
                                     Ok(HttpResponse::NoContent().finish())

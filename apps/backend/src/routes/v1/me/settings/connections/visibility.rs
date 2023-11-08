@@ -70,13 +70,14 @@ mod tests {
         // Insert a connection
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO connections(provider, provider_identifier, user_id)
-            VALUES ($1, $2, $3)
+            INSERT INTO connections(provider, provider_identifier, display_name, user_id)
+            VALUES ($1, $2, $3, $4)
             RETURNING id, hidden
             "#,
         )
         .bind(0)
-        .bind("some-id".to_string())
+        .bind("some-id")
+        .bind("Some name")
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
         .await?;

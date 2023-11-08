@@ -295,6 +295,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "actix-session"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2e6a28f813a6671e1847d005cad0be36ae4d016287690f765c303379837c13d6"
+dependencies = [
+ "actix-service",
+ "actix-utils",
+ "actix-web",
+ "anyhow",
+ "async-trait",
+ "derive_more",
+ "rand",
+ "redis 0.23.3",
+ "serde",
+ "serde_json",
+ "tracing",
+]
+
+[[package]]
 name = "actix-test"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3748,6 +3767,7 @@ dependencies = [
  "actix-request-identifier",
  "actix-rt",
  "actix-service",
+ "actix-session",
  "actix-test",
  "actix-utils",
  "actix-web",

@@ -3,6 +3,8 @@ use actix_extensible_rate_limit::{backend::SimpleInputFunctionBuilder, RateLimit
 use actix_files as fs;
 use actix_redis::RedisActor;
 use actix_request_identifier::RequestIdentifier;
+use actix_session::config::{CookieContentSecurity, PersistentSession};
+use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{
     cookie::{Key, SameSite},
     http::{header, header::ContentType},
@@ -11,7 +13,6 @@ use actix_web::{
 };
 use actix_web_validator::{JsonConfig, PathConfig, QsQueryConfig};
 use dotenv::dotenv;
-use middleware::session::{middleware::SessionMiddleware, storage::RedisSessionStore};
 use redis::aio::ConnectionManager;
 use rusoto_s3::S3Client;
 use rusoto_ses::SesClient;
@@ -61,11 +62,10 @@ async fn main() -> io::Result<()> {
             let redis_connection_manager = ConnectionManager::new(redis_client)
                 .await
                 .expect("Cannot build Redis connection manager");
-            let backend = middleware::rate_limiter::rate_limiter::RedisBackend::builder(
-                redis_connection_manager.clone(),
-            )
-            .key_prefix(Some("lim:a:")) // Add prefix to avoid collisions with other servicse
-            .build();
+            let backend =
+                middleware::rate_limiter::RedisBackend::builder(redis_connection_manager.clone())
+                    .key_prefix(Some("lim:a:")) // Add prefix to avoid collisions with other servicse
+                    .build();
 
             // Session
             let secret_key = Key::from(&config.session_secret_key.as_bytes());
@@ -136,6 +136,25 @@ async fn main() -> io::Result<()> {
                 });
 
                 App::new()
+                    .wrap(IdentityMiddleware::default())
+                    .wrap(
+                        SessionMiddleware::builder(redis_store.clone(), secret_key.clone())
+                            .session_lifecycle(
+                                PersistentSession::default().session_ttl(time::Duration::weeks(1)),
+                            )
+                            .cookie_content_security(CookieContentSecurity::Signed)
+                            .cookie_name("_storiny_sess".into())
+                            .cookie_same_site(SameSite::None)
+                            .cookie_domain(if config.is_dev {
+                                None
+                            } else {
+                                Some("storiny.com".into())
+                            })
+                            .cookie_path("/".to_string())
+                            .cookie_secure(!config.is_dev)
+                            .cookie_http_only(true)
+                            .build(),
+                    )
                     .wrap(
                         RateLimiter::builder(backend.clone(), input)
                             .add_headers()
@@ -148,6 +167,8 @@ async fn main() -> io::Result<()> {
                                 header::CONTENT_TYPE,
                                 header::AUTHORIZATION,
                                 header::ACCEPT,
+                                header::COOKIE,
+                                header::SET_COOKIE,
                             ])
                             .supports_credentials()
                             .max_age(3600),
@@ -156,18 +177,8 @@ async fn main() -> io::Result<()> {
                     .wrap(Logger::new(
                         "%a %t \"%r\" %s %b \"%{Referer}i\" \"%{User-Agent}i\" %T",
                     ))
-                    .wrap(IdentityMiddleware::default())
-                    .wrap(
-                        SessionMiddleware::builder(redis_store.clone(), secret_key.clone())
-                            .cookie_name("_storiny_sess".into())
-                            .cookie_same_site(SameSite::None)
-                            .cookie_domain("storiny.com".into())
-                            .cookie_path("/".to_string())
-                            .cookie_max_age(time::Duration::weeks(1))
-                            .cookie_secure(true)
-                            .cookie_http_only(true)
-                            .build(),
-                    )
+                    .wrap(actix_web::middleware::Compress::default())
+                    .wrap(actix_web::middleware::NormalizePath::trim())
                     .app_data(json_config)
                     .app_data(qs_query_config)
                     .app_data(path_config)
@@ -186,7 +197,7 @@ async fn main() -> io::Result<()> {
                             endpoint: "http://localhost:9000".to_string(),
                         }),
                         reqwest_client: reqwest::Client::new(),
-                        oauth_client_map: get_oauth_client_map(),
+                        oauth_client_map: get_oauth_client_map(envy::from_env::<Config>().unwrap()),
                     }))
                     .configure(routes::init::init_common_routes)
                     .configure(routes::init::init_oauth_routes)

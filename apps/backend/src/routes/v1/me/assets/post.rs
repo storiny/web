@@ -233,6 +233,8 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::config::Config;
+    use crate::oauth::get_oauth_client_map;
     use actix_web::{App, HttpServer};
     use reqwest::{
         self,
@@ -274,6 +276,7 @@ mod tests {
 
             App::new()
                 .app_data(web::Data::new(AppState {
+                    config: envy::from_env::<Config>().unwrap(),
                     redis: None,
                     db_pool: db_pool.clone(),
                     geo_db,
@@ -289,7 +292,7 @@ mod tests {
                         Region::UsEast1,
                     ),
                     reqwest_client: reqwest::Client::new(),
-                    pexels_api_key: "".to_owned(),
+                    oauth_client_map: get_oauth_client_map(envy::from_env::<Config>().unwrap()),
                 }))
                 .service(unsecure_post)
         })
