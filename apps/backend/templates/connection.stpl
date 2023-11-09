@@ -110,28 +110,35 @@
     </div>
     <div>
         <% if let Some(err) = error { %>
-        <%      match err {
-                    routes::oauth::ConnectionError::StateMismatch => { %>
-                       <p class="error">
-                           Failed to connect your <span class="account"><%= provider_name %></span> account to <span
-                               class="account">Storiny</span>
-                       </p>
-        <%          }
-                    _ => { %>
-                       <p class="error">
-                           Failed to connect your <span class="account"><%= provider_name %></span> account to <span
-                               class="account">Storiny</span>
-                       </p>
-        <%         }
-                } %>
+        <p class="error">
+            Failed to connect your <span class="account"><%= provider_name %></span> account to <span
+                class="account">Storiny</span>
+        </p>
+        <% match err {
+        routes::oauth::ConnectionError::StateMismatch => { %>
+        <p class="sub">
+            The request was tampered during the authentication window.
+        </p>
+        <% } routes::oauth::ConnectionError::InsufficientScopes => { %>
+        <p class="sub">
+            You (or the provider) did not grant the required scopes.
+        </p>
+        <% } routes::oauth::ConnectionError::Duplicate => { %>
+        <p class="sub">
+            You already have a <span class="account"><%= provider_name %></span> account connected to your <span
+                class="account">Storiny</span>
+            account.
+        </p>
+        <% } _ => {}
+        } %>
         <% } else { %>
-            <p>
-                Connected your <span class="account"><%= provider_name %></span> account to <span
-                    class="account">Storiny</span>
-            </p>
-            <p class="sub">
-                You can close this window.
-            </p>
+        <p>
+            Connected your <span class="account"><%= provider_name %></span> account to <span
+                class="account">Storiny</span>
+        </p>
+        <p class="sub">
+            You can close this window.
+        </p>
         <% } %>
     </div>
 </main>

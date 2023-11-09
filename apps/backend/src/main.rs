@@ -196,7 +196,10 @@ async fn main() -> io::Result<()> {
                             name: "us-east-1".to_string(),
                             endpoint: "http://localhost:9000".to_string(),
                         }),
-                        reqwest_client: reqwest::Client::new(),
+                        reqwest_client: reqwest::Client::builder()
+                            .user_agent("Storiny (https://storiny.com)")
+                            .build()
+                            .unwrap(),
                         oauth_client_map: get_oauth_client_map(envy::from_env::<Config>().unwrap()),
                     }))
                     .configure(routes::init::init_common_routes)

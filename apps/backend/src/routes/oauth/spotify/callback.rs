@@ -1,8 +1,8 @@
+use crate::oauth::icons::spotify::SPOTIFY_LOGO;
 use crate::{
     connection_def::v1::Provider,
     error::AppError,
     middleware::identity::identity::Identity,
-    oauth::icons::youtube::YOUTUBE_LOGO,
     routes::oauth::{AuthRequest, ConnectionError},
     AppState, ConnectionTemplate,
 };
@@ -14,30 +14,13 @@ use oauth2::{reqwest::async_http_client, AuthorizationCode, TokenResponse};
 use sailfish::TemplateOnce;
 use serde::Deserialize;
 
-/// A [YouTube Channel Snippet](https://developers.google.com/youtube/v3/docs/channels#snippet).
-#[derive(Debug, Deserialize)]
-struct Snippet {
-    /// The channel's title.
-    /// https://developers.google.com/youtube/v3/docs/channels#snippet.title
-    title: String,
-}
-
-/// A [YouTube Channel Resource](https://developers.google.com/youtube/v3/docs/channels#resource) item.
-#[derive(Debug, Deserialize)]
-struct Item {
-    /// The ID that YouTube uses to uniquely identify the channel.
-    /// https://developers.google.com/youtube/v3/docs/channels#id
-    id: String,
-    /// An object that contains the details about the YouTube channel.
-    /// https://developers.google.com/youtube/v3/docs/channels#snippet
-    snippet: Snippet,
-}
-
-/// A [YouTube Channels List](https://developers.google.com/youtube/v3/docs/channels/list) endpoint response.
+/// A [Spotify User Profile](https://developer.spotify.com/documentation/web-api/reference/get-current-users-profile) endpoint response.
 #[derive(Debug, Deserialize)]
 struct Response {
-    /// A list of YouTube channels.
-    items: Vec<Item>,
+    /// The ID of the Spotify user.
+    id: String,
+    /// The name displayed on the user's profile. `null` if not available.
+    display_name: Option<String>,
 }
 
 async fn handle_oauth_request(
@@ -61,31 +44,25 @@ async fn handle_oauth_request(
 
     let reqwest_client = &data.reqwest_client;
     let code = AuthorizationCode::new(params.code.clone());
-    let token_res = (&data.oauth_client_map.youtube)
+    let token_res = (&data.oauth_client_map.spotify)
         .exchange_code(code)
         .request_async(async_http_client)
         .await
         .map_err(|_| ConnectionError::Other)?;
 
-    // Check if the `youtube.readonly` scope is granted, required for obtaining the channel details.
+    // Check if the `user-read-email` scope is granted, required for obtaining the profile details.
     if !token_res
         .scopes()
         .ok_or(ConnectionError::InsufficientScopes)?
         .iter()
-        .any(|scope| scope.as_str() == "https://www.googleapis.com/auth/youtube.readonly")
+        .any(|scope| scope.as_str() == "user-read-email")
     {
         return Err(ConnectionError::InsufficientScopes);
     }
 
-    // Fetch the channel details
-    let channel_res = reqwest_client
-        .get(&format!(
-            "https://youtube.googleapis.com/youtube/v3/channels?{}&{}&{}&{}",
-            "part=snippet",
-            "maxResults=1",
-            "mine=true",
-            format!("key={}", &data.config.youtube_data_api_key)
-        ))
+    // Fetch the profile details
+    let profile_res = reqwest_client
+        .get("https://api.spotify.com/v1/me")
         .header("Content-type", ContentType::json().to_string())
         .header(
             header::AUTHORIZATION,
@@ -98,12 +75,10 @@ async fn handle_oauth_request(
         .await
         .map_err(|_| ConnectionError::Other)?;
 
-    if channel_res.items.len() == 0 {
-        return Err(ConnectionError::Other);
-    }
-
-    let provider_identifier = channel_res.items[0].id.to_string();
-    let display_name = channel_res.items[0].snippet.title.to_string();
+    let provider_identifier = profile_res.id;
+    let display_name = profile_res
+        .display_name
+        .unwrap_or(provider_identifier.clone());
 
     // Save the connection
     match sqlx::query(
@@ -112,7 +87,7 @@ async fn handle_oauth_request(
         VALUES ($1, $2, $3, $4)
         "#,
     )
-    .bind(Provider::Youtube as i16)
+    .bind(Provider::Spotify as i16)
     .bind(provider_identifier)
     .bind(display_name)
     .bind(user_id)
@@ -136,7 +111,7 @@ async fn handle_oauth_request(
     }
 }
 
-#[get("/oauth/youtube/callback")]
+#[get("/oauth/spotify/callback")]
 async fn get(
     data: web::Data<AppState>,
     params: QsQuery<AuthRequest>,
@@ -152,8 +127,8 @@ async fn get(
             } else {
                 Some(ConnectionError::Other)
             },
-            provider_icon: YOUTUBE_LOGO.to_string(),
-            provider_name: "YouTube".to_string(),
+            provider_icon: SPOTIFY_LOGO.to_string(),
+            provider_name: "Spotify".to_string(),
         }
         .render_once()
         .unwrap(),
