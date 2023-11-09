@@ -6,7 +6,6 @@ use actix_utils::future::{ready, Ready};
 use actix_web::{
     cookie::time::OffsetDateTime,
     dev::{Extensions, Payload},
-    http::StatusCode,
     Error, FromRequest, HttpMessage, HttpRequest, HttpResponse,
 };
 
@@ -112,7 +111,7 @@ impl FromRequest for Identity {
         ready(Identity::extract(&req.extensions()).map_err(|err| {
             let res = actix_web::error::InternalError::from_response(
                 err,
-                HttpResponse::new(StatusCode::UNAUTHORIZED),
+                HttpResponse::Unauthorized().body("Unauthorized"),
             );
 
             actix_web::Error::from(res)

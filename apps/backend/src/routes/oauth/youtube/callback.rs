@@ -1,7 +1,11 @@
-use super::AuthRequest;
-use crate::connection_def::v1::Provider;
-use crate::middleware::identity::identity::Identity;
-use crate::{error::AppError, oauth::icons::youtube::YOUTUBE_LOGO, AppState, ConnectionTemplate};
+use crate::{
+    connection_def::v1::Provider,
+    error::AppError,
+    middleware::identity::identity::Identity,
+    oauth::icons::youtube::YOUTUBE_LOGO,
+    routes::oauth::{AuthRequest, ConnectionError},
+    AppState, ConnectionTemplate,
+};
 use actix_session::Session;
 use actix_web::http::header::{self, ContentType};
 use actix_web::{get, web, HttpResponse};
@@ -31,15 +35,15 @@ async fn handle_oauth_request(
     session: &Session,
     params: &QsQuery<AuthRequest>,
     user_id: i64,
-) -> Result<(), ()> {
+) -> Result<(), ConnectionError> {
     let oauth_token = session
         .get::<String>("oauth_token")
-        .map_err(|_| ())?
-        .ok_or(())?;
+        .map_err(|_| ConnectionError::Other)?
+        .ok_or(ConnectionError::Other)?;
 
     // Check whether the CSRF token has been tampered
     if oauth_token != params.state {
-        return Err(());
+        return Err(ConnectionError::StateMismatch);
     }
 
     // Remove the CSRF token from the session.
@@ -52,16 +56,16 @@ async fn handle_oauth_request(
     let token_res = token
         .request_async(async_http_client)
         .await
-        .map_err(|_| ())?;
+        .map_err(|_| ConnectionError::Other)?;
 
     // Check if the `youtube.readonly` scope is granted, required for obtaining the channel details.
     if !token_res
         .scopes()
-        .ok_or(())?
+        .ok_or(ConnectionError::InsufficientScopes)?
         .iter()
         .any(|scope| scope.as_str() == "https://www.googleapis.com/auth/youtube.readonly")
     {
-        return Err(());
+        return Err(ConnectionError::InsufficientScopes);
     }
 
     // Fetch the channel details
@@ -80,16 +84,16 @@ async fn handle_oauth_request(
         )
         .send()
         .await
-        .map_err(|_| ())?
+        .map_err(|_| ConnectionError::Other)?
         .json::<Response>()
         .await
-        .map_err(|_| ())?;
+        .map_err(|_| ConnectionError::Other)?;
 
     let provider_identifier = channel_res.items[0].id.to_string();
     let display_name = channel_res.items[0].snippet.title.to_string();
 
     // Save the connection
-    sqlx::query(
+    match sqlx::query(
         r#"
         INSERT INTO connections(provider, provider_identifier, display_name, user_id)
         VALUES ($1, $2, $3, $4)
@@ -101,9 +105,22 @@ async fn handle_oauth_request(
     .bind(user_id)
     .execute(&data.db_pool)
     .await
-    .map_err(|_| ())?;
-
-    Ok(())
+    {
+        Ok(result) => match result.rows_affected() {
+            0 => Err(ConnectionError::Other),
+            _ => Ok(()),
+        },
+        Err(err) => {
+            if let Some(db_err) = err.into_database_error() {
+                match db_err.kind() {
+                    sqlx::error::ErrorKind::UniqueViolation => Err(ConnectionError::Duplicate),
+                    _ => Err(ConnectionError::Other),
+                }
+            } else {
+                Err(ConnectionError::Other)
+            }
+        }
+    }
 }
 
 #[get("/oauth/youtube/callback")]
@@ -116,9 +133,9 @@ async fn get(
     match user.id() {
         Ok(user_id) => Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
             ConnectionTemplate {
-                is_error: handle_oauth_request(&data, &session, &params, user_id)
+                error: handle_oauth_request(&data, &session, &params, user_id)
                     .await
-                    .is_err(),
+                    .err(),
                 provider_icon: YOUTUBE_LOGO.to_string(),
                 provider_name: "YouTube".to_string(),
             }
