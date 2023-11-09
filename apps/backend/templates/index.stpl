@@ -7,10 +7,10 @@
     <meta content="noindex,nofollow" name="robots">
     <style>
         @font-face {
-          font-family: satoshi;
-          font-weight: 100 900;
-          font-style: normal;
-          src: url("https://cdn.storiny.com/web-assets/raw/fonts/satoshi.woff") format("woff2");
+            font-family: satoshi;
+            font-weight: 100 900;
+            font-style: normal;
+            src: url("https://cdn.storiny.com/web-assets/raw/fonts/satoshi.woff") format("woff2");
         }
 
         html,
@@ -64,9 +64,9 @@
     </style>
 </head>
 <body dir="ltr">
-    <main>
-        <h1>Storiny API</h1>
-        <p>Request ID: <span><%= req_id %></span></p>
-    </main>
+<main>
+    <h1>Storiny API</h1>
+    <p>Request ID: <span><%= req_id %></span></p>
+</main>
 </body>
 </html>

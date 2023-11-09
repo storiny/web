@@ -91,7 +91,10 @@ pub async fn init_app_for_test(
                     MockCredentialsProvider,
                     Region::UsEast1,
                 ),
-                reqwest_client: reqwest::Client::new(),
+                reqwest_client: reqwest::Client::builder()
+                    .user_agent("Storiny (https://storiny.com)")
+                    .build()
+                    .unwrap(),
                 oauth_client_map: get_oauth_client_map(envy::from_env::<Config>().unwrap()),
             }))
             .service(post)

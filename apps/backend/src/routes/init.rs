@@ -25,6 +25,10 @@ pub fn init_common_routes(cfg: &mut web::ServiceConfig) {
 /// * `cfg` - Web service config
 pub fn init_oauth_routes(cfg: &mut web::ServiceConfig) {
     oauth::youtube::init_routes(cfg);
+    oauth::github::init_routes(cfg);
+    oauth::spotify::init_routes(cfg);
+    oauth::discord::init_routes(cfg);
+    oauth::dribbble::init_routes(cfg);
 }
 
 /// Registers v1 API routes.

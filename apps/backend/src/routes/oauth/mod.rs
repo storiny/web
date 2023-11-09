@@ -1,16 +1,14 @@
 use serde::Deserialize;
 use validator::Validate;
 
-pub mod youtube;
-
 #[derive(Deserialize, Validate)]
 pub struct AuthRequest {
     pub code: String,
     pub state: String,
-    pub scope: String,
 }
 
 /// An error raised during the processing of the connection.
+#[allow(dead_code)]
 pub enum ConnectionError {
     /// Insufficient scopes were returned on the callback endpoint
     InsufficientScopes,
@@ -21,3 +19,9 @@ pub enum ConnectionError {
     /// Other connection error
     Other,
 }
+
+pub mod discord;
+pub mod dribbble;
+pub mod github;
+pub mod spotify;
+pub mod youtube;

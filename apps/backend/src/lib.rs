@@ -38,11 +38,6 @@ pub struct ConnectionTemplate {
     error: Option<ConnectionError>,
 }
 
-/// OAuth client instances.
-pub struct OAuthClientMap {
-    youtube: BasicClient,
-}
-
 /// Application state
 pub struct AppState {
     /// Environment configuration
@@ -63,6 +58,15 @@ pub struct AppState {
     pub reqwest_client: reqwest::Client,
     /// OAuth client map
     pub oauth_client_map: OAuthClientMap,
+}
+
+/// OAuth client instances.
+pub struct OAuthClientMap {
+    youtube: BasicClient,
+    github: BasicClient,
+    spotify: BasicClient,
+    discord: BasicClient,
+    dribbble: BasicClient,
 }
 
 // GRPC

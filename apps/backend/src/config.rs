@@ -9,6 +9,8 @@ pub struct Config {
     pub host: String,
     /// App port
     pub port: String,
+    /// Public URL of the API server
+    pub api_server_url: String,
     /// Allowed client origin (CORS)
     pub allowed_origin: String,
     /// Postgres URL
@@ -25,8 +27,20 @@ pub struct Config {
     pub aws_access_key_id: String,
     /// AWS secret access key
     pub aws_secret_access_key: String,
-    /// Google OAuth
+    // Google OAuth
     pub google_client_id: String,
     pub google_client_secret: String,
     pub youtube_data_api_key: String,
+    // GitHub OAuth
+    pub github_client_id: String,
+    pub github_client_secret: String,
+    // Spotify OAuth
+    pub spotify_client_id: String,
+    pub spotify_client_secret: String,
+    // Discord OAuth
+    pub discord_client_id: String,
+    pub discord_client_secret: String,
+    // Dribbble OAuth
+    pub dribbble_client_id: String,
+    pub dribbble_client_secret: String,
 }

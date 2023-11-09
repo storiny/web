@@ -1,0 +1,22 @@
+use oauth2::{basic::BasicClient, AuthUrl, ClientId, ClientSecret, RedirectUrl, TokenUrl};
+
+/// Builds and returns Spotify oauth client.
+///
+/// * `api_server_url` - The public URL of the API server.
+/// * `spotify_client_id` - The Spotify client ID.
+/// * `spotify_client_secret` - The Spotify client secret.
+pub fn get_spotify_oauth_client(
+    api_server_url: &str,
+    spotify_client_id: String,
+    spotify_client_secret: String,
+) -> BasicClient {
+    BasicClient::new(
+        ClientId::new(spotify_client_id),
+        Some(ClientSecret::new(spotify_client_secret)),
+        AuthUrl::new("https://accounts.spotify.com/authorize".to_string()).unwrap(),
+        Some(TokenUrl::new("https://accounts.spotify.com/api/token".to_string()).unwrap()),
+    )
+    .set_redirect_uri(
+        RedirectUrl::new(format!("{}/{}", api_server_url, "oauth/spotify/callback")).unwrap(),
+    )
+}
