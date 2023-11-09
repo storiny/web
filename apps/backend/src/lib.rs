@@ -2,6 +2,7 @@ use actix::Addr;
 use actix_redis::RedisActor;
 use maxminddb::Reader;
 use oauth2::basic::BasicClient;
+use routes::oauth::ConnectionError;
 use rusoto_s3::S3Client;
 use rusoto_ses::SesClient;
 use sailfish::TemplateOnce;
@@ -34,7 +35,7 @@ pub struct IndexTemplate {
 pub struct ConnectionTemplate {
     provider_icon: String,
     provider_name: String,
-    is_error: bool,
+    error: Option<ConnectionError>,
 }
 
 /// OAuth client instances.
