@@ -314,7 +314,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::privacy_settings_def::v1::RelationVisibility;
+    use crate::grpc::defs::privacy_settings_def::v1::RelationVisibility;
     use crate::test_utils::{init_app_for_test, res_to_string};
     use actix_web::test;
     use sqlx::PgPool;

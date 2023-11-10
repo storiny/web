@@ -1,0 +1,196 @@
+use crate::{
+    config,
+    grpc::{
+        defs::{
+            comment_def::v1::{GetCommentRequest, GetCommentResponse},
+            connection_settings_def::v1::{
+                GetConnectionSettingsRequest, GetConnectionSettingsResponse,
+            },
+            credential_settings_def::v1::{
+                GetCredentialSettingsRequest, GetCredentialSettingsResponse,
+            },
+            grpc_service::v1::api_service_server::ApiService,
+            login_activity_def::v1::{GetLoginActivityRequest, GetLoginActivityResponse},
+            notification_settings_def::v1::{
+                GetNotificationSettingsRequest, GetNotificationSettingsResponse,
+            },
+            privacy_settings_def::v1::{GetPrivacySettingsRequest, GetPrivacySettingsResponse},
+            profile_def::v1::{GetProfileRequest, GetProfileResponse},
+            response_def::v1::{
+                GetResponsesInfoRequest, GetResponsesInfoResponse, GetStoryResponsesInfoRequest,
+                GetStoryResponsesInfoResponse,
+            },
+            story_def::v1::{
+                GetDraftsInfoRequest, GetDraftsInfoResponse, GetStoriesInfoRequest,
+                GetStoriesInfoResponse, GetStoryRequest, GetStoryResponse,
+            },
+            tag_def::v1::{
+                GetFollowedTagCountRequest, GetFollowedTagCountResponse, GetTagRequest,
+                GetTagResponse,
+            },
+            token_def::v1::{
+                GetTokenRequest, GetTokenResponse, VerifyEmailRequest, VerifyEmailResponse,
+            },
+            user_def::v1::{
+                GetUserBlockCountRequest, GetUserBlockCountResponse, GetUserIdRequest,
+                GetUserIdResponse, GetUserMuteCountRequest, GetUserMuteCountResponse,
+                GetUserRelationsInfoRequest, GetUserRelationsInfoResponse,
+            },
+        },
+        endpoints,
+    },
+};
+use sqlx::{Pool, Postgres};
+use tonic::{Request, Response, Status};
+
+/// A GRPC service.
+#[derive(Debug, Clone)]
+pub struct GrpcService {
+    /// Environment configuration
+    pub config: config::Config,
+    /// Postgres connection pool
+    pub db_pool: Pool<Postgres>,
+}
+
+#[tonic::async_trait]
+impl ApiService for GrpcService {
+    async fn get_user_id(
+        &self,
+        request: Request<GetUserIdRequest>,
+    ) -> Result<Response<GetUserIdResponse>, Status> {
+        todo!()
+    }
+
+    async fn get_profile(
+        &self,
+        request: Request<GetProfileRequest>,
+    ) -> Result<Response<GetProfileResponse>, Status> {
+        todo!()
+    }
+
+    async fn get_tag(
+        &self,
+        request: Request<GetTagRequest>,
+    ) -> Result<Response<GetTagResponse>, Status> {
+        todo!()
+    }
+
+    async fn get_token(
+        &self,
+        request: Request<GetTokenRequest>,
+    ) -> Result<Response<GetTokenResponse>, Status> {
+        todo!()
+    }
+
+    async fn verify_email(
+        &self,
+        request: Request<VerifyEmailRequest>,
+    ) -> Result<Response<VerifyEmailResponse>, Status> {
+        todo!()
+    }
+
+    async fn get_credential_settings(
+        &self,
+        request: Request<GetCredentialSettingsRequest>,
+    ) -> Result<Response<GetCredentialSettingsResponse>, Status> {
+        todo!()
+    }
+
+    async fn get_privacy_settings(
+        &self,
+        request: Request<GetPrivacySettingsRequest>,
+    ) -> Result<Response<GetPrivacySettingsResponse>, Status> {
+        todo!()
+    }
+
+    async fn get_notification_settings(
+        &self,
+        request: Request<GetNotificationSettingsRequest>,
+    ) -> Result<Response<GetNotificationSettingsResponse>, Status> {
+        todo!()
+    }
+
+    async fn get_connection_settings(
+        &self,
+        request: Request<GetConnectionSettingsRequest>,
+    ) -> Result<Response<GetConnectionSettingsResponse>, Status> {
+        todo!()
+    }
+
+    async fn get_login_activity(
+        &self,
+        request: Request<GetLoginActivityRequest>,
+    ) -> Result<Response<GetLoginActivityResponse>, Status> {
+        todo!()
+    }
+
+    async fn get_drafts_info(
+        &self,
+        request: Request<GetDraftsInfoRequest>,
+    ) -> Result<Response<GetDraftsInfoResponse>, Status> {
+        todo!()
+    }
+
+    async fn get_stories_info(
+        &self,
+        request: Request<GetStoriesInfoRequest>,
+    ) -> Result<Response<GetStoriesInfoResponse>, Status> {
+        todo!()
+    }
+
+    async fn get_responses_info(
+        &self,
+        request: Request<GetResponsesInfoRequest>,
+    ) -> Result<Response<GetResponsesInfoResponse>, Status> {
+        endpoints::get_responses_info::get_responses_info(self, request).await
+    }
+
+    async fn get_story_responses_info(
+        &self,
+        request: Request<GetStoryResponsesInfoRequest>,
+    ) -> Result<Response<GetStoryResponsesInfoResponse>, Status> {
+        todo!()
+    }
+
+    async fn get_followed_tag_count(
+        &self,
+        request: Request<GetFollowedTagCountRequest>,
+    ) -> Result<Response<GetFollowedTagCountResponse>, Status> {
+        todo!()
+    }
+
+    async fn get_user_relations_info(
+        &self,
+        request: Request<GetUserRelationsInfoRequest>,
+    ) -> Result<Response<GetUserRelationsInfoResponse>, Status> {
+        todo!()
+    }
+
+    async fn get_user_block_count(
+        &self,
+        request: Request<GetUserBlockCountRequest>,
+    ) -> Result<Response<GetUserBlockCountResponse>, Status> {
+        todo!()
+    }
+
+    async fn get_user_mute_count(
+        &self,
+        request: Request<GetUserMuteCountRequest>,
+    ) -> Result<Response<GetUserMuteCountResponse>, Status> {
+        todo!()
+    }
+
+    async fn get_story(
+        &self,
+        request: Request<GetStoryRequest>,
+    ) -> Result<Response<GetStoryResponse>, Status> {
+        todo!()
+    }
+
+    async fn get_comment(
+        &self,
+        request: Request<GetCommentRequest>,
+    ) -> Result<Response<GetCommentResponse>, Status> {
+        todo!()
+    }
+}

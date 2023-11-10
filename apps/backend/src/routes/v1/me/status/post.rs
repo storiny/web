@@ -1,6 +1,6 @@
 use crate::{
-    error::AppError, error::FormErrorResponse, middleware::identity::identity::Identity,
-    user_def::v1::StatusDuration, AppState,
+    error::AppError, error::FormErrorResponse, grpc::defs::user_def::v1::StatusDuration,
+    middleware::identity::identity::Identity, AppState,
 };
 use actix_web::{post, web, HttpResponse};
 use actix_web_validator::Json;
@@ -103,7 +103,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::test_utils::assert_form_error_response;
-    use crate::{test_utils::init_app_for_test, user_def::v1::StatusVisibility};
+    use crate::{grpc::defs::user_def::v1::StatusVisibility, test_utils::init_app_for_test};
     use actix_web::test;
     use sqlx::{PgPool, Row};
 

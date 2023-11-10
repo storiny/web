@@ -1,6 +1,6 @@
 use crate::{
-    connection_def::v1::Provider,
     error::AppError,
+    grpc::defs::connection_def::v1::Provider,
     middleware::identity::identity::Identity,
     oauth::icons::youtube::YOUTUBE_LOGO,
     routes::oauth::{AuthRequest, ConnectionError},

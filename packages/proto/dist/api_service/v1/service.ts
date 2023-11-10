@@ -8,6 +8,7 @@ import type {
   ServiceError,
   UntypedServiceImplementation,
 } from "@grpc/grpc-js";
+import _m0 from "protobufjs/minimal";
 import { GetCommentRequest, GetCommentResponse } from "../../comment_def/v1/def";
 import { GetConnectionSettingsRequest, GetConnectionSettingsResponse } from "../../connection_settings_def/v1/def";
 import { GetCredentialSettingsRequest, GetCredentialSettingsResponse } from "../../credential_settings_def/v1/def";
@@ -51,6 +52,53 @@ import {
 } from "../../user_def/v1/def";
 
 export const protobufPackage = "api_service.v1";
+
+/** This is necessary to generate an output file for tonic. */
+export interface Placeholder {
+}
+
+function createBasePlaceholder(): Placeholder {
+  return {};
+}
+
+export const Placeholder = {
+  encode(_: Placeholder, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Placeholder {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePlaceholder();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): Placeholder {
+    return {};
+  },
+
+  toJSON(_: Placeholder): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Placeholder>, I>>(base?: I): Placeholder {
+    return Placeholder.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Placeholder>, I>>(_: I): Placeholder {
+    const message = createBasePlaceholder();
+    return message;
+  },
+};
 
 /** Service definition */
 export type ApiServiceService = typeof ApiServiceService;
@@ -648,3 +696,15 @@ export const ApiServiceClient = makeGenericClientConstructor(
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): ApiServiceClient;
   service: typeof ApiServiceService;
 };
+
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+
+export type DeepPartial<T> = T extends Builtin ? T
+  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
+  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
+  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
+  : Partial<T>;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };

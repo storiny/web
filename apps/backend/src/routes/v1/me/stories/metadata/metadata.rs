@@ -219,8 +219,8 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::{
+        grpc::defs::story_def::v1::{StoryAgeRestriction, StoryLicense, StoryVisibility},
         models::story::StoryCategory,
-        story_def::v1::{StoryAgeRestriction, StoryLicense, StoryVisibility},
         test_utils::{assert_form_error_response, assert_toast_error_response, init_app_for_test},
     };
     use actix_web::test;

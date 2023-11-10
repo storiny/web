@@ -1,4 +1,4 @@
-use crate::story_def::v1::{StoryAgeRestriction, StoryLicense, StoryVisibility};
+use crate::grpc::defs::story_def::v1::{StoryAgeRestriction, StoryLicense, StoryVisibility};
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
