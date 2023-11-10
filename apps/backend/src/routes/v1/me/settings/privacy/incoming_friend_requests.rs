@@ -1,4 +1,4 @@
-use crate::privacy_settings_def::v1::IncomingFriendRequest;
+use crate::grpc::defs::privacy_settings_def::v1::IncomingFriendRequest;
 use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
 use actix_web::{patch, web, HttpResponse};
 use actix_web_validator::Json;

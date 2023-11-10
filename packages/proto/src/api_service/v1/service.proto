@@ -98,3 +98,6 @@ service ApiService {
    */
   rpc GetComment(comment_def.v1.GetCommentRequest) returns (comment_def.v1.GetCommentResponse) {}
 }
+
+// This is necessary to generate an output file for tonic.
+message Placeholder {}

@@ -1,7 +1,7 @@
 use crate::oauth::icons::spotify::SPOTIFY_LOGO;
 use crate::{
-    connection_def::v1::Provider,
     error::AppError,
+    grpc::defs::connection_def::v1::Provider,
     middleware::identity::identity::Identity,
     routes::oauth::{AuthRequest, ConnectionError},
     AppState, ConnectionTemplate,

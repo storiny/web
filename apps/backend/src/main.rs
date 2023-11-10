@@ -18,11 +18,15 @@ use rusoto_s3::S3Client;
 use rusoto_ses::SesClient;
 use rusoto_signature::Region;
 use sqlx::postgres::PgPoolOptions;
+use sqlx::{Pool, Postgres};
 use std::{io, time::Duration};
+use storiny::grpc::defs::grpc_service::v1::api_service_server::ApiServiceServer;
+use storiny::grpc::service::GrpcService;
 use storiny::{
     config::Config, error::FormErrorResponse, middleware::identity::middleware::IdentityMiddleware,
     oauth::get_oauth_client_map, *,
 };
+use tonic::codegen::CompressionEncoding;
 use user_agent_parser::UserAgentParser;
 
 mod middleware;
@@ -32,6 +36,18 @@ async fn not_found() -> impl Responder {
     HttpResponse::NotFound()
         .content_type(ContentType::plaintext())
         .body("Not found")
+}
+
+async fn init_grpc(config: Config, db_pool: Pool<Postgres>) {
+    tonic::transport::Server::builder()
+        .add_service(
+            ApiServiceServer::new(GrpcService { config, db_pool })
+                .send_compressed(CompressionEncoding::Gzip)
+                .accept_compressed(CompressionEncoding::Gzip),
+        )
+        .serve("127.0.0.1:50051".parse().unwrap())
+        .await
+        .unwrap();
 }
 
 #[actix_web::main]
@@ -69,7 +85,9 @@ async fn main() -> io::Result<()> {
 
             // Session
             let secret_key = Key::from(&config.session_secret_key.as_bytes());
-            let redis_store = RedisSessionStore::new(&redis_connection_string.clone())
+            let redis_store = RedisSessionStore::builder(&redis_connection_string.clone())
+                .cache_keygen(|key| format!("s:{}", key)) // Add prefix to session records
+                .build()
                 .await
                 .unwrap();
 
@@ -88,6 +106,9 @@ async fn main() -> io::Result<()> {
                     std::process::exit(1);
                 }
             };
+
+            // TODO
+            init_grpc(config.clone(), db_pool.clone()).await;
 
             HttpServer::new(move || {
                 let input = SimpleInputFunctionBuilder::new(Duration::from_secs(5), 25) // 25 requests / 5s

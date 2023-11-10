@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use sqlx::{PgPool, Row};
-    use storiny::privacy_settings_def::v1::IncomingFriendRequest;
+    use storiny::grpc::defs::privacy_settings_def::v1::IncomingFriendRequest;
 
     #[sqlx::test(fixtures("user"))]
     async fn can_send_a_friend_request(pool: PgPool) -> sqlx::Result<()> {
