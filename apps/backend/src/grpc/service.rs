@@ -40,6 +40,8 @@ use crate::{
         endpoints,
     },
 };
+use actix::Addr;
+use actix_redis::RedisActor;
 use sqlx::{Pool, Postgres};
 use tonic::{Request, Response, Status};
 
@@ -50,6 +52,8 @@ pub struct GrpcService {
     pub config: config::Config,
     /// Postgres connection pool
     pub db_pool: Pool<Postgres>,
+    /// Redis connection instance
+    pub redis: Addr<RedisActor>,
 }
 
 #[tonic::async_trait]
@@ -58,7 +62,7 @@ impl ApiService for GrpcService {
         &self,
         request: Request<GetUserIdRequest>,
     ) -> Result<Response<GetUserIdResponse>, Status> {
-        todo!()
+        endpoints::get_user_id::get_user_id(self, request).await
     }
 
     async fn get_profile(

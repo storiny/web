@@ -9,6 +9,8 @@ pub struct Config {
     pub host: String,
     /// App port
     pub port: String,
+    /// GRPC service endpoint
+    pub grpc_endpoint: String,
     /// Public URL of the API server
     pub api_server_url: String,
     /// Allowed client origin (CORS)

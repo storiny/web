@@ -10,7 +10,7 @@ use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{
     cookie::{Cookie, Key, SameSite},
     dev::{HttpServiceFactory, Service, ServiceResponse},
-    post, test, web, App, Error, HttpRequest, HttpResponse, Responder,
+    get, post, test, web, App, Error, HttpRequest, HttpResponse, Responder,
 };
 use rusoto_mock::{MockCredentialsProvider, MockRequestDispatcher};
 use rusoto_s3::S3Client;
@@ -23,6 +23,12 @@ use user_agent_parser::UserAgentParser;
 #[post("/__login__")]
 async fn post(req: HttpRequest) -> impl Responder {
     Identity::login(&req.extensions(), 1_i64).unwrap();
+    HttpResponse::Ok().finish()
+}
+
+// An emty endpoint
+#[get("/__empty__")]
+pub async fn empty_service() -> impl Responder {
     HttpResponse::Ok().finish()
 }
 

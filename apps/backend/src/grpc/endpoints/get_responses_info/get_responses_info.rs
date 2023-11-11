@@ -20,7 +20,7 @@ pub async fn get_responses_info(
         r#"
         SELECT
             (SELECT
-                 COUNT(*) AS "count"
+                 COUNT(*)
              FROM
                  replies
              WHERE
@@ -28,7 +28,7 @@ pub async fn get_responses_info(
                AND deleted_at IS NULL
             ) AS "reply_count",
             (SELECT
-                 COUNT(*) AS "count"
+                 COUNT(*)
              FROM
                  comments
              WHERE
@@ -50,31 +50,30 @@ pub async fn get_responses_info(
 
 #[cfg(test)]
 mod tests {
-    use crate::grpc::defs::response_def::v1::GetResponsesInfoRequest;
-    use crate::test_utils::init_grpc_service_for_test;
+    use crate::{
+        grpc::defs::response_def::v1::GetResponsesInfoRequest, test_utils::test_grpc_service,
+    };
     use sqlx::PgPool;
     use tonic::Request;
 
-    #[sqlx::test]
-    async fn abcd(pool: PgPool) {
-        let (serve_future, mut client) = init_grpc_service_for_test(pool).await;
+    #[sqlx::test(fixtures("get_responses_info"))]
+    async fn can_return_responses_info(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            false,
+            Box::new(|mut client, _, user_id| async move {
+                let response = client
+                    .get_responses_info(Request::new(GetResponsesInfoRequest {
+                        id: user_id.unwrap().to_string(),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
 
-        let request_future = async {
-            let response = client
-                .get_responses_info(Request::new(GetResponsesInfoRequest {
-                    id: "1".to_string(),
-                }))
-                .await
-                .unwrap()
-                .into_inner();
-
-            assert_eq!(1_u32, response.comment_count);
-        };
-
-        // Wait for completion, when the client request future completes
-        tokio::select! {
-            _ = serve_future => panic!("server returned first"),
-            _ = request_future => (),
-        }
+                assert_eq!(2_u32, response.comment_count);
+                assert_eq!(2_u32, response.reply_count);
+            }),
+        )
+        .await;
     }
 }

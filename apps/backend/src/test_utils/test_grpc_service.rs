@@ -1,0 +1,99 @@
+use crate::{
+    config::Config,
+    grpc::{
+        defs::grpc_service::{
+            v1::api_service_client::ApiServiceClient, v1::api_service_server::ApiServiceServer,
+        },
+        service::GrpcService,
+    },
+};
+use actix_redis::RedisActor;
+use futures_core;
+use sqlx::PgPool;
+use std::future::Future;
+use std::sync::Arc;
+use tempfile::NamedTempFile;
+use tokio::net::{UnixListener, UnixStream};
+use tokio_stream::wrappers::UnixListenerStream;
+use tonic::transport::{Channel, Endpoint, Server, Uri};
+use tower::service_fn;
+
+/// Initializes the GRPC service and executes the body of test closure.
+///
+/// * `db_pool` - Postgres pool
+/// * `insert_user` - Whether to insert a user to the database
+/// * `test_closure` - A closure with the body containing the test code
+pub async fn test_grpc_service<B>(
+    db_pool: PgPool,
+    insert_user: bool,
+    test_closure: Box<dyn Fn(ApiServiceClient<Channel>, PgPool, Option<i64>) -> B>,
+) where
+    B: Future<Output = ()>,
+{
+    let config = envy::from_env::<Config>().unwrap();
+
+    if insert_user {
+        // Insert the user
+        sqlx::query(
+            r#"
+            INSERT INTO users(id, name, username, email)
+            VALUES ($1, $2, $3, $4)
+            "#,
+        )
+        .bind(1_i64)
+        .bind("Some user".to_string())
+        .bind("some_user".to_string())
+        .bind("someone@example.com".to_string())
+        .execute(&db_pool)
+        .await
+        .unwrap();
+    }
+
+    let socket = Arc::new(NamedTempFile::new().unwrap().into_temp_path());
+    std::fs::remove_file(&*socket).unwrap();
+
+    let uds = UnixListener::bind(&*socket).unwrap();
+    let stream = UnixListenerStream::new(uds);
+
+    let server_future = async {
+        let result = Server::builder()
+            .add_service(ApiServiceServer::new(GrpcService {
+                redis: RedisActor::start(format!("{}:{}", &config.redis_host, &config.redis_port)),
+                config: envy::from_env::<Config>().unwrap(),
+                db_pool: db_pool.clone(),
+            }))
+            .serve_with_incoming(stream)
+            .await;
+
+        // Server should be running
+        assert!(result.is_ok());
+    };
+
+    // Connect to the server over a Unix socket
+    let socket = Arc::clone(&socket);
+
+    // The URL will be ignored.
+    let channel = Endpoint::try_from("http://test.com")
+        .unwrap()
+        .connect_with_connector(service_fn(move |_: Uri| {
+            let socket = Arc::clone(&socket);
+            async move { UnixStream::connect(&*socket).await }
+        }))
+        .await
+        .unwrap();
+
+    // Build a client instance
+    let client = ApiServiceClient::new(channel);
+
+    // Execute the test closure
+    let request_future = test_closure(
+        client,
+        db_pool.clone(),
+        if insert_user { Some(1_i64) } else { None },
+    );
+
+    tokio::select! {
+        _ = server_future => panic!("Server returned first"),
+        _ = request_future => (),
+    }
+}
