@@ -38,14 +38,24 @@ async fn not_found() -> impl Responder {
         .body("Not found")
 }
 
-async fn init_grpc(config: Config, db_pool: Pool<Postgres>) {
+/// Initializes and starts the GRPC service.
+///
+/// * `config` - The environment configuration.
+/// * `db_pool` - The Postgres pool.
+async fn start_grpc_server(config: Config, db_pool: Pool<Postgres>) {
+    let endpoint = config.grpc_endpoint.clone();
+
     tonic::transport::Server::builder()
         .add_service(
-            ApiServiceServer::new(GrpcService { config, db_pool })
-                .send_compressed(CompressionEncoding::Gzip)
-                .accept_compressed(CompressionEncoding::Gzip),
+            ApiServiceServer::new(GrpcService {
+                redis: RedisActor::start(format!("{}:{}", &config.redis_host, &config.redis_port)),
+                config,
+                db_pool,
+            })
+            .send_compressed(CompressionEncoding::Gzip)
+            .accept_compressed(CompressionEncoding::Gzip),
         )
-        .serve("127.0.0.1:50051".parse().unwrap())
+        .serve(endpoint.parse().unwrap())
         .await
         .unwrap();
 }
@@ -107,8 +117,8 @@ async fn main() -> io::Result<()> {
                 }
             };
 
-            // TODO
-            init_grpc(config.clone(), db_pool.clone()).await;
+            // Start the GRPC server.
+            start_grpc_server(config.clone(), db_pool.clone()).await;
 
             HttpServer::new(move || {
                 let input = SimpleInputFunctionBuilder::new(Duration::from_secs(5), 25) // 25 requests / 5s
