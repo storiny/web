@@ -68,7 +68,7 @@ impl Identity {
     /// * `id` - ID of the user.
     pub fn login(ext: &Extensions, id: i64) -> Result<Self, LoginError> {
         let inner = IdentityInner::extract(ext);
-        inner.session.insert(ID_KEY, id.to_string())?;
+        inner.session.insert(ID_KEY, id)?;
         let now = OffsetDateTime::now_utc().unix_timestamp();
         inner.session.insert(LOGIN_UNIX_TIMESTAMP_KEY, now)?;
         inner.session.renew();

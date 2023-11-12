@@ -1,4 +1,5 @@
 pub mod decode_uri_encoded_story_categories;
+pub mod extract_session_key_from_cookie;
 pub mod flag;
 pub mod generate_recovery_codes;
 pub mod generate_totp;

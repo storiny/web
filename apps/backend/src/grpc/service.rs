@@ -40,20 +40,19 @@ use crate::{
         endpoints,
     },
 };
-use actix::Addr;
-use actix_redis::RedisActor;
+use deadpool_redis::Pool as RedisPool;
 use sqlx::{Pool, Postgres};
 use tonic::{Request, Response, Status};
 
 /// A GRPC service.
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct GrpcService {
     /// Environment configuration
     pub config: config::Config,
     /// Postgres connection pool
     pub db_pool: Pool<Postgres>,
     /// Redis connection instance
-    pub redis: Addr<RedisActor>,
+    pub redis_pool: RedisPool,
 }
 
 #[tonic::async_trait]
@@ -139,7 +138,7 @@ impl ApiService for GrpcService {
         &self,
         request: Request<GetStoriesInfoRequest>,
     ) -> Result<Response<GetStoriesInfoResponse>, Status> {
-        todo!()
+        endpoints::get_stories_info::get_stories_info(self, request).await
     }
 
     async fn get_responses_info(
