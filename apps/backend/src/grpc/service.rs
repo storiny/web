@@ -82,7 +82,7 @@ impl ApiService for GrpcService {
         &self,
         request: Request<GetTokenRequest>,
     ) -> Result<Response<GetTokenResponse>, Status> {
-        todo!()
+        endpoints::get_tag::get_tag(self, request).await
     }
 
     async fn verify_email(
@@ -131,7 +131,7 @@ impl ApiService for GrpcService {
         &self,
         request: Request<GetDraftsInfoRequest>,
     ) -> Result<Response<GetDraftsInfoResponse>, Status> {
-        todo!()
+        endpoints::get_drafts_info::get_drafts_info(self, request).await
     }
 
     async fn get_stories_info(

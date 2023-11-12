@@ -70,8 +70,8 @@ mod tests {
                     .unwrap()
                     .into_inner();
 
-                assert_eq!(2_u32, response.published_story_count);
-                assert_eq!(2_u32, response.deleted_story_count);
+                assert_eq!(response.published_story_count, 2_u32);
+                assert_eq!(response.deleted_story_count, 2_u32);
             }),
         )
         .await;

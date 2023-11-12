@@ -32,12 +32,11 @@ enum StoryLicense {
 message Draft {
   string id /*                   */ = 1;
   string title /*                */ = 2;
-  optional string splash_id /*   */ = 5;
-  optional string splash_hex /*  */ = 6;
-  uint32 word_count /*           */ = 9;
-  string created_at /*           */ = 10;
-  optional string edited_at /*   */ = 11;
-  optional string published_at /**/ = 12;
+  optional string splash_id /*   */ = 3;
+  optional string splash_hex /*  */ = 4;
+  uint32 word_count /*           */ = 5;
+  string created_at /*           */ = 6;
+  optional string edited_at /*   */ = 7;
 }
 
 // Drafts information request

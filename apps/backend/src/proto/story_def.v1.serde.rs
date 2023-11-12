@@ -28,9 +28,6 @@ impl serde::Serialize for Draft {
         if self.edited_at.is_some() {
             len += 1;
         }
-        if self.published_at.is_some() {
-            len += 1;
-        }
         let mut struct_ser = serializer.serialize_struct("story_def.v1.Draft", len)?;
         if !self.id.is_empty() {
             struct_ser.serialize_field("id", &self.id)?;
@@ -52,9 +49,6 @@ impl serde::Serialize for Draft {
         }
         if let Some(v) = self.edited_at.as_ref() {
             struct_ser.serialize_field("editedAt", v)?;
-        }
-        if let Some(v) = self.published_at.as_ref() {
-            struct_ser.serialize_field("publishedAt", v)?;
         }
         struct_ser.end()
     }
@@ -78,8 +72,6 @@ impl<'de> serde::Deserialize<'de> for Draft {
             "createdAt",
             "edited_at",
             "editedAt",
-            "published_at",
-            "publishedAt",
         ];
 
         #[allow(clippy::enum_variant_names)]
@@ -91,7 +83,6 @@ impl<'de> serde::Deserialize<'de> for Draft {
             WordCount,
             CreatedAt,
             EditedAt,
-            PublishedAt,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
@@ -120,7 +111,6 @@ impl<'de> serde::Deserialize<'de> for Draft {
                             "wordCount" | "word_count" => Ok(GeneratedField::WordCount),
                             "createdAt" | "created_at" => Ok(GeneratedField::CreatedAt),
                             "editedAt" | "edited_at" => Ok(GeneratedField::EditedAt),
-                            "publishedAt" | "published_at" => Ok(GeneratedField::PublishedAt),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -147,7 +137,6 @@ impl<'de> serde::Deserialize<'de> for Draft {
                 let mut word_count__ = None;
                 let mut created_at__ = None;
                 let mut edited_at__ = None;
-                let mut published_at__ = None;
                 while let Some(k) = map.next_key()? {
                     match k {
                         GeneratedField::Id => {
@@ -194,12 +183,6 @@ impl<'de> serde::Deserialize<'de> for Draft {
                             }
                             edited_at__ = map.next_value()?;
                         }
-                        GeneratedField::PublishedAt => {
-                            if published_at__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("publishedAt"));
-                            }
-                            published_at__ = map.next_value()?;
-                        }
                     }
                 }
                 Ok(Draft {
@@ -210,7 +193,6 @@ impl<'de> serde::Deserialize<'de> for Draft {
                     word_count: word_count__.unwrap_or_default(),
                     created_at: created_at__.unwrap_or_default(),
                     edited_at: edited_at__,
-                    published_at: published_at__,
                 })
             }
         }

@@ -163,7 +163,6 @@ export interface Draft {
   word_count: number;
   created_at: string;
   edited_at?: string | undefined;
-  published_at?: string | undefined;
 }
 
 export interface GetDraftsInfoRequest {
@@ -238,7 +237,6 @@ function createBaseDraft(): Draft {
     word_count: 0,
     created_at: "",
     edited_at: undefined,
-    published_at: undefined,
   };
 }
 
@@ -251,22 +249,19 @@ export const Draft = {
       writer.uint32(18).string(message.title);
     }
     if (message.splash_id !== undefined) {
-      writer.uint32(42).string(message.splash_id);
+      writer.uint32(26).string(message.splash_id);
     }
     if (message.splash_hex !== undefined) {
-      writer.uint32(50).string(message.splash_hex);
+      writer.uint32(34).string(message.splash_hex);
     }
     if (message.word_count !== 0) {
-      writer.uint32(72).uint32(message.word_count);
+      writer.uint32(40).uint32(message.word_count);
     }
     if (message.created_at !== "") {
-      writer.uint32(82).string(message.created_at);
+      writer.uint32(50).string(message.created_at);
     }
     if (message.edited_at !== undefined) {
-      writer.uint32(90).string(message.edited_at);
-    }
-    if (message.published_at !== undefined) {
-      writer.uint32(98).string(message.published_at);
+      writer.uint32(58).string(message.edited_at);
     }
     return writer;
   },
@@ -292,47 +287,40 @@ export const Draft = {
 
           message.title = reader.string();
           continue;
-        case 5:
-          if (tag !== 42) {
+        case 3:
+          if (tag !== 26) {
             break;
           }
 
           message.splash_id = reader.string();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.splash_hex = reader.string();
+          continue;
+        case 5:
+          if (tag !== 40) {
+            break;
+          }
+
+          message.word_count = reader.uint32();
           continue;
         case 6:
           if (tag !== 50) {
             break;
           }
 
-          message.splash_hex = reader.string();
-          continue;
-        case 9:
-          if (tag !== 72) {
-            break;
-          }
-
-          message.word_count = reader.uint32();
-          continue;
-        case 10:
-          if (tag !== 82) {
-            break;
-          }
-
           message.created_at = reader.string();
           continue;
-        case 11:
-          if (tag !== 90) {
+        case 7:
+          if (tag !== 58) {
             break;
           }
 
           message.edited_at = reader.string();
-          continue;
-        case 12:
-          if (tag !== 98) {
-            break;
-          }
-
-          message.published_at = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -352,7 +340,6 @@ export const Draft = {
       word_count: isSet(object.word_count) ? globalThis.Number(object.word_count) : 0,
       created_at: isSet(object.created_at) ? globalThis.String(object.created_at) : "",
       edited_at: isSet(object.edited_at) ? globalThis.String(object.edited_at) : undefined,
-      published_at: isSet(object.published_at) ? globalThis.String(object.published_at) : undefined,
     };
   },
 
@@ -379,9 +366,6 @@ export const Draft = {
     if (message.edited_at !== undefined) {
       obj.edited_at = message.edited_at;
     }
-    if (message.published_at !== undefined) {
-      obj.published_at = message.published_at;
-    }
     return obj;
   },
 
@@ -397,7 +381,6 @@ export const Draft = {
     message.word_count = object.word_count ?? 0;
     message.created_at = object.created_at ?? "";
     message.edited_at = object.edited_at ?? undefined;
-    message.published_at = object.published_at ?? undefined;
     return message;
   },
 };
