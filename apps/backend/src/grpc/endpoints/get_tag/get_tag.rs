@@ -20,7 +20,7 @@ struct Draft {
 }
 
 /// Returns the `pending_draft_count`, `deleted_draft_count` and `latest_draft` for a user.
-pub async fn get_drafts_info(
+pub async fn get_tag(
     client: &GrpcService,
     request: Request<GetDraftsInfoRequest>,
 ) -> Result<Response<GetDraftsInfoResponse>, Status> {

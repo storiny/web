@@ -70,8 +70,8 @@ mod tests {
                     .unwrap()
                     .into_inner();
 
-                assert_eq!(2_u32, response.comment_count);
-                assert_eq!(2_u32, response.reply_count);
+                assert_eq!(response.comment_count, 2_u32);
+                assert_eq!(response.reply_count, 2_u32);
             }),
         )
         .await;

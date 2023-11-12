@@ -6,18 +6,16 @@ pub struct Draft {
     pub id: ::prost::alloc::string::String,
     #[prost(string, tag="2")]
     pub title: ::prost::alloc::string::String,
-    #[prost(string, optional, tag="5")]
+    #[prost(string, optional, tag="3")]
     pub splash_id: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="6")]
+    #[prost(string, optional, tag="4")]
     pub splash_hex: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(uint32, tag="9")]
+    #[prost(uint32, tag="5")]
     pub word_count: u32,
-    #[prost(string, tag="10")]
+    #[prost(string, tag="6")]
     pub created_at: ::prost::alloc::string::String,
-    #[prost(string, optional, tag="11")]
+    #[prost(string, optional, tag="7")]
     pub edited_at: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="12")]
-    pub published_at: ::core::option::Option<::prost::alloc::string::String>,
 }
 // Drafts information request
 
