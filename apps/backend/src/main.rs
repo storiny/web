@@ -44,11 +44,18 @@ async fn not_found() -> impl Responder {
 /// * `db_pool` - The Postgres pool.
 async fn start_grpc_server(config: Config, db_pool: Pool<Postgres>) {
     let endpoint = config.grpc_endpoint.clone();
+    let cfg = deadpool_redis::Config::from_url(format!(
+        "redis://{}:{}",
+        &config.redis_host, &config.redis_port
+    ));
+    let pool = cfg
+        .create_pool(Some(deadpool_redis::Runtime::Tokio1))
+        .unwrap();
 
     tonic::transport::Server::builder()
         .add_service(
             ApiServiceServer::new(GrpcService {
-                redis: RedisActor::start(format!("{}:{}", &config.redis_host, &config.redis_port)),
+                redis_pool: pool,
                 config,
                 db_pool,
             })

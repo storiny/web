@@ -7,8 +7,6 @@ use crate::{
         service::GrpcService,
     },
 };
-use actix_redis::RedisActor;
-use futures_core;
 use sqlx::PgPool;
 use std::future::Future;
 use std::sync::Arc;
@@ -55,10 +53,19 @@ pub async fn test_grpc_service<B>(
     let uds = UnixListener::bind(&*socket).unwrap();
     let stream = UnixListenerStream::new(uds);
 
+    // Redis
+    let mut cfg = deadpool_redis::Config::from_url(format!(
+        "redis://{}:{}",
+        &config.redis_host, &config.redis_port
+    ));
+    let pool = cfg
+        .create_pool(Some(deadpool_redis::Runtime::Tokio1))
+        .unwrap();
+
     let server_future = async {
         let result = Server::builder()
             .add_service(ApiServiceServer::new(GrpcService {
-                redis: RedisActor::start(format!("{}:{}", &config.redis_host, &config.redis_port)),
+                redis_pool: pool,
                 config: envy::from_env::<Config>().unwrap(),
                 db_pool: db_pool.clone(),
             }))

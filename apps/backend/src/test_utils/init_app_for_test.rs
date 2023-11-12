@@ -51,8 +51,15 @@ pub async fn init_app_for_test(
 ) {
     let config = envy::from_env::<Config>().expect("Unable to load environment configuration");
     let redis_connection_string = format!("redis://{}:{}", config.redis_host, config.redis_port);
-    let secret_key = Key::generate();
-    let redis_store = RedisSessionStore::new(&redis_connection_string)
+    let secret_key = Key::from(
+        envy::from_env::<Config>()
+            .unwrap()
+            .session_secret_key
+            .as_bytes(),
+    );
+    let redis_store = RedisSessionStore::builder(&redis_connection_string)
+        .cache_keygen(|key| format!("s:{}", key)) // Add prefix to session records
+        .build()
         .await
         .unwrap();
 
