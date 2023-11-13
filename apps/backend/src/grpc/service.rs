@@ -152,7 +152,7 @@ impl ApiService for GrpcService {
         &self,
         request: Request<GetStoryResponsesInfoRequest>,
     ) -> Result<Response<GetStoryResponsesInfoResponse>, Status> {
-        todo!()
+        endpoints::get_story_responses_info::get_story_responses_info(self, request).await
     }
 
     async fn get_followed_tag_count(
