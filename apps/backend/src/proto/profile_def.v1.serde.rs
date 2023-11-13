@@ -173,31 +173,31 @@ impl serde::Serialize for GetProfileResponse {
         if !self.connections.is_empty() {
             len += 1;
         }
-        if self.is_following.is_some() {
+        if self.is_following {
             len += 1;
         }
-        if self.is_follower.is_some() {
+        if self.is_follower {
             len += 1;
         }
-        if self.is_friend.is_some() {
+        if self.is_friend {
             len += 1;
         }
-        if self.is_subscribed.is_some() {
+        if self.is_subscribed {
             len += 1;
         }
-        if self.is_friend_request_sent.is_some() {
+        if self.is_friend_request_sent {
             len += 1;
         }
-        if self.is_blocked_by_user.is_some() {
+        if self.is_blocked_by_user {
             len += 1;
         }
-        if self.is_blocking.is_some() {
+        if self.is_blocking {
             len += 1;
         }
-        if self.is_muted.is_some() {
+        if self.is_muted {
             len += 1;
         }
-        if self.is_self.is_some() {
+        if self.is_self {
             len += 1;
         }
         let mut struct_ser = serializer.serialize_struct("profile_def.v1.GetProfileResponse", len)?;
@@ -258,32 +258,32 @@ impl serde::Serialize for GetProfileResponse {
         if !self.connections.is_empty() {
             struct_ser.serialize_field("connections", &self.connections)?;
         }
-        if let Some(v) = self.is_following.as_ref() {
-            struct_ser.serialize_field("isFollowing", v)?;
+        if self.is_following {
+            struct_ser.serialize_field("isFollowing", &self.is_following)?;
         }
-        if let Some(v) = self.is_follower.as_ref() {
-            struct_ser.serialize_field("isFollower", v)?;
+        if self.is_follower {
+            struct_ser.serialize_field("isFollower", &self.is_follower)?;
         }
-        if let Some(v) = self.is_friend.as_ref() {
-            struct_ser.serialize_field("isFriend", v)?;
+        if self.is_friend {
+            struct_ser.serialize_field("isFriend", &self.is_friend)?;
         }
-        if let Some(v) = self.is_subscribed.as_ref() {
-            struct_ser.serialize_field("isSubscribed", v)?;
+        if self.is_subscribed {
+            struct_ser.serialize_field("isSubscribed", &self.is_subscribed)?;
         }
-        if let Some(v) = self.is_friend_request_sent.as_ref() {
-            struct_ser.serialize_field("isFriendRequestSent", v)?;
+        if self.is_friend_request_sent {
+            struct_ser.serialize_field("isFriendRequestSent", &self.is_friend_request_sent)?;
         }
-        if let Some(v) = self.is_blocked_by_user.as_ref() {
-            struct_ser.serialize_field("isBlockedByUser", v)?;
+        if self.is_blocked_by_user {
+            struct_ser.serialize_field("isBlockedByUser", &self.is_blocked_by_user)?;
         }
-        if let Some(v) = self.is_blocking.as_ref() {
-            struct_ser.serialize_field("isBlocking", v)?;
+        if self.is_blocking {
+            struct_ser.serialize_field("isBlocking", &self.is_blocking)?;
         }
-        if let Some(v) = self.is_muted.as_ref() {
-            struct_ser.serialize_field("isMuted", v)?;
+        if self.is_muted {
+            struct_ser.serialize_field("isMuted", &self.is_muted)?;
         }
-        if let Some(v) = self.is_self.as_ref() {
-            struct_ser.serialize_field("isSelf", v)?;
+        if self.is_self {
+            struct_ser.serialize_field("isSelf", &self.is_self)?;
         }
         struct_ser.end()
     }
@@ -602,55 +602,55 @@ impl<'de> serde::Deserialize<'de> for GetProfileResponse {
                             if is_following__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isFollowing"));
                             }
-                            is_following__ = map.next_value()?;
+                            is_following__ = Some(map.next_value()?);
                         }
                         GeneratedField::IsFollower => {
                             if is_follower__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isFollower"));
                             }
-                            is_follower__ = map.next_value()?;
+                            is_follower__ = Some(map.next_value()?);
                         }
                         GeneratedField::IsFriend => {
                             if is_friend__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isFriend"));
                             }
-                            is_friend__ = map.next_value()?;
+                            is_friend__ = Some(map.next_value()?);
                         }
                         GeneratedField::IsSubscribed => {
                             if is_subscribed__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isSubscribed"));
                             }
-                            is_subscribed__ = map.next_value()?;
+                            is_subscribed__ = Some(map.next_value()?);
                         }
                         GeneratedField::IsFriendRequestSent => {
                             if is_friend_request_sent__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isFriendRequestSent"));
                             }
-                            is_friend_request_sent__ = map.next_value()?;
+                            is_friend_request_sent__ = Some(map.next_value()?);
                         }
                         GeneratedField::IsBlockedByUser => {
                             if is_blocked_by_user__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isBlockedByUser"));
                             }
-                            is_blocked_by_user__ = map.next_value()?;
+                            is_blocked_by_user__ = Some(map.next_value()?);
                         }
                         GeneratedField::IsBlocking => {
                             if is_blocking__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isBlocking"));
                             }
-                            is_blocking__ = map.next_value()?;
+                            is_blocking__ = Some(map.next_value()?);
                         }
                         GeneratedField::IsMuted => {
                             if is_muted__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isMuted"));
                             }
-                            is_muted__ = map.next_value()?;
+                            is_muted__ = Some(map.next_value()?);
                         }
                         GeneratedField::IsSelf => {
                             if is_self__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isSelf"));
                             }
-                            is_self__ = map.next_value()?;
+                            is_self__ = Some(map.next_value()?);
                         }
                     }
                 }
@@ -674,15 +674,15 @@ impl<'de> serde::Deserialize<'de> for GetProfileResponse {
                     friend_count: friend_count__,
                     is_private: is_private__.unwrap_or_default(),
                     connections: connections__.unwrap_or_default(),
-                    is_following: is_following__,
-                    is_follower: is_follower__,
-                    is_friend: is_friend__,
-                    is_subscribed: is_subscribed__,
-                    is_friend_request_sent: is_friend_request_sent__,
-                    is_blocked_by_user: is_blocked_by_user__,
-                    is_blocking: is_blocking__,
-                    is_muted: is_muted__,
-                    is_self: is_self__,
+                    is_following: is_following__.unwrap_or_default(),
+                    is_follower: is_follower__.unwrap_or_default(),
+                    is_friend: is_friend__.unwrap_or_default(),
+                    is_subscribed: is_subscribed__.unwrap_or_default(),
+                    is_friend_request_sent: is_friend_request_sent__.unwrap_or_default(),
+                    is_blocked_by_user: is_blocked_by_user__.unwrap_or_default(),
+                    is_blocking: is_blocking__.unwrap_or_default(),
+                    is_muted: is_muted__.unwrap_or_default(),
+                    is_self: is_self__.unwrap_or_default(),
                 })
             }
         }

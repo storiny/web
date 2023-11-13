@@ -7,8 +7,8 @@ package tag_def.v1;
 message Tag {
   string id /*                 */ = 1;
   string name /*               */ = 2;
-  int32 story_count /*         */ = 3;
-  int32 follower_count /*      */ = 4;
+  uint32 story_count /*        */ = 3;
+  uint32 follower_count /*     */ = 4;
   string created_at /*         */ = 5;
 }
 
@@ -21,13 +21,13 @@ message GetTagRequest {
 
 message GetTagResponse {
   // Base props
-  string id /*                 */ = 1;
-  string name /*               */ = 2;
-  int32 story_count /*         */ = 3;
-  int32 follower_count /*      */ = 4;
-  string created_at /*         */ = 5;
+  string id /*            */ = 1;
+  string name /*          */ = 2;
+  uint32 story_count /*   */ = 3;
+  uint32 follower_count /**/ = 4;
+  string created_at /*    */ = 5;
   // User specific props
-  optional bool is_following /**/ = 6;
+  bool is_following /*    */ = 6;
 }
 
 // Followed tag count

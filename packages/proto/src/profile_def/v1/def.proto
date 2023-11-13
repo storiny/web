@@ -33,13 +33,13 @@ message GetProfileResponse {
   bool is_private /*                                  */ = 18;
   repeated connection_def.v1.Connection connections /**/ = 19;
   // User specific props
-  optional bool is_following /*                       */ = 20;
-  optional bool is_follower /*                        */ = 21;
-  optional bool is_friend /*                          */ = 22;
-  optional bool is_subscribed /*                      */ = 23;
-  optional bool is_friend_request_sent /*             */ = 24;
-  optional bool is_blocked_by_user /*                 */ = 25;
-  optional bool is_blocking /*                        */ = 26;
-  optional bool is_muted /*                           */ = 27;
-  optional bool is_self /*                            */ = 28;
+  bool is_following /*                                */ = 20;
+  bool is_follower /*                                 */ = 21;
+  bool is_friend /*                                   */ = 22;
+  bool is_subscribed /*                               */ = 23;
+  bool is_friend_request_sent /*                      */ = 24;
+  bool is_blocked_by_user /*                          */ = 25;
+  bool is_blocking /*                                 */ = 26;
+  bool is_muted /*                                    */ = 27;
+  bool is_self /*                                     */ = 28;
 }

@@ -51,23 +51,23 @@ pub struct GetProfileResponse {
     #[prost(message, repeated, tag="19")]
     pub connections: ::prost::alloc::vec::Vec<super::super::connection_def::v1::Connection>,
     /// User specific props
-    #[prost(bool, optional, tag="20")]
-    pub is_following: ::core::option::Option<bool>,
-    #[prost(bool, optional, tag="21")]
-    pub is_follower: ::core::option::Option<bool>,
-    #[prost(bool, optional, tag="22")]
-    pub is_friend: ::core::option::Option<bool>,
-    #[prost(bool, optional, tag="23")]
-    pub is_subscribed: ::core::option::Option<bool>,
-    #[prost(bool, optional, tag="24")]
-    pub is_friend_request_sent: ::core::option::Option<bool>,
-    #[prost(bool, optional, tag="25")]
-    pub is_blocked_by_user: ::core::option::Option<bool>,
-    #[prost(bool, optional, tag="26")]
-    pub is_blocking: ::core::option::Option<bool>,
-    #[prost(bool, optional, tag="27")]
-    pub is_muted: ::core::option::Option<bool>,
-    #[prost(bool, optional, tag="28")]
-    pub is_self: ::core::option::Option<bool>,
+    #[prost(bool, tag="20")]
+    pub is_following: bool,
+    #[prost(bool, tag="21")]
+    pub is_follower: bool,
+    #[prost(bool, tag="22")]
+    pub is_friend: bool,
+    #[prost(bool, tag="23")]
+    pub is_subscribed: bool,
+    #[prost(bool, tag="24")]
+    pub is_friend_request_sent: bool,
+    #[prost(bool, tag="25")]
+    pub is_blocked_by_user: bool,
+    #[prost(bool, tag="26")]
+    pub is_blocking: bool,
+    #[prost(bool, tag="27")]
+    pub is_muted: bool,
+    #[prost(bool, tag="28")]
+    pub is_self: bool,
 }
 // @@protoc_insertion_point(module)

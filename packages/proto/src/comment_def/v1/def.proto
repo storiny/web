@@ -24,5 +24,5 @@ message GetCommentResponse {
   uint32 reply_count /*          */ = 12;
   user_def.v1.User user /*       */ = 13;
   // User specific props
-  optional bool is_liked /*      */ = 14;
+  bool is_liked /*      */ = 14;
 }

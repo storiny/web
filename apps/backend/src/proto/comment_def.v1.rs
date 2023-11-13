@@ -37,7 +37,7 @@ pub struct GetCommentResponse {
     #[prost(message, optional, tag="13")]
     pub user: ::core::option::Option<super::super::user_def::v1::User>,
     /// User specific props
-    #[prost(bool, optional, tag="14")]
-    pub is_liked: ::core::option::Option<bool>,
+    #[prost(bool, tag="14")]
+    pub is_liked: bool,
 }
 // @@protoc_insertion_point(module)

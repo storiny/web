@@ -154,7 +154,7 @@ impl serde::Serialize for GetCommentResponse {
         if self.user.is_some() {
             len += 1;
         }
-        if self.is_liked.is_some() {
+        if self.is_liked {
             len += 1;
         }
         let mut struct_ser = serializer.serialize_struct("comment_def.v1.GetCommentResponse", len)?;
@@ -197,8 +197,8 @@ impl serde::Serialize for GetCommentResponse {
         if let Some(v) = self.user.as_ref() {
             struct_ser.serialize_field("user", v)?;
         }
-        if let Some(v) = self.is_liked.as_ref() {
-            struct_ser.serialize_field("isLiked", v)?;
+        if self.is_liked {
+            struct_ser.serialize_field("isLiked", &self.is_liked)?;
         }
         struct_ser.end()
     }
@@ -408,7 +408,7 @@ impl<'de> serde::Deserialize<'de> for GetCommentResponse {
                             if is_liked__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isLiked"));
                             }
-                            is_liked__ = map.next_value()?;
+                            is_liked__ = Some(map.next_value()?);
                         }
                     }
                 }
@@ -426,7 +426,7 @@ impl<'de> serde::Deserialize<'de> for GetCommentResponse {
                     like_count: like_count__.unwrap_or_default(),
                     reply_count: reply_count__.unwrap_or_default(),
                     user: user__,
-                    is_liked: is_liked__,
+                    is_liked: is_liked__.unwrap_or_default(),
                 })
             }
         }

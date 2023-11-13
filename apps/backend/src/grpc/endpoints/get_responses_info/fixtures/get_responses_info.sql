@@ -12,11 +12,11 @@ WITH
 		INSERT INTO comments (id, content, user_id, story_id)
 			VALUES
 				(2, 'Sample content', (SELECT id FROM inserted_user), (SELECT id FROM inserted_story)),
-				(DEfault, 'Sample content', (SELECT id FROM inserted_user), (SELECT id FROM inserted_story))
+				(DEFAULT, 'Sample content', (SELECT id FROM inserted_user), (SELECT id FROM inserted_story))
 	)
 INSERT
 INTO
-	replies (content, user_id, comment_id)
+	replies (id, content, user_id, comment_id)
 VALUES
-	('Sample content', (SELECT id FROM inserted_user), 2),
-	('Sample content', (SELECT id FROM inserted_user), 2);
+	(3, 'Sample content', (SELECT id FROM inserted_user), 2),
+	(DEFAULT, 'Sample content', (SELECT id FROM inserted_user), 2);

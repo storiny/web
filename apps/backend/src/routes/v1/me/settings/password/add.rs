@@ -1,5 +1,6 @@
+use crate::grpc::defs::token_def::v1::TokenType;
 use crate::{
-    constants::{account_activity_type::AccountActivityType, token_type::TokenType},
+    constants::account_activity_type::AccountActivityType,
     error::{AppError, ToastErrorResponse},
     middleware::identity::identity::Identity,
     AppState,
@@ -55,7 +56,7 @@ async fn post(
                 WHERE type = $1 AND user_id = $2
                 "#,
             )
-            .bind(TokenType::PasswordAddVerification.to_string())
+            .bind(TokenType::PasswordAdd as i16)
             .bind(user_id)
             .fetch_one(&data.db_pool)
             .await
@@ -194,7 +195,7 @@ mod tests {
             "#,
         )
         .bind(hashed_verification_code.to_string())
-        .bind(TokenType::PasswordAddVerification.to_string())
+        .bind(TokenType::PasswordAdd as i16)
         .bind(user_id.unwrap())
         .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
         .execute(&mut *conn)
@@ -326,7 +327,7 @@ mod tests {
             "#,
         )
         .bind(hashed_verification_code.to_string())
-        .bind(TokenType::PasswordAddVerification.to_string())
+        .bind(TokenType::PasswordAdd as i16)
         .bind(user_id.unwrap())
         .bind(OffsetDateTime::now_utc() - Duration::days(1)) // The token expired yesterday
         .execute(&mut *conn)

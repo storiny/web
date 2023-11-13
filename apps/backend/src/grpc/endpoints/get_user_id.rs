@@ -57,7 +57,7 @@ mod tests {
         test_utils::{empty_service, init_app_for_test, test_grpc_service},
     };
     use sqlx::PgPool;
-    use tonic::{Code, Request, Status};
+    use tonic::{Code, Request};
 
     #[sqlx::test]
     async fn can_return_user_id(pool: PgPool) {
@@ -87,7 +87,7 @@ mod tests {
         test_grpc_service(
             pool,
             false,
-            Box::new(|mut client, pool, _| async move {
+            Box::new(|mut client, _, _| async move {
                 let response = client
                     .get_user_id(Request::new(GetUserIdRequest {
                         token: "invalid_token".to_string(),

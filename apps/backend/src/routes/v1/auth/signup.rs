@@ -1,8 +1,9 @@
+use crate::grpc::defs::token_def::v1::TokenType;
 use crate::models::user::USERNAME_REGEX;
 use crate::{
     constants::{
         email_source::EMAIL_SOURCE, email_templates::EmailTemplate,
-        reserved_usernames::RESERVED_USERNAMES, token_type::TokenType,
+        reserved_usernames::RESERVED_USERNAMES,
     },
     error::{AppError, FormErrorResponse, ToastErrorResponse},
     middleware::identity::identity::Identity,
@@ -153,7 +154,7 @@ async fn post(
                         "#,
                     )
                     .bind(hashed_token.to_string())
-                    .bind(TokenType::EmailVerify.to_string())
+                    .bind(TokenType::EmailVerification as i16)
                     .bind(user_id)
                     .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
                     .execute(&mut *txn)
@@ -260,7 +261,7 @@ mod tests {
             )
             "#,
         )
-        .bind(TokenType::EmailVerify.to_string())
+        .bind(TokenType::EmailVerification as i16)
         .fetch_one(&mut *conn)
         .await?;
 

@@ -10,7 +10,7 @@ WITH
 	)
 INSERT
 INTO
-	comments (hidden, content, user_id, story_id)
+	comments (id, hidden, content, user_id, story_id)
 VALUES
-	(TRUE, 'Sample content', (SELECT id FROM inserted_user), (SELECT id FROM inserted_story)),
-	(DEfault, 'Sample content', (SELECT id FROM inserted_user), (SELECT id FROM inserted_story));
+	(2, DEFAULT, 'Sample content', (SELECT id FROM inserted_user), (SELECT id FROM inserted_story)),
+	(3, TRUE, 'Sample content', (SELECT id FROM inserted_user), (SELECT id FROM inserted_story));

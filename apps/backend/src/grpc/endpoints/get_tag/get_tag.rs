@@ -1,147 +1,164 @@
-use crate::grpc::{
-    defs::story_def::v1::{Draft as DraftDef, GetDraftsInfoRequest, GetDraftsInfoResponse},
-    service::GrpcService,
-};
+use crate::grpc::defs::tag_def::v1::{GetTagRequest, GetTagResponse};
+use crate::grpc::service::GrpcService;
 use serde::Deserialize;
-use sqlx::{FromRow, Row};
+use sqlx::{FromRow, Postgres, QueryBuilder, Row};
 use time::OffsetDateTime;
 use tonic::{Request, Response, Status};
-use uuid::Uuid;
 
 #[derive(Debug, FromRow)]
-struct Draft {
+struct Tag {
     id: i64,
-    title: String,
-    splash_id: Option<Uuid>,
-    splash_hex: Option<String>,
-    word_count: i32,
+    name: String,
+    story_count: i32,
+    follower_count: i32,
     created_at: OffsetDateTime,
-    edited_at: Option<OffsetDateTime>,
+    // Boolean flags
+    is_following: bool,
 }
 
-/// Returns the `pending_draft_count`, `deleted_draft_count` and `latest_draft` for a user.
+/// Returns the tag object.
 pub async fn get_tag(
     client: &GrpcService,
-    request: Request<GetDraftsInfoRequest>,
-) -> Result<Response<GetDraftsInfoResponse>, Status> {
-    let user_id = request
-        .into_inner()
-        .id
-        .parse::<i64>()
-        .map_err(|_| Status::invalid_argument("`id` is invalid"))?;
+    request: Request<GetTagRequest>,
+) -> Result<Response<GetTagResponse>, Status> {
+    let request = request.into_inner();
+    let tag_name = request.name;
+    let current_user_id = {
+        if let Some(user_id) = request.current_user_id {
+            let value = user_id
+                .parse::<i64>()
+                .map_err(|_| Status::invalid_argument("`current_user_id` is invalid"))?;
 
-    let pg_pool = &client.db_pool;
-    let mut txn = pg_pool
-        .begin()
-        .await
-        .map_err(|_| Status::internal("Database error"))?;
-
-    let result = sqlx::query(
-        r#"
-        SELECT
-            (SELECT
-                 COUNT(*)
-             FROM
-                 stories
-             WHERE
-                   user_id = $1
-               AND first_published_at IS NULL
-               AND deleted_at IS NULL
-            ) AS "pending_draft_count",
-            (SELECT
-                 COUNT(*)
-             FROM
-                 stories
-             WHERE
-                   user_id = $1
-               AND first_published_at IS NULL
-               AND deleted_at IS NOT NULL
-            ) AS "deleted_draft_count"
-        "#,
-    )
-    .bind(user_id)
-    .fetch_one(&mut *txn)
-    .await
-    .map_err(|_| Status::internal("Database error"))?;
-
-    let latest_draft = sqlx::query_as::<_, Draft>(
-        r#"
-        SELECT
-            id,
-            title,
-            splash_id,
-            splash_hex,
-            word_count,
-            created_at,
-            edited_at
-        FROM
-            stories
-        WHERE
-            user_id = $1
-                AND first_published_at IS NULL
-                AND deleted_at IS NULL
-        ORDER BY
-            edited_at DESC NULLS LAST,
-            created_at DESC
-        LIMIT 1
-        "#,
-    )
-    .bind(user_id)
-    .fetch_one(&mut *txn)
-    .await;
-
-    // Throw for internal server error
-    if let Err(ref err) = latest_draft {
-        if matches!(err, sqlx::Error::RowNotFound) {
-            return Err(Status::internal("Database error"));
+            Some(value)
+        } else {
+            None
         }
+    };
+
+    let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
+        r#"
+        SELECT
+            t.id,
+            t.name,
+            t.story_count,
+            t.follower_count,
+            t.created_at,
+        "#,
+    );
+
+    query_builder.push(if current_user_id.is_some() {
+        r#"
+        -- Boolean flags
+        CASE
+            WHEN COUNT("t->is_following") = 1
+                THEN
+                    TRUE
+                ELSE
+                    FALSE
+        END AS "is_following"
+        "#
+    } else {
+        r#"
+        -- Boolean flags
+        FALSE AS "is_following"
+        "#
+    });
+
+    query_builder.push(
+        r#"
+        FROM tags t
+        "#,
+    );
+
+    if current_user_id.is_some() {
+        query_builder.push(
+            r#"
+            -- Boolean following flag
+            LEFT OUTER JOIN tag_followers AS "t->is_following"
+                ON "t->is_following".tag_id = t.id
+                    AND "t->is_following".user_id = $2
+                    AND "t->is_following".deleted_at IS NULL
+            "#,
+        );
     }
 
-    txn.commit()
-        .await
-        .map_err(|_| Status::internal("Database error"))?;
+    query_builder.push(
+        r#"
+        WHERE
+            t.name = $1
+        GROUP BY
+            t.id
+        "#,
+    );
 
-    Ok(Response::new(GetDraftsInfoResponse {
-        pending_draft_count: result.get::<i64, _>("pending_draft_count") as u32,
-        deleted_draft_count: result.get::<i64, _>("deleted_draft_count") as u32,
-        latest_draft: latest_draft.ok().and_then(|draft| {
-            Some(DraftDef {
-                id: draft.id.to_string(),
-                title: draft.title,
-                splash_id: draft.splash_id.and_then(|value| Some(value.to_string())),
-                splash_hex: draft.splash_hex,
-                word_count: draft.word_count as u32,
-                created_at: draft.created_at.to_string(),
-                edited_at: draft.edited_at.and_then(|value| Some(value.to_string())),
-            })
-        }),
+    let mut query_result = query_builder.build_query_as::<Tag>().bind(tag_name);
+
+    if let Some(user_id) = current_user_id {
+        query_result = query_result.bind(user_id);
+    }
+
+    let result = query_result.fetch_one(&client.db_pool).await;
+
+    if let Err(ref err) = result {
+        if matches!(err, sqlx::Error::RowNotFound) {
+            return Err(Status::not_found("Tag not found"));
+        }
+
+        return Err(Status::internal("Database error"));
+    }
+
+    let tag = result.unwrap();
+
+    Ok(Response::new(GetTagResponse {
+        id: tag.id.to_string(),
+        name: tag.name,
+        story_count: tag.story_count as u32,
+        follower_count: tag.follower_count as u32,
+        created_at: tag.created_at.to_string(),
+        is_following: tag.is_following,
     }))
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::grpc::defs::story_def::v1::GetDraftsInfoRequest;
+    use crate::grpc::defs::tag_def::v1::GetTagRequest;
     use crate::test_utils::test_grpc_service;
     use sqlx::PgPool;
     use tonic::Request;
 
-    #[sqlx::test(fixtures("get_drafts_info"))]
-    async fn can_return_drafts_info(pool: PgPool) {
+    #[sqlx::test(fixtures("get_tag"))]
+    async fn can_return_tag(pool: PgPool) {
         test_grpc_service(
             pool,
             false,
+            Box::new(|mut client, _, _| async move {
+                let response = client
+                    .get_tag(Request::new(GetTagRequest {
+                        name: "sample".to_string(),
+                        current_user_id: None,
+                    }))
+                    .await;
+
+                assert!(response.is_ok());
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_tag"))]
+    async fn can_return_tag_when_logged_in(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
             Box::new(|mut client, _, user_id| async move {
                 let response = client
-                    .get_drafts_info(Request::new(GetDraftsInfoRequest {
-                        id: 1_i64.to_string(),
+                    .get_tag(Request::new(GetTagRequest {
+                        name: "sample".to_string(),
+                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
                     }))
-                    .await
-                    .unwrap()
-                    .into_inner();
+                    .await;
 
-                assert_eq!(response.pending_draft_count, 2_u32);
-                assert_eq!(response.deleted_draft_count, 2_u32);
-                assert!(response.latest_draft.is_some());
+                assert!(response.is_ok());
             }),
         )
         .await;

@@ -316,7 +316,7 @@ impl serde::Serialize for GetTagResponse {
         if !self.created_at.is_empty() {
             len += 1;
         }
-        if self.is_following.is_some() {
+        if self.is_following {
             len += 1;
         }
         let mut struct_ser = serializer.serialize_struct("tag_def.v1.GetTagResponse", len)?;
@@ -335,8 +335,8 @@ impl serde::Serialize for GetTagResponse {
         if !self.created_at.is_empty() {
             struct_ser.serialize_field("createdAt", &self.created_at)?;
         }
-        if let Some(v) = self.is_following.as_ref() {
-            struct_ser.serialize_field("isFollowing", v)?;
+        if self.is_following {
+            struct_ser.serialize_field("isFollowing", &self.is_following)?;
         }
         struct_ser.end()
     }
@@ -460,7 +460,7 @@ impl<'de> serde::Deserialize<'de> for GetTagResponse {
                             if is_following__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isFollowing"));
                             }
-                            is_following__ = map.next_value()?;
+                            is_following__ = Some(map.next_value()?);
                         }
                     }
                 }
@@ -470,7 +470,7 @@ impl<'de> serde::Deserialize<'de> for GetTagResponse {
                     story_count: story_count__.unwrap_or_default(),
                     follower_count: follower_count__.unwrap_or_default(),
                     created_at: created_at__.unwrap_or_default(),
-                    is_following: is_following__,
+                    is_following: is_following__.unwrap_or_default(),
                 })
             }
         }

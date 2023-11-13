@@ -1,7 +1,6 @@
+use crate::grpc::defs::token_def::v1::TokenType;
 use crate::{
-    constants::{
-        email_source::EMAIL_SOURCE, email_templates::EmailTemplate, token_type::TokenType,
-    },
+    constants::{email_source::EMAIL_SOURCE, email_templates::EmailTemplate},
     error::AppError,
     error::ToastErrorResponse,
     middleware::identity::identity::Identity,
@@ -65,7 +64,7 @@ async fn post(data: web::Data<AppState>, user: Identity) -> Result<HttpResponse,
                         WHERE type = $1 AND user_id = $2
                         "#,
                     )
-                    .bind(TokenType::PasswordAddVerification.to_string())
+                    .bind(TokenType::PasswordAdd as i16)
                     .bind(user_id)
                     .execute(&mut *txn)
                     .await?;
@@ -78,7 +77,7 @@ async fn post(data: web::Data<AppState>, user: Identity) -> Result<HttpResponse,
                         "#,
                     )
                     .bind(hashed_verification_code.to_string())
-                    .bind(TokenType::PasswordAddVerification.to_string())
+                    .bind(TokenType::PasswordAdd as i16)
                     .bind(user_id)
                     .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
                     .execute(&mut *txn)
@@ -152,7 +151,7 @@ mod tests {
             )
             "#,
         )
-        .bind(TokenType::PasswordAddVerification.to_string())
+        .bind(TokenType::PasswordAdd as i16)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -213,7 +212,7 @@ mod tests {
             "#,
         )
         .bind("sample")
-        .bind(TokenType::PasswordAddVerification.to_string())
+        .bind(TokenType::PasswordAdd as i16)
         .bind(user_id.unwrap())
         .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
         .execute(&mut *conn)

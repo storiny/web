@@ -24,7 +24,7 @@ export interface GetTagResponse {
   follower_count: number;
   created_at: string;
   /** User specific props */
-  is_following?: boolean | undefined;
+  is_following: boolean;
 }
 
 export interface GetFollowedTagCountRequest {
@@ -48,10 +48,10 @@ export const Tag = {
       writer.uint32(18).string(message.name);
     }
     if (message.story_count !== 0) {
-      writer.uint32(24).int32(message.story_count);
+      writer.uint32(24).uint32(message.story_count);
     }
     if (message.follower_count !== 0) {
-      writer.uint32(32).int32(message.follower_count);
+      writer.uint32(32).uint32(message.follower_count);
     }
     if (message.created_at !== "") {
       writer.uint32(42).string(message.created_at);
@@ -85,14 +85,14 @@ export const Tag = {
             break;
           }
 
-          message.story_count = reader.int32();
+          message.story_count = reader.uint32();
           continue;
         case 4:
           if (tag !== 32) {
             break;
           }
 
-          message.follower_count = reader.int32();
+          message.follower_count = reader.uint32();
           continue;
         case 5:
           if (tag !== 42) {
@@ -229,7 +229,7 @@ export const GetTagRequest = {
 };
 
 function createBaseGetTagResponse(): GetTagResponse {
-  return { id: "", name: "", story_count: 0, follower_count: 0, created_at: "", is_following: undefined };
+  return { id: "", name: "", story_count: 0, follower_count: 0, created_at: "", is_following: false };
 }
 
 export const GetTagResponse = {
@@ -241,15 +241,15 @@ export const GetTagResponse = {
       writer.uint32(18).string(message.name);
     }
     if (message.story_count !== 0) {
-      writer.uint32(24).int32(message.story_count);
+      writer.uint32(24).uint32(message.story_count);
     }
     if (message.follower_count !== 0) {
-      writer.uint32(32).int32(message.follower_count);
+      writer.uint32(32).uint32(message.follower_count);
     }
     if (message.created_at !== "") {
       writer.uint32(42).string(message.created_at);
     }
-    if (message.is_following !== undefined) {
+    if (message.is_following === true) {
       writer.uint32(48).bool(message.is_following);
     }
     return writer;
@@ -281,14 +281,14 @@ export const GetTagResponse = {
             break;
           }
 
-          message.story_count = reader.int32();
+          message.story_count = reader.uint32();
           continue;
         case 4:
           if (tag !== 32) {
             break;
           }
 
-          message.follower_count = reader.int32();
+          message.follower_count = reader.uint32();
           continue;
         case 5:
           if (tag !== 42) {
@@ -320,7 +320,7 @@ export const GetTagResponse = {
       story_count: isSet(object.story_count) ? globalThis.Number(object.story_count) : 0,
       follower_count: isSet(object.follower_count) ? globalThis.Number(object.follower_count) : 0,
       created_at: isSet(object.created_at) ? globalThis.String(object.created_at) : "",
-      is_following: isSet(object.is_following) ? globalThis.Boolean(object.is_following) : undefined,
+      is_following: isSet(object.is_following) ? globalThis.Boolean(object.is_following) : false,
     };
   },
 
@@ -341,7 +341,7 @@ export const GetTagResponse = {
     if (message.created_at !== "") {
       obj.created_at = message.created_at;
     }
-    if (message.is_following !== undefined) {
+    if (message.is_following === true) {
       obj.is_following = message.is_following;
     }
     return obj;
@@ -357,7 +357,7 @@ export const GetTagResponse = {
     message.story_count = object.story_count ?? 0;
     message.follower_count = object.follower_count ?? 0;
     message.created_at = object.created_at ?? "";
-    message.is_following = object.is_following ?? undefined;
+    message.is_following = object.is_following ?? false;
     return message;
   },
 };
