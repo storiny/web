@@ -54,7 +54,7 @@ pub async fn test_grpc_service<B>(
     let stream = UnixListenerStream::new(uds);
 
     // Redis
-    let mut cfg = deadpool_redis::Config::from_url(format!(
+    let cfg = deadpool_redis::Config::from_url(format!(
         "redis://{}:{}",
         &config.redis_host, &config.redis_port
     ));

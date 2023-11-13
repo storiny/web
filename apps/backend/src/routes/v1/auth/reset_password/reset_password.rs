@@ -1,5 +1,5 @@
+use crate::grpc::defs::token_def::v1::TokenType;
 use crate::{
-    constants::token_type::TokenType,
     error::{AppError, FormErrorResponse, ToastErrorResponse},
     AppState,
 };
@@ -51,7 +51,7 @@ async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpR
             WHERE type = $1 AND user_id = $2
             "#,
         )
-        .bind(TokenType::PasswordReset.to_string())
+        .bind(TokenType::PasswordReset as i16)
         .bind(user.get::<i64, _>("id"))
         .fetch_one(&data.db_pool)
         .await
@@ -178,7 +178,7 @@ mod tests {
             "#,
         )
         .bind(hashed_token.to_string())
-        .bind(TokenType::PasswordReset.to_string())
+        .bind(TokenType::PasswordReset as i16)
         .bind(1_i64)
         .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
         .execute(&mut *conn)
@@ -247,7 +247,7 @@ mod tests {
             "#,
         )
         .bind(token_id.clone())
-        .bind(TokenType::PasswordReset.to_string())
+        .bind(TokenType::PasswordReset as i16)
         .bind(1_i64)
         .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
         .execute(&mut *conn)
@@ -295,7 +295,7 @@ mod tests {
             "#,
         )
         .bind(hashed_token.to_string())
-        .bind(TokenType::PasswordReset.to_string())
+        .bind(TokenType::PasswordReset as i16)
         .bind(1_i64)
         .bind(OffsetDateTime::now_utc() - Duration::days(1)) // The token expired yesterday
         .execute(&mut *conn)

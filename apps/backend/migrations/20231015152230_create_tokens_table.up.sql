@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS tokens
 (
 	-- Hashed token value
 	id         TEXT PRIMARY KEY,
-	type       TEXT        NOT NULL,
+	type       SMALLINT    NOT NULL,
 	user_id    BIGINT      NOT NULL
 		REFERENCES users (id)
 			ON DELETE CASCADE,

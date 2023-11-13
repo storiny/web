@@ -33,15 +33,15 @@ export interface GetProfileResponse {
   is_private: boolean;
   connections: Connection[];
   /** User specific props */
-  is_following?: boolean | undefined;
-  is_follower?: boolean | undefined;
-  is_friend?: boolean | undefined;
-  is_subscribed?: boolean | undefined;
-  is_friend_request_sent?: boolean | undefined;
-  is_blocked_by_user?: boolean | undefined;
-  is_blocking?: boolean | undefined;
-  is_muted?: boolean | undefined;
-  is_self?: boolean | undefined;
+  is_following: boolean;
+  is_follower: boolean;
+  is_friend: boolean;
+  is_subscribed: boolean;
+  is_friend_request_sent: boolean;
+  is_blocked_by_user: boolean;
+  is_blocking: boolean;
+  is_muted: boolean;
+  is_self: boolean;
 }
 
 function createBaseGetProfileRequest(): GetProfileRequest {
@@ -139,15 +139,15 @@ function createBaseGetProfileResponse(): GetProfileResponse {
     friend_count: undefined,
     is_private: false,
     connections: [],
-    is_following: undefined,
-    is_follower: undefined,
-    is_friend: undefined,
-    is_subscribed: undefined,
-    is_friend_request_sent: undefined,
-    is_blocked_by_user: undefined,
-    is_blocking: undefined,
-    is_muted: undefined,
-    is_self: undefined,
+    is_following: false,
+    is_follower: false,
+    is_friend: false,
+    is_subscribed: false,
+    is_friend_request_sent: false,
+    is_blocked_by_user: false,
+    is_blocking: false,
+    is_muted: false,
+    is_self: false,
   };
 }
 
@@ -210,31 +210,31 @@ export const GetProfileResponse = {
     for (const v of message.connections) {
       Connection.encode(v!, writer.uint32(154).fork()).ldelim();
     }
-    if (message.is_following !== undefined) {
+    if (message.is_following === true) {
       writer.uint32(160).bool(message.is_following);
     }
-    if (message.is_follower !== undefined) {
+    if (message.is_follower === true) {
       writer.uint32(168).bool(message.is_follower);
     }
-    if (message.is_friend !== undefined) {
+    if (message.is_friend === true) {
       writer.uint32(176).bool(message.is_friend);
     }
-    if (message.is_subscribed !== undefined) {
+    if (message.is_subscribed === true) {
       writer.uint32(184).bool(message.is_subscribed);
     }
-    if (message.is_friend_request_sent !== undefined) {
+    if (message.is_friend_request_sent === true) {
       writer.uint32(192).bool(message.is_friend_request_sent);
     }
-    if (message.is_blocked_by_user !== undefined) {
+    if (message.is_blocked_by_user === true) {
       writer.uint32(200).bool(message.is_blocked_by_user);
     }
-    if (message.is_blocking !== undefined) {
+    if (message.is_blocking === true) {
       writer.uint32(208).bool(message.is_blocking);
     }
-    if (message.is_muted !== undefined) {
+    if (message.is_muted === true) {
       writer.uint32(216).bool(message.is_muted);
     }
-    if (message.is_self !== undefined) {
+    if (message.is_self === true) {
       writer.uint32(224).bool(message.is_self);
     }
     return writer;
@@ -475,17 +475,17 @@ export const GetProfileResponse = {
       connections: globalThis.Array.isArray(object?.connections)
         ? object.connections.map((e: any) => Connection.fromJSON(e))
         : [],
-      is_following: isSet(object.is_following) ? globalThis.Boolean(object.is_following) : undefined,
-      is_follower: isSet(object.is_follower) ? globalThis.Boolean(object.is_follower) : undefined,
-      is_friend: isSet(object.is_friend) ? globalThis.Boolean(object.is_friend) : undefined,
-      is_subscribed: isSet(object.is_subscribed) ? globalThis.Boolean(object.is_subscribed) : undefined,
+      is_following: isSet(object.is_following) ? globalThis.Boolean(object.is_following) : false,
+      is_follower: isSet(object.is_follower) ? globalThis.Boolean(object.is_follower) : false,
+      is_friend: isSet(object.is_friend) ? globalThis.Boolean(object.is_friend) : false,
+      is_subscribed: isSet(object.is_subscribed) ? globalThis.Boolean(object.is_subscribed) : false,
       is_friend_request_sent: isSet(object.is_friend_request_sent)
         ? globalThis.Boolean(object.is_friend_request_sent)
-        : undefined,
-      is_blocked_by_user: isSet(object.is_blocked_by_user) ? globalThis.Boolean(object.is_blocked_by_user) : undefined,
-      is_blocking: isSet(object.is_blocking) ? globalThis.Boolean(object.is_blocking) : undefined,
-      is_muted: isSet(object.is_muted) ? globalThis.Boolean(object.is_muted) : undefined,
-      is_self: isSet(object.is_self) ? globalThis.Boolean(object.is_self) : undefined,
+        : false,
+      is_blocked_by_user: isSet(object.is_blocked_by_user) ? globalThis.Boolean(object.is_blocked_by_user) : false,
+      is_blocking: isSet(object.is_blocking) ? globalThis.Boolean(object.is_blocking) : false,
+      is_muted: isSet(object.is_muted) ? globalThis.Boolean(object.is_muted) : false,
+      is_self: isSet(object.is_self) ? globalThis.Boolean(object.is_self) : false,
     };
   },
 
@@ -548,31 +548,31 @@ export const GetProfileResponse = {
     if (message.connections?.length) {
       obj.connections = message.connections.map((e) => Connection.toJSON(e));
     }
-    if (message.is_following !== undefined) {
+    if (message.is_following === true) {
       obj.is_following = message.is_following;
     }
-    if (message.is_follower !== undefined) {
+    if (message.is_follower === true) {
       obj.is_follower = message.is_follower;
     }
-    if (message.is_friend !== undefined) {
+    if (message.is_friend === true) {
       obj.is_friend = message.is_friend;
     }
-    if (message.is_subscribed !== undefined) {
+    if (message.is_subscribed === true) {
       obj.is_subscribed = message.is_subscribed;
     }
-    if (message.is_friend_request_sent !== undefined) {
+    if (message.is_friend_request_sent === true) {
       obj.is_friend_request_sent = message.is_friend_request_sent;
     }
-    if (message.is_blocked_by_user !== undefined) {
+    if (message.is_blocked_by_user === true) {
       obj.is_blocked_by_user = message.is_blocked_by_user;
     }
-    if (message.is_blocking !== undefined) {
+    if (message.is_blocking === true) {
       obj.is_blocking = message.is_blocking;
     }
-    if (message.is_muted !== undefined) {
+    if (message.is_muted === true) {
       obj.is_muted = message.is_muted;
     }
-    if (message.is_self !== undefined) {
+    if (message.is_self === true) {
       obj.is_self = message.is_self;
     }
     return obj;
@@ -604,15 +604,15 @@ export const GetProfileResponse = {
     message.friend_count = object.friend_count ?? undefined;
     message.is_private = object.is_private ?? false;
     message.connections = object.connections?.map((e) => Connection.fromPartial(e)) || [];
-    message.is_following = object.is_following ?? undefined;
-    message.is_follower = object.is_follower ?? undefined;
-    message.is_friend = object.is_friend ?? undefined;
-    message.is_subscribed = object.is_subscribed ?? undefined;
-    message.is_friend_request_sent = object.is_friend_request_sent ?? undefined;
-    message.is_blocked_by_user = object.is_blocked_by_user ?? undefined;
-    message.is_blocking = object.is_blocking ?? undefined;
-    message.is_muted = object.is_muted ?? undefined;
-    message.is_self = object.is_self ?? undefined;
+    message.is_following = object.is_following ?? false;
+    message.is_follower = object.is_follower ?? false;
+    message.is_friend = object.is_friend ?? false;
+    message.is_subscribed = object.is_subscribed ?? false;
+    message.is_friend_request_sent = object.is_friend_request_sent ?? false;
+    message.is_blocked_by_user = object.is_blocked_by_user ?? false;
+    message.is_blocking = object.is_blocking ?? false;
+    message.is_muted = object.is_muted ?? false;
+    message.is_self = object.is_self ?? false;
     return message;
   },
 };

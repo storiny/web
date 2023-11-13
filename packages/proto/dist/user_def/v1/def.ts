@@ -124,11 +124,11 @@ export interface User {
   created_at: string;
   follower_count: number;
   /** User specific props */
-  is_self?: boolean | undefined;
-  is_following?: boolean | undefined;
-  is_follower?: boolean | undefined;
-  is_friend?: boolean | undefined;
-  is_blocked_by_user?: boolean | undefined;
+  is_self: boolean;
+  is_following: boolean;
+  is_follower: boolean;
+  is_friend: boolean;
+  is_blocked_by_user: boolean;
 }
 
 export interface GetUserIdRequest {
@@ -299,11 +299,11 @@ function createBaseUser(): User {
     location: "",
     created_at: "",
     follower_count: 0,
-    is_self: undefined,
-    is_following: undefined,
-    is_follower: undefined,
-    is_friend: undefined,
-    is_blocked_by_user: undefined,
+    is_self: false,
+    is_following: false,
+    is_follower: false,
+    is_friend: false,
+    is_blocked_by_user: false,
   };
 }
 
@@ -342,19 +342,19 @@ export const User = {
     if (message.follower_count !== 0) {
       writer.uint32(88).uint32(message.follower_count);
     }
-    if (message.is_self !== undefined) {
+    if (message.is_self === true) {
       writer.uint32(96).bool(message.is_self);
     }
-    if (message.is_following !== undefined) {
+    if (message.is_following === true) {
       writer.uint32(104).bool(message.is_following);
     }
-    if (message.is_follower !== undefined) {
+    if (message.is_follower === true) {
       writer.uint32(112).bool(message.is_follower);
     }
-    if (message.is_friend !== undefined) {
+    if (message.is_friend === true) {
       writer.uint32(120).bool(message.is_friend);
     }
-    if (message.is_blocked_by_user !== undefined) {
+    if (message.is_blocked_by_user === true) {
       writer.uint32(128).bool(message.is_blocked_by_user);
     }
     return writer;
@@ -501,11 +501,11 @@ export const User = {
       location: isSet(object.location) ? globalThis.String(object.location) : "",
       created_at: isSet(object.created_at) ? globalThis.String(object.created_at) : "",
       follower_count: isSet(object.follower_count) ? globalThis.Number(object.follower_count) : 0,
-      is_self: isSet(object.is_self) ? globalThis.Boolean(object.is_self) : undefined,
-      is_following: isSet(object.is_following) ? globalThis.Boolean(object.is_following) : undefined,
-      is_follower: isSet(object.is_follower) ? globalThis.Boolean(object.is_follower) : undefined,
-      is_friend: isSet(object.is_friend) ? globalThis.Boolean(object.is_friend) : undefined,
-      is_blocked_by_user: isSet(object.is_blocked_by_user) ? globalThis.Boolean(object.is_blocked_by_user) : undefined,
+      is_self: isSet(object.is_self) ? globalThis.Boolean(object.is_self) : false,
+      is_following: isSet(object.is_following) ? globalThis.Boolean(object.is_following) : false,
+      is_follower: isSet(object.is_follower) ? globalThis.Boolean(object.is_follower) : false,
+      is_friend: isSet(object.is_friend) ? globalThis.Boolean(object.is_friend) : false,
+      is_blocked_by_user: isSet(object.is_blocked_by_user) ? globalThis.Boolean(object.is_blocked_by_user) : false,
     };
   },
 
@@ -544,19 +544,19 @@ export const User = {
     if (message.follower_count !== 0) {
       obj.follower_count = Math.round(message.follower_count);
     }
-    if (message.is_self !== undefined) {
+    if (message.is_self === true) {
       obj.is_self = message.is_self;
     }
-    if (message.is_following !== undefined) {
+    if (message.is_following === true) {
       obj.is_following = message.is_following;
     }
-    if (message.is_follower !== undefined) {
+    if (message.is_follower === true) {
       obj.is_follower = message.is_follower;
     }
-    if (message.is_friend !== undefined) {
+    if (message.is_friend === true) {
       obj.is_friend = message.is_friend;
     }
-    if (message.is_blocked_by_user !== undefined) {
+    if (message.is_blocked_by_user === true) {
       obj.is_blocked_by_user = message.is_blocked_by_user;
     }
     return obj;
@@ -578,11 +578,11 @@ export const User = {
     message.location = object.location ?? "";
     message.created_at = object.created_at ?? "";
     message.follower_count = object.follower_count ?? 0;
-    message.is_self = object.is_self ?? undefined;
-    message.is_following = object.is_following ?? undefined;
-    message.is_follower = object.is_follower ?? undefined;
-    message.is_friend = object.is_friend ?? undefined;
-    message.is_blocked_by_user = object.is_blocked_by_user ?? undefined;
+    message.is_self = object.is_self ?? false;
+    message.is_following = object.is_following ?? false;
+    message.is_follower = object.is_follower ?? false;
+    message.is_friend = object.is_friend ?? false;
+    message.is_blocked_by_user = object.is_blocked_by_user ?? false;
     return message;
   },
 };

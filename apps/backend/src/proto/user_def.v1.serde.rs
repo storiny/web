@@ -1165,19 +1165,19 @@ impl serde::Serialize for User {
         if self.follower_count != 0 {
             len += 1;
         }
-        if self.is_self.is_some() {
+        if self.is_self {
             len += 1;
         }
-        if self.is_following.is_some() {
+        if self.is_following {
             len += 1;
         }
-        if self.is_follower.is_some() {
+        if self.is_follower {
             len += 1;
         }
-        if self.is_friend.is_some() {
+        if self.is_friend {
             len += 1;
         }
-        if self.is_blocked_by_user.is_some() {
+        if self.is_blocked_by_user {
             len += 1;
         }
         let mut struct_ser = serializer.serialize_struct("user_def.v1.User", len)?;
@@ -1214,20 +1214,20 @@ impl serde::Serialize for User {
         if self.follower_count != 0 {
             struct_ser.serialize_field("followerCount", &self.follower_count)?;
         }
-        if let Some(v) = self.is_self.as_ref() {
-            struct_ser.serialize_field("isSelf", v)?;
+        if self.is_self {
+            struct_ser.serialize_field("isSelf", &self.is_self)?;
         }
-        if let Some(v) = self.is_following.as_ref() {
-            struct_ser.serialize_field("isFollowing", v)?;
+        if self.is_following {
+            struct_ser.serialize_field("isFollowing", &self.is_following)?;
         }
-        if let Some(v) = self.is_follower.as_ref() {
-            struct_ser.serialize_field("isFollower", v)?;
+        if self.is_follower {
+            struct_ser.serialize_field("isFollower", &self.is_follower)?;
         }
-        if let Some(v) = self.is_friend.as_ref() {
-            struct_ser.serialize_field("isFriend", v)?;
+        if self.is_friend {
+            struct_ser.serialize_field("isFriend", &self.is_friend)?;
         }
-        if let Some(v) = self.is_blocked_by_user.as_ref() {
-            struct_ser.serialize_field("isBlockedByUser", v)?;
+        if self.is_blocked_by_user {
+            struct_ser.serialize_field("isBlockedByUser", &self.is_blocked_by_user)?;
         }
         struct_ser.end()
     }
@@ -1435,31 +1435,31 @@ impl<'de> serde::Deserialize<'de> for User {
                             if is_self__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isSelf"));
                             }
-                            is_self__ = map.next_value()?;
+                            is_self__ = Some(map.next_value()?);
                         }
                         GeneratedField::IsFollowing => {
                             if is_following__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isFollowing"));
                             }
-                            is_following__ = map.next_value()?;
+                            is_following__ = Some(map.next_value()?);
                         }
                         GeneratedField::IsFollower => {
                             if is_follower__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isFollower"));
                             }
-                            is_follower__ = map.next_value()?;
+                            is_follower__ = Some(map.next_value()?);
                         }
                         GeneratedField::IsFriend => {
                             if is_friend__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isFriend"));
                             }
-                            is_friend__ = map.next_value()?;
+                            is_friend__ = Some(map.next_value()?);
                         }
                         GeneratedField::IsBlockedByUser => {
                             if is_blocked_by_user__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isBlockedByUser"));
                             }
-                            is_blocked_by_user__ = map.next_value()?;
+                            is_blocked_by_user__ = Some(map.next_value()?);
                         }
                     }
                 }
@@ -1475,11 +1475,11 @@ impl<'de> serde::Deserialize<'de> for User {
                     location: location__.unwrap_or_default(),
                     created_at: created_at__.unwrap_or_default(),
                     follower_count: follower_count__.unwrap_or_default(),
-                    is_self: is_self__,
-                    is_following: is_following__,
-                    is_follower: is_follower__,
-                    is_friend: is_friend__,
-                    is_blocked_by_user: is_blocked_by_user__,
+                    is_self: is_self__.unwrap_or_default(),
+                    is_following: is_following__.unwrap_or_default(),
+                    is_follower: is_follower__.unwrap_or_default(),
+                    is_friend: is_friend__.unwrap_or_default(),
+                    is_blocked_by_user: is_blocked_by_user__.unwrap_or_default(),
                 })
             }
         }

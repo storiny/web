@@ -61,7 +61,7 @@ mod tests {
         test_grpc_service(
             pool,
             false,
-            Box::new(|mut client, _, user_id| async move {
+            Box::new(|mut client, _, _| async move {
                 let response = client
                     .get_responses_info(Request::new(GetResponsesInfoRequest {
                         id: 1_i64.to_string(),
@@ -72,6 +72,100 @@ mod tests {
 
                 assert_eq!(response.comment_count, 2_u32);
                 assert_eq!(response.reply_count, 2_u32);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_responses_info"))]
+    async fn should_not_count_soft_deleted_comments(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            false,
+            Box::new(|mut client, pool, _| async move {
+                // Should count all the comments initially
+                let response = client
+                    .get_responses_info(Request::new(GetResponsesInfoRequest {
+                        id: 1_i64.to_string(),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                assert_eq!(response.comment_count, 2_u32);
+
+                // Soft-delete one of the comments
+                let result = sqlx::query(
+                    r#"
+                    UPDATE comments
+                    SET deleted_at = now()
+                    WHERE id = $1
+                    "#,
+                )
+                .bind(2_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                // Should count only one comment
+                let response = client
+                    .get_responses_info(Request::new(GetResponsesInfoRequest {
+                        id: 1_i64.to_string(),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                assert_eq!(response.comment_count, 1_u32);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_responses_info"))]
+    async fn should_not_count_soft_deleted_replies(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            false,
+            Box::new(|mut client, pool, _| async move {
+                // Should count all the replies initially
+                let response = client
+                    .get_responses_info(Request::new(GetResponsesInfoRequest {
+                        id: 1_i64.to_string(),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                assert_eq!(response.reply_count, 2_u32);
+
+                // Soft-delete one of the replies
+                let result = sqlx::query(
+                    r#"
+                    UPDATE replies
+                    SET deleted_at = now()
+                    WHERE id = $1
+                    "#,
+                )
+                .bind(3_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                // Should count only one reply
+                let response = client
+                    .get_responses_info(Request::new(GetResponsesInfoRequest {
+                        id: 1_i64.to_string(),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                assert_eq!(response.reply_count, 1_u32);
             }),
         )
         .await;

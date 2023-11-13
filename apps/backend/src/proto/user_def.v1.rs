@@ -41,16 +41,16 @@ pub struct User {
     #[prost(uint32, tag="11")]
     pub follower_count: u32,
     /// User specific props
-    #[prost(bool, optional, tag="12")]
-    pub is_self: ::core::option::Option<bool>,
-    #[prost(bool, optional, tag="13")]
-    pub is_following: ::core::option::Option<bool>,
-    #[prost(bool, optional, tag="14")]
-    pub is_follower: ::core::option::Option<bool>,
-    #[prost(bool, optional, tag="15")]
-    pub is_friend: ::core::option::Option<bool>,
-    #[prost(bool, optional, tag="16")]
-    pub is_blocked_by_user: ::core::option::Option<bool>,
+    #[prost(bool, tag="12")]
+    pub is_self: bool,
+    #[prost(bool, tag="13")]
+    pub is_following: bool,
+    #[prost(bool, tag="14")]
+    pub is_follower: bool,
+    #[prost(bool, tag="15")]
+    pub is_friend: bool,
+    #[prost(bool, tag="16")]
+    pub is_blocked_by_user: bool,
 }
 // Get user ID
 

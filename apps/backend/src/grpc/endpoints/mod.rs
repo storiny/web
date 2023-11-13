@@ -1,6 +1,12 @@
 pub mod get_drafts_info;
+pub mod get_followed_tag_count;
 pub mod get_responses_info;
 pub mod get_stories_info;
 pub mod get_story_responses_info;
 pub mod get_tag;
+pub mod get_token;
+pub mod get_user_block_count;
 pub mod get_user_id;
+pub mod get_user_mute_count;
+pub mod get_user_relations_info;
+pub mod verify_email;

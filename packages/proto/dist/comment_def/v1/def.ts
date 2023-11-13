@@ -26,7 +26,7 @@ export interface GetCommentResponse {
     | User
     | undefined;
   /** User specific props */
-  is_liked?: boolean | undefined;
+  is_liked: boolean;
 }
 
 function createBaseGetCommentRequest(): GetCommentRequest {
@@ -118,7 +118,7 @@ function createBaseGetCommentResponse(): GetCommentResponse {
     like_count: 0,
     reply_count: 0,
     user: undefined,
-    is_liked: undefined,
+    is_liked: false,
   };
 }
 
@@ -163,7 +163,7 @@ export const GetCommentResponse = {
     if (message.user !== undefined) {
       User.encode(message.user, writer.uint32(106).fork()).ldelim();
     }
-    if (message.is_liked !== undefined) {
+    if (message.is_liked === true) {
       writer.uint32(112).bool(message.is_liked);
     }
     return writer;
@@ -298,7 +298,7 @@ export const GetCommentResponse = {
       like_count: isSet(object.like_count) ? globalThis.Number(object.like_count) : 0,
       reply_count: isSet(object.reply_count) ? globalThis.Number(object.reply_count) : 0,
       user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
-      is_liked: isSet(object.is_liked) ? globalThis.Boolean(object.is_liked) : undefined,
+      is_liked: isSet(object.is_liked) ? globalThis.Boolean(object.is_liked) : false,
     };
   },
 
@@ -343,7 +343,7 @@ export const GetCommentResponse = {
     if (message.user !== undefined) {
       obj.user = User.toJSON(message.user);
     }
-    if (message.is_liked !== undefined) {
+    if (message.is_liked === true) {
       obj.is_liked = message.is_liked;
     }
     return obj;
@@ -367,7 +367,7 @@ export const GetCommentResponse = {
     message.like_count = object.like_count ?? 0;
     message.reply_count = object.reply_count ?? 0;
     message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
-    message.is_liked = object.is_liked ?? undefined;
+    message.is_liked = object.is_liked ?? false;
     return message;
   },
 };

@@ -75,14 +75,14 @@ impl ApiService for GrpcService {
         &self,
         request: Request<GetTagRequest>,
     ) -> Result<Response<GetTagResponse>, Status> {
-        todo!()
+        endpoints::get_tag::get_tag(self, request).await
     }
 
     async fn get_token(
         &self,
         request: Request<GetTokenRequest>,
     ) -> Result<Response<GetTokenResponse>, Status> {
-        endpoints::get_tag::get_tag(self, request).await
+        endpoints::get_token::get_token(self, request).await
     }
 
     async fn verify_email(
@@ -159,28 +159,28 @@ impl ApiService for GrpcService {
         &self,
         request: Request<GetFollowedTagCountRequest>,
     ) -> Result<Response<GetFollowedTagCountResponse>, Status> {
-        todo!()
+        endpoints::get_followed_tag_count::get_followed_tag_count(self, request).await
     }
 
     async fn get_user_relations_info(
         &self,
         request: Request<GetUserRelationsInfoRequest>,
     ) -> Result<Response<GetUserRelationsInfoResponse>, Status> {
-        todo!()
+        endpoints::get_user_relations_info::get_user_relations_info(self, request).await
     }
 
     async fn get_user_block_count(
         &self,
         request: Request<GetUserBlockCountRequest>,
     ) -> Result<Response<GetUserBlockCountResponse>, Status> {
-        todo!()
+        endpoints::get_user_block_count::get_user_block_count(self, request).await
     }
 
     async fn get_user_mute_count(
         &self,
         request: Request<GetUserMuteCountRequest>,
     ) -> Result<Response<GetUserMuteCountResponse>, Status> {
-        todo!()
+        endpoints::get_user_mute_count::get_user_mute_count(self, request).await
     }
 
     async fn get_story(
