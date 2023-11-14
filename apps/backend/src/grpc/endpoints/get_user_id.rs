@@ -8,7 +8,6 @@ use crate::{
 use actix_web::cookie::Key;
 use deadpool_redis::redis::cmd;
 use serde::Deserialize;
-use sqlx::Row;
 use tonic::{Request, Response, Status};
 
 #[derive(Debug, Deserialize)]

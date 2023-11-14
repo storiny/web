@@ -2,7 +2,6 @@ use crate::grpc::{
     defs::story_def::v1::{Draft as DraftDef, GetDraftsInfoRequest, GetDraftsInfoResponse},
     service::GrpcService,
 };
-use serde::Deserialize;
 use sqlx::{FromRow, Row};
 use time::OffsetDateTime;
 use tonic::{Request, Response, Status};

@@ -1,7 +1,6 @@
 use crate::grpc::defs::token_def::v1::{TokenType, VerifyEmailRequest, VerifyEmailResponse};
 use crate::grpc::service::GrpcService;
-use serde::Deserialize;
-use sqlx::{FromRow, Row};
+use sqlx::Row;
 use tonic::{Request, Response, Status};
 
 /// Verifies an email for a user.
@@ -10,60 +9,74 @@ pub async fn verify_email(
     request: Request<VerifyEmailRequest>,
 ) -> Result<Response<VerifyEmailResponse>, Status> {
     let pg_pool = &client.db_pool;
-    let mut txn = pg_pool.begin().await?;
+    let mut txn = pg_pool
+        .begin()
+        .await
+        .map_err(|_| Status::internal("Database error"))?;
+
     let token_id = request.into_inner().identifier;
     let token_result = sqlx::query(
         r#"
         SELECT user_id FROM tokens
-        WHERE id = $1 AND type = $2
+        WHERE
+            id = $1
+            AND type = $2
+            AND expires_at > NOW()
         "#,
     )
-    .bind(token_id)
+    .bind(&token_id)
     .bind(TokenType::EmailVerification as i16)
     .fetch_one(&mut *txn)
-    .await;
-
-    if let Err(ref err) = token_result {
-        if matches!(err, sqlx::Error::RowNotFound) {
-            return Err(Status::not_found("Token not found"));
+    .await
+    .map_err(|kind| {
+        if matches!(kind, sqlx::Error::RowNotFound) {
+            Status::not_found("Token not found")
+        } else {
+            Status::internal("Database error")
         }
-
-        return Err(Status::internal("Database error"));
-    }
+    })?;
 
     match sqlx::query(
         r#"
         WITH updated_user as (
             UPDATE users
             SET email_verified = TRUE
-            WHERE id = (SELECT user_id FROM token)
+            WHERE id = $1
         )
+        -- Delete the token
         DELETE FROM tokens
-        WHERE id = $1 AND type = $2
+        WHERE id = $2 AND type = $3
         "#,
     )
-    .bind(token_id)
+    .bind(token_result.get::<i64, _>("user_id"))
+    .bind(&token_id)
     .bind(TokenType::EmailVerification as i16)
-    .execute(&client.db_pool)
+    .execute(&mut *txn)
     .await
     .map_err(|_| Status::internal("Database error"))?
     .rows_affected()
     {
-        // 0 => Err(Status::),
-        _ => Ok(Response::new(VerifyEmailResponse {})),
+        0 => Err(Status::internal("Internal error")),
+        _ => {
+            txn.commit()
+                .await
+                .map_err(|_| Status::internal("Database error"))?;
+
+            Ok(Response::new(VerifyEmailResponse {}))
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::grpc::defs::token_def::v1::{GetTokenRequest, TokenType};
+    use crate::grpc::defs::token_def::v1::{TokenType, VerifyEmailRequest};
     use crate::test_utils::test_grpc_service;
-    use sqlx::PgPool;
+    use sqlx::{PgPool, Row};
     use time::{Duration, OffsetDateTime};
-    use tonic::Request;
+    use tonic::{Code, Request};
 
     #[sqlx::test]
-    async fn can_return_token(pool: PgPool) {
+    async fn can_verify_email(pool: PgPool) {
         test_grpc_service(
             pool,
             true,
@@ -86,16 +99,26 @@ mod tests {
                 assert_eq!(result.rows_affected(), 1);
 
                 let response = client
-                    .get_token(Request::new(GetTokenRequest {
+                    .verify_email(Request::new(VerifyEmailRequest {
                         identifier: "sample".to_string(),
-                        r#type: TokenType::EmailVerification as i32,
                     }))
-                    .await
-                    .unwrap()
-                    .into_inner();
+                    .await;
 
-                assert!(!response.is_expired);
-                assert!(response.is_valid);
+                assert!(response.is_ok());
+
+                // Should update the user
+                let result = sqlx::query(
+                    r#"
+                    SELECT email_verified FROM users
+                    WHERE id = $1
+                    "#,
+                )
+                .bind(user_id.unwrap())
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                assert!(result.get::<bool, _>("email_verified"))
             }),
         )
         .await;
@@ -125,16 +148,13 @@ mod tests {
                 assert_eq!(result.rows_affected(), 1);
 
                 let response = client
-                    .get_token(Request::new(GetTokenRequest {
+                    .verify_email(Request::new(VerifyEmailRequest {
                         identifier: "sample".to_string(),
-                        r#type: TokenType::EmailVerification as i32,
                     }))
-                    .await
-                    .unwrap()
-                    .into_inner();
+                    .await;
 
-                assert!(response.is_expired);
-                assert!(!response.is_valid);
+                assert!(response.is_err());
+                assert_eq!(response.unwrap_err().code(), Code::NotFound);
             }),
         )
         .await;
@@ -147,16 +167,13 @@ mod tests {
             false,
             Box::new(|mut client, _, _| async move {
                 let response = client
-                    .get_token(Request::new(GetTokenRequest {
+                    .verify_email(Request::new(VerifyEmailRequest {
                         identifier: "invalid".to_string(),
-                        r#type: TokenType::EmailVerification as i32,
                     }))
-                    .await
-                    .unwrap()
-                    .into_inner();
+                    .await;
 
-                assert!(!response.is_expired);
-                assert!(!response.is_valid);
+                assert!(response.is_err());
+                assert_eq!(response.unwrap_err().code(), Code::NotFound);
             }),
         )
         .await;

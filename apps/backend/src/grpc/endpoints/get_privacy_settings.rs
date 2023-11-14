@@ -1,0 +1,125 @@
+use crate::grpc::defs::privacy_settings_def::v1::{
+    GetPrivacySettingsRequest, GetPrivacySettingsResponse,
+};
+use crate::grpc::service::GrpcService;
+use sqlx::Row;
+use tonic::{Request, Response, Status};
+
+/// Returns the privacy settings for a user.
+pub async fn get_privacy_settings(
+    client: &GrpcService,
+    request: Request<GetPrivacySettingsRequest>,
+) -> Result<Response<GetPrivacySettingsResponse>, Status> {
+    let user_id = request
+        .into_inner()
+        .id
+        .parse::<i64>()
+        .map_err(|_| Status::invalid_argument("`id` is invalid"))?;
+
+    match sqlx::query(
+        r#"
+        SELECT
+            is_private,
+            disable_read_history,
+            allow_sensitive_content,
+            incoming_friend_requests,
+            following_list_visibility,
+            friend_list_visibility
+        FROM users
+        WHERE id = $1
+        "#,
+    )
+    .bind(user_id)
+    .fetch_one(&client.db_pool)
+    .await
+    {
+        Ok(user) => Ok(Response::new(GetPrivacySettingsResponse {
+            is_private_account: user.get::<bool, _>("is_private"),
+            record_read_history: !user.get::<bool, _>("disable_read_history"),
+            allow_sensitive_media: user.get::<bool, _>("allow_sensitive_content"),
+            incoming_friend_requests: user.get::<i16, _>("incoming_friend_requests") as i32,
+            following_list_visibility: user.get::<i16, _>("following_list_visibility") as i32,
+            friend_list_visibility: user.get::<i16, _>("friend_list_visibility") as i32,
+        })),
+        Err(kind) => {
+            if matches!(kind, sqlx::Error::RowNotFound) {
+                Err(Status::not_found("User not found"))
+            } else {
+                Err(Status::internal("Database error"))
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::grpc::defs::privacy_settings_def::v1::{
+        GetPrivacySettingsRequest, GetPrivacySettingsResponse, IncomingFriendRequest,
+        RelationVisibility,
+    };
+    use crate::test_utils::test_grpc_service;
+    use sqlx::PgPool;
+    use tonic::Request;
+
+    #[sqlx::test]
+    async fn can_return_privacy_settings(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            false,
+            Box::new(|mut client, pool, _| async move {
+                // Insert the user
+                sqlx::query(
+                    r#"
+                    INSERT INTO users(
+                        id,
+                        name,
+                        username,
+                        email,
+                        is_private,
+                        disable_read_history,
+                        allow_sensitive_content,
+                        incoming_friend_requests,
+                        following_list_visibility,
+                        friend_list_visibility
+                    )
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                    "#,
+                )
+                .bind(1_i64)
+                .bind("Some user".to_string())
+                .bind("some_user".to_string())
+                .bind("someone@example.com".to_string())
+                .bind(true)
+                .bind(true)
+                .bind(true)
+                .bind(IncomingFriendRequest::None as i16)
+                .bind(RelationVisibility::None as i16)
+                .bind(RelationVisibility::None as i16)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                let response = client
+                    .get_privacy_settings(Request::new(GetPrivacySettingsRequest {
+                        id: 1_i64.to_string(),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                assert_eq!(
+                    response,
+                    GetPrivacySettingsResponse {
+                        is_private_account: true,
+                        record_read_history: false,
+                        allow_sensitive_media: true,
+                        incoming_friend_requests: IncomingFriendRequest::None as i32,
+                        following_list_visibility: RelationVisibility::None as i32,
+                        friend_list_visibility: RelationVisibility::None as i32,
+                    }
+                );
+            }),
+        )
+        .await;
+    }
+}
