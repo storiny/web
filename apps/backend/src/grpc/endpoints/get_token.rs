@@ -1,7 +1,6 @@
 use crate::grpc::defs::token_def::v1::{GetTokenRequest, GetTokenResponse, TokenType};
 use crate::grpc::service::GrpcService;
-use serde::Deserialize;
-use sqlx::{FromRow, Row};
+use sqlx::Row;
 use time::OffsetDateTime;
 use tonic::{Request, Response, Status};
 

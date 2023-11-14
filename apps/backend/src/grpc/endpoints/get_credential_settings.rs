@@ -1,0 +1,117 @@
+use crate::grpc::defs::credential_settings_def::v1::{
+    GetCredentialSettingsRequest, GetCredentialSettingsResponse,
+};
+use crate::grpc::service::GrpcService;
+use sqlx::Row;
+use tonic::{Request, Response, Status};
+
+/// Returns the credential settings for a user.
+pub async fn get_credential_settings(
+    client: &GrpcService,
+    request: Request<GetCredentialSettingsRequest>,
+) -> Result<Response<GetCredentialSettingsResponse>, Status> {
+    let user_id = request
+        .into_inner()
+        .id
+        .parse::<i64>()
+        .map_err(|_| Status::invalid_argument("`id` is invalid"))?;
+
+    match sqlx::query(
+        r#"
+        SELECT
+            CASE WHEN password IS NULL THEN
+                    FALSE
+                ELSE
+                    TRUE
+            END AS "has_password",
+            mfa_enabled,
+            login_apple_id,
+            login_google_id
+        FROM users
+        WHERE id = $1
+        "#,
+    )
+    .bind(user_id)
+    .fetch_one(&client.db_pool)
+    .await
+    {
+        Ok(user) => Ok(Response::new(GetCredentialSettingsResponse {
+            has_password: user.get::<bool, _>("has_password"),
+            mfa_enabled: user.get::<bool, _>("mfa_enabled"),
+            login_apple_id: user.get::<Option<String>, _>("login_apple_id"),
+            login_google_id: user.get::<Option<String>, _>("login_google_id"),
+        })),
+        Err(kind) => {
+            if matches!(kind, sqlx::Error::RowNotFound) {
+                Err(Status::not_found("User not found"))
+            } else {
+                Err(Status::internal("Database error"))
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::grpc::defs::credential_settings_def::v1::{
+        GetCredentialSettingsRequest, GetCredentialSettingsResponse,
+    };
+    use crate::test_utils::test_grpc_service;
+    use sqlx::PgPool;
+    use tonic::Request;
+
+    #[sqlx::test]
+    async fn can_return_credential_settings(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            false,
+            Box::new(|mut client, pool, _| async move {
+                // Insert the user
+                sqlx::query(
+                    r#"
+                    INSERT INTO users(
+                        id,
+                        name,
+                        username,
+                        email,
+                        password,
+                        login_apple_id,
+                        login_google_id,
+                        mfa_enabled
+                    )
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, TRUE)
+                    "#,
+                )
+                .bind(1_i64)
+                .bind("Some user".to_string())
+                .bind("some_user".to_string())
+                .bind("someone@example.com".to_string())
+                .bind("some_hashed_password")
+                .bind("some_apple_id")
+                .bind("some_google_id")
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                let response = client
+                    .get_credential_settings(Request::new(GetCredentialSettingsRequest {
+                        id: 1_i64.to_string(),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                assert_eq!(
+                    response,
+                    GetCredentialSettingsResponse {
+                        has_password: true,
+                        mfa_enabled: true,
+                        login_apple_id: Some("some_apple_id".to_string()),
+                        login_google_id: Some("some_google_id".to_string()),
+                    }
+                );
+            }),
+        )
+        .await;
+    }
+}

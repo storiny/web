@@ -89,35 +89,35 @@ impl ApiService for GrpcService {
         &self,
         request: Request<VerifyEmailRequest>,
     ) -> Result<Response<VerifyEmailResponse>, Status> {
-        todo!()
+        endpoints::verify_email::verify_email(self, request).await
     }
 
     async fn get_credential_settings(
         &self,
         request: Request<GetCredentialSettingsRequest>,
     ) -> Result<Response<GetCredentialSettingsResponse>, Status> {
-        todo!()
+        endpoints::get_credential_settings::get_credential_settings(self, request).await
     }
 
     async fn get_privacy_settings(
         &self,
         request: Request<GetPrivacySettingsRequest>,
     ) -> Result<Response<GetPrivacySettingsResponse>, Status> {
-        todo!()
+        endpoints::get_privacy_settings::get_privacy_settings(self, request).await
     }
 
     async fn get_notification_settings(
         &self,
         request: Request<GetNotificationSettingsRequest>,
     ) -> Result<Response<GetNotificationSettingsResponse>, Status> {
-        todo!()
+        endpoints::get_notification_settings::get_notification_settings(self, request).await
     }
 
     async fn get_connection_settings(
         &self,
         request: Request<GetConnectionSettingsRequest>,
     ) -> Result<Response<GetConnectionSettingsResponse>, Status> {
-        todo!()
+        endpoints::get_connection_settings::get_connection_settings(self, request).await
     }
 
     async fn get_login_activity(

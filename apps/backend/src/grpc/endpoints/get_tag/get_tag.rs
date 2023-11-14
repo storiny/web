@@ -1,7 +1,6 @@
 use crate::grpc::defs::tag_def::v1::{GetTagRequest, GetTagResponse};
 use crate::grpc::service::GrpcService;
-use serde::Deserialize;
-use sqlx::{FromRow, Postgres, QueryBuilder, Row};
+use sqlx::{FromRow, Postgres, QueryBuilder};
 use time::OffsetDateTime;
 use tonic::{Request, Response, Status};
 
