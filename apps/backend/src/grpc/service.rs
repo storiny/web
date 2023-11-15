@@ -194,6 +194,6 @@ impl ApiService for GrpcService {
         &self,
         request: Request<GetCommentRequest>,
     ) -> Result<Response<GetCommentResponse>, Status> {
-        todo!()
+        endpoints::get_comment::get_comment(self, request).await
     }
 }
