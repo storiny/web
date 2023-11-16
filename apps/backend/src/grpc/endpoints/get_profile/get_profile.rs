@@ -1,6 +1,5 @@
-use crate::grpc::defs::comment_def::v1::{GetCommentRequest, GetCommentResponse};
 use crate::grpc::defs::profile_def::v1::{GetProfileRequest, GetProfileResponse};
-use crate::grpc::defs::user_def::v1::BareUser;
+use crate::grpc::defs::user_def::v1::Status as UserStatus;
 use crate::grpc::service::GrpcService;
 use serde::Deserialize;
 use sqlx::types::Json;
@@ -164,13 +163,19 @@ pub async fn get_profile(
         return Err(Status::internal("Database error"));
     }
 
-    let comment = result.unwrap();
+    let user = result.unwrap();
 
     Ok(Response::new(GetProfileResponse {
         id: "".to_string(),
         name: "".to_string(),
         username,
-        status: None,
+        status: Some(UserStatus {
+            emoji: None,
+            text: None,
+            expires_at: None,
+            duration: 0,
+            visibility: 0,
+        }),
         bio: None,
         rendered_bio: None,
         avatar_id: None,
