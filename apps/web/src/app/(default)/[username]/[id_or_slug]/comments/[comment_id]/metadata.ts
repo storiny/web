@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 
 import { get_comment } from "~/common/grpc";
 import { get_session_token } from "~/common/utils/get-session-token";
+import { get_user } from "~/common/utils/get-user";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 import { truncate } from "~/utils/truncate";
 
@@ -13,10 +14,10 @@ export const generateMetadata = async ({
 }): Promise<Metadata> => {
   try {
     const { comment_id } = params;
-    const session_token = get_session_token();
+    const user_id = await get_user();
     const comment_response = await get_comment({
       id: comment_id,
-      token: session_token || undefined
+      current_user_id: user_id || undefined
     });
 
     return {

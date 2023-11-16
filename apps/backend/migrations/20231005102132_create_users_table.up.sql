@@ -1,5 +1,3 @@
-CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;
-
 CREATE TABLE IF NOT EXISTS users
 (
 	id                        BIGINT PRIMARY KEY      DEFAULT public.next_snowflake(),

@@ -1,4 +1,5 @@
 use crate::grpc::defs::comment_def::v1::{GetCommentRequest, GetCommentResponse};
+use crate::grpc::defs::profile_def::v1::{GetProfileRequest, GetProfileResponse};
 use crate::grpc::defs::user_def::v1::BareUser;
 use crate::grpc::service::GrpcService;
 use serde::Deserialize;
@@ -39,16 +40,13 @@ struct Comment {
     is_liked: bool,
 }
 
-/// Returns the comment object.
-pub async fn get_comment(
+/// Returns the user profile object.
+pub async fn get_profile(
     client: &GrpcService,
-    request: Request<GetCommentRequest>,
-) -> Result<Response<GetCommentResponse>, Status> {
+    request: Request<GetProfileRequest>,
+) -> Result<Response<GetProfileResponse>, Status> {
     let request = request.into_inner();
-    let comment_id = request
-        .id
-        .parse::<i64>()
-        .map_err(|_| Status::invalid_argument("`id` is invalid"))?;
+    let username = request.username;
 
     let current_user_id = {
         if let Some(user_id) = request.current_user_id {
@@ -168,31 +166,35 @@ pub async fn get_comment(
 
     let comment = result.unwrap();
 
-    Ok(Response::new(GetCommentResponse {
-        id: comment.id.to_string(),
-        content: comment.content,
-        rendered_content: comment.rendered_content,
-        user_id: comment.user_id.to_string(),
-        story_id: comment.story_id.to_string(),
-        story_slug: comment.story_slug,
-        story_writer_username: comment.story_writer_username,
-        hidden: comment.hidden,
-        edited_at: comment.edited_at.and_then(|value| Some(value.to_string())),
-        created_at: comment.created_at.to_string(),
-        like_count: comment.like_count as u32,
-        reply_count: comment.reply_count as u32,
-        user: Some(BareUser {
-            id: comment.user.id.to_string(),
-            name: comment.user.name.clone(),
-            username: comment.user.username.clone(),
-            avatar_id: comment
-                .user
-                .avatar_id
-                .and_then(|value| Some(value.to_string())),
-            avatar_hex: comment.user.avatar_hex.clone(),
-            public_flags: comment.user.public_flags as u32,
-        }),
-        is_liked: comment.is_liked,
+    Ok(Response::new(GetProfileResponse {
+        id: "".to_string(),
+        name: "".to_string(),
+        username,
+        status: None,
+        bio: None,
+        rendered_bio: None,
+        avatar_id: None,
+        avatar_hex: None,
+        banner_id: None,
+        banner_hex: None,
+        location: "".to_string(),
+        created_at: "".to_string(),
+        public_flags: 0,
+        story_count: 0,
+        follower_count: 0,
+        following_count: None,
+        friend_count: None,
+        is_private: false,
+        connections: vec![],
+        is_following: false,
+        is_follower: false,
+        is_friend: false,
+        is_subscribed: false,
+        is_friend_request_sent: false,
+        is_blocked_by_user: false,
+        is_blocking: false,
+        is_muted: false,
+        is_self: false,
     }))
 }
 

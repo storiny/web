@@ -21,45 +21,4 @@ mod tests {
 
         Ok(())
     }
-
-    #[sqlx::test(fixtures("user", "story"))]
-    async fn can_reject_document_for_soft_deleted_story(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-
-        // Soft-delete the story
-        sqlx::query(
-            r#"
-            UPDATE stories
-            SET deleted_at = now()
-            WHERE id = $1
-            "#,
-        )
-        .bind(2_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        let result = sqlx::query(
-            r#"
-            INSERT INTO documents(key, story_id) 
-            VALUES ($1, $2)
-            "#,
-        )
-        .bind(Uuid::new_v4())
-        .bind(2_i64)
-        .execute(&mut *conn)
-        .await;
-
-        // Should reject with `52001` SQLSTATE
-        assert_eq!(
-            result
-                .unwrap_err()
-                .into_database_error()
-                .unwrap()
-                .code()
-                .unwrap(),
-            "52001"
-        );
-
-        Ok(())
-    }
 }

@@ -38,6 +38,29 @@ mod tests {
     }
 
     #[sqlx::test(fixtures("user"))]
+    async fn can_insert_document_on_story_insert(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let result = insert_sample_story(&mut conn, false).await?;
+
+        // Should insert a document for the new story
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS(
+                SELECT 1 FROM documents
+                WHERE story_id = $1
+            )
+            "#,
+        )
+        .bind(result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
     async fn can_reject_story_for_soft_deleted_story_writer(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
@@ -1196,20 +1219,6 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
 
-        // Insert a document
-        let insert_result = sqlx::query(
-            r#"
-            INSERT INTO documents(key, story_id)
-            VALUES ($1, $2)
-            "#,
-        )
-        .bind(Uuid::new_v4())
-        .bind(story_id)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(insert_result.rows_affected(), 1);
-
         // Soft-delete the story
         sqlx::query(
             r#"
@@ -1246,20 +1255,6 @@ mod tests {
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
-
-        // Insert a document
-        let insert_result = sqlx::query(
-            r#"
-            INSERT INTO documents(key, story_id)
-            VALUES ($1, $2)
-            "#,
-        )
-        .bind(Uuid::new_v4())
-        .bind(story_id)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(insert_result.rows_affected(), 1);
 
         // Unpublish the story
         sqlx::query(
@@ -4022,11 +4017,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
 
-        // Insert a document
-        let insert_result = sqlx::query(
+        // Update the document
+        let update_result = sqlx::query(
             r#"
-            INSERT INTO documents(key, story_id)
-            VALUES ($1, $2)
+            UPDATE documents
+            SET key = $1
+            WHERE story_id = $2
             RETURNING key
             "#,
         )
@@ -4035,7 +4031,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(insert_result.try_get::<Uuid, _>("key").is_ok());
+        assert!(update_result.try_get::<Uuid, _>("key").is_ok());
 
         // Delete the story
         sqlx::query(
@@ -4055,7 +4051,7 @@ mod tests {
             WHERE key = $1
             "#,
         )
-        .bind(insert_result.get::<Uuid, _>("key"))
+        .bind(update_result.get::<Uuid, _>("key"))
         .fetch_one(&mut *conn)
         .await?;
 

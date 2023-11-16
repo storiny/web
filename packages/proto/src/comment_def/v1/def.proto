@@ -5,8 +5,8 @@ package comment_def.v1;
 import "user_def/v1/def.proto";
 
 message GetCommentRequest {
-  string id /*            */ = 1;
-  optional string token /**/ = 2;
+  string id /*                      */ = 1;
+  optional string current_user_id /**/ = 2;
 }
 
 message GetCommentResponse {
@@ -22,7 +22,7 @@ message GetCommentResponse {
   string created_at /*           */ = 10;
   uint32 like_count /*           */ = 11;
   uint32 reply_count /*          */ = 12;
-  user_def.v1.User user /*       */ = 13;
+  user_def.v1.BareUser user /*   */ = 13;
   // User specific props
-  bool is_liked /*      */ = 14;
+  bool is_liked /*               */ = 14;
 }

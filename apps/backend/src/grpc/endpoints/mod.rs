@@ -5,6 +5,7 @@ pub mod get_drafts_info;
 pub mod get_followed_tag_count;
 pub mod get_notification_settings;
 pub mod get_privacy_settings;
+pub mod get_profile;
 pub mod get_responses_info;
 pub mod get_stories_info;
 pub mod get_story_responses_info;

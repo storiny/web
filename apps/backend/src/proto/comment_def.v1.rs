@@ -5,7 +5,7 @@ pub struct GetCommentRequest {
     #[prost(string, tag="1")]
     pub id: ::prost::alloc::string::String,
     #[prost(string, optional, tag="2")]
-    pub token: ::core::option::Option<::prost::alloc::string::String>,
+    pub current_user_id: ::core::option::Option<::prost::alloc::string::String>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -35,7 +35,7 @@ pub struct GetCommentResponse {
     #[prost(uint32, tag="12")]
     pub reply_count: u32,
     #[prost(message, optional, tag="13")]
-    pub user: ::core::option::Option<super::super::user_def::v1::User>,
+    pub user: ::core::option::Option<super::super::user_def::v1::BareUser>,
     /// User specific props
     #[prost(bool, tag="14")]
     pub is_liked: bool,

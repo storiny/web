@@ -65,8 +65,8 @@ message GetStoriesInfoResponse {
 // Main story request
 
 message GetStoryRequest {
-  string id_or_slug /*    */ = 1;
-  optional string token /**/ = 2;
+  string id_or_slug /*              */ = 1;
+  optional string current_user_id /**/ = 2;
 }
 
 message GetStoryResponse {
@@ -86,22 +86,23 @@ message GetStoryResponse {
   StoryAgeRestriction age_restriction /* */ = 14;
   StoryLicense license /*                */ = 15;
   StoryVisibility visibility /*          */ = 16;
+  bool disable_comments /*               */ = 17;
+  bool disable_public_revision_history /**/ = 18;
+  bool disable_toc /*                    */ = 19;
   // SEO
-  optional string canonical_url /*       */ = 17;
-  optional string seo_description /*     */ = 18;
-  optional string seo_title /*           */ = 19;
-  optional string preview_image /*       */ = 20;
-  string created_at /*                   */ = 21;
-  optional string edited_at /*           */ = 22;
-  optional string published_at /*        */ = 23;
-  optional string first_published_at /*  */ = 24;
-  optional string deleted_at /*          */ = 25;
-  user_def.v1.User user /*               */ = 26;
+  optional string canonical_url /*       */ = 20;
+  optional string seo_description /*     */ = 21;
+  optional string seo_title /*           */ = 22;
+  optional string preview_image /*       */ = 23;
+  string created_at /*                   */ = 24;
+  optional string edited_at /*           */ = 25;
+  optional string published_at /*        */ = 26;
+  optional string first_published_at /*  */ = 27;
+  optional string deleted_at /*          */ = 28;
+  // Joins
+  user_def.v1.ExtendedUser user /*       */ = 29;
+  repeated tag_def.v1.Tag tags /*        */ = 30;
   // User specific props
-  bool is_bookmarked /*                  */ = 27;
-  bool is_liked /*                       */ = 28;
-  bool disable_comments /*               */ = 29;
-  bool disable_public_revision_history /**/ = 30;
-  bool disable_toc /*                    */ = 31;
-  repeated tag_def.v1.Tag tags /*        */ = 32;
+  bool is_bookmarked /*                  */ = 31;
+  bool is_liked /*                       */ = 32;
 }

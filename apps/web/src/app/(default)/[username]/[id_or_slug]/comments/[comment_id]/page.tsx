@@ -6,6 +6,7 @@ import React from "react";
 import { get_comment } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
 import { get_session_token } from "~/common/utils/get-session-token";
+import { get_user } from "~/common/utils/get-user";
 import { is_snowflake } from "~/common/utils/is-snowflake";
 import { is_valid_username } from "~/common/utils/is-valid-username";
 
@@ -26,10 +27,10 @@ const Page = async ({
       not_found();
     }
 
-    const session_token = get_session_token();
+    const user_id = await get_user();
     const comment_response = await get_comment({
       id: id_or_slug,
-      token: session_token || undefined
+      current_user_id: user_id || undefined
     });
 
     // Redirect if the username or story slug is incorrect

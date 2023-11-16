@@ -10,15 +10,15 @@ impl serde::Serialize for GetCommentRequest {
         if !self.id.is_empty() {
             len += 1;
         }
-        if self.token.is_some() {
+        if self.current_user_id.is_some() {
             len += 1;
         }
         let mut struct_ser = serializer.serialize_struct("comment_def.v1.GetCommentRequest", len)?;
         if !self.id.is_empty() {
             struct_ser.serialize_field("id", &self.id)?;
         }
-        if let Some(v) = self.token.as_ref() {
-            struct_ser.serialize_field("token", v)?;
+        if let Some(v) = self.current_user_id.as_ref() {
+            struct_ser.serialize_field("currentUserId", v)?;
         }
         struct_ser.end()
     }
@@ -31,13 +31,14 @@ impl<'de> serde::Deserialize<'de> for GetCommentRequest {
     {
         const FIELDS: &[&str] = &[
             "id",
-            "token",
+            "current_user_id",
+            "currentUserId",
         ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
             Id,
-            Token,
+            CurrentUserId,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
@@ -60,7 +61,7 @@ impl<'de> serde::Deserialize<'de> for GetCommentRequest {
                     {
                         match value {
                             "id" => Ok(GeneratedField::Id),
-                            "token" => Ok(GeneratedField::Token),
+                            "currentUserId" | "current_user_id" => Ok(GeneratedField::CurrentUserId),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -81,7 +82,7 @@ impl<'de> serde::Deserialize<'de> for GetCommentRequest {
                     V: serde::de::MapAccess<'de>,
             {
                 let mut id__ = None;
-                let mut token__ = None;
+                let mut current_user_id__ = None;
                 while let Some(k) = map.next_key()? {
                     match k {
                         GeneratedField::Id => {
@@ -90,17 +91,17 @@ impl<'de> serde::Deserialize<'de> for GetCommentRequest {
                             }
                             id__ = Some(map.next_value()?);
                         }
-                        GeneratedField::Token => {
-                            if token__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("token"));
+                        GeneratedField::CurrentUserId => {
+                            if current_user_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("currentUserId"));
                             }
-                            token__ = map.next_value()?;
+                            current_user_id__ = map.next_value()?;
                         }
                     }
                 }
                 Ok(GetCommentRequest {
                     id: id__.unwrap_or_default(),
-                    token: token__,
+                    current_user_id: current_user_id__,
                 })
             }
         }

@@ -2,7 +2,7 @@
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 import { Tag } from "../../tag_def/v1/def";
-import { User } from "../../user_def/v1/def";
+import { ExtendedUser } from "../../user_def/v1/def";
 
 export const protobufPackage = "story_def.v1";
 
@@ -186,7 +186,7 @@ export interface GetStoriesInfoResponse {
 
 export interface GetStoryRequest {
   id_or_slug: string;
-  token?: string | undefined;
+  current_user_id?: string | undefined;
 }
 
 export interface GetStoryResponse {
@@ -206,6 +206,9 @@ export interface GetStoryResponse {
   age_restriction: StoryAgeRestriction;
   license: StoryLicense;
   visibility: StoryVisibility;
+  disable_comments: boolean;
+  disable_public_revision_history: boolean;
+  disable_toc: boolean;
   /** SEO */
   canonical_url?: string | undefined;
   seo_description?: string | undefined;
@@ -215,17 +218,15 @@ export interface GetStoryResponse {
   edited_at?: string | undefined;
   published_at?: string | undefined;
   first_published_at?: string | undefined;
-  deleted_at?: string | undefined;
-  user:
-    | User
+  deleted_at?:
+    | string
     | undefined;
+  /** Joins */
+  user: ExtendedUser | undefined;
+  tags: Tag[];
   /** User specific props */
   is_bookmarked: boolean;
   is_liked: boolean;
-  disable_comments: boolean;
-  disable_public_revision_history: boolean;
-  disable_toc: boolean;
-  tags: Tag[];
 }
 
 function createBaseDraft(): Draft {
@@ -665,7 +666,7 @@ export const GetStoriesInfoResponse = {
 };
 
 function createBaseGetStoryRequest(): GetStoryRequest {
-  return { id_or_slug: "", token: undefined };
+  return { id_or_slug: "", current_user_id: undefined };
 }
 
 export const GetStoryRequest = {
@@ -673,8 +674,8 @@ export const GetStoryRequest = {
     if (message.id_or_slug !== "") {
       writer.uint32(10).string(message.id_or_slug);
     }
-    if (message.token !== undefined) {
-      writer.uint32(18).string(message.token);
+    if (message.current_user_id !== undefined) {
+      writer.uint32(18).string(message.current_user_id);
     }
     return writer;
   },
@@ -698,7 +699,7 @@ export const GetStoryRequest = {
             break;
           }
 
-          message.token = reader.string();
+          message.current_user_id = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -712,7 +713,7 @@ export const GetStoryRequest = {
   fromJSON(object: any): GetStoryRequest {
     return {
       id_or_slug: isSet(object.id_or_slug) ? globalThis.String(object.id_or_slug) : "",
-      token: isSet(object.token) ? globalThis.String(object.token) : undefined,
+      current_user_id: isSet(object.current_user_id) ? globalThis.String(object.current_user_id) : undefined,
     };
   },
 
@@ -721,8 +722,8 @@ export const GetStoryRequest = {
     if (message.id_or_slug !== "") {
       obj.id_or_slug = message.id_or_slug;
     }
-    if (message.token !== undefined) {
-      obj.token = message.token;
+    if (message.current_user_id !== undefined) {
+      obj.current_user_id = message.current_user_id;
     }
     return obj;
   },
@@ -733,7 +734,7 @@ export const GetStoryRequest = {
   fromPartial<I extends Exact<DeepPartial<GetStoryRequest>, I>>(object: I): GetStoryRequest {
     const message = createBaseGetStoryRequest();
     message.id_or_slug = object.id_or_slug ?? "";
-    message.token = object.token ?? undefined;
+    message.current_user_id = object.current_user_id ?? undefined;
     return message;
   },
 };
@@ -756,6 +757,9 @@ function createBaseGetStoryResponse(): GetStoryResponse {
     age_restriction: 0,
     license: 0,
     visibility: 0,
+    disable_comments: false,
+    disable_public_revision_history: false,
+    disable_toc: false,
     canonical_url: undefined,
     seo_description: undefined,
     seo_title: undefined,
@@ -766,12 +770,9 @@ function createBaseGetStoryResponse(): GetStoryResponse {
     first_published_at: undefined,
     deleted_at: undefined,
     user: undefined,
+    tags: [],
     is_bookmarked: false,
     is_liked: false,
-    disable_comments: false,
-    disable_public_revision_history: false,
-    disable_toc: false,
-    tags: [],
   };
 }
 
@@ -825,53 +826,53 @@ export const GetStoryResponse = {
     if (message.visibility !== 0) {
       writer.uint32(128).int32(message.visibility);
     }
-    if (message.canonical_url !== undefined) {
-      writer.uint32(138).string(message.canonical_url);
-    }
-    if (message.seo_description !== undefined) {
-      writer.uint32(146).string(message.seo_description);
-    }
-    if (message.seo_title !== undefined) {
-      writer.uint32(154).string(message.seo_title);
-    }
-    if (message.preview_image !== undefined) {
-      writer.uint32(162).string(message.preview_image);
-    }
-    if (message.created_at !== "") {
-      writer.uint32(170).string(message.created_at);
-    }
-    if (message.edited_at !== undefined) {
-      writer.uint32(178).string(message.edited_at);
-    }
-    if (message.published_at !== undefined) {
-      writer.uint32(186).string(message.published_at);
-    }
-    if (message.first_published_at !== undefined) {
-      writer.uint32(194).string(message.first_published_at);
-    }
-    if (message.deleted_at !== undefined) {
-      writer.uint32(202).string(message.deleted_at);
-    }
-    if (message.user !== undefined) {
-      User.encode(message.user, writer.uint32(210).fork()).ldelim();
-    }
-    if (message.is_bookmarked === true) {
-      writer.uint32(216).bool(message.is_bookmarked);
-    }
-    if (message.is_liked === true) {
-      writer.uint32(224).bool(message.is_liked);
-    }
     if (message.disable_comments === true) {
-      writer.uint32(232).bool(message.disable_comments);
+      writer.uint32(136).bool(message.disable_comments);
     }
     if (message.disable_public_revision_history === true) {
-      writer.uint32(240).bool(message.disable_public_revision_history);
+      writer.uint32(144).bool(message.disable_public_revision_history);
     }
     if (message.disable_toc === true) {
-      writer.uint32(248).bool(message.disable_toc);
+      writer.uint32(152).bool(message.disable_toc);
+    }
+    if (message.canonical_url !== undefined) {
+      writer.uint32(162).string(message.canonical_url);
+    }
+    if (message.seo_description !== undefined) {
+      writer.uint32(170).string(message.seo_description);
+    }
+    if (message.seo_title !== undefined) {
+      writer.uint32(178).string(message.seo_title);
+    }
+    if (message.preview_image !== undefined) {
+      writer.uint32(186).string(message.preview_image);
+    }
+    if (message.created_at !== "") {
+      writer.uint32(194).string(message.created_at);
+    }
+    if (message.edited_at !== undefined) {
+      writer.uint32(202).string(message.edited_at);
+    }
+    if (message.published_at !== undefined) {
+      writer.uint32(210).string(message.published_at);
+    }
+    if (message.first_published_at !== undefined) {
+      writer.uint32(218).string(message.first_published_at);
+    }
+    if (message.deleted_at !== undefined) {
+      writer.uint32(226).string(message.deleted_at);
+    }
+    if (message.user !== undefined) {
+      ExtendedUser.encode(message.user, writer.uint32(234).fork()).ldelim();
     }
     for (const v of message.tags) {
-      Tag.encode(v!, writer.uint32(258).fork()).ldelim();
+      Tag.encode(v!, writer.uint32(242).fork()).ldelim();
+    }
+    if (message.is_bookmarked === true) {
+      writer.uint32(248).bool(message.is_bookmarked);
+    }
+    if (message.is_liked === true) {
+      writer.uint32(256).bool(message.is_liked);
     }
     return writer;
   },
@@ -996,116 +997,116 @@ export const GetStoryResponse = {
           message.visibility = reader.int32() as any;
           continue;
         case 17:
-          if (tag !== 138) {
+          if (tag !== 136) {
             break;
           }
 
-          message.canonical_url = reader.string();
+          message.disable_comments = reader.bool();
           continue;
         case 18:
-          if (tag !== 146) {
+          if (tag !== 144) {
             break;
           }
 
-          message.seo_description = reader.string();
+          message.disable_public_revision_history = reader.bool();
           continue;
         case 19:
-          if (tag !== 154) {
+          if (tag !== 152) {
             break;
           }
 
-          message.seo_title = reader.string();
+          message.disable_toc = reader.bool();
           continue;
         case 20:
           if (tag !== 162) {
             break;
           }
 
-          message.preview_image = reader.string();
+          message.canonical_url = reader.string();
           continue;
         case 21:
           if (tag !== 170) {
             break;
           }
 
-          message.created_at = reader.string();
+          message.seo_description = reader.string();
           continue;
         case 22:
           if (tag !== 178) {
             break;
           }
 
-          message.edited_at = reader.string();
+          message.seo_title = reader.string();
           continue;
         case 23:
           if (tag !== 186) {
             break;
           }
 
-          message.published_at = reader.string();
+          message.preview_image = reader.string();
           continue;
         case 24:
           if (tag !== 194) {
             break;
           }
 
-          message.first_published_at = reader.string();
+          message.created_at = reader.string();
           continue;
         case 25:
           if (tag !== 202) {
             break;
           }
 
-          message.deleted_at = reader.string();
+          message.edited_at = reader.string();
           continue;
         case 26:
           if (tag !== 210) {
             break;
           }
 
-          message.user = User.decode(reader, reader.uint32());
+          message.published_at = reader.string();
           continue;
         case 27:
-          if (tag !== 216) {
+          if (tag !== 218) {
             break;
           }
 
-          message.is_bookmarked = reader.bool();
+          message.first_published_at = reader.string();
           continue;
         case 28:
-          if (tag !== 224) {
+          if (tag !== 226) {
             break;
           }
 
-          message.is_liked = reader.bool();
+          message.deleted_at = reader.string();
           continue;
         case 29:
-          if (tag !== 232) {
+          if (tag !== 234) {
             break;
           }
 
-          message.disable_comments = reader.bool();
+          message.user = ExtendedUser.decode(reader, reader.uint32());
           continue;
         case 30:
-          if (tag !== 240) {
+          if (tag !== 242) {
             break;
           }
 
-          message.disable_public_revision_history = reader.bool();
+          message.tags.push(Tag.decode(reader, reader.uint32()));
           continue;
         case 31:
           if (tag !== 248) {
             break;
           }
 
-          message.disable_toc = reader.bool();
+          message.is_bookmarked = reader.bool();
           continue;
         case 32:
-          if (tag !== 258) {
+          if (tag !== 256) {
             break;
           }
 
-          message.tags.push(Tag.decode(reader, reader.uint32()));
+          message.is_liked = reader.bool();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -1134,6 +1135,11 @@ export const GetStoryResponse = {
       age_restriction: isSet(object.age_restriction) ? storyAgeRestrictionFromJSON(object.age_restriction) : 0,
       license: isSet(object.license) ? storyLicenseFromJSON(object.license) : 0,
       visibility: isSet(object.visibility) ? storyVisibilityFromJSON(object.visibility) : 0,
+      disable_comments: isSet(object.disable_comments) ? globalThis.Boolean(object.disable_comments) : false,
+      disable_public_revision_history: isSet(object.disable_public_revision_history)
+        ? globalThis.Boolean(object.disable_public_revision_history)
+        : false,
+      disable_toc: isSet(object.disable_toc) ? globalThis.Boolean(object.disable_toc) : false,
       canonical_url: isSet(object.canonical_url) ? globalThis.String(object.canonical_url) : undefined,
       seo_description: isSet(object.seo_description) ? globalThis.String(object.seo_description) : undefined,
       seo_title: isSet(object.seo_title) ? globalThis.String(object.seo_title) : undefined,
@@ -1143,15 +1149,10 @@ export const GetStoryResponse = {
       published_at: isSet(object.published_at) ? globalThis.String(object.published_at) : undefined,
       first_published_at: isSet(object.first_published_at) ? globalThis.String(object.first_published_at) : undefined,
       deleted_at: isSet(object.deleted_at) ? globalThis.String(object.deleted_at) : undefined,
-      user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
+      user: isSet(object.user) ? ExtendedUser.fromJSON(object.user) : undefined,
+      tags: globalThis.Array.isArray(object?.tags) ? object.tags.map((e: any) => Tag.fromJSON(e)) : [],
       is_bookmarked: isSet(object.is_bookmarked) ? globalThis.Boolean(object.is_bookmarked) : false,
       is_liked: isSet(object.is_liked) ? globalThis.Boolean(object.is_liked) : false,
-      disable_comments: isSet(object.disable_comments) ? globalThis.Boolean(object.disable_comments) : false,
-      disable_public_revision_history: isSet(object.disable_public_revision_history)
-        ? globalThis.Boolean(object.disable_public_revision_history)
-        : false,
-      disable_toc: isSet(object.disable_toc) ? globalThis.Boolean(object.disable_toc) : false,
-      tags: globalThis.Array.isArray(object?.tags) ? object.tags.map((e: any) => Tag.fromJSON(e)) : [],
     };
   },
 
@@ -1205,6 +1206,15 @@ export const GetStoryResponse = {
     if (message.visibility !== 0) {
       obj.visibility = storyVisibilityToJSON(message.visibility);
     }
+    if (message.disable_comments === true) {
+      obj.disable_comments = message.disable_comments;
+    }
+    if (message.disable_public_revision_history === true) {
+      obj.disable_public_revision_history = message.disable_public_revision_history;
+    }
+    if (message.disable_toc === true) {
+      obj.disable_toc = message.disable_toc;
+    }
     if (message.canonical_url !== undefined) {
       obj.canonical_url = message.canonical_url;
     }
@@ -1233,25 +1243,16 @@ export const GetStoryResponse = {
       obj.deleted_at = message.deleted_at;
     }
     if (message.user !== undefined) {
-      obj.user = User.toJSON(message.user);
+      obj.user = ExtendedUser.toJSON(message.user);
+    }
+    if (message.tags?.length) {
+      obj.tags = message.tags.map((e) => Tag.toJSON(e));
     }
     if (message.is_bookmarked === true) {
       obj.is_bookmarked = message.is_bookmarked;
     }
     if (message.is_liked === true) {
       obj.is_liked = message.is_liked;
-    }
-    if (message.disable_comments === true) {
-      obj.disable_comments = message.disable_comments;
-    }
-    if (message.disable_public_revision_history === true) {
-      obj.disable_public_revision_history = message.disable_public_revision_history;
-    }
-    if (message.disable_toc === true) {
-      obj.disable_toc = message.disable_toc;
-    }
-    if (message.tags?.length) {
-      obj.tags = message.tags.map((e) => Tag.toJSON(e));
     }
     return obj;
   },
@@ -1277,6 +1278,9 @@ export const GetStoryResponse = {
     message.age_restriction = object.age_restriction ?? 0;
     message.license = object.license ?? 0;
     message.visibility = object.visibility ?? 0;
+    message.disable_comments = object.disable_comments ?? false;
+    message.disable_public_revision_history = object.disable_public_revision_history ?? false;
+    message.disable_toc = object.disable_toc ?? false;
     message.canonical_url = object.canonical_url ?? undefined;
     message.seo_description = object.seo_description ?? undefined;
     message.seo_title = object.seo_title ?? undefined;
@@ -1286,13 +1290,12 @@ export const GetStoryResponse = {
     message.published_at = object.published_at ?? undefined;
     message.first_published_at = object.first_published_at ?? undefined;
     message.deleted_at = object.deleted_at ?? undefined;
-    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    message.user = (object.user !== undefined && object.user !== null)
+      ? ExtendedUser.fromPartial(object.user)
+      : undefined;
+    message.tags = object.tags?.map((e) => Tag.fromPartial(e)) || [];
     message.is_bookmarked = object.is_bookmarked ?? false;
     message.is_liked = object.is_liked ?? false;
-    message.disable_comments = object.disable_comments ?? false;
-    message.disable_public_revision_history = object.disable_public_revision_history ?? false;
-    message.disable_toc = object.disable_toc ?? false;
-    message.tags = object.tags?.map((e) => Tag.fromPartial(e)) || [];
     return message;
   },
 };

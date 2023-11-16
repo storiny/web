@@ -68,7 +68,7 @@ impl ApiService for GrpcService {
         &self,
         request: Request<GetProfileRequest>,
     ) -> Result<Response<GetProfileResponse>, Status> {
-        todo!()
+        endpoints::get_profile::get_profile(self, request).await
     }
 
     async fn get_tag(

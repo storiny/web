@@ -638,15 +638,15 @@ impl serde::Serialize for GetStoryRequest {
         if !self.id_or_slug.is_empty() {
             len += 1;
         }
-        if self.token.is_some() {
+        if self.current_user_id.is_some() {
             len += 1;
         }
         let mut struct_ser = serializer.serialize_struct("story_def.v1.GetStoryRequest", len)?;
         if !self.id_or_slug.is_empty() {
             struct_ser.serialize_field("idOrSlug", &self.id_or_slug)?;
         }
-        if let Some(v) = self.token.as_ref() {
-            struct_ser.serialize_field("token", v)?;
+        if let Some(v) = self.current_user_id.as_ref() {
+            struct_ser.serialize_field("currentUserId", v)?;
         }
         struct_ser.end()
     }
@@ -660,13 +660,14 @@ impl<'de> serde::Deserialize<'de> for GetStoryRequest {
         const FIELDS: &[&str] = &[
             "id_or_slug",
             "idOrSlug",
-            "token",
+            "current_user_id",
+            "currentUserId",
         ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
             IdOrSlug,
-            Token,
+            CurrentUserId,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
@@ -689,7 +690,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryRequest {
                     {
                         match value {
                             "idOrSlug" | "id_or_slug" => Ok(GeneratedField::IdOrSlug),
-                            "token" => Ok(GeneratedField::Token),
+                            "currentUserId" | "current_user_id" => Ok(GeneratedField::CurrentUserId),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -710,7 +711,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryRequest {
                     V: serde::de::MapAccess<'de>,
             {
                 let mut id_or_slug__ = None;
-                let mut token__ = None;
+                let mut current_user_id__ = None;
                 while let Some(k) = map.next_key()? {
                     match k {
                         GeneratedField::IdOrSlug => {
@@ -719,17 +720,17 @@ impl<'de> serde::Deserialize<'de> for GetStoryRequest {
                             }
                             id_or_slug__ = Some(map.next_value()?);
                         }
-                        GeneratedField::Token => {
-                            if token__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("token"));
+                        GeneratedField::CurrentUserId => {
+                            if current_user_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("currentUserId"));
                             }
-                            token__ = map.next_value()?;
+                            current_user_id__ = map.next_value()?;
                         }
                     }
                 }
                 Ok(GetStoryRequest {
                     id_or_slug: id_or_slug__.unwrap_or_default(),
-                    token: token__,
+                    current_user_id: current_user_id__,
                 })
             }
         }
@@ -792,6 +793,15 @@ impl serde::Serialize for GetStoryResponse {
         if self.visibility != 0 {
             len += 1;
         }
+        if self.disable_comments {
+            len += 1;
+        }
+        if self.disable_public_revision_history {
+            len += 1;
+        }
+        if self.disable_toc {
+            len += 1;
+        }
         if self.canonical_url.is_some() {
             len += 1;
         }
@@ -822,22 +832,13 @@ impl serde::Serialize for GetStoryResponse {
         if self.user.is_some() {
             len += 1;
         }
+        if !self.tags.is_empty() {
+            len += 1;
+        }
         if self.is_bookmarked {
             len += 1;
         }
         if self.is_liked {
-            len += 1;
-        }
-        if self.disable_comments {
-            len += 1;
-        }
-        if self.disable_public_revision_history {
-            len += 1;
-        }
-        if self.disable_toc {
-            len += 1;
-        }
-        if !self.tags.is_empty() {
             len += 1;
         }
         let mut struct_ser = serializer.serialize_struct("story_def.v1.GetStoryResponse", len)?;
@@ -895,6 +896,15 @@ impl serde::Serialize for GetStoryResponse {
                 .ok_or_else(|| serde::ser::Error::custom(format!("Invalid variant {}", self.visibility)))?;
             struct_ser.serialize_field("visibility", &v)?;
         }
+        if self.disable_comments {
+            struct_ser.serialize_field("disableComments", &self.disable_comments)?;
+        }
+        if self.disable_public_revision_history {
+            struct_ser.serialize_field("disablePublicRevisionHistory", &self.disable_public_revision_history)?;
+        }
+        if self.disable_toc {
+            struct_ser.serialize_field("disableToc", &self.disable_toc)?;
+        }
         if let Some(v) = self.canonical_url.as_ref() {
             struct_ser.serialize_field("canonicalUrl", v)?;
         }
@@ -925,23 +935,14 @@ impl serde::Serialize for GetStoryResponse {
         if let Some(v) = self.user.as_ref() {
             struct_ser.serialize_field("user", v)?;
         }
+        if !self.tags.is_empty() {
+            struct_ser.serialize_field("tags", &self.tags)?;
+        }
         if self.is_bookmarked {
             struct_ser.serialize_field("isBookmarked", &self.is_bookmarked)?;
         }
         if self.is_liked {
             struct_ser.serialize_field("isLiked", &self.is_liked)?;
-        }
-        if self.disable_comments {
-            struct_ser.serialize_field("disableComments", &self.disable_comments)?;
-        }
-        if self.disable_public_revision_history {
-            struct_ser.serialize_field("disablePublicRevisionHistory", &self.disable_public_revision_history)?;
-        }
-        if self.disable_toc {
-            struct_ser.serialize_field("disableToc", &self.disable_toc)?;
-        }
-        if !self.tags.is_empty() {
-            struct_ser.serialize_field("tags", &self.tags)?;
         }
         struct_ser.end()
     }
@@ -978,6 +979,12 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
             "ageRestriction",
             "license",
             "visibility",
+            "disable_comments",
+            "disableComments",
+            "disable_public_revision_history",
+            "disablePublicRevisionHistory",
+            "disable_toc",
+            "disableToc",
             "canonical_url",
             "canonicalUrl",
             "seo_description",
@@ -997,17 +1004,11 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
             "deleted_at",
             "deletedAt",
             "user",
+            "tags",
             "is_bookmarked",
             "isBookmarked",
             "is_liked",
             "isLiked",
-            "disable_comments",
-            "disableComments",
-            "disable_public_revision_history",
-            "disablePublicRevisionHistory",
-            "disable_toc",
-            "disableToc",
-            "tags",
         ];
 
         #[allow(clippy::enum_variant_names)]
@@ -1028,6 +1029,9 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
             AgeRestriction,
             License,
             Visibility,
+            DisableComments,
+            DisablePublicRevisionHistory,
+            DisableToc,
             CanonicalUrl,
             SeoDescription,
             SeoTitle,
@@ -1038,12 +1042,9 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
             FirstPublishedAt,
             DeletedAt,
             User,
+            Tags,
             IsBookmarked,
             IsLiked,
-            DisableComments,
-            DisablePublicRevisionHistory,
-            DisableToc,
-            Tags,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
@@ -1081,6 +1082,9 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                             "ageRestriction" | "age_restriction" => Ok(GeneratedField::AgeRestriction),
                             "license" => Ok(GeneratedField::License),
                             "visibility" => Ok(GeneratedField::Visibility),
+                            "disableComments" | "disable_comments" => Ok(GeneratedField::DisableComments),
+                            "disablePublicRevisionHistory" | "disable_public_revision_history" => Ok(GeneratedField::DisablePublicRevisionHistory),
+                            "disableToc" | "disable_toc" => Ok(GeneratedField::DisableToc),
                             "canonicalUrl" | "canonical_url" => Ok(GeneratedField::CanonicalUrl),
                             "seoDescription" | "seo_description" => Ok(GeneratedField::SeoDescription),
                             "seoTitle" | "seo_title" => Ok(GeneratedField::SeoTitle),
@@ -1091,12 +1095,9 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                             "firstPublishedAt" | "first_published_at" => Ok(GeneratedField::FirstPublishedAt),
                             "deletedAt" | "deleted_at" => Ok(GeneratedField::DeletedAt),
                             "user" => Ok(GeneratedField::User),
+                            "tags" => Ok(GeneratedField::Tags),
                             "isBookmarked" | "is_bookmarked" => Ok(GeneratedField::IsBookmarked),
                             "isLiked" | "is_liked" => Ok(GeneratedField::IsLiked),
-                            "disableComments" | "disable_comments" => Ok(GeneratedField::DisableComments),
-                            "disablePublicRevisionHistory" | "disable_public_revision_history" => Ok(GeneratedField::DisablePublicRevisionHistory),
-                            "disableToc" | "disable_toc" => Ok(GeneratedField::DisableToc),
-                            "tags" => Ok(GeneratedField::Tags),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -1132,6 +1133,9 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                 let mut age_restriction__ = None;
                 let mut license__ = None;
                 let mut visibility__ = None;
+                let mut disable_comments__ = None;
+                let mut disable_public_revision_history__ = None;
+                let mut disable_toc__ = None;
                 let mut canonical_url__ = None;
                 let mut seo_description__ = None;
                 let mut seo_title__ = None;
@@ -1142,12 +1146,9 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                 let mut first_published_at__ = None;
                 let mut deleted_at__ = None;
                 let mut user__ = None;
+                let mut tags__ = None;
                 let mut is_bookmarked__ = None;
                 let mut is_liked__ = None;
-                let mut disable_comments__ = None;
-                let mut disable_public_revision_history__ = None;
-                let mut disable_toc__ = None;
-                let mut tags__ = None;
                 while let Some(k) = map.next_key()? {
                     match k {
                         GeneratedField::Id => {
@@ -1254,6 +1255,24 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                             }
                             visibility__ = Some(map.next_value::<StoryVisibility>()? as i32);
                         }
+                        GeneratedField::DisableComments => {
+                            if disable_comments__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("disableComments"));
+                            }
+                            disable_comments__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::DisablePublicRevisionHistory => {
+                            if disable_public_revision_history__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("disablePublicRevisionHistory"));
+                            }
+                            disable_public_revision_history__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::DisableToc => {
+                            if disable_toc__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("disableToc"));
+                            }
+                            disable_toc__ = Some(map.next_value()?);
+                        }
                         GeneratedField::CanonicalUrl => {
                             if canonical_url__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("canonicalUrl"));
@@ -1314,6 +1333,12 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                             }
                             user__ = map.next_value()?;
                         }
+                        GeneratedField::Tags => {
+                            if tags__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("tags"));
+                            }
+                            tags__ = Some(map.next_value()?);
+                        }
                         GeneratedField::IsBookmarked => {
                             if is_bookmarked__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isBookmarked"));
@@ -1325,30 +1350,6 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                                 return Err(serde::de::Error::duplicate_field("isLiked"));
                             }
                             is_liked__ = Some(map.next_value()?);
-                        }
-                        GeneratedField::DisableComments => {
-                            if disable_comments__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("disableComments"));
-                            }
-                            disable_comments__ = Some(map.next_value()?);
-                        }
-                        GeneratedField::DisablePublicRevisionHistory => {
-                            if disable_public_revision_history__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("disablePublicRevisionHistory"));
-                            }
-                            disable_public_revision_history__ = Some(map.next_value()?);
-                        }
-                        GeneratedField::DisableToc => {
-                            if disable_toc__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("disableToc"));
-                            }
-                            disable_toc__ = Some(map.next_value()?);
-                        }
-                        GeneratedField::Tags => {
-                            if tags__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("tags"));
-                            }
-                            tags__ = Some(map.next_value()?);
                         }
                     }
                 }
@@ -1369,6 +1370,9 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                     age_restriction: age_restriction__.unwrap_or_default(),
                     license: license__.unwrap_or_default(),
                     visibility: visibility__.unwrap_or_default(),
+                    disable_comments: disable_comments__.unwrap_or_default(),
+                    disable_public_revision_history: disable_public_revision_history__.unwrap_or_default(),
+                    disable_toc: disable_toc__.unwrap_or_default(),
                     canonical_url: canonical_url__,
                     seo_description: seo_description__,
                     seo_title: seo_title__,
@@ -1379,12 +1383,9 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                     first_published_at: first_published_at__,
                     deleted_at: deleted_at__,
                     user: user__,
+                    tags: tags__.unwrap_or_default(),
                     is_bookmarked: is_bookmarked__.unwrap_or_default(),
                     is_liked: is_liked__.unwrap_or_default(),
-                    disable_comments: disable_comments__.unwrap_or_default(),
-                    disable_public_revision_history: disable_public_revision_history__.unwrap_or_default(),
-                    disable_toc: disable_toc__.unwrap_or_default(),
-                    tags: tags__.unwrap_or_default(),
                 })
             }
         }
