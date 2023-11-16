@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 
 import { get_story } from "~/common/grpc";
 import { get_session_token } from "~/common/utils/get-session-token";
+import { get_user } from "~/common/utils/get-user";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 export const generateMetadata = async ({
@@ -13,10 +14,10 @@ export const generateMetadata = async ({
   const { id_or_slug } = params;
 
   try {
-    const session_token = get_session_token();
+    const user_id = await get_user();
     const story_response = await get_story({
       id_or_slug: id_or_slug,
-      token: session_token || undefined
+      current_user_id: user_id || undefined
     });
 
     return {

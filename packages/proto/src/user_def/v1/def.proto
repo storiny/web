@@ -28,7 +28,16 @@ message Status {
 
 // User
 
-message User {
+message BareUser {
+  string id /*                 */ = 1;
+  string name /*               */ = 2;
+  string username /*           */ = 3;
+  optional string avatar_id /* */ = 4;
+  optional string avatar_hex /**/ = 5;
+  uint32 public_flags /*       */ = 6;
+}
+
+message ExtendedUser {
   string id /*                 */ = 1;
   string name /*               */ = 2;
   string username /*           */ = 3;

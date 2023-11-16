@@ -49,7 +49,7 @@ $$ LANGUAGE plpgsql;
 
 -- Insert
 --
-CREATE OR REPLACE FUNCTION story_insert_trigger_proc(
+CREATE OR REPLACE FUNCTION story_before_insert_trigger_proc(
 )
 	RETURNS TRIGGER
 AS
@@ -73,11 +73,33 @@ END;
 $$
 	LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER story_insert_trigger
+CREATE OR REPLACE TRIGGER story_before_insert_trigger
 	BEFORE INSERT
 	ON stories
 	FOR EACH ROW
-EXECUTE PROCEDURE story_insert_trigger_proc();
+EXECUTE PROCEDURE story_before_insert_trigger_proc();
+
+--
+CREATE OR REPLACE FUNCTION story_after_insert_trigger_proc(
+)
+	RETURNS TRIGGER
+AS
+$$
+BEGIN
+	-- Insert a document
+	INSERT INTO documents (story_id)
+	VALUES (NEW.id);
+	--
+	RETURN NEW;
+END;
+$$
+	LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER story_after_insert_trigger
+	AFTER INSERT
+	ON stories
+	FOR EACH ROW
+EXECUTE PROCEDURE story_after_insert_trigger_proc();
 
 -- Update
 --

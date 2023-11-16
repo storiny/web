@@ -111,7 +111,16 @@ export interface Status {
   visibility: StatusVisibility;
 }
 
-export interface User {
+export interface BareUser {
+  id: string;
+  name: string;
+  username: string;
+  avatar_id?: string | undefined;
+  avatar_hex?: string | undefined;
+  public_flags: number;
+}
+
+export interface ExtendedUser {
   id: string;
   name: string;
   username: string;
@@ -286,7 +295,141 @@ export const Status = {
   },
 };
 
-function createBaseUser(): User {
+function createBaseBareUser(): BareUser {
+  return { id: "", name: "", username: "", avatar_id: undefined, avatar_hex: undefined, public_flags: 0 };
+}
+
+export const BareUser = {
+  encode(message: BareUser, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.name !== "") {
+      writer.uint32(18).string(message.name);
+    }
+    if (message.username !== "") {
+      writer.uint32(26).string(message.username);
+    }
+    if (message.avatar_id !== undefined) {
+      writer.uint32(34).string(message.avatar_id);
+    }
+    if (message.avatar_hex !== undefined) {
+      writer.uint32(42).string(message.avatar_hex);
+    }
+    if (message.public_flags !== 0) {
+      writer.uint32(48).uint32(message.public_flags);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): BareUser {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseBareUser();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.username = reader.string();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.avatar_id = reader.string();
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.avatar_hex = reader.string();
+          continue;
+        case 6:
+          if (tag !== 48) {
+            break;
+          }
+
+          message.public_flags = reader.uint32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): BareUser {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
+      username: isSet(object.username) ? globalThis.String(object.username) : "",
+      avatar_id: isSet(object.avatar_id) ? globalThis.String(object.avatar_id) : undefined,
+      avatar_hex: isSet(object.avatar_hex) ? globalThis.String(object.avatar_hex) : undefined,
+      public_flags: isSet(object.public_flags) ? globalThis.Number(object.public_flags) : 0,
+    };
+  },
+
+  toJSON(message: BareUser): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.username !== "") {
+      obj.username = message.username;
+    }
+    if (message.avatar_id !== undefined) {
+      obj.avatar_id = message.avatar_id;
+    }
+    if (message.avatar_hex !== undefined) {
+      obj.avatar_hex = message.avatar_hex;
+    }
+    if (message.public_flags !== 0) {
+      obj.public_flags = Math.round(message.public_flags);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<BareUser>, I>>(base?: I): BareUser {
+    return BareUser.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<BareUser>, I>>(object: I): BareUser {
+    const message = createBaseBareUser();
+    message.id = object.id ?? "";
+    message.name = object.name ?? "";
+    message.username = object.username ?? "";
+    message.avatar_id = object.avatar_id ?? undefined;
+    message.avatar_hex = object.avatar_hex ?? undefined;
+    message.public_flags = object.public_flags ?? 0;
+    return message;
+  },
+};
+
+function createBaseExtendedUser(): ExtendedUser {
   return {
     id: "",
     name: "",
@@ -307,8 +450,8 @@ function createBaseUser(): User {
   };
 }
 
-export const User = {
-  encode(message: User, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const ExtendedUser = {
+  encode(message: ExtendedUser, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
@@ -360,10 +503,10 @@ export const User = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): User {
+  decode(input: _m0.Reader | Uint8Array, length?: number): ExtendedUser {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUser();
+    const message = createBaseExtendedUser();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -488,7 +631,7 @@ export const User = {
     return message;
   },
 
-  fromJSON(object: any): User {
+  fromJSON(object: any): ExtendedUser {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
@@ -509,7 +652,7 @@ export const User = {
     };
   },
 
-  toJSON(message: User): unknown {
+  toJSON(message: ExtendedUser): unknown {
     const obj: any = {};
     if (message.id !== "") {
       obj.id = message.id;
@@ -562,11 +705,11 @@ export const User = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<User>, I>>(base?: I): User {
-    return User.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<ExtendedUser>, I>>(base?: I): ExtendedUser {
+    return ExtendedUser.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<User>, I>>(object: I): User {
-    const message = createBaseUser();
+  fromPartial<I extends Exact<DeepPartial<ExtendedUser>, I>>(object: I): ExtendedUser {
+    const message = createBaseExtendedUser();
     message.id = object.id ?? "";
     message.name = object.name ?? "";
     message.username = object.username ?? "";

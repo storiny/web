@@ -1,12 +1,12 @@
 /* eslint-disable */
 import _m0 from "protobufjs/minimal";
-import { User } from "../../user_def/v1/def";
+import { BareUser } from "../../user_def/v1/def";
 
 export const protobufPackage = "comment_def.v1";
 
 export interface GetCommentRequest {
   id: string;
-  token?: string | undefined;
+  current_user_id?: string | undefined;
 }
 
 export interface GetCommentResponse {
@@ -23,14 +23,14 @@ export interface GetCommentResponse {
   like_count: number;
   reply_count: number;
   user:
-    | User
+    | BareUser
     | undefined;
   /** User specific props */
   is_liked: boolean;
 }
 
 function createBaseGetCommentRequest(): GetCommentRequest {
-  return { id: "", token: undefined };
+  return { id: "", current_user_id: undefined };
 }
 
 export const GetCommentRequest = {
@@ -38,8 +38,8 @@ export const GetCommentRequest = {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
-    if (message.token !== undefined) {
-      writer.uint32(18).string(message.token);
+    if (message.current_user_id !== undefined) {
+      writer.uint32(18).string(message.current_user_id);
     }
     return writer;
   },
@@ -63,7 +63,7 @@ export const GetCommentRequest = {
             break;
           }
 
-          message.token = reader.string();
+          message.current_user_id = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -77,7 +77,7 @@ export const GetCommentRequest = {
   fromJSON(object: any): GetCommentRequest {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
-      token: isSet(object.token) ? globalThis.String(object.token) : undefined,
+      current_user_id: isSet(object.current_user_id) ? globalThis.String(object.current_user_id) : undefined,
     };
   },
 
@@ -86,8 +86,8 @@ export const GetCommentRequest = {
     if (message.id !== "") {
       obj.id = message.id;
     }
-    if (message.token !== undefined) {
-      obj.token = message.token;
+    if (message.current_user_id !== undefined) {
+      obj.current_user_id = message.current_user_id;
     }
     return obj;
   },
@@ -98,7 +98,7 @@ export const GetCommentRequest = {
   fromPartial<I extends Exact<DeepPartial<GetCommentRequest>, I>>(object: I): GetCommentRequest {
     const message = createBaseGetCommentRequest();
     message.id = object.id ?? "";
-    message.token = object.token ?? undefined;
+    message.current_user_id = object.current_user_id ?? undefined;
     return message;
   },
 };
@@ -161,7 +161,7 @@ export const GetCommentResponse = {
       writer.uint32(96).uint32(message.reply_count);
     }
     if (message.user !== undefined) {
-      User.encode(message.user, writer.uint32(106).fork()).ldelim();
+      BareUser.encode(message.user, writer.uint32(106).fork()).ldelim();
     }
     if (message.is_liked === true) {
       writer.uint32(112).bool(message.is_liked);
@@ -265,7 +265,7 @@ export const GetCommentResponse = {
             break;
           }
 
-          message.user = User.decode(reader, reader.uint32());
+          message.user = BareUser.decode(reader, reader.uint32());
           continue;
         case 14:
           if (tag !== 112) {
@@ -297,7 +297,7 @@ export const GetCommentResponse = {
       created_at: isSet(object.created_at) ? globalThis.String(object.created_at) : "",
       like_count: isSet(object.like_count) ? globalThis.Number(object.like_count) : 0,
       reply_count: isSet(object.reply_count) ? globalThis.Number(object.reply_count) : 0,
-      user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
+      user: isSet(object.user) ? BareUser.fromJSON(object.user) : undefined,
       is_liked: isSet(object.is_liked) ? globalThis.Boolean(object.is_liked) : false,
     };
   },
@@ -341,7 +341,7 @@ export const GetCommentResponse = {
       obj.reply_count = Math.round(message.reply_count);
     }
     if (message.user !== undefined) {
-      obj.user = User.toJSON(message.user);
+      obj.user = BareUser.toJSON(message.user);
     }
     if (message.is_liked === true) {
       obj.is_liked = message.is_liked;
@@ -366,7 +366,7 @@ export const GetCommentResponse = {
     message.created_at = object.created_at ?? "";
     message.like_count = object.like_count ?? 0;
     message.reply_count = object.reply_count ?? 0;
-    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    message.user = (object.user !== undefined && object.user !== null) ? BareUser.fromPartial(object.user) : undefined;
     message.is_liked = object.is_liked ?? false;
     return message;
   },

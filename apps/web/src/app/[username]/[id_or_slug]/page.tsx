@@ -8,6 +8,7 @@ import { get_story } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
 import { get_doc_by_key } from "~/common/utils/get-doc-by-key";
 import { get_session_token } from "~/common/utils/get-session-token";
+import { get_user } from "~/common/utils/get-user";
 import { is_valid_username } from "~/common/utils/is-valid-username";
 
 import Component from "./component";
@@ -24,10 +25,10 @@ const Page = async ({
       not_found();
     }
 
-    const session_token = get_session_token();
+    const user_id = await get_user();
     const story_response = await get_story({
       id_or_slug: id_or_slug,
-      token: session_token || undefined
+      current_user_id: user_id || undefined
     });
 
     if (

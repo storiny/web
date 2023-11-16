@@ -75,8 +75,8 @@ async fn get(data: web::Data<AppState>, user: Identity) -> Result<HttpResponse, 
                     users u
                         LEFT OUTER JOIN user_statuses AS status
                                         ON u.id = status.user_id
-                                            AND status.expires_at IS NULL
-                                                OR status.expires_at > NOW()
+                                            AND (status.expires_at IS NULL
+                                                OR status.expires_at > NOW())
                 WHERE
                       u.id = $1
                   AND u.deactivated_at IS NULL

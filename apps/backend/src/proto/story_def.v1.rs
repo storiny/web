@@ -59,7 +59,7 @@ pub struct GetStoryRequest {
     #[prost(string, tag="1")]
     pub id_or_slug: ::prost::alloc::string::String,
     #[prost(string, optional, tag="2")]
-    pub token: ::core::option::Option<::prost::alloc::string::String>,
+    pub current_user_id: ::core::option::Option<::prost::alloc::string::String>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -96,40 +96,41 @@ pub struct GetStoryResponse {
     pub license: i32,
     #[prost(enumeration="StoryVisibility", tag="16")]
     pub visibility: i32,
-    /// SEO
-    #[prost(string, optional, tag="17")]
-    pub canonical_url: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="18")]
-    pub seo_description: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="19")]
-    pub seo_title: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="20")]
-    pub preview_image: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, tag="21")]
-    pub created_at: ::prost::alloc::string::String,
-    #[prost(string, optional, tag="22")]
-    pub edited_at: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="23")]
-    pub published_at: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="24")]
-    pub first_published_at: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="25")]
-    pub deleted_at: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(message, optional, tag="26")]
-    pub user: ::core::option::Option<super::super::user_def::v1::User>,
-    /// User specific props
-    #[prost(bool, tag="27")]
-    pub is_bookmarked: bool,
-    #[prost(bool, tag="28")]
-    pub is_liked: bool,
-    #[prost(bool, tag="29")]
+    #[prost(bool, tag="17")]
     pub disable_comments: bool,
-    #[prost(bool, tag="30")]
+    #[prost(bool, tag="18")]
     pub disable_public_revision_history: bool,
-    #[prost(bool, tag="31")]
+    #[prost(bool, tag="19")]
     pub disable_toc: bool,
-    #[prost(message, repeated, tag="32")]
+    /// SEO
+    #[prost(string, optional, tag="20")]
+    pub canonical_url: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="21")]
+    pub seo_description: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="22")]
+    pub seo_title: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="23")]
+    pub preview_image: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, tag="24")]
+    pub created_at: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="25")]
+    pub edited_at: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="26")]
+    pub published_at: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="27")]
+    pub first_published_at: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="28")]
+    pub deleted_at: ::core::option::Option<::prost::alloc::string::String>,
+    /// Joins
+    #[prost(message, optional, tag="29")]
+    pub user: ::core::option::Option<super::super::user_def::v1::ExtendedUser>,
+    #[prost(message, repeated, tag="30")]
     pub tags: ::prost::alloc::vec::Vec<super::super::tag_def::v1::Tag>,
+    /// User specific props
+    #[prost(bool, tag="31")]
+    pub is_bookmarked: bool,
+    #[prost(bool, tag="32")]
+    pub is_liked: bool,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]

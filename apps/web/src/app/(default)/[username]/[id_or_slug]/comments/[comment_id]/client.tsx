@@ -32,7 +32,7 @@ const Page = (props: Props): React.ReactElement => {
         comment={{
           ...props,
           edited_at: props.edited_at || null,
-          user: props.user as User
+          user: props.user as User | undefined
         }}
         hide_hidden_overlay
       />
