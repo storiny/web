@@ -8,6 +8,7 @@ pub mod get_privacy_settings;
 pub mod get_profile;
 pub mod get_responses_info;
 pub mod get_stories_info;
+pub mod get_story;
 pub mod get_story_responses_info;
 pub mod get_tag;
 pub mod get_token;

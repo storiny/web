@@ -410,7 +410,6 @@ const ProfileContent = ({
                 <Connections
                   connections={profile.connections}
                   is_inside_sidebar={is_inside_sidebar}
-                  name={profile.name}
                 />
               </div>
             )}

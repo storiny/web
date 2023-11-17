@@ -491,30 +491,12 @@ impl serde::Serialize for Tag {
         if !self.name.is_empty() {
             len += 1;
         }
-        if self.story_count != 0 {
-            len += 1;
-        }
-        if self.follower_count != 0 {
-            len += 1;
-        }
-        if !self.created_at.is_empty() {
-            len += 1;
-        }
         let mut struct_ser = serializer.serialize_struct("tag_def.v1.Tag", len)?;
         if !self.id.is_empty() {
             struct_ser.serialize_field("id", &self.id)?;
         }
         if !self.name.is_empty() {
             struct_ser.serialize_field("name", &self.name)?;
-        }
-        if self.story_count != 0 {
-            struct_ser.serialize_field("storyCount", &self.story_count)?;
-        }
-        if self.follower_count != 0 {
-            struct_ser.serialize_field("followerCount", &self.follower_count)?;
-        }
-        if !self.created_at.is_empty() {
-            struct_ser.serialize_field("createdAt", &self.created_at)?;
         }
         struct_ser.end()
     }
@@ -528,21 +510,12 @@ impl<'de> serde::Deserialize<'de> for Tag {
         const FIELDS: &[&str] = &[
             "id",
             "name",
-            "story_count",
-            "storyCount",
-            "follower_count",
-            "followerCount",
-            "created_at",
-            "createdAt",
         ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
             Id,
             Name,
-            StoryCount,
-            FollowerCount,
-            CreatedAt,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
@@ -566,9 +539,6 @@ impl<'de> serde::Deserialize<'de> for Tag {
                         match value {
                             "id" => Ok(GeneratedField::Id),
                             "name" => Ok(GeneratedField::Name),
-                            "storyCount" | "story_count" => Ok(GeneratedField::StoryCount),
-                            "followerCount" | "follower_count" => Ok(GeneratedField::FollowerCount),
-                            "createdAt" | "created_at" => Ok(GeneratedField::CreatedAt),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -590,9 +560,6 @@ impl<'de> serde::Deserialize<'de> for Tag {
             {
                 let mut id__ = None;
                 let mut name__ = None;
-                let mut story_count__ = None;
-                let mut follower_count__ = None;
-                let mut created_at__ = None;
                 while let Some(k) = map.next_key()? {
                     match k {
                         GeneratedField::Id => {
@@ -607,36 +574,11 @@ impl<'de> serde::Deserialize<'de> for Tag {
                             }
                             name__ = Some(map.next_value()?);
                         }
-                        GeneratedField::StoryCount => {
-                            if story_count__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("storyCount"));
-                            }
-                            story_count__ = 
-                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
-                            ;
-                        }
-                        GeneratedField::FollowerCount => {
-                            if follower_count__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("followerCount"));
-                            }
-                            follower_count__ = 
-                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
-                            ;
-                        }
-                        GeneratedField::CreatedAt => {
-                            if created_at__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("createdAt"));
-                            }
-                            created_at__ = Some(map.next_value()?);
-                        }
                     }
                 }
                 Ok(Tag {
                     id: id__.unwrap_or_default(),
                     name: name__.unwrap_or_default(),
-                    story_count: story_count__.unwrap_or_default(),
-                    follower_count: follower_count__.unwrap_or_default(),
-                    created_at: created_at__.unwrap_or_default(),
                 })
             }
         }

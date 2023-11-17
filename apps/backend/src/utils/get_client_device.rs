@@ -6,7 +6,7 @@ use user_agent_parser::UserAgentParser;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ClientDevice {
     display_name: String,
-    r#type: DeviceType,
+    r#type: i32,
 }
 
 /// Parses and return client's device information from the user-agent string.
@@ -17,29 +17,29 @@ pub fn get_client_device(ua: &str, parser: &UserAgentParser) -> ClientDevice {
     let device = parser.parse_device(ua);
     let os = parser.parse_os(ua);
     let brand = device.clone().brand.unwrap_or_default();
-    let mut device_type = DeviceType::Unknown;
+    let mut device_type = DeviceType::Unknown as i32;
 
     {
         match os.name.clone().unwrap_or_default().as_ref() {
             "Windows" | "Mac OS" | "Chrome OS" | "CentOS" | "AmigaOS" | "Ubuntu" | "Arch"
             | "Debian" | "Unix" | "Linux" | "Raspbian" | "VectorLinux" | "Solaris" => {
-                device_type = DeviceType::Computer;
+                device_type = DeviceType::Computer as i32;
             }
             "Android" | "iOS" | "Windows Phone" => {
-                device_type = DeviceType::Mobile;
+                device_type = DeviceType::Mobile as i32;
             }
             _ => {}
         }
 
         match device.model.clone().unwrap_or_default().as_ref() {
-            "iPad" => device_type = DeviceType::Tablet,
-            "Mac" => device_type = DeviceType::Computer,
+            "iPad" => device_type = DeviceType::Tablet as i32,
+            "Mac" => device_type = DeviceType::Computer as i32,
             _ => {}
         }
 
         match brand.as_ref() {
-            "Generic_Android" => device_type = DeviceType::Mobile,
-            "Generic_Android_Tablet" => device_type = DeviceType::Tablet,
+            "Generic_Android" => device_type = DeviceType::Mobile as i32,
+            "Generic_Android_Tablet" => device_type = DeviceType::Tablet as i32,
             _ => {}
         }
     }
@@ -91,7 +91,7 @@ mod tests {
         );
 
         assert_eq!(result.display_name, "Windows");
-        assert_eq!(result.r#type, DeviceType::Computer);
+        assert_eq!(result.r#type, DeviceType::Computer as i32);
     }
 
     #[test]
@@ -102,7 +102,7 @@ mod tests {
         );
 
         assert_eq!(result.display_name, "Apple Mac");
-        assert_eq!(result.r#type, DeviceType::Computer);
+        assert_eq!(result.r#type, DeviceType::Computer as i32);
     }
 
     #[test]
@@ -113,7 +113,7 @@ mod tests {
         );
 
         assert_eq!(result.display_name, "Ubuntu");
-        assert_eq!(result.r#type, DeviceType::Computer);
+        assert_eq!(result.r#type, DeviceType::Computer as i32);
     }
 
     #[test]
@@ -124,7 +124,7 @@ mod tests {
         );
 
         assert_eq!(result.display_name, "Generic Smartphone");
-        assert_eq!(result.r#type, DeviceType::Mobile);
+        assert_eq!(result.r#type, DeviceType::Mobile as i32);
     }
 
     #[test]
@@ -135,7 +135,7 @@ mod tests {
         );
 
         assert_eq!(result.display_name, "Apple iPhone");
-        assert_eq!(result.r#type, DeviceType::Mobile);
+        assert_eq!(result.r#type, DeviceType::Mobile as i32);
     }
 
     #[test]
@@ -146,13 +146,13 @@ mod tests {
         );
 
         assert_eq!(result.display_name, "Apple iPad");
-        assert_eq!(result.r#type, DeviceType::Tablet);
+        assert_eq!(result.r#type, DeviceType::Tablet as i32);
     }
 
     #[test]
     fn can_handle_unknown_devices() {
         let result = get_client_device("Invalid UA", &get_ua_parser());
         assert_eq!(result.display_name, "Unknown device");
-        assert_eq!(result.r#type, DeviceType::Unknown);
+        assert_eq!(result.r#type, DeviceType::Unknown as i32);
     }
 }

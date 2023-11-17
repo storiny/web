@@ -10,7 +10,6 @@ import styles from "./connections.module.scss";
 interface Props {
   connections: GetProfileResponse["connections"];
   is_inside_sidebar?: boolean;
-  name: string;
 }
 
 import {
@@ -20,13 +19,12 @@ import {
 
 const Connections = ({
   connections,
-  name,
   is_inside_sidebar
 }: Props): React.ReactElement => (
   <div className={clsx(css["flex"], styles.connections)}>
     {connections.map((connection) => (
       <IconButton
-        aria-label={`${name} on ${
+        aria-label={`${connection.display_name} on ${
           PROVIDER_DISPLAY_NAME_MAP[connection.provider]
         }`}
         as={"a"}
@@ -36,7 +34,9 @@ const Connections = ({
         rel={"noreferrer"}
         size={is_inside_sidebar ? "md" : "lg"}
         target={"_blank"}
-        title={`${name} on ${PROVIDER_DISPLAY_NAME_MAP[connection.provider]}`}
+        title={`${connection.display_name} on ${
+          PROVIDER_DISPLAY_NAME_MAP[connection.provider]
+        }`}
         variant={"ghost"}
       >
         {React.createElement(PROVIDER_ICON_MAP[connection.provider])}

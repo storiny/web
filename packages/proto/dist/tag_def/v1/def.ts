@@ -6,9 +6,6 @@ export const protobufPackage = "tag_def.v1";
 export interface Tag {
   id: string;
   name: string;
-  story_count: number;
-  follower_count: number;
-  created_at: string;
 }
 
 export interface GetTagRequest {
@@ -36,7 +33,7 @@ export interface GetFollowedTagCountResponse {
 }
 
 function createBaseTag(): Tag {
-  return { id: "", name: "", story_count: 0, follower_count: 0, created_at: "" };
+  return { id: "", name: "" };
 }
 
 export const Tag = {
@@ -46,15 +43,6 @@ export const Tag = {
     }
     if (message.name !== "") {
       writer.uint32(18).string(message.name);
-    }
-    if (message.story_count !== 0) {
-      writer.uint32(24).uint32(message.story_count);
-    }
-    if (message.follower_count !== 0) {
-      writer.uint32(32).uint32(message.follower_count);
-    }
-    if (message.created_at !== "") {
-      writer.uint32(42).string(message.created_at);
     }
     return writer;
   },
@@ -80,27 +68,6 @@ export const Tag = {
 
           message.name = reader.string();
           continue;
-        case 3:
-          if (tag !== 24) {
-            break;
-          }
-
-          message.story_count = reader.uint32();
-          continue;
-        case 4:
-          if (tag !== 32) {
-            break;
-          }
-
-          message.follower_count = reader.uint32();
-          continue;
-        case 5:
-          if (tag !== 42) {
-            break;
-          }
-
-          message.created_at = reader.string();
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -114,9 +81,6 @@ export const Tag = {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
-      story_count: isSet(object.story_count) ? globalThis.Number(object.story_count) : 0,
-      follower_count: isSet(object.follower_count) ? globalThis.Number(object.follower_count) : 0,
-      created_at: isSet(object.created_at) ? globalThis.String(object.created_at) : "",
     };
   },
 
@@ -128,15 +92,6 @@ export const Tag = {
     if (message.name !== "") {
       obj.name = message.name;
     }
-    if (message.story_count !== 0) {
-      obj.story_count = Math.round(message.story_count);
-    }
-    if (message.follower_count !== 0) {
-      obj.follower_count = Math.round(message.follower_count);
-    }
-    if (message.created_at !== "") {
-      obj.created_at = message.created_at;
-    }
     return obj;
   },
 
@@ -147,9 +102,6 @@ export const Tag = {
     const message = createBaseTag();
     message.id = object.id ?? "";
     message.name = object.name ?? "";
-    message.story_count = object.story_count ?? 0;
-    message.follower_count = object.follower_count ?? 0;
-    message.created_at = object.created_at ?? "";
     return message;
   },
 };

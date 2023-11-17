@@ -18,7 +18,13 @@ enum StatusDuration {
   STATUS_DURATION_DAY_1 /*      */ = 5;
 }
 
-message Status {
+message BareStatus {
+  optional string emoji /*      */ = 1;
+  optional string text /*       */ = 2;
+  optional string expires_at /* */ = 3;
+}
+
+message ExtendedStatus {
   optional string emoji /*      */ = 1;
   optional string text /*       */ = 2;
   optional string expires_at /* */ = 3;
@@ -49,12 +55,13 @@ message ExtendedUser {
   string location /*           */ = 9;
   string created_at /*         */ = 10;
   uint32 follower_count /*     */ = 11;
+  BareStatus status /*         */ = 12;
   // User specific props
-  bool is_self /*              */ = 12;
-  bool is_following /*         */ = 13;
-  bool is_follower /*          */ = 14;
-  bool is_friend /*            */ = 15;
-  bool is_blocked_by_user /*   */ = 16;
+  bool is_self /*              */ = 13;
+  bool is_following /*         */ = 14;
+  bool is_follower /*          */ = 15;
+  bool is_friend /*            */ = 16;
+  bool is_blocked_by_user /*   */ = 17;
 }
 
 // Get user ID

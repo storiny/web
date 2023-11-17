@@ -5,11 +5,8 @@ package tag_def.v1;
 // Tag
 
 message Tag {
-  string id /*                 */ = 1;
-  string name /*               */ = 2;
-  uint32 story_count /*        */ = 3;
-  uint32 follower_count /*     */ = 4;
-  string created_at /*         */ = 5;
+  string id /*  */ = 1;
+  string name /**/ = 2;
 }
 
 // Get tag

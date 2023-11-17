@@ -1,4 +1,130 @@
 // @generated
+impl serde::Serialize for BareStatus {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if self.emoji.is_some() {
+            len += 1;
+        }
+        if self.text.is_some() {
+            len += 1;
+        }
+        if self.expires_at.is_some() {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("user_def.v1.BareStatus", len)?;
+        if let Some(v) = self.emoji.as_ref() {
+            struct_ser.serialize_field("emoji", v)?;
+        }
+        if let Some(v) = self.text.as_ref() {
+            struct_ser.serialize_field("text", v)?;
+        }
+        if let Some(v) = self.expires_at.as_ref() {
+            struct_ser.serialize_field("expiresAt", v)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for BareStatus {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "emoji",
+            "text",
+            "expires_at",
+            "expiresAt",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            Emoji,
+            Text,
+            ExpiresAt,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "emoji" => Ok(GeneratedField::Emoji),
+                            "text" => Ok(GeneratedField::Text),
+                            "expiresAt" | "expires_at" => Ok(GeneratedField::ExpiresAt),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = BareStatus;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct user_def.v1.BareStatus")
+            }
+
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<BareStatus, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut emoji__ = None;
+                let mut text__ = None;
+                let mut expires_at__ = None;
+                while let Some(k) = map.next_key()? {
+                    match k {
+                        GeneratedField::Emoji => {
+                            if emoji__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("emoji"));
+                            }
+                            emoji__ = map.next_value()?;
+                        }
+                        GeneratedField::Text => {
+                            if text__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("text"));
+                            }
+                            text__ = map.next_value()?;
+                        }
+                        GeneratedField::ExpiresAt => {
+                            if expires_at__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("expiresAt"));
+                            }
+                            expires_at__ = map.next_value()?;
+                        }
+                    }
+                }
+                Ok(BareStatus {
+                    emoji: emoji__,
+                    text: text__,
+                    expires_at: expires_at__,
+                })
+            }
+        }
+        deserializer.deserialize_struct("user_def.v1.BareStatus", FIELDS, GeneratedVisitor)
+    }
+}
 impl serde::Serialize for BareUser {
     #[allow(deprecated)]
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
@@ -180,6 +306,170 @@ impl<'de> serde::Deserialize<'de> for BareUser {
         deserializer.deserialize_struct("user_def.v1.BareUser", FIELDS, GeneratedVisitor)
     }
 }
+impl serde::Serialize for ExtendedStatus {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if self.emoji.is_some() {
+            len += 1;
+        }
+        if self.text.is_some() {
+            len += 1;
+        }
+        if self.expires_at.is_some() {
+            len += 1;
+        }
+        if self.duration != 0 {
+            len += 1;
+        }
+        if self.visibility != 0 {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("user_def.v1.ExtendedStatus", len)?;
+        if let Some(v) = self.emoji.as_ref() {
+            struct_ser.serialize_field("emoji", v)?;
+        }
+        if let Some(v) = self.text.as_ref() {
+            struct_ser.serialize_field("text", v)?;
+        }
+        if let Some(v) = self.expires_at.as_ref() {
+            struct_ser.serialize_field("expiresAt", v)?;
+        }
+        if self.duration != 0 {
+            let v = StatusDuration::from_i32(self.duration)
+                .ok_or_else(|| serde::ser::Error::custom(format!("Invalid variant {}", self.duration)))?;
+            struct_ser.serialize_field("duration", &v)?;
+        }
+        if self.visibility != 0 {
+            let v = StatusVisibility::from_i32(self.visibility)
+                .ok_or_else(|| serde::ser::Error::custom(format!("Invalid variant {}", self.visibility)))?;
+            struct_ser.serialize_field("visibility", &v)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for ExtendedStatus {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "emoji",
+            "text",
+            "expires_at",
+            "expiresAt",
+            "duration",
+            "visibility",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            Emoji,
+            Text,
+            ExpiresAt,
+            Duration,
+            Visibility,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "emoji" => Ok(GeneratedField::Emoji),
+                            "text" => Ok(GeneratedField::Text),
+                            "expiresAt" | "expires_at" => Ok(GeneratedField::ExpiresAt),
+                            "duration" => Ok(GeneratedField::Duration),
+                            "visibility" => Ok(GeneratedField::Visibility),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = ExtendedStatus;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct user_def.v1.ExtendedStatus")
+            }
+
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<ExtendedStatus, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut emoji__ = None;
+                let mut text__ = None;
+                let mut expires_at__ = None;
+                let mut duration__ = None;
+                let mut visibility__ = None;
+                while let Some(k) = map.next_key()? {
+                    match k {
+                        GeneratedField::Emoji => {
+                            if emoji__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("emoji"));
+                            }
+                            emoji__ = map.next_value()?;
+                        }
+                        GeneratedField::Text => {
+                            if text__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("text"));
+                            }
+                            text__ = map.next_value()?;
+                        }
+                        GeneratedField::ExpiresAt => {
+                            if expires_at__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("expiresAt"));
+                            }
+                            expires_at__ = map.next_value()?;
+                        }
+                        GeneratedField::Duration => {
+                            if duration__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("duration"));
+                            }
+                            duration__ = Some(map.next_value::<StatusDuration>()? as i32);
+                        }
+                        GeneratedField::Visibility => {
+                            if visibility__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("visibility"));
+                            }
+                            visibility__ = Some(map.next_value::<StatusVisibility>()? as i32);
+                        }
+                    }
+                }
+                Ok(ExtendedStatus {
+                    emoji: emoji__,
+                    text: text__,
+                    expires_at: expires_at__,
+                    duration: duration__.unwrap_or_default(),
+                    visibility: visibility__.unwrap_or_default(),
+                })
+            }
+        }
+        deserializer.deserialize_struct("user_def.v1.ExtendedStatus", FIELDS, GeneratedVisitor)
+    }
+}
 impl serde::Serialize for ExtendedUser {
     #[allow(deprecated)]
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
@@ -219,6 +509,9 @@ impl serde::Serialize for ExtendedUser {
             len += 1;
         }
         if self.follower_count != 0 {
+            len += 1;
+        }
+        if self.status.is_some() {
             len += 1;
         }
         if self.is_self {
@@ -270,6 +563,9 @@ impl serde::Serialize for ExtendedUser {
         if self.follower_count != 0 {
             struct_ser.serialize_field("followerCount", &self.follower_count)?;
         }
+        if let Some(v) = self.status.as_ref() {
+            struct_ser.serialize_field("status", v)?;
+        }
         if self.is_self {
             struct_ser.serialize_field("isSelf", &self.is_self)?;
         }
@@ -313,6 +609,7 @@ impl<'de> serde::Deserialize<'de> for ExtendedUser {
             "createdAt",
             "follower_count",
             "followerCount",
+            "status",
             "is_self",
             "isSelf",
             "is_following",
@@ -338,6 +635,7 @@ impl<'de> serde::Deserialize<'de> for ExtendedUser {
             Location,
             CreatedAt,
             FollowerCount,
+            Status,
             IsSelf,
             IsFollowing,
             IsFollower,
@@ -375,6 +673,7 @@ impl<'de> serde::Deserialize<'de> for ExtendedUser {
                             "location" => Ok(GeneratedField::Location),
                             "createdAt" | "created_at" => Ok(GeneratedField::CreatedAt),
                             "followerCount" | "follower_count" => Ok(GeneratedField::FollowerCount),
+                            "status" => Ok(GeneratedField::Status),
                             "isSelf" | "is_self" => Ok(GeneratedField::IsSelf),
                             "isFollowing" | "is_following" => Ok(GeneratedField::IsFollowing),
                             "isFollower" | "is_follower" => Ok(GeneratedField::IsFollower),
@@ -410,6 +709,7 @@ impl<'de> serde::Deserialize<'de> for ExtendedUser {
                 let mut location__ = None;
                 let mut created_at__ = None;
                 let mut follower_count__ = None;
+                let mut status__ = None;
                 let mut is_self__ = None;
                 let mut is_following__ = None;
                 let mut is_follower__ = None;
@@ -487,6 +787,12 @@ impl<'de> serde::Deserialize<'de> for ExtendedUser {
                                 Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
                             ;
                         }
+                        GeneratedField::Status => {
+                            if status__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("status"));
+                            }
+                            status__ = map.next_value()?;
+                        }
                         GeneratedField::IsSelf => {
                             if is_self__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isSelf"));
@@ -531,6 +837,7 @@ impl<'de> serde::Deserialize<'de> for ExtendedUser {
                     location: location__.unwrap_or_default(),
                     created_at: created_at__.unwrap_or_default(),
                     follower_count: follower_count__.unwrap_or_default(),
+                    status: status__,
                     is_self: is_self__.unwrap_or_default(),
                     is_following: is_following__.unwrap_or_default(),
                     is_follower: is_follower__.unwrap_or_default(),
@@ -1337,170 +1644,6 @@ impl<'de> serde::Deserialize<'de> for GetUserRelationsInfoResponse {
             }
         }
         deserializer.deserialize_struct("user_def.v1.GetUserRelationsInfoResponse", FIELDS, GeneratedVisitor)
-    }
-}
-impl serde::Serialize for Status {
-    #[allow(deprecated)]
-    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        use serde::ser::SerializeStruct;
-        let mut len = 0;
-        if self.emoji.is_some() {
-            len += 1;
-        }
-        if self.text.is_some() {
-            len += 1;
-        }
-        if self.expires_at.is_some() {
-            len += 1;
-        }
-        if self.duration != 0 {
-            len += 1;
-        }
-        if self.visibility != 0 {
-            len += 1;
-        }
-        let mut struct_ser = serializer.serialize_struct("user_def.v1.Status", len)?;
-        if let Some(v) = self.emoji.as_ref() {
-            struct_ser.serialize_field("emoji", v)?;
-        }
-        if let Some(v) = self.text.as_ref() {
-            struct_ser.serialize_field("text", v)?;
-        }
-        if let Some(v) = self.expires_at.as_ref() {
-            struct_ser.serialize_field("expiresAt", v)?;
-        }
-        if self.duration != 0 {
-            let v = StatusDuration::from_i32(self.duration)
-                .ok_or_else(|| serde::ser::Error::custom(format!("Invalid variant {}", self.duration)))?;
-            struct_ser.serialize_field("duration", &v)?;
-        }
-        if self.visibility != 0 {
-            let v = StatusVisibility::from_i32(self.visibility)
-                .ok_or_else(|| serde::ser::Error::custom(format!("Invalid variant {}", self.visibility)))?;
-            struct_ser.serialize_field("visibility", &v)?;
-        }
-        struct_ser.end()
-    }
-}
-impl<'de> serde::Deserialize<'de> for Status {
-    #[allow(deprecated)]
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        const FIELDS: &[&str] = &[
-            "emoji",
-            "text",
-            "expires_at",
-            "expiresAt",
-            "duration",
-            "visibility",
-        ];
-
-        #[allow(clippy::enum_variant_names)]
-        enum GeneratedField {
-            Emoji,
-            Text,
-            ExpiresAt,
-            Duration,
-            Visibility,
-        }
-        impl<'de> serde::Deserialize<'de> for GeneratedField {
-            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
-            where
-                D: serde::Deserializer<'de>,
-            {
-                struct GeneratedVisitor;
-
-                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
-                    type Value = GeneratedField;
-
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                        write!(formatter, "expected one of: {:?}", &FIELDS)
-                    }
-
-                    #[allow(unused_variables)]
-                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
-                    where
-                        E: serde::de::Error,
-                    {
-                        match value {
-                            "emoji" => Ok(GeneratedField::Emoji),
-                            "text" => Ok(GeneratedField::Text),
-                            "expiresAt" | "expires_at" => Ok(GeneratedField::ExpiresAt),
-                            "duration" => Ok(GeneratedField::Duration),
-                            "visibility" => Ok(GeneratedField::Visibility),
-                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
-                        }
-                    }
-                }
-                deserializer.deserialize_identifier(GeneratedVisitor)
-            }
-        }
-        struct GeneratedVisitor;
-        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
-            type Value = Status;
-
-            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                formatter.write_str("struct user_def.v1.Status")
-            }
-
-            fn visit_map<V>(self, mut map: V) -> std::result::Result<Status, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
-            {
-                let mut emoji__ = None;
-                let mut text__ = None;
-                let mut expires_at__ = None;
-                let mut duration__ = None;
-                let mut visibility__ = None;
-                while let Some(k) = map.next_key()? {
-                    match k {
-                        GeneratedField::Emoji => {
-                            if emoji__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("emoji"));
-                            }
-                            emoji__ = map.next_value()?;
-                        }
-                        GeneratedField::Text => {
-                            if text__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("text"));
-                            }
-                            text__ = map.next_value()?;
-                        }
-                        GeneratedField::ExpiresAt => {
-                            if expires_at__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("expiresAt"));
-                            }
-                            expires_at__ = map.next_value()?;
-                        }
-                        GeneratedField::Duration => {
-                            if duration__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("duration"));
-                            }
-                            duration__ = Some(map.next_value::<StatusDuration>()? as i32);
-                        }
-                        GeneratedField::Visibility => {
-                            if visibility__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("visibility"));
-                            }
-                            visibility__ = Some(map.next_value::<StatusVisibility>()? as i32);
-                        }
-                    }
-                }
-                Ok(Status {
-                    emoji: emoji__,
-                    text: text__,
-                    expires_at: expires_at__,
-                    duration: duration__.unwrap_or_default(),
-                    visibility: visibility__.unwrap_or_default(),
-                })
-            }
-        }
-        deserializer.deserialize_struct("user_def.v1.Status", FIELDS, GeneratedVisitor)
     }
 }
 impl serde::Serialize for StatusDuration {

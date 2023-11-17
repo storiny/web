@@ -56,7 +56,8 @@ WITH
 						ORDER BY
 							published_at_date_only DESC,
 							s.read_count           DESC
-						LIMIT $1 OFFSET $2)
+						LIMIT $1 OFFSET $2
+	)
 SELECT
 	-- Story
 	id,

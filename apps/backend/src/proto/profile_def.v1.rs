@@ -18,7 +18,7 @@ pub struct GetProfileResponse {
     #[prost(string, tag="3")]
     pub username: ::prost::alloc::string::String,
     #[prost(message, optional, tag="4")]
-    pub status: ::core::option::Option<super::super::user_def::v1::Status>,
+    pub status: ::core::option::Option<super::super::user_def::v1::ExtendedStatus>,
     #[prost(string, optional, tag="5")]
     pub bio: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="6")]

@@ -1,7 +1,8 @@
 WITH
 	liked_stories AS (WITH
 						  search_query AS (SELECT
-											   PLAINTO_TSQUERY('english', $1) AS tsq)
+											   PLAINTO_TSQUERY('english', $1) AS tsq
+						  )
 					  SELECT
 						  -- Story
 						  s.id,
@@ -51,10 +52,10 @@ WITH
 						  TS_RANK_CD(s.search_vec, (SELECT tsq FROM search_query)) AS "query_score"
 					  FROM
 						  story_likes sl
-						      -- Join story
+							  -- Join story
 							  INNER JOIN stories s
 										 ON s.id = sl.story_id
-						      -- Join story user
+							  -- Join story user
 							  INNER JOIN users su
 										 ON su.id = s.user_id
 							  -- Join story tags
@@ -79,7 +80,8 @@ WITH
 					  ORDER BY
 						  query_score   DESC,
 						  sl.created_at DESC
-					  LIMIT $3 OFFSET $4)
+					  LIMIT $3 OFFSET $4
+	)
 SELECT
 	-- Story
 	id,

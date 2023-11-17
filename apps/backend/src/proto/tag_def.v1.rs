@@ -8,12 +8,6 @@ pub struct Tag {
     pub id: ::prost::alloc::string::String,
     #[prost(string, tag="2")]
     pub name: ::prost::alloc::string::String,
-    #[prost(uint32, tag="3")]
-    pub story_count: u32,
-    #[prost(uint32, tag="4")]
-    pub follower_count: u32,
-    #[prost(string, tag="5")]
-    pub created_at: ::prost::alloc::string::String,
 }
 // Get tag
 

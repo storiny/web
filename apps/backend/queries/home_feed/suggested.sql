@@ -62,7 +62,8 @@ WITH
 																WHERE
 																	 (transmitter_id = u.id AND receiver_id = $1)
 																  OR (transmitter_id = $1 AND receiver_id = u.id)
-																		 AND accepted_at IS NOT NULL)
+																		 AND accepted_at IS NOT NULL
+															   )
 													)
 												 -- Filter out stories from blocked and muted users
 												 AND u.id NOT IN (SELECT
@@ -77,7 +78,8 @@ WITH
 																  FROM
 																	  mutes m
 																  WHERE
-																	  m.muter_id = $1)
+																	  m.muter_id = $1
+																 )
 								  -- Boolean bookmark flag
 								  LEFT OUTER JOIN bookmarks AS "s->is_bookmarked"
 												  ON "s->is_bookmarked".story_id = s.id
@@ -99,7 +101,8 @@ WITH
 																		WHERE
 																			  hs.id = "s->histories".story_id
 																		  AND hs.deleted_at IS NULL
-																		  AND hs.published_at IS NOT NULL)
+																		  AND hs.published_at IS NOT NULL
+																	   )
 													  AND "s->histories".user_id = $1
 													  AND "s->histories".deleted_at IS NULL
 								  --
@@ -113,7 +116,8 @@ WITH
 																		WHERE
 																			  bs.id = "s->bookmarks".story_id
 																		  AND bs.deleted_at IS NULL
-																		  AND bs.published_at IS NOT NULL)
+																		  AND bs.published_at IS NOT NULL
+																	   )
 													  AND "s->bookmarks".user_id = $1
 													  AND "s->bookmarks".deleted_at IS NULL
 								  --
@@ -142,7 +146,8 @@ WITH
 							  followed_tags_weight   DESC,
 							  histories_weight       DESC,
 							  bookmarks_weight       DESC
-						  LIMIT $2 OFFSET $3)
+						  LIMIT $2 OFFSET $3
+	)
 SELECT
 	-- Story
 	id,

@@ -46,10 +46,10 @@ WITH
 						  )                AS "tags!: Vec<Tag>"
 					  FROM
 						  story_likes sl
-						      -- Join story
+							  -- Join story
 							  INNER JOIN stories s
 										 ON s.id = sl.story_id
-						      -- Join story user
+							  -- Join story user
 							  INNER JOIN users su
 										 ON su.id = s.user_id
 							  -- Join story tags
@@ -72,7 +72,8 @@ WITH
 						  sl.created_at
 					  ORDER BY
 						  sl.created_at DESC
-					  LIMIT $2 OFFSET $3)
+					  LIMIT $2 OFFSET $3
+	)
 SELECT
 	-- Story
 	id,
