@@ -21,7 +21,7 @@
       {
         "ordinal": 3,
         "name": "avatar_id",
-        "type_info": "Text"
+        "type_info": "Uuid"
       },
       {
         "ordinal": 4,

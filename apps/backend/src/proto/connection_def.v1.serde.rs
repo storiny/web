@@ -13,6 +13,9 @@ impl serde::Serialize for Connection {
         if !self.url.is_empty() {
             len += 1;
         }
+        if !self.display_name.is_empty() {
+            len += 1;
+        }
         let mut struct_ser = serializer.serialize_struct("connection_def.v1.Connection", len)?;
         if self.provider != 0 {
             let v = Provider::from_i32(self.provider)
@@ -21,6 +24,9 @@ impl serde::Serialize for Connection {
         }
         if !self.url.is_empty() {
             struct_ser.serialize_field("url", &self.url)?;
+        }
+        if !self.display_name.is_empty() {
+            struct_ser.serialize_field("displayName", &self.display_name)?;
         }
         struct_ser.end()
     }
@@ -34,12 +40,15 @@ impl<'de> serde::Deserialize<'de> for Connection {
         const FIELDS: &[&str] = &[
             "provider",
             "url",
+            "display_name",
+            "displayName",
         ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
             Provider,
             Url,
+            DisplayName,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
@@ -63,6 +72,7 @@ impl<'de> serde::Deserialize<'de> for Connection {
                         match value {
                             "provider" => Ok(GeneratedField::Provider),
                             "url" => Ok(GeneratedField::Url),
+                            "displayName" | "display_name" => Ok(GeneratedField::DisplayName),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -84,6 +94,7 @@ impl<'de> serde::Deserialize<'de> for Connection {
             {
                 let mut provider__ = None;
                 let mut url__ = None;
+                let mut display_name__ = None;
                 while let Some(k) = map.next_key()? {
                     match k {
                         GeneratedField::Provider => {
@@ -98,11 +109,18 @@ impl<'de> serde::Deserialize<'de> for Connection {
                             }
                             url__ = Some(map.next_value()?);
                         }
+                        GeneratedField::DisplayName => {
+                            if display_name__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("displayName"));
+                            }
+                            display_name__ = Some(map.next_value()?);
+                        }
                     }
                 }
                 Ok(Connection {
                     provider: provider__.unwrap_or_default(),
                     url: url__.unwrap_or_default(),
+                    display_name: display_name__.unwrap_or_default(),
                 })
             }
         }

@@ -113,6 +113,7 @@ export function providerToJSON(object: Provider): string {
 export interface Connection {
   provider: Provider;
   url: string;
+  display_name: string;
 }
 
 export interface ConnectionSetting {
@@ -125,7 +126,7 @@ export interface ConnectionSetting {
 }
 
 function createBaseConnection(): Connection {
-  return { provider: 0, url: "" };
+  return { provider: 0, url: "", display_name: "" };
 }
 
 export const Connection = {
@@ -135,6 +136,9 @@ export const Connection = {
     }
     if (message.url !== "") {
       writer.uint32(18).string(message.url);
+    }
+    if (message.display_name !== "") {
+      writer.uint32(26).string(message.display_name);
     }
     return writer;
   },
@@ -160,6 +164,13 @@ export const Connection = {
 
           message.url = reader.string();
           continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.display_name = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -173,6 +184,7 @@ export const Connection = {
     return {
       provider: isSet(object.provider) ? providerFromJSON(object.provider) : 0,
       url: isSet(object.url) ? globalThis.String(object.url) : "",
+      display_name: isSet(object.display_name) ? globalThis.String(object.display_name) : "",
     };
   },
 
@@ -184,6 +196,9 @@ export const Connection = {
     if (message.url !== "") {
       obj.url = message.url;
     }
+    if (message.display_name !== "") {
+      obj.display_name = message.display_name;
+    }
     return obj;
   },
 
@@ -194,6 +209,7 @@ export const Connection = {
     const message = createBaseConnection();
     message.provider = object.provider ?? 0;
     message.url = object.url ?? "";
+    message.display_name = object.display_name ?? "";
     return message;
   },
 };

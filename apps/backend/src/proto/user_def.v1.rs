@@ -1,7 +1,17 @@
 // @generated
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Status {
+pub struct BareStatus {
+    #[prost(string, optional, tag="1")]
+    pub emoji: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="2")]
+    pub text: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="3")]
+    pub expires_at: ::core::option::Option<::prost::alloc::string::String>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ExtendedStatus {
     #[prost(string, optional, tag="1")]
     pub emoji: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="2")]
@@ -56,16 +66,18 @@ pub struct ExtendedUser {
     pub created_at: ::prost::alloc::string::String,
     #[prost(uint32, tag="11")]
     pub follower_count: u32,
+    #[prost(message, optional, tag="12")]
+    pub status: ::core::option::Option<BareStatus>,
     /// User specific props
-    #[prost(bool, tag="12")]
-    pub is_self: bool,
     #[prost(bool, tag="13")]
-    pub is_following: bool,
+    pub is_self: bool,
     #[prost(bool, tag="14")]
-    pub is_follower: bool,
+    pub is_following: bool,
     #[prost(bool, tag="15")]
-    pub is_friend: bool,
+    pub is_follower: bool,
     #[prost(bool, tag="16")]
+    pub is_friend: bool,
+    #[prost(bool, tag="17")]
     pub is_blocked_by_user: bool,
 }
 // Get user ID

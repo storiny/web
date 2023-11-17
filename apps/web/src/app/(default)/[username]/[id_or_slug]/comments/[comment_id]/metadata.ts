@@ -2,7 +2,6 @@ import { ImageSize } from "@storiny/shared";
 import type { Metadata } from "next";
 
 import { get_comment } from "~/common/grpc";
-import { get_session_token } from "~/common/utils/get-session-token";
 import { get_user } from "~/common/utils/get-user";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 import { truncate } from "~/utils/truncate";

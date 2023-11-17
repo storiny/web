@@ -3,11 +3,11 @@ WITH
 										  -- Story
 										  s.id,
 										  s.title,
-										  s.slug                                                             AS "slug!",
+										  s.slug                            AS "slug!",
 										  s.description,
 										  s.splash_id,
 										  s.splash_hex,
-										  s.category::TEXT                                                   AS "category!",
+										  s.category::TEXT                  AS "category!",
 										  s.age_restriction,
 										  s.license,
 										  s.user_id,
@@ -17,7 +17,7 @@ WITH
 										  s.like_count,
 										  s.comment_count,
 										  -- Timestamps
-										  s.published_at                                                     AS "published_at!",
+										  s.published_at                    AS "published_at!",
 										  s.edited_at,
 										  -- Boolean flags
 										  CASE
@@ -26,23 +26,23 @@ WITH
 												  TRUE
 											  ELSE
 												  FALSE
-										  END                                                                AS "is_bookmarked!",
+										  END                               AS "is_bookmarked!",
 										  CASE
 											  WHEN COUNT("s->is_liked") = 1
 												  THEN
 												  TRUE
 											  ELSE
 												  FALSE
-										  END                                                                AS "is_liked!",
+										  END                               AS "is_liked!",
 										  -- User
 										  JSON_BUILD_OBJECT('id', u.id, 'name', u.name, 'username', u.username,
 															'avatar_id', u.avatar_id, 'avatar_hex', u.avatar_hex,
 															'public_flags',
-															u.public_flags)                                  AS "user!: Json<User>",
+															u.public_flags) AS "user!: Json<User>",
 										  -- Tags
 										  COALESCE(ARRAY_AGG(("s->story_tags->tag".id, "s->story_tags->tag".name))
 												   FILTER (WHERE "s->story_tags->tag".id IS NOT NULL),
-												   '{}')                                                     AS "tags!: Vec<Tag>"
+												   '{}')                    AS "tags!: Vec<Tag>"
 									  FROM
 										  stories s
 											  INNER JOIN users u
@@ -62,7 +62,8 @@ WITH
 																			  FROM
 																				  mutes m
 																			  WHERE
-																				  m.muter_id = $1)
+																				  m.muter_id = $1
+																			 )
 											  --
 											  -- Join story tags
 											  LEFT OUTER JOIN (story_tags AS "s->story_tags"
@@ -119,7 +120,8 @@ WITH
 																 AND ru.deactivated_at IS NULL
 										  WHERE
 												r.follower_id = $1
-											AND r.deleted_at IS NULL)
+											AND r.deleted_at IS NULL
+														 )
 										AND s.deleted_at IS NULL
 										AND s.published_at IS NOT NULL
 									  GROUP BY
@@ -130,7 +132,8 @@ WITH
 										  -- Sort by `published_at` as the user usually would want to
 										  -- see the latest stories from friends and following users.
 										  s.published_at DESC
-									  LIMIT $2 OFFSET $3)
+									  LIMIT $2 OFFSET $3
+	)
 SELECT
 	-- Story
 	id,

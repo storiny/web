@@ -7,7 +7,6 @@ import React from "react";
 import { get_story } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
 import { get_doc_by_key } from "~/common/utils/get-doc-by-key";
-import { get_session_token } from "~/common/utils/get-session-token";
 import { get_user } from "~/common/utils/get-user";
 import { is_valid_username } from "~/common/utils/is-valid-username";
 

@@ -1,7 +1,7 @@
 /* eslint-disable */
 import _m0 from "protobufjs/minimal";
 import { Connection } from "../../connection_def/v1/def";
-import { Status } from "../../user_def/v1/def";
+import { ExtendedStatus } from "../../user_def/v1/def";
 
 export const protobufPackage = "profile_def.v1";
 
@@ -15,7 +15,7 @@ export interface GetProfileResponse {
   id: string;
   name: string;
   username: string;
-  status?: Status | undefined;
+  status?: ExtendedStatus | undefined;
   bio?: string | undefined;
   rendered_bio?: string | undefined;
   avatar_id?: string | undefined;
@@ -163,7 +163,7 @@ export const GetProfileResponse = {
       writer.uint32(26).string(message.username);
     }
     if (message.status !== undefined) {
-      Status.encode(message.status, writer.uint32(34).fork()).ldelim();
+      ExtendedStatus.encode(message.status, writer.uint32(34).fork()).ldelim();
     }
     if (message.bio !== undefined) {
       writer.uint32(42).string(message.bio);
@@ -273,7 +273,7 @@ export const GetProfileResponse = {
             break;
           }
 
-          message.status = Status.decode(reader, reader.uint32());
+          message.status = ExtendedStatus.decode(reader, reader.uint32());
           continue;
         case 5:
           if (tag !== 42) {
@@ -457,7 +457,7 @@ export const GetProfileResponse = {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       username: isSet(object.username) ? globalThis.String(object.username) : "",
-      status: isSet(object.status) ? Status.fromJSON(object.status) : undefined,
+      status: isSet(object.status) ? ExtendedStatus.fromJSON(object.status) : undefined,
       bio: isSet(object.bio) ? globalThis.String(object.bio) : undefined,
       rendered_bio: isSet(object.rendered_bio) ? globalThis.String(object.rendered_bio) : undefined,
       avatar_id: isSet(object.avatar_id) ? globalThis.String(object.avatar_id) : undefined,
@@ -501,7 +501,7 @@ export const GetProfileResponse = {
       obj.username = message.username;
     }
     if (message.status !== undefined) {
-      obj.status = Status.toJSON(message.status);
+      obj.status = ExtendedStatus.toJSON(message.status);
     }
     if (message.bio !== undefined) {
       obj.bio = message.bio;
@@ -587,7 +587,7 @@ export const GetProfileResponse = {
     message.name = object.name ?? "";
     message.username = object.username ?? "";
     message.status = (object.status !== undefined && object.status !== null)
-      ? Status.fromPartial(object.status)
+      ? ExtendedStatus.fromPartial(object.status)
       : undefined;
     message.bio = object.bio ?? undefined;
     message.rendered_bio = object.rendered_bio ?? undefined;

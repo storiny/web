@@ -103,7 +103,13 @@ export function statusDurationToJSON(object: StatusDuration): string {
   }
 }
 
-export interface Status {
+export interface BareStatus {
+  emoji?: string | undefined;
+  text?: string | undefined;
+  expires_at?: string | undefined;
+}
+
+export interface ExtendedStatus {
   emoji?: string | undefined;
   text?: string | undefined;
   expires_at?: string | undefined;
@@ -132,6 +138,9 @@ export interface ExtendedUser {
   location: string;
   created_at: string;
   follower_count: number;
+  status:
+    | BareStatus
+    | undefined;
   /** User specific props */
   is_self: boolean;
   is_following: boolean;
@@ -176,12 +185,101 @@ export interface GetUserMuteCountResponse {
   mute_count: number;
 }
 
-function createBaseStatus(): Status {
+function createBaseBareStatus(): BareStatus {
+  return { emoji: undefined, text: undefined, expires_at: undefined };
+}
+
+export const BareStatus = {
+  encode(message: BareStatus, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.emoji !== undefined) {
+      writer.uint32(10).string(message.emoji);
+    }
+    if (message.text !== undefined) {
+      writer.uint32(18).string(message.text);
+    }
+    if (message.expires_at !== undefined) {
+      writer.uint32(26).string(message.expires_at);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): BareStatus {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseBareStatus();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.emoji = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.text = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.expires_at = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): BareStatus {
+    return {
+      emoji: isSet(object.emoji) ? globalThis.String(object.emoji) : undefined,
+      text: isSet(object.text) ? globalThis.String(object.text) : undefined,
+      expires_at: isSet(object.expires_at) ? globalThis.String(object.expires_at) : undefined,
+    };
+  },
+
+  toJSON(message: BareStatus): unknown {
+    const obj: any = {};
+    if (message.emoji !== undefined) {
+      obj.emoji = message.emoji;
+    }
+    if (message.text !== undefined) {
+      obj.text = message.text;
+    }
+    if (message.expires_at !== undefined) {
+      obj.expires_at = message.expires_at;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<BareStatus>, I>>(base?: I): BareStatus {
+    return BareStatus.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<BareStatus>, I>>(object: I): BareStatus {
+    const message = createBaseBareStatus();
+    message.emoji = object.emoji ?? undefined;
+    message.text = object.text ?? undefined;
+    message.expires_at = object.expires_at ?? undefined;
+    return message;
+  },
+};
+
+function createBaseExtendedStatus(): ExtendedStatus {
   return { emoji: undefined, text: undefined, expires_at: undefined, duration: 0, visibility: 0 };
 }
 
-export const Status = {
-  encode(message: Status, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const ExtendedStatus = {
+  encode(message: ExtendedStatus, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.emoji !== undefined) {
       writer.uint32(10).string(message.emoji);
     }
@@ -200,10 +298,10 @@ export const Status = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): Status {
+  decode(input: _m0.Reader | Uint8Array, length?: number): ExtendedStatus {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseStatus();
+    const message = createBaseExtendedStatus();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -251,7 +349,7 @@ export const Status = {
     return message;
   },
 
-  fromJSON(object: any): Status {
+  fromJSON(object: any): ExtendedStatus {
     return {
       emoji: isSet(object.emoji) ? globalThis.String(object.emoji) : undefined,
       text: isSet(object.text) ? globalThis.String(object.text) : undefined,
@@ -261,7 +359,7 @@ export const Status = {
     };
   },
 
-  toJSON(message: Status): unknown {
+  toJSON(message: ExtendedStatus): unknown {
     const obj: any = {};
     if (message.emoji !== undefined) {
       obj.emoji = message.emoji;
@@ -281,11 +379,11 @@ export const Status = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<Status>, I>>(base?: I): Status {
-    return Status.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<ExtendedStatus>, I>>(base?: I): ExtendedStatus {
+    return ExtendedStatus.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<Status>, I>>(object: I): Status {
-    const message = createBaseStatus();
+  fromPartial<I extends Exact<DeepPartial<ExtendedStatus>, I>>(object: I): ExtendedStatus {
+    const message = createBaseExtendedStatus();
     message.emoji = object.emoji ?? undefined;
     message.text = object.text ?? undefined;
     message.expires_at = object.expires_at ?? undefined;
@@ -442,6 +540,7 @@ function createBaseExtendedUser(): ExtendedUser {
     location: "",
     created_at: "",
     follower_count: 0,
+    status: undefined,
     is_self: false,
     is_following: false,
     is_follower: false,
@@ -485,20 +584,23 @@ export const ExtendedUser = {
     if (message.follower_count !== 0) {
       writer.uint32(88).uint32(message.follower_count);
     }
+    if (message.status !== undefined) {
+      BareStatus.encode(message.status, writer.uint32(98).fork()).ldelim();
+    }
     if (message.is_self === true) {
-      writer.uint32(96).bool(message.is_self);
+      writer.uint32(104).bool(message.is_self);
     }
     if (message.is_following === true) {
-      writer.uint32(104).bool(message.is_following);
+      writer.uint32(112).bool(message.is_following);
     }
     if (message.is_follower === true) {
-      writer.uint32(112).bool(message.is_follower);
+      writer.uint32(120).bool(message.is_follower);
     }
     if (message.is_friend === true) {
-      writer.uint32(120).bool(message.is_friend);
+      writer.uint32(128).bool(message.is_friend);
     }
     if (message.is_blocked_by_user === true) {
-      writer.uint32(128).bool(message.is_blocked_by_user);
+      writer.uint32(136).bool(message.is_blocked_by_user);
     }
     return writer;
   },
@@ -588,35 +690,42 @@ export const ExtendedUser = {
           message.follower_count = reader.uint32();
           continue;
         case 12:
-          if (tag !== 96) {
+          if (tag !== 98) {
             break;
           }
 
-          message.is_self = reader.bool();
+          message.status = BareStatus.decode(reader, reader.uint32());
           continue;
         case 13:
           if (tag !== 104) {
             break;
           }
 
-          message.is_following = reader.bool();
+          message.is_self = reader.bool();
           continue;
         case 14:
           if (tag !== 112) {
             break;
           }
 
-          message.is_follower = reader.bool();
+          message.is_following = reader.bool();
           continue;
         case 15:
           if (tag !== 120) {
             break;
           }
 
-          message.is_friend = reader.bool();
+          message.is_follower = reader.bool();
           continue;
         case 16:
           if (tag !== 128) {
+            break;
+          }
+
+          message.is_friend = reader.bool();
+          continue;
+        case 17:
+          if (tag !== 136) {
             break;
           }
 
@@ -644,6 +753,7 @@ export const ExtendedUser = {
       location: isSet(object.location) ? globalThis.String(object.location) : "",
       created_at: isSet(object.created_at) ? globalThis.String(object.created_at) : "",
       follower_count: isSet(object.follower_count) ? globalThis.Number(object.follower_count) : 0,
+      status: isSet(object.status) ? BareStatus.fromJSON(object.status) : undefined,
       is_self: isSet(object.is_self) ? globalThis.Boolean(object.is_self) : false,
       is_following: isSet(object.is_following) ? globalThis.Boolean(object.is_following) : false,
       is_follower: isSet(object.is_follower) ? globalThis.Boolean(object.is_follower) : false,
@@ -687,6 +797,9 @@ export const ExtendedUser = {
     if (message.follower_count !== 0) {
       obj.follower_count = Math.round(message.follower_count);
     }
+    if (message.status !== undefined) {
+      obj.status = BareStatus.toJSON(message.status);
+    }
     if (message.is_self === true) {
       obj.is_self = message.is_self;
     }
@@ -721,6 +834,9 @@ export const ExtendedUser = {
     message.location = object.location ?? "";
     message.created_at = object.created_at ?? "";
     message.follower_count = object.follower_count ?? 0;
+    message.status = (object.status !== undefined && object.status !== null)
+      ? BareStatus.fromPartial(object.status)
+      : undefined;
     message.is_self = object.is_self ?? false;
     message.is_following = object.is_following ?? false;
     message.is_follower = object.is_follower ?? false;

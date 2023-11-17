@@ -20,8 +20,9 @@ enum Provider {
 }
 
 message Connection {
-  Provider provider /**/ = 1;
-  string url /*       */ = 2;
+  Provider provider /*  */ = 1;
+  string url /*         */ = 2;
+  string display_name /**/ = 3;
 }
 
 message ConnectionSetting {

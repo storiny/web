@@ -187,7 +187,7 @@ impl ApiService for GrpcService {
         &self,
         request: Request<GetStoryRequest>,
     ) -> Result<Response<GetStoryResponse>, Status> {
-        todo!()
+        endpoints::get_story::get_story(self, request).await
     }
 
     async fn get_comment(
