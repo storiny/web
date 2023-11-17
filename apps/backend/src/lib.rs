@@ -1,5 +1,4 @@
-use actix::Addr;
-use actix_redis::RedisActor;
+use deadpool_redis::Pool as RedisPool;
 use maxminddb::Reader;
 use oauth2::basic::BasicClient;
 use routes::oauth::ConnectionError;
@@ -43,8 +42,8 @@ pub struct ConnectionTemplate {
 pub struct AppState {
     /// Environment configuration
     pub config: config::Config,
-    /// Redis connection instance
-    pub redis: Option<Addr<RedisActor>>,
+    /// Redis connection pool
+    pub redis: RedisPool,
     /// Postgres connection pool
     pub db_pool: Pool<Postgres>,
     /// GeoIP database instance

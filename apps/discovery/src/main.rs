@@ -44,7 +44,7 @@ async fn main() -> io::Result<()> {
         .await
         .expect("Cannot build Redis connection manager");
     let backend = middleware::rate_limiter::RedisBackend::builder(redis_connection_manager)
-        .key_prefix(Some("lim:d:")) // Add prefix to avoid collisions with other servicse
+        .key_prefix(Some("d:l:")) // Add prefix to avoid collisions with other servicse
         .build();
 
     HttpServer::new(move || {

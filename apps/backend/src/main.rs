@@ -1,7 +1,6 @@
 use actix_cors::Cors;
 use actix_extensible_rate_limit::{backend::SimpleInputFunctionBuilder, RateLimiter};
 use actix_files as fs;
-use actix_redis::RedisActor;
 use actix_request_identifier::RequestIdentifier;
 use actix_session::config::{CookieContentSecurity, PersistentSession};
 use actix_session::{storage::RedisSessionStore, SessionMiddleware};
@@ -44,18 +43,17 @@ async fn not_found() -> impl Responder {
 /// * `db_pool` - The Postgres pool.
 async fn start_grpc_server(config: Config, db_pool: Pool<Postgres>) {
     let endpoint = config.grpc_endpoint.clone();
-    let cfg = deadpool_redis::Config::from_url(format!(
+    let redis_pool = deadpool_redis::Config::from_url(format!(
         "redis://{}:{}",
         &config.redis_host, &config.redis_port
-    ));
-    let pool = cfg
-        .create_pool(Some(deadpool_redis::Runtime::Tokio1))
-        .unwrap();
+    ))
+    .create_pool(Some(deadpool_redis::Runtime::Tokio1))
+    .unwrap();
 
     tonic::transport::Server::builder()
         .add_service(
             ApiServiceServer::new(GrpcService {
-                redis_pool: pool,
+                redis_pool,
                 config,
                 db_pool,
             })
@@ -97,7 +95,7 @@ async fn main() -> io::Result<()> {
                 .expect("Cannot build Redis connection manager");
             let backend =
                 middleware::rate_limiter::RedisBackend::builder(redis_connection_manager.clone())
-                    .key_prefix(Some("lim:a:")) // Add prefix to avoid collisions with other servicse
+                    .key_prefix(Some("a:l:")) // Add prefix to avoid collisions with other servicse
                     .build();
 
             // Session
@@ -123,6 +121,14 @@ async fn main() -> io::Result<()> {
                     std::process::exit(1);
                 }
             };
+
+            // Redis pool
+            let redis_pool = deadpool_redis::Config::from_url(format!(
+                "redis://{}:{}",
+                &config.redis_host, &config.redis_port
+            ))
+            .create_pool(Some(deadpool_redis::Runtime::Tokio1))
+            .unwrap();
 
             // Start the GRPC server.
             start_grpc_server(config.clone(), db_pool.clone()).await;
@@ -222,10 +228,7 @@ async fn main() -> io::Result<()> {
                     .app_data(path_config)
                     .app_data(web::Data::new(AppState {
                         config: envy::from_env::<Config>().unwrap(),
-                        redis: Some(RedisActor::start(format!(
-                            "{}:{}",
-                            &config.redis_host, &config.redis_port
-                        ))),
+                        redis: redis_pool.clone(),
                         db_pool: db_pool.clone(),
                         geo_db,
                         ua_parser,

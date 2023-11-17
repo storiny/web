@@ -1,18 +1,12 @@
-use maxminddb::{
-    geoip2,
-    Reader,
-};
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use maxminddb::{geoip2, Reader};
+use serde::{Deserialize, Serialize};
 use std::net::IpAddr;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ClientLocation {
-    display_name: String,
-    lat: Option<f64>,
-    lng: Option<f64>,
+    pub display_name: String,
+    pub lat: Option<f64>,
+    pub lng: Option<f64>,
 }
 
 /// Parses and return client's location information from IP.

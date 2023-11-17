@@ -1,7 +1,7 @@
 use crate::{middleware::identity::identity::Identity, AppState};
-use actix_redis::{resp_array, Command};
 use actix_web::{post, web, HttpResponse, Responder};
 use actix_web_validator::Json;
+use redis::AsyncCommands;
 use serde::Deserialize;
 use validator::Validate;
 
@@ -14,16 +14,22 @@ struct Request {
 }
 
 #[post("/v1/me/sessions/logout")]
-async fn post(user: Identity, payload: Json<Request>, data: web::Data<AppState>) -> impl Responder {
+async fn post(
+    user: Identity,
+    payload: Json<Request>,
+    data: web::Data<AppState>,
+) -> actix_web::Result<impl Responder> {
     match user.id() {
-        Ok(user_id) => match &data.redis.as_ref() {
-            None => HttpResponse::InternalServerError().finish(),
-            Some(redis) => {
-                let cache_key = format!("s:{}:{}", user_id.to_string(), &payload.id);
-                let _ = redis.send(Command(resp_array!["DEL", &cache_key])).await;
-                HttpResponse::Ok().finish()
-            }
-        },
+        Ok(user_id) => {
+            let mut conn = &data.redis.get().await.map_err(|_| ())?;
+            let cache_key = format!("s:{}:{}", user_id.to_string(), &payload.id);
+            let _: () = conn
+                .del(cache_key)
+                .await
+                .map_err(|_| HttpResponse::InternalServerError().finish())?;
+
+            HttpResponse::Ok().finish()
+        }
         Err(_) => HttpResponse::InternalServerError().finish(),
     }
 }
