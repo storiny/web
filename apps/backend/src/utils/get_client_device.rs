@@ -5,8 +5,8 @@ use user_agent_parser::UserAgentParser;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ClientDevice {
-    display_name: String,
-    r#type: i32,
+    pub display_name: String,
+    pub r#type: i32,
 }
 
 /// Parses and return client's device information from the user-agent string.

@@ -263,9 +263,19 @@ mod tests {
     ///
     /// * `db_pool` - Postgres pool
     async fn init_web_server_for_test(db_pool: PgPool) -> (Client, Box<dyn Fn(&str) -> String>) {
+        let config = envy::from_env::<Config>().unwrap();
         let listener = TcpListener::bind("localhost:0").unwrap();
         let port = listener.local_addr().unwrap().port();
         let db_pool_clone = db_pool.clone();
+
+        // Redis pool
+        let redis_pool = deadpool_redis::Config::from_url(format!(
+            "redis://{}:{}",
+            &config.redis_host, &config.redis_port
+        ))
+        .create_pool(Some(deadpool_redis::Runtime::Tokio1))
+        .unwrap();
+
         let server = HttpServer::new(move || {
             // GeoIP service
             let geo_db = maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();
@@ -277,7 +287,7 @@ mod tests {
             App::new()
                 .app_data(web::Data::new(AppState {
                     config: envy::from_env::<Config>().unwrap(),
-                    redis: None,
+                    redis: redis_pool.clone(),
                     db_pool: db_pool.clone(),
                     geo_db,
                     ua_parser,

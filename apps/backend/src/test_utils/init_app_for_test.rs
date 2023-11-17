@@ -51,6 +51,8 @@ pub async fn init_app_for_test(
 ) {
     let config = envy::from_env::<Config>().expect("Unable to load environment configuration");
     let redis_connection_string = format!("redis://{}:{}", config.redis_host, config.redis_port);
+
+    // Session
     let secret_key = Key::from(
         envy::from_env::<Config>()
             .unwrap()
@@ -62,6 +64,14 @@ pub async fn init_app_for_test(
         .build()
         .await
         .unwrap();
+
+    // Redis pool
+    let redis_pool = deadpool_redis::Config::from_url(format!(
+        "redis://{}:{}",
+        &config.redis_host, &config.redis_port
+    ))
+    .create_pool(Some(deadpool_redis::Runtime::Tokio1))
+    .unwrap();
 
     // GeoIP service
     let geo_db = maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();
@@ -90,7 +100,7 @@ pub async fn init_app_for_test(
             .wrap(actix_web::middleware::NormalizePath::trim())
             .app_data(web::Data::new(AppState {
                 config,
-                redis: None,
+                redis: redis_pool.clone(),
                 db_pool: db_pool.clone(),
                 geo_db,
                 ua_parser,
