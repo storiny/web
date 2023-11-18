@@ -129,7 +129,7 @@ mod tests {
         test_grpc_service(
             pool,
             false,
-            Box::new(|mut client, _, _| async move {
+            Box::new(|mut client, _, _, _| async move {
                 let response = client
                     .get_drafts_info(Request::new(GetDraftsInfoRequest {
                         id: 1_i64.to_string(),

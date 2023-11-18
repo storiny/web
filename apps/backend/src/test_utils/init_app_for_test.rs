@@ -1,3 +1,4 @@
+use crate::constants::redis_namespaces::RedisNamespace;
 use crate::{
     config::Config,
     middleware::identity::{identity::Identity, middleware::IdentityMiddleware},
@@ -60,7 +61,7 @@ pub async fn init_app_for_test(
             .as_bytes(),
     );
     let redis_store = RedisSessionStore::builder(&redis_connection_string)
-        .cache_keygen(|key| format!("s:{}", key)) // Add prefix to session records
+        .cache_keygen(|key| format!("{}:{}", RedisNamespace::Session.to_string(), key)) // Add prefix to session records
         .build()
         .await
         .unwrap();

@@ -124,7 +124,7 @@ impl ApiService for GrpcService {
         &self,
         request: Request<GetLoginActivityRequest>,
     ) -> Result<Response<GetLoginActivityResponse>, Status> {
-        todo!()
+        endpoints::get_login_activity::get_login_activity(self, request).await
     }
 
     async fn get_drafts_info(

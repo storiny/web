@@ -130,7 +130,7 @@ mod tests {
         test_grpc_service(
             pool,
             false,
-            Box::new(|mut client, _, _| async move {
+            Box::new(|mut client, _, _, _| async move {
                 let response = client
                     .get_tag(Request::new(GetTagRequest {
                         name: "sample".to_string(),
@@ -149,7 +149,7 @@ mod tests {
         test_grpc_service(
             pool,
             true,
-            Box::new(|mut client, _, user_id| async move {
+            Box::new(|mut client, _, _, user_id| async move {
                 let response = client
                     .get_tag(Request::new(GetTagRequest {
                         name: "sample".to_string(),

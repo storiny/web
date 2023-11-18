@@ -12,10 +12,10 @@ pub struct Device {
 pub struct Location {
     #[prost(string, tag="1")]
     pub display_name: ::prost::alloc::string::String,
-    #[prost(sint32, optional, tag="2")]
-    pub lat: ::core::option::Option<i32>,
-    #[prost(sint32, optional, tag="3")]
-    pub lng: ::core::option::Option<i32>,
+    #[prost(double, optional, tag="2")]
+    pub lat: ::core::option::Option<f64>,
+    #[prost(double, optional, tag="3")]
+    pub lng: ::core::option::Option<f64>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -37,6 +37,9 @@ pub struct GetLoginActivityRequest {
     /// Token from the session cookie (used to determine if the current device is active)
     #[prost(string, tag="1")]
     pub token: ::prost::alloc::string::String,
+    /// User ID
+    #[prost(string, tag="2")]
+    pub id: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]

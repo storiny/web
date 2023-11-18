@@ -82,7 +82,7 @@ mod tests {
         test_grpc_service(
             pool,
             true,
-            Box::new(|mut client, pool, user_id| async move {
+            Box::new(|mut client, pool, _, user_id| async move {
                 // Add some relations
                 let result = sqlx::query(
                     r#"
@@ -136,7 +136,7 @@ mod tests {
         test_grpc_service(
             pool,
             true,
-            Box::new(|mut client, pool, user_id| async move {
+            Box::new(|mut client, pool, _, user_id| async move {
                 // Add some relations
                 let result = sqlx::query(
                     r#"

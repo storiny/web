@@ -10,7 +10,10 @@ import Divider from "~/components/divider";
 import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
-import { use_session_logout_mutation } from "~/redux/features";
+import {
+  use_acknowledge_session_mutation,
+  use_session_logout_mutation
+} from "~/redux/features";
 import css from "~/theme/main.module.scss";
 import { DateFormat, format_date } from "~/utils/format-date";
 
@@ -22,6 +25,44 @@ const Map = dynamic(() => import("../map"), {
   loading: dynamic_loader(),
   ssr: false
 });
+
+const AcknowledgeButton = (
+  props: LoginItemProps & { on_acknowledge: () => void }
+): React.ReactElement => {
+  const { login, on_acknowledge } = props;
+  const toast = use_toast();
+  const [acknowledge_session, { isLoading: is_loading }] =
+    use_acknowledge_session_mutation();
+
+  /**
+   * Marks a session as acknowledged
+   */
+  const session_logout_impl = (): void => {
+    acknowledge_session({ id: login.id })
+      .unwrap()
+      .then(on_acknowledge)
+      .catch((e) =>
+        toast(e?.data?.error || "Could not acknowledge your session", "error")
+      );
+  };
+
+  return (
+    <Button
+      check_auth
+      className={clsx(
+        css["focus-invert"],
+        css["f-grow"],
+        styles.x,
+        styles.button
+      )}
+      disabled={is_loading}
+      onClick={session_logout_impl}
+      variant={"ghost"}
+    >
+      This was me
+    </Button>
+  );
+};
 
 const LogoutButton = (
   props: LoginItemProps & { on_logout: () => void }
@@ -124,19 +165,10 @@ const LoginItem = (props: LoginItemProps): React.ReactElement => {
           </div>
           {status === null && (
             <div className={css["flex-center"]}>
-              <Button
-                check_auth
-                className={clsx(
-                  css["focus-invert"],
-                  css["f-grow"],
-                  styles.x,
-                  styles.button
-                )}
-                onClick={(): void => set_status("acknowledged")}
-                variant={"ghost"}
-              >
-                This was me
-              </Button>
+              <AcknowledgeButton
+                on_acknowledge={(): void => set_status("acknowledged")}
+                {...props}
+              />
               <Divider orientation={"vertical"} />
               <LogoutButton
                 on_logout={(): void => set_status("revoked")}

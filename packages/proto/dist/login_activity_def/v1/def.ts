@@ -71,6 +71,8 @@ export interface Login {
 export interface GetLoginActivityRequest {
   /** Token from the session cookie (used to determine if the current device is active) */
   token: string;
+  /** User ID */
+  id: string;
 }
 
 export interface GetLoginActivityResponse {
@@ -162,10 +164,10 @@ export const Location = {
       writer.uint32(10).string(message.display_name);
     }
     if (message.lat !== undefined) {
-      writer.uint32(16).sint32(message.lat);
+      writer.uint32(17).double(message.lat);
     }
     if (message.lng !== undefined) {
-      writer.uint32(24).sint32(message.lng);
+      writer.uint32(25).double(message.lng);
     }
     return writer;
   },
@@ -185,18 +187,18 @@ export const Location = {
           message.display_name = reader.string();
           continue;
         case 2:
-          if (tag !== 16) {
+          if (tag !== 17) {
             break;
           }
 
-          message.lat = reader.sint32();
+          message.lat = reader.double();
           continue;
         case 3:
-          if (tag !== 24) {
+          if (tag !== 25) {
             break;
           }
 
-          message.lng = reader.sint32();
+          message.lng = reader.double();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -221,10 +223,10 @@ export const Location = {
       obj.display_name = message.display_name;
     }
     if (message.lat !== undefined) {
-      obj.lat = Math.round(message.lat);
+      obj.lat = message.lat;
     }
     if (message.lng !== undefined) {
-      obj.lng = Math.round(message.lng);
+      obj.lng = message.lng;
     }
     return obj;
   },
@@ -365,13 +367,16 @@ export const Login = {
 };
 
 function createBaseGetLoginActivityRequest(): GetLoginActivityRequest {
-  return { token: "" };
+  return { token: "", id: "" };
 }
 
 export const GetLoginActivityRequest = {
   encode(message: GetLoginActivityRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.token !== "") {
       writer.uint32(10).string(message.token);
+    }
+    if (message.id !== "") {
+      writer.uint32(18).string(message.id);
     }
     return writer;
   },
@@ -390,6 +395,13 @@ export const GetLoginActivityRequest = {
 
           message.token = reader.string();
           continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -400,13 +412,19 @@ export const GetLoginActivityRequest = {
   },
 
   fromJSON(object: any): GetLoginActivityRequest {
-    return { token: isSet(object.token) ? globalThis.String(object.token) : "" };
+    return {
+      token: isSet(object.token) ? globalThis.String(object.token) : "",
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+    };
   },
 
   toJSON(message: GetLoginActivityRequest): unknown {
     const obj: any = {};
     if (message.token !== "") {
       obj.token = message.token;
+    }
+    if (message.id !== "") {
+      obj.id = message.id;
     }
     return obj;
   },
@@ -417,6 +435,7 @@ export const GetLoginActivityRequest = {
   fromPartial<I extends Exact<DeepPartial<GetLoginActivityRequest>, I>>(object: I): GetLoginActivityRequest {
     const message = createBaseGetLoginActivityRequest();
     message.token = object.token ?? "";
+    message.id = object.id ?? "";
     return message;
   },
 };

@@ -159,6 +159,7 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     // Me - Settings - Sessions
     v1::me::settings::sessions::destroy::init_routes(cfg);
     v1::me::settings::sessions::logout::init_routes(cfg);
+    v1::me::settings::sessions::acknowledge::init_routes(cfg);
     // Me - Settings - Username
     v1::me::settings::username::init_routes(cfg);
     // Me - Status

@@ -65,7 +65,7 @@ mod tests {
         test_grpc_service(
             pool,
             true,
-            Box::new(|mut client, pool, user_id| async move {
+            Box::new(|mut client, pool, _, user_id| async move {
                 // Insert token
                 let result = sqlx::query(
                     r#"
@@ -104,7 +104,7 @@ mod tests {
         test_grpc_service(
             pool,
             true,
-            Box::new(|mut client, pool, user_id| async move {
+            Box::new(|mut client, pool, _, user_id| async move {
                 // Insert an expired token
                 let result = sqlx::query(
                     r#"
@@ -143,7 +143,7 @@ mod tests {
         test_grpc_service(
             pool,
             false,
-            Box::new(|mut client, _, _| async move {
+            Box::new(|mut client, _, _, _| async move {
                 let response = client
                     .get_token(Request::new(GetTokenRequest {
                         identifier: "invalid".to_string(),

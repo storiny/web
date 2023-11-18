@@ -7,6 +7,7 @@ use crate::{
         service::GrpcService,
     },
 };
+use deadpool_redis::Pool as RedisPool;
 use sqlx::PgPool;
 use std::future::Future;
 use std::sync::Arc;
@@ -24,7 +25,7 @@ use tower::service_fn;
 pub async fn test_grpc_service<B>(
     db_pool: PgPool,
     insert_user: bool,
-    test_closure: Box<dyn Fn(ApiServiceClient<Channel>, PgPool, Option<i64>) -> B>,
+    test_closure: Box<dyn Fn(ApiServiceClient<Channel>, PgPool, RedisPool, Option<i64>) -> B>,
 ) where
     B: Future<Output = ()>,
 {
@@ -54,19 +55,18 @@ pub async fn test_grpc_service<B>(
     let stream = UnixListenerStream::new(uds);
 
     // Redis
-    let cfg = deadpool_redis::Config::from_url(format!(
+    let redis_pool = deadpool_redis::Config::from_url(format!(
         "redis://{}:{}",
         &config.redis_host, &config.redis_port
-    ));
-    let pool = cfg
-        .create_pool(Some(deadpool_redis::Runtime::Tokio1))
-        .unwrap();
+    ))
+    .create_pool(Some(deadpool_redis::Runtime::Tokio1))
+    .unwrap();
 
     let server_future = async {
         let result = Server::builder()
             .add_service(ApiServiceServer::new(GrpcService {
-                redis_pool: pool,
                 config: envy::from_env::<Config>().unwrap(),
+                redis_pool: redis_pool.clone(),
                 db_pool: db_pool.clone(),
             }))
             .serve_with_incoming(stream)
@@ -96,6 +96,7 @@ pub async fn test_grpc_service<B>(
     let request_future = test_closure(
         client,
         db_pool.clone(),
+        redis_pool.clone(),
         if insert_user { Some(1_i64) } else { None },
     );
 
