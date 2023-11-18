@@ -17,8 +17,8 @@ message Device {
 
 message Location {
   string display_name = 1;
-  optional sint32 lat = 2;
-  optional sint32 lng = 3;
+  optional double lat = 2;
+  optional double lng = 3;
 }
 
 message Login {
@@ -30,7 +30,8 @@ message Login {
 }
 
 message GetLoginActivityRequest {
-  string token = 1; // Token from the session cookie (used to determine if the current device is active)
+  string token /**/ = 1; // Token from the session cookie (used to determine if the current device is active)
+  string id /*   */ = 2; // User ID
 }
 
 message GetLoginActivityResponse {

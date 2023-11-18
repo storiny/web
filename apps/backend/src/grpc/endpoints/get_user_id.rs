@@ -1,3 +1,4 @@
+use crate::constants::redis_namespaces::RedisNamespace;
 use crate::{
     grpc::{
         defs::user_def::v1::{GetUserIdRequest, GetUserIdResponse},
@@ -21,9 +22,10 @@ pub async fn get_user_id(
     request: Request<GetUserIdRequest>,
 ) -> Result<Response<GetUserIdResponse>, Status> {
     let secret_key = Key::from(client.config.session_secret_key.as_bytes());
+    // Session key is in the format `user_id:token`
     let session_key = extract_session_key_from_cookie(&request.into_inner().token, &secret_key)
         .ok_or(Status::not_found("Invalid token"))?;
-    let cache_key = format!("s:{}", session_key);
+    let cache_key = format!("{}:{}", RedisNamespace::Session.to_string(), session_key);
 
     let mut conn = client
         .redis_pool
@@ -63,7 +65,7 @@ mod tests {
         test_grpc_service(
             pool,
             false,
-            Box::new(|mut client, pool, _| async move {
+            Box::new(|mut client, pool, _, _| async move {
                 let (_, cookie, user_id) =
                     init_app_for_test(empty_service, pool, true, false).await;
 
@@ -86,7 +88,7 @@ mod tests {
         test_grpc_service(
             pool,
             false,
-            Box::new(|mut client, _, _| async move {
+            Box::new(|mut client, _, _, _| async move {
                 let response = client
                     .get_user_id(Request::new(GetUserIdRequest {
                         token: "invalid_token".to_string(),

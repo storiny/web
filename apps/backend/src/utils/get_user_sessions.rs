@@ -1,3 +1,4 @@
+use crate::constants::redis_namespaces::RedisNamespace;
 use crate::utils::get_client_device::ClientDevice;
 use crate::utils::get_client_location::ClientLocation;
 use deadpool_redis::Pool as RedisPool;
@@ -12,6 +13,7 @@ pub struct UserSession {
     pub created_at: i64,
     pub device: Option<ClientDevice>,
     pub location: Option<ClientLocation>,
+    pub ack: bool,
 }
 
 /// Returns all the active sessions for a user using its ID.
@@ -24,7 +26,10 @@ pub async fn get_user_sessions(
 ) -> Result<Vec<(String, UserSession)>, ()> {
     let mut conn = redis_pool.get().await.map_err(|_| ())?;
     let iter: AsyncIter<String> = conn
-        .scan_match(format!("s:{user_id}:*"))
+        .scan_match(format!(
+            "{}:{user_id}:*",
+            RedisNamespace::Session.to_string()
+        ))
         .await
         .map_err(|_| ())?;
 
@@ -68,6 +73,7 @@ mod tests {
     use crate::AppState;
     use actix_web::{delete, get, post, services, test, web, HttpResponse, Responder};
     use sqlx::PgPool;
+    use time::OffsetDateTime;
     use uuid::Uuid;
 
     #[derive(Deserialize)]
@@ -87,10 +93,15 @@ mod tests {
 
         let _: () = conn
             .set(
-                &format!("s:{user_id}:{}", Uuid::new_v4()),
+                &format!(
+                    "{}:{user_id}:{}",
+                    RedisNamespace::Session.to_string(),
+                    Uuid::new_v4()
+                ),
                 &serde_json::to_string(&UserSession {
                     user_id,
-                    created_at: 0,
+                    created_at: OffsetDateTime::now_utc().unix_timestamp(),
+                    ack: false,
                     device: Some(ClientDevice {
                         display_name: "Some device".to_string(),
                         r#type: 0,
@@ -135,7 +146,14 @@ mod tests {
             .map(|(key, _)| key.to_string())
             .collect::<Vec<_>>();
 
-        let _: () = conn.del(session_keys).await.unwrap();
+        let mut pipe = redis::pipe();
+        pipe.atomic();
+
+        for key in session_keys {
+            pipe.del(key).ignore();
+        }
+
+        pipe.query_async::<_, ()>(&mut *conn).await.unwrap();
 
         HttpResponse::Ok().finish()
     }
@@ -183,6 +201,16 @@ mod tests {
             .uri(&format!("/remove_sessions/{}", user_id.unwrap()))
             .to_request();
         test::call_service(&app, req).await;
+
+        // Get sessions for the user again
+        let req = test::TestRequest::get()
+            .uri(&format!("/get_sessions/{}", user_id.unwrap()))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+        let json = serde_json::from_str::<Vec<(String, UserSession)>>(&res_to_string(res).await);
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 0);
 
         Ok(())
     }

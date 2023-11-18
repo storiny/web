@@ -65,7 +65,7 @@ mod tests {
         test_grpc_service(
             pool,
             false,
-            Box::new(|mut client, pool, _| async move {
+            Box::new(|mut client, pool, _, _| async move {
                 // Insert the user
                 sqlx::query(
                     r#"

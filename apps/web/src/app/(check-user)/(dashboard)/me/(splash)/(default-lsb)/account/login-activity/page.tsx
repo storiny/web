@@ -25,7 +25,8 @@ const Page = async (): Promise<React.ReactElement | undefined> => {
     }
 
     const login_activity_response = await get_login_activity({
-      token: session_token
+      token: session_token,
+      id: user_id
     });
 
     return <LoginActivityClient {...login_activity_response} />;

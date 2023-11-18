@@ -75,7 +75,7 @@ mod tests {
         test_grpc_service(
             pool,
             true,
-            Box::new(|mut client, pool, user_id| async move {
+            Box::new(|mut client, pool, _, user_id| async move {
                 let created_at = OffsetDateTime::now_utc();
 
                 // Insert a connection

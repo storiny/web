@@ -61,7 +61,7 @@ mod tests {
         test_grpc_service(
             pool,
             false,
-            Box::new(|mut client, _, _| async move {
+            Box::new(|mut client, _, _, _| async move {
                 let response = client
                     .get_responses_info(Request::new(GetResponsesInfoRequest {
                         id: 1_i64.to_string(),
@@ -82,7 +82,7 @@ mod tests {
         test_grpc_service(
             pool,
             false,
-            Box::new(|mut client, pool, _| async move {
+            Box::new(|mut client, pool, _, _| async move {
                 // Should count all the comments initially
                 let response = client
                     .get_responses_info(Request::new(GetResponsesInfoRequest {
@@ -129,7 +129,7 @@ mod tests {
         test_grpc_service(
             pool,
             false,
-            Box::new(|mut client, pool, _| async move {
+            Box::new(|mut client, pool, _, _| async move {
                 // Should count all the replies initially
                 let response = client
                     .get_responses_info(Request::new(GetResponsesInfoRequest {

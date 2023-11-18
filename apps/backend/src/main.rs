@@ -19,6 +19,7 @@ use rusoto_signature::Region;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::{Pool, Postgres};
 use std::{io, time::Duration};
+use storiny::constants::redis_namespaces::RedisNamespace;
 use storiny::grpc::defs::grpc_service::v1::api_service_server::ApiServiceServer;
 use storiny::grpc::service::GrpcService;
 use storiny::{
@@ -95,13 +96,13 @@ async fn main() -> io::Result<()> {
                 .expect("Cannot build Redis connection manager");
             let backend =
                 middleware::rate_limiter::RedisBackend::builder(redis_connection_manager.clone())
-                    .key_prefix(Some("a:l:")) // Add prefix to avoid collisions with other servicse
+                    .key_prefix(Some(&format!("{}:", RedisNamespace::RateLimit.to_string()))) // Add prefix to avoid collisions with other servicse
                     .build();
 
             // Session
             let secret_key = Key::from(&config.session_secret_key.as_bytes());
             let redis_store = RedisSessionStore::builder(&redis_connection_string.clone())
-                .cache_keygen(|key| format!("s:{}", key)) // Add prefix to session records
+                .cache_keygen(|key| format!("{}:{}", RedisNamespace::Session.to_string(), key)) // Add prefix to session records
                 .build()
                 .await
                 .unwrap();

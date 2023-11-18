@@ -71,6 +71,7 @@ impl Identity {
         inner.session.insert(ID_KEY, id)?;
         let now = OffsetDateTime::now_utc().unix_timestamp();
         inner.session.insert(LOGIN_UNIX_TIMESTAMP_KEY, now)?;
+        inner.session.insert("ack", false)?; // Acknowledged flag
         inner.session.renew();
 
         Ok(Self(inner))

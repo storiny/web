@@ -82,7 +82,7 @@ mod tests {
         test_grpc_service(
             pool,
             true,
-            Box::new(|mut client, pool, _| async move {
+            Box::new(|mut client, pool, _, _| async move {
                 // Update the notification settings
                 let result = sqlx::query(
                     r#"

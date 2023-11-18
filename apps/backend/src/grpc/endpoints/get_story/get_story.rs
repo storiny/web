@@ -239,7 +239,7 @@ mod tests {
         test_grpc_service(
             pool,
             false,
-            Box::new(|mut client, _, _| async move {
+            Box::new(|mut client, _, _, _| async move {
                 let response = client
                     .get_story(Request::new(GetStoryRequest {
                         id_or_slug: 3_i64.to_string(),
@@ -258,7 +258,7 @@ mod tests {
         test_grpc_service(
             pool,
             false,
-            Box::new(|mut client, pool, _| async move {
+            Box::new(|mut client, pool, _, _| async move {
                 // Unpublish the story
                 let result = sqlx::query(
                     r#"
@@ -292,7 +292,7 @@ mod tests {
         test_grpc_service(
             pool,
             false,
-            Box::new(|mut client, pool, _| async move {
+            Box::new(|mut client, pool, _, _| async move {
                 // Soft-delete the story
                 let result = sqlx::query(
                     r#"
@@ -326,7 +326,7 @@ mod tests {
         test_grpc_service(
             pool,
             false,
-            Box::new(|mut client, _, _| async move {
+            Box::new(|mut client, _, _, _| async move {
                 let response = client
                     .get_story(Request::new(GetStoryRequest {
                         id_or_slug: "some-story".to_string(),
@@ -345,7 +345,7 @@ mod tests {
         test_grpc_service(
             pool,
             false,
-            Box::new(|mut client, pool, _| async move {
+            Box::new(|mut client, pool, _, _| async move {
                 // Unpublish the story
                 let result = sqlx::query(
                     r#"
@@ -379,7 +379,7 @@ mod tests {
         test_grpc_service(
             pool,
             false,
-            Box::new(|mut client, pool, _| async move {
+            Box::new(|mut client, pool, _, _| async move {
                 // Soft-delete the story
                 let result = sqlx::query(
                     r#"
@@ -415,7 +415,7 @@ mod tests {
         test_grpc_service(
             pool,
             true,
-            Box::new(|mut client, _, user_id| async move {
+            Box::new(|mut client, _, _, user_id| async move {
                 let response = client
                     .get_story(Request::new(GetStoryRequest {
                         id_or_slug: 3_i64.to_string(),
@@ -434,7 +434,7 @@ mod tests {
         test_grpc_service(
             pool,
             true,
-            Box::new(|mut client, pool, user_id| async move {
+            Box::new(|mut client, pool, _, user_id| async move {
                 // Unpublish the story
                 let result = sqlx::query(
                     r#"
@@ -468,7 +468,7 @@ mod tests {
         test_grpc_service(
             pool,
             true,
-            Box::new(|mut client, pool, user_id| async move {
+            Box::new(|mut client, pool, _, user_id| async move {
                 // Soft-delete the story
                 let result = sqlx::query(
                     r#"
@@ -502,7 +502,7 @@ mod tests {
         test_grpc_service(
             pool,
             true,
-            Box::new(|mut client, _, user_id| async move {
+            Box::new(|mut client, _, _, user_id| async move {
                 let response = client
                     .get_story(Request::new(GetStoryRequest {
                         id_or_slug: "some-story".to_string(),
@@ -521,7 +521,7 @@ mod tests {
         test_grpc_service(
             pool,
             true,
-            Box::new(|mut client, pool, user_id| async move {
+            Box::new(|mut client, pool, _, user_id| async move {
                 // Unpublish the story
                 let result = sqlx::query(
                     r#"
@@ -555,7 +555,7 @@ mod tests {
         test_grpc_service(
             pool,
             true,
-            Box::new(|mut client, pool, user_id| async move {
+            Box::new(|mut client, pool, _, user_id| async move {
                 // Soft-delete the story
                 let result = sqlx::query(
                     r#"
