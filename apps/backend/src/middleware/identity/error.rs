@@ -1,13 +1,13 @@
 //! Failure modes of identity operations.
 
-use actix_session::{SessionGetError, SessionInsertError};
+use actix_extended_session::SessionGetError;
 use actix_web::{cookie::time::error::ComponentRange, http::StatusCode, ResponseError};
 use derive_more::{Display, Error, From};
 
 /// Error that can occur during login attempts.
 #[derive(Debug, Display, Error, From)]
 #[display(fmt = "{_0}")]
-pub struct LoginError(SessionInsertError);
+pub struct LoginError(SessionGetError);
 
 impl ResponseError for LoginError {
     fn status_code(&self) -> StatusCode {

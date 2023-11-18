@@ -14,6 +14,7 @@ pub struct UserSession {
     pub device: Option<ClientDevice>,
     pub location: Option<ClientLocation>,
     pub ack: bool,
+    pub oauth_token: Option<String>,
 }
 
 /// Returns all the active sessions for a user using its ID.
@@ -111,6 +112,7 @@ mod tests {
                         lat: Some(0.0),
                         lng: Some(0.0),
                     }),
+                    oauth_token: None,
                 })
                 .unwrap(),
             )

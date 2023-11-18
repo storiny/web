@@ -1,5 +1,5 @@
 use super::{config::IdentityMiddlewareBuilder, identity::IdentityInner};
-use actix_session::SessionExt;
+use actix_extended_session::SessionExt;
 use actix_utils::future::{ready, Ready};
 use actix_web::{
     body::MessageBody,

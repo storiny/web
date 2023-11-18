@@ -1,3 +1,5 @@
+#![forbid(unsafe_code)]
+
 use deadpool_redis::Pool as RedisPool;
 use maxminddb::Reader;
 use oauth2::basic::BasicClient;

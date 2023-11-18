@@ -33,6 +33,8 @@ fn convert_user_session_to_login(
     let secret_key = Key::from(session_secret_key.as_bytes());
     let session_key = extract_session_key_from_cookie(token, &secret_key).unwrap_or_default();
 
+    panic!("{session_key:#?}");
+
     Login {
         id: token_from_key,
         device: user_session.device.as_ref().and_then(|value| {
@@ -178,6 +180,7 @@ mod tests {
                                 lat: Some(0.0),
                                 lng: Some(0.0),
                             }),
+                            oauth_token: None,
                         })
                         .unwrap(),
                     )
