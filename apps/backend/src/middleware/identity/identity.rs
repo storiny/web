@@ -1,13 +1,14 @@
 use super::error::{
     GetIdentityError, LoginError, LostIdentityError, MissingIdentityError, SessionExpiryError,
 };
-use actix_session::Session;
+use actix_extended_session::Session;
 use actix_utils::future::{ready, Ready};
 use actix_web::{
     cookie::time::OffsetDateTime,
     dev::{Extensions, Payload},
     Error, FromRequest, HttpMessage, HttpRequest, HttpResponse,
 };
+use serde_json::Value;
 
 /// A verified user identity. It can be used as a request extractor.
 ///
@@ -39,8 +40,9 @@ impl IdentityInner {
     /// Retrieve the user id attached to the current session.
     fn get_identity(&self) -> Result<String, GetIdentityError> {
         self.session
-            .get::<String>(ID_KEY)?
+            .get::<i64>(ID_KEY)?
             .ok_or_else(|| MissingIdentityError.into())
+            .map(|id| id.to_string())
     }
 }
 
@@ -51,12 +53,11 @@ static LOGIN_UNIX_TIMESTAMP_KEY: &str = "created_at";
 impl Identity {
     /// Returns the user id associated to the current session.
     pub fn id(&self) -> Result<i64, GetIdentityError> {
-        let str_id = self.0.session.get::<String>(ID_KEY)?;
-
-        match str_id {
-            Some(id) => id.parse::<i64>().map_err(|_| LostIdentityError.into()),
-            None => Err(LostIdentityError.into()),
-        }
+        Ok(self
+            .0
+            .session
+            .get::<i64>(ID_KEY)?
+            .ok_or(LostIdentityError)?)
     }
 
     /// Attaches a valid user identity to the current session.
@@ -68,10 +69,12 @@ impl Identity {
     /// * `id` - ID of the user.
     pub fn login(ext: &Extensions, id: i64) -> Result<Self, LoginError> {
         let inner = IdentityInner::extract(ext);
-        inner.session.insert(ID_KEY, id)?;
+        inner.session.insert(ID_KEY, Value::from(id));
         let now = OffsetDateTime::now_utc().unix_timestamp();
-        inner.session.insert(LOGIN_UNIX_TIMESTAMP_KEY, now)?;
-        inner.session.insert("ack", false)?; // Acknowledged flag
+        inner
+            .session
+            .insert(LOGIN_UNIX_TIMESTAMP_KEY, Value::from(now));
+        inner.session.insert("ack", Value::from(false)); // Acknowledged flag
         inner.session.renew();
 
         Ok(Self(inner))
@@ -95,7 +98,7 @@ impl Identity {
         Ok(self
             .0
             .session
-            .get(LOGIN_UNIX_TIMESTAMP_KEY)?
+            .get::<i64>(LOGIN_UNIX_TIMESTAMP_KEY)?
             .map(OffsetDateTime::from_unix_timestamp)
             .transpose()
             .map_err(SessionExpiryError)?)

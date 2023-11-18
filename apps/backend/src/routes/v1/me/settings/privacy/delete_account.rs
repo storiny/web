@@ -1,7 +1,7 @@
 use crate::{
     error::AppError, error::ToastErrorResponse, middleware::identity::identity::Identity, AppState,
 };
-use actix_session::Session;
+use actix_extended_session::Session;
 use actix_web::{post, web, HttpResponse};
 use actix_web_validator::Json;
 use argon2::{Argon2, PasswordHash, PasswordVerifier};

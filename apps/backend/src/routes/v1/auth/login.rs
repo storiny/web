@@ -10,8 +10,8 @@ use crate::{
     },
     AppState,
 };
+use actix_extended_session::Session;
 use actix_http::HttpMessage;
-use actix_session::Session;
 use actix_web::{post, web, HttpRequest, HttpResponse};
 use actix_web_validator::{Json, QsQuery};
 use argon2::{Argon2, PasswordHash, PasswordVerifier};
@@ -289,23 +289,21 @@ async fn post(
                             {
                                 if let Some(ip) = req.connection_info().realip_remote_addr() {
                                     if let Ok(parsed_ip) = ip.parse::<IpAddr>() {
-                                        session
-                                            .insert(
-                                                "location",
-                                                get_client_location(parsed_ip, &data.geo_db),
-                                            )
-                                            .unwrap_or_default();
+                                        if let Ok(client_location) = serde_json::to_value(
+                                            get_client_location(parsed_ip, &data.geo_db),
+                                        ) {
+                                            let _ = session.insert("location", client_location);
+                                        }
                                     }
                                 }
 
                                 if let Some(ua_header) = (&req.headers()).get("user-agent") {
                                     if let Ok(ua) = ua_header.to_str() {
-                                        session
-                                            .insert(
-                                                "device",
-                                                get_client_device(ua, &data.ua_parser),
-                                            )
-                                            .unwrap_or_default();
+                                        if let Ok(client_device) = serde_json::to_value(
+                                            get_client_device(ua, &data.ua_parser),
+                                        ) {
+                                            let _ = session.insert("device", client_device);
+                                        }
                                     }
                                 }
                             }

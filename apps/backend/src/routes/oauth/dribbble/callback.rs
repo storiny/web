@@ -6,7 +6,7 @@ use crate::{
     routes::oauth::{AuthRequest, ConnectionError},
     AppState, ConnectionTemplate,
 };
-use actix_session::Session;
+use actix_extended_session::Session;
 use actix_web::http::header::{self, ContentType};
 use actix_web::{get, web, HttpResponse};
 use actix_web_validator::QsQuery;

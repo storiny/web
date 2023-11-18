@@ -5,9 +5,9 @@ use crate::{
     oauth::get_oauth_client_map,
     AppState,
 };
+use actix_extended_session::config::{CookieContentSecurity, PersistentSession};
+use actix_extended_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_http::{HttpMessage, Request};
-use actix_session::config::{CookieContentSecurity, PersistentSession};
-use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{
     cookie::{Cookie, Key, SameSite},
     dev::{HttpServiceFactory, Service, ServiceResponse},

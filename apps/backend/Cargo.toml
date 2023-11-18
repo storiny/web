@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-actix = "0.13.1"
 actix-cors = "0.6.4"
+actix-extended-session = { version = "0.1.3", features = ["redis-rs-session"] }
 actix-extensible-rate-limit = { version = "0.2.1", features = ["redis"] }
 actix-files = "0.6.2"
 actix-http = "3.4.0"
@@ -13,7 +13,6 @@ actix-multipart = "0.6.1"
 actix-request-identifier = "4.1.0"
 actix-rt = "2.9.0"
 actix-service = "2.0.2"
-actix-session = { version = "0.8.0", features = ["redis-rs-session"] }
 actix-test = "0.1.2"
 actix-utils = "3.0.1"
 actix-web = { version = "4.4.0", features = ["cookies", "secure-cookies", "__compress"] }
@@ -33,7 +32,7 @@ futures = "0.3.29"
 futures-core = "0.3.28"
 hashbrown = { version = "0.14.0", features = ["serde"] }
 image = { version = "0.24.7", default-features = false, features = ["gif", "png", "jpeg", "jpeg_rayon", "webp", "webp-encoder"] }
-itertools = "0.11.0"
+itertools = "0.12.0"
 lazy_static = "1.4.0"
 log = "0.4.20"
 lz-str = "0.2.1"

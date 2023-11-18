@@ -8,8 +8,9 @@ use actix_web::cookie::{Cookie, CookieJar, Key};
 /// * `key` - The secret key used to sign the cookie.
 pub fn extract_session_key_from_cookie(cookie_value: &str, key: &Key) -> Option<String> {
     let mut jar = CookieJar::new();
-    jar.add_original(Cookie::new("_storiny_sess", cookie_value.to_owned()));
-    let result = jar.signed(key).get("_storiny_sess");
+    jar.signed_mut(key)
+        .add(Cookie::new("x", cookie_value.to_owned()));
+    let result = jar.signed(key).get("x");
     result?.value().to_owned().try_into().ok()
 }
 

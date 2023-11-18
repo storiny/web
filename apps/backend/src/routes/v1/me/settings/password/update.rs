@@ -2,7 +2,7 @@ use crate::constants::account_activity_type::AccountActivityType;
 use crate::{
     error::AppError, error::ToastErrorResponse, middleware::identity::identity::Identity, AppState,
 };
-use actix_session::Session;
+use actix_extended_session::Session;
 use actix_web::{patch, web, HttpResponse};
 use actix_web_validator::Json;
 use argon2::password_hash::rand_core::OsRng;

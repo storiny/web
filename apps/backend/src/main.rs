@@ -1,9 +1,9 @@
 use actix_cors::Cors;
+use actix_extended_session::config::{CookieContentSecurity, PersistentSession};
+use actix_extended_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_extensible_rate_limit::{backend::SimpleInputFunctionBuilder, RateLimiter};
 use actix_files as fs;
 use actix_request_identifier::RequestIdentifier;
-use actix_session::config::{CookieContentSecurity, PersistentSession};
-use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{
     cookie::{Key, SameSite},
     http::{header, header::ContentType},
@@ -51,19 +51,21 @@ async fn start_grpc_server(config: Config, db_pool: Pool<Postgres>) {
     .create_pool(Some(deadpool_redis::Runtime::Tokio1))
     .unwrap();
 
-    tonic::transport::Server::builder()
-        .add_service(
-            ApiServiceServer::new(GrpcService {
-                redis_pool,
-                config,
-                db_pool,
-            })
-            .send_compressed(CompressionEncoding::Gzip)
-            .accept_compressed(CompressionEncoding::Gzip),
-        )
-        .serve(endpoint.parse().unwrap())
-        .await
-        .unwrap();
+    tokio::spawn(async move {
+        tonic::transport::Server::builder()
+            .add_service(
+                ApiServiceServer::new(GrpcService {
+                    redis_pool,
+                    config,
+                    db_pool,
+                })
+                .send_compressed(CompressionEncoding::Gzip)
+                .accept_compressed(CompressionEncoding::Gzip),
+            )
+            .serve(endpoint.parse().unwrap())
+            .await
+            .unwrap();
+    });
 }
 
 #[actix_web::main]
