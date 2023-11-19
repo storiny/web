@@ -10,6 +10,7 @@ use crate::{
         user::UserFlag,
     },
     utils::{
+        clear_user_sessions::clear_user_sessions,
         flag::{
             Flag,
             Mask,
@@ -17,6 +18,7 @@ use crate::{
         generate_totp::generate_totp,
         get_client_device::get_client_device,
         get_client_location::get_client_location,
+        get_user_sessions::get_user_sessions,
     },
     AppState,
 };
@@ -72,9 +74,6 @@ struct Response {
 struct QueryParams {
     bypass: Option<String>,
 }
-
-// TODO: Get all the current sessions for the user before final login, and purge previous sessions
-// if > 10
 
 #[post("/v1/auth/login")]
 async fn post(
@@ -375,18 +374,44 @@ async fn post(
                             .execute(&mut *txn)
                             .await?;
 
-                            // Commit database changes
-                            txn.commit().await?;
-
                             // TODO: Send a persistent cookie to the client
                             // if payload.remember_me {
                             //     session.insert("cookie_type", "persistent");
                             // }
 
+                            // Check if the user maintains more than or equal to 10 sessions, and
+                            // delete all the previous sessions if the current number of active
+                            // sessions for the user exceeds the per user session limit (10).
+                            match get_user_sessions(&data.redis, user.get::<i64, _>("id")).await {
+                                Ok(sessions) => {
+                                    if sessions.len() >= 10 {
+                                        match clear_user_sessions(
+                                            &data.redis,
+                                            user.get::<i64, _>("id"),
+                                        )
+                                        .await
+                                        {
+                                            Ok(_) => {}
+                                            Err(_) => {
+                                                return Ok(
+                                                    HttpResponse::InternalServerError().finish()
+                                                );
+                                            }
+                                        };
+                                    }
+                                }
+                                Err(_) => return Ok(HttpResponse::InternalServerError().finish()),
+                            };
+
                             match Identity::login(&req.extensions(), user.get::<i64, _>("id")) {
-                                Ok(_) => Ok(HttpResponse::Ok().json(Response {
-                                    result: "success".to_string(),
-                                })),
+                                Ok(_) => {
+                                    // Commit database changes
+                                    txn.commit().await?;
+
+                                    Ok(HttpResponse::Ok().json(Response {
+                                        result: "success".to_string(),
+                                    }))
+                                }
                                 Err(_) => Ok(HttpResponse::InternalServerError().finish()),
                             }
                         }
@@ -413,18 +438,22 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::{
+        constants::redis_namespaces::RedisNamespace,
         test_utils::{
             assert_form_error_response,
             assert_response_body_text,
             assert_toast_error_response,
             init_app_for_test,
+            res_to_string,
         },
         utils::{
             get_client_device::ClientDevice,
             get_client_location::ClientLocation,
+            get_user_sessions::UserSession,
         },
     };
     use actix_web::{
+        delete,
         get,
         services,
         test,
@@ -437,6 +466,7 @@ mod tests {
         },
         PasswordHasher,
     };
+    use redis::AsyncCommands;
     use serde_json::json;
     use sqlx::PgPool;
     use std::net::{
@@ -444,6 +474,7 @@ mod tests {
         SocketAddr,
         SocketAddrV4,
     };
+    use uuid::Uuid;
 
     /// Only for testing
     #[get("/v1/auth/login")]
@@ -454,6 +485,69 @@ mod tests {
             "location": location,
             "device": device
         }))
+    }
+
+    #[derive(Deserialize)]
+    struct Fragments {
+        user_id: String,
+        count: Option<i32>,
+    }
+
+    // Route to create `count` number of sessions for the user.
+    #[post("/create_sessions/{user_id}/{count}")]
+    async fn create_sessions(
+        path: web::Path<Fragments>,
+        data: web::Data<AppState>,
+    ) -> impl Responder {
+        let redis_pool = &data.redis;
+        let user_id = (&path.user_id).parse::<i64>().unwrap();
+        let count = (&path.count).clone().unwrap_or_default();
+        let mut conn = redis_pool.get().await.unwrap();
+
+        for _ in 0..count {
+            let _: () = conn
+                .set(
+                    &format!(
+                        "{}:{user_id}:{}",
+                        RedisNamespace::Session.to_string(),
+                        Uuid::new_v4()
+                    ),
+                    &serde_json::to_string(&UserSession {
+                        user_id,
+                        created_at: OffsetDateTime::now_utc().unix_timestamp(),
+                        ack: false,
+                        device: None,
+                        location: None,
+                        oauth_token: None,
+                    })
+                    .unwrap(),
+                )
+                .await
+                .unwrap();
+        }
+
+        HttpResponse::Ok().finish()
+    }
+
+    // Route to return the sessions for the user.
+    #[get("/get_sessions/{user_id}")]
+    async fn get_sessions(path: web::Path<Fragments>, data: web::Data<AppState>) -> impl Responder {
+        let redis_pool = &data.redis;
+        let user_id = (&path.user_id).parse::<i64>().unwrap();
+        let sessions = get_user_sessions(redis_pool, user_id).await.unwrap();
+        HttpResponse::Ok().json(sessions)
+    }
+
+    // Route to remove all the sessions for the user.
+    #[delete("/remove_sessions/{user_id}")]
+    async fn remove_sessions(
+        path: web::Path<Fragments>,
+        data: web::Data<AppState>,
+    ) -> impl Responder {
+        let redis_pool = &data.redis;
+        let user_id = (&path.user_id).parse::<i64>().unwrap();
+        clear_user_sessions(redis_pool, user_id).await.unwrap();
+        HttpResponse::Ok().finish()
     }
 
     /// Returns sample email and hashed password
@@ -532,6 +626,95 @@ mod tests {
         .await?;
 
         assert!(result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_clear_overflowing_sessions(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, _, user_id) = init_app_for_test(
+            services![post, create_sessions, get_sessions, remove_sessions],
+            pool,
+            true,
+            true,
+        )
+        .await;
+        let (email, password_hash, password) = get_sample_email_and_password();
+
+        // Remove all the previous sessions
+        let req = test::TestRequest::delete()
+            .uri(&format!("/remove_sessions/{}", user_id.unwrap()))
+            .to_request();
+        test::call_service(&app, req).await;
+
+        // Create 10 sessions
+        let req = test::TestRequest::post()
+            .uri(&format!("/create_sessions/{}/{}", user_id.unwrap(), 10))
+            .to_request();
+        test::call_service(&app, req).await;
+
+        let req = test::TestRequest::get()
+            .uri(&format!("/get_sessions/{}", user_id.unwrap()))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        let json = serde_json::from_str::<Vec<(String, UserSession)>>(&res_to_string(res).await);
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 10);
+
+        // Insert the user
+        sqlx::query(
+            r#"
+            INSERT INTO users(id, name, username, email, password, email_verified)
+            VALUES ($1, $2, $3, $4, $5, TRUE)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind("Sample user".to_string())
+        .bind("sample_user".to_string())
+        .bind((&email).to_string())
+        .bind(password_hash)
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::post()
+            .uri("/v1/auth/login")
+            .set_json(Request {
+                email: email.to_string(),
+                password: password.to_string(),
+                remember_me: true,
+                code: None,
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+        assert_response_body_text(
+            res,
+            &serde_json::to_string(&Response {
+                result: "success".to_string(),
+            })
+            .unwrap_or_default(),
+        )
+        .await;
+
+        // Should remove previous sessions
+        let req = test::TestRequest::get()
+            .uri(&format!("/get_sessions/{}", user_id.unwrap()))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+        let json = serde_json::from_str::<Vec<(String, UserSession)>>(&res_to_string(res).await);
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 1);
+
+        // Remove all the sessions
+        let req = test::TestRequest::delete()
+            .uri(&format!("/remove_sessions/{}", user_id.unwrap()))
+            .to_request();
+        test::call_service(&app, req).await;
 
         Ok(())
     }

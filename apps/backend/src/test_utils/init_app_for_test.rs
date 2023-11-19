@@ -41,6 +41,7 @@ use actix_web::{
     HttpResponse,
     Responder,
 };
+use rand::Rng;
 use rusoto_mock::{
     MockCredentialsProvider,
     MockRequestDispatcher,
@@ -48,13 +49,23 @@ use rusoto_mock::{
 use rusoto_s3::S3Client;
 use rusoto_ses::SesClient;
 use rusoto_signature::Region;
-use sqlx::PgPool;
+use serde::Deserialize;
+use sqlx::{
+    PgPool,
+    Row,
+};
 use user_agent_parser::UserAgentParser;
 
+#[derive(Deserialize)]
+struct Fragments {
+    user_id: i64,
+}
+
 // Private login route
-#[post("/__login__")]
-async fn post(req: HttpRequest) -> impl Responder {
-    Identity::login(&req.extensions(), 1_i64).unwrap();
+#[post("/__login__/{user_id}")]
+async fn post(req: HttpRequest, path: web::Path<Fragments>) -> impl Responder {
+    let user_id = path.user_id;
+    Identity::login(&req.extensions(), user_id).unwrap();
     HttpResponse::Ok().finish()
 }
 
@@ -158,25 +169,32 @@ pub async fn init_app_for_test(
     .await;
 
     if logged_in {
+        let mut rng = rand::thread_rng();
+        let mut user_id: Option<i64> = Some(rng.gen::<i64>());
+
         if !skip_inserting_user {
             // Insert the user
-            sqlx::query(
+            let result = sqlx::query(
                 r#"
-                INSERT INTO users(id, name, username, email)
-                VALUES ($1, $2, $3, $4)
+                INSERT INTO users(name, username, email)
+                VALUES ($1, $2, $3)
+                RETURNING id
                 "#,
             )
-            .bind(1_i64)
             .bind("Some user".to_string())
             .bind("some_user".to_string())
             .bind("someone@example.com".to_string())
-            .execute(&db_pool)
+            .fetch_one(&db_pool)
             .await
             .unwrap();
+
+            user_id = Some(result.get::<i64, _>("id"));
         }
 
         // Log the user in
-        let req = test::TestRequest::post().uri("/__login__").to_request();
+        let req = test::TestRequest::post()
+            .uri(&format!("/__login__/{}", user_id.unwrap()))
+            .to_request();
         let res = test::call_service(&service, req).await;
         let cookie = res
             .response()
@@ -184,7 +202,7 @@ pub async fn init_app_for_test(
             .find(|cookie| cookie.name() == "_storiny_sess")
             .unwrap();
 
-        return (service, Some(cookie.into_owned()), Some(1_i64));
+        return (service, Some(cookie.into_owned()), user_id);
     }
 
     (service, None, None)

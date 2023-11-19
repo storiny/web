@@ -125,12 +125,10 @@ mod tests {
         grpc::defs::login_activity_def::v1::GetLoginActivityRequest,
         test_utils::test_grpc_service,
         utils::{
+            clear_user_sessions::clear_user_sessions,
             get_client_device::ClientDevice,
             get_client_location::ClientLocation,
-            get_user_sessions::{
-                get_user_sessions,
-                UserSession,
-            },
+            get_user_sessions::UserSession,
         },
     };
     use cookie::{
@@ -138,35 +136,11 @@ mod tests {
         CookieJar,
         Key,
     };
-    use deadpool_redis::Pool as RedisPool;
     use redis::AsyncCommands;
     use sqlx::PgPool;
     use time::OffsetDateTime;
     use tonic::Request;
     use uuid::Uuid;
-
-    /// Removes all the sessions for the given user ID.
-    ///
-    /// * `redis_pool` - The Redis connection pool.
-    /// * `user_id` - The ID of the user.
-    async fn remove_all_user_sessions(redis_pool: &RedisPool, user_id: i64) {
-        let mut conn = redis_pool.get().await.unwrap();
-        let session_keys = get_user_sessions(&redis_pool, user_id)
-            .await
-            .unwrap()
-            .iter()
-            .map(|(key, _)| key.to_string())
-            .collect::<Vec<_>>();
-
-        let mut pipe = redis::pipe();
-        pipe.atomic();
-
-        for key in session_keys {
-            pipe.del(key).ignore();
-        }
-
-        pipe.query_async::<_, ()>(&mut *conn).await.unwrap();
-    }
 
     #[sqlx::test]
     async fn can_return_login_activity(pool: PgPool) {
@@ -178,7 +152,9 @@ mod tests {
                 let mut conn = redis_pool.get().await.unwrap();
 
                 // Remove all the previous sessions
-                remove_all_user_sessions(&redis_pool, user_id.unwrap()).await;
+                clear_user_sessions(&redis_pool, user_id.unwrap())
+                    .await
+                    .unwrap();
 
                 // Insert a session
                 let session_key = format!("{}:{}", user_id.unwrap(), Uuid::new_v4().to_string());
@@ -227,7 +203,9 @@ mod tests {
                 assert!(response.recent.unwrap().is_active); // The only session should be active
 
                 // Remove all the sessions
-                remove_all_user_sessions(&redis_pool, user_id.unwrap()).await;
+                clear_user_sessions(&redis_pool, user_id.unwrap())
+                    .await
+                    .unwrap();
             }),
         )
         .await;
