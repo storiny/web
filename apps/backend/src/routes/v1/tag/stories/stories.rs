@@ -255,7 +255,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_reject_invalid_tag_name(pool: PgPool) -> sqlx::Result<()> {
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
             .uri("/v1/tag/@invalid_tag_name/stories")
@@ -272,7 +272,7 @@ mod tests {
 
     #[sqlx::test(fixtures("story"))]
     async fn can_return_tag_stories(pool: PgPool) -> sqlx::Result<()> {
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
             .uri("/v1/tag/tag-1/stories")
@@ -291,7 +291,7 @@ mod tests {
 
     #[sqlx::test(fixtures("story"))]
     async fn can_return_tag_stories_in_recent_order(pool: PgPool) -> sqlx::Result<()> {
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
             .uri("/v1/tag/tag-1/stories?sort=recent")
@@ -310,7 +310,7 @@ mod tests {
 
     #[sqlx::test(fixtures("story"))]
     async fn can_return_tag_stories_in_popular_order(pool: PgPool) -> sqlx::Result<()> {
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
             .uri("/v1/tag/tag-1/stories?sort=popular")
@@ -329,7 +329,7 @@ mod tests {
 
     #[sqlx::test(fixtures("story"))]
     async fn can_search_tag_stories(pool: PgPool) -> sqlx::Result<()> {
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
             .uri(&format!("/v1/tag/tag-1/stories?query={}", encode("two")))
@@ -351,7 +351,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Should return all the stories initially
         let req = test::TestRequest::get()
@@ -432,7 +432,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Should return all the stories initially
         let req = test::TestRequest::get()
@@ -508,7 +508,7 @@ mod tests {
 
     #[sqlx::test(fixtures("story"))]
     async fn can_return_tag_stories_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
@@ -530,7 +530,7 @@ mod tests {
     async fn can_return_tag_stories_in_recent_order_when_logged_in(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
@@ -552,7 +552,7 @@ mod tests {
     async fn can_return_tag_stories_in_popular_order_when_logged_in(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
@@ -572,7 +572,7 @@ mod tests {
 
     #[sqlx::test(fixtures("story"))]
     async fn can_search_tag_stories_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
@@ -595,7 +595,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         // Should return all the stories initially
         let req = test::TestRequest::get()
@@ -679,7 +679,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         // Should return all the stories initially
         let req = test::TestRequest::get()

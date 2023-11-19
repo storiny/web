@@ -185,7 +185,7 @@ mod tests {
 
     #[sqlx::test(fixtures("recommendation"))]
     async fn can_return_recommended_stories(pool: PgPool) -> sqlx::Result<()> {
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
             .uri(&format!("/v1/public/stories/{}/recommendations", 4))
@@ -206,7 +206,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Should return all the stories initially
         let req = test::TestRequest::get()
@@ -287,7 +287,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Should return all the stories initially
         let req = test::TestRequest::get()
@@ -363,7 +363,7 @@ mod tests {
 
     #[sqlx::test(fixtures("recommendation"))]
     async fn can_return_recommended_stories_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
@@ -385,7 +385,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         // Should return all the stories initially
         let req = test::TestRequest::get()
@@ -465,7 +465,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         // Should return all the stories initially
         let req = test::TestRequest::get()

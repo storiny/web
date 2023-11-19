@@ -298,7 +298,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_stories(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some stories
         let insert_result = sqlx::query(
@@ -332,7 +332,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_published_stories(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some published stories
         let insert_result = sqlx::query(
@@ -366,7 +366,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_deleted_stories(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some deleted stories
         let insert_result = sqlx::query(
@@ -400,7 +400,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_published_stories_in_asc_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some published stories
         sqlx::query(
@@ -444,7 +444,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_published_stories_in_desc_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some published stories
         sqlx::query(
@@ -488,7 +488,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_published_stories_in_least_popular_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some published stories
         sqlx::query(
@@ -532,7 +532,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_published_stories_in_most_popular_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some published stories
         sqlx::query(
@@ -576,7 +576,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_published_stories_in_least_liked_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some published stories
         sqlx::query(
@@ -620,7 +620,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_published_stories_in_most_liked_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some published stories
         sqlx::query(
@@ -664,7 +664,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_deleted_stories_in_asc_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some deleted stories
         sqlx::query(
@@ -708,7 +708,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_deleted_stories_in_desc_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some deleted stories
         sqlx::query(
@@ -752,7 +752,7 @@ mod tests {
     #[sqlx::test]
     async fn can_search_published_stories(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some published stories
         let insert_result = sqlx::query(
@@ -793,7 +793,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some published stories
         let insert_result = sqlx::query(
@@ -860,7 +860,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some deleted stories
         let insert_result = sqlx::query(

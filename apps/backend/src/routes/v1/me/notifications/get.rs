@@ -185,7 +185,7 @@ mod tests {
     #[sqlx::test(fixtures("notification"))]
     async fn can_return_notifications(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Receive some notifications
         let insert_result = sqlx::query(
@@ -221,7 +221,7 @@ mod tests {
     #[sqlx::test(fixtures("notification"))]
     async fn can_return_system_notifications(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Receive a system notification
         let insert_result = sqlx::query(
@@ -256,7 +256,7 @@ mod tests {
     #[sqlx::test(fixtures("notification"))]
     async fn can_return_unread_notifications(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Receive some notifications
         let insert_result = sqlx::query(
@@ -321,7 +321,7 @@ mod tests {
     #[sqlx::test(fixtures("notification"))]
     async fn can_return_notifications_from_followed_users(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Receive some notifications
         let insert_result = sqlx::query(
@@ -386,7 +386,7 @@ mod tests {
     #[sqlx::test(fixtures("notification"))]
     async fn can_return_notifications_from_friends(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Receive some notifications
         let insert_result = sqlx::query(
@@ -453,7 +453,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Receive some notifications
         let insert_result = sqlx::query(
@@ -534,7 +534,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Receive some notifications
         let insert_result = sqlx::query(
@@ -615,7 +615,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Receive some notifications
         let insert_result = sqlx::query(

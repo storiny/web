@@ -98,7 +98,7 @@ mod tests {
     #[sqlx::test(fixtures("friend_request"))]
     async fn can_accept_a_friend_request(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         // Receive a friend request
         let insert_result = sqlx::query(
@@ -169,7 +169,7 @@ mod tests {
     #[sqlx::test(fixtures("friend_request"))]
     async fn should_not_accept_a_soft_deleted_friend_request(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         // Receive a soft-deleted friend request
         let insert_result = sqlx::query(
@@ -227,7 +227,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         // Receive a friend request
         let insert_result = sqlx::query(

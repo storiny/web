@@ -169,7 +169,7 @@ mod tests {
     #[sqlx::test]
     async fn can_remove_login_accounts(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
         let (password_hash, password) = get_sample_password();
 
         // Insert the user
@@ -290,7 +290,7 @@ mod tests {
     async fn can_reject_removing_login_account_for_a_user_without_password(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
@@ -317,7 +317,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
         let (password_hash, _) = get_sample_password();
 
         // Insert the user

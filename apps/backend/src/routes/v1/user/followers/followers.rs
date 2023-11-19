@@ -293,7 +293,7 @@ mod tests {
     #[sqlx::test(fixtures("follower"))]
     async fn can_return_user_followers(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Add some followers
         let insert_result = sqlx::query(
@@ -328,7 +328,7 @@ mod tests {
     #[sqlx::test(fixtures("follower"))]
     async fn can_return_user_followers_in_old_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Add some followers
         sqlx::query(
@@ -371,7 +371,7 @@ mod tests {
     #[sqlx::test(fixtures("follower"))]
     async fn can_return_user_followers_in_recent_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Add some followers
         sqlx::query(
@@ -414,7 +414,7 @@ mod tests {
     #[sqlx::test(fixtures("follower"))]
     async fn can_return_user_followers_in_popular_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Add some followers
         sqlx::query(
@@ -457,7 +457,7 @@ mod tests {
     #[sqlx::test(fixtures("follower"))]
     async fn can_search_user_followers(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Add some followers
         let insert_result = sqlx::query(
@@ -492,7 +492,7 @@ mod tests {
     #[sqlx::test(fixtures("follower"))]
     async fn should_not_include_soft_deleted_followers(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Add some followers
         let insert_result = sqlx::query(
@@ -586,7 +586,7 @@ mod tests {
     #[sqlx::test(fixtures("follower"))]
     async fn can_return_user_followers_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         // Add some followers
         let insert_result = sqlx::query(
@@ -624,7 +624,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         // Add some followers
         sqlx::query(
@@ -670,7 +670,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         // Add some followers
         sqlx::query(
@@ -716,7 +716,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         // Add some followers
         sqlx::query(
@@ -760,7 +760,7 @@ mod tests {
     #[sqlx::test(fixtures("follower"))]
     async fn can_search_user_followers_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         // Add some followers
         let insert_result = sqlx::query(
@@ -798,7 +798,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         // Add some followers
         let insert_result = sqlx::query(

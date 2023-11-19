@@ -114,7 +114,7 @@ mod tests {
     #[sqlx::test(fixtures("liked_story"))]
     async fn can_like_a_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
@@ -169,7 +169,7 @@ mod tests {
     #[sqlx::test(fixtures("liked_story"))]
     async fn should_not_throw_when_liking_an_already_liked_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         // Like the story for the first time
         let req = test::TestRequest::post()
@@ -216,7 +216,7 @@ mod tests {
     #[sqlx::test(fixtures("liked_story"))]
     async fn should_not_like_a_soft_deleted_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         // Soft-delete the story
         let result = sqlx::query(
@@ -248,7 +248,7 @@ mod tests {
     #[sqlx::test(fixtures("liked_story"))]
     async fn should_not_like_an_unpublished_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         // Unpublish the story
         let result = sqlx::query(

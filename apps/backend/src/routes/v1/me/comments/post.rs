@@ -155,7 +155,7 @@ mod tests {
     #[sqlx::test(fixtures("comment"))]
     async fn can_add_a_comment(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
@@ -214,7 +214,7 @@ mod tests {
 
     #[sqlx::test(fixtures("comment"))]
     async fn can_reject_comment_for_a_missing_story(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
@@ -235,7 +235,7 @@ mod tests {
     #[sqlx::test(fixtures("comment"))]
     async fn can_reject_comment_for_a_soft_deleted_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         // Soft-delete the story
         sqlx::query(
@@ -268,7 +268,7 @@ mod tests {
     #[sqlx::test(fixtures("comment"))]
     async fn can_reject_comment_for_an_unpublished_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         // Unpublish the story
         sqlx::query(
@@ -303,7 +303,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         // Get blocked by the story writer
         sqlx::query(

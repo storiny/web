@@ -260,7 +260,7 @@ mod tests {
 
     #[sqlx::test(fixtures("reply"))]
     async fn can_return_replies(pool: PgPool) -> sqlx::Result<()> {
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
             .uri(&format!("/v1/public/comments/{}/replies", 2))
@@ -279,7 +279,7 @@ mod tests {
 
     #[sqlx::test(fixtures("reply"))]
     async fn can_return_replies_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, false, None).await;
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
@@ -300,7 +300,7 @@ mod tests {
     #[sqlx::test(fixtures("reply"))]
     async fn should_not_include_soft_deleted_replies(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, true, false).await.0;
+        let app = init_app_for_test(get, pool, true, false, None).await.0;
 
         // Should return all the replies initially
         let req = test::TestRequest::get()
@@ -377,7 +377,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, false, None).await;
 
         // Should return all the replies initially
         let req = test::TestRequest::get()

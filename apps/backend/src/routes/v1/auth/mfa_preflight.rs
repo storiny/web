@@ -145,7 +145,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool, false, false).await.0;
+        let app = init_app_for_test(post, pool, false, false, None).await.0;
         let (email, password_hash, password) = get_sample_email_and_password();
 
         // Insert the user
@@ -186,7 +186,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool, false, false).await.0;
+        let app = init_app_for_test(post, pool, false, false, None).await.0;
         let (email, password_hash, password) = get_sample_email_and_password();
 
         // Insert the user
@@ -225,7 +225,7 @@ mod tests {
     #[sqlx::test]
     async fn can_reject_mfa_preflight_request_with_invalid_email(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool, false, false).await.0;
+        let app = init_app_for_test(post, pool, false, false, None).await.0;
         let (email, password_hash, password) = get_sample_email_and_password();
 
         // Insert the user
@@ -262,7 +262,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool, false, false).await.0;
+        let app = init_app_for_test(post, pool, false, false, None).await.0;
         let (email, _, password) = get_sample_email_and_password();
 
         // Insert the user
@@ -298,7 +298,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool, false, false).await.0;
+        let app = init_app_for_test(post, pool, false, false, None).await.0;
         let (email, password_hash, _) = get_sample_email_and_password();
 
         // Insert the user

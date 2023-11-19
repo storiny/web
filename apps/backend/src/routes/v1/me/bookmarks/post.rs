@@ -90,7 +90,7 @@ mod tests {
     #[sqlx::test(fixtures("bookmark"))]
     async fn can_bookmark_a_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
@@ -123,7 +123,7 @@ mod tests {
     async fn should_not_throw_when_bookmarking_an_already_bookmarked_story(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         // Bookmark the story for the first time
         let req = test::TestRequest::post()
@@ -150,7 +150,7 @@ mod tests {
     #[sqlx::test(fixtures("bookmark"))]
     async fn should_not_bookmark_a_soft_deleted_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         // Soft-delete the target story
         let result = sqlx::query(
@@ -186,7 +186,7 @@ mod tests {
     #[sqlx::test(fixtures("bookmark"))]
     async fn should_not_bookmark_an_unpublished_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         // Unpublish the target story
         let result = sqlx::query(

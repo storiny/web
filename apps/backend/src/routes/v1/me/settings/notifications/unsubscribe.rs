@@ -98,7 +98,7 @@ mod tests {
     #[sqlx::test]
     async fn can_unsubscribe_from_notifications(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
         // `push_followers` should be TRUE initially
         let result = sqlx::query(

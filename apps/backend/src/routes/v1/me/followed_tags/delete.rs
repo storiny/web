@@ -67,7 +67,7 @@ mod tests {
     #[sqlx::test(fixtures("followed_tag"))]
     async fn can_unfollow_a_tag(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
         // Follow the tag
         let result = sqlx::query(
@@ -114,7 +114,7 @@ mod tests {
     async fn can_return_an_error_response_when_unfollowing_an_unknown_tag(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(delete, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(delete, pool, true, false, None).await;
 
         let req = test::TestRequest::delete()
             .cookie(cookie.unwrap())

@@ -356,7 +356,7 @@ mod tests {
     #[sqlx::test(fixtures("comment"))]
     async fn can_return_comments(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Insert some comments
         let insert_result = sqlx::query(
@@ -391,7 +391,7 @@ mod tests {
     #[sqlx::test(fixtures("comment"))]
     async fn can_return_comments_in_asc_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Insert some comments
         sqlx::query(
@@ -438,7 +438,7 @@ mod tests {
     #[sqlx::test(fixtures("comment"))]
     async fn can_return_comments_in_desc_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Insert some comments
         sqlx::query(
@@ -485,7 +485,7 @@ mod tests {
     #[sqlx::test(fixtures("comment"))]
     async fn can_return_comments_in_most_replied_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Insert some comments
         sqlx::query(
@@ -536,7 +536,7 @@ mod tests {
     #[sqlx::test(fixtures("comment"))]
     async fn can_return_comments_in_least_replied_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Insert some comments
         sqlx::query(
@@ -587,7 +587,7 @@ mod tests {
     #[sqlx::test(fixtures("comment"))]
     async fn can_return_comments_in_most_liked_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Insert some comments
         sqlx::query(
@@ -638,7 +638,7 @@ mod tests {
     #[sqlx::test(fixtures("comment"))]
     async fn can_return_comments_in_least_liked_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Insert some comments
         sqlx::query(
@@ -689,7 +689,7 @@ mod tests {
     #[sqlx::test(fixtures("comment"))]
     async fn can_search_comments(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Insert some comments
         let insert_result = sqlx::query(
@@ -729,7 +729,7 @@ mod tests {
     #[sqlx::test(fixtures("comment"))]
     async fn should_not_include_soft_deleted_comments(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Insert some comments
         let insert_result = sqlx::query(
@@ -821,7 +821,7 @@ mod tests {
     #[sqlx::test(fixtures("comment"))]
     async fn can_return_comments_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some comments
         let insert_result = sqlx::query(
@@ -857,7 +857,7 @@ mod tests {
     #[sqlx::test(fixtures("comment"))]
     async fn can_return_comments_in_asc_order_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some comments
         sqlx::query(
@@ -905,7 +905,7 @@ mod tests {
     #[sqlx::test(fixtures("comment"))]
     async fn can_return_comments_in_desc_order_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some comments
         sqlx::query(
@@ -955,7 +955,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some comments
         sqlx::query(
@@ -1009,7 +1009,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some comments
         sqlx::query(
@@ -1063,7 +1063,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some comments
         sqlx::query(
@@ -1117,7 +1117,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some comments
         sqlx::query(
@@ -1169,7 +1169,7 @@ mod tests {
     #[sqlx::test(fixtures("comment"))]
     async fn can_search_comments_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some comments
         let insert_result = sqlx::query(
@@ -1212,7 +1212,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some comments
         let insert_result = sqlx::query(

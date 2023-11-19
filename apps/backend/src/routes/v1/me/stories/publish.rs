@@ -230,7 +230,7 @@ mod tests {
     async fn can_publish_a_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) =
-            init_app_for_test(services![post, put], pool, true, false).await;
+            init_app_for_test(services![post, put], pool, true, false, None).await;
 
         // Insert a draft
         let result = sqlx::query(
@@ -279,7 +279,7 @@ mod tests {
     async fn should_not_publish_already_published_stories(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) =
-            init_app_for_test(services![post, put], pool, true, false).await;
+            init_app_for_test(services![post, put], pool, true, false, None).await;
 
         // Insert a published story
         let result = sqlx::query(
@@ -311,7 +311,7 @@ mod tests {
     async fn should_not_publish_soft_deleted_drafts(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) =
-            init_app_for_test(services![post, put], pool, true, false).await;
+            init_app_for_test(services![post, put], pool, true, false, None).await;
 
         // Insert a soft-deleted draft
         let result = sqlx::query(
@@ -341,7 +341,8 @@ mod tests {
 
     #[sqlx::test]
     async fn can_handle_unknown_drafts(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(services![post, put], pool, true, false).await;
+        let (app, cookie, _) =
+            init_app_for_test(services![post, put], pool, true, false, None).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
@@ -361,7 +362,7 @@ mod tests {
     async fn can_edit_a_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) =
-            init_app_for_test(services![post, put], pool, true, false).await;
+            init_app_for_test(services![post, put], pool, true, false, None).await;
 
         // Insert a published story
         let result = sqlx::query(
@@ -409,7 +410,7 @@ mod tests {
     async fn should_not_edit_unpublished_stories(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) =
-            init_app_for_test(services![post, put], pool, true, false).await;
+            init_app_for_test(services![post, put], pool, true, false, None).await;
 
         // Insert an unpublished story
         let result = sqlx::query(
@@ -441,7 +442,7 @@ mod tests {
     async fn should_not_edit_soft_deleted_stories(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) =
-            init_app_for_test(services![post, put], pool, true, false).await;
+            init_app_for_test(services![post, put], pool, true, false, None).await;
 
         // Insert a soft-deleted story
         let result = sqlx::query(
@@ -471,7 +472,8 @@ mod tests {
 
     #[sqlx::test]
     async fn can_handle_unknown_stories(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(services![post, put], pool, true, false).await;
+        let (app, cookie, _) =
+            init_app_for_test(services![post, put], pool, true, false, None).await;
 
         let req = test::TestRequest::put()
             .cookie(cookie.unwrap())

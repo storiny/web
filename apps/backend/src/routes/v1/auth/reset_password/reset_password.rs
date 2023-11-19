@@ -185,7 +185,7 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn can_reset_password(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool, false, false).await.0;
+        let app = init_app_for_test(post, pool, false, false, None).await.0;
         let token_id = nanoid!(48);
         let salt = SaltString::generate(&mut OsRng);
         let hashed_token = Argon2::default()
@@ -260,7 +260,7 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn can_reject_reset_password_for_an_invalid_email(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool, false, false).await.0;
+        let app = init_app_for_test(post, pool, false, false, None).await.0;
         let token_id = nanoid!(48);
 
         // Insert reset password token
@@ -304,7 +304,7 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn can_reject_reset_password_for_an_expired_token(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool, false, false).await.0;
+        let app = init_app_for_test(post, pool, false, false, None).await.0;
         let token_id = nanoid!(48);
         let salt = SaltString::generate(&mut OsRng);
         let hashed_token = Argon2::default()
@@ -346,7 +346,7 @@ mod tests {
 
     #[sqlx::test(fixtures("user"))]
     async fn can_reject_reset_password_for_an_invalid_token(pool: PgPool) -> sqlx::Result<()> {
-        let app = init_app_for_test(post, pool, false, false).await.0;
+        let app = init_app_for_test(post, pool, false, false, None).await.0;
 
         let req = test::TestRequest::post()
             .uri("/v1/auth/reset-password")

@@ -71,7 +71,7 @@ mod tests {
     #[sqlx::test(fixtures("comment"))]
     async fn can_remove_a_comment(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
         // Insert a comment
         let result = sqlx::query(
@@ -119,7 +119,7 @@ mod tests {
     async fn can_return_an_error_response_when_deleting_an_unknown_comment(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(delete, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(delete, pool, true, false, None).await;
 
         let req = test::TestRequest::delete()
             .cookie(cookie.unwrap())

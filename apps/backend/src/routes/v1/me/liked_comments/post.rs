@@ -91,7 +91,7 @@ mod tests {
     #[sqlx::test(fixtures("liked_comment"))]
     async fn can_like_a_comment(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
@@ -124,7 +124,7 @@ mod tests {
     async fn should_not_throw_when_liking_an_already_liked_comment(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         // Like the comment for the first time
         let req = test::TestRequest::post()
@@ -151,7 +151,7 @@ mod tests {
     #[sqlx::test(fixtures("liked_comment"))]
     async fn should_not_like_a_soft_deleted_comment(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         // Soft-delete the comment
         let result = sqlx::query(

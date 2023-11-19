@@ -81,7 +81,7 @@ mod tests {
     #[sqlx::test]
     async fn can_recover_a_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         // Insert a soft-deleted story
         let result = sqlx::query(
@@ -128,7 +128,7 @@ mod tests {
     #[sqlx::test]
     async fn should_not_recover_drafts(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         // Insert a draft
         let result = sqlx::query(
@@ -159,7 +159,7 @@ mod tests {
     #[sqlx::test]
     async fn should_not_recover_non_deleted_stories(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         // Insert a non-deleted story
         let result = sqlx::query(
@@ -189,7 +189,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_handle_unknown_stories(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())

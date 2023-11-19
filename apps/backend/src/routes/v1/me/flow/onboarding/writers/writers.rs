@@ -76,7 +76,7 @@ mod tests {
 
     #[sqlx::test(fixtures("writer"))]
     async fn can_return_onboarding_writers(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, false, None).await;
         let encoded_categories = lz_str::compress_to_encoded_uri_component(&format!(
             "{}|{}",
             StoryCategory::Travel.to_string(),

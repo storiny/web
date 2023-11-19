@@ -97,7 +97,7 @@ mod tests {
     #[sqlx::test(fixtures("visibility"))]
     async fn can_hide_and_unhide_a_comment(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
         // Hide the comment
         let req = test::TestRequest::post()
@@ -150,7 +150,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_handle_a_missing_comment(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
@@ -170,7 +170,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
         // Change the writer of the story
         let result = sqlx::query(
@@ -208,7 +208,7 @@ mod tests {
     #[sqlx::test(fixtures("visibility"))]
     async fn should_not_hide_a_soft_deleted_comment(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
         // Soft-delete the comment
         let result = sqlx::query(

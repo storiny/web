@@ -81,7 +81,7 @@ mod tests {
     #[sqlx::test]
     async fn can_add_a_report(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool, false, false).await.0;
+        let app = init_app_for_test(post, pool, false, false, None).await.0;
 
         let req = test::TestRequest::post()
             .uri("/v1/public/reports")
@@ -116,7 +116,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_reject_report_for_an_invalid_entity_id(pool: PgPool) -> sqlx::Result<()> {
-        let app = init_app_for_test(post, pool, false, false).await.0;
+        let app = init_app_for_test(post, pool, false, false, None).await.0;
 
         let req = test::TestRequest::post()
             .uri("/v1/public/reports")

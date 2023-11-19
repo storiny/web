@@ -88,7 +88,7 @@ mod tests {
     #[sqlx::test]
     async fn can_set_site_notification_settings(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
         // Disable all site notifications
         let req = test::TestRequest::patch()

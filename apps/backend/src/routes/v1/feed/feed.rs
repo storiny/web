@@ -197,7 +197,7 @@ mod tests {
 
     #[sqlx::test(fixtures("feed"))]
     async fn can_generate_feed_for_logged_out_user(pool: PgPool) -> sqlx::Result<()> {
-        let (app, _, _) = init_app_for_test(get, pool, false, false).await;
+        let (app, _, _) = init_app_for_test(get, pool, false, false, None).await;
         let req = test::TestRequest::get().uri("/v1/feed").to_request();
         let res = test::call_service(&app, req).await;
 
@@ -216,7 +216,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, _, _) = init_app_for_test(get, pool, false, false).await;
+        let (app, _, _) = init_app_for_test(get, pool, false, false, None).await;
 
         // Insert a story
         let story_result = sqlx::query(
@@ -269,7 +269,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, _, _) = init_app_for_test(get, pool, false, false).await;
+        let (app, _, _) = init_app_for_test(get, pool, false, false, None).await;
 
         // Insert a story
         let story_result = sqlx::query(
@@ -322,7 +322,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, _, _) = init_app_for_test(get, pool, false, false).await;
+        let (app, _, _) = init_app_for_test(get, pool, false, false, None).await;
 
         // Insert a story
         let story_result = sqlx::query(
@@ -376,7 +376,7 @@ mod tests {
     async fn can_generate_feed_for_logged_in_user_and_suggested_type(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
@@ -399,7 +399,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert a story
         let story_result = sqlx::query(
@@ -458,7 +458,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert a story
         let story_result = sqlx::query(
@@ -517,7 +517,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert a story
         let story_result = sqlx::query(
@@ -599,7 +599,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert a story
         let story_result = sqlx::query(
@@ -658,7 +658,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert a story
         let story_result = sqlx::query(
@@ -718,24 +718,7 @@ mod tests {
     async fn can_generate_feed_for_logged_in_user_and_friends_and_following_type(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
-
-        // Follow one of the story writer
-        let result = sqlx::query(
-            r#"
-            INSERT INTO
-                relations(follower_id, followed_id)
-            VALUES
-                ($1, $2)
-            "#,
-        )
-        .bind(user_id.unwrap())
-        .bind(3_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
@@ -758,7 +741,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert a story
         let story_result = sqlx::query(
@@ -822,7 +805,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert a story
         let story_result = sqlx::query(
@@ -886,7 +869,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert a story
         let story_result = sqlx::query(
@@ -973,7 +956,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert a story
         let story_result = sqlx::query(
@@ -1038,7 +1021,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert a story
         let story_result = sqlx::query(

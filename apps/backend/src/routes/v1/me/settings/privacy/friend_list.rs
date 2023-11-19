@@ -80,7 +80,7 @@ mod tests {
     #[sqlx::test]
     async fn can_set_friend_list_visibility(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
         // Set to `friends`
         let req = test::TestRequest::patch()

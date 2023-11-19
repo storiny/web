@@ -82,7 +82,7 @@ mod tests {
     #[sqlx::test(fixtures("followed_tag"))]
     async fn can_follow_a_tag(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
@@ -113,7 +113,7 @@ mod tests {
 
     #[sqlx::test(fixtures("followed_tag"))]
     async fn can_reject_followed_tag_for_a_missing_tag(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
@@ -131,7 +131,7 @@ mod tests {
     async fn should_not_throw_when_following_an_already_followed_tag(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         // Follow the tag for the first time
         let req = test::TestRequest::post()

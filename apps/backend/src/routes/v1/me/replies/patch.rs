@@ -99,7 +99,7 @@ mod tests {
     #[sqlx::test(fixtures("reply"))]
     async fn can_edit_a_reply(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
         // Insert a reply
         sqlx::query(
@@ -153,7 +153,7 @@ mod tests {
     #[sqlx::test(fixtures("reply"))]
     async fn should_not_edit_a_soft_deleted_reply(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
         // Insert a reply
         sqlx::query(
@@ -202,7 +202,7 @@ mod tests {
     async fn can_return_an_error_response_when_editing_an_unknown_reply(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(patch, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(patch, pool, true, false, None).await;
 
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())

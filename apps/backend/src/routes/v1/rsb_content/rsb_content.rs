@@ -79,7 +79,7 @@ mod tests {
 
     #[sqlx::test(fixtures("rsb_content"))]
     async fn can_return_rsb_content(pool: PgPool) -> sqlx::Result<()> {
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get().uri("/v1/rsb_content").to_request();
         let res = test::call_service(&app, req).await;
@@ -95,7 +95,7 @@ mod tests {
 
     #[sqlx::test(fixtures("rsb_content"))]
     async fn can_return_rsb_content_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())

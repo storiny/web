@@ -118,7 +118,7 @@ mod tests {
 
     #[sqlx::test(fixtures("preview"))]
     async fn can_return_story_preview(pool: PgPool) -> sqlx::Result<()> {
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
             .uri(&format!("/v1/public/preview/{}", 2))
@@ -136,7 +136,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_handle_a_missing_story(pool: PgPool) -> sqlx::Result<()> {
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
             .uri("/v1/public/preview/12345")
@@ -152,7 +152,7 @@ mod tests {
     #[sqlx::test(fixtures("preview"))]
     async fn should_not_return_preview_for_a_soft_deleted_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Soft-delete the story
         let result = sqlx::query(
@@ -182,7 +182,7 @@ mod tests {
     #[sqlx::test(fixtures("preview"))]
     async fn should_not_return_preview_for_an_unpublished_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         // Unpublish the story
         let result = sqlx::query(

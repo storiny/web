@@ -99,7 +99,7 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn can_return_muted_users(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Should return an empty array initially
         let req = test::TestRequest::get()
@@ -153,7 +153,7 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn should_not_return_soft_deleted_mutes(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Should return an empty array initially
         let req = test::TestRequest::get()

@@ -70,7 +70,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_validate_a_username(pool: PgPool) -> sqlx::Result<()> {
-        let app = init_app_for_test(post, pool, false, false).await.0;
+        let app = init_app_for_test(post, pool, false, false, None).await.0;
 
         let req = test::TestRequest::post()
             .uri("/v1/public/validation/username")
@@ -87,7 +87,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_reject_a_reserved_username(pool: PgPool) -> sqlx::Result<()> {
-        let app = init_app_for_test(post, pool, false, false).await.0;
+        let app = init_app_for_test(post, pool, false, false, None).await.0;
 
         let req = test::TestRequest::post()
             .uri("/v1/public/validation/username")
@@ -106,7 +106,7 @@ mod tests {
     #[sqlx::test]
     async fn can_reject_a_used_username(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool, false, false).await.0;
+        let app = init_app_for_test(post, pool, false, false, None).await.0;
 
         // Insert a user with a specific username
         let result = sqlx::query(

@@ -67,7 +67,7 @@ mod tests {
     #[sqlx::test(fixtures("liked_story"))]
     async fn can_unlike_a_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
         // Like a story
         let result = sqlx::query(
@@ -114,7 +114,7 @@ mod tests {
     async fn can_return_an_error_response_when_unliking_an_unknown_story(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(delete, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(delete, pool, true, false, None).await;
 
         let req = test::TestRequest::delete()
             .cookie(cookie.unwrap())

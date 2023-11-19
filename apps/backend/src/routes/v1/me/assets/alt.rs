@@ -87,7 +87,7 @@ mod tests {
     #[sqlx::test]
     async fn can_update_alt_text_for_an_asset(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
         // Insert an asset
         let result = sqlx::query(
@@ -138,7 +138,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_handle_a_missing_asset(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(patch, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(patch, pool, true, false, None).await;
 
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())

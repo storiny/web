@@ -118,7 +118,7 @@ mod tests {
     #[sqlx::test]
     async fn can_generate_recovery_codes(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
         // Insert the user
         let result = sqlx::query(
@@ -170,7 +170,7 @@ mod tests {
     #[sqlx::test]
     async fn can_delete_old_recovery_codes(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
         // Insert the user
         let result = sqlx::query(
@@ -239,7 +239,7 @@ mod tests {
     async fn can_reject_generate_recovery_codes_request_for_a_user_without_password(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
@@ -259,7 +259,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
         // Insert the user
         let result = sqlx::query(

@@ -77,7 +77,7 @@ mod tests {
 
     #[sqlx::test(fixtures("tag"))]
     async fn can_return_onboarding_tags(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, false, None).await;
         let encoded_categories = lz_str::compress_to_encoded_uri_component(&format!(
             "{}|{}",
             StoryCategory::Travel.to_string(),
