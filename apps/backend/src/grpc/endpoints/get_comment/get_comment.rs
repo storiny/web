@@ -1,11 +1,26 @@
-use crate::grpc::defs::comment_def::v1::{GetCommentRequest, GetCommentResponse};
-use crate::grpc::defs::user_def::v1::BareUser;
-use crate::grpc::service::GrpcService;
+use crate::grpc::{
+    defs::{
+        comment_def::v1::{
+            GetCommentRequest,
+            GetCommentResponse,
+        },
+        user_def::v1::BareUser,
+    },
+    service::GrpcService,
+};
 use serde::Deserialize;
-use sqlx::types::Json;
-use sqlx::{FromRow, Postgres, QueryBuilder};
+use sqlx::{
+    types::Json,
+    FromRow,
+    Postgres,
+    QueryBuilder,
+};
 use time::OffsetDateTime;
-use tonic::{Request, Response, Status};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 use uuid::Uuid;
 
 #[derive(Debug, Deserialize)]
@@ -198,10 +213,15 @@ pub async fn get_comment(
 
 #[cfg(test)]
 mod tests {
-    use crate::grpc::defs::comment_def::v1::GetCommentRequest;
-    use crate::test_utils::test_grpc_service;
+    use crate::{
+        grpc::defs::comment_def::v1::GetCommentRequest,
+        test_utils::test_grpc_service,
+    };
     use sqlx::PgPool;
-    use tonic::{Code, Request};
+    use tonic::{
+        Code,
+        Request,
+    };
 
     // Logged-out
 

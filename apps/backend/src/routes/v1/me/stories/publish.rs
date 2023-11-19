@@ -1,10 +1,25 @@
-use crate::error::ToastErrorResponse;
-use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
-use actix_web::{post, put, web, HttpResponse};
+use crate::{
+    error::{
+        AppError,
+        ToastErrorResponse,
+    },
+    middleware::identity::identity::Identity,
+    AppState,
+};
+use actix_web::{
+    post,
+    put,
+    web,
+    HttpResponse,
+};
 use nanoid::nanoid;
 use serde::Deserialize;
 use slugify::slugify;
-use sqlx::{Postgres, Row, Transaction};
+use sqlx::{
+    Postgres,
+    Row,
+    Transaction,
+};
 use validator::Validate;
 
 /// The maximum number of retries before a random fixed-length ID suffix is used
@@ -195,9 +210,18 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_toast_error_response, init_app_for_test};
-    use actix_web::{services, test};
-    use sqlx::{PgPool, Row};
+    use crate::test_utils::{
+        assert_toast_error_response,
+        init_app_for_test,
+    };
+    use actix_web::{
+        services,
+        test,
+    };
+    use sqlx::{
+        PgPool,
+        Row,
+    };
     use time::OffsetDateTime;
 
     // Publish a new story
@@ -242,9 +266,11 @@ mod tests {
         .await?;
 
         assert!(result.get::<Option<String>, _>("slug").is_some());
-        assert!(result
-            .get::<Option<OffsetDateTime>, _>("published_at")
-            .is_some());
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("published_at")
+                .is_some()
+        );
 
         Ok(())
     }
@@ -370,9 +396,11 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(result
-            .get::<Option<OffsetDateTime>, _>("edited_at")
-            .is_some());
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("edited_at")
+                .is_some()
+        );
 
         Ok(())
     }

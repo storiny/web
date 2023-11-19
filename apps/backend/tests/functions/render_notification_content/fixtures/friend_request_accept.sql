@@ -12,7 +12,7 @@ VALUES
 INSERT INTO
 	notifications (id, entity_type, entity_id, notifier_id)
 VALUES
-	(3, 3, 1, 2);
+	(3, 3, 2, 2);
 
 INSERT INTO
 	notification_outs (notified_id, notification_id)

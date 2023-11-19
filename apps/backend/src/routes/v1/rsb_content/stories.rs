@@ -1,5 +1,14 @@
-use serde::{Deserialize, Serialize};
-use sqlx::{types::Json, FromRow, Pool, Postgres, QueryBuilder};
+use serde::{
+    Deserialize,
+    Serialize,
+};
+use sqlx::{
+    types::Json,
+    FromRow,
+    Pool,
+    Postgres,
+    QueryBuilder,
+};
 use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize)]

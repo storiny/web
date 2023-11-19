@@ -1,8 +1,15 @@
 use crate::{
-    constants::sql_states::SqlState, error::AppError, middleware::identity::identity::Identity,
+    constants::sql_states::SqlState,
+    error::AppError,
+    middleware::identity::identity::Identity,
+    models::notification::NotificationEntityType,
     AppState,
 };
-use actix_web::{post, web, HttpResponse};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
 use serde::Deserialize;
 use validator::Validate;
 
@@ -22,13 +29,35 @@ async fn post(
             match path.story_id.parse::<i64>() {
                 Ok(story_id) => {
                     match sqlx::query(
-                        r#"
-                        INSERT INTO story_likes(user_id, story_id)
-                        VALUES ($1, $2)
+                        r#"                        
+                        WITH
+                            inserted_story_like AS (
+                                INSERT INTO story_likes(user_id, story_id)
+                                VALUES ($1, $2)
+                            ),
+                            liked_story AS (
+                                SELECT user_id FROM stories
+                                WHERE id = $2
+                            ),
+                            inserted_notification AS (
+                                INSERT INTO notifications (entity_type, entity_id, notifier_id)
+                                VALUES ($3, $2, $1)
+                                RETURNING id
+                            )
+                        INSERT
+                        INTO
+                            notification_outs (notified_id, notification_id)
+                        SELECT
+                            (SELECT user_id FROM liked_story),
+                            (SELECT id FROM inserted_notification)
+                        WHERE EXISTS (
+                            SELECT 1 FROM liked_story
+                        )
                         "#,
                     )
                     .bind(user_id)
                     .bind(story_id)
+                    .bind(NotificationEntityType::StoryLike as i16)
                     .execute(&data.db_pool)
                     .await
                     {
@@ -72,9 +101,15 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_response_body_text, init_app_for_test};
+    use crate::test_utils::{
+        assert_response_body_text,
+        init_app_for_test,
+    };
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test(fixtures("liked_story"))]
     async fn can_like_a_story(pool: PgPool) -> sqlx::Result<()> {
@@ -105,11 +140,35 @@ mod tests {
 
         assert!(result.get::<bool, _>("exists"));
 
+        // Should also insert a notification
+        let result = sqlx::query(
+            r#"
+            SELECT
+                EXISTS (
+                    SELECT
+                        1
+                    FROM
+                        notification_outs
+                    WHERE
+                        notification_id = (
+                            SELECT id FROM notifications
+                            WHERE entity_id = $1
+                        )
+                   )
+            "#,
+        )
+        .bind(3_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(result.get::<bool, _>("exists"));
+
         Ok(())
     }
 
     #[sqlx::test(fixtures("liked_story"))]
     async fn should_not_throw_when_liking_an_already_liked_story(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
 
         // Like the story for the first time
@@ -130,6 +189,26 @@ mod tests {
 
         // Should not throw
         assert!(res.status().is_success());
+
+        // Should not insert another notification
+        let result = sqlx::query(
+            r#"
+            SELECT
+                1
+            FROM
+                notification_outs
+            WHERE
+                notification_id = (
+                    SELECT id FROM notifications
+                    WHERE entity_id = $1
+                )
+            "#,
+        )
+        .bind(3_i64)
+        .fetch_all(&mut *conn)
+        .await?;
+
+        assert_eq!(result.len(), 1);
 
         Ok(())
     }

@@ -1,13 +1,29 @@
-use crate::grpc::defs::connection_def::v1::{ConnectionSetting, Provider};
-use crate::grpc::defs::connection_settings_def::v1::{
-    GetConnectionSettingsRequest, GetConnectionSettingsResponse,
+use crate::{
+    grpc::{
+        defs::{
+            connection_def::v1::{
+                ConnectionSetting,
+                Provider,
+            },
+            connection_settings_def::v1::{
+                GetConnectionSettingsRequest,
+                GetConnectionSettingsResponse,
+            },
+        },
+        service::GrpcService,
+    },
+    utils::generate_connection_url::generate_connection_url,
 };
-use crate::grpc::service::GrpcService;
-use crate::utils::generate_connection_url::generate_connection_url;
-use sqlx::postgres::PgRow;
-use sqlx::Row;
+use sqlx::{
+    postgres::PgRow,
+    Row,
+};
 use time::OffsetDateTime;
-use tonic::{Request, Response, Status};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 
 /// Returns the connection settings for a user.
 pub async fn get_connection_settings(
@@ -60,12 +76,20 @@ pub async fn get_connection_settings(
 
 #[cfg(test)]
 mod tests {
-    use crate::grpc::defs::connection_def::v1::{ConnectionSetting, Provider};
-    use crate::grpc::defs::connection_settings_def::v1::{
-        GetConnectionSettingsRequest, GetConnectionSettingsResponse,
+    use crate::{
+        grpc::defs::{
+            connection_def::v1::{
+                ConnectionSetting,
+                Provider,
+            },
+            connection_settings_def::v1::{
+                GetConnectionSettingsRequest,
+                GetConnectionSettingsResponse,
+            },
+        },
+        test_utils::test_grpc_service,
+        utils::generate_connection_url::generate_connection_url,
     };
-    use crate::test_utils::test_grpc_service;
-    use crate::utils::generate_connection_url::generate_connection_url;
     use sqlx::PgPool;
     use time::OffsetDateTime;
     use tonic::Request;

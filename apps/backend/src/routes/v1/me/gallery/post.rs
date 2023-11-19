@@ -1,17 +1,42 @@
 use crate::{
-    constants::buckets::S3_UPLOADS_BUCKET, constants::pexels::PEXELS_API_URL, error::AppError,
-    middleware::identity::identity::Identity, models::photo::Photo, AppState,
+    constants::{
+        buckets::S3_UPLOADS_BUCKET,
+        pexels::PEXELS_API_URL,
+    },
+    error::AppError,
+    middleware::identity::identity::Identity,
+    models::photo::Photo,
+    AppState,
 };
-use actix_web::{post, web, HttpResponse};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::Json;
 use colors_transform::Rgb;
 use dominant_color::get_colors;
-use image::{imageops::FilterType, EncodableLayout, GenericImageView, ImageOutputFormat};
+use image::{
+    imageops::FilterType,
+    EncodableLayout,
+    GenericImageView,
+    ImageOutputFormat,
+};
 use mime::IMAGE_JPEG;
-use rusoto_s3::{DeleteObjectRequest, PutObjectRequest, S3};
-use serde::{Deserialize, Serialize};
+use rusoto_s3::{
+    DeleteObjectRequest,
+    PutObjectRequest,
+    S3,
+};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use sqlx::Row;
-use std::{io::Cursor, time::Duration};
+use std::{
+    io::Cursor,
+    time::Duration,
+};
 use uuid::Uuid;
 use validator::Validate;
 
@@ -38,7 +63,9 @@ struct Response {
 ///
 /// * `photo_id` - The ID of the photo resource.
 fn get_photo_image_url(photo_id: &str) -> String {
-    format!("https://images.pexels.com/photos/{photo_id}/pexels-photo-{photo_id}.jpeg?auto=compress&cs=tinysrgb&h=2048&w=2048")
+    format!(
+        "https://images.pexels.com/photos/{photo_id}/pexels-photo-{photo_id}.jpeg?auto=compress&cs=tinysrgb&h=2048&w=2048"
+    )
 }
 
 #[post("/v1/me/gallery")]
@@ -205,7 +232,8 @@ async fn post(
                                                         }))
                                                     }
                                                     Err(_) => {
-                                                        // Delete the object from S3 if the database operation fails for
+                                                        // Delete the object from S3 if the database
+                                                        // operation fails for
                                                         // some reason.
                                                         let _ = s3_client
                                                             .delete_object(DeleteObjectRequest {
@@ -246,9 +274,15 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{init_app_for_test, res_to_string};
+    use crate::test_utils::{
+        init_app_for_test,
+        res_to_string,
+    };
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test]
     async fn can_upload_a_photo_from_pexels(pool: PgPool) -> sqlx::Result<()> {

@@ -1,10 +1,21 @@
 use crate::grpc::{
-    defs::story_def::v1::{Draft as DraftDef, GetDraftsInfoRequest, GetDraftsInfoResponse},
+    defs::story_def::v1::{
+        Draft as DraftDef,
+        GetDraftsInfoRequest,
+        GetDraftsInfoResponse,
+    },
     service::GrpcService,
 };
-use sqlx::{FromRow, Row};
+use sqlx::{
+    FromRow,
+    Row,
+};
 use time::OffsetDateTime;
-use tonic::{Request, Response, Status};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 use uuid::Uuid;
 
 #[derive(Debug, FromRow)]
@@ -119,8 +130,10 @@ pub async fn get_drafts_info(
 
 #[cfg(test)]
 mod tests {
-    use crate::grpc::defs::story_def::v1::GetDraftsInfoRequest;
-    use crate::test_utils::test_grpc_service;
+    use crate::{
+        grpc::defs::story_def::v1::GetDraftsInfoRequest,
+        test_utils::test_grpc_service,
+    };
     use sqlx::PgPool;
     use tonic::Request;
 

@@ -1,6 +1,13 @@
 #[cfg(test)]
 mod tests {
-    use sqlx::{pool::PoolConnection, postgres::PgRow, Error, PgPool, Postgres, Row};
+    use sqlx::{
+        pool::PoolConnection,
+        postgres::PgRow,
+        Error,
+        PgPool,
+        Postgres,
+        Row,
+    };
     use time::OffsetDateTime;
 
     /// Inserts a sample reply into the database.
@@ -221,9 +228,11 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(insert_result
-            .get::<Option<OffsetDateTime>, _>("deleted_at")
-            .is_none());
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         // Soft-delete the reply
         sqlx::query(
@@ -249,9 +258,11 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(result
-            .get::<Option<OffsetDateTime>, _>("deleted_at")
-            .is_some());
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
 
         // Restore the reply
         sqlx::query(
@@ -277,9 +288,11 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(result
-            .get::<Option<OffsetDateTime>, _>("deleted_at")
-            .is_none());
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         Ok(())
     }
@@ -583,9 +596,11 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(insert_result
-            .get::<Option<OffsetDateTime>, _>("deleted_at")
-            .is_none());
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         // Soft-delete the reply
         sqlx::query(
@@ -623,9 +638,11 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(result
-            .get::<Option<OffsetDateTime>, _>("deleted_at")
-            .is_some());
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
 
         // Restore the reply
         sqlx::query(
@@ -651,9 +668,11 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(result
-            .get::<Option<OffsetDateTime>, _>("deleted_at")
-            .is_some());
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
 
         // Restore the user
         sqlx::query(
@@ -679,9 +698,11 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(result
-            .get::<Option<OffsetDateTime>, _>("deleted_at")
-            .is_none());
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         Ok(())
     }
@@ -706,9 +727,11 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(insert_result
-            .get::<Option<OffsetDateTime>, _>("deleted_at")
-            .is_none());
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         // Soft-delete the reply
         sqlx::query(
@@ -746,9 +769,11 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(result
-            .get::<Option<OffsetDateTime>, _>("deleted_at")
-            .is_some());
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
 
         // Restore the reply
         sqlx::query(
@@ -774,9 +799,11 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(result
-            .get::<Option<OffsetDateTime>, _>("deleted_at")
-            .is_some());
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
 
         // Activate the user
         sqlx::query(
@@ -802,9 +829,11 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(result
-            .get::<Option<OffsetDateTime>, _>("deleted_at")
-            .is_none());
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         Ok(())
     }

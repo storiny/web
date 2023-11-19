@@ -8,6 +8,39 @@ BEGIN
 	RETURN
 		(
 			CASE
+				-- Login attempt
+				WHEN
+					entity_type = 2
+					THEN (WITH
+							  notification_out AS (SELECT
+													   n_out.rendered_content
+												   FROM
+													   notification_outs n_out
+												   WHERE
+														 n_out.notification_id = nu.notification_id
+													 AND n_out.notified_id = nu.notified_id
+							  )
+						  SELECT
+							  (
+								  FORMAT(
+													  'There was a successful login attempt to your account using'
+													  || ' <b>%s</b>'
+												  || CASE
+														  -- Insert client location if exist
+														 WHEN CHAR_LENGTH(
+																	  SPLIT_PART((SELECT rendered_content FROM notification_out), ':', 2)
+															  ) = 0
+															 THEN ''
+														 ELSE ' near <b>' ||
+															  SPLIT_PART((SELECT rendered_content FROM notification_out), ':', 2) ||
+															  '</b>'
+													 END
+											  ||
+													  '. <a data-underline href="/me/account/login-activity">Click to review</a>',
+													  SPLIT_PART((SELECT rendered_content FROM notification_out), ':', 1)
+								  )
+								  )
+				)
 				-- Friend request accept
 				WHEN
 					entity_type = 3
@@ -309,6 +342,7 @@ BEGIN
 								  )
 								  )
 				)
+				-- Unknown
 				ELSE 'Unknown notification'
 			END
 			);

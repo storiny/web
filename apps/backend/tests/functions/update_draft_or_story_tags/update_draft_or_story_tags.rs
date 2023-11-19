@@ -1,6 +1,9 @@
 #[cfg(test)]
 mod tests {
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test(fixtures("draft"))]
     async fn can_update_tags_for_a_draft(pool: PgPool) -> sqlx::Result<()> {

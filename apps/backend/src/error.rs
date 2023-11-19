@@ -1,6 +1,12 @@
-use actix_web::{HttpResponse, ResponseError};
+use actix_web::{
+    HttpResponse,
+    ResponseError,
+};
 use serde::Serialize;
-use std::fmt::{Display, Formatter};
+use std::fmt::{
+    Display,
+    Formatter,
+};
 
 /// JSON form error response
 #[derive(Debug, Serialize)]

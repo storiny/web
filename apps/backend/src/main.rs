@@ -1,30 +1,64 @@
 use actix_cors::Cors;
-use actix_extended_session::config::{CookieContentSecurity, PersistentSession};
-use actix_extended_session::{storage::RedisSessionStore, SessionMiddleware};
-use actix_extensible_rate_limit::{backend::SimpleInputFunctionBuilder, RateLimiter};
+use actix_extended_session::{
+    config::{
+        CookieContentSecurity,
+        PersistentSession,
+    },
+    storage::RedisSessionStore,
+    SessionMiddleware,
+};
+use actix_extensible_rate_limit::{
+    backend::SimpleInputFunctionBuilder,
+    RateLimiter,
+};
 use actix_files as fs;
 use actix_request_identifier::RequestIdentifier;
 use actix_web::{
-    cookie::{Key, SameSite},
-    http::{header, header::ContentType},
+    cookie::{
+        Key,
+        SameSite,
+    },
+    http::{
+        header,
+        header::ContentType,
+    },
     middleware::Logger,
-    web, App, HttpResponse, HttpServer, Responder,
+    web,
+    App,
+    HttpResponse,
+    HttpServer,
+    Responder,
 };
-use actix_web_validator::{JsonConfig, PathConfig, QsQueryConfig};
+use actix_web_validator::{
+    JsonConfig,
+    PathConfig,
+    QsQueryConfig,
+};
 use dotenv::dotenv;
 use redis::aio::ConnectionManager;
 use rusoto_s3::S3Client;
 use rusoto_ses::SesClient;
 use rusoto_signature::Region;
-use sqlx::postgres::PgPoolOptions;
-use sqlx::{Pool, Postgres};
-use std::{io, time::Duration};
-use storiny::constants::redis_namespaces::RedisNamespace;
-use storiny::grpc::defs::grpc_service::v1::api_service_server::ApiServiceServer;
-use storiny::grpc::service::GrpcService;
+use sqlx::{
+    postgres::PgPoolOptions,
+    Pool,
+    Postgres,
+};
+use std::{
+    io,
+    time::Duration,
+};
 use storiny::{
-    config::Config, error::FormErrorResponse, middleware::identity::middleware::IdentityMiddleware,
-    oauth::get_oauth_client_map, *,
+    config::Config,
+    constants::redis_namespaces::RedisNamespace,
+    error::FormErrorResponse,
+    grpc::{
+        defs::grpc_service::v1::api_service_server::ApiServiceServer,
+        service::GrpcService,
+    },
+    middleware::identity::middleware::IdentityMiddleware,
+    oauth::get_oauth_client_map,
+    *,
 };
 use tonic::codegen::CompressionEncoding;
 use user_agent_parser::UserAgentParser;

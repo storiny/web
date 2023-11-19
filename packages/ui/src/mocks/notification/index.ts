@@ -35,7 +35,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     read_at: null,
     type: NotificationType.LOGIN_ATTEMPT,
     actor: null,
-    rendered_content: `There was a successful login attempt to your account using <b>Safari on iPhone 6</a> near <b>Menlo Park, CA</a>. <a data-underline href="/me/account/login-activity">Click to review</a>`,
+    rendered_content: `There was a successful login attempt to your account using <b>Safari on iPhone 6</b> near <b>Menlo Park, CA</b>. <a data-underline href="/me/account/login-activity">Click to review</a>`,
     created_at: "2021-02-18T01:07:02.000Z",
     id: "1637392061766836224"
   },
@@ -75,7 +75,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     read_at: null,
     type: NotificationType.LOGIN_ATTEMPT,
     actor: null,
-    rendered_content: `There was a successful login attempt to your account using <b>Safari on iPhone 6</a> near <b>Menlo Park, CA</a>. <a data-underline href="/me/account/login-activity">Click to review</a>`,
+    rendered_content: `There was a successful login attempt to your account using <b>Safari on iPhone 6</b> near <b>Menlo Park, CA</b>. <a data-underline href="/me/account/login-activity">Click to review</a>`,
     created_at: "2021-02-18T01:07:02.000Z",
     id: "1637334061766836224"
   },

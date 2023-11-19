@@ -1,4 +1,10 @@
-use markdown::{to_html_with_options, CompileOptions, Constructs, Options, ParseOptions};
+use markdown::{
+    to_html_with_options,
+    CompileOptions,
+    Constructs,
+    Options,
+    ParseOptions,
+};
 
 /// Source of the markdown string. Controls how the markdown is parsed and rendered into
 /// the HTML string and which features are enabled for the specific source.

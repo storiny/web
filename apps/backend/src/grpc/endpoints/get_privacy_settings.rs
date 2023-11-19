@@ -1,9 +1,16 @@
-use crate::grpc::defs::privacy_settings_def::v1::{
-    GetPrivacySettingsRequest, GetPrivacySettingsResponse,
+use crate::grpc::{
+    defs::privacy_settings_def::v1::{
+        GetPrivacySettingsRequest,
+        GetPrivacySettingsResponse,
+    },
+    service::GrpcService,
 };
-use crate::grpc::service::GrpcService;
 use sqlx::Row;
-use tonic::{Request, Response, Status};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 
 /// Returns the privacy settings for a user.
 pub async fn get_privacy_settings(
@@ -53,11 +60,15 @@ pub async fn get_privacy_settings(
 
 #[cfg(test)]
 mod tests {
-    use crate::grpc::defs::privacy_settings_def::v1::{
-        GetPrivacySettingsRequest, GetPrivacySettingsResponse, IncomingFriendRequest,
-        RelationVisibility,
+    use crate::{
+        grpc::defs::privacy_settings_def::v1::{
+            GetPrivacySettingsRequest,
+            GetPrivacySettingsResponse,
+            IncomingFriendRequest,
+            RelationVisibility,
+        },
+        test_utils::test_grpc_service,
     };
-    use crate::test_utils::test_grpc_service;
     use sqlx::PgPool;
     use tonic::Request;
 

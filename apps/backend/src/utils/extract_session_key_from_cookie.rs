@@ -1,4 +1,11 @@
-use actix_web::cookie::{Cookie, CookieJar, Key};
+use cookie::{
+    CookieJar,
+    Key,
+};
+use urlencoding::decode;
+
+/// Cookie value digest length.
+const BASE64_DIGEST_LEN: usize = 44;
 
 /// Examines the session cookie and tries to extract the session key.
 ///
@@ -9,14 +16,22 @@ use actix_web::cookie::{Cookie, CookieJar, Key};
 pub fn extract_session_key_from_cookie(cookie_value: &str, key: &Key) -> Option<String> {
     let mut jar = CookieJar::new();
     jar.signed_mut(key)
-        .add(Cookie::new("x", cookie_value.to_owned()));
+        .add_original(("x", cookie_value.to_owned()));
     let result = jar.signed(key).get("x");
-    result?.value().to_owned().try_into().ok()
+    let value_str = result?.value().to_string();
+    let cookie_value = decode(&value_str).ok()?;
+
+    if cookie_value.chars().count() <= BASE64_DIGEST_LEN {
+        return None;
+    }
+
+    Some(cookie_value.split_at(BASE64_DIGEST_LEN).1.to_owned())
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use cookie::Cookie;
     use uuid::Uuid;
 
     #[test]

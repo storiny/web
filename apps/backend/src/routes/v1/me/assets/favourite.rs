@@ -1,9 +1,17 @@
 use crate::{
-    error::{AppError, ToastErrorResponse},
+    error::{
+        AppError,
+        ToastErrorResponse,
+    },
     middleware::identity::identity::Identity,
     AppState,
 };
-use actix_web::{delete, post, web, HttpResponse};
+use actix_web::{
+    delete,
+    post,
+    web,
+    HttpResponse,
+};
 use serde::Deserialize;
 use validator::Validate;
 
@@ -90,9 +98,18 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_toast_error_response, init_app_for_test};
-    use actix_web::{services, test};
-    use sqlx::{PgPool, Row};
+    use crate::test_utils::{
+        assert_toast_error_response,
+        init_app_for_test,
+    };
+    use actix_web::{
+        services,
+        test,
+    };
+    use sqlx::{
+        PgPool,
+        Row,
+    };
     use time::OffsetDateTime;
     use uuid::Uuid;
 
@@ -120,9 +137,11 @@ mod tests {
 
         assert!(result.try_get::<i64, _>("id").is_ok());
         // `favourited_at` should be NULL initially
-        assert!(result
-            .get::<Option<OffsetDateTime>, _>("favourited_at")
-            .is_none());
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("favourited_at")
+                .is_none()
+        );
 
         let asset_id = result.get::<i64, _>("id");
 
@@ -146,9 +165,11 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(asset
-            .get::<Option<OffsetDateTime>, _>("favourited_at")
-            .is_some());
+        assert!(
+            asset
+                .get::<Option<OffsetDateTime>, _>("favourited_at")
+                .is_some()
+        );
 
         // Remove the asset from favourites
         let req = test::TestRequest::delete()
@@ -170,9 +191,11 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(asset
-            .get::<Option<OffsetDateTime>, _>("favourited_at")
-            .is_none());
+        assert!(
+            asset
+                .get::<Option<OffsetDateTime>, _>("favourited_at")
+                .is_none()
+        );
 
         Ok(())
     }
@@ -230,9 +253,11 @@ mod tests {
 
         assert!(result.try_get::<i64, _>("id").is_ok());
         // `favourited_at` should be NULL initially
-        assert!(result
-            .get::<Option<OffsetDateTime>, _>("favourited_at")
-            .is_none());
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("favourited_at")
+                .is_none()
+        );
 
         let asset_id = result.get::<i64, _>("id");
 

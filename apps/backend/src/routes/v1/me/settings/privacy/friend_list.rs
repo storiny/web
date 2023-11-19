@@ -1,10 +1,21 @@
-use crate::grpc::defs::privacy_settings_def::v1::RelationVisibility;
-use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
-use actix_web::{patch, web, HttpResponse};
+use crate::{
+    error::AppError,
+    grpc::defs::privacy_settings_def::v1::RelationVisibility,
+    middleware::identity::identity::Identity,
+    AppState,
+};
+use actix_web::{
+    patch,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::Json;
 use lazy_static::lazy_static;
 use regex::Regex;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use validator::Validate;
 
 lazy_static! {
@@ -61,7 +72,10 @@ mod tests {
     use super::*;
     use crate::test_utils::init_app_for_test;
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test]
     async fn can_set_friend_list_visibility(pool: PgPool) -> sqlx::Result<()> {

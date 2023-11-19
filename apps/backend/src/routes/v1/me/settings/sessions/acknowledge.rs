@@ -1,8 +1,16 @@
-use crate::constants::redis_namespaces::RedisNamespace;
-use crate::error::ToastErrorResponse;
-use crate::utils::get_user_sessions::UserSession;
-use crate::{middleware::identity::identity::Identity, AppState};
-use actix_web::{post, web, HttpResponse, Responder};
+use crate::{
+    constants::redis_namespaces::RedisNamespace,
+    error::ToastErrorResponse,
+    middleware::identity::identity::Identity,
+    utils::get_user_sessions::UserSession,
+    AppState,
+};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+    Responder,
+};
 use actix_web_validator::Json;
 use redis::AsyncCommands;
 use serde::Deserialize;

@@ -1,4 +1,11 @@
-use oauth2::{basic::BasicClient, AuthUrl, ClientId, ClientSecret, RedirectUrl, TokenUrl};
+use oauth2::{
+    basic::BasicClient,
+    AuthUrl,
+    ClientId,
+    ClientSecret,
+    RedirectUrl,
+    TokenUrl,
+};
 
 /// Builds and returns Discord oauth client.
 ///

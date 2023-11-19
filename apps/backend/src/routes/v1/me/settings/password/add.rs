@@ -1,17 +1,34 @@
-use crate::grpc::defs::token_def::v1::TokenType;
 use crate::{
     constants::account_activity_type::AccountActivityType,
-    error::{AppError, ToastErrorResponse},
+    error::{
+        AppError,
+        ToastErrorResponse,
+    },
+    grpc::defs::token_def::v1::TokenType,
     middleware::identity::identity::Identity,
     AppState,
 };
 use actix_extended_session::Session;
-use actix_web::{post, web, HttpResponse};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::Json;
-use argon2::password_hash::rand_core::OsRng;
-use argon2::password_hash::SaltString;
-use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
-use serde::{Deserialize, Serialize};
+use argon2::{
+    password_hash::{
+        rand_core::OsRng,
+        SaltString,
+    },
+    Argon2,
+    PasswordHash,
+    PasswordHasher,
+    PasswordVerifier,
+};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use sqlx::Row;
 use time::OffsetDateTime;
 use validator::Validate;
@@ -167,14 +184,23 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_toast_error_response, init_app_for_test};
+    use crate::test_utils::{
+        assert_toast_error_response,
+        init_app_for_test,
+    };
     use actix_web::test;
     use argon2::{
-        password_hash::{rand_core::OsRng, SaltString},
+        password_hash::{
+            rand_core::OsRng,
+            SaltString,
+        },
         PasswordHasher,
     };
     use nanoid::nanoid;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
     use time::Duration;
 
     #[sqlx::test]
@@ -224,12 +250,14 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(Argon2::default()
-            .verify_password(
-                "new_password".as_bytes(),
-                &PasswordHash::new(&user.get::<String, _>("password")).unwrap(),
-            )
-            .is_ok());
+        assert!(
+            Argon2::default()
+                .verify_password(
+                    "new_password".as_bytes(),
+                    &PasswordHash::new(&user.get::<String, _>("password")).unwrap(),
+                )
+                .is_ok()
+        );
 
         // Token should get removed from the database
         let token = sqlx::query(

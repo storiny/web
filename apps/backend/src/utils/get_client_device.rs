@@ -1,5 +1,8 @@
 use crate::grpc::defs::login_activity_def::v1::DeviceType;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use std::borrow::Cow;
 use user_agent_parser::UserAgentParser;
 

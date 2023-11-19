@@ -1,14 +1,32 @@
 use crate::{
-    error::{AppError, FormErrorResponse, ToastErrorResponse},
+    error::{
+        AppError,
+        FormErrorResponse,
+        ToastErrorResponse,
+    },
     middleware::identity::identity::Identity,
     AppState,
 };
-use actix_web::{post, web, HttpResponse};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::Json;
-use argon2::{Argon2, PasswordHash, PasswordVerifier};
+use argon2::{
+    Argon2,
+    PasswordHash,
+    PasswordVerifier,
+};
 use email_address::EmailAddress;
-use serde::{Deserialize, Serialize};
-use sqlx::{Error, Row};
+use serde::{
+    Deserialize,
+    Serialize,
+};
+use sqlx::{
+    Error,
+    Row,
+};
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
@@ -94,10 +112,17 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_toast_error_response, init_app_for_test, res_to_string};
+    use crate::test_utils::{
+        assert_toast_error_response,
+        init_app_for_test,
+        res_to_string,
+    };
     use actix_web::test;
     use argon2::{
-        password_hash::{rand_core::OsRng, SaltString},
+        password_hash::{
+            rand_core::OsRng,
+            SaltString,
+        },
         PasswordHasher,
     };
     use sqlx::PgPool;

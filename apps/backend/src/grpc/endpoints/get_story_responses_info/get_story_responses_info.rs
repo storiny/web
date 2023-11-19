@@ -1,9 +1,16 @@
-use crate::grpc::defs::response_def::v1::{
-    GetStoryResponsesInfoRequest, GetStoryResponsesInfoResponse,
+use crate::grpc::{
+    defs::response_def::v1::{
+        GetStoryResponsesInfoRequest,
+        GetStoryResponsesInfoResponse,
+    },
+    service::GrpcService,
 };
-use crate::grpc::service::GrpcService;
 use sqlx::Row;
-use tonic::{Request, Response, Status};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 
 /// Returns the `total_count` and `hidden_count` comments for a story.
 pub async fn get_story_responses_info(
@@ -58,8 +65,10 @@ pub async fn get_story_responses_info(
 
 #[cfg(test)]
 mod tests {
-    use crate::grpc::defs::response_def::v1::GetStoryResponsesInfoRequest;
-    use crate::test_utils::test_grpc_service;
+    use crate::{
+        grpc::defs::response_def::v1::GetStoryResponsesInfoRequest,
+        test_utils::test_grpc_service,
+    };
     use sqlx::PgPool;
     use tonic::Request;
 

@@ -1,5 +1,13 @@
-use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
-use actix_web::{delete, web, HttpResponse};
+use crate::{
+    error::AppError,
+    middleware::identity::identity::Identity,
+    AppState,
+};
+use actix_web::{
+    delete,
+    web,
+    HttpResponse,
+};
 use serde::Deserialize;
 use validator::Validate;
 
@@ -46,9 +54,15 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_response_body_text, init_app_for_test};
+    use crate::test_utils::{
+        assert_response_body_text,
+        init_app_for_test,
+    };
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test(fixtures("following"))]
     async fn can_unfollow_a_user(pool: PgPool) -> sqlx::Result<()> {

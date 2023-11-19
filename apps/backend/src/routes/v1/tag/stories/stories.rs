@@ -1,12 +1,25 @@
 use crate::{
-    error::AppError, middleware::identity::identity::Identity, models::tag::TAG_REGEX, AppState,
+    error::AppError,
+    middleware::identity::identity::Identity,
+    models::tag::TAG_REGEX,
+    AppState,
 };
-use actix_web::{get, web, HttpResponse};
+use actix_web::{
+    get,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::QsQuery;
 use lazy_static::lazy_static;
 use regex::Regex;
-use serde::{Deserialize, Serialize};
-use sqlx::{types::Json, FromRow};
+use serde::{
+    Deserialize,
+    Serialize,
+};
+use sqlx::{
+    types::Json,
+    FromRow,
+};
 use time::OffsetDateTime;
 use uuid::Uuid;
 use validator::Validate;
@@ -231,7 +244,11 @@ impl ::sqlx::Type<::sqlx::Postgres> for User {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_response_body_text, init_app_for_test, res_to_string};
+    use crate::test_utils::{
+        assert_response_body_text,
+        init_app_for_test,
+        res_to_string,
+    };
     use actix_web::test;
     use sqlx::PgPool;
     use urlencoding::encode;

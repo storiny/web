@@ -1,4 +1,8 @@
-use totp_rs::{Algorithm, TotpUrlError, TOTP};
+use totp_rs::{
+    Algorithm,
+    TotpUrlError,
+    TOTP,
+};
 
 /// Generates a new TOTP instance using the provided secret and username.
 ///

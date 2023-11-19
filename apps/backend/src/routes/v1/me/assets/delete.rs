@@ -1,11 +1,21 @@
 use crate::{
     constants::buckets::S3_UPLOADS_BUCKET,
-    error::{AppError, ToastErrorResponse},
+    error::{
+        AppError,
+        ToastErrorResponse,
+    },
     middleware::identity::identity::Identity,
     AppState,
 };
-use actix_web::{delete, web, HttpResponse};
-use rusoto_s3::{DeleteObjectRequest, S3};
+use actix_web::{
+    delete,
+    web,
+    HttpResponse,
+};
+use rusoto_s3::{
+    DeleteObjectRequest,
+    S3,
+};
 use serde::Deserialize;
 use sqlx::Row;
 use uuid::Uuid;
@@ -86,7 +96,10 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_toast_error_response, init_app_for_test};
+    use crate::test_utils::{
+        assert_toast_error_response,
+        init_app_for_test,
+    };
     use actix_web::test;
     use sqlx::PgPool;
 

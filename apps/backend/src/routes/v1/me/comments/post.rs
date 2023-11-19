@@ -1,12 +1,27 @@
-use crate::error::ToastErrorResponse;
-use crate::utils::md_to_html::{md_to_html, MarkdownSource};
 use crate::{
-    constants::sql_states::SqlState, error::AppError, middleware::identity::identity::Identity,
+    constants::sql_states::SqlState,
+    error::{
+        AppError,
+        ToastErrorResponse,
+    },
+    middleware::identity::identity::Identity,
+    models::notification::NotificationEntityType,
+    utils::md_to_html::{
+        md_to_html,
+        MarkdownSource,
+    },
     AppState,
 };
-use actix_web::{post, web, HttpResponse};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::Json;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
@@ -36,14 +51,40 @@ async fn post(
 
                     match sqlx::query(
                         r#"
-                        INSERT INTO comments(content, rendered_content, user_id, story_id)
-                        VALUES ($1, $2, $3, $4)
+                        WITH
+                            inserted_comment AS (
+                                INSERT INTO comments (content, rendered_content, user_id, story_id)
+                                    VALUES ($1, $2, $3, $4)
+                                    RETURNING id
+                            ),
+                            comment_story AS (
+                                SELECT user_id FROM stories
+                                WHERE id = $4
+                            ),
+                            inserted_notification AS (
+                                INSERT INTO notifications (entity_type, entity_id, notifier_id)
+                                    VALUES
+                                        ($5,
+                                         (SELECT id FROM inserted_comment),
+                                         $3)
+                                    RETURNING id
+                            )
+                        INSERT
+                        INTO
+                            notification_outs (notified_id, notification_id)
+                        SELECT
+                            (SELECT user_id FROM comment_story),
+                            (SELECT id FROM inserted_notification)
+                        WHERE EXISTS (
+                            SELECT 1 FROM comment_story
+                        )
                         "#,
                     )
                     .bind(content)
                     .bind(rendered_content)
                     .bind(user_id)
                     .bind(story_id)
+                    .bind(NotificationEntityType::CommentAdd as i16)
                     .execute(&data.db_pool)
                     .await
                     {
@@ -65,7 +106,8 @@ async fn post(
                                                     "Story is either deleted or unpublished",
                                                 ),
                                             ))
-                                        // Check if the comment writer is blocked by the story writer
+                                        // Check if the comment writer is blocked by the story
+                                        // writer
                                         } else if err_code
                                             == SqlState::CommentWriterBlockedByStoryWriter
                                                 .to_string()
@@ -100,9 +142,15 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_toast_error_response, init_app_for_test};
+    use crate::test_utils::{
+        assert_toast_error_response,
+        init_app_for_test,
+    };
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test(fixtures("comment"))]
     async fn can_add_a_comment(pool: PgPool) -> sqlx::Result<()> {
@@ -124,7 +172,7 @@ mod tests {
         // Comment should be present in the database, with rendered markdown
         let result = sqlx::query(
             r#"
-            SELECT rendered_content FROM comments
+            SELECT id, rendered_content FROM comments
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
@@ -137,6 +185,29 @@ mod tests {
             result.get::<String, _>("rendered_content"),
             md_to_html(MarkdownSource::Response("Sample **comment** content!"))
         );
+
+        // Should also insert a notification
+        let notification_result = sqlx::query(
+            r#"
+            SELECT
+                EXISTS (
+                    SELECT
+                        1
+                    FROM
+                        notification_outs
+                    WHERE
+                        notification_id = (
+                            SELECT id FROM notifications
+                            WHERE entity_id = $1
+                        )
+                   )
+            "#,
+        )
+        .bind(result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(notification_result.get::<bool, _>("exists"));
 
         Ok(())
     }

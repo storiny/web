@@ -1,9 +1,16 @@
 use crate::grpc::{
-    defs::story_def::v1::{GetStoriesInfoRequest, GetStoriesInfoResponse},
+    defs::story_def::v1::{
+        GetStoriesInfoRequest,
+        GetStoriesInfoResponse,
+    },
     service::GrpcService,
 };
 use sqlx::Row;
-use tonic::{Request, Response, Status};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 
 /// Returns the `published_story_count` and `deleted_story_count` for a user.
 pub async fn get_stories_info(
@@ -52,7 +59,10 @@ pub async fn get_stories_info(
 
 #[cfg(test)]
 mod tests {
-    use crate::{grpc::defs::story_def::v1::GetStoriesInfoRequest, test_utils::test_grpc_service};
+    use crate::{
+        grpc::defs::story_def::v1::GetStoriesInfoRequest,
+        test_utils::test_grpc_service,
+    };
     use sqlx::PgPool;
     use tonic::Request;
 

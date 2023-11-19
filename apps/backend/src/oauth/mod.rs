@@ -1,4 +1,7 @@
-use crate::{config::Config, OAuthClientMap};
+use crate::{
+    config::Config,
+    OAuthClientMap,
+};
 
 mod discord;
 mod dribbble;

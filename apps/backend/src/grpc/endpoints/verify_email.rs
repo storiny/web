@@ -1,7 +1,17 @@
-use crate::grpc::defs::token_def::v1::{TokenType, VerifyEmailRequest, VerifyEmailResponse};
-use crate::grpc::service::GrpcService;
+use crate::grpc::{
+    defs::token_def::v1::{
+        TokenType,
+        VerifyEmailRequest,
+        VerifyEmailResponse,
+    },
+    service::GrpcService,
+};
 use sqlx::Row;
-use tonic::{Request, Response, Status};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 
 /// Verifies an email for a user.
 pub async fn verify_email(
@@ -69,11 +79,25 @@ pub async fn verify_email(
 
 #[cfg(test)]
 mod tests {
-    use crate::grpc::defs::token_def::v1::{TokenType, VerifyEmailRequest};
-    use crate::test_utils::test_grpc_service;
-    use sqlx::{PgPool, Row};
-    use time::{Duration, OffsetDateTime};
-    use tonic::{Code, Request};
+    use crate::{
+        grpc::defs::token_def::v1::{
+            TokenType,
+            VerifyEmailRequest,
+        },
+        test_utils::test_grpc_service,
+    };
+    use sqlx::{
+        PgPool,
+        Row,
+    };
+    use time::{
+        Duration,
+        OffsetDateTime,
+    };
+    use tonic::{
+        Code,
+        Request,
+    };
 
     #[sqlx::test]
     async fn can_verify_email(pool: PgPool) {

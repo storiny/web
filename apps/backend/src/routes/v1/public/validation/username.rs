@@ -1,10 +1,19 @@
 use crate::{
-    constants::reserved_usernames::RESERVED_USERNAMES, error::AppError,
-    models::user::USERNAME_REGEX, AppState,
+    constants::reserved_usernames::RESERVED_USERNAMES,
+    error::AppError,
+    models::user::USERNAME_REGEX,
+    AppState,
 };
-use actix_web::{post, web, HttpResponse};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::Json;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use slugify::slugify;
 use sqlx::Row;
 use validator::Validate;
@@ -52,7 +61,10 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_response_body_text, init_app_for_test};
+    use crate::test_utils::{
+        assert_response_body_text,
+        init_app_for_test,
+    };
     use actix_web::test;
     use sqlx::PgPool;
 

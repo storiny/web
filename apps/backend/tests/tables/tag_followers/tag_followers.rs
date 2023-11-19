@@ -1,6 +1,9 @@
 #[cfg(test)]
 mod tests {
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test(fixtures("user", "tag"))]
     async fn can_insert_a_tag_follower(pool: PgPool) -> sqlx::Result<()> {

@@ -1,7 +1,14 @@
-use crate::middleware::identity::identity::Identity;
-use crate::utils::get_user_sessions::get_user_sessions;
-use crate::AppState;
-use actix_web::{post, web, HttpResponse, Responder};
+use crate::{
+    middleware::identity::identity::Identity,
+    utils::get_user_sessions::get_user_sessions,
+    AppState,
+};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+    Responder,
+};
 
 // TODO: Write tests
 

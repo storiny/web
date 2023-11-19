@@ -1,9 +1,24 @@
-use crate::models::story::STORY_CATEGORY_VEC;
-use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
-use actix_web::{get, web, HttpResponse};
+use crate::{
+    error::AppError,
+    middleware::identity::identity::Identity,
+    models::story::STORY_CATEGORY_VEC,
+    AppState,
+};
+use actix_web::{
+    get,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::QsQuery;
-use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, Postgres, QueryBuilder};
+use serde::{
+    Deserialize,
+    Serialize,
+};
+use sqlx::{
+    FromRow,
+    Postgres,
+    QueryBuilder,
+};
 use time::OffsetDateTime;
 use validator::Validate;
 
@@ -214,7 +229,11 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_response_body_text, init_app_for_test, res_to_string};
+    use crate::test_utils::{
+        assert_response_body_text,
+        init_app_for_test,
+        res_to_string,
+    };
     use actix_web::test;
     use sqlx::PgPool;
     use urlencoding::encode;

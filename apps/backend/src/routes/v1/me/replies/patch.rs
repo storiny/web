@@ -1,9 +1,25 @@
-use crate::error::ToastErrorResponse;
-use crate::utils::md_to_html::{md_to_html, MarkdownSource};
-use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
-use actix_web::{patch, web, HttpResponse};
+use crate::{
+    error::{
+        AppError,
+        ToastErrorResponse,
+    },
+    middleware::identity::identity::Identity,
+    utils::md_to_html::{
+        md_to_html,
+        MarkdownSource,
+    },
+    AppState,
+};
+use actix_web::{
+    patch,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::Json;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
@@ -69,9 +85,15 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_toast_error_response, init_app_for_test};
+    use crate::test_utils::{
+        assert_toast_error_response,
+        init_app_for_test,
+    };
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
     use time::OffsetDateTime;
 
     #[sqlx::test(fixtures("reply"))]
@@ -119,9 +141,11 @@ mod tests {
             result.get::<String, _>("rendered_content"),
             md_to_html(MarkdownSource::Response("Sample **reply** content!"))
         );
-        assert!(result
-            .get::<Option<OffsetDateTime>, _>("edited_at")
-            .is_some());
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("edited_at")
+                .is_some()
+        );
 
         Ok(())
     }

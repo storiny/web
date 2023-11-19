@@ -1,7 +1,16 @@
-use crate::grpc::defs::user_def::v1::{GetUserRelationsInfoRequest, GetUserRelationsInfoResponse};
-use crate::grpc::service::GrpcService;
+use crate::grpc::{
+    defs::user_def::v1::{
+        GetUserRelationsInfoRequest,
+        GetUserRelationsInfoResponse,
+    },
+    service::GrpcService,
+};
 use sqlx::Row;
-use tonic::{Request, Response, Status};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 
 /// Returns the relations details for a user.
 pub async fn get_user_relations_info(
@@ -72,8 +81,10 @@ pub async fn get_user_relations_info(
 
 #[cfg(test)]
 mod tests {
-    use crate::grpc::defs::user_def::v1::GetUserRelationsInfoRequest;
-    use crate::test_utils::test_grpc_service;
+    use crate::{
+        grpc::defs::user_def::v1::GetUserRelationsInfoRequest,
+        test_utils::test_grpc_service,
+    };
     use sqlx::PgPool;
     use tonic::Request;
 

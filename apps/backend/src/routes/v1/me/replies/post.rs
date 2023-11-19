@@ -1,12 +1,27 @@
-use crate::error::ToastErrorResponse;
-use crate::utils::md_to_html::{md_to_html, MarkdownSource};
 use crate::{
-    constants::sql_states::SqlState, error::AppError, middleware::identity::identity::Identity,
+    constants::sql_states::SqlState,
+    error::{
+        AppError,
+        ToastErrorResponse,
+    },
+    middleware::identity::identity::Identity,
+    models::notification::NotificationEntityType,
+    utils::md_to_html::{
+        md_to_html,
+        MarkdownSource,
+    },
     AppState,
 };
-use actix_web::{post, web, HttpResponse};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::Json;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
@@ -35,15 +50,41 @@ async fn post(
                     };
 
                     match sqlx::query(
-                        r#"
-                        INSERT INTO replies(content, rendered_content, user_id, comment_id)
-                        VALUES ($1, $2, $3, $4)
+                        r#"          
+                        WITH
+                            inserted_reply AS (
+                                INSERT INTO replies (content, rendered_content, user_id, comment_id)
+                                    VALUES ($1, $2, $3, $4)
+                                    RETURNING id, user_id
+                            ),
+                            reply_comment AS (
+                                SELECT user_id FROM comments
+                                WHERE id = $4
+                            ),
+                            inserted_notification AS (
+                                INSERT INTO notifications (entity_type, entity_id, notifier_id)
+                                    VALUES
+                                        ($5,
+                                         (SELECT id FROM inserted_reply),
+                                         (SELECT user_id FROM inserted_reply))
+                                    RETURNING id
+                            )
+                        INSERT
+                        INTO
+                            notification_outs (notified_id, notification_id)
+                        SELECT
+                            (SELECT user_id FROM reply_comment),
+                            (SELECT id FROM inserted_notification)
+                        WHERE EXISTS (
+                            SELECT 1 FROM reply_comment
+                        )
                         "#,
                     )
                     .bind(content)
                     .bind(rendered_content)
                     .bind(user_id)
                     .bind(comment_id)
+                    .bind(NotificationEntityType::ReplyAdd as i16)
                     .execute(&data.db_pool)
                     .await
                     {
@@ -64,7 +105,8 @@ async fn post(
                                             Ok(HttpResponse::BadRequest().json(
                                                 ToastErrorResponse::new("Comment is deleted"),
                                             ))
-                                        // Check if the reply writer is blocked by the comment writer
+                                        // Check if the reply writer is blocked by the comment
+                                        // writer
                                         } else if err_code
                                             == SqlState::ReplyWriterBlockedByCommentWriter
                                                 .to_string()
@@ -99,9 +141,15 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_toast_error_response, init_app_for_test};
+    use crate::test_utils::{
+        assert_toast_error_response,
+        init_app_for_test,
+    };
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test(fixtures("reply"))]
     async fn can_add_a_reply(pool: PgPool) -> sqlx::Result<()> {
@@ -123,7 +171,7 @@ mod tests {
         // Reply should be present in the database, with rendered markdown
         let result = sqlx::query(
             r#"
-            SELECT rendered_content FROM replies
+            SELECT id, rendered_content FROM replies
             WHERE user_id = $1 AND comment_id = $2
             "#,
         )
@@ -136,6 +184,29 @@ mod tests {
             result.get::<String, _>("rendered_content"),
             md_to_html(MarkdownSource::Response("Sample **reply** content!"))
         );
+
+        // Should also insert a notification
+        let notification_result = sqlx::query(
+            r#"
+            SELECT
+                EXISTS (
+                    SELECT
+                        1
+                    FROM
+                        notification_outs
+                    WHERE
+                        notification_id = (
+                            SELECT id FROM notifications
+                            WHERE entity_id = $1
+                        )
+                   )
+            "#,
+        )
+        .bind(result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(notification_result.get::<bool, _>("exists"));
 
         Ok(())
     }

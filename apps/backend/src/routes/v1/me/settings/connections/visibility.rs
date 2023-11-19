@@ -1,9 +1,21 @@
 use crate::{
-    error::AppError, error::ToastErrorResponse, middleware::identity::identity::Identity, AppState,
+    error::{
+        AppError,
+        ToastErrorResponse,
+    },
+    middleware::identity::identity::Identity,
+    AppState,
 };
-use actix_web::{patch, web, HttpResponse};
+use actix_web::{
+    patch,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::Json;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use validator::Validate;
 
 #[derive(Deserialize, Validate)]
@@ -58,9 +70,15 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_toast_error_response, init_app_for_test};
+    use crate::test_utils::{
+        assert_toast_error_response,
+        init_app_for_test,
+    };
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test]
     async fn can_update_connection_visibility(pool: PgPool) -> sqlx::Result<()> {

@@ -1,8 +1,19 @@
-use crate::utils::decode_uri_encoded_story_categories::decode_uri_encoded_story_categories;
-use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
-use actix_web::{get, web, HttpResponse};
+use crate::{
+    error::AppError,
+    middleware::identity::identity::Identity,
+    utils::decode_uri_encoded_story_categories::decode_uri_encoded_story_categories,
+    AppState,
+};
+use actix_web::{
+    get,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::QsQuery;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use sqlx::FromRow;
 use validator::Validate;
 
@@ -54,8 +65,13 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::models::story::StoryCategory;
-    use crate::test_utils::{init_app_for_test, res_to_string};
+    use crate::{
+        models::story::StoryCategory,
+        test_utils::{
+            init_app_for_test,
+            res_to_string,
+        },
+    };
     use actix_web::test;
     use sqlx::PgPool;
 

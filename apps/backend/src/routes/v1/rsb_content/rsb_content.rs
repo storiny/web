@@ -1,11 +1,31 @@
 use super::{
-    stories::{get_rsb_content_stories, Story},
-    tags::{get_rsb_content_tags, Tag},
-    users::{get_rsb_content_users, User},
+    stories::{
+        get_rsb_content_stories,
+        Story,
+    },
+    tags::{
+        get_rsb_content_tags,
+        Tag,
+    },
+    users::{
+        get_rsb_content_users,
+        User,
+    },
 };
-use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
-use actix_web::{get, web, HttpResponse};
-use serde::{Deserialize, Serialize};
+use crate::{
+    error::AppError,
+    middleware::identity::identity::Identity,
+    AppState,
+};
+use actix_web::{
+    get,
+    web,
+    HttpResponse,
+};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Response {
@@ -50,7 +70,10 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{init_app_for_test, res_to_string};
+    use crate::test_utils::{
+        init_app_for_test,
+        res_to_string,
+    };
     use actix_web::test;
     use sqlx::PgPool;
 

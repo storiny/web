@@ -1,6 +1,9 @@
 #[cfg(test)]
 mod tests {
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test]
     async fn can_insert_a_valid_report(pool: PgPool) -> sqlx::Result<()> {

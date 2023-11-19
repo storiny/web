@@ -1,18 +1,41 @@
-use crate::grpc::defs::token_def::v1::TokenType;
 use crate::{
-    constants::{email_source::EMAIL_SOURCE, email_templates::EmailTemplate},
-    error::AppError,
-    error::ToastErrorResponse,
+    constants::{
+        email_source::EMAIL_SOURCE,
+        email_templates::EmailTemplate,
+    },
+    error::{
+        AppError,
+        ToastErrorResponse,
+    },
+    grpc::defs::token_def::v1::TokenType,
     middleware::identity::identity::Identity,
     AppState,
 };
-use actix_web::{post, web, HttpResponse};
-use argon2::{password_hash::rand_core::OsRng, password_hash::SaltString, Argon2, PasswordHasher};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
+use argon2::{
+    password_hash::{
+        rand_core::OsRng,
+        SaltString,
+    },
+    Argon2,
+    PasswordHasher,
+};
 use nanoid::nanoid;
-use rusoto_ses::{Destination, SendTemplatedEmailRequest, Ses};
+use rusoto_ses::{
+    Destination,
+    SendTemplatedEmailRequest,
+    Ses,
+};
 use serde::Serialize;
 use sqlx::Row;
-use time::{Duration, OffsetDateTime};
+use time::{
+    Duration,
+    OffsetDateTime,
+};
 
 #[derive(Debug, Serialize)]
 struct PasswordAddVerificationEmailTemplateData {
@@ -93,9 +116,9 @@ async fn post(data: web::Data<AppState>, user: Identity) -> Result<HttpResponse,
                             let _ = ses
                                 .send_templated_email(SendTemplatedEmailRequest {
                                     destination: Destination {
-                                        to_addresses: Some(vec![(&db_user
-                                            .get::<String, _>("email"))
-                                            .to_string()]),
+                                        to_addresses: Some(vec![
+                                            (&db_user.get::<String, _>("email")).to_string(),
+                                        ]),
                                         ..Default::default()
                                     },
                                     source: EMAIL_SOURCE.to_string(),
@@ -124,9 +147,15 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_toast_error_response, init_app_for_test};
+    use crate::test_utils::{
+        assert_toast_error_response,
+        init_app_for_test,
+    };
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test]
     async fn can_request_password_setup_verification(pool: PgPool) -> sqlx::Result<()> {

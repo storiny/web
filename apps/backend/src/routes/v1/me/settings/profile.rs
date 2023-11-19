@@ -1,12 +1,22 @@
 use crate::{
     error::AppError,
     middleware::identity::identity::Identity,
-    utils::md_to_html::{md_to_html, MarkdownSource},
+    utils::md_to_html::{
+        md_to_html,
+        MarkdownSource,
+    },
     AppState,
 };
-use actix_web::{patch, web, HttpResponse};
+use actix_web::{
+    patch,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::Json;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
@@ -71,7 +81,10 @@ mod tests {
     use super::*;
     use crate::test_utils::init_app_for_test;
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test]
     async fn can_update_profile(pool: PgPool) -> sqlx::Result<()> {

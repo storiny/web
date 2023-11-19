@@ -1,10 +1,20 @@
-use crate::utils::generate_totp::generate_totp;
 use crate::{
-    error::{AppError, FormErrorResponse, ToastErrorResponse},
+    error::{
+        AppError,
+        FormErrorResponse,
+        ToastErrorResponse,
+    },
     middleware::identity::identity::Identity,
-    models::user::UserFlag,
+    models::{
+        notification::NotificationEntityType,
+        user::UserFlag,
+    },
     utils::{
-        flag::{Flag, Mask},
+        flag::{
+            Flag,
+            Mask,
+        },
+        generate_totp::generate_totp,
         get_client_device::get_client_device,
         get_client_location::get_client_location,
     },
@@ -12,12 +22,30 @@ use crate::{
 };
 use actix_extended_session::Session;
 use actix_http::HttpMessage;
-use actix_web::{post, web, HttpRequest, HttpResponse};
-use actix_web_validator::{Json, QsQuery};
-use argon2::{Argon2, PasswordHash, PasswordVerifier};
+use actix_web::{
+    post,
+    web,
+    HttpRequest,
+    HttpResponse,
+};
+use actix_web_validator::{
+    Json,
+    QsQuery,
+};
+use argon2::{
+    Argon2,
+    PasswordHash,
+    PasswordVerifier,
+};
 use email_address::EmailAddress;
-use serde::{Deserialize, Serialize};
-use sqlx::{Error, Row};
+use serde::{
+    Deserialize,
+    Serialize,
+};
+use sqlx::{
+    Error,
+    Row,
+};
 use std::net::IpAddr;
 use time::OffsetDateTime;
 use totp_rs::Secret;
@@ -45,7 +73,8 @@ struct QueryParams {
     bypass: Option<String>,
 }
 
-// TODO: Get all the current sessions for the user before final login, and purge previous sessions if > 10
+// TODO: Get all the current sessions for the user before final login, and purge previous sessions
+// if > 10
 
 #[post("/v1/auth/login")]
 async fn post(
@@ -182,12 +211,9 @@ async fn post(
                         }
                     }
                     _ => {
-                        return Ok(
-                            HttpResponse::BadRequest().json(FormErrorResponse::new(vec![(
-                                "code",
-                                "Invalid verification code",
-                            )])),
-                        )
+                        return Ok(HttpResponse::BadRequest().json(FormErrorResponse::new(vec![
+                            ("code", "Invalid verification code"),
+                        ])));
                     }
                 };
             }
@@ -271,9 +297,6 @@ async fn post(
                                 }
                             }
 
-                            // Commit the transaction
-                            txn.commit().await?;
-
                             // Check if the email is verified
                             {
                                 let email_verified = user.get::<bool, _>("email_verified");
@@ -285,32 +308,79 @@ async fn post(
                                 }
                             }
 
+                            let mut client_device_value = "Unknown device".to_string();
+                            let mut client_location_value: Option<String> = None;
+
                             // Insert additional data to the session
                             {
                                 if let Some(ip) = req.connection_info().realip_remote_addr() {
                                     if let Ok(parsed_ip) = ip.parse::<IpAddr>() {
-                                        if let Ok(client_location) = serde_json::to_value(
-                                            get_client_location(parsed_ip, &data.geo_db),
-                                        ) {
-                                            let _ = session.insert("location", client_location);
+                                        let client_location_result =
+                                            get_client_location(parsed_ip, &data.geo_db);
+                                        client_location_value =
+                                            Some(client_location_result.display_name.to_string());
+
+                                        if let Ok(client_location) =
+                                            serde_json::to_value(client_location_result)
+                                        {
+                                            session.insert("location", client_location);
                                         }
                                     }
                                 }
 
                                 if let Some(ua_header) = (&req.headers()).get("user-agent") {
                                     if let Ok(ua) = ua_header.to_str() {
-                                        if let Ok(client_device) = serde_json::to_value(
-                                            get_client_device(ua, &data.ua_parser),
-                                        ) {
-                                            let _ = session.insert("device", client_device);
+                                        let client_device_result =
+                                            get_client_device(ua, &data.ua_parser);
+                                        client_device_value =
+                                            client_device_result.display_name.to_string();
+
+                                        if let Ok(client_device) =
+                                            serde_json::to_value(client_device_result)
+                                        {
+                                            session.insert("device", client_device);
                                         }
                                     }
                                 }
                             }
 
+                            // Insert a login notification
+                            sqlx::query(
+                                r#"
+                                WITH inserted_notification AS (
+                                    INSERT INTO notifications (entity_type)
+                                    VALUES ($1)
+                                    RETURNING id
+                                )
+                                INSERT
+                                INTO
+                                    notification_outs (
+                                        notified_id,
+                                        notification_id,
+                                        rendered_content
+                                    )
+                                SELECT
+                                    $2,
+                                    (SELECT id FROM inserted_notification),
+                                    $3
+                                "#,
+                            )
+                            .bind(NotificationEntityType::LoginAttempt as i16)
+                            .bind(user.get::<i64, _>("id"))
+                            .bind(if let Some(location) = client_location_value {
+                                format!("{client_device_value}:{location}")
+                            } else {
+                                client_device_value
+                            })
+                            .execute(&mut *txn)
+                            .await?;
+
+                            // Commit database changes
+                            txn.commit().await?;
+
                             // TODO: Send a persistent cookie to the client
                             // if payload.remember_me {
-                            //     let _ = session.insert("cookie_type", "persistent");
+                            //     session.insert("cookie_type", "persistent");
                             // }
 
                             match Identity::login(&req.extensions(), user.get::<i64, _>("id")) {
@@ -342,19 +412,38 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::assert_form_error_response;
     use crate::{
-        test_utils::{assert_response_body_text, assert_toast_error_response, init_app_for_test},
-        utils::{get_client_device::ClientDevice, get_client_location::ClientLocation},
+        test_utils::{
+            assert_form_error_response,
+            assert_response_body_text,
+            assert_toast_error_response,
+            init_app_for_test,
+        },
+        utils::{
+            get_client_device::ClientDevice,
+            get_client_location::ClientLocation,
+        },
     };
-    use actix_web::{get, services, test, Responder};
+    use actix_web::{
+        get,
+        services,
+        test,
+        Responder,
+    };
     use argon2::{
-        password_hash::{rand_core::OsRng, SaltString},
+        password_hash::{
+            rand_core::OsRng,
+            SaltString,
+        },
         PasswordHasher,
     };
     use serde_json::json;
     use sqlx::PgPool;
-    use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4};
+    use std::net::{
+        Ipv4Addr,
+        SocketAddr,
+        SocketAddrV4,
+    };
 
     /// Only for testing
     #[get("/v1/auth/login")]
@@ -420,6 +509,29 @@ mod tests {
             .unwrap_or_default(),
         )
         .await;
+
+        // Should also insert a notification
+        let result = sqlx::query(
+            r#"
+            SELECT
+                EXISTS (
+                    SELECT
+                        1
+                    FROM
+                        notification_outs
+                    WHERE
+                        notification_id = (
+                            SELECT id FROM notifications
+                            WHERE entity_type = $1
+                        )
+                   )
+            "#,
+        )
+        .bind(NotificationEntityType::LoginAttempt as i16)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -1341,9 +1453,11 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(user_result
-            .get::<Option<OffsetDateTime>, _>("deleted_at")
-            .is_none());
+        assert!(
+            user_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         Ok(())
     }
@@ -1416,9 +1530,11 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(user_result
-            .get::<Option<OffsetDateTime>, _>("deactivated_at")
-            .is_none());
+        assert!(
+            user_result
+                .get::<Option<OffsetDateTime>, _>("deactivated_at")
+                .is_none()
+        );
 
         Ok(())
     }

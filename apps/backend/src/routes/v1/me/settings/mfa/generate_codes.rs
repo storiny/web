@@ -1,11 +1,21 @@
-use crate::utils::generate_recovery_codes::generate_recovery_codes;
 use crate::{
-    error::{AppError, ToastErrorResponse},
+    error::{
+        AppError,
+        ToastErrorResponse,
+    },
     middleware::identity::identity::Identity,
+    utils::generate_recovery_codes::generate_recovery_codes,
     AppState,
 };
-use actix_web::{post, web, HttpResponse};
-use serde::{Deserialize, Serialize};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use sqlx::Row;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -94,10 +104,16 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::test_utils::{
-        assert_response_body_text, assert_toast_error_response, init_app_for_test, res_to_string,
+        assert_response_body_text,
+        assert_toast_error_response,
+        init_app_for_test,
+        res_to_string,
     };
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test]
     async fn can_generate_recovery_codes(pool: PgPool) -> sqlx::Result<()> {

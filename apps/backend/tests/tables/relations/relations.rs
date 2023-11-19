@@ -1,6 +1,9 @@
 #[cfg(test)]
 mod tests {
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test(fixtures("user"))]
     async fn can_insert_a_relation(pool: PgPool) -> sqlx::Result<()> {

@@ -1,6 +1,16 @@
-use crate::error::ToastErrorResponse;
-use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
-use actix_web::{post, web, HttpResponse};
+use crate::{
+    error::{
+        AppError,
+        ToastErrorResponse,
+    },
+    middleware::identity::identity::Identity,
+    AppState,
+};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
 use serde::Deserialize;
 use validator::Validate;
 
@@ -55,9 +65,15 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_toast_error_response, init_app_for_test};
+    use crate::test_utils::{
+        assert_toast_error_response,
+        init_app_for_test,
+    };
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
     use time::OffsetDateTime;
 
     #[sqlx::test]
@@ -98,9 +114,11 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(result
-            .get::<Option<OffsetDateTime>, _>("published_at")
-            .is_none());
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("published_at")
+                .is_none()
+        );
 
         Ok(())
     }

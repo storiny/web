@@ -1,9 +1,16 @@
-use crate::grpc::defs::notification_settings_def::v1::{
-    GetNotificationSettingsRequest, GetNotificationSettingsResponse,
+use crate::grpc::{
+    defs::notification_settings_def::v1::{
+        GetNotificationSettingsRequest,
+        GetNotificationSettingsResponse,
+    },
+    service::GrpcService,
 };
-use crate::grpc::service::GrpcService;
 use sqlx::Row;
-use tonic::{Request, Response, Status};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 
 /// Returns the notification settings for a user.
 pub async fn get_notification_settings(
@@ -70,10 +77,13 @@ pub async fn get_notification_settings(
 
 #[cfg(test)]
 mod tests {
-    use crate::grpc::defs::notification_settings_def::v1::{
-        GetNotificationSettingsRequest, GetNotificationSettingsResponse,
+    use crate::{
+        grpc::defs::notification_settings_def::v1::{
+            GetNotificationSettingsRequest,
+            GetNotificationSettingsResponse,
+        },
+        test_utils::test_grpc_service,
     };
-    use crate::test_utils::test_grpc_service;
     use sqlx::PgPool;
     use tonic::Request;
 

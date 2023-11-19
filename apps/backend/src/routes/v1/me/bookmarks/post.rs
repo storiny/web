@@ -1,8 +1,14 @@
 use crate::{
-    constants::sql_states::SqlState, error::AppError, middleware::identity::identity::Identity,
+    constants::sql_states::SqlState,
+    error::AppError,
+    middleware::identity::identity::Identity,
     AppState,
 };
-use actix_web::{post, web, HttpResponse};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
 use serde::Deserialize;
 use validator::Validate;
 
@@ -71,9 +77,15 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_response_body_text, init_app_for_test};
+    use crate::test_utils::{
+        assert_response_body_text,
+        init_app_for_test,
+    };
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test(fixtures("bookmark"))]
     async fn can_bookmark_a_story(pool: PgPool) -> sqlx::Result<()> {

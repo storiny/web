@@ -3,14 +3,29 @@ use crate::{
     grpc::defs::connection_def::v1::Provider,
     middleware::identity::identity::Identity,
     oauth::icons::youtube::YOUTUBE_LOGO,
-    routes::oauth::{AuthRequest, ConnectionError},
-    AppState, ConnectionTemplate,
+    routes::oauth::{
+        AuthRequest,
+        ConnectionError,
+    },
+    AppState,
+    ConnectionTemplate,
 };
 use actix_extended_session::Session;
-use actix_web::http::header::{self, ContentType};
-use actix_web::{get, web, HttpResponse};
+use actix_web::{
+    get,
+    http::header::{
+        self,
+        ContentType,
+    },
+    web,
+    HttpResponse,
+};
 use actix_web_validator::QsQuery;
-use oauth2::{reqwest::async_http_client, AuthorizationCode, TokenResponse};
+use oauth2::{
+    reqwest::async_http_client,
+    AuthorizationCode,
+    TokenResponse,
+};
 use sailfish::TemplateOnce;
 use serde::Deserialize;
 
