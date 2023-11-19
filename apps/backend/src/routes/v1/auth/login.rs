@@ -22,7 +22,10 @@ use crate::{
     },
     AppState,
 };
-use actix_extended_session::Session;
+use actix_extended_session::{
+    config::SessionLifecycle,
+    Session,
+};
 use actix_http::HttpMessage;
 use actix_web::{
     post,
@@ -374,10 +377,12 @@ async fn post(
                             .execute(&mut *txn)
                             .await?;
 
-                            // TODO: Send a persistent cookie to the client
-                            // if payload.remember_me {
-                            //     session.insert("cookie_type", "persistent");
-                            // }
+                            // Set the session lifecycle
+                            session.set_lifecycle(if payload.remember_me {
+                                SessionLifecycle::PersistentSession
+                            } else {
+                                SessionLifecycle::BrowserSession
+                            });
 
                             // Check if the user maintains more than or equal to 10 sessions, and
                             // delete all the previous sessions if the current number of active
@@ -1476,100 +1481,99 @@ mod tests {
         Ok(())
     }
 
-    // TODO: Uncomment after writing configurable cookies
-    // #[sqlx::test]
-    // async fn can_send_non_persistent_cookie_if_remember_me_is_set_to_false(
-    //     pool: PgPool,
-    // ) -> sqlx::Result<()> {
-    //     let mut conn = pool.acquire().await?;
-    //     let app = init_app_for_test(services![get, post], pool, false, false)
-    //         .await
-    //         .0;
-    //     let (email, password_hash, password) = get_sample_email_and_password();
-    //
-    //     // Insert the user
-    //     sqlx::query(
-    //         r#"
-    //         INSERT INTO users(name, username, email, password, email_verified)
-    //         VALUES ($1, $2, $3, $4, TRUE)
-    //         "#,
-    //     )
-    //     .bind("Sample user".to_string())
-    //     .bind("sample_user".to_string())
-    //     .bind((&email).to_string())
-    //     .bind(password_hash)
-    //     .execute(&mut *conn)
-    //     .await?;
-    //
-    //     let post_req = test::TestRequest::post()
-    //         .uri("/v1/auth/login")
-    //         .set_json(Request {
-    //             email: email.to_string(),
-    //             password: password.to_string(),
-    //             remember_me: false,
-    //             code: None,
-    //         })
-    //         .to_request();
-    //     let post_res = test::call_service(&app, post_req).await;
-    //     let cookie_value = post_res
-    //         .response()
-    //         .cookies()
-    //         .find(|cookie| cookie.name() == "_storiny_sess")
-    //         .unwrap();
-    //     assert!(post_res.status().is_success());
-    //
-    //     // Should be non-persistent
-    //     assert!(cookie_value.max_age().is_none());
-    //
-    //     Ok(())
-    // }
-    //
-    // #[sqlx::test]
-    // async fn can_send_persistent_cookie_if_remember_me_is_set_to_true(
-    //     pool: PgPool,
-    // ) -> sqlx::Result<()> {
-    //     let mut conn = pool.acquire().await?;
-    //     let app = init_app_for_test(services![get, post], pool, false, false)
-    //         .await
-    //         .0;
-    //     let (email, password_hash, password) = get_sample_email_and_password();
-    //
-    //     // Insert the user
-    //     sqlx::query(
-    //         r#"
-    //         INSERT INTO users(name, username, email, password, email_verified)
-    //         VALUES ($1, $2, $3, $4, TRUE)
-    //         "#,
-    //     )
-    //     .bind("Sample user".to_string())
-    //     .bind("sample_user".to_string())
-    //     .bind((&email).to_string())
-    //     .bind(password_hash)
-    //     .execute(&mut *conn)
-    //     .await?;
-    //
-    //     let post_req = test::TestRequest::post()
-    //         .uri("/v1/auth/login")
-    //         .set_json(Request {
-    //             email: email.to_string(),
-    //             password: password.to_string(),
-    //             remember_me: true,
-    //             code: None,
-    //         })
-    //         .to_request();
-    //     let post_res = test::call_service(&app, post_req).await;
-    //     let cookie_value = post_res
-    //         .response()
-    //         .cookies()
-    //         .find(|cookie| cookie.name() == "_storiny_sess")
-    //         .unwrap();
-    //     assert!(post_res.status().is_success());
-    //
-    //     // Should be persistent
-    //     assert!(cookie_value.max_age().is_some());
-    //
-    //     Ok(())
-    // }
+    #[sqlx::test]
+    async fn can_send_non_persistent_cookie_if_remember_me_is_set_to_false(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let app = init_app_for_test(services![get, post], pool, false, false, None)
+            .await
+            .0;
+        let (email, password_hash, password) = get_sample_email_and_password();
+
+        // Insert the user
+        sqlx::query(
+            r#"
+            INSERT INTO users(name, username, email, password, email_verified)
+            VALUES ($1, $2, $3, $4, TRUE)
+            "#,
+        )
+        .bind("Sample user".to_string())
+        .bind("sample_user".to_string())
+        .bind((&email).to_string())
+        .bind(password_hash)
+        .execute(&mut *conn)
+        .await?;
+
+        let post_req = test::TestRequest::post()
+            .uri("/v1/auth/login")
+            .set_json(Request {
+                email: email.to_string(),
+                password: password.to_string(),
+                remember_me: false,
+                code: None,
+            })
+            .to_request();
+        let post_res = test::call_service(&app, post_req).await;
+        let cookie_value = post_res
+            .response()
+            .cookies()
+            .find(|cookie| cookie.name() == "_storiny_sess")
+            .unwrap();
+        assert!(post_res.status().is_success());
+
+        // Should be non-persistent
+        assert!(cookie_value.max_age().is_none());
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_send_persistent_cookie_if_remember_me_is_set_to_true(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let app = init_app_for_test(services![get, post], pool, false, false, None)
+            .await
+            .0;
+        let (email, password_hash, password) = get_sample_email_and_password();
+
+        // Insert the user
+        sqlx::query(
+            r#"
+            INSERT INTO users(name, username, email, password, email_verified)
+            VALUES ($1, $2, $3, $4, TRUE)
+            "#,
+        )
+        .bind("Sample user".to_string())
+        .bind("sample_user".to_string())
+        .bind((&email).to_string())
+        .bind(password_hash)
+        .execute(&mut *conn)
+        .await?;
+
+        let post_req = test::TestRequest::post()
+            .uri("/v1/auth/login")
+            .set_json(Request {
+                email: email.to_string(),
+                password: password.to_string(),
+                remember_me: true,
+                code: None,
+            })
+            .to_request();
+        let post_res = test::call_service(&app, post_req).await;
+        let cookie_value = post_res
+            .response()
+            .cookies()
+            .find(|cookie| cookie.name() == "_storiny_sess")
+            .unwrap();
+        assert!(post_res.status().is_success());
+
+        // Should be persistent
+        assert!(cookie_value.max_age().is_some());
+
+        Ok(())
+    }
 
     #[sqlx::test]
     async fn can_restore_and_login_a_soft_deleted_user_on_bypass(pool: PgPool) -> sqlx::Result<()> {
