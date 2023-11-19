@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 actix-cors = "0.6.4"
-actix-extended-session = { version = "0.1.3", features = ["redis-rs-session"] }
+actix-extended-session = { version = "0.2.0", features = ["redis-rs-session"] }
 actix-extensible-rate-limit = { version = "0.2.1", features = ["redis"] }
 actix-files = "0.6.2"
 actix-http = "3.4.0"

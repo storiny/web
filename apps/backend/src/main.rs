@@ -1,9 +1,5 @@
 use actix_cors::Cors;
 use actix_extended_session::{
-    config::{
-        CookieContentSecurity,
-        PersistentSession,
-    },
     storage::RedisSessionStore,
     SessionMiddleware,
 };
@@ -220,10 +216,7 @@ async fn main() -> io::Result<()> {
                     .wrap(IdentityMiddleware::default())
                     .wrap(
                         SessionMiddleware::builder(redis_store.clone(), secret_key.clone())
-                            .session_lifecycle(
-                                PersistentSession::default().session_ttl(time::Duration::weeks(1)),
-                            )
-                            .cookie_content_security(CookieContentSecurity::Signed)
+                            .session_ttl(time::Duration::weeks(1))
                             .cookie_name("_storiny_sess".into())
                             .cookie_same_site(SameSite::None)
                             .cookie_domain(if config.is_dev {
