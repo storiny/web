@@ -523,7 +523,6 @@ mod tests {
                         ack: false,
                         device: None,
                         location: None,
-                        oauth_token: None,
                     })
                     .unwrap(),
                 )
