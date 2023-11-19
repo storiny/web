@@ -91,7 +91,6 @@ mod tests {
                         lat: Some(0.0),
                         lng: Some(0.0),
                     }),
-                    oauth_token: None,
                 })
                 .unwrap(),
             )
