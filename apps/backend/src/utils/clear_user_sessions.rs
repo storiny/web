@@ -1,90 +1,43 @@
-use crate::{
-    constants::redis_namespaces::RedisNamespace,
-    utils::{
-        get_client_device::ClientDevice,
-        get_client_location::ClientLocation,
-    },
-};
+use crate::utils::get_user_sessions::get_user_sessions;
 use deadpool_redis::Pool as RedisPool;
-use futures::stream::StreamExt;
-use redis::{
-    AsyncCommands,
-    AsyncIter,
-};
-use serde::{
-    Deserialize,
-    Serialize,
-};
 
-#[derive(Debug, Deserialize, Serialize)]
-pub struct UserSession {
-    pub user_id: i64,
-    pub created_at: i64,
-    pub device: Option<ClientDevice>,
-    pub location: Option<ClientLocation>,
-    pub ack: bool,
-    pub oauth_token: Option<String>,
-}
-
-/// Returns all the active sessions for a user using its ID.
+/// Clears all the active sessions for a user using its ID.
 ///
 /// * `redis_pool` - The Redis connection pool.
 /// * `user_id` - The target user ID.
-pub async fn get_user_sessions(
-    redis_pool: &RedisPool,
-    user_id: i64,
-) -> Result<Vec<(String, UserSession)>, ()> {
+pub async fn clear_user_sessions(redis_pool: &RedisPool, user_id: i64) -> Result<(), ()> {
     let mut conn = redis_pool.get().await.map_err(|_| ())?;
-    let iter: AsyncIter<String> = conn
-        .scan_match(format!(
-            "{}:{user_id}:*",
-            RedisNamespace::Session.to_string()
-        ))
+    let session_keys = get_user_sessions(redis_pool, user_id)
         .await
-        .map_err(|_| ())?;
+        .map_err(|_| ())?
+        .iter()
+        .map(|(key, _)| key.to_string())
+        .collect::<Vec<_>>();
 
-    let keys: Vec<String> = iter.collect().await;
+    let mut pipe = redis::pipe();
+    pipe.atomic();
 
-    if keys.len() == 0 {
-        return Ok(vec![]);
+    for key in session_keys {
+        pipe.del(key).ignore();
     }
 
-    let values: Vec<Option<String>> = conn.mget(&keys).await.map_err(|_| ())?;
-
-    // Build and return key-value pairs
-    Ok(keys
-        .iter()
-        .enumerate()
-        .map(|(index, &ref key)| {
-            (
-                key.to_string(),
-                if let Some(value) = values.get(index) {
-                    serde_json::from_str::<UserSession>(value.clone().unwrap_or_default().as_str())
-                        .ok()
-                } else {
-                    None
-                },
-            )
-        })
-        .filter_map(|(key, value)| {
-            if value.is_some() {
-                Some((key, value.unwrap()))
-            } else {
-                None
-            }
-        })
-        .collect::<Vec<_>>())
+    pipe.query_async::<_, ()>(&mut *conn).await.map_err(|_| ())
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::{
+        constants::redis_namespaces::RedisNamespace,
         test_utils::{
             init_app_for_test,
             res_to_string,
         },
-        utils::clear_user_sessions::clear_user_sessions,
+        utils::{
+            get_client_device::ClientDevice,
+            get_client_location::ClientLocation,
+            get_user_sessions::UserSession,
+        },
         AppState,
     };
     use actix_web::{
@@ -97,6 +50,8 @@ mod tests {
         HttpResponse,
         Responder,
     };
+    use redis::AsyncCommands;
+    use serde::Deserialize;
     use sqlx::PgPool;
     use time::OffsetDateTime;
     use uuid::Uuid;
@@ -169,7 +124,7 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_return_user_sessions(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_clear_user_sessions(pool: PgPool) -> sqlx::Result<()> {
         let (app, _, user_id) = init_app_for_test(
             services![create_session, get_sessions, remove_sessions],
             pool,

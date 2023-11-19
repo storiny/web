@@ -68,17 +68,14 @@ const DestroySessions = ({
     use_destroy_sessions_mutation();
 
   /**
-   * Destroys all sessions except the current one
+   * Destroys all the sessions
    */
   const destroy_sessions_impl = (): void => {
     destroy_sessions()
       .unwrap()
       .then(on_destroy)
       .catch((e) =>
-        toast(
-          e?.data?.error || "Could not log you out of other devices",
-          "error"
-        )
+        toast(e?.data?.error || "Could not log you out of devices", "error")
       );
   };
 
@@ -94,7 +91,7 @@ const DestroySessions = ({
         onClick={open_confirmation}
         variant={"hollow"}
       >
-        Log out of all other devices
+        Log out of all devices
       </Button>
     ),
     {
@@ -103,7 +100,7 @@ const DestroySessions = ({
       decorator: <LogoutIcon />,
       color: "ruby",
       description:
-        "You will be logged out of all devices except the current device."
+        "You will be logged out of all the devices, including the current device."
     }
   );
 

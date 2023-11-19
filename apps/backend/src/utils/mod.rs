@@ -1,3 +1,4 @@
+pub mod clear_user_sessions;
 pub mod decode_uri_encoded_story_categories;
 pub mod extract_session_key_from_cookie;
 pub mod flag;
