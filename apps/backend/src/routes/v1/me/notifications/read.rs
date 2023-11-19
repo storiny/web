@@ -71,7 +71,7 @@ mod tests {
     #[sqlx::test(fixtures("notification"))]
     async fn can_mark_a_notification_as_read(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         // Receive a notification
         let insert_result = sqlx::query(
@@ -121,7 +121,7 @@ mod tests {
 
     #[sqlx::test(fixtures("notification"))]
     async fn can_handle_a_missing_notification(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
@@ -140,7 +140,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         // Receive a notification
         let insert_result = sqlx::query(

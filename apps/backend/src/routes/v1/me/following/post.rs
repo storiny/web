@@ -117,7 +117,7 @@ mod tests {
     #[sqlx::test(fixtures("following"))]
     async fn can_follow_a_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
@@ -173,7 +173,7 @@ mod tests {
     async fn should_not_throw_when_following_an_already_followed_user(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         // Follow the user for the first time
         let req = test::TestRequest::post()
@@ -200,7 +200,7 @@ mod tests {
     #[sqlx::test(fixtures("following"))]
     async fn should_not_follow_a_soft_deleted_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         // Soft-delete the target user
         let result = sqlx::query(
@@ -233,7 +233,7 @@ mod tests {
     #[sqlx::test(fixtures("following"))]
     async fn should_not_follow_a_deactivated_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         // Deactivate the target user
         let result = sqlx::query(
@@ -265,11 +265,11 @@ mod tests {
 
     #[sqlx::test]
     async fn should_not_allow_the_user_to_follow_itself(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/me/following/{}", 1))
+            .uri(&format!("/v1/me/following/{}", user_id.unwrap()))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -284,7 +284,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         // Get blocked by the target user
         sqlx::query(

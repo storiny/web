@@ -154,7 +154,7 @@ mod tests {
     #[sqlx::test(fixtures("reply"))]
     async fn can_add_a_reply(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
@@ -213,7 +213,7 @@ mod tests {
 
     #[sqlx::test(fixtures("reply"))]
     async fn can_reject_reply_for_a_missing_comment(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
@@ -234,7 +234,7 @@ mod tests {
     #[sqlx::test(fixtures("reply"))]
     async fn can_reject_reply_for_a_soft_deleted_comment(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         // Soft-delete the comment
         sqlx::query(
@@ -269,7 +269,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         // Get blocked by the comment writer
         sqlx::query(

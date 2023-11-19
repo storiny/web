@@ -74,7 +74,7 @@ mod tests {
     #[sqlx::test(fixtures("friend_request"))]
     async fn can_reject_a_friend_request(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
         // Receive a friend request
         let insert_result = sqlx::query(
@@ -121,7 +121,7 @@ mod tests {
     async fn can_return_an_error_response_when_rejecting_an_unknown_friend_request(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(delete, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(delete, pool, true, false, None).await;
 
         let req = test::TestRequest::delete()
             .cookie(cookie.unwrap())

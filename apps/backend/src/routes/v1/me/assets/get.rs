@@ -103,7 +103,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_assets(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some assets
         let insert_result = sqlx::query(

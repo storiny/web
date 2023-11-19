@@ -90,7 +90,7 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn can_block_a_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
@@ -123,7 +123,7 @@ mod tests {
     async fn should_not_throw_when_blocking_an_already_blocked_user(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         // Block the user for the first time
         let req = test::TestRequest::post()
@@ -150,7 +150,7 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn should_not_block_a_soft_deleted_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         // Soft-delete the target user
         let result = sqlx::query(
@@ -182,7 +182,7 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn should_not_block_a_deactivated_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         // Deactivate the target user
         let result = sqlx::query(

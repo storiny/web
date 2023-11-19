@@ -243,7 +243,7 @@ mod tests {
     #[sqlx::test]
     async fn can_signup_using_valid_details(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool, false, false).await.0;
+        let app = init_app_for_test(post, pool, false, false, None).await.0;
 
         let req = test::TestRequest::post()
             .uri("/v1/auth/signup")
@@ -304,7 +304,7 @@ mod tests {
     #[sqlx::test]
     async fn can_reject_signup_when_the_email_already_exists(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool, false, false).await.0;
+        let app = init_app_for_test(post, pool, false, false, None).await.0;
 
         // Insert user into the database
         sqlx::query(
@@ -340,7 +340,7 @@ mod tests {
     #[sqlx::test]
     async fn can_reject_signup_when_the_username_already_exists(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool, false, false).await.0;
+        let app = init_app_for_test(post, pool, false, false, None).await.0;
 
         // Insert user into the database
         sqlx::query(
@@ -376,7 +376,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_reject_signup_for_reserved_usernames(pool: PgPool) -> sqlx::Result<()> {
-        let app = init_app_for_test(post, pool, false, false).await.0;
+        let app = init_app_for_test(post, pool, false, false, None).await.0;
 
         let req = test::TestRequest::post()
             .uri("/v1/auth/signup")

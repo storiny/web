@@ -156,7 +156,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_return_user(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, false, None).await;
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
@@ -176,7 +176,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_user_with_status(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert status
         let insert_result = sqlx::query(
@@ -213,7 +213,7 @@ mod tests {
     #[sqlx::test]
     async fn should_not_return_expired_status(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert expired status
         let insert_result = sqlx::query(

@@ -162,7 +162,7 @@ mod tests {
     #[sqlx::test]
     async fn can_update_password(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, true).await;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, true, Some(1_i64)).await;
         let (password_hash, password) = get_sample_password();
 
         // Insert the user
@@ -239,7 +239,7 @@ mod tests {
     async fn can_reject_updating_password_for_a_user_without_password(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(patch, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(patch, pool, true, false, None).await;
 
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
@@ -262,7 +262,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, true).await;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, true, Some(1_i64)).await;
         let (password_hash, _) = get_sample_password();
 
         // Insert the user

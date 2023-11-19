@@ -86,7 +86,7 @@ mod tests {
     #[sqlx::test]
     async fn can_make_an_account_private(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
@@ -135,7 +135,7 @@ mod tests {
     #[sqlx::test]
     async fn can_make_an_account_public(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
         // Make the account private
         sqlx::query(
@@ -198,7 +198,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
         // Make the account private
         sqlx::query(
@@ -249,7 +249,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
         // Try making the account public
         let req = test::TestRequest::patch()

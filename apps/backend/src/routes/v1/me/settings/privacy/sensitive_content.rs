@@ -67,7 +67,7 @@ mod tests {
     #[sqlx::test]
     async fn can_enable_sensitive_content(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
@@ -99,7 +99,7 @@ mod tests {
     #[sqlx::test]
     async fn can_disable_sensitive_content(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
         // Enable sensitive content for the user
         sqlx::query(

@@ -46,7 +46,7 @@ mod tests {
     #[sqlx::test]
     async fn can_clear_a_status(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
         // Set a status
         let result = sqlx::query(

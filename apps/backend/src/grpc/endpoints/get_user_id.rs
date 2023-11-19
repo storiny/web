@@ -81,7 +81,7 @@ mod tests {
             false,
             Box::new(|mut client, pool, _, _| async move {
                 let (_, cookie, user_id) =
-                    init_app_for_test(empty_service, pool, true, false).await;
+                    init_app_for_test(empty_service, pool, true, false, None).await;
 
                 let response = client
                     .get_user_id(Request::new(GetUserIdRequest {

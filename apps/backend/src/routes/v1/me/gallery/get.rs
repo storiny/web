@@ -87,7 +87,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_return_gallery_photos(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, false, None).await;
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
@@ -106,7 +106,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_search_gallery_photos(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, false, None).await;
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())

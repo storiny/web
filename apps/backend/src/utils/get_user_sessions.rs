@@ -152,7 +152,6 @@ mod tests {
         let redis_pool = &data.redis;
         let user_id = (&path.user_id).parse::<i64>().unwrap();
         let sessions = get_user_sessions(redis_pool, user_id).await.unwrap();
-
         HttpResponse::Ok().json(sessions)
     }
 
@@ -175,6 +174,7 @@ mod tests {
             pool,
             true,
             false,
+            None,
         )
         .await;
 

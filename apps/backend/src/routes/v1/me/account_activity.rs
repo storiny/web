@@ -123,7 +123,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_return_account_activity(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, false, None).await;
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
             .uri("/v1/me/account-activity")
@@ -157,7 +157,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert an account activity with a description
         sqlx::query(

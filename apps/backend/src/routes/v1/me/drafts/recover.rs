@@ -79,7 +79,7 @@ mod tests {
     #[sqlx::test]
     async fn can_recover_a_draft(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         // Insert a deleted draft
         let result = sqlx::query(
@@ -126,7 +126,7 @@ mod tests {
     #[sqlx::test]
     async fn should_not_recover_a_published_draft(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         // Insert a published and deleted draft
         let result = sqlx::query(
@@ -158,7 +158,7 @@ mod tests {
     async fn can_return_an_error_response_when_recovering_an_unknown_draft(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())

@@ -51,7 +51,7 @@ mod tests {
     #[sqlx::test(fixtures("unread_notification"))]
     async fn can_return_unread_notification_count(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Receive some notifications
         let insert_result = sqlx::query(

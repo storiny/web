@@ -240,7 +240,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_reject_invalid_story_category(pool: PgPool) -> sqlx::Result<()> {
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
             .uri("/v1/public/explore/tags?category=invalid")
@@ -257,7 +257,7 @@ mod tests {
 
     #[sqlx::test(fixtures("tag"))]
     async fn can_return_explore_tags(pool: PgPool) -> sqlx::Result<()> {
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
             .uri("/v1/public/explore/tags?category=diy")
@@ -276,7 +276,7 @@ mod tests {
 
     #[sqlx::test(fixtures("tag"))]
     async fn can_search_explore_tags(pool: PgPool) -> sqlx::Result<()> {
-        let app = init_app_for_test(get, pool, false, false).await.0;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
             .uri(&format!(
@@ -300,7 +300,7 @@ mod tests {
 
     #[sqlx::test(fixtures("tag"))]
     async fn can_return_explore_tags_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
@@ -320,7 +320,7 @@ mod tests {
 
     #[sqlx::test(fixtures("tag"))]
     async fn can_search_explore_tags_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(get, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())

@@ -82,11 +82,13 @@ pub async fn empty_service() -> impl Responder {
 /// * `logged_in` - Whether to create a session for the user.
 /// * `skip_inserting_user` - Whether to skip inserting the user into the database when `logged_in`
 ///   is enabled.
+/// * `user_id` - Optional user ID to use instead of generating a random ID.
 pub async fn init_app_for_test(
     service_factory: impl HttpServiceFactory + 'static,
     db_pool: PgPool,
     logged_in: bool,
     skip_inserting_user: bool,
+    user_id: Option<i64>,
 ) -> (
     impl Service<Request, Response = ServiceResponse, Error = Error>,
     Option<Cookie<'static>>,
@@ -170,7 +172,7 @@ pub async fn init_app_for_test(
 
     if logged_in {
         let mut rng = rand::thread_rng();
-        let mut user_id: Option<i64> = Some(rng.gen::<i64>());
+        let mut next_user_id: Option<i64> = Some(user_id.unwrap_or(rng.gen::<i64>()));
 
         if !skip_inserting_user {
             // Insert the user
@@ -188,12 +190,14 @@ pub async fn init_app_for_test(
             .await
             .unwrap();
 
-            user_id = Some(result.get::<i64, _>("id"));
+            if user_id.is_none() {
+                next_user_id = Some(result.get::<i64, _>("id"));
+            }
         }
 
         // Log the user in
         let req = test::TestRequest::post()
-            .uri(&format!("/__login__/{}", user_id.unwrap()))
+            .uri(&format!("/__login__/{}", next_user_id.unwrap()))
             .to_request();
         let res = test::call_service(&service, req).await;
         let cookie = res
@@ -202,7 +206,7 @@ pub async fn init_app_for_test(
             .find(|cookie| cookie.name() == "_storiny_sess")
             .unwrap();
 
-        return (service, Some(cookie.into_owned()), user_id);
+        return (service, Some(cookie.into_owned()), next_user_id);
     }
 
     (service, None, None)

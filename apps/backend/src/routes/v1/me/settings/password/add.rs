@@ -206,7 +206,7 @@ mod tests {
     #[sqlx::test]
     async fn can_add_a_password(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
         let verification_code = nanoid!(6);
         let salt = SaltString::generate(&mut OsRng);
         let hashed_verification_code = Argon2::default()
@@ -299,7 +299,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
         // Insert the user
         let result = sqlx::query(
@@ -340,7 +340,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
         let verification_code = nanoid!(6);
         let salt = SaltString::generate(&mut OsRng);
         let hashed_verification_code = Argon2::default()
@@ -383,7 +383,7 @@ mod tests {
     async fn can_reject_add_password_request_for_an_invalid_verification_code(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())

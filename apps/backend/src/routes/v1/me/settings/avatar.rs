@@ -119,7 +119,7 @@ mod tests {
     #[sqlx::test]
     async fn can_set_an_avatar(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
         let avatar_id = Uuid::new_v4();
 
         // Insert an asset
@@ -182,7 +182,7 @@ mod tests {
     #[sqlx::test]
     async fn can_remove_an_avatar(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
         let avatar_id = Uuid::new_v4();
 
         // Insert an asset
@@ -263,7 +263,7 @@ mod tests {
     async fn can_return_an_error_response_for_an_invalid_avatar_id(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(patch, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(patch, pool, true, false, None).await;
 
         let req = test::TestRequest::patch()
             .cookie(cookie.clone().unwrap())

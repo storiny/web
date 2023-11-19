@@ -71,7 +71,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_recovery_codes(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some recovery codes
         let result = sqlx::query(

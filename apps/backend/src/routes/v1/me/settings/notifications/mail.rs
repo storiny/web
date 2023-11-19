@@ -76,7 +76,7 @@ mod tests {
     #[sqlx::test]
     async fn can_set_mail_notification_settings(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
         // Disable all e-mail notifications
         let req = test::TestRequest::patch()

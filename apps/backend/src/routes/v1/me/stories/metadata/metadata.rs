@@ -278,7 +278,7 @@ mod tests {
     #[sqlx::test(fixtures("story"))]
     async fn can_update_story_metadata(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, true).await;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, true, Some(1_i64)).await;
 
         // Assert initial metadata
         let result = sqlx::query_as::<_, Metadata>(
@@ -428,7 +428,7 @@ mod tests {
     #[sqlx::test(fixtures("story"))]
     async fn can_update_story_tags(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(patch, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(patch, pool, true, true, Some(1_i64)).await;
 
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
@@ -473,7 +473,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_reject_invalid_story_category(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(patch, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(patch, pool, true, true, None).await;
 
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
@@ -497,7 +497,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_reject_invalid_story_tags(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(patch, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(patch, pool, true, true, None).await;
 
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
@@ -522,7 +522,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_reject_invalid_story_splash(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(patch, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(patch, pool, true, true, None).await;
 
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
@@ -547,7 +547,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_reject_invalid_preview_image(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(patch, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(patch, pool, true, true, None).await;
 
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
@@ -573,7 +573,7 @@ mod tests {
     #[sqlx::test(fixtures("story"))]
     async fn should_not_update_metadata_for_soft_deleted_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(patch, pool, true, true).await;
+        let (app, cookie, _) = init_app_for_test(patch, pool, true, true, Some(1_i64)).await;
 
         // Soft-delete the story
         let result = sqlx::query(

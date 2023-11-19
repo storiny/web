@@ -85,7 +85,7 @@ mod tests {
 
     #[sqlx::test(fixtures("tag"))]
     async fn can_search_tags(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, false, None).await;
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())

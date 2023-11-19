@@ -233,7 +233,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_drafts(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some drafts
         let insert_result = sqlx::query(
@@ -267,7 +267,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_pending_drafts(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some pending drafts
         let insert_result = sqlx::query(
@@ -301,7 +301,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_deleted_drafts(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some deleted drafts
         let insert_result = sqlx::query(
@@ -335,7 +335,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_pending_drafts_in_asc_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some pending drafts
         sqlx::query(
@@ -379,7 +379,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_pending_drafts_in_desc_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some pending drafts
         sqlx::query(
@@ -423,7 +423,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_deleted_drafts_in_asc_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some deleted drafts
         sqlx::query(
@@ -467,7 +467,7 @@ mod tests {
     #[sqlx::test]
     async fn can_return_deleted_drafts_in_desc_order(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some deleted drafts
         sqlx::query(
@@ -511,7 +511,7 @@ mod tests {
     #[sqlx::test]
     async fn can_search_pending_drafts(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some pending drafts
         let insert_result = sqlx::query(
@@ -550,7 +550,7 @@ mod tests {
     #[sqlx::test]
     async fn can_search_deleted_drafts(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some deleted drafts
         let insert_result = sqlx::query(
@@ -589,7 +589,7 @@ mod tests {
     #[sqlx::test]
     async fn should_not_include_deleted_drafts_in_pending_drafts(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some pending drafts
         let insert_result = sqlx::query(
@@ -682,7 +682,7 @@ mod tests {
     #[sqlx::test]
     async fn should_not_include_pending_drafts_in_deleted_drafts(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some deleted drafts
         let insert_result = sqlx::query(
