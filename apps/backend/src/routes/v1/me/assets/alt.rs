@@ -1,11 +1,21 @@
 use crate::{
-    error::{AppError, ToastErrorResponse},
+    error::{
+        AppError,
+        ToastErrorResponse,
+    },
     middleware::identity::identity::Identity,
     AppState,
 };
-use actix_web::{patch, web, HttpResponse};
+use actix_web::{
+    patch,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::Json;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
@@ -63,9 +73,15 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_toast_error_response, init_app_for_test};
+    use crate::test_utils::{
+        assert_toast_error_response,
+        init_app_for_test,
+    };
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
     use uuid::Uuid;
 
     #[sqlx::test]

@@ -1,8 +1,19 @@
-use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
+use crate::{
+    error::AppError,
+    middleware::identity::identity::Identity,
+    AppState,
+};
 use actix_extended_session::Session;
-use actix_web::http::header;
-use actix_web::{get, web, HttpResponse};
-use oauth2::{CsrfToken, Scope};
+use actix_web::{
+    get,
+    http::header,
+    web,
+    HttpResponse,
+};
+use oauth2::{
+    CsrfToken,
+    Scope,
+};
 use serde_json::Value;
 
 #[get("/oauth/spotify")]
@@ -19,7 +30,7 @@ async fn get(
         .url();
 
     // Insert the CSRF token into the session. This is validated at the callback endpoint.
-    let _ = session.insert("oauth_token", Value::from(csrf_token.secret().to_string()));
+    session.insert("oauth_token", Value::from(csrf_token.secret().to_string()));
 
     Ok(HttpResponse::Found()
         .append_header((header::LOCATION, authorize_url.to_string()))

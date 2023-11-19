@@ -1,9 +1,16 @@
-use crate::grpc::defs::credential_settings_def::v1::{
-    GetCredentialSettingsRequest, GetCredentialSettingsResponse,
+use crate::grpc::{
+    defs::credential_settings_def::v1::{
+        GetCredentialSettingsRequest,
+        GetCredentialSettingsResponse,
+    },
+    service::GrpcService,
 };
-use crate::grpc::service::GrpcService;
 use sqlx::Row;
-use tonic::{Request, Response, Status};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 
 /// Returns the credential settings for a user.
 pub async fn get_credential_settings(
@@ -53,10 +60,13 @@ pub async fn get_credential_settings(
 
 #[cfg(test)]
 mod tests {
-    use crate::grpc::defs::credential_settings_def::v1::{
-        GetCredentialSettingsRequest, GetCredentialSettingsResponse,
+    use crate::{
+        grpc::defs::credential_settings_def::v1::{
+            GetCredentialSettingsRequest,
+            GetCredentialSettingsResponse,
+        },
+        test_utils::test_grpc_service,
     };
-    use crate::test_utils::test_grpc_service;
     use sqlx::PgPool;
     use tonic::Request;
 

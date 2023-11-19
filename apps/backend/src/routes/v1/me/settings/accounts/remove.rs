@@ -1,13 +1,29 @@
-use crate::constants::account_activity_type::AccountActivityType;
 use crate::{
-    error::AppError, error::ToastErrorResponse, middleware::identity::identity::Identity, AppState,
+    constants::account_activity_type::AccountActivityType,
+    error::{
+        AppError,
+        ToastErrorResponse,
+    },
+    middleware::identity::identity::Identity,
+    AppState,
 };
-use actix_web::{post, web, HttpResponse};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::Json;
-use argon2::{Argon2, PasswordHash, PasswordVerifier};
+use argon2::{
+    Argon2,
+    PasswordHash,
+    PasswordVerifier,
+};
 use lazy_static::lazy_static;
 use regex::Regex;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use sqlx::Row;
 use validator::Validate;
 
@@ -121,13 +137,22 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_toast_error_response, init_app_for_test};
+    use crate::test_utils::{
+        assert_toast_error_response,
+        init_app_for_test,
+    };
     use actix_web::test;
     use argon2::{
-        password_hash::{rand_core::OsRng, SaltString},
+        password_hash::{
+            rand_core::OsRng,
+            SaltString,
+        },
         PasswordHasher,
     };
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     /// Returns sample hashed password
     fn get_sample_password() -> (String, String) {

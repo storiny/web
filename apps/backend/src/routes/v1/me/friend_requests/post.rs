@@ -1,6 +1,17 @@
-use crate::error::ToastErrorResponse;
-use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
-use actix_web::{post, web, HttpResponse};
+use crate::{
+    error::{
+        AppError,
+        ToastErrorResponse,
+    },
+    middleware::identity::identity::Identity,
+    models::notification::NotificationEntityType,
+    AppState,
+};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
 use serde::Deserialize;
 use validator::Validate;
 
@@ -19,18 +30,38 @@ async fn post(
         Ok(user_id) => match path.user_id.parse::<i64>() {
             Ok(transmitter_id) => {
                 match sqlx::query(
-                    r#"
-                        UPDATE friends
-                        SET accepted_at = now()
-                        WHERE
-                            receiver_id = $1
-                            AND transmitter_id = $2
-                            AND accepted_at IS NULL
-                            AND deleted_at IS NULL
-                        "#,
+                    r#"                    
+                    WITH
+                        updated_friend AS (
+                            UPDATE friends
+                            SET accepted_at = now()
+                            WHERE
+                                receiver_id = $1
+                                AND transmitter_id = $2
+                                AND accepted_at IS NULL
+                                AND deleted_at IS NULL
+                            RETURNING TRUE as "updated"
+                        ),
+                        inserted_notification AS (
+                            INSERT INTO notifications (entity_type, entity_id, notifier_id)
+                            SELECT $3, $1, $1
+                            WHERE EXISTS (SELECT 1 FROM updated_friend)
+                            RETURNING id
+                        )
+                    INSERT
+                    INTO
+                        notification_outs (notified_id, notification_id)
+                    SELECT
+                        $2,
+                        (SELECT id FROM inserted_notification)
+                    WHERE EXISTS (
+                        SELECT 1 FROM inserted_notification
+                    )
+                    "#,
                 )
                 .bind(user_id)
                 .bind(transmitter_id)
+                .bind(NotificationEntityType::FriendReqAccept as i16)
                 .execute(&data.db_pool)
                 .await?
                 .rows_affected()
@@ -53,9 +84,15 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_toast_error_response, init_app_for_test};
+    use crate::test_utils::{
+        assert_toast_error_response,
+        init_app_for_test,
+    };
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
     use time::OffsetDateTime;
 
     #[sqlx::test(fixtures("friend_request"))]
@@ -97,9 +134,34 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(result
-            .get::<Option<OffsetDateTime>, _>("accepted_at")
-            .is_some());
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("accepted_at")
+                .is_some()
+        );
+
+        // Should also insert a notification
+        let result = sqlx::query(
+            r#"
+            SELECT
+                EXISTS (
+                    SELECT
+                        1
+                    FROM
+                        notification_outs
+                    WHERE
+                        notification_id = (
+                            SELECT id FROM notifications
+                            WHERE entity_id = $1
+                        )
+                   )
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(result.get::<bool, _>("exists"));
 
         Ok(())
     }

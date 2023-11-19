@@ -1,5 +1,13 @@
-use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
-use actix_web::{delete, web, HttpResponse};
+use crate::{
+    error::AppError,
+    middleware::identity::identity::Identity,
+    AppState,
+};
+use actix_web::{
+    delete,
+    web,
+    HttpResponse,
+};
 
 #[delete("/v1/me/status")]
 async fn delete(data: web::Data<AppState>, user: Identity) -> Result<HttpResponse, AppError> {
@@ -30,7 +38,10 @@ mod tests {
     use super::*;
     use crate::test_utils::init_app_for_test;
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test]
     async fn can_clear_a_status(pool: PgPool) -> sqlx::Result<()> {

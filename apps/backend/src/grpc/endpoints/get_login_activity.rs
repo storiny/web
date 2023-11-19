@@ -1,14 +1,31 @@
-use crate::constants::redis_namespaces::RedisNamespace;
-use crate::grpc::defs::login_activity_def::v1::{
-    Device, GetLoginActivityRequest, GetLoginActivityResponse, Location, Login,
+use crate::{
+    constants::redis_namespaces::RedisNamespace,
+    grpc::{
+        defs::login_activity_def::v1::{
+            Device,
+            GetLoginActivityRequest,
+            GetLoginActivityResponse,
+            Location,
+            Login,
+        },
+        service::GrpcService,
+    },
+    utils::{
+        extract_session_key_from_cookie::extract_session_key_from_cookie,
+        get_user_sessions::{
+            get_user_sessions,
+            UserSession,
+        },
+    },
 };
-use crate::grpc::service::GrpcService;
-use crate::utils::extract_session_key_from_cookie::extract_session_key_from_cookie;
-use crate::utils::get_user_sessions::{get_user_sessions, UserSession};
-use actix_web::cookie::Key;
+use cookie::Key;
 use itertools::Itertools;
 use time::OffsetDateTime;
-use tonic::{Request, Response, Status};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 
 /// Converts a user session object into a login object.
 ///
@@ -32,8 +49,6 @@ fn convert_user_session_to_login(
 
     let secret_key = Key::from(session_secret_key.as_bytes());
     let session_key = extract_session_key_from_cookie(token, &secret_key).unwrap_or_default();
-
-    panic!("{session_key:#?}");
 
     Login {
         id: token_from_key,
@@ -104,14 +119,25 @@ pub async fn get_login_activity(
 
 #[cfg(test)]
 mod tests {
-    use crate::config::Config;
-    use crate::constants::redis_namespaces::RedisNamespace;
-    use crate::grpc::defs::login_activity_def::v1::GetLoginActivityRequest;
-    use crate::test_utils::test_grpc_service;
-    use crate::utils::get_client_device::ClientDevice;
-    use crate::utils::get_client_location::ClientLocation;
-    use crate::utils::get_user_sessions::{get_user_sessions, UserSession};
-    use actix_web::cookie::{Cookie, CookieJar, Key};
+    use crate::{
+        config::Config,
+        constants::redis_namespaces::RedisNamespace,
+        grpc::defs::login_activity_def::v1::GetLoginActivityRequest,
+        test_utils::test_grpc_service,
+        utils::{
+            get_client_device::ClientDevice,
+            get_client_location::ClientLocation,
+            get_user_sessions::{
+                get_user_sessions,
+                UserSession,
+            },
+        },
+    };
+    use cookie::{
+        Cookie,
+        CookieJar,
+        Key,
+    };
     use deadpool_redis::Pool as RedisPool;
     use redis::AsyncCommands;
     use sqlx::PgPool;

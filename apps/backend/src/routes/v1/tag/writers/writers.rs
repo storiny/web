@@ -1,9 +1,23 @@
 use crate::{
-    error::AppError, middleware::identity::identity::Identity, models::tag::TAG_REGEX, AppState,
+    error::AppError,
+    middleware::identity::identity::Identity,
+    models::tag::TAG_REGEX,
+    AppState,
 };
-use actix_web::{get, web, HttpResponse};
-use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, Postgres, QueryBuilder};
+use actix_web::{
+    get,
+    web,
+    HttpResponse,
+};
+use serde::{
+    Deserialize,
+    Serialize,
+};
+use sqlx::{
+    FromRow,
+    Postgres,
+    QueryBuilder,
+};
 use uuid::Uuid;
 use validator::Validate;
 
@@ -158,7 +172,11 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_response_body_text, init_app_for_test, res_to_string};
+    use crate::test_utils::{
+        assert_response_body_text,
+        init_app_for_test,
+        res_to_string,
+    };
     use actix_web::test;
     use sqlx::PgPool;
 

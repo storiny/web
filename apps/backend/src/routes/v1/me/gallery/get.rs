@@ -1,10 +1,20 @@
 use crate::{
-    constants::pexels::PEXELS_API_URL, error::AppError, middleware::identity::identity::Identity,
-    models::photo::PexelsResponse, AppState,
+    constants::pexels::PEXELS_API_URL,
+    error::AppError,
+    middleware::identity::identity::Identity,
+    models::photo::PexelsResponse,
+    AppState,
 };
-use actix_web::{get, web, HttpResponse};
+use actix_web::{
+    get,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::QsQuery;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use validator::Validate;
 
 #[derive(Serialize, Deserialize, Validate)]
@@ -64,8 +74,13 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::models::photo::Photo;
-    use crate::test_utils::{init_app_for_test, res_to_string};
+    use crate::{
+        models::photo::Photo,
+        test_utils::{
+            init_app_for_test,
+            res_to_string,
+        },
+    };
     use actix_web::test;
     use sqlx::PgPool;
     use urlencoding::encode;

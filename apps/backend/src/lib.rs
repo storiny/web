@@ -7,7 +7,10 @@ use routes::oauth::ConnectionError;
 use rusoto_s3::S3Client;
 use rusoto_ses::SesClient;
 use sailfish::TemplateOnce;
-use sqlx::{Pool, Postgres};
+use sqlx::{
+    Pool,
+    Postgres,
+};
 use user_agent_parser::UserAgentParser;
 
 pub mod config;

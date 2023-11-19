@@ -1,8 +1,22 @@
-use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
-use actix_web::{get, web, HttpResponse};
-use serde::{Deserialize, Serialize};
-use sqlx::postgres::PgRow;
-use sqlx::{FromRow, Row};
+use crate::{
+    error::AppError,
+    middleware::identity::identity::Identity,
+    AppState,
+};
+use actix_web::{
+    get,
+    web,
+    HttpResponse,
+};
+use serde::{
+    Deserialize,
+    Serialize,
+};
+use sqlx::{
+    postgres::PgRow,
+    FromRow,
+    Row,
+};
 use time::OffsetDateTime;
 use uuid::Uuid;
 
@@ -132,7 +146,10 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{init_app_for_test, res_to_string};
+    use crate::test_utils::{
+        init_app_for_test,
+        res_to_string,
+    };
     use actix_web::test;
     use sqlx::PgPool;
     use time::Duration;

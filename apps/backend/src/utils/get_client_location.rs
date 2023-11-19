@@ -1,5 +1,11 @@
-use maxminddb::{geoip2, Reader};
-use serde::{Deserialize, Serialize};
+use maxminddb::{
+    geoip2,
+    Reader,
+};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use std::net::IpAddr;
 
 #[derive(Debug, Serialize, Deserialize)]

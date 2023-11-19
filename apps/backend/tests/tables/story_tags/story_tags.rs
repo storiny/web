@@ -1,6 +1,9 @@
 #[cfg(test)]
 mod tests {
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test(fixtures("user", "story", "tag"))]
     async fn can_insert_a_story_tag(pool: PgPool) -> sqlx::Result<()> {

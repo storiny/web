@@ -1,7 +1,116 @@
 #[cfg(test)]
 mod tests {
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
     use storiny::models::notification::NotificationEntityType;
+
+    #[sqlx::test(fixtures("system"))]
+    async fn can_render_notification_content_for_login_attempt_type(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Insert a login notification
+        sqlx::query(
+            r#"
+            WITH inserted_notification AS (
+                INSERT INTO notifications (id, entity_type)
+                VALUES ($3, $1)
+            )
+            INSERT
+            INTO
+                notification_outs (
+                    notified_id,
+                    notification_id,
+                    rendered_content
+                )
+            SELECT $2, $3, $4
+            "#,
+        )
+        .bind(NotificationEntityType::LoginAttempt as i16)
+        .bind(1_i64)
+        .bind(2_i64)
+        .bind(format!("{}:{}", "Device name", "Location name"))
+        .execute(&mut *conn)
+        .await?;
+
+        let result = sqlx::query(
+            r#"
+            SELECT
+                public.render_notification_content($1, notification_outs.*) AS "content"
+            FROM
+                notification_outs
+            WHERE
+                notification_id = $2;
+            "#,
+        )
+        .bind(NotificationEntityType::LoginAttempt as i16)
+        .bind(2_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(
+            result.get::<String, _>("content"),
+            r#"There was a successful login attempt to your account using <b>Device name</b> near <b>Location name</b>. <a data-underline href="/me/account/login-activity">Click to review</a>"#.to_string()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("system"))]
+    async fn can_render_notification_content_for_login_attempt_type_without_location(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Insert a login notification
+        sqlx::query(
+            r#"
+            WITH inserted_notification AS (
+                INSERT INTO notifications (id, entity_type)
+                VALUES ($3, $1)
+            )
+            INSERT
+            INTO
+                notification_outs (
+                    notified_id,
+                    notification_id,
+                    rendered_content
+                )
+            SELECT $2, $3, $4
+            "#,
+        )
+        .bind(NotificationEntityType::LoginAttempt as i16)
+        .bind(1_i64)
+        .bind(2_i64)
+        .bind("Device name")
+        .execute(&mut *conn)
+        .await?;
+
+        let result = sqlx::query(
+            r#"
+            SELECT
+                public.render_notification_content($1, notification_outs.*) AS "content"
+            FROM
+                notification_outs
+            WHERE
+                notification_id = $2;
+            "#,
+        )
+        .bind(NotificationEntityType::LoginAttempt as i16)
+        .bind(2_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(
+            result.get::<String, _>("content"),
+            r#"There was a successful login attempt to your account using <b>Device name</b>. <a data-underline href="/me/account/login-activity">Click to review</a>"#.to_string()
+        );
+
+        Ok(())
+    }
 
     #[sqlx::test(fixtures("friend_request_accept"))]
     async fn can_render_notification_content_for_friend_request_accept_type(

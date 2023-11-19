@@ -1,14 +1,32 @@
-use crate::constants::account_activity_type::AccountActivityType;
-use crate::constants::sql_states::SqlState;
-use crate::error::FormErrorResponse;
 use crate::{
-    error::AppError, error::ToastErrorResponse, middleware::identity::identity::Identity,
-    models::user::USERNAME_REGEX, AppState,
+    constants::{
+        account_activity_type::AccountActivityType,
+        sql_states::SqlState,
+    },
+    error::{
+        AppError,
+        FormErrorResponse,
+        ToastErrorResponse,
+    },
+    middleware::identity::identity::Identity,
+    models::user::USERNAME_REGEX,
+    AppState,
 };
-use actix_web::{patch, web, HttpResponse};
+use actix_web::{
+    patch,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::Json;
-use argon2::{Argon2, PasswordHash, PasswordVerifier};
-use serde::{Deserialize, Serialize};
+use argon2::{
+    Argon2,
+    PasswordHash,
+    PasswordVerifier,
+};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use slugify::slugify;
 use sqlx::Row;
 use validator::Validate;
@@ -143,14 +161,22 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::test_utils::{
-        assert_form_error_response, assert_toast_error_response, init_app_for_test,
+        assert_form_error_response,
+        assert_toast_error_response,
+        init_app_for_test,
     };
     use actix_web::test;
     use argon2::{
-        password_hash::{rand_core::OsRng, SaltString},
+        password_hash::{
+            rand_core::OsRng,
+            SaltString,
+        },
         PasswordHasher,
     };
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
     use time::OffsetDateTime;
 
     /// Returns sample hashed password
@@ -216,9 +242,11 @@ mod tests {
             result.get::<String, _>("username"),
             "new_username".to_string()
         );
-        assert!(result
-            .get::<Option<OffsetDateTime>, _>("username_modified_at")
-            .is_some());
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("username_modified_at")
+                .is_some()
+        );
 
         // Should also insert an account activity
         let result = sqlx::query(

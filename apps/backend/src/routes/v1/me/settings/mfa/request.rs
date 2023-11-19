@@ -1,8 +1,21 @@
-use crate::error::ToastErrorResponse;
-use crate::utils::generate_totp::generate_totp;
-use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
-use actix_web::{post, web, HttpResponse};
-use serde::{Deserialize, Serialize};
+use crate::{
+    error::{
+        AppError,
+        ToastErrorResponse,
+    },
+    middleware::identity::identity::Identity,
+    utils::generate_totp::generate_totp,
+    AppState,
+};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use sqlx::Row;
 use totp_rs::Secret;
 
@@ -97,7 +110,10 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::test_utils::{
-        assert_response_body_text, assert_toast_error_response, init_app_for_test, res_to_string,
+        assert_response_body_text,
+        assert_toast_error_response,
+        init_app_for_test,
+        res_to_string,
     };
     use actix_web::test;
     use sqlx::PgPool;

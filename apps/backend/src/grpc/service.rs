@@ -2,47 +2,85 @@ use crate::{
     config,
     grpc::{
         defs::{
-            comment_def::v1::{GetCommentRequest, GetCommentResponse},
+            comment_def::v1::{
+                GetCommentRequest,
+                GetCommentResponse,
+            },
             connection_settings_def::v1::{
-                GetConnectionSettingsRequest, GetConnectionSettingsResponse,
+                GetConnectionSettingsRequest,
+                GetConnectionSettingsResponse,
             },
             credential_settings_def::v1::{
-                GetCredentialSettingsRequest, GetCredentialSettingsResponse,
+                GetCredentialSettingsRequest,
+                GetCredentialSettingsResponse,
             },
             grpc_service::v1::api_service_server::ApiService,
-            login_activity_def::v1::{GetLoginActivityRequest, GetLoginActivityResponse},
-            notification_settings_def::v1::{
-                GetNotificationSettingsRequest, GetNotificationSettingsResponse,
+            login_activity_def::v1::{
+                GetLoginActivityRequest,
+                GetLoginActivityResponse,
             },
-            privacy_settings_def::v1::{GetPrivacySettingsRequest, GetPrivacySettingsResponse},
-            profile_def::v1::{GetProfileRequest, GetProfileResponse},
+            notification_settings_def::v1::{
+                GetNotificationSettingsRequest,
+                GetNotificationSettingsResponse,
+            },
+            privacy_settings_def::v1::{
+                GetPrivacySettingsRequest,
+                GetPrivacySettingsResponse,
+            },
+            profile_def::v1::{
+                GetProfileRequest,
+                GetProfileResponse,
+            },
             response_def::v1::{
-                GetResponsesInfoRequest, GetResponsesInfoResponse, GetStoryResponsesInfoRequest,
+                GetResponsesInfoRequest,
+                GetResponsesInfoResponse,
+                GetStoryResponsesInfoRequest,
                 GetStoryResponsesInfoResponse,
             },
             story_def::v1::{
-                GetDraftsInfoRequest, GetDraftsInfoResponse, GetStoriesInfoRequest,
-                GetStoriesInfoResponse, GetStoryRequest, GetStoryResponse,
+                GetDraftsInfoRequest,
+                GetDraftsInfoResponse,
+                GetStoriesInfoRequest,
+                GetStoriesInfoResponse,
+                GetStoryRequest,
+                GetStoryResponse,
             },
             tag_def::v1::{
-                GetFollowedTagCountRequest, GetFollowedTagCountResponse, GetTagRequest,
+                GetFollowedTagCountRequest,
+                GetFollowedTagCountResponse,
+                GetTagRequest,
                 GetTagResponse,
             },
             token_def::v1::{
-                GetTokenRequest, GetTokenResponse, VerifyEmailRequest, VerifyEmailResponse,
+                GetTokenRequest,
+                GetTokenResponse,
+                VerifyEmailRequest,
+                VerifyEmailResponse,
             },
             user_def::v1::{
-                GetUserBlockCountRequest, GetUserBlockCountResponse, GetUserIdRequest,
-                GetUserIdResponse, GetUserMuteCountRequest, GetUserMuteCountResponse,
-                GetUserRelationsInfoRequest, GetUserRelationsInfoResponse,
+                GetUserBlockCountRequest,
+                GetUserBlockCountResponse,
+                GetUserIdRequest,
+                GetUserIdResponse,
+                GetUserMuteCountRequest,
+                GetUserMuteCountResponse,
+                GetUserRelationsInfoRequest,
+                GetUserRelationsInfoResponse,
             },
         },
         endpoints,
     },
 };
 use deadpool_redis::Pool as RedisPool;
-use sqlx::{Pool, Postgres};
-use tonic::{Request, Response, Status};
+use sqlx::{
+    Pool,
+    Postgres,
+};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 
 /// A GRPC service.
 #[derive(Clone)]

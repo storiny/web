@@ -1,14 +1,24 @@
 use crate::grpc::{
     defs::{
-        story_def::v1::{GetStoryRequest, GetStoryResponse},
+        story_def::v1::{
+            GetStoryRequest,
+            GetStoryResponse,
+        },
         tag_def::v1::Tag as StoryTag,
-        user_def::v1::{BareStatus, ExtendedUser},
+        user_def::v1::{
+            BareStatus,
+            ExtendedUser,
+        },
     },
     service::GrpcService,
 };
 use sqlx::FromRow;
 use time::OffsetDateTime;
-use tonic::{Request, Response, Status};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 use uuid::Uuid;
 
 #[derive(sqlx::Type, Debug)]
@@ -227,8 +237,10 @@ pub async fn get_story(
 
 #[cfg(test)]
 mod tests {
-    use crate::grpc::defs::story_def::v1::GetStoryRequest;
-    use crate::test_utils::test_grpc_service;
+    use crate::{
+        grpc::defs::story_def::v1::GetStoryRequest,
+        test_utils::test_grpc_service,
+    };
     use sqlx::PgPool;
     use tonic::Request;
 

@@ -1,14 +1,32 @@
-use crate::grpc::defs::connection_def::v1::{Connection, Provider};
-use crate::grpc::defs::profile_def::v1::{GetProfileRequest, GetProfileResponse};
-use crate::grpc::defs::user_def::v1::{
-    ExtendedStatus as UserStatus, StatusDuration, StatusVisibility,
+use crate::{
+    grpc::{
+        defs::{
+            connection_def::v1::{
+                Connection,
+                Provider,
+            },
+            profile_def::v1::{
+                GetProfileRequest,
+                GetProfileResponse,
+            },
+            user_def::v1::{
+                ExtendedStatus as UserStatus,
+                StatusDuration,
+                StatusVisibility,
+            },
+        },
+        service::GrpcService,
+    },
+    utils::generate_connection_url::generate_connection_url,
 };
-use crate::grpc::service::GrpcService;
-use crate::utils::generate_connection_url::generate_connection_url;
 use serde::Deserialize;
 use sqlx::FromRow;
 use time::OffsetDateTime;
-use tonic::{Request, Response, Status};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 use uuid::Uuid;
 
 #[derive(sqlx::Type, Debug, Deserialize)]
@@ -169,10 +187,15 @@ pub async fn get_profile(
 
 #[cfg(test)]
 mod tests {
-    use crate::grpc::defs::profile_def::v1::GetProfileRequest;
-    use crate::test_utils::test_grpc_service;
+    use crate::{
+        grpc::defs::profile_def::v1::GetProfileRequest,
+        test_utils::test_grpc_service,
+    };
     use sqlx::PgPool;
-    use tonic::{Code, Request};
+    use tonic::{
+        Code,
+        Request,
+    };
 
     // Logged-out
 

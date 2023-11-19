@@ -1,21 +1,45 @@
-use crate::grpc::defs::token_def::v1::TokenType;
 use crate::{
-    constants::{email_source::EMAIL_SOURCE, email_templates::EmailTemplate},
-    error::{AppError, FormErrorResponse},
+    constants::{
+        email_source::EMAIL_SOURCE,
+        email_templates::EmailTemplate,
+    },
+    error::{
+        AppError,
+        FormErrorResponse,
+    },
+    grpc::defs::token_def::v1::TokenType,
     AppState,
 };
-use actix_web::{post, web, HttpResponse};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::Json;
 use argon2::{
-    password_hash::{rand_core::OsRng, SaltString},
-    Argon2, PasswordHasher,
+    password_hash::{
+        rand_core::OsRng,
+        SaltString,
+    },
+    Argon2,
+    PasswordHasher,
 };
 use email_address::EmailAddress;
 use nanoid::nanoid;
-use rusoto_ses::{Destination, SendTemplatedEmailRequest, Ses};
-use serde::{Deserialize, Serialize};
+use rusoto_ses::{
+    Destination,
+    SendTemplatedEmailRequest,
+    Ses,
+};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use sqlx::Row;
-use time::{Duration, OffsetDateTime};
+use time::{
+    Duration,
+    OffsetDateTime,
+};
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
@@ -132,7 +156,10 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_form_error_response, init_app_for_test};
+    use crate::test_utils::{
+        assert_form_error_response,
+        init_app_for_test,
+    };
     use actix_web::test;
     use sqlx::PgPool;
 

@@ -1,19 +1,50 @@
-use crate::constants::redis_namespaces::RedisNamespace;
 use crate::{
     config::Config,
-    middleware::identity::{identity::Identity, middleware::IdentityMiddleware},
+    constants::redis_namespaces::RedisNamespace,
+    middleware::identity::{
+        identity::Identity,
+        middleware::IdentityMiddleware,
+    },
     oauth::get_oauth_client_map,
     AppState,
 };
-use actix_extended_session::config::{CookieContentSecurity, PersistentSession};
-use actix_extended_session::{storage::RedisSessionStore, SessionMiddleware};
-use actix_http::{HttpMessage, Request};
-use actix_web::{
-    cookie::{Cookie, Key, SameSite},
-    dev::{HttpServiceFactory, Service, ServiceResponse},
-    get, post, test, web, App, Error, HttpRequest, HttpResponse, Responder,
+use actix_extended_session::{
+    config::{
+        CookieContentSecurity,
+        PersistentSession,
+    },
+    storage::RedisSessionStore,
+    SessionMiddleware,
 };
-use rusoto_mock::{MockCredentialsProvider, MockRequestDispatcher};
+use actix_http::{
+    HttpMessage,
+    Request,
+};
+use actix_web::{
+    cookie::{
+        Cookie,
+        Key,
+        SameSite,
+    },
+    dev::{
+        HttpServiceFactory,
+        Service,
+        ServiceResponse,
+    },
+    get,
+    post,
+    test,
+    web,
+    App,
+    Error,
+    HttpRequest,
+    HttpResponse,
+    Responder,
+};
+use rusoto_mock::{
+    MockCredentialsProvider,
+    MockRequestDispatcher,
+};
 use rusoto_s3::S3Client;
 use rusoto_ses::SesClient;
 use rusoto_signature::Region;
@@ -38,8 +69,8 @@ pub async fn empty_service() -> impl Responder {
 /// * `service_factory` - Service factory
 /// * `db_pool` - Postgres pool
 /// * `logged_in` - Whether to create a session for the user.
-/// * `skip_inserting_user` - Whether to skip inserting the user into the database when
-///   `logged_in` is enabled.
+/// * `skip_inserting_user` - Whether to skip inserting the user into the database when `logged_in`
+///   is enabled.
 pub async fn init_app_for_test(
     service_factory: impl HttpServiceFactory + 'static,
     db_pool: PgPool,

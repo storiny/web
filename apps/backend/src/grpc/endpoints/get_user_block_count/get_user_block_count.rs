@@ -1,7 +1,16 @@
-use crate::grpc::defs::user_def::v1::{GetUserBlockCountRequest, GetUserBlockCountResponse};
-use crate::grpc::service::GrpcService;
+use crate::grpc::{
+    defs::user_def::v1::{
+        GetUserBlockCountRequest,
+        GetUserBlockCountResponse,
+    },
+    service::GrpcService,
+};
 use sqlx::Row;
-use tonic::{Request, Response, Status};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 
 /// Returns the blocked user count for a user.
 pub async fn get_user_block_count(
@@ -39,8 +48,10 @@ pub async fn get_user_block_count(
 
 #[cfg(test)]
 mod tests {
-    use crate::grpc::defs::user_def::v1::GetUserBlockCountRequest;
-    use crate::test_utils::test_grpc_service;
+    use crate::{
+        grpc::defs::user_def::v1::GetUserBlockCountRequest,
+        test_utils::test_grpc_service,
+    };
     use sqlx::PgPool;
     use tonic::Request;
 

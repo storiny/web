@@ -1,19 +1,50 @@
 use crate::{
     constants::buckets::S3_UPLOADS_BUCKET,
-    error::{AppError, ToastErrorResponse},
+    error::{
+        AppError,
+        ToastErrorResponse,
+    },
     middleware::identity::identity::Identity,
     AppState,
 };
-use actix_multipart::form::{tempfile::TempFile, text::Text, MultipartForm};
-use actix_web::{post, web, HttpResponse};
+use actix_multipart::form::{
+    tempfile::TempFile,
+    text::Text,
+    MultipartForm,
+};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
 use colors_transform::Rgb;
 use dominant_color::get_colors;
-use image::{imageops::FilterType, EncodableLayout, GenericImageView, ImageOutputFormat};
-use mime::{IMAGE_GIF, IMAGE_JPEG, IMAGE_PNG};
-use rusoto_s3::{DeleteObjectRequest, PutObjectRequest, S3};
-use serde::{Deserialize, Serialize};
+use image::{
+    imageops::FilterType,
+    EncodableLayout,
+    GenericImageView,
+    ImageOutputFormat,
+};
+use mime::{
+    IMAGE_GIF,
+    IMAGE_JPEG,
+    IMAGE_PNG,
+};
+use rusoto_s3::{
+    DeleteObjectRequest,
+    PutObjectRequest,
+    S3,
+};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use sqlx::Row;
-use std::io::{BufReader, Cursor, Read};
+use std::io::{
+    BufReader,
+    Cursor,
+    Read,
+};
 use uuid::Uuid;
 
 static MAX_FILE_SIZE: usize = 1024 * 1024 * 10; // 10 MB
@@ -233,20 +264,35 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::config::Config;
-    use crate::oauth::get_oauth_client_map;
-    use actix_web::{App, HttpServer};
+    use crate::{
+        config::Config,
+        oauth::get_oauth_client_map,
+    };
+    use actix_web::{
+        App,
+        HttpServer,
+    };
     use reqwest::{
         self,
-        multipart::{Form, Part},
-        Body, Client,
+        multipart::{
+            Form,
+            Part,
+        },
+        Body,
+        Client,
     };
-    use rusoto_mock::{MockCredentialsProvider, MockRequestDispatcher};
+    use rusoto_mock::{
+        MockCredentialsProvider,
+        MockRequestDispatcher,
+    };
     use rusoto_s3::S3Client;
     use rusoto_ses::SesClient;
     use rusoto_signature::Region;
     use sqlx::PgPool;
-    use std::{net::TcpListener, str};
+    use std::{
+        net::TcpListener,
+        str,
+    };
     use tokio_util::codec::BytesCodec;
     use user_agent_parser::UserAgentParser;
 

@@ -1,6 +1,9 @@
 #[cfg(test)]
 mod tests {
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test(fixtures("user", "story"))]
     async fn can_like_a_story(pool: PgPool) -> sqlx::Result<()> {

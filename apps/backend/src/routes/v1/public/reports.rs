@@ -1,7 +1,18 @@
-use crate::{constants::report_type::REPORT_TYPE_VEC, error::AppError, AppState};
-use actix_web::{post, web, HttpResponse};
+use crate::{
+    constants::report_type::REPORT_TYPE_VEC,
+    error::AppError,
+    AppState,
+};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::Json;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
@@ -56,10 +67,16 @@ mod tests {
     use super::*;
     use crate::{
         constants::report_type::ReportType,
-        test_utils::{assert_response_body_text, init_app_for_test},
+        test_utils::{
+            assert_response_body_text,
+            init_app_for_test,
+        },
     };
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test]
     async fn can_add_a_report(pool: PgPool) -> sqlx::Result<()> {

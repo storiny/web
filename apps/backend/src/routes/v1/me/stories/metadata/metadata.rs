@@ -1,13 +1,27 @@
 use crate::{
     constants::sql_states::SqlState,
-    error::{AppError, FormErrorResponse, ToastErrorResponse},
+    error::{
+        AppError,
+        FormErrorResponse,
+        ToastErrorResponse,
+    },
     middleware::identity::identity::Identity,
-    models::{story::STORY_CATEGORY_VEC, tag::TAG_REGEX},
+    models::{
+        story::STORY_CATEGORY_VEC,
+        tag::TAG_REGEX,
+    },
     AppState,
 };
-use actix_web::{patch, web, HttpResponse};
+use actix_web::{
+    patch,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::Json;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use sqlx::Row;
 use uuid::Uuid;
 use validator::Validate;
@@ -100,7 +114,7 @@ async fn patch(
                                     sqlx::Error::RowNotFound => Ok(HttpResponse::BadRequest()
                                         .json(ToastErrorResponse::new("Invalid splash ID"))),
                                     _ => Ok(HttpResponse::InternalServerError().finish()),
-                                }
+                                };
                             }
                         };
                     }
@@ -189,7 +203,8 @@ async fn patch(
                         },
                         Err(err) => {
                             if let Some(db_err) = err.into_database_error() {
-                                // Check for error returned from `update_draft_or_story_tags` function.
+                                // Check for error returned from `update_draft_or_story_tags`
+                                // function.
                                 if db_err.code().unwrap_or_default()
                                     == SqlState::EntityUnavailable.to_string()
                                 {
@@ -219,12 +234,24 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::{
-        grpc::defs::story_def::v1::{StoryAgeRestriction, StoryLicense, StoryVisibility},
+        grpc::defs::story_def::v1::{
+            StoryAgeRestriction,
+            StoryLicense,
+            StoryVisibility,
+        },
         models::story::StoryCategory,
-        test_utils::{assert_form_error_response, assert_toast_error_response, init_app_for_test},
+        test_utils::{
+            assert_form_error_response,
+            assert_toast_error_response,
+            init_app_for_test,
+        },
     };
     use actix_web::test;
-    use sqlx::{FromRow, PgPool, Row};
+    use sqlx::{
+        FromRow,
+        PgPool,
+        Row,
+    };
 
     /// Metadata without `tags` and with `splash_hex`.
     #[derive(Debug, FromRow)]

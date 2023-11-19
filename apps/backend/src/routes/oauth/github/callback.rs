@@ -1,16 +1,30 @@
-use crate::oauth::icons::github::GITHUB_LOGO;
 use crate::{
     error::AppError,
     grpc::defs::connection_def::v1::Provider,
     middleware::identity::identity::Identity,
-    routes::oauth::{AuthRequest, ConnectionError},
-    AppState, ConnectionTemplate,
+    oauth::icons::github::GITHUB_LOGO,
+    routes::oauth::{
+        AuthRequest,
+        ConnectionError,
+    },
+    AppState,
+    ConnectionTemplate,
 };
 use actix_extended_session::Session;
-use actix_web::http::header::{self, ContentType};
-use actix_web::{get, web, HttpResponse};
+use actix_web::{
+    get,
+    http::header::{
+        self,
+        ContentType,
+    },
+    web,
+    HttpResponse,
+};
 use actix_web_validator::QsQuery;
-use oauth2::{AuthorizationCode, TokenResponse};
+use oauth2::{
+    AuthorizationCode,
+    TokenResponse,
+};
 use reqwest::StatusCode;
 use sailfish::TemplateOnce;
 use serde::Deserialize;

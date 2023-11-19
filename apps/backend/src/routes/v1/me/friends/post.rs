@@ -1,9 +1,18 @@
-use crate::error::ToastErrorResponse;
 use crate::{
-    constants::sql_states::SqlState, error::AppError, middleware::identity::identity::Identity,
+    constants::sql_states::SqlState,
+    error::{
+        AppError,
+        ToastErrorResponse,
+    },
+    middleware::identity::identity::Identity,
+    models::notification::NotificationEntityType,
     AppState,
 };
-use actix_web::{post, web, HttpResponse};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
 use serde::Deserialize;
 use validator::Validate;
 
@@ -24,12 +33,27 @@ async fn post(
                 Ok(receiver_id) => {
                     match sqlx::query(
                         r#"
-                        INSERT INTO friends(transmitter_id, receiver_id)
-                        VALUES ($1, $2)
+                        WITH
+                            inserted_friend AS (
+                                INSERT INTO friends(transmitter_id, receiver_id)
+                                VALUES ($1, $2)
+                            ),
+                            inserted_notification AS (
+                                INSERT INTO notifications (entity_type, entity_id, notifier_id)
+                                VALUES ($3, $1, $1)
+                                RETURNING id
+                            )
+                        INSERT
+                        INTO
+                            notification_outs (notified_id, notification_id)
+                        SELECT
+                            $2,
+                            (SELECT id FROM inserted_notification)
                         "#,
                     )
                     .bind(user_id)
                     .bind(receiver_id)
+                    .bind(NotificationEntityType::FriendReqReceived as i16)
                     .execute(&data.db_pool)
                     .await
                     {
@@ -69,7 +93,8 @@ async fn post(
                                                     "You are being blocked by the user",
                                                 ),
                                             ))
-                                        // Check whether the receiver is accepting friend requests from the transmitter
+                                        // Check whether the receiver is accepting friend requests
+                                        // from the transmitter
                                         } else if err_code
                                             == SqlState::ReceiverNotAcceptingFriendRequest
                                                 .to_string()
@@ -103,10 +128,18 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::grpc::defs::privacy_settings_def::v1::IncomingFriendRequest;
-    use crate::test_utils::{assert_toast_error_response, init_app_for_test};
+    use crate::{
+        grpc::defs::privacy_settings_def::v1::IncomingFriendRequest,
+        test_utils::{
+            assert_toast_error_response,
+            init_app_for_test,
+        },
+    };
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test(fixtures("friend"))]
     async fn can_send_a_friend_request(pool: PgPool) -> sqlx::Result<()> {
@@ -130,8 +163,31 @@ mod tests {
             )
             "#,
         )
-        .bind(user_id)
+        .bind(user_id.unwrap())
         .bind(2_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(result.get::<bool, _>("exists"));
+
+        // Should also insert a notification
+        let result = sqlx::query(
+            r#"
+            SELECT
+                EXISTS (
+                    SELECT
+                        1
+                    FROM
+                        notification_outs
+                    WHERE
+                        notification_id = (
+                            SELECT id FROM notifications
+                            WHERE entity_id = $1
+                        )
+                   )
+            "#,
+        )
+        .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
         .await?;
 
@@ -144,7 +200,8 @@ mod tests {
     async fn should_not_throw_when_sending_a_friend_request_to_an_existing_friend(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
 
         // Send the friend request for the first time
         let req = test::TestRequest::post()
@@ -164,6 +221,26 @@ mod tests {
 
         // Should not throw
         assert!(res.status().is_success());
+
+        // Should not insert another notification
+        let result = sqlx::query(
+            r#"
+            SELECT
+                1
+            FROM
+                notification_outs
+            WHERE
+                notification_id = (
+                    SELECT id FROM notifications
+                    WHERE entity_id = $1
+                )
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .fetch_all(&mut *conn)
+        .await?;
+
+        assert_eq!(result.len(), 1);
 
         Ok(())
     }

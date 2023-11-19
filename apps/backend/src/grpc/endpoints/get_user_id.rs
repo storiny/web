@@ -1,15 +1,22 @@
-use crate::constants::redis_namespaces::RedisNamespace;
 use crate::{
+    constants::redis_namespaces::RedisNamespace,
     grpc::{
-        defs::user_def::v1::{GetUserIdRequest, GetUserIdResponse},
+        defs::user_def::v1::{
+            GetUserIdRequest,
+            GetUserIdResponse,
+        },
         service::GrpcService,
     },
     utils::extract_session_key_from_cookie::extract_session_key_from_cookie,
 };
-use actix_web::cookie::Key;
+use cookie::Key;
 use deadpool_redis::redis::cmd;
 use serde::Deserialize;
-use tonic::{Request, Response, Status};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 
 #[derive(Debug, Deserialize)]
 struct CacheResponse {
@@ -55,10 +62,17 @@ pub async fn get_user_id(
 mod tests {
     use crate::{
         grpc::defs::user_def::v1::GetUserIdRequest,
-        test_utils::{empty_service, init_app_for_test, test_grpc_service},
+        test_utils::{
+            empty_service,
+            init_app_for_test,
+            test_grpc_service,
+        },
     };
     use sqlx::PgPool;
-    use tonic::{Code, Request};
+    use tonic::{
+        Code,
+        Request,
+    };
 
     #[sqlx::test]
     async fn can_return_user_id(pool: PgPool) {

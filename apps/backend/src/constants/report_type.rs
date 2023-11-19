@@ -1,9 +1,20 @@
 use lazy_static::lazy_static;
-use serde::{Deserialize, Serialize};
-use std::iter::Iterator;
-use std::string::ToString;
-use strum::{Display, IntoEnumIterator};
-use strum_macros::{EnumCount as EnumCountMacro, EnumIter};
+use serde::{
+    Deserialize,
+    Serialize,
+};
+use std::{
+    iter::Iterator,
+    string::ToString,
+};
+use strum::{
+    Display,
+    IntoEnumIterator,
+};
+use strum_macros::{
+    EnumCount as EnumCountMacro,
+    EnumIter,
+};
 
 lazy_static! {
     pub static ref REPORT_TYPE_VEC: Vec<String> = ReportType::iter()

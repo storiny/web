@@ -1,8 +1,15 @@
 use crate::{
-    constants::sql_states::SqlState, error::AppError, middleware::identity::identity::Identity,
+    constants::sql_states::SqlState,
+    error::AppError,
+    middleware::identity::identity::Identity,
+    models::notification::NotificationEntityType,
     AppState,
 };
-use actix_web::{post, web, HttpResponse};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
 use serde::Deserialize;
 use validator::Validate;
 
@@ -23,12 +30,27 @@ async fn post(
                 Ok(followed_id) => {
                     match sqlx::query(
                         r#"
-                        INSERT INTO relations(follower_id, followed_id)
-                        VALUES ($1, $2)
+                        WITH
+                            inserted_relation AS (
+                                INSERT INTO relations(follower_id, followed_id)
+                                VALUES ($1, $2)
+                            ),
+                            inserted_notification AS (
+                                INSERT INTO notifications (entity_type, entity_id, notifier_id)
+                                VALUES ($3, $1, $1)
+                                RETURNING id
+                            )
+                        INSERT
+                        INTO
+                            notification_outs (notified_id, notification_id)
+                        SELECT
+                            $2,
+                            (SELECT id FROM inserted_notification)
                         "#,
                     )
                     .bind(user_id)
                     .bind(followed_id)
+                    .bind(NotificationEntityType::FollowerAdd as i16)
                     .execute(&data.db_pool)
                     .await
                     {
@@ -82,9 +104,15 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_response_body_text, init_app_for_test};
+    use crate::test_utils::{
+        assert_response_body_text,
+        init_app_for_test,
+    };
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test(fixtures("following"))]
     async fn can_follow_a_user(pool: PgPool) -> sqlx::Result<()> {
@@ -108,8 +136,31 @@ mod tests {
             )
             "#,
         )
-        .bind(user_id)
+        .bind(user_id.unwrap())
         .bind(2_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(result.get::<bool, _>("exists"));
+
+        // Should also insert a notification
+        let result = sqlx::query(
+            r#"
+            SELECT
+                EXISTS (
+                    SELECT
+                        1
+                    FROM
+                        notification_outs
+                    WHERE
+                        notification_id = (
+                            SELECT id FROM notifications
+                            WHERE entity_id = $1
+                        )
+                   )
+            "#,
+        )
+        .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
         .await?;
 

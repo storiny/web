@@ -1,12 +1,27 @@
 use crate::{
-    error::AppError, error::FormErrorResponse, grpc::defs::user_def::v1::StatusDuration,
-    middleware::identity::identity::Identity, AppState,
+    error::{
+        AppError,
+        FormErrorResponse,
+    },
+    grpc::defs::user_def::v1::StatusDuration,
+    middleware::identity::identity::Identity,
+    AppState,
 };
-use actix_web::{post, web, HttpResponse};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::Json;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use sqlx::FromRow;
-use time::{Duration, OffsetDateTime};
+use time::{
+    Duration,
+    OffsetDateTime,
+};
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
@@ -103,10 +118,18 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::assert_form_error_response;
-    use crate::{grpc::defs::user_def::v1::StatusVisibility, test_utils::init_app_for_test};
+    use crate::{
+        grpc::defs::user_def::v1::StatusVisibility,
+        test_utils::{
+            assert_form_error_response,
+            init_app_for_test,
+        },
+    };
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test]
     async fn can_set_a_status(pool: PgPool) -> sqlx::Result<()> {
@@ -174,9 +197,11 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(result
-            .get::<Option<OffsetDateTime>, _>("expires_at")
-            .is_some());
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("expires_at")
+                .is_some()
+        );
 
         Ok(())
     }

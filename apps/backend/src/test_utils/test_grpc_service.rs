@@ -1,20 +1,31 @@
 use crate::{
     config::Config,
     grpc::{
-        defs::grpc_service::{
-            v1::api_service_client::ApiServiceClient, v1::api_service_server::ApiServiceServer,
+        defs::grpc_service::v1::{
+            api_service_client::ApiServiceClient,
+            api_service_server::ApiServiceServer,
         },
         service::GrpcService,
     },
 };
 use deadpool_redis::Pool as RedisPool;
 use sqlx::PgPool;
-use std::future::Future;
-use std::sync::Arc;
+use std::{
+    future::Future,
+    sync::Arc,
+};
 use tempfile::NamedTempFile;
-use tokio::net::{UnixListener, UnixStream};
+use tokio::net::{
+    UnixListener,
+    UnixStream,
+};
 use tokio_stream::wrappers::UnixListenerStream;
-use tonic::transport::{Channel, Endpoint, Server, Uri};
+use tonic::transport::{
+    Channel,
+    Endpoint,
+    Server,
+    Uri,
+};
 use tower::service_fn;
 
 /// Initializes the GRPC service and executes the body of test closure.

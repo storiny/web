@@ -1,11 +1,20 @@
-use crate::constants::redis_namespaces::RedisNamespace;
-use crate::utils::get_client_device::ClientDevice;
-use crate::utils::get_client_location::ClientLocation;
+use crate::{
+    constants::redis_namespaces::RedisNamespace,
+    utils::{
+        get_client_device::ClientDevice,
+        get_client_location::ClientLocation,
+    },
+};
 use deadpool_redis::Pool as RedisPool;
 use futures::stream::StreamExt;
-use redis::AsyncCommands;
-use redis::AsyncIter;
-use serde::{Deserialize, Serialize};
+use redis::{
+    AsyncCommands,
+    AsyncIter,
+};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct UserSession {
@@ -70,9 +79,23 @@ pub async fn get_user_sessions(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{init_app_for_test, res_to_string};
-    use crate::AppState;
-    use actix_web::{delete, get, post, services, test, web, HttpResponse, Responder};
+    use crate::{
+        test_utils::{
+            init_app_for_test,
+            res_to_string,
+        },
+        AppState,
+    };
+    use actix_web::{
+        delete,
+        get,
+        post,
+        services,
+        test,
+        web,
+        HttpResponse,
+        Responder,
+    };
     use sqlx::PgPool;
     use time::OffsetDateTime;
     use uuid::Uuid;

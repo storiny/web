@@ -1,8 +1,19 @@
-use crate::constants::redis_namespaces::RedisNamespace;
-use crate::{middleware::identity::identity::Identity, AppState};
-use actix_web::{post, web, HttpResponse, Responder};
+use crate::{
+    constants::redis_namespaces::RedisNamespace,
+    middleware::identity::identity::Identity,
+    AppState,
+};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+    Responder,
+};
 use actix_web_validator::Json;
-use redis::{AsyncCommands, RedisResult};
+use redis::{
+    AsyncCommands,
+    RedisResult,
+};
 use serde::Deserialize;
 use validator::Validate;
 

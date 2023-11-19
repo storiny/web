@@ -1,11 +1,26 @@
-use crate::grpc::defs::story_def::v1::{StoryAgeRestriction, StoryLicense, StoryVisibility};
+use crate::grpc::defs::story_def::v1::{
+    StoryAgeRestriction,
+    StoryLicense,
+    StoryVisibility,
+};
 use lazy_static::lazy_static;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use sqlx::FromRow;
-use std::iter::Iterator;
-use std::string::ToString;
-use strum::{Display, IntoEnumIterator};
-use strum_macros::{EnumCount as EnumCountMacro, EnumIter};
+use std::{
+    iter::Iterator,
+    string::ToString,
+};
+use strum::{
+    Display,
+    IntoEnumIterator,
+};
+use strum_macros::{
+    EnumCount as EnumCountMacro,
+    EnumIter,
+};
 use time::OffsetDateTime;
 use uuid::Uuid;
 

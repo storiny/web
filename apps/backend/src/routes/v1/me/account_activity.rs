@@ -1,12 +1,24 @@
 use crate::{
-    constants::account_activity_type::AccountActivityType, error::AppError,
-    middleware::identity::identity::Identity, AppState,
+    constants::account_activity_type::AccountActivityType,
+    error::AppError,
+    middleware::identity::identity::Identity,
+    AppState,
 };
-use actix_web::{get, web, HttpResponse};
+use actix_web::{
+    get,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::QsQuery;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use sqlx::FromRow;
-use time::{format_description, OffsetDateTime};
+use time::{
+    format_description,
+    OffsetDateTime,
+};
 use validator::Validate;
 
 #[derive(Serialize, Deserialize, Validate)]
@@ -102,7 +114,10 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{init_app_for_test, res_to_string};
+    use crate::test_utils::{
+        init_app_for_test,
+        res_to_string,
+    };
     use actix_web::test;
     use sqlx::PgPool;
 
@@ -126,11 +141,13 @@ mod tests {
         let creation_activity = &json_data[0];
 
         // Should return description generated at the application layer
-        assert!(creation_activity
-            .description
-            .clone()
-            .unwrap()
-            .starts_with("You created this account on"));
+        assert!(
+            creation_activity
+                .description
+                .clone()
+                .unwrap()
+                .starts_with("You created this account on")
+        );
 
         Ok(())
     }

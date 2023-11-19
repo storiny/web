@@ -1,5 +1,13 @@
-use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
-use actix_web::{post, web, HttpResponse};
+use crate::{
+    error::AppError,
+    middleware::identity::identity::Identity,
+    AppState,
+};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
 use serde::Deserialize;
 use validator::Validate;
 
@@ -49,9 +57,15 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_response_body_text, init_app_for_test};
+    use crate::test_utils::{
+        assert_response_body_text,
+        init_app_for_test,
+    };
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::{
+        PgPool,
+        Row,
+    };
     use time::OffsetDateTime;
 
     #[sqlx::test(fixtures("notification"))]
@@ -73,9 +87,11 @@ mod tests {
         .await?;
 
         // `read_at` should be NULL initially
-        assert!(insert_result
-            .get::<Option<OffsetDateTime>, _>("read_at")
-            .is_none());
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("read_at")
+                .is_none()
+        );
 
         // Mark the notification as read
         let req = test::TestRequest::post()
@@ -140,9 +156,11 @@ mod tests {
         .await?;
 
         // `read_at` should be NULL initially
-        assert!(insert_result
-            .get::<Option<OffsetDateTime>, _>("read_at")
-            .is_none());
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("read_at")
+                .is_none()
+        );
 
         // Mark the notification as read
         let req = test::TestRequest::post()

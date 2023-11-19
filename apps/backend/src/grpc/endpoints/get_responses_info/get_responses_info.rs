@@ -1,9 +1,16 @@
 use crate::grpc::{
-    defs::response_def::v1::{GetResponsesInfoRequest, GetResponsesInfoResponse},
+    defs::response_def::v1::{
+        GetResponsesInfoRequest,
+        GetResponsesInfoResponse,
+    },
     service::GrpcService,
 };
 use sqlx::Row;
-use tonic::{Request, Response, Status};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 
 /// Returns the `comment_count` and `reply_count` for a user.
 pub async fn get_responses_info(
@@ -51,7 +58,8 @@ pub async fn get_responses_info(
 #[cfg(test)]
 mod tests {
     use crate::{
-        grpc::defs::response_def::v1::GetResponsesInfoRequest, test_utils::test_grpc_service,
+        grpc::defs::response_def::v1::GetResponsesInfoRequest,
+        test_utils::test_grpc_service,
     };
     use sqlx::PgPool;
     use tonic::Request;

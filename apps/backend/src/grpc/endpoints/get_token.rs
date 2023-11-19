@@ -1,8 +1,18 @@
-use crate::grpc::defs::token_def::v1::{GetTokenRequest, GetTokenResponse, TokenType};
-use crate::grpc::service::GrpcService;
+use crate::grpc::{
+    defs::token_def::v1::{
+        GetTokenRequest,
+        GetTokenResponse,
+        TokenType,
+    },
+    service::GrpcService,
+};
 use sqlx::Row;
 use time::OffsetDateTime;
-use tonic::{Request, Response, Status};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 
 /// Returns the token object.
 pub async fn get_token(
@@ -54,10 +64,18 @@ pub async fn get_token(
 
 #[cfg(test)]
 mod tests {
-    use crate::grpc::defs::token_def::v1::{GetTokenRequest, TokenType};
-    use crate::test_utils::test_grpc_service;
+    use crate::{
+        grpc::defs::token_def::v1::{
+            GetTokenRequest,
+            TokenType,
+        },
+        test_utils::test_grpc_service,
+    };
     use sqlx::PgPool;
-    use time::{Duration, OffsetDateTime};
+    use time::{
+        Duration,
+        OffsetDateTime,
+    };
     use tonic::Request;
 
     #[sqlx::test]

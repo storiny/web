@@ -1,7 +1,16 @@
-use crate::grpc::defs::user_def::v1::{GetUserMuteCountRequest, GetUserMuteCountResponse};
-use crate::grpc::service::GrpcService;
+use crate::grpc::{
+    defs::user_def::v1::{
+        GetUserMuteCountRequest,
+        GetUserMuteCountResponse,
+    },
+    service::GrpcService,
+};
 use sqlx::Row;
-use tonic::{Request, Response, Status};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 
 /// Returns the muted user count for a user.
 pub async fn get_user_mute_count(
@@ -39,8 +48,10 @@ pub async fn get_user_mute_count(
 
 #[cfg(test)]
 mod tests {
-    use crate::grpc::defs::user_def::v1::GetUserMuteCountRequest;
-    use crate::test_utils::test_grpc_service;
+    use crate::{
+        grpc::defs::user_def::v1::GetUserMuteCountRequest,
+        test_utils::test_grpc_service,
+    };
     use sqlx::PgPool;
     use tonic::Request;
 

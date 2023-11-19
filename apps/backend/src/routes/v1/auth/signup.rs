@@ -1,27 +1,50 @@
-use crate::grpc::defs::token_def::v1::TokenType;
-use crate::models::user::USERNAME_REGEX;
 use crate::{
     constants::{
-        email_source::EMAIL_SOURCE, email_templates::EmailTemplate,
+        email_source::EMAIL_SOURCE,
+        email_templates::EmailTemplate,
         reserved_usernames::RESERVED_USERNAMES,
     },
-    error::{AppError, FormErrorResponse, ToastErrorResponse},
+    error::{
+        AppError,
+        FormErrorResponse,
+        ToastErrorResponse,
+    },
+    grpc::defs::token_def::v1::TokenType,
     middleware::identity::identity::Identity,
+    models::user::USERNAME_REGEX,
     AppState,
 };
-use actix_web::{post, web, HttpResponse};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::Json;
 use argon2::{
-    password_hash::{rand_core::OsRng, SaltString},
-    Argon2, PasswordHasher,
+    password_hash::{
+        rand_core::OsRng,
+        SaltString,
+    },
+    Argon2,
+    PasswordHasher,
 };
 use email_address::EmailAddress;
 use nanoid::nanoid;
-use rusoto_ses::{Destination, SendTemplatedEmailRequest, Ses};
-use serde::{Deserialize, Serialize};
+use rusoto_ses::{
+    Destination,
+    SendTemplatedEmailRequest,
+    Ses,
+};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use slugify::slugify;
 use sqlx::Row;
-use time::{Duration, OffsetDateTime};
+use time::{
+    Duration,
+    OffsetDateTime,
+};
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
@@ -206,9 +229,15 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_form_error_response, init_app_for_test};
+    use crate::test_utils::{
+        assert_form_error_response,
+        init_app_for_test,
+    };
     use actix_web::test;
-    use argon2::{PasswordHash, PasswordVerifier};
+    use argon2::{
+        PasswordHash,
+        PasswordVerifier,
+    };
     use sqlx::PgPool;
 
     #[sqlx::test]
@@ -245,12 +274,14 @@ mod tests {
         assert_eq!(user.get::<String, _>("name"), "Some user".to_string());
 
         // Check whether the hashed password matches
-        assert!(Argon2::default()
-            .verify_password(
-                "some_secret_password".as_bytes(),
-                &PasswordHash::new(&user.get::<String, _>("password")).unwrap(),
-            )
-            .is_ok());
+        assert!(
+            Argon2::default()
+                .verify_password(
+                    "some_secret_password".as_bytes(),
+                    &PasswordHash::new(&user.get::<String, _>("password")).unwrap(),
+                )
+                .is_ok()
+        );
 
         // Should also insert an e-mail verification token
         let token = sqlx::query(

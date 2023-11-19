@@ -1,7 +1,16 @@
-use crate::grpc::defs::tag_def::v1::{GetFollowedTagCountRequest, GetFollowedTagCountResponse};
-use crate::grpc::service::GrpcService;
+use crate::grpc::{
+    defs::tag_def::v1::{
+        GetFollowedTagCountRequest,
+        GetFollowedTagCountResponse,
+    },
+    service::GrpcService,
+};
 use sqlx::Row;
-use tonic::{Request, Response, Status};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 
 /// Returns the followed tag count for a user.
 pub async fn get_followed_tag_count(
@@ -39,8 +48,10 @@ pub async fn get_followed_tag_count(
 
 #[cfg(test)]
 mod tests {
-    use crate::grpc::defs::tag_def::v1::GetFollowedTagCountRequest;
-    use crate::test_utils::test_grpc_service;
+    use crate::{
+        grpc::defs::tag_def::v1::GetFollowedTagCountRequest,
+        test_utils::test_grpc_service,
+    };
     use sqlx::PgPool;
     use tonic::Request;
 

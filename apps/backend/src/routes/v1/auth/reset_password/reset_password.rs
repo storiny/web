@@ -1,16 +1,33 @@
-use crate::grpc::defs::token_def::v1::TokenType;
 use crate::{
-    error::{AppError, FormErrorResponse, ToastErrorResponse},
+    error::{
+        AppError,
+        FormErrorResponse,
+        ToastErrorResponse,
+    },
+    grpc::defs::token_def::v1::TokenType,
     AppState,
 };
-use actix_web::{post, web, HttpResponse};
+use actix_web::{
+    post,
+    web,
+    HttpResponse,
+};
 use actix_web_validator::Json;
 use argon2::{
-    password_hash::{rand_core::OsRng, SaltString},
-    Argon2, PasswordHash, PasswordHasher, PasswordVerifier,
+    password_hash::{
+        rand_core::OsRng,
+        SaltString,
+    },
+    Argon2,
+    PasswordHash,
+    PasswordHasher,
+    PasswordVerifier,
 };
 use email_address::EmailAddress;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use sqlx::Row;
 use time::OffsetDateTime;
 use validator::Validate;
@@ -152,10 +169,15 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::test_utils::{
-        assert_form_error_response, assert_toast_error_response, init_app_for_test,
+        assert_form_error_response,
+        assert_toast_error_response,
+        init_app_for_test,
     };
     use actix_web::test;
-    use argon2::{PasswordHash, PasswordVerifier};
+    use argon2::{
+        PasswordHash,
+        PasswordVerifier,
+    };
     use nanoid::nanoid;
     use sqlx::PgPool;
     use time::Duration;
@@ -208,12 +230,14 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(Argon2::default()
-            .verify_password(
-                "new_password".as_bytes(),
-                &PasswordHash::new(&user.get::<String, _>("password")).unwrap(),
-            )
-            .is_ok());
+        assert!(
+            Argon2::default()
+                .verify_password(
+                    "new_password".as_bytes(),
+                    &PasswordHash::new(&user.get::<String, _>("password")).unwrap(),
+                )
+                .is_ok()
+        );
 
         // Token should get removed from the database
         let token = sqlx::query(

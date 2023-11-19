@@ -1,8 +1,21 @@
-use crate::grpc::defs::tag_def::v1::{GetTagRequest, GetTagResponse};
-use crate::grpc::service::GrpcService;
-use sqlx::{FromRow, Postgres, QueryBuilder};
+use crate::grpc::{
+    defs::tag_def::v1::{
+        GetTagRequest,
+        GetTagResponse,
+    },
+    service::GrpcService,
+};
+use sqlx::{
+    FromRow,
+    Postgres,
+    QueryBuilder,
+};
 use time::OffsetDateTime;
-use tonic::{Request, Response, Status};
+use tonic::{
+    Request,
+    Response,
+    Status,
+};
 
 #[derive(Debug, FromRow)]
 struct Tag {
@@ -120,8 +133,10 @@ pub async fn get_tag(
 
 #[cfg(test)]
 mod tests {
-    use crate::grpc::defs::tag_def::v1::GetTagRequest;
-    use crate::test_utils::test_grpc_service;
+    use crate::{
+        grpc::defs::tag_def::v1::GetTagRequest,
+        test_utils::test_grpc_service,
+    };
     use sqlx::PgPool;
     use tonic::Request;
 

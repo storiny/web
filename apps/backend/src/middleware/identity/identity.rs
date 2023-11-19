@@ -1,12 +1,26 @@
 use super::error::{
-    GetIdentityError, LoginError, LostIdentityError, MissingIdentityError, SessionExpiryError,
+    GetIdentityError,
+    LoginError,
+    LostIdentityError,
+    MissingIdentityError,
+    SessionExpiryError,
 };
 use actix_extended_session::Session;
-use actix_utils::future::{ready, Ready};
+use actix_utils::future::{
+    ready,
+    Ready,
+};
 use actix_web::{
     cookie::time::OffsetDateTime,
-    dev::{Extensions, Payload},
-    Error, FromRequest, HttpMessage, HttpRequest, HttpResponse,
+    dev::{
+        Extensions,
+        Payload,
+    },
+    Error,
+    FromRequest,
+    HttpMessage,
+    HttpRequest,
+    HttpResponse,
 };
 use serde_json::Value;
 

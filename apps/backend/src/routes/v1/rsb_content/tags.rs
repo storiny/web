@@ -1,5 +1,13 @@
-use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, Pool, Postgres, QueryBuilder};
+use serde::{
+    Deserialize,
+    Serialize,
+};
+use sqlx::{
+    FromRow,
+    Pool,
+    Postgres,
+    QueryBuilder,
+};
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 pub struct Tag {
