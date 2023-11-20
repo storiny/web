@@ -1,7 +1,7 @@
 use crate::{
     constants::redis_namespaces::RedisNamespace,
     error::ToastErrorResponse,
-    middleware::identity::identity::Identity,
+    middlewares::identity::identity::Identity,
     utils::get_user_sessions::UserSession,
     AppState,
 };

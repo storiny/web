@@ -1,5 +1,5 @@
 use crate::{
-    middleware::identity::identity::Identity,
+    middlewares::identity::identity::Identity,
     utils::clear_user_sessions::clear_user_sessions,
     AppState,
 };

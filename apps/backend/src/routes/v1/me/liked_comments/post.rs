@@ -1,7 +1,7 @@
 use crate::{
     constants::sql_states::SqlState,
     error::AppError,
-    middleware::identity::identity::Identity,
+    middlewares::identity::identity::Identity,
     AppState,
 };
 use actix_web::{

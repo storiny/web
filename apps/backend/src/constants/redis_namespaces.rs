@@ -9,4 +9,6 @@ pub enum RedisNamespace {
     Session,
     #[strum(serialize = "a:l")]
     RateLimit,
+    #[strum(serialize = "j")]
+    BackgroundJob,
 }

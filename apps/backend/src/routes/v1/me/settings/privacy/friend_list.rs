@@ -1,7 +1,7 @@
 use crate::{
     error::AppError,
     grpc::defs::privacy_settings_def::v1::RelationVisibility,
-    middleware::identity::identity::Identity,
+    middlewares::identity::identity::Identity,
     AppState,
 };
 use actix_web::{

@@ -4,7 +4,7 @@ use crate::{
         FormErrorResponse,
         ToastErrorResponse,
     },
-    middleware::identity::identity::Identity,
+    middlewares::identity::identity::Identity,
     models::{
         notification::NotificationEntityType,
         user::UserFlag,
@@ -443,7 +443,10 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::{
-        constants::redis_namespaces::RedisNamespace,
+        constants::{
+            redis_namespaces::RedisNamespace,
+            session_cookie::SESSION_COOKIE_NAME,
+        },
         test_utils::{
             assert_form_error_response,
             assert_response_body_text,
@@ -1456,7 +1459,7 @@ mod tests {
         let cookie_value = post_res
             .response()
             .cookies()
-            .find(|cookie| cookie.name() == "_storiny_sess");
+            .find(|cookie| cookie.name() == SESSION_COOKIE_NAME);
         assert!(post_res.status().is_success());
         assert!(cookie_value.is_some());
 
@@ -1517,7 +1520,7 @@ mod tests {
         let cookie_value = post_res
             .response()
             .cookies()
-            .find(|cookie| cookie.name() == "_storiny_sess")
+            .find(|cookie| cookie.name() == SESSION_COOKIE_NAME)
             .unwrap();
         assert!(post_res.status().is_success());
 
@@ -1564,7 +1567,7 @@ mod tests {
         let cookie_value = post_res
             .response()
             .cookies()
-            .find(|cookie| cookie.name() == "_storiny_sess")
+            .find(|cookie| cookie.name() == SESSION_COOKIE_NAME)
             .unwrap();
         assert!(post_res.status().is_success());
 

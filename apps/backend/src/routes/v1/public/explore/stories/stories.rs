@@ -1,6 +1,6 @@
 use crate::{
     error::AppError,
-    middleware::identity::identity::Identity,
+    middlewares::identity::identity::Identity,
     models::story::STORY_CATEGORY_VEC,
     AppState,
 };

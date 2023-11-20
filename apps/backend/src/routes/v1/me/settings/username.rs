@@ -8,7 +8,7 @@ use crate::{
         FormErrorResponse,
         ToastErrorResponse,
     },
-    middleware::identity::identity::Identity,
+    middlewares::identity::identity::Identity,
     models::user::USERNAME_REGEX,
     AppState,
 };

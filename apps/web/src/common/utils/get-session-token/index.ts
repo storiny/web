@@ -2,7 +2,7 @@ import "server-only";
 
 import { cookies } from "next/headers";
 
-export const SESSION_COOKIE_ID = "_storiny_sess";
+export const SESSION_COOKIE_ID = "__Host-storiny.auth.v1";
 
 /**
  * Returns the session cookie value if present

@@ -3,7 +3,7 @@ use crate::{
         AppError,
         ToastErrorResponse,
     },
-    middleware::identity::identity::Identity,
+    middlewares::identity::identity::Identity,
     utils::generate_totp::generate_totp,
     AppState,
 };

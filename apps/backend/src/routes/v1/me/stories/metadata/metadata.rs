@@ -5,7 +5,7 @@ use crate::{
         FormErrorResponse,
         ToastErrorResponse,
     },
-    middleware::identity::identity::Identity,
+    middlewares::identity::identity::Identity,
     models::{
         story::STORY_CATEGORY_VEC,
         tag::TAG_REGEX,

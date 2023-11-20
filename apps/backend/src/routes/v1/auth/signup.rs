@@ -10,7 +10,7 @@ use crate::{
         ToastErrorResponse,
     },
     grpc::defs::token_def::v1::TokenType,
-    middleware::identity::identity::Identity,
+    middlewares::identity::identity::Identity,
     models::user::USERNAME_REGEX,
     AppState,
 };
