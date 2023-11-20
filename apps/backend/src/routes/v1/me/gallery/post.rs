@@ -4,7 +4,7 @@ use crate::{
         pexels::PEXELS_API_URL,
     },
     error::AppError,
-    middleware::identity::identity::Identity,
+    middlewares::identity::identity::Identity,
     models::photo::Photo,
     AppState,
 };

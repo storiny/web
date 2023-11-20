@@ -14,7 +14,7 @@ use super::{
 };
 use crate::{
     error::AppError,
-    middleware::identity::identity::Identity,
+    middlewares::identity::identity::Identity,
     AppState,
 };
 use actix_web::{

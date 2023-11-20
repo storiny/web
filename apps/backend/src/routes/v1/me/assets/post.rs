@@ -4,7 +4,7 @@ use crate::{
         AppError,
         ToastErrorResponse,
     },
-    middleware::identity::identity::Identity,
+    middlewares::identity::identity::Identity,
     AppState,
 };
 use actix_multipart::form::{

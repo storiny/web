@@ -1,6 +1,6 @@
 use crate::{
     error::AppError,
-    middleware::identity::identity::Identity,
+    middlewares::identity::identity::Identity,
     utils::md_to_html::{
         md_to_html,
         MarkdownSource,

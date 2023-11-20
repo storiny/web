@@ -4,7 +4,7 @@ use crate::{
         FormErrorResponse,
         ToastErrorResponse,
     },
-    middleware::identity::identity::Identity,
+    middlewares::identity::identity::Identity,
     utils::{
         generate_recovery_codes::generate_recovery_codes,
         generate_totp::generate_totp,

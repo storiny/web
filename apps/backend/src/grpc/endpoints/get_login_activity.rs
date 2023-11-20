@@ -121,7 +121,10 @@ pub async fn get_login_activity(
 mod tests {
     use crate::{
         config::Config,
-        constants::redis_namespaces::RedisNamespace,
+        constants::{
+            redis_namespaces::RedisNamespace,
+            session_cookie::SESSION_COOKIE_NAME,
+        },
         grpc::defs::login_activity_def::v1::GetLoginActivityRequest,
         test_utils::test_grpc_service,
         utils::{
@@ -159,7 +162,7 @@ mod tests {
                 // Insert a session
                 let session_key = format!("{}:{}", user_id.unwrap(), Uuid::new_v4().to_string());
                 let secret_key = Key::from(&config.session_secret_key.as_bytes());
-                let cookie = Cookie::new("_storiny_sess", session_key.clone());
+                let cookie = Cookie::new(SESSION_COOKIE_NAME, session_key.clone());
                 let mut jar = CookieJar::new();
 
                 jar.signed_mut(&secret_key).add(cookie);

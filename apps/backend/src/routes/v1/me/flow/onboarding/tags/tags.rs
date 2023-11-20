@@ -1,6 +1,6 @@
 use crate::{
     error::AppError,
-    middleware::identity::identity::Identity,
+    middlewares::identity::identity::Identity,
     utils::decode_uri_encoded_story_categories::decode_uri_encoded_story_categories,
     AppState,
 };

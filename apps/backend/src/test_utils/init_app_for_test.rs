@@ -1,7 +1,10 @@
 use crate::{
     config::Config,
-    constants::redis_namespaces::RedisNamespace,
-    middleware::identity::{
+    constants::{
+        redis_namespaces::RedisNamespace,
+        session_cookie::SESSION_COOKIE_NAME,
+    },
+    middlewares::identity::{
         identity::Identity,
         middleware::IdentityMiddleware,
     },
@@ -127,7 +130,7 @@ pub async fn init_app_for_test(
             .wrap(
                 SessionMiddleware::builder(redis_store.clone(), secret_key.clone())
                     .session_ttl(time::Duration::weeks(1))
-                    .cookie_name("_storiny_sess".into())
+                    .cookie_name(SESSION_COOKIE_NAME.into())
                     .cookie_same_site(SameSite::None)
                     .cookie_domain(None)
                     .cookie_path("/".to_string())
@@ -196,7 +199,7 @@ pub async fn init_app_for_test(
         let cookie = res
             .response()
             .cookies()
-            .find(|cookie| cookie.name() == "_storiny_sess")
+            .find(|cookie| cookie.name() == SESSION_COOKIE_NAME)
             .unwrap();
 
         return (service, Some(cookie.into_owned()), next_user_id);

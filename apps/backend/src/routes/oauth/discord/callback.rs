@@ -1,7 +1,7 @@
 use crate::{
     error::AppError,
     grpc::defs::connection_def::v1::Provider,
-    middleware::identity::identity::Identity,
+    middlewares::identity::identity::Identity,
     oauth::icons::discord::DISCORD_LOGO,
     routes::oauth::{
         AuthRequest,

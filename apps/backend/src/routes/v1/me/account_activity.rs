@@ -1,7 +1,7 @@
 use crate::{
     constants::account_activity_type::AccountActivityType,
     error::AppError,
-    middleware::identity::identity::Identity,
+    middlewares::identity::identity::Identity,
     AppState,
 };
 use actix_web::{

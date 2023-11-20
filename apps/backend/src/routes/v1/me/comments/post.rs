@@ -4,7 +4,7 @@ use crate::{
         AppError,
         ToastErrorResponse,
     },
-    middleware::identity::identity::Identity,
+    middlewares::identity::identity::Identity,
     models::notification::NotificationEntityType,
     utils::md_to_html::{
         md_to_html,
