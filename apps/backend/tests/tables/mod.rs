@@ -5,7 +5,6 @@ pub mod bookmarks;
 pub mod comment_likes;
 pub mod comments;
 pub mod connections;
-pub mod documents;
 pub mod draft_tags;
 pub mod friends;
 pub mod histories;

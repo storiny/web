@@ -3,6 +3,10 @@ use crate::{
         AppError,
         ToastErrorResponse,
     },
+    jobs::notify::{
+        story_add_by_tag::NotifyStoryAddByTagJob,
+        story_add_by_user::NotifyStoryAddByUserJob,
+    },
     middlewares::identity::identity::Identity,
     AppState,
 };
@@ -12,6 +16,11 @@ use actix_web::{
     web,
     HttpResponse,
 };
+use apalis::{
+    prelude::Storage,
+    redis::RedisStorage as RedisJobStorage,
+};
+use futures::future;
 use nanoid::nanoid;
 use serde::Deserialize;
 use slugify::slugify;
@@ -92,6 +101,8 @@ async fn post(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
+    notify_story_add_by_user_job_storage: web::Data<RedisJobStorage<NotifyStoryAddByUserJob>>,
+    notify_story_add_by_tag_job_storage: web::Data<RedisJobStorage<NotifyStoryAddByTagJob>>,
 ) -> Result<HttpResponse, AppError> {
     match user.id() {
         Ok(user_id) => {
@@ -102,13 +113,13 @@ async fn post(
 
                     match sqlx::query(
                         r#"
-                    SELECT title FROM stories
-                    WHERE
-                        user_id = $1
-                        AND id = $2
-                        AND published_at IS NULL
-                        AND deleted_at IS NULL
-                    "#,
+                        SELECT title FROM stories
+                        WHERE
+                            user_id = $1
+                            AND id = $2
+                            AND published_at IS NULL
+                            AND deleted_at IS NULL
+                        "#,
                     )
                     .bind(user_id)
                     .bind(story_id)
@@ -125,16 +136,16 @@ async fn post(
 
                             match sqlx::query(
                                 r#"
-                            UPDATE stories
-                            SET
-                                published_at = now(),
-                                slug = $3
-                            WHERE
-                                user_id = $1
-                                AND id = $2
-                                AND published_at IS NULL
-                                AND deleted_at IS NULL
-                            "#,
+                                UPDATE stories
+                                SET
+                                    published_at = now(),
+                                    slug = $3
+                                WHERE
+                                    user_id = $1
+                                    AND id = $2
+                                    AND published_at IS NULL
+                                    AND deleted_at IS NULL
+                                "#,
                             )
                             .bind(user_id)
                             .bind(story_id)
@@ -147,6 +158,23 @@ async fn post(
                                     .json(ToastErrorResponse::new("Story not found"))),
                                 _ => {
                                     txn.commit().await?;
+
+                                    // Queue push notification jobs
+                                    let mut notify_story_add_by_user_job =
+                                        (&*notify_story_add_by_user_job_storage.into_inner())
+                                            .clone();
+                                    let mut notify_story_add_by_tag_job =
+                                        (&*notify_story_add_by_tag_job_storage.into_inner())
+                                            .clone();
+
+                                    let _ = future::try_join(
+                                        notify_story_add_by_user_job
+                                            .push(NotifyStoryAddByUserJob { story_id }),
+                                        notify_story_add_by_tag_job
+                                            .push(NotifyStoryAddByTagJob { story_id }),
+                                    )
+                                    .await;
+
                                     Ok(HttpResponse::NoContent().finish())
                                 }
                             }
@@ -175,14 +203,14 @@ async fn put(
                 Ok(story_id) => {
                     match sqlx::query(
                         r#"
-                    UPDATE stories
-                    SET edited_at = now()
-                    WHERE
-                        user_id = $1
-                        AND id = $2
-                        AND published_at IS NOT NULL
-                        AND deleted_at IS NULL
-                    "#,
+                        UPDATE stories
+                        SET edited_at = now()
+                        WHERE
+                            user_id = $1
+                            AND id = $2
+                            AND published_at IS NOT NULL
+                            AND deleted_at IS NULL
+                        "#,
                     )
                     .bind(user_id)
                     .bind(story_id)
@@ -210,18 +238,27 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{
-        assert_toast_error_response,
-        init_app_for_test,
+    use crate::{
+        jobs::notify::{
+            story_add_by_tag::NOTIFY_STORY_ADD_BY_TAG_JOB_NAME,
+            story_add_by_user::NOTIFY_STORY_ADD_BY_USER_JOB_NAME,
+        },
+        test_utils::{
+            assert_toast_error_response,
+            get_redis_pool,
+            init_app_for_test,
+        },
     };
     use actix_web::{
         services,
         test,
     };
+    use redis::AsyncCommands;
     use sqlx::{
         PgPool,
         Row,
     };
+    use std::collections::HashMap;
     use time::OffsetDateTime;
 
     // Publish a new story
@@ -270,6 +307,47 @@ mod tests {
             result
                 .get::<Option<OffsetDateTime>, _>("published_at")
                 .is_some()
+        );
+
+        // Should insert push notification jobs
+
+        #[derive(Debug, Deserialize)]
+        struct JobData {
+            story_id: i64,
+        }
+
+        #[derive(Debug, Deserialize)]
+        struct CachedJob {
+            job: JobData,
+        }
+
+        async fn get_notify_jobs_by_name(job_name: &str) -> Vec<JobData> {
+            let redis_pool = get_redis_pool().await;
+            let mut redis_conn = redis_pool.get().await.unwrap();
+
+            redis_conn
+                .hgetall::<_, HashMap<String, String>>(format!("{}:data", job_name))
+                .await
+                .expect("Notify job not found")
+                .into_iter()
+                .filter_map(|(_, data)| serde_json::from_str::<CachedJob>(&data).ok())
+                .map(|item| item.job)
+                .collect::<Vec<_>>()
+        }
+
+        let story_add_by_user_jobs =
+            get_notify_jobs_by_name(NOTIFY_STORY_ADD_BY_USER_JOB_NAME).await;
+        let story_add_by_tag_jobs = get_notify_jobs_by_name(NOTIFY_STORY_ADD_BY_TAG_JOB_NAME).await;
+
+        assert!(
+            story_add_by_user_jobs
+                .iter()
+                .any(|job| job.story_id == 2_i64)
+        );
+        assert!(
+            story_add_by_tag_jobs
+                .iter()
+                .any(|job| job.story_id == 2_i64)
         );
 
         Ok(())

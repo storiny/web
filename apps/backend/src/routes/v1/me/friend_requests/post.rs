@@ -143,18 +143,10 @@ mod tests {
         // Should also insert a notification
         let result = sqlx::query(
             r#"
-            SELECT
-                EXISTS (
-                    SELECT
-                        1
-                    FROM
-                        notification_outs
-                    WHERE
-                        notification_id = (
-                            SELECT id FROM notifications
-                            WHERE entity_id = $1
-                        )
-                   )
+            SELECT EXISTS (
+                SELECT 1 FROM notifications
+                WHERE entity_id = $1
+            )
             "#,
         )
         .bind(user_id.unwrap())

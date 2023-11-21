@@ -10,7 +10,7 @@ BEGIN
 		SELECT
 			name
 		FROM
-			draft_tags dt
+			draft_tags
 		WHERE
 			story_id = story_id_arg
 		-- Maximum 5 tags (sanity)

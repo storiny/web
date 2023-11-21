@@ -9,14 +9,16 @@ use serde::{
 };
 use std::sync::Arc;
 
-#[derive(Debug, Deserialize, Serialize)]
+pub const NOTIFY_STORY_ADD_BY_USER_JOB_NAME: &'static str = "j:n:story_add_by_user";
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct NotifyStoryAddByUserJob {
     /// The ID of the published story.
     pub story_id: i64,
 }
 
 impl Job for NotifyStoryAddByUserJob {
-    const NAME: &'static str = "j:n:story_add_by_user";
+    const NAME: &'static str = NOTIFY_STORY_ADD_BY_USER_JOB_NAME;
 }
 
 /// Notifies the followers and friends of the story writer.
@@ -28,8 +30,6 @@ pub async fn notify_story_add_by_user(
         "Attempting to insert notifications for story with ID `{}`",
         job.story_id
     );
-
-    panic!("running----");
 
     let state = ctx.data::<Arc<SharedJobState>>()?;
     let result = sqlx::query(
@@ -47,8 +47,9 @@ pub async fn notify_story_add_by_user(
             ),
             inserted_notification AS (
                 INSERT INTO notifications (entity_type, entity_id, notifier_id)
-                    VALUES ($2, $1, (SELECT user_id FROM published_story))
-                    RETURNING id
+                SELECT $2, $1, (SELECT user_id FROM published_story)
+                WHERE EXISTS (SELECT 1 FROM published_story)
+                RETURNING id
             )
         INSERT
         INTO
@@ -91,7 +92,8 @@ pub async fn notify_story_add_by_user(
     .bind(NotificationEntityType::StoryAddByUser as i16)
     .execute(&state.db_pool)
     .await
-    .map_err(|err| JobError::Failed(Box::new(err)))?;
+    .map_err(Box::new)
+    .map_err(|err| JobError::Failed(err))?;
 
     log::info!(
         "Inserted `{}` notifications for story with ID `{}`",
@@ -105,39 +107,128 @@ pub async fn notify_story_add_by_user(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::init_job_for_test;
-    use sqlx::PgPool;
+    use crate::test_utils::get_job_ctx_for_test;
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test(fixtures("story_add_by_user"))]
     async fn can_notify_story_add_by_user(pool: PgPool) -> sqlx::Result<()> {
-        let mut storage = init_job_for_test(pool).await;
-        let job_id = storage
-            .push(NotifyStoryAddByUserJob { story_id: 4_i64 })
-            .await
-            .unwrap();
+        let mut conn = pool.acquire().await?;
+        let ctx = get_job_ctx_for_test(pool).await;
+        let result =
+            notify_story_add_by_user(NotifyStoryAddByUserJob { story_id: 4_i64 }, ctx).await;
 
-        loop {
-            if storage
-                .fetch_by_id(&job_id)
-                .await
-                .unwrap()
-                .expect("Job not found")
-                .status()
-                != &JobState::Pending
-            {
-                break;
-            }
-        }
+        assert!(result.is_ok());
 
-        panic!(
-            "{:#?}",
-            storage
-                .fetch_by_id(&job_id)
-                .await
-                .unwrap()
-                .expect("Job not found")
-                .status()
-        );
+        // Notifications should be present in the database
+        let result = sqlx::query(
+            r#"
+            WITH notification AS (
+                SELECT id FROM notifications
+                WHERE entity_id = $1 AND entity_type = $2
+            )
+            SELECT 1 FROM notification_outs
+            WHERE notification_id = (
+                (SELECT id FROM notification)
+            )
+            "#,
+        )
+        .bind(4_i64)
+        .bind(NotificationEntityType::StoryAddByUser as i16)
+        .fetch_all(&mut *conn)
+        .await?;
+
+        assert_eq!(result.len(), 2);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("story_add_by_user"))]
+    async fn should_not_notify_story_add_by_user_for_an_unpublished_story(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let ctx = get_job_ctx_for_test(pool).await;
+
+        // Unpublish the story
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(4_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let result =
+            notify_story_add_by_user(NotifyStoryAddByUserJob { story_id: 4_i64 }, ctx).await;
+
+        assert!(result.is_ok());
+
+        // Notifications should not be present in the database
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS (
+                SELECT 1 FROM notifications
+                WHERE entity_id = $1
+            )
+            "#,
+        )
+        .bind(4_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("story_add_by_user"))]
+    async fn should_not_notify_story_add_by_user_for_a_soft_deleted_story(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let ctx = get_job_ctx_for_test(pool).await;
+
+        // Soft-delete the story
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(4_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let result =
+            notify_story_add_by_user(NotifyStoryAddByUserJob { story_id: 4_i64 }, ctx).await;
+
+        assert!(result.is_ok());
+
+        // Notifications should not be present in the database
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS (
+                SELECT 1 FROM notifications
+                WHERE entity_id = $1
+            )
+            "#,
+        )
+        .bind(4_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
