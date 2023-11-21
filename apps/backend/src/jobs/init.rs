@@ -1,7 +1,16 @@
 use crate::{
     config,
     config::Config,
-    jobs::notify::story_add_by_user::notify_story_add_by_user,
+    jobs::notify::{
+        story_add_by_tag::{
+            notify_story_add_by_tag,
+            NotifyStoryAddByTagJob,
+        },
+        story_add_by_user::{
+            notify_story_add_by_user,
+            NotifyStoryAddByUserJob,
+        },
+    },
 };
 use apalis::{
     layers::{
@@ -19,10 +28,6 @@ use sqlx::{
     Postgres,
 };
 use std::sync::Arc;
-use tower::{
-    timeout::TimeoutLayer,
-    Layer,
-};
 
 /// State common to all the jobs
 #[derive(Clone)]
@@ -49,7 +54,6 @@ pub async fn start_jobs(
     db_pool: Pool<Postgres>,
     s3_client: S3Client,
 ) {
-    let storage = RedisStorage::new(connection_manager);
     let state = Arc::new(SharedJobState {
         config: envy::from_env::<Config>().unwrap(),
         redis: redis_pool,
@@ -58,14 +62,28 @@ pub async fn start_jobs(
     });
 
     tokio::spawn(async move {
+        let story_add_by_user_state = state.clone();
+        let story_add_by_user_storage: RedisStorage<NotifyStoryAddByUserJob> =
+            RedisStorage::new(connection_manager.clone());
+
+        let story_add_by_tag_state = state;
+        let story_add_by_tag_storage: RedisStorage<NotifyStoryAddByTagJob> =
+            RedisStorage::new(connection_manager);
+
         Monitor::new()
             .register_with_count(2, move |x| {
                 WorkerBuilder::new(format!("notify-story-add-by-user-worker-{x}"))
                     .layer(TraceLayer::new())
-                    .layer(Extension(state.clone()))
-                    .layer(TimeoutLayer::new(core::time::Duration::from_secs(5)))
-                    .with_storage(storage.clone())
+                    .layer(Extension(story_add_by_user_state.clone()))
+                    .with_storage(story_add_by_user_storage.clone())
                     .build_fn(notify_story_add_by_user)
+            })
+            .register_with_count(2, move |x| {
+                WorkerBuilder::new(format!("notify-story-add-by-tag-worker-{x}"))
+                    .layer(TraceLayer::new())
+                    .layer(Extension(story_add_by_tag_state.clone()))
+                    .with_storage(story_add_by_tag_storage.clone())
+                    .build_fn(notify_story_add_by_tag)
             })
             .run()
             .await

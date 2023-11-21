@@ -29,10 +29,7 @@ use actix_web_validator::{
     PathConfig,
     QsQueryConfig,
 };
-use apalis::{
-    prelude::Storage,
-    redis::RedisStorage as RedisJobStorage,
-};
+use apalis::redis::RedisStorage as RedisJobStorage;
 use dotenv::dotenv;
 use futures::future;
 use redis::aio::ConnectionManager;
@@ -61,7 +58,10 @@ use storiny::{
     },
     jobs::{
         init::start_jobs,
-        notify::story_add_by_user::NotifyStoryAddByUserJob,
+        notify::{
+            story_add_by_tag::NotifyStoryAddByTagJob,
+            story_add_by_user::NotifyStoryAddByUserJob,
+        },
     },
     middlewares::identity::middleware::IdentityMiddleware,
     oauth::get_oauth_client_map,
@@ -136,7 +136,7 @@ async fn main() -> io::Result<()> {
             let redis_connection_manager = ConnectionManager::new(redis_client)
                 .await
                 .expect("Cannot build Redis connection manager");
-            let backend =
+            let rate_limit_backend =
                 middlewares::rate_limiter::RedisBackend::builder(redis_connection_manager.clone())
                     .key_prefix(Some(&format!("{}:", RedisNamespace::RateLimit.to_string()))) // Add prefix to avoid collisions with other servicse
                     .build();
@@ -157,7 +157,7 @@ async fn main() -> io::Result<()> {
 
             // Postgres
             let db_pool = match PgPoolOptions::new()
-                .max_connections(15)
+                .max_connections(25)
                 .connect(&config.database_url)
                 .await
             {
@@ -189,10 +189,15 @@ async fn main() -> io::Result<()> {
                 Region::UsEast1
             });
 
-            // Start the background jobs
-            let b =
-                RedisJobStorage::<NotifyStoryAddByUserJob>::new(redis_connection_manager.clone());
-            let mut job_data = web::Data::new(b.clone());
+            // Init and start the background jobs
+            let story_add_by_user_job_data =
+                web::Data::new(RedisJobStorage::<NotifyStoryAddByUserJob>::new(
+                    redis_connection_manager.clone(),
+                ));
+            let story_add_by_tag_job_data = web::Data::new(
+                RedisJobStorage::<NotifyStoryAddByTagJob>::new(redis_connection_manager.clone()),
+            );
+
             start_jobs(
                 redis_connection_manager,
                 redis_pool.clone(),
@@ -200,11 +205,6 @@ async fn main() -> io::Result<()> {
                 s3_client.clone(),
             )
             .await;
-
-            let mut a = b.clone();
-            a.push(NotifyStoryAddByUserJob { story_id: 100_i64 })
-                .await
-                .unwrap();
 
             // Start the GRPC server
             let grpc_future = start_grpc_server(config.clone(), db_pool.clone());
@@ -276,7 +276,7 @@ async fn main() -> io::Result<()> {
                                 .build(),
                         )
                         .wrap(
-                            RateLimiter::builder(backend.clone(), input)
+                            RateLimiter::builder(rate_limit_backend.clone(), input)
                                 .add_headers()
                                 .build(),
                         )
@@ -299,10 +299,14 @@ async fn main() -> io::Result<()> {
                         ))
                         .wrap(actix_web::middleware::Compress::default())
                         .wrap(actix_web::middleware::NormalizePath::trim())
-                        .app_data(job_data.clone())
+                        // Jobs
+                        .app_data(story_add_by_user_job_data.clone())
+                        .app_data(story_add_by_tag_job_data.clone())
+                        // Validation
                         .app_data(json_config)
                         .app_data(qs_query_config)
                         .app_data(path_config)
+                        // Application state
                         .app_data(web::Data::new(AppState {
                             config: envy::from_env::<Config>().unwrap(),
                             redis: redis_pool.clone(),

@@ -3528,7 +3528,7 @@ mod tests {
             "#,
         )
         .bind(&token_id)
-        .bind("sample")
+        .bind(0_i16)
         .bind(1_i64)
         .execute(&mut *conn)
         .await?;
@@ -9669,7 +9669,7 @@ mod tests {
             "#,
         )
         .bind(&token_id)
-        .bind("sample")
+        .bind(0_i16)
         .bind(1_i64)
         .execute(&mut *conn)
         .await?;

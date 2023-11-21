@@ -41,7 +41,10 @@ async fn post(
                             ),
                             inserted_notification AS (
                                 INSERT INTO notifications (entity_type, entity_id, notifier_id)
-                                VALUES ($3, $2, $1)
+                                SELECT $3, $2, $1
+                                WHERE EXISTS (
+                                    SELECT 1 FROM liked_story
+                                )
                                 RETURNING id
                             )
                         INSERT
@@ -143,18 +146,10 @@ mod tests {
         // Should also insert a notification
         let result = sqlx::query(
             r#"
-            SELECT
-                EXISTS (
-                    SELECT
-                        1
-                    FROM
-                        notification_outs
-                    WHERE
-                        notification_id = (
-                            SELECT id FROM notifications
-                            WHERE entity_id = $1
-                        )
-                   )
+            SELECT EXISTS (
+                SELECT 1 FROM notifications
+                WHERE entity_id = $1
+            )
             "#,
         )
         .bind(3_i64)

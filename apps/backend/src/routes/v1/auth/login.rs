@@ -362,9 +362,7 @@ async fn post(
                                         rendered_content
                                     )
                                 SELECT
-                                    $2,
-                                    (SELECT id FROM inserted_notification),
-                                    $3
+                                    $2, (SELECT id FROM inserted_notification), $3
                                 "#,
                             )
                             .bind(NotificationEntityType::LoginAttempt as i16)

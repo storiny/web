@@ -4,6 +4,10 @@ use crate::{
         redis_namespaces::RedisNamespace,
         session_cookie::SESSION_COOKIE_NAME,
     },
+    jobs::notify::{
+        story_add_by_tag::NotifyStoryAddByTagJob,
+        story_add_by_user::NotifyStoryAddByUserJob,
+    },
     middlewares::identity::{
         identity::Identity,
         middleware::IdentityMiddleware,
@@ -40,6 +44,7 @@ use actix_web::{
     HttpResponse,
     Responder,
 };
+use apalis::redis::RedisStorage as RedisJobStorage;
 use rand::Rng;
 use rusoto_mock::{
     MockCredentialsProvider,
@@ -117,6 +122,18 @@ pub async fn init_app_for_test(
     .create_pool(Some(deadpool_redis::Runtime::Tokio1))
     .unwrap();
 
+    // Background jobs
+    let story_add_by_user_job_data = web::Data::new(
+        RedisJobStorage::<NotifyStoryAddByUserJob>::connect(redis_connection_string.to_string())
+            .await
+            .unwrap(),
+    );
+    let story_add_by_tag_job_data = web::Data::new(
+        RedisJobStorage::<NotifyStoryAddByTagJob>::connect(redis_connection_string.to_string())
+            .await
+            .unwrap(),
+    );
+
     // GeoIP service
     let geo_db = maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();
 
@@ -138,7 +155,9 @@ pub async fn init_app_for_test(
                     .cookie_http_only(true)
                     .build(),
             )
-            .wrap(actix_web::middleware::NormalizePath::trim())
+            .wrap(actix_web::middleware::NormalizePath::trim()) // Jobs
+            .app_data(story_add_by_user_job_data.clone())
+            .app_data(story_add_by_tag_job_data.clone())
             .app_data(web::Data::new(AppState {
                 config,
                 redis: redis_pool.clone(),

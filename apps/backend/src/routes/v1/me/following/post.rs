@@ -37,15 +37,20 @@ async fn post(
                             ),
                             inserted_notification AS (
                                 INSERT INTO notifications (entity_type, entity_id, notifier_id)
-                                VALUES ($3, $1, $1)
+                                SELECT $3, $1, $1
+                                WHERE EXISTS (
+                                    SELECT 1 FROM inserted_relation
+                                )
                                 RETURNING id
                             )
                         INSERT
                         INTO
                             notification_outs (notified_id, notification_id)
                         SELECT
-                            $2,
-                            (SELECT id FROM inserted_notification)
+                            $2, (SELECT id FROM inserted_notification)
+                        WHERE EXISTS (
+                            SELECT 1 FROM inserted_relation
+                        )
                         "#,
                     )
                     .bind(user_id)
@@ -130,7 +135,7 @@ mod tests {
         // Following relation should be present in the database
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM relations
                 WHERE follower_id = $1 AND followed_id = $2
             )
@@ -146,18 +151,10 @@ mod tests {
         // Should also insert a notification
         let result = sqlx::query(
             r#"
-            SELECT
-                EXISTS (
-                    SELECT
-                        1
-                    FROM
-                        notification_outs
-                    WHERE
-                        notification_id = (
-                            SELECT id FROM notifications
-                            WHERE entity_id = $1
-                        )
-                   )
+            SELECT EXISTS (
+                SELECT 1 FROM notifications
+                WHERE entity_id = $1
+            )
             "#,
         )
         .bind(user_id.unwrap())
