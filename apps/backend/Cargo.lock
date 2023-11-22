@@ -545,7 +545,6 @@ dependencies = [
  "serde",
  "strum 0.25.0",
  "thiserror",
- "time",
  "tokio",
  "tower",
  "tracing",
@@ -583,7 +582,6 @@ dependencies = [
  "redis 0.23.3",
  "serde",
  "serde_json",
- "time",
  "tokio",
 ]
 
@@ -603,7 +601,6 @@ dependencies = [
  "serde",
  "serde_json",
  "sqlx",
- "time",
  "tokio",
 ]
 
@@ -630,6 +627,17 @@ name = "askama_escape"
 version = "0.10.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "619743e34b5ba4e9703bba34deac3427c72507c7159f5fd030aea8cac0cfe341"
+
+[[package]]
+name = "async-recursion"
+version = "1.0.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5fd55a5ba1179988837d24ab4c7cc8ed6efdeff578ede0416b4225a5fca35bd0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.37",
+]
 
 [[package]]
 name = "async-stream"
@@ -3656,6 +3664,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "sitemap-rs"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "95b58125f0ab4317b5ba3cdc1f60696e47958760e356874c759334fa56ae1596"
+dependencies = [
+ "chrono",
+ "xml-builder",
+]
+
+[[package]]
 name = "slab"
 version = "0.4.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3987,7 +4005,9 @@ dependencies = [
  "anyhow",
  "apalis",
  "argon2",
+ "async-recursion",
  "async-trait",
+ "chrono",
  "colors-transform",
  "cookie 0.18.0",
  "deadpool-redis",
@@ -4026,6 +4046,7 @@ dependencies = [
  "sailfish",
  "serde",
  "serde_json",
+ "sitemap-rs",
  "slugify",
  "sqlx",
  "strum 0.25.0",
@@ -4993,6 +5014,12 @@ dependencies = [
  "cfg-if",
  "windows-sys",
 ]
+
+[[package]]
+name = "xml-builder"
+version = "0.5.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "efc4f1a86af7800dfc4056c7833648ea4515ae21502060b5c98114d828f5333b"
 
 [[package]]
 name = "xml-rs"

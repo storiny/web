@@ -1,5 +1,6 @@
 pub mod clear_user_sessions;
 pub mod decode_uri_encoded_story_categories;
+pub mod delete_s3_objects_with_prefix;
 pub mod extract_session_key_from_cookie;
 pub mod flag;
 pub mod generate_connection_url;

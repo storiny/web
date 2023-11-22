@@ -29,7 +29,6 @@ use actix_web_validator::{
     PathConfig,
     QsQueryConfig,
 };
-use apalis::redis::RedisStorage as RedisJobStorage;
 use dotenv::dotenv;
 use futures::future;
 use redis::aio::ConnectionManager;
@@ -62,6 +61,7 @@ use storiny::{
             story_add_by_tag::NotifyStoryAddByTagJob,
             story_add_by_user::NotifyStoryAddByUserJob,
         },
+        storage::JobStorage,
     },
     middlewares::identity::middleware::IdentityMiddleware,
     oauth::get_oauth_client_map,
@@ -183,19 +183,18 @@ async fn main() -> io::Result<()> {
             let s3_client = S3Client::new(if config.is_dev {
                 Region::Custom {
                     name: "us-east-1".to_string(),
-                    endpoint: "http://localhost:9000".to_string(), // MinIO endpoint
+                    endpoint: config.minio_endpoint.to_string(),
                 }
             } else {
                 Region::UsEast1
             });
 
             // Init and start the background jobs
-            let story_add_by_user_job_data =
-                web::Data::new(RedisJobStorage::<NotifyStoryAddByUserJob>::new(
-                    redis_connection_manager.clone(),
-                ));
+            let story_add_by_user_job_data = web::Data::new(
+                JobStorage::<NotifyStoryAddByUserJob>::new(redis_connection_manager.clone()),
+            );
             let story_add_by_tag_job_data = web::Data::new(
-                RedisJobStorage::<NotifyStoryAddByTagJob>::new(redis_connection_manager.clone()),
+                JobStorage::<NotifyStoryAddByTagJob>::new(redis_connection_manager.clone()),
             );
 
             start_jobs(

@@ -3,9 +3,12 @@ use crate::{
         AppError,
         ToastErrorResponse,
     },
-    jobs::notify::{
-        story_add_by_tag::NotifyStoryAddByTagJob,
-        story_add_by_user::NotifyStoryAddByUserJob,
+    jobs::{
+        notify::{
+            story_add_by_tag::NotifyStoryAddByTagJob,
+            story_add_by_user::NotifyStoryAddByUserJob,
+        },
+        storage::JobStorage,
     },
     middlewares::identity::identity::Identity,
     AppState,
@@ -16,10 +19,7 @@ use actix_web::{
     web,
     HttpResponse,
 };
-use apalis::{
-    prelude::Storage,
-    redis::RedisStorage as RedisJobStorage,
-};
+use apalis::prelude::Storage;
 use futures::future;
 use nanoid::nanoid;
 use serde::Deserialize;
@@ -101,8 +101,8 @@ async fn post(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
-    notify_story_add_by_user_job_storage: web::Data<RedisJobStorage<NotifyStoryAddByUserJob>>,
-    notify_story_add_by_tag_job_storage: web::Data<RedisJobStorage<NotifyStoryAddByTagJob>>,
+    notify_story_add_by_user_job_storage: web::Data<JobStorage<NotifyStoryAddByUserJob>>,
+    notify_story_add_by_tag_job_storage: web::Data<JobStorage<NotifyStoryAddByTagJob>>,
 ) -> Result<HttpResponse, AppError> {
     match user.id() {
         Ok(user_id) => {
