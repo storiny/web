@@ -6,3 +6,6 @@ pub static S3_UPLOADS_BUCKET: &'static str = "uploads";
 
 /// Bucket containing binary story documents.
 pub static S3_DOCS_BUCKET: &'static str = "docs";
+
+/// Bucket containing the XML sitemaps.
+pub static S3_SITEMAPS_BUCKET: &'static str = "sitemaps";
