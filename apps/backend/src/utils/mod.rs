@@ -1,6 +1,6 @@
 pub mod clear_user_sessions;
 pub mod decode_uri_encoded_story_categories;
-pub mod delete_s3_objects_with_prefix;
+pub mod delete_s3_objects;
 pub mod extract_session_key_from_cookie;
 pub mod flag;
 pub mod generate_connection_url;
@@ -8,5 +8,6 @@ pub mod generate_recovery_codes;
 pub mod generate_totp;
 pub mod get_client_device;
 pub mod get_client_location;
+mod get_sitemap_change_freq;
 pub mod get_user_sessions;
 pub mod md_to_html;
