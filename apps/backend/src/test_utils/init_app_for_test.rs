@@ -4,9 +4,12 @@ use crate::{
         redis_namespaces::RedisNamespace,
         session_cookie::SESSION_COOKIE_NAME,
     },
-    jobs::notify::{
-        story_add_by_tag::NotifyStoryAddByTagJob,
-        story_add_by_user::NotifyStoryAddByUserJob,
+    jobs::{
+        notify::{
+            story_add_by_tag::NotifyStoryAddByTagJob,
+            story_add_by_user::NotifyStoryAddByUserJob,
+        },
+        storage::JobStorage,
     },
     middlewares::identity::{
         identity::Identity,
@@ -44,7 +47,6 @@ use actix_web::{
     HttpResponse,
     Responder,
 };
-use apalis::redis::RedisStorage as RedisJobStorage;
 use rand::Rng;
 use rusoto_mock::{
     MockCredentialsProvider,
@@ -124,12 +126,12 @@ pub async fn init_app_for_test(
 
     // Background jobs
     let story_add_by_user_job_data = web::Data::new(
-        RedisJobStorage::<NotifyStoryAddByUserJob>::connect(redis_connection_string.to_string())
+        JobStorage::<NotifyStoryAddByUserJob>::connect(redis_connection_string.to_string())
             .await
             .unwrap(),
     );
     let story_add_by_tag_job_data = web::Data::new(
-        RedisJobStorage::<NotifyStoryAddByTagJob>::connect(redis_connection_string.to_string())
+        JobStorage::<NotifyStoryAddByTagJob>::connect(redis_connection_string.to_string())
             .await
             .unwrap(),
     );

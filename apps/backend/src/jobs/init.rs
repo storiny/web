@@ -1,24 +1,34 @@
 use crate::{
     config,
     config::Config,
-    jobs::notify::{
-        story_add_by_tag::{
-            notify_story_add_by_tag,
-            NotifyStoryAddByTagJob,
+    jobs::{
+        cron::sitemap::refresh_sitemap,
+        notify::{
+            story_add_by_tag::{
+                notify_story_add_by_tag,
+                NotifyStoryAddByTagJob,
+            },
+            story_add_by_user::{
+                notify_story_add_by_user,
+                NotifyStoryAddByUserJob,
+            },
         },
-        story_add_by_user::{
-            notify_story_add_by_user,
-            NotifyStoryAddByUserJob,
-        },
+        storage::JobStorage,
     },
 };
 use apalis::{
+    cron::{
+        CronStream,
+        Schedule,
+    },
     layers::{
         Extension,
         TraceLayer,
     },
-    prelude::*,
-    redis::RedisStorage,
+    prelude::{
+        timer::TokioTimer,
+        *,
+    },
 };
 use deadpool_redis::Pool as RedisPool;
 use redis::aio::ConnectionManager;
@@ -27,7 +37,10 @@ use sqlx::{
     Pool,
     Postgres,
 };
-use std::sync::Arc;
+use std::{
+    str::FromStr,
+    sync::Arc,
+};
 
 /// State common to all the jobs
 #[derive(Clone)]
@@ -63,14 +76,15 @@ pub async fn start_jobs(
 
     tokio::spawn(async move {
         let story_add_by_user_state = state.clone();
-        let story_add_by_user_storage: RedisStorage<NotifyStoryAddByUserJob> =
-            RedisStorage::new(connection_manager.clone());
+        let story_add_by_user_storage: JobStorage<NotifyStoryAddByUserJob> =
+            JobStorage::new(connection_manager.clone());
 
-        let story_add_by_tag_state = state;
-        let story_add_by_tag_storage: RedisStorage<NotifyStoryAddByTagJob> =
-            RedisStorage::new(connection_manager);
+        let story_add_by_tag_state = state.clone();
+        let story_add_by_tag_storage: JobStorage<NotifyStoryAddByTagJob> =
+            JobStorage::new(connection_manager);
 
         Monitor::new()
+            // Push notifications
             .register_with_count(2, move |x| {
                 WorkerBuilder::new(format!("notify-story-add-by-user-worker-{x}"))
                     .layer(TraceLayer::new())
@@ -85,6 +99,22 @@ pub async fn start_jobs(
                     .with_storage(story_add_by_tag_storage.clone())
                     .build_fn(notify_story_add_by_tag)
             })
+            // Cron
+            .register(
+                WorkerBuilder::new("sitemap-worker")
+                    .layer(TraceLayer::new())
+                    .layer(Extension(state.clone()))
+                    .stream(
+                        CronStream::new(
+                            // Run every week
+                            Schedule::from_str("0 0 0 * * 0")
+                                .expect("Unable to parse cron schedule"),
+                        )
+                        .timer(TokioTimer)
+                        .to_stream(),
+                    )
+                    .build_fn(refresh_sitemap),
+            )
             .run()
             .await
     });

@@ -18,9 +18,11 @@ actix-utils = "3.0.1"
 actix-web = { version = "4.4.0", features = ["cookies", "secure-cookies", "__compress"] }
 actix-web-validator = "5.0.1"
 anyhow = "1.0.75"
-apalis = { version = "0.4.7", features = ["redis", "time", "cron", "extensions", "retry"] }
+apalis = { version = "0.4.7", default-features = false, features = ["extensions", "retry", "cron", "tokio-comp", "tracing", "redis", "chrono"] }
 argon2 = "0.5.2"
+async-recursion = "1.0.5"
 async-trait = "0.1.73"
+chrono = "0.4.31"
 colors-transform = "0.2.11"
 cookie = { version = "0.18.0", features = ["private", "signed"] }
 deadpool-redis = "0.13.0"
@@ -57,6 +59,7 @@ rusoto_signature = "0.48.0"
 sailfish = "0.8.0"
 serde = { version = "1.0.188", features = ["derive"] }
 serde_json = "1.0.105"
+sitemap-rs = "0.2.0"
 slugify = "0.1.0"
 sqlx = { version = "0.7.2", features = ["postgres", "time", "macros", "json", "migrate", "runtime-tokio", "sqlx-postgres", "uuid"] }
 strum = { version = "0.25.0", features = ["derive"] }
