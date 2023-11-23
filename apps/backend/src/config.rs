@@ -16,6 +16,8 @@ pub struct Config {
     pub minio_endpoint: String,
     /// Public URL of the API server
     pub api_server_url: String,
+    /// Public URL of the CDN server
+    pub cdn_server_url: String,
     /// Public URL of the font-end web server
     pub web_server_url: String,
     /// Allowed client origin (CORS)

@@ -6,6 +6,7 @@ pub mod flag;
 pub mod generate_connection_url;
 pub mod generate_recovery_codes;
 pub mod generate_totp;
+pub mod get_cdn_url;
 pub mod get_client_device;
 pub mod get_client_location;
 pub mod get_sitemap_change_freq;
