@@ -7,11 +7,13 @@
       <sourceFolder url="file://$MODULE_DIR$/packages/ui/src/theme" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/apps/backend/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/apps/backend/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/backend/macros/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/temp" />
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/apps/discovery/target" />
       <excludeFolder url="file://$MODULE_DIR$/apps/backend/target" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/backend/macros/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

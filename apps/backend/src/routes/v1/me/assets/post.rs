@@ -265,8 +265,9 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::{
-        config::Config,
+        config::get_app_config,
         oauth::get_oauth_client_map,
+        test_utils::get_redis_pool,
     };
     use actix_web::{
         App,
@@ -309,18 +310,10 @@ mod tests {
     ///
     /// * `db_pool` - Postgres pool
     async fn init_web_server_for_test(db_pool: PgPool) -> (Client, Box<dyn Fn(&str) -> String>) {
-        let config = envy::from_env::<Config>().unwrap();
         let listener = TcpListener::bind("localhost:0").unwrap();
         let port = listener.local_addr().unwrap().port();
         let db_pool_clone = db_pool.clone();
-
-        // Redis pool
-        let redis_pool = deadpool_redis::Config::from_url(format!(
-            "redis://{}:{}",
-            &config.redis_host, &config.redis_port
-        ))
-        .create_pool(Some(deadpool_redis::Runtime::Tokio1))
-        .unwrap();
+        let redis_pool = get_redis_pool();
 
         let server = HttpServer::new(move || {
             // GeoIP service
@@ -332,7 +325,7 @@ mod tests {
 
             App::new()
                 .app_data(web::Data::new(AppState {
-                    config: envy::from_env::<Config>().unwrap(),
+                    config: get_app_config().unwrap(),
                     redis: redis_pool.clone(),
                     db_pool: db_pool.clone(),
                     geo_db,
@@ -348,7 +341,7 @@ mod tests {
                         Region::UsEast1,
                     ),
                     reqwest_client: reqwest::Client::new(),
-                    oauth_client_map: get_oauth_client_map(envy::from_env::<Config>().unwrap()),
+                    oauth_client_map: get_oauth_client_map(get_app_config().unwrap()),
                 }))
                 .service(unsecure_post)
         })

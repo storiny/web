@@ -8,6 +8,6 @@ pub mod generate_recovery_codes;
 pub mod generate_totp;
 pub mod get_client_device;
 pub mod get_client_location;
-mod get_sitemap_change_freq;
+pub mod get_sitemap_change_freq;
 pub mod get_user_sessions;
 pub mod md_to_html;

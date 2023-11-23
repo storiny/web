@@ -1,3 +1,4 @@
+use dotenv::dotenv;
 use serde::Deserialize;
 
 /// Environment configuration.
@@ -15,6 +16,8 @@ pub struct Config {
     pub minio_endpoint: String,
     /// Public URL of the API server
     pub api_server_url: String,
+    /// Public URL of the font-end web server
+    pub web_server_url: String,
     /// Allowed client origin (CORS)
     pub allowed_origin: String,
     /// Postgres URL
@@ -47,4 +50,10 @@ pub struct Config {
     // Dribbble OAuth
     pub dribbble_client_id: String,
     pub dribbble_client_secret: String,
+}
+
+/// Returns the application environment configuration.
+pub fn get_app_config() -> envy::Result<Config> {
+    dotenv().ok();
+    envy::from_env()
 }

@@ -1,8 +1,8 @@
-use crate::config::Config;
+use crate::config::get_app_config;
 
 /// Initializes and returns a Redis connection pool for tests
-pub async fn get_redis_pool() -> deadpool_redis::Pool {
-    let config = envy::from_env::<Config>().expect("Unable to load environment configuration");
+pub fn get_redis_pool() -> deadpool_redis::Pool {
+    let config = get_app_config().unwrap();
     deadpool_redis::Config::from_url(format!(
         "redis://{}:{}",
         &config.redis_host, &config.redis_port

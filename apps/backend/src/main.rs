@@ -45,7 +45,10 @@ use std::{
     time::Duration,
 };
 use storiny::{
-    config::Config,
+    config::{
+        get_app_config,
+        Config,
+    },
     constants::{
         redis_namespaces::RedisNamespace,
         session_cookie::SESSION_COOKIE_NAME,
@@ -113,7 +116,7 @@ async fn start_grpc_server(config: Config, db_pool: Pool<Postgres>) -> io::Resul
 async fn main() -> io::Result<()> {
     dotenv().ok();
 
-    match envy::from_env::<Config>() {
+    match get_app_config() {
         Ok(config) => {
             env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
 
@@ -307,7 +310,7 @@ async fn main() -> io::Result<()> {
                         .app_data(path_config)
                         // Application state
                         .app_data(web::Data::new(AppState {
-                            config: envy::from_env::<Config>().unwrap(),
+                            config: get_app_config().unwrap(),
                             redis: redis_pool.clone(),
                             db_pool: db_pool.clone(),
                             geo_db,
@@ -318,9 +321,7 @@ async fn main() -> io::Result<()> {
                                 .user_agent("Storiny (https://storiny.com)")
                                 .build()
                                 .unwrap(),
-                            oauth_client_map: get_oauth_client_map(
-                                envy::from_env::<Config>().unwrap(),
-                            ),
+                            oauth_client_map: get_oauth_client_map(get_app_config().unwrap()),
                         }))
                         .configure(routes::init::init_common_routes)
                         .configure(routes::init::init_oauth_routes)

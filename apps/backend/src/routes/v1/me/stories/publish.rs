@@ -322,7 +322,7 @@ mod tests {
         }
 
         async fn get_notify_jobs_by_name(job_name: &str) -> Vec<JobData> {
-            let redis_pool = get_redis_pool().await;
+            let redis_pool = get_redis_pool();
             let mut redis_conn = redis_pool.get().await.unwrap();
 
             redis_conn
