@@ -21,19 +21,19 @@ use rusoto_s3::{
 pub async fn delete_s3_objects(
     client: &S3Client,
     bucket_name: &str,
-    prefix: Option<&str>,
+    prefix: Option<String>,
     continuation_token: Option<String>,
 ) -> anyhow::Result<u32> {
     let list_objects_result = client
         .list_objects_v2(ListObjectsV2Request {
             bucket: bucket_name.to_string(),
-            continuation_token,
             max_keys: Some(1_000_i64),
-            prefix: prefix.and_then(|value| Some(value.to_string())),
+            prefix: prefix.clone(),
+            continuation_token,
             ..Default::default()
         })
         .await
-        .map_err(|err| anyhow!("Unable to list objects: {:?}", err))?;
+        .map_err(|err| anyhow!("unable to list objects: {:?}", err))?;
 
     let mut objects_to_delete: Vec<ObjectIdentifier> = vec![];
 
@@ -64,7 +64,7 @@ pub async fn delete_s3_objects(
             ..Default::default()
         })
         .await
-        .map_err(|err| anyhow!("Unable to delete objects: {:?}", err))?;
+        .map_err(|err| anyhow!("unable to delete objects: {:?}", err))?;
 
     let mut num_deleted = match delete_result.deleted {
         Some(deleted) => deleted.len() as u32,
@@ -90,10 +90,12 @@ pub async fn delete_s3_objects(
 mod tests {
     use super::*;
     use crate::{
-        config::Config,
         constants::buckets::S3_BASE_BUCKET,
+        test_utils::{
+            get_s3_client,
+            TestContext,
+        },
     };
-    use dotenv::dotenv;
     use futures::future;
     use rusoto_core::RusotoError;
     use rusoto_s3::{
@@ -101,37 +103,58 @@ mod tests {
         GetObjectRequest,
         PutObjectRequest,
     };
-    use rusoto_signature::Region;
+    use serial_test::serial;
+    use storiny_macros::test_context;
 
-    /// Returns an S3 client instance.
-    fn get_s3_client() -> S3Client {
-        dotenv().ok();
-
-        let config = envy::from_env::<Config>().unwrap();
-        S3Client::new(Region::Custom {
-            name: "us-east-1".to_string(),
-            endpoint: config.minio_endpoint,
-        })
+    struct LocalTestContext {
+        s3_client: S3Client,
     }
 
+    #[async_trait::async_trait]
+    impl TestContext for LocalTestContext {
+        async fn setup() -> LocalTestContext {
+            LocalTestContext {
+                s3_client: get_s3_client(),
+            }
+        }
+
+        async fn teardown(self) {
+            delete_s3_objects(
+                &self.s3_client,
+                S3_BASE_BUCKET,
+                Some("test-".to_string()),
+                None,
+            )
+            .await
+            .unwrap();
+        }
+    }
+
+    #[test_context(LocalTestContext)]
     #[tokio::test]
-    async fn can_delete_objects_with_prefix() {
-        let s3_client = get_s3_client();
+    #[serial]
+    async fn can_delete_objects_with_prefix(ctx: &mut LocalTestContext) {
+        let s3_client = &ctx.s3_client;
 
         // Insert an object
         let result = s3_client
             .put_object(PutObjectRequest {
                 bucket: S3_BASE_BUCKET.to_string(),
-                key: "fruits/guava".to_string(),
+                key: "test-fruits/guava".to_string(),
                 ..Default::default()
             })
             .await;
 
         assert!(result.is_ok());
 
-        let result = delete_s3_objects(&s3_client, S3_BASE_BUCKET, Some("fruits/"), None)
-            .await
-            .unwrap();
+        let result = delete_s3_objects(
+            &s3_client,
+            S3_BASE_BUCKET,
+            Some("test-fruits/".to_string()),
+            None,
+        )
+        .await
+        .unwrap();
 
         assert_eq!(result, 1_u32);
 
@@ -139,7 +162,7 @@ mod tests {
         let result = s3_client
             .get_object(GetObjectRequest {
                 bucket: S3_BASE_BUCKET.to_string(),
-                key: "fruits/guava".to_string(),
+                key: "test-fruits/guava".to_string(),
                 ..Default::default()
             })
             .await;
@@ -150,38 +173,47 @@ mod tests {
         ));
     }
 
+    #[test_context(LocalTestContext)]
     #[tokio::test]
-    async fn can_delete_more_than_1000_objects_with_prefix() {
-        let s3_client = get_s3_client();
+    #[serial]
+    async fn can_delete_more_than_1000_objects_with_prefix(ctx: &mut LocalTestContext) {
+        let s3_client = &ctx.s3_client;
         let mut put_futures = vec![];
 
         // Insert 1200 objects
         for i in 0..1_200 {
             put_futures.push(s3_client.put_object(PutObjectRequest {
                 bucket: S3_BASE_BUCKET.to_string(),
-                key: format!("integers/{}", i),
+                key: format!("test-integers/{}", i),
                 ..Default::default()
             }));
         }
 
         future::join_all(put_futures).await;
 
-        let result = delete_s3_objects(&s3_client, S3_BASE_BUCKET, Some("integers/"), None)
-            .await
-            .unwrap();
+        let result = delete_s3_objects(
+            &s3_client,
+            S3_BASE_BUCKET,
+            Some("test-integers/".to_string()),
+            None,
+        )
+        .await
+        .unwrap();
 
         assert_eq!(result, 1_200_u32);
     }
 
+    #[test_context(LocalTestContext)]
     #[tokio::test]
-    async fn should_not_delete_objects_not_starting_with_the_prefix() {
-        let s3_client = get_s3_client();
+    #[serial]
+    async fn should_not_delete_objects_not_starting_with_the_prefix(ctx: &mut LocalTestContext) {
+        let s3_client = &ctx.s3_client;
 
         // Insert an object
         let result = s3_client
             .put_object(PutObjectRequest {
                 bucket: S3_BASE_BUCKET.to_string(),
-                key: "trees/oak".to_string(),
+                key: "test-trees/oak".to_string(),
                 ..Default::default()
             })
             .await;
@@ -192,16 +224,21 @@ mod tests {
         let result = s3_client
             .put_object(PutObjectRequest {
                 bucket: S3_BASE_BUCKET.to_string(),
-                key: "beverages/latte".to_string(),
+                key: "test-beverages/latte".to_string(),
                 ..Default::default()
             })
             .await;
 
         assert!(result.is_ok());
 
-        let result = delete_s3_objects(&s3_client, S3_BASE_BUCKET, Some("trees/"), None)
-            .await
-            .unwrap();
+        let result = delete_s3_objects(
+            &s3_client,
+            S3_BASE_BUCKET,
+            Some("test-trees/".to_string()),
+            None,
+        )
+        .await
+        .unwrap();
 
         assert_eq!(result, 1_u32);
     }

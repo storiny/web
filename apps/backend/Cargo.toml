@@ -26,6 +26,7 @@ chrono = "0.4.31"
 colors-transform = "0.2.11"
 cookie = { version = "0.18.0", features = ["private", "signed"] }
 deadpool-redis = "0.13.0"
+deflate = { version = "1.0.0", features = ["gzip"] }
 derive_more = "0.99.17"
 dominant_color = "0.4.0"
 dotenv = "0.15.0"
@@ -34,6 +35,7 @@ env_logger = "0.10.0"
 envy = "0.4.2"
 futures = "0.3.29"
 futures-core = "0.3.28"
+gzip-header = "1.0.0"
 hashbrown = { version = "0.14.0", features = ["serde"] }
 image = { version = "0.24.7", default-features = false, features = ["gif", "png", "jpeg", "jpeg_rayon", "webp", "webp-encoder"] }
 itertools = "0.12.0"
@@ -76,9 +78,12 @@ uuid = { version = "1.4.1", features = ["v4", "serde"] }
 validator = { version = "0.16.1", features = ["derive"] }
 
 [dev-dependencies]
+storiny_macros = { version = "0.1.0", path = "macros" }
 just = "1.14.0"
+quote = "1.0.33"
 reqwest = { version = "0.11.22", default-features = false, features = ["cookies", "json", "multipart", "stream"] }
 rusoto_mock = "0.48.0"
+serial_test = "2.0.0"
 tempfile = "3.8.1"
 tokio = { version = "1.32.0", features = ["time"] }
 tokio-stream = { version = "0.1.14", features = ["net"] }

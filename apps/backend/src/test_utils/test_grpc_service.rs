@@ -1,5 +1,5 @@
 use crate::{
-    config::Config,
+    config::get_app_config,
     grpc::{
         defs::grpc_service::v1::{
             api_service_client::ApiServiceClient,
@@ -7,6 +7,7 @@ use crate::{
         },
         service::GrpcService,
     },
+    test_utils::get_redis_pool,
 };
 use deadpool_redis::Pool as RedisPool;
 use sqlx::PgPool;
@@ -40,8 +41,6 @@ pub async fn test_grpc_service<B>(
 ) where
     B: Future<Output = ()>,
 {
-    let config = envy::from_env::<Config>().unwrap();
-
     if insert_user {
         // Insert the user
         sqlx::query(
@@ -66,17 +65,11 @@ pub async fn test_grpc_service<B>(
     let stream = UnixListenerStream::new(uds);
 
     // Redis
-    let redis_pool = deadpool_redis::Config::from_url(format!(
-        "redis://{}:{}",
-        &config.redis_host, &config.redis_port
-    ))
-    .create_pool(Some(deadpool_redis::Runtime::Tokio1))
-    .unwrap();
-
+    let redis_pool = get_redis_pool();
     let server_future = async {
         let result = Server::builder()
             .add_service(ApiServiceServer::new(GrpcService {
-                config: envy::from_env::<Config>().unwrap(),
+                config: get_app_config().unwrap(),
                 redis_pool: redis_pool.clone(),
                 db_pool: db_pool.clone(),
             }))

@@ -30,9 +30,11 @@ services:
       /usr/bin/mc mb objstore/base;
       /usr/bin/mc mb objstore/docs;
       /usr/bin/mc mb objstore/uploads;
+      /usr/bin/mc mb objstore/sitemaps;
       /usr/bin/mc anonymous set public objstore/base;
       /usr/bin/mc anonymous set public objstore/docs;
       /usr/bin/mc anonymous set public objstore/uploads;
+      /usr/bin/mc anonymous set public objstore/sitemaps;
       exit 0;
       "
 

@@ -1,5 +1,5 @@
 use crate::{
-    config::Config,
+    config::get_app_config,
     constants::{
         redis_namespaces::RedisNamespace,
         session_cookie::SESSION_COOKIE_NAME,
@@ -16,6 +16,7 @@ use crate::{
         middleware::IdentityMiddleware,
     },
     oauth::get_oauth_client_map,
+    test_utils::get_redis_pool,
     AppState,
 };
 use actix_extended_session::{
@@ -100,16 +101,11 @@ pub async fn init_app_for_test(
     Option<Cookie<'static>>,
     Option<i64>, // User ID
 ) {
-    let config = envy::from_env::<Config>().expect("Unable to load environment configuration");
+    let config = get_app_config().expect("Unable to load environment configuration");
     let redis_connection_string = format!("redis://{}:{}", config.redis_host, config.redis_port);
 
     // Session
-    let secret_key = Key::from(
-        envy::from_env::<Config>()
-            .unwrap()
-            .session_secret_key
-            .as_bytes(),
-    );
+    let secret_key = Key::from(get_app_config().unwrap().session_secret_key.as_bytes());
     let redis_store = RedisSessionStore::builder(&redis_connection_string)
         .cache_keygen(|key| format!("{}:{}", RedisNamespace::Session.to_string(), key)) // Add prefix to session records
         .build()
@@ -117,12 +113,7 @@ pub async fn init_app_for_test(
         .unwrap();
 
     // Redis pool
-    let redis_pool = deadpool_redis::Config::from_url(format!(
-        "redis://{}:{}",
-        &config.redis_host, &config.redis_port
-    ))
-    .create_pool(Some(deadpool_redis::Runtime::Tokio1))
-    .unwrap();
+    let redis_pool = get_redis_pool();
 
     // Background jobs
     let story_add_by_user_job_data = web::Data::new(
@@ -180,7 +171,7 @@ pub async fn init_app_for_test(
                     .user_agent("Storiny (https://storiny.com)")
                     .build()
                     .unwrap(),
-                oauth_client_map: get_oauth_client_map(envy::from_env::<Config>().unwrap()),
+                oauth_client_map: get_oauth_client_map(get_app_config().unwrap()),
             }))
             .service(post)
             .service(service_factory),

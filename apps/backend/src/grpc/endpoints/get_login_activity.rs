@@ -120,7 +120,7 @@ pub async fn get_login_activity(
 #[cfg(test)]
 mod tests {
     use crate::{
-        config::Config,
+        config::get_app_config,
         constants::{
             redis_namespaces::RedisNamespace,
             session_cookie::SESSION_COOKIE_NAME,
@@ -151,7 +151,7 @@ mod tests {
             pool,
             true,
             Box::new(|mut client, _, redis_pool, user_id| async move {
-                let config = envy::from_env::<Config>().unwrap();
+                let config = get_app_config().unwrap();
                 let mut conn = redis_pool.get().await.unwrap();
 
                 // Remove all the previous sessions

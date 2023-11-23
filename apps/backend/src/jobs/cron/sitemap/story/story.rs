@@ -1,0 +1,278 @@
+use crate::{
+    constants::buckets::S3_SITEMAPS_BUCKET,
+    utils::get_sitemap_change_freq::get_sitemap_change_freq,
+};
+use apalis::prelude::JobError;
+use async_recursion::async_recursion;
+use chrono::DateTime;
+use deflate::{
+    deflate_bytes_gzip_conf,
+    Compression,
+};
+use gzip_header::GzBuilder;
+use rusoto_s3::{
+    PutObjectRequest,
+    S3Client,
+    S3,
+};
+use sitemap_rs::{
+    url::Url,
+    url_set::UrlSet,
+};
+use sqlx::{
+    FromRow,
+    Pool,
+    Postgres,
+};
+use time::OffsetDateTime;
+
+#[derive(Debug, FromRow)]
+struct Story {
+    change_freq: String,
+    url: String,
+    edited_at: Option<OffsetDateTime>,
+}
+
+#[derive(Debug, Default, PartialEq)]
+pub struct GenerateStorySitemapResponse {
+    /// The total number of URLs appended to all the sitemap files.
+    pub url_count: u32,
+    /// The total number of sitemap files generated.
+    pub file_count: u16,
+}
+
+/// Generates story sitemaps.
+///
+/// * `db_pool` - The Postgres connection pool.
+/// * `s3_client` - The S3 client instance.
+/// * `web_server_url` - The URL of the web server, used to generate story URLs.
+/// * `index` - (Private) An index counter used to keep track of the generated sitemap files.
+/// * `offset` - (Private) An offset value used to skip the specified number of rows during the
+///   generation of different chunked sitemap files.
+#[async_recursion]
+pub async fn generate_story_sitemap(
+    db_pool: &Pool<Postgres>,
+    s3_client: &S3Client,
+    web_server_url: &str,
+    index: Option<u16>,
+    offset: Option<u32>,
+) -> Result<GenerateStorySitemapResponse, JobError> {
+    // We can currently generate entries for upto 750 million stories (15_000 files x 50_0000
+    // entries per file) across 15,000 sitemap files. Raise this limit (would require multiple
+    // sitemap index files) when we exceed this limit :)
+    if index.unwrap_or_default() >= 15_000 {
+        return Ok(GenerateStorySitemapResponse::default());
+    }
+
+    let mut generated_result = GenerateStorySitemapResponse::default();
+
+    let mut result = sqlx::query_as::<_, Story>(
+        r#"
+        SELECT
+            s.edited_at,
+            CASE
+                WHEN COALESCE(s.edited_at, s.published_at) >= (NOW() - INTERVAL '1 week')
+                    THEN 'weekly'
+                WHEN COALESCE(s.edited_at, s.published_at) >= (NOW() - INTERVAL '6 months')
+                    THEN 'monthly'
+                ELSE 'yearly'
+            END AS change_freq,
+            $3 || '/' || "s->user".username || '/' || s.slug AS url
+        FROM
+            stories s
+                INNER JOIN users AS "s->user"
+                           ON s.user_id = "s->user".id
+                               -- Ignore stories from private users
+                               AND "s->user".is_private IS FALSE
+        WHERE
+              s.published_at IS NOT NULL
+              -- Public
+          AND s.visibility = 2
+          AND s.deleted_at IS NULL
+        ORDER BY
+            s.read_count DESC
+        LIMIT $1 OFFSET $2
+        "#,
+    )
+    // Return a maximum of 50,000 rows for a single sitemap file. (+1) is added to determine whether
+    // there are more rows to return.
+    .bind(50_000 + 1)
+    .bind((offset.unwrap_or_default() * 50_000) as i32)
+    .bind(web_server_url)
+    .fetch_all(db_pool)
+    .await
+    .map_err(Box::new)
+    .map_err(|err| JobError::Failed(err))?
+    .iter()
+    .map(|row| {
+        let mut url_builder = Url::builder(row.url.to_string());
+
+        url_builder
+            .change_frequency(get_sitemap_change_freq(&row.change_freq))
+            .priority(0.4);
+
+        if let Some(edited_at) = row.edited_at {
+            if let Some(last_mod) = DateTime::from_timestamp(edited_at.unix_timestamp(), 0) {
+                url_builder.last_modified(last_mod.fixed_offset());
+            }
+        }
+
+        // This should never panic as the priority is a constant value and there are no images.
+        url_builder.build().unwrap()
+    })
+    .collect::<Vec<_>>();
+
+    let mut result_length = result.len();
+    let has_more_rows = result_length > 50_000;
+
+    // Upload the sitemap to S3 if it is non-empty
+    if !result.is_empty() {
+        if result_length > 50_000 {
+            result.pop(); // Remove the extra row
+            result_length = result_length - 1;
+        }
+
+        // This should never panic as the number of rows are always <= 50,000
+        let url_set: UrlSet = UrlSet::new(result).unwrap();
+        let mut buf = Vec::new();
+
+        url_set
+            .write(&mut buf)
+            .map_err(Box::new)
+            .map_err(|err| JobError::Failed(err))?;
+
+        let gzipped_bytes = deflate_bytes_gzip_conf(&buf, Compression::Fast, GzBuilder::new());
+
+        s3_client
+            .put_object(PutObjectRequest {
+                bucket: S3_SITEMAPS_BUCKET.to_string(),
+                key: format!("stories-{}.xml.gz", index.unwrap_or_default()),
+                content_type: Some("application/x-gzip".to_string()),
+                content_encoding: Some("gzip".to_string()),
+                content_disposition: Some(format!(
+                    r#"attachment; filename="stories-{}.xml.gz""#,
+                    index.unwrap_or_default()
+                )),
+                body: Some(gzipped_bytes.into()),
+                ..Default::default()
+            })
+            .await
+            .map_err(Box::new)
+            .map_err(|err| JobError::Failed(err))?;
+
+        generated_result.url_count = generated_result.url_count + result_length as u32;
+        generated_result.file_count = generated_result.file_count + 1;
+    }
+
+    // Recurse if there are more rows to return.
+    if has_more_rows {
+        let next_result = generate_story_sitemap(
+            db_pool,
+            s3_client,
+            web_server_url,
+            Some(index.unwrap_or_default() + 1),
+            Some(offset.unwrap_or_default() + 1),
+        )
+        .await?;
+
+        generated_result.url_count = generated_result.url_count + next_result.url_count;
+        generated_result.file_count = generated_result.file_count + next_result.file_count;
+    }
+
+    Ok(generated_result)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        config::get_app_config,
+        test_utils::{
+            count_s3_objects,
+            get_s3_client,
+        },
+        utils::delete_s3_objects::delete_s3_objects,
+    };
+    use serial_test::serial;
+    use sqlx::PgPool;
+
+    /// Deletes the generated sitemaps from the object store.
+    ///
+    /// * `s3_client` - The S3 client instance.
+    async fn cleanup(s3_client: &S3Client) {
+        delete_s3_objects(
+            s3_client,
+            S3_SITEMAPS_BUCKET,
+            Some("stories-".to_string()),
+            None,
+        )
+        .await
+        .unwrap();
+    }
+
+    #[sqlx::test(fixtures("story"))]
+    #[serial]
+    async fn can_generate_story_sitemap(pool: PgPool) -> sqlx::Result<()> {
+        let config = get_app_config().unwrap();
+        let s3_client = get_s3_client();
+        let result =
+            generate_story_sitemap(&pool, &s3_client, &config.web_server_url, None, None).await;
+
+        assert!(result.is_ok());
+        assert_eq!(
+            result.unwrap(),
+            GenerateStorySitemapResponse {
+                url_count: 5,
+                file_count: 1,
+            }
+        );
+
+        // Sitemaps should be present in the bucket
+        let sitemap_count = count_s3_objects(
+            &s3_client,
+            S3_SITEMAPS_BUCKET,
+            Some("stories-".to_string()),
+            None,
+        )
+        .await
+        .unwrap();
+
+        assert_eq!(sitemap_count, 1);
+
+        cleanup(&s3_client).await;
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("large_dataset"))]
+    #[serial]
+    async fn can_generate_story_sitemap_for_large_dataset(pool: PgPool) -> sqlx::Result<()> {
+        let config = get_app_config().unwrap();
+        let s3_client = get_s3_client();
+        let result =
+            generate_story_sitemap(&pool, &s3_client, &config.web_server_url, None, None).await;
+
+        assert!(result.is_ok());
+        assert_eq!(
+            result.unwrap(),
+            GenerateStorySitemapResponse {
+                url_count: 125700,
+                file_count: 3,
+            }
+        );
+
+        // Sitemaps should be present in the bucket
+        let sitemap_count = count_s3_objects(
+            &s3_client,
+            S3_SITEMAPS_BUCKET,
+            Some("stories-".to_string()),
+            None,
+        )
+        .await
+        .unwrap();
+
+        assert_eq!(sitemap_count, 3);
+
+        cleanup(&s3_client).await;
+        Ok(())
+    }
+}

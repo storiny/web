@@ -1,16 +1,31 @@
 use sitemap_rs::url::ChangeFrequency;
-use time::OffsetDateTime;
 
-pub fn get_sitemap_change_freq(date: OffsetDateTime) -> ChangeFrequency {
-    if (date.isAfter(dayjs().utcOffset(0).startOf('week'))) {
-        return EnumChangefreq.WEEKLY;
+/// Maps a change frequency string value to its enum value.
+///
+/// * `change_freq` - The change frequency value.
+pub fn get_sitemap_change_freq(change_freq: &str) -> ChangeFrequency {
+    match change_freq {
+        "weekly" => ChangeFrequency::Weekly,
+        "monthly" => ChangeFrequency::Monthly,
+        _ => ChangeFrequency::Yearly,
     }
+}
 
-    if (
-        date.isAfter(dayjs().utcOffset(0).startOf('month').subtract(6, 'month'))
-    ) {
-        return EnumChangefreq.MONTHLY;
+#[cfg(test)]
+mod tests {
+    use super::get_sitemap_change_freq;
+    use sitemap_rs::url::ChangeFrequency;
+
+    #[test]
+    fn can_return_sitemap_change_freq() {
+        let (weekly, monthly, invariant) = (
+            get_sitemap_change_freq("weekly"),
+            get_sitemap_change_freq("monthly"),
+            get_sitemap_change_freq("some_invalid_value"),
+        );
+
+        assert!(matches!(weekly, ChangeFrequency::Weekly));
+        assert!(matches!(monthly, ChangeFrequency::Monthly));
+        assert!(matches!(invariant, ChangeFrequency::Yearly));
     }
-
-    ChangeFrequency::Yearly
 }

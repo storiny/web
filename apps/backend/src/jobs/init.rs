@@ -1,6 +1,6 @@
 use crate::{
     config,
-    config::Config,
+    config::get_app_config,
     jobs::{
         cron::sitemap::refresh_sitemap,
         notify::{
@@ -68,7 +68,7 @@ pub async fn start_jobs(
     s3_client: S3Client,
 ) {
     let state = Arc::new(SharedJobState {
-        config: envy::from_env::<Config>().unwrap(),
+        config: get_app_config().unwrap(),
         redis: redis_pool,
         db_pool,
         s3_client,
@@ -82,6 +82,8 @@ pub async fn start_jobs(
         let story_add_by_tag_state = state.clone();
         let story_add_by_tag_storage: JobStorage<NotifyStoryAddByTagJob> =
             JobStorage::new(connection_manager);
+
+        let sitemap_state = state.clone();
 
         Monitor::new()
             // Push notifications
@@ -100,21 +102,21 @@ pub async fn start_jobs(
                     .build_fn(notify_story_add_by_tag)
             })
             // Cron
-            .register(
-                WorkerBuilder::new("sitemap-worker")
+            .register_with_count(2, move |x| {
+                WorkerBuilder::new(format!("sitemap-worker-{x}"))
                     .layer(TraceLayer::new())
-                    .layer(Extension(state.clone()))
+                    .layer(Extension(sitemap_state.clone()))
                     .stream(
                         CronStream::new(
                             // Run every week
                             Schedule::from_str("0 0 0 * * 0")
-                                .expect("Unable to parse cron schedule"),
+                                .expect("Unable to parse the cron schedule"),
                         )
                         .timer(TokioTimer)
                         .to_stream(),
                     )
-                    .build_fn(refresh_sitemap),
-            )
+                    .build_fn(refresh_sitemap)
+            })
             .run()
             .await
     });

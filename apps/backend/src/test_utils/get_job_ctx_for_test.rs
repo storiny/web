@@ -1,6 +1,7 @@
 use crate::{
-    config::Config,
+    config::get_app_config,
     jobs::init::SharedJobState,
+    test_utils::get_redis_pool,
 };
 use apalis::prelude::*;
 use rusoto_mock::{
@@ -16,18 +17,9 @@ use std::sync::Arc;
 ///
 /// * `db_pool` - Postgres pool
 pub async fn get_job_ctx_for_test(db_pool: PgPool) -> JobContext {
-    let config = envy::from_env::<Config>().expect("Unable to load environment configuration");
-
-    // Redis pool
-    let redis_pool = deadpool_redis::Config::from_url(format!(
-        "redis://{}:{}",
-        &config.redis_host, &config.redis_port
-    ))
-    .create_pool(Some(deadpool_redis::Runtime::Tokio1))
-    .unwrap();
-
+    let redis_pool = get_redis_pool();
     let shared_state = Arc::new(SharedJobState {
-        config: envy::from_env::<Config>().unwrap(),
+        config: get_app_config().unwrap(),
         redis: redis_pool,
         db_pool,
         s3_client: S3Client::new_with(
