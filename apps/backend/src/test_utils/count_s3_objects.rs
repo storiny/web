@@ -56,14 +56,46 @@ mod tests {
     use super::*;
     use crate::{
         constants::buckets::S3_BASE_BUCKET,
-        test_utils::get_s3_client,
+        test_utils::{
+            get_s3_client,
+            TestContext,
+        },
+        utils::delete_s3_objects::delete_s3_objects,
     };
     use futures::future;
     use rusoto_s3::PutObjectRequest;
+    use serial_test::serial;
+    use storiny_macros::test_context;
 
+    struct LocalTestContext {
+        s3_client: S3Client,
+    }
+
+    #[async_trait::async_trait]
+    impl TestContext for LocalTestContext {
+        async fn setup() -> LocalTestContext {
+            LocalTestContext {
+                s3_client: get_s3_client(),
+            }
+        }
+
+        async fn teardown(self) {
+            delete_s3_objects(
+                &self.s3_client,
+                S3_BASE_BUCKET,
+                Some("test-".to_string()),
+                None,
+            )
+            .await
+            .unwrap();
+        }
+    }
+
+    #[test_context(LocalTestContext)]
     #[tokio::test]
-    async fn can_count_objects_with_prefix() {
-        let s3_client = get_s3_client();
+    #[serial]
+    async fn can_count_objects_with_prefix(ctx: &mut LocalTestContext) {
+        let s3_client = &ctx.s3_client;
 
         // Insert an object
         let result = s3_client
@@ -88,9 +120,11 @@ mod tests {
         assert_eq!(result, 1_u32);
     }
 
+    #[test_context(LocalTestContext)]
     #[tokio::test]
-    async fn can_count_more_than_1000_objects_with_prefix() {
-        let s3_client = get_s3_client();
+    #[serial]
+    async fn can_count_more_than_1000_objects_with_prefix(ctx: &mut LocalTestContext) {
+        let s3_client = &ctx.s3_client;
         let mut put_futures = vec![];
 
         // Insert 1200 objects

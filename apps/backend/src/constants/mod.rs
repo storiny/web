@@ -2,6 +2,7 @@ pub mod account_activity_type;
 pub mod buckets;
 pub mod email_source;
 pub mod email_templates;
+pub mod image_size;
 pub mod pexels;
 pub mod redis_namespaces;
 pub mod report_type;

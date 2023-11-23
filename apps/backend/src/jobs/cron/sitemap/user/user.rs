@@ -1,11 +1,13 @@
 use crate::{
-    constants::buckets::S3_SITEMAPS_BUCKET,
+    constants::{
+        buckets::S3_SITEMAPS_BUCKET,
+        image_size::ImageSize,
+    },
     jobs::cron::sitemap::GenerateSitemapResponse,
-    utils::get_sitemap_change_freq::get_sitemap_change_freq,
+    utils::get_cdn_url::get_cdn_url,
 };
 use apalis::prelude::JobError;
 use async_recursion::async_recursion;
-use chrono::DateTime;
 use deflate::{
     deflate_bytes_gzip_conf,
     Compression,
@@ -17,7 +19,11 @@ use rusoto_s3::{
     S3,
 };
 use sitemap_rs::{
-    url::Url,
+    image::Image,
+    url::{
+        ChangeFrequency,
+        Url,
+    },
     url_set::UrlSet,
 };
 use sqlx::{
@@ -25,35 +31,37 @@ use sqlx::{
     Pool,
     Postgres,
 };
-use time::OffsetDateTime;
+use uuid::Uuid;
 
-/// The maximum number of story entries per sitemap file.
+/// The maximum number of user entries per sitemap file.
 const CHUNK_SIZE: u32 = 50_000;
 
 #[derive(Debug, FromRow)]
-struct Story {
-    change_freq: String,
-    url: String,
-    edited_at: Option<OffsetDateTime>,
+struct User {
+    username: String,
+    avatar_id: Option<Uuid>,
+    banner_id: Option<Uuid>,
 }
 
-/// Generates story sitemaps.
+/// Generates user sitemaps.
 ///
 /// * `db_pool` - The Postgres connection pool.
 /// * `s3_client` - The S3 client instance.
-/// * `web_server_url` - The URL of the web server, used to generate story URLs.
+/// * `web_server_url` - The URL of the web server, used to generate user profile URLs.
+/// * `cdn_server_url` - The URL of the CDN server, used to generate user profile image URLs.
 /// * `index` - (Private) An index counter used to keep track of the generated sitemap files.
 /// * `offset` - (Private) An offset value used to skip the specified number of rows during the
 ///   generation of different chunked sitemap files.
 #[async_recursion]
-pub async fn generate_story_sitemap(
+pub async fn generate_user_sitemap(
     db_pool: &Pool<Postgres>,
     s3_client: &S3Client,
     web_server_url: &str,
+    cdn_server_url: &str,
     index: Option<u16>,
     offset: Option<u32>,
 ) -> Result<GenerateSitemapResponse, JobError> {
-    // We can currently generate entries for upto 750 million stories (15_000 files x 50_0000
+    // We can currently generate entries for upto 750 million users (15_000 files x 50_0000
     // entries per file) across 15,000 sitemap files. Raise this value (would require multiple
     // sitemap index files) when we exceed this limit :)
     if index.unwrap_or_default() >= 15_000 {
@@ -62,31 +70,20 @@ pub async fn generate_story_sitemap(
 
     let mut generated_result = GenerateSitemapResponse::default();
 
-    let mut result = sqlx::query_as::<_, Story>(
+    let mut result = sqlx::query_as::<_, User>(
         r#"
         SELECT
-            s.edited_at,
-            CASE
-                WHEN COALESCE(s.edited_at, s.published_at) >= (NOW() - INTERVAL '1 week')
-                    THEN 'weekly'
-                WHEN COALESCE(s.edited_at, s.published_at) >= (NOW() - INTERVAL '6 months')
-                    THEN 'monthly'
-                ELSE 'yearly'
-            END AS change_freq,
-            $3 || '/' || "s->user".username || '/' || s.slug AS url
+            u.username,
+            u.avatar_id,
+            u.banner_id
         FROM
-            stories s
-                INNER JOIN users AS "s->user"
-                           ON s.user_id = "s->user".id
-                               -- Ignore stories from private users
-                               AND "s->user".is_private IS FALSE
+            users u
         WHERE
-              s.published_at IS NOT NULL
-              -- Public
-          AND s.visibility = 2
-          AND s.deleted_at IS NULL
+              u.is_private IS FALSE
+          AND u.deactivated_at IS NULL
+          AND u.deleted_at IS NULL
         ORDER BY
-            s.read_count DESC
+            u.follower_count DESC
         LIMIT $1 OFFSET $2
         "#,
     )
@@ -94,26 +91,45 @@ pub async fn generate_story_sitemap(
     // there are more rows to return.
     .bind((CHUNK_SIZE + 1) as i32)
     .bind((offset.unwrap_or_default() * CHUNK_SIZE) as i32)
-    .bind(web_server_url)
     .fetch_all(db_pool)
     .await
     .map_err(Box::new)
     .map_err(|err| JobError::Failed(err))?
     .iter()
     .map(|row| {
-        let mut url_builder = Url::builder(row.url.to_string());
+        let mut url_builder = Url::builder(format!("{web_server_url}/{}", row.username));
+        let mut images = vec![];
 
         url_builder
-            .change_frequency(get_sitemap_change_freq(&row.change_freq))
+            .change_frequency(ChangeFrequency::Monthly)
             .priority(0.4);
 
-        if let Some(edited_at) = row.edited_at {
-            if let Some(last_mod) = DateTime::from_timestamp(edited_at.unix_timestamp(), 0) {
-                url_builder.last_modified(last_mod.fixed_offset());
-            }
+        if let Some(avatar_id) = row.avatar_id {
+            images.push(Image {
+                location: get_cdn_url(
+                    cdn_server_url,
+                    &avatar_id.to_string(),
+                    Some(ImageSize::W256),
+                ),
+            });
         }
 
-        // This should never panic as the priority is a constant value and there are no images.
+        if let Some(banner_id) = row.banner_id {
+            images.push(Image {
+                location: get_cdn_url(
+                    cdn_server_url,
+                    &banner_id.to_string(),
+                    Some(ImageSize::W860),
+                ),
+            });
+        }
+
+        if !images.is_empty() {
+            url_builder.images(images);
+        }
+
+        // This should never panic as the priority is a constant value and there are at-most 2
+        // images.
         url_builder.build().unwrap()
     })
     .collect::<Vec<_>>();
@@ -142,11 +158,11 @@ pub async fn generate_story_sitemap(
         s3_client
             .put_object(PutObjectRequest {
                 bucket: S3_SITEMAPS_BUCKET.to_string(),
-                key: format!("stories-{}.xml.gz", index.unwrap_or_default()),
+                key: format!("users-{}.xml.gz", index.unwrap_or_default()),
                 content_type: Some("application/x-gzip".to_string()),
                 content_encoding: Some("gzip".to_string()),
                 content_disposition: Some(format!(
-                    r#"attachment; filename="stories-{}.xml.gz""#,
+                    r#"attachment; filename="users-{}.xml.gz""#,
                     index.unwrap_or_default()
                 )),
                 body: Some(gzipped_bytes.into()),
@@ -162,10 +178,11 @@ pub async fn generate_story_sitemap(
 
     // Recurse if there are more rows to return.
     if has_more_rows {
-        let next_result = generate_story_sitemap(
+        let next_result = generate_user_sitemap(
             db_pool,
             s3_client,
             web_server_url,
+            cdn_server_url,
             Some(index.unwrap_or_default() + 1),
             Some(offset.unwrap_or_default() + 1),
         )
@@ -210,7 +227,7 @@ mod tests {
             delete_s3_objects(
                 &self.s3_client,
                 S3_SITEMAPS_BUCKET,
-                Some("stories-".to_string()),
+                Some("users-".to_string()),
                 None,
             )
             .await
@@ -219,16 +236,23 @@ mod tests {
     }
 
     #[test_context(LocalTestContext)]
-    #[sqlx::test(fixtures("story"))]
+    #[sqlx::test(fixtures("user"))]
     #[serial]
-    async fn can_generate_story_sitemap(
+    async fn can_generate_user_sitemap(
         ctx: &mut LocalTestContext,
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let config = get_app_config().unwrap();
         let s3_client = &ctx.s3_client;
-        let result =
-            generate_story_sitemap(&pool, &s3_client, &config.web_server_url, None, None).await;
+        let result = generate_user_sitemap(
+            &pool,
+            &s3_client,
+            &config.web_server_url,
+            &config.cdn_server_url,
+            None,
+            None,
+        )
+        .await;
 
         assert!(result.is_ok());
         assert_eq!(
@@ -243,7 +267,7 @@ mod tests {
         let sitemap_count = count_s3_objects(
             &s3_client,
             S3_SITEMAPS_BUCKET,
-            Some("stories-".to_string()),
+            Some("users-".to_string()),
             None,
         )
         .await
@@ -257,14 +281,21 @@ mod tests {
     #[test_context(LocalTestContext)]
     #[sqlx::test(fixtures("large_dataset"))]
     #[serial]
-    async fn can_generate_story_sitemap_for_large_dataset(
+    async fn can_generate_user_sitemap_for_large_dataset(
         ctx: &mut LocalTestContext,
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let config = get_app_config().unwrap();
         let s3_client = &ctx.s3_client;
-        let result =
-            generate_story_sitemap(&pool, &s3_client, &config.web_server_url, None, None).await;
+        let result = generate_user_sitemap(
+            &pool,
+            &s3_client,
+            &config.web_server_url,
+            &config.cdn_server_url,
+            None,
+            None,
+        )
+        .await;
 
         assert!(result.is_ok());
         assert_eq!(
@@ -279,7 +310,7 @@ mod tests {
         let sitemap_count = count_s3_objects(
             &s3_client,
             S3_SITEMAPS_BUCKET,
-            Some("stories-".to_string()),
+            Some("users-".to_string()),
             None,
         )
         .await
