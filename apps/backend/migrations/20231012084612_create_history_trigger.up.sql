@@ -33,8 +33,8 @@ BEGIN
 					 id = NEW.user_id
 				 AND disable_read_history IS TRUE
 			  )) THEN
-		RAISE 'Read history is disabled by the user'
-			USING ERRCODE = '52002';
+		-- Skip inserting the row
+		RETURN NULL;
 	END IF;
 	--
 	RETURN NEW;

@@ -11,4 +11,6 @@ pub enum RedisNamespace {
     RateLimit,
     #[strum(serialize = "j")]
     BackgroundJob,
+    #[strum(serialize = "rl")]
+    ResourceLimit,
 }

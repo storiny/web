@@ -110,6 +110,12 @@ pub async fn get_story(
         }
     };
 
+    let pg_pool = &client.db_pool;
+    let mut txn = pg_pool
+        .begin()
+        .await
+        .map_err(|_| Status::internal("Database error"))?;
+
     let result = {
         if let Some(user_id) = current_user_id {
             if let Some(story_id) = maybe_story_id {
@@ -119,7 +125,7 @@ pub async fn get_story(
                     story_id,
                     user_id
                 )
-                .fetch_one(&client.db_pool)
+                .fetch_one(&mut *txn)
                 .await
             } else {
                 sqlx::query_file_as!(
@@ -128,13 +134,13 @@ pub async fn get_story(
                     maybe_story_slug,
                     user_id
                 )
-                .fetch_one(&client.db_pool)
+                .fetch_one(&mut *txn)
                 .await
             }
         } else {
             if let Some(story_id) = maybe_story_id {
                 sqlx::query_file_as!(Story, "queries/grpc/get_story/default_by_id.sql", story_id)
-                    .fetch_one(&client.db_pool)
+                    .fetch_one(&mut *txn)
                     .await
             } else {
                 sqlx::query_file_as!(
@@ -142,7 +148,7 @@ pub async fn get_story(
                     "queries/grpc/get_story/default_by_slug.sql",
                     maybe_story_slug,
                 )
-                .fetch_one(&client.db_pool)
+                .fetch_one(&mut *txn)
                 .await
             }
         }
@@ -157,6 +163,27 @@ pub async fn get_story(
     }
 
     let story = result.unwrap();
+
+    // Insert a history record for the current user
+    if let Some(user_id) = current_user_id {
+        if story.published_at.is_some() && story.deleted_at.is_none() {
+            sqlx::query(
+                r#"
+                INSERT INTO histories(user_id, story_id) 
+                VALUES ($1, $2)
+                "#,
+            )
+            .bind(user_id)
+            .bind(story.id)
+            .execute(&mut *txn)
+            .await
+            .map_err(|_| Status::internal("Database error"))?;
+        }
+    }
+
+    txn.commit()
+        .await
+        .map_err(|_| Status::internal("Database error"))?;
 
     Ok(Response::new(GetStoryResponse {
         id: story.id.to_string(),
@@ -241,7 +268,10 @@ mod tests {
         grpc::defs::story_def::v1::GetStoryRequest,
         test_utils::test_grpc_service,
     };
-    use sqlx::PgPool;
+    use sqlx::{
+        PgPool,
+        Row,
+    };
     use tonic::Request;
 
     // Logged-out
@@ -427,7 +457,7 @@ mod tests {
         test_grpc_service(
             pool,
             true,
-            Box::new(|mut client, _, _, user_id| async move {
+            Box::new(|mut client, db_pool, _, user_id| async move {
                 let response = client
                     .get_story(Request::new(GetStoryRequest {
                         id_or_slug: 3_i64.to_string(),
@@ -436,6 +466,22 @@ mod tests {
                     .await;
 
                 assert!(response.is_ok());
+
+                // Should also insert a history record
+                let result = sqlx::query(
+                    r#"
+                    SELECT EXISTS(
+                        SELECT 1 FROM histories
+                        WHERE user_id = $1
+                    )
+                    "#,
+                )
+                .bind(user_id.unwrap())
+                .fetch_one(&db_pool)
+                .await
+                .unwrap();
+
+                assert!(result.get::<bool, _>("exists"));
             }),
         )
         .await;

@@ -168,7 +168,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with `52003` SQLSTATE
+        // Should reject with `52002` SQLSTATE
         assert_eq!(
             result
                 .unwrap_err()
@@ -176,7 +176,7 @@ mod tests {
                 .unwrap()
                 .code()
                 .unwrap(),
-            "52003"
+            "52002"
         );
 
         Ok(())

@@ -21,7 +21,5 @@ pub enum SqlState {
     #[strum(serialize = "52001")]
     EntityUnavailable,
     #[strum(serialize = "52002")]
-    ReadHistoryDisabled,
-    #[strum(serialize = "52003")]
     UsernameCooldown,
 }

@@ -39,7 +39,7 @@ BEGIN
 			AND OLD.username_modified_at > NOW() - INTERVAL '30 days'
 		) THEN
 		RAISE 'Username is on a cooldown period'
-			USING ERRCODE = '52003';
+			USING ERRCODE = '52002';
 	END IF;
 	--
 	RETURN NEW;
