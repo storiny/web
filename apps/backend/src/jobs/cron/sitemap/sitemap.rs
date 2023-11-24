@@ -111,7 +111,7 @@ pub async fn refresh_sitemap(
         + user_sitemap_result.url_count
         + tag_sitemap_result.url_count;
 
-    log::info!(
+    log::trace!(
         r#"
         Regenerated sitemap files:
         - {} preset sitemap file(s) with {} entrie(s)
