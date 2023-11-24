@@ -2,7 +2,11 @@ use crate::{
     config,
     config::get_app_config,
     jobs::{
-        cron::sitemap::refresh_sitemap,
+        cron::{
+            cleanup_db::cleanup_db,
+            cleanup_s3::cleanup_s3,
+            sitemap::refresh_sitemap,
+        },
         notify::{
             story_add_by_tag::{
                 notify_story_add_by_tag,
@@ -83,8 +87,6 @@ pub async fn start_jobs(
         let story_add_by_tag_storage: JobStorage<NotifyStoryAddByTagJob> =
             JobStorage::new(connection_manager);
 
-        let sitemap_state = state.clone();
-
         Monitor::new()
             // Push notifications
             .register_with_count(2, move |x| {
@@ -102,21 +104,51 @@ pub async fn start_jobs(
                     .build_fn(notify_story_add_by_tag)
             })
             // Cron
-            .register_with_count(2, move |x| {
-                WorkerBuilder::new(format!("sitemap-worker-{x}"))
+            .register(
+                WorkerBuilder::new("sitemap-worker")
                     .layer(TraceLayer::new())
-                    .layer(Extension(sitemap_state.clone()))
+                    .layer(Extension(state.clone()))
                     .stream(
                         CronStream::new(
-                            // Run every week
-                            Schedule::from_str("0 0 0 * * 0")
+                            // Run every monday
+                            Schedule::from_str("0 0 0 * * 1")
                                 .expect("Unable to parse the cron schedule"),
                         )
                         .timer(TokioTimer)
                         .to_stream(),
                     )
-                    .build_fn(refresh_sitemap)
-            })
+                    .build_fn(refresh_sitemap),
+            )
+            .register(
+                WorkerBuilder::new("db-cleanup-worker")
+                    .layer(TraceLayer::new())
+                    .layer(Extension(state.clone()))
+                    .stream(
+                        CronStream::new(
+                            // Run every tuesday
+                            Schedule::from_str("0 0 0 * * 2")
+                                .expect("Unable to parse the cron schedule"),
+                        )
+                        .timer(TokioTimer)
+                        .to_stream(),
+                    )
+                    .build_fn(cleanup_db),
+            )
+            .register(
+                WorkerBuilder::new("s3-cleanup-worker")
+                    .layer(TraceLayer::new())
+                    .layer(Extension(state.clone()))
+                    .stream(
+                        CronStream::new(
+                            // Run every wednesday
+                            Schedule::from_str("0 0 0 * * 3")
+                                .expect("Unable to parse the cron schedule"),
+                        )
+                        .timer(TokioTimer)
+                        .to_stream(),
+                    )
+                    .build_fn(cleanup_s3),
+            )
             .run()
             .await
     });
