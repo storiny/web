@@ -58,7 +58,7 @@ mod tests {
     #[sqlx::test(fixtures("story_add_by_tag"))]
     async fn can_notify_story_add_by_tag(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let ctx = get_job_ctx_for_test(pool).await;
+        let ctx = get_job_ctx_for_test(pool, None).await;
         let result = notify_story_add_by_tag(NotifyStoryAddByTagJob { story_id: 5_i64 }, ctx).await;
 
         assert!(result.is_ok());

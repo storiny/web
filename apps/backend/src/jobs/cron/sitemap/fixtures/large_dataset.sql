@@ -13,7 +13,7 @@ SELECT
 		uuid_generate_v4(),
 		NOW()
 FROM
-	GENERATE_SERIES(1, 5);
+	GENERATE_SERIES(1, 125700);
 
 -- Users
 
@@ -27,7 +27,7 @@ SELECT
 	uuid_generate_v4(),
 	uuid_generate_v4()
 FROM
-	GENERATE_SERIES(1, 5);
+	GENERATE_SERIES(1, 125700);
 
 -- Tags
 
@@ -38,4 +38,4 @@ SELECT
 	next_snowflake()::TEXT,
 	1
 FROM
-	GENERATE_SERIES(1, 5);
+	GENERATE_SERIES(1, 125700);

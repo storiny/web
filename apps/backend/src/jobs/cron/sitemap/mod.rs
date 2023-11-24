@@ -1,3 +1,4 @@
+mod presets;
 mod sitemap;
 mod story;
 mod tag;
@@ -10,5 +11,5 @@ pub struct GenerateSitemapResponse {
     /// The total number of URLs appended to all the sitemap files.
     pub url_count: u32,
     /// The total number of sitemap files generated.
-    pub file_count: u16,
+    pub file_count: u32,
 }

@@ -12,6 +12,7 @@ export const middleware: NextMiddleware = (request) => {
     case "/login":
       return NextResponse.redirect(new URL("/auth?segment=login", request.url));
     case "/signup":
+    case "/sign-up":
       return NextResponse.redirect(
         new URL("/auth?segment=signup", request.url)
       );
