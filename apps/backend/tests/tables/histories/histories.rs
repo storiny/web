@@ -50,18 +50,10 @@ mod tests {
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
-        .await;
+        .await?;
 
-        // Should reject with `52002` SQLSTATE
-        assert_eq!(
-            result
-                .unwrap_err()
-                .into_database_error()
-                .unwrap()
-                .code()
-                .unwrap(),
-            "52002"
-        );
+        // Should not insert the history
+        assert_eq!(result.rows_affected(), 0);
 
         Ok(())
     }

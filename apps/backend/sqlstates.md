@@ -19,5 +19,4 @@
 |-------|-------------------------|---------------------------------------------------------------------|
 | 52000 | Relation overlap        | Target user ID is equivalent to the source user ID                  | 
 | 52001 | Entity unavailable      | Entity has been soft-deleted (or deactivated in case of a user)     |
-| 52002 | History insert          | User has disabled read history                                      |
-| 52003 | Username cooldown       | Username was updated recently and is currently on a cooldown period |
+| 52002 | Username cooldown       | Username was updated recently and is currently on a cooldown period |
