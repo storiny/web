@@ -116,7 +116,7 @@ mod tests {
     #[sqlx::test(fixtures("story_add_by_user"))]
     async fn can_notify_story_add_by_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let ctx = get_job_ctx_for_test(pool).await;
+        let ctx = get_job_ctx_for_test(pool, None).await;
         let result =
             notify_story_add_by_user(NotifyStoryAddByUserJob { story_id: 4_i64 }, ctx).await;
 
@@ -150,7 +150,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let ctx = get_job_ctx_for_test(pool).await;
+        let ctx = get_job_ctx_for_test(pool, None).await;
 
         // Unpublish the story
         let result = sqlx::query(
@@ -194,7 +194,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let ctx = get_job_ctx_for_test(pool).await;
+        let ctx = get_job_ctx_for_test(pool, None).await;
 
         // Soft-delete the story
         let result = sqlx::query(
