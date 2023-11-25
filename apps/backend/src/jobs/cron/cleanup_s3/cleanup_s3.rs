@@ -227,7 +227,7 @@ mod tests {
 
     #[test_context(LocalTestContext)]
     #[sqlx::test]
-    #[serial]
+    #[serial(s3)]
     async fn can_clean_assets_table_and_s3(
         ctx: &mut LocalTestContext,
         pool: PgPool,
@@ -261,7 +261,7 @@ mod tests {
 
     #[test_context(LocalTestContext)]
     #[sqlx::test]
-    #[serial]
+    #[serial(s3)]
     async fn can_clean_assets_table_and_s3_for_large_dataset(
         ctx: &mut LocalTestContext,
         pool: PgPool,
@@ -295,7 +295,7 @@ mod tests {
 
     #[test_context(LocalTestContext)]
     #[sqlx::test(fixtures("user"))]
-    #[serial]
+    #[serial(s3)]
     async fn should_not_delete_valid_assets(
         ctx: &mut LocalTestContext,
         pool: PgPool,

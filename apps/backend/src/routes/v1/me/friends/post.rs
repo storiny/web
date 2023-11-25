@@ -1,11 +1,18 @@
 use crate::{
-    constants::sql_states::SqlState,
+    constants::{
+        resource_limit::ResourceLimit,
+        sql_states::SqlState,
+    },
     error::{
         AppError,
         ToastErrorResponse,
     },
     middlewares::identity::identity::Identity,
     models::notification::NotificationEntityType,
+    utils::{
+        check_resource_limit::check_resource_limit,
+        incr_resource_limit::incr_resource_limit,
+    },
     AppState,
 };
 use actix_web::{
@@ -31,12 +38,22 @@ async fn post(
         Ok(user_id) => {
             match path.user_id.parse::<i64>() {
                 Ok(receiver_id) => {
+                    if !check_resource_limit(&data.redis, ResourceLimit::SendFriendRequest, user_id)
+                        .await
+                        .unwrap_or_default()
+                    {
+                        return Ok(HttpResponse::TooManyRequests().body(
+                            "Daily limit exceeded for sending friend requests. Try again tomorrow.",
+                        ));
+                    }
+
                     match sqlx::query(
                         r#"
                         WITH
                             inserted_friend AS (
-                                INSERT INTO friends(transmitter_id, receiver_id)
+                                INSERT INTO friends (transmitter_id, receiver_id)
                                 VALUES ($1, $2)
+                                RETURNING TRUE AS "inserted"
                             ),
                             inserted_notification AS (
                                 INSERT INTO notifications (entity_type, entity_id, notifier_id)
@@ -58,13 +75,27 @@ async fn post(
                     .execute(&data.db_pool)
                     .await
                     {
-                        Ok(_) => Ok(HttpResponse::Created().finish()),
+                        Ok(_) => {
+                            let _ = incr_resource_limit(
+                                &data.redis,
+                                ResourceLimit::SendFriendRequest,
+                                user_id,
+                            )
+                            .await;
+
+                            Ok(HttpResponse::Created().finish())
+                        }
                         Err(err) => {
                             if let Some(db_err) = err.into_database_error() {
                                 match db_err.kind() {
                                     // Do not throw if friend already exists
                                     sqlx::error::ErrorKind::UniqueViolation => {
                                         Ok(HttpResponse::NoContent().finish())
+                                    }
+                                    // Target user is not present in the table
+                                    sqlx::error::ErrorKind::ForeignKeyViolation => {
+                                        Ok(HttpResponse::BadRequest()
+                                            .json(ToastErrorResponse::new("User does not exist")))
                                     }
                                     _ => {
                                         let err_code = db_err.code().unwrap_or_default();
@@ -133,17 +164,30 @@ mod tests {
         grpc::defs::privacy_settings_def::v1::IncomingFriendRequest,
         test_utils::{
             assert_toast_error_response,
+            exceed_resource_limit,
+            get_resource_limit,
             init_app_for_test,
+            RedisTestContext,
         },
     };
-    use actix_web::test;
+    use actix_web::{
+        http::StatusCode,
+        test,
+    };
+    use serial_test::serial;
     use sqlx::{
         PgPool,
         Row,
     };
+    use storiny_macros::test_context;
 
+    #[test_context(RedisTestContext)]
     #[sqlx::test(fixtures("friend"))]
-    async fn can_send_a_friend_request(pool: PgPool) -> sqlx::Result<()> {
+    #[serial(redis)]
+    async fn can_send_a_friend_request(
+        ctx: &mut RedisTestContext,
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
@@ -186,11 +230,52 @@ mod tests {
 
         assert!(result.get::<bool, _>("exists"));
 
+        // Should also increment the resource limit
+        let result = get_resource_limit(
+            &ctx.redis_pool,
+            ResourceLimit::SendFriendRequest,
+            user_id.unwrap(),
+        )
+        .await;
+
+        assert_eq!(result, 1);
+
         Ok(())
     }
 
+    #[test_context(RedisTestContext)]
+    #[sqlx::test]
+    #[serial(redis)]
+    async fn can_reject_friend_request_on_exceeding_the_resource_limit(
+        ctx: &mut RedisTestContext,
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
+        // Exceed the resource limit
+        exceed_resource_limit(
+            &ctx.redis_pool,
+            ResourceLimit::SendFriendRequest,
+            user_id.unwrap(),
+        )
+        .await;
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/friends/{}", 2))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
+
+        Ok(())
+    }
+
+    #[test_context(RedisTestContext)]
     #[sqlx::test(fixtures("friend"))]
+    #[serial(redis)]
     async fn should_not_throw_when_sending_a_friend_request_to_an_existing_friend(
+        _ctx: &mut RedisTestContext,
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -383,6 +468,22 @@ mod tests {
 
         assert!(res.status().is_client_error());
         assert_toast_error_response(res, "User is not accepting friend requests from you").await;
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_friend_request_for_a_missing_user(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/friends/{}", 12345))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "User does not exist").await;
 
         Ok(())
     }

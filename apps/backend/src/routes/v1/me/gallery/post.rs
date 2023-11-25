@@ -2,10 +2,15 @@ use crate::{
     constants::{
         buckets::S3_UPLOADS_BUCKET,
         pexels::PEXELS_API_URL,
+        resource_limit::ResourceLimit,
     },
     error::AppError,
     middlewares::identity::identity::Identity,
     models::photo::Photo,
+    utils::{
+        check_resource_limit::check_resource_limit,
+        incr_resource_limit::incr_resource_limit,
+    },
     AppState,
 };
 use actix_web::{
@@ -77,6 +82,14 @@ async fn post(
     match user.id() {
         Ok(user_id) => match payload.id.parse::<i64>() {
             Ok(photo_id) => {
+                if !check_resource_limit(&data.redis, ResourceLimit::CreateAsset, user_id)
+                    .await
+                    .unwrap_or_default()
+                {
+                    return Ok(HttpResponse::TooManyRequests()
+                        .body("Daily limit exceeded for uploading media. Try again tomorrow."));
+                }
+
                 let reqwest_client = &data.reqwest_client;
                 let api_key = &data.config.pexels_api_key.to_string();
 
@@ -221,6 +234,13 @@ async fn post(
                                                 .await
                                                 {
                                                     Ok(asset) => {
+                                                        let _ = incr_resource_limit(
+                                                            &data.redis,
+                                                            ResourceLimit::CreateAsset,
+                                                            user_id,
+                                                        )
+                                                        .await;
+
                                                         Ok(HttpResponse::Created().json(Response {
                                                             id: asset.get::<i64, _>("id"),
                                                             key: object_key.to_string(),
@@ -275,17 +295,29 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::test_utils::{
+        assert_response_body_text,
+        exceed_resource_limit,
+        get_resource_limit,
         init_app_for_test,
         res_to_string,
+        RedisTestContext,
     };
+    use actix_http::StatusCode;
     use actix_web::test;
+    use serial_test::serial;
     use sqlx::{
         PgPool,
         Row,
     };
+    use storiny_macros::test_context;
 
+    #[test_context(RedisTestContext)]
     #[sqlx::test]
-    async fn can_upload_a_photo_from_pexels(pool: PgPool) -> sqlx::Result<()> {
+    #[serial(redis)]
+    async fn can_upload_a_photo_from_pexels(
+        ctx: &mut RedisTestContext,
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
@@ -317,6 +349,66 @@ mod tests {
         .await?;
 
         assert!(result.get::<bool, _>("exists"));
+
+        // Should also increment the resource limit
+        let result = get_resource_limit(
+            &ctx.redis_pool,
+            ResourceLimit::CreateAsset,
+            user_id.unwrap(),
+        )
+        .await;
+
+        assert_eq!(result, 1);
+
+        Ok(())
+    }
+
+    #[test_context(RedisTestContext)]
+    #[sqlx::test]
+    #[serial(redis)]
+    async fn can_reject_photo_on_exceeding_the_resource_limit(
+        ctx: &mut RedisTestContext,
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
+        // Exceed the resource limit
+        exceed_resource_limit(
+            &ctx.redis_pool,
+            ResourceLimit::CreateAsset,
+            user_id.unwrap(),
+        )
+        .await;
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/gallery")
+            .set_json(Request {
+                id: "2014422".to_string(),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_an_invalid_photo(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/gallery")
+            .set_json(Request {
+                id: "1".to_string(),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_response_body_text(res, "Photo not found").await;
 
         Ok(())
     }

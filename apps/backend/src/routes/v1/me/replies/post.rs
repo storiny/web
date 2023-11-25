@@ -1,14 +1,21 @@
 use crate::{
-    constants::sql_states::SqlState,
+    constants::{
+        resource_limit::ResourceLimit,
+        sql_states::SqlState,
+    },
     error::{
         AppError,
         ToastErrorResponse,
     },
     middlewares::identity::identity::Identity,
     models::notification::NotificationEntityType,
-    utils::md_to_html::{
-        md_to_html,
-        MarkdownSource,
+    utils::{
+        check_resource_limit::check_resource_limit,
+        incr_resource_limit::incr_resource_limit,
+        md_to_html::{
+            md_to_html,
+            MarkdownSource,
+        },
     },
     AppState,
 };
@@ -42,6 +49,17 @@ async fn post(
         Ok(user_id) => {
             match payload.comment_id.parse::<i64>() {
                 Ok(comment_id) => {
+                    if !check_resource_limit(&data.redis, ResourceLimit::CreateReply, user_id)
+                        .await
+                        .unwrap_or_default()
+                    {
+                        return Ok(
+                            HttpResponse::TooManyRequests().json(ToastErrorResponse::new(
+                                "Daily limit exceeded for posting replies. Try again tomorrow.",
+                            )),
+                        );
+                    }
+
                     let content = payload.content.trim();
                     let rendered_content = if content.is_empty() {
                         "".to_string()
@@ -91,7 +109,16 @@ async fn post(
                     .execute(&data.db_pool)
                     .await
                     {
-                        Ok(_) => Ok(HttpResponse::Created().finish()),
+                        Ok(_) => {
+                            let _ = incr_resource_limit(
+                                &data.redis,
+                                ResourceLimit::CreateReply,
+                                user_id,
+                            )
+                            .await;
+
+                            Ok(HttpResponse::Created().finish())
+                        }
                         Err(err) => {
                             if let Some(db_err) = err.into_database_error() {
                                 match db_err.kind() {
@@ -146,16 +173,26 @@ mod tests {
     use super::*;
     use crate::test_utils::{
         assert_toast_error_response,
+        exceed_resource_limit,
+        get_resource_limit,
         init_app_for_test,
+        RedisTestContext,
     };
-    use actix_web::test;
+    use actix_web::{
+        http::StatusCode,
+        test,
+    };
+    use serial_test::serial;
     use sqlx::{
         PgPool,
         Row,
     };
+    use storiny_macros::test_context;
 
+    #[test_context(RedisTestContext)]
     #[sqlx::test(fixtures("reply"))]
-    async fn can_add_a_reply(pool: PgPool) -> sqlx::Result<()> {
+    #[serial(redis)]
+    async fn can_add_a_reply(ctx: &mut RedisTestContext, pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
@@ -203,25 +240,47 @@ mod tests {
 
         assert!(notification_result.get::<bool, _>("exists"));
 
+        // Should also increment the resource limit
+        let result = get_resource_limit(
+            &ctx.redis_pool,
+            ResourceLimit::CreateReply,
+            user_id.unwrap(),
+        )
+        .await;
+
+        assert_eq!(result, 1);
+
         Ok(())
     }
 
-    #[sqlx::test(fixtures("reply"))]
-    async fn can_reject_reply_for_a_missing_comment(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
+    #[test_context(RedisTestContext)]
+    #[sqlx::test]
+    #[serial(redis)]
+    async fn can_reject_reply_on_exceeding_the_resource_limit(
+        ctx: &mut RedisTestContext,
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
+        // Exceed the resource limit
+        exceed_resource_limit(
+            &ctx.redis_pool,
+            ResourceLimit::CreateReply,
+            user_id.unwrap(),
+        )
+        .await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .uri("/v1/me/replies")
             .set_json(Request {
                 content: "Sample **reply** content!".to_string(),
-                comment_id: "12345".to_string(),
+                comment_id: "3".to_string(),
             })
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Comment does not exist").await;
+        assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
 
         Ok(())
     }
@@ -290,6 +349,26 @@ mod tests {
 
         assert!(res.status().is_client_error());
         assert_toast_error_response(res, "You are being blocked by the comment writer").await;
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_reply_for_a_missing_comment(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/replies")
+            .set_json(Request {
+                content: "Sample **reply** content!".to_string(),
+                comment_id: "12345".to_string(),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Comment does not exist").await;
 
         Ok(())
     }

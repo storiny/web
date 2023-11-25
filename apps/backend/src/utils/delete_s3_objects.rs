@@ -132,7 +132,7 @@ mod tests {
 
     #[test_context(LocalTestContext)]
     #[tokio::test]
-    #[serial]
+    #[serial(s3)]
     async fn can_delete_objects_with_prefix(ctx: &mut LocalTestContext) {
         let s3_client = &ctx.s3_client;
 
@@ -175,7 +175,7 @@ mod tests {
 
     #[test_context(LocalTestContext)]
     #[tokio::test]
-    #[serial]
+    #[serial(s3)]
     async fn can_delete_more_than_1000_objects_with_prefix(ctx: &mut LocalTestContext) {
         let s3_client = &ctx.s3_client;
         let mut put_futures = vec![];
@@ -205,7 +205,7 @@ mod tests {
 
     #[test_context(LocalTestContext)]
     #[tokio::test]
-    #[serial]
+    #[serial(s3)]
     async fn should_not_delete_objects_not_starting_with_the_prefix(ctx: &mut LocalTestContext) {
         let s3_client = &ctx.s3_client;
 

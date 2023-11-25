@@ -1,10 +1,17 @@
 use crate::{
-    constants::buckets::S3_UPLOADS_BUCKET,
+    constants::{
+        buckets::S3_UPLOADS_BUCKET,
+        resource_limit::ResourceLimit,
+    },
     error::{
         AppError,
         ToastErrorResponse,
     },
     middlewares::identity::identity::Identity,
+    utils::{
+        check_resource_limit::check_resource_limit,
+        incr_resource_limit::incr_resource_limit,
+    },
     AppState,
 };
 use actix_multipart::form::{
@@ -84,6 +91,17 @@ async fn handle_upload(
     data: web::Data<AppState>,
     user_id: i64,
 ) -> Result<HttpResponse, AppError> {
+    if !check_resource_limit(&data.redis, ResourceLimit::CreateAsset, user_id)
+        .await
+        .unwrap_or_default()
+    {
+        return Ok(
+            HttpResponse::TooManyRequests().json(ToastErrorResponse::new(
+                "Daily limit exceeded for uploading media. Try again tomorrow.",
+            )),
+        );
+    }
+
     let img_alt = &form.alt.0;
 
     // Validate alt length
@@ -225,15 +243,24 @@ async fn handle_upload(
                             .fetch_one(&data.db_pool)
                             .await
                             {
-                                Ok(asset) => Ok(HttpResponse::Created().json(Response {
-                                    id: asset.get::<i64, _>("id"),
-                                    key: object_key.to_string(),
-                                    alt: img_alt.to_string(),
-                                    hex: hex_color,
-                                    width: img_w as i16,
-                                    height: img_h as i16,
-                                    rating: asset.get::<i16, _>("rating"),
-                                })),
+                                Ok(asset) => {
+                                    let _ = incr_resource_limit(
+                                        &data.redis,
+                                        ResourceLimit::CreateAsset,
+                                        user_id,
+                                    )
+                                    .await;
+
+                                    Ok(HttpResponse::Created().json(Response {
+                                        id: asset.get::<i64, _>("id"),
+                                        key: object_key.to_string(),
+                                        alt: img_alt.to_string(),
+                                        hex: hex_color,
+                                        width: img_w as i16,
+                                        height: img_h as i16,
+                                        rating: asset.get::<i16, _>("rating"),
+                                    }))
+                                }
                                 Err(_) => {
                                     // Delete the object from S3 if the database operation fails for
                                     // some reason.
@@ -267,7 +294,12 @@ mod tests {
     use crate::{
         config::get_app_config,
         oauth::get_oauth_client_map,
-        test_utils::get_redis_pool,
+        test_utils::{
+            exceed_resource_limit,
+            get_redis_pool,
+            get_resource_limit,
+            RedisTestContext,
+        },
     };
     use actix_web::{
         App,
@@ -281,6 +313,7 @@ mod tests {
         },
         Body,
         Client,
+        StatusCode,
     };
     use rusoto_mock::{
         MockCredentialsProvider,
@@ -289,11 +322,13 @@ mod tests {
     use rusoto_s3::S3Client;
     use rusoto_ses::SesClient;
     use rusoto_signature::Region;
+    use serial_test::serial;
     use sqlx::PgPool;
     use std::{
         net::TcpListener,
         str,
     };
+    use storiny_macros::test_context;
     use tokio_util::codec::BytesCodec;
     use user_agent_parser::UserAgentParser;
 
@@ -394,8 +429,10 @@ mod tests {
     }
 
     // This test also asserts JPG/JPEG image handling
+    #[test_context(RedisTestContext)]
     #[sqlx::test]
-    async fn can_insert_an_asset(pool: PgPool) -> sqlx::Result<()> {
+    #[serial(redis)]
+    async fn can_insert_an_asset(ctx: &mut RedisTestContext, pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (client, generate_url) = init_web_server_for_test(pool).await;
         let part = get_image_part("normal.jpg", "image.jpg", &IMAGE_JPEG.to_string()).await;
@@ -425,6 +462,37 @@ mod tests {
 
         assert_eq!(result.get::<String, _>("alt"), "Some alt".to_string());
 
+        // Should also increment the resource limit
+        let result = get_resource_limit(&ctx.redis_pool, ResourceLimit::CreateAsset, 1_i64).await;
+
+        assert_eq!(result, 1);
+
+        Ok(())
+    }
+
+    #[test_context(RedisTestContext)]
+    #[sqlx::test]
+    #[serial(redis)]
+    async fn can_reject_an_asset_on_exceeding_the_resource_limit(
+        ctx: &mut RedisTestContext,
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let (client, generate_url) = init_web_server_for_test(pool).await;
+        let part = get_image_part("normal.jpg", "image.jpg", &IMAGE_JPEG.to_string()).await;
+        let form = Form::new().text("alt", "Some alt").part("file", part);
+
+        // Exceed the resource limit
+        exceed_resource_limit(&ctx.redis_pool, ResourceLimit::CreateAsset, 1_i64).await;
+
+        let res = client
+            .post(generate_url("/v1/me/assets"))
+            .multipart(form)
+            .send()
+            .await
+            .unwrap();
+
+        assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
+
         Ok(())
     }
 
@@ -447,8 +515,13 @@ mod tests {
         Ok(())
     }
 
+    #[test_context(RedisTestContext)]
     #[sqlx::test]
-    async fn can_insert_an_asset_without_file_extension(pool: PgPool) -> sqlx::Result<()> {
+    #[serial(redis)]
+    async fn can_insert_an_asset_without_file_extension(
+        _ctx: &mut RedisTestContext,
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let (client, generate_url) = init_web_server_for_test(pool).await;
         let part = get_image_part("normal.jpg", "image", &IMAGE_JPEG.to_string()).await;
         let form = Form::new().text("alt", "").part("file", part);
@@ -502,8 +575,13 @@ mod tests {
         Ok(())
     }
 
+    #[test_context(RedisTestContext)]
     #[sqlx::test]
-    async fn can_scale_down_a_large_image(pool: PgPool) -> sqlx::Result<()> {
+    #[serial(redis)]
+    async fn can_scale_down_a_large_image(
+        _ctx: &mut RedisTestContext,
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let (client, generate_url) = init_web_server_for_test(pool).await;
         let part = get_image_part("large_dims.jpg", "image.jpg", &IMAGE_JPEG.to_string()).await;
         let form = Form::new().text("alt", "").part("file", part);
@@ -522,8 +600,10 @@ mod tests {
         Ok(())
     }
 
+    #[test_context(RedisTestContext)]
     #[sqlx::test]
-    async fn can_handle_a_png_image(pool: PgPool) -> sqlx::Result<()> {
+    #[serial(redis)]
+    async fn can_handle_a_png_image(_ctx: &mut RedisTestContext, pool: PgPool) -> sqlx::Result<()> {
         let (client, generate_url) = init_web_server_for_test(pool).await;
         let part = get_image_part("image.png", "image.png", &IMAGE_PNG.to_string()).await;
         let form = Form::new().text("alt", "").part("file", part);
@@ -540,8 +620,10 @@ mod tests {
         Ok(())
     }
 
+    #[test_context(RedisTestContext)]
     #[sqlx::test]
-    async fn can_handle_a_gif_image(pool: PgPool) -> sqlx::Result<()> {
+    #[serial(redis)]
+    async fn can_handle_a_gif_image(_ctx: &mut RedisTestContext, pool: PgPool) -> sqlx::Result<()> {
         let (client, generate_url) = init_web_server_for_test(pool).await;
         let part = get_image_part("image.gif", "image.gif", &IMAGE_GIF.to_string()).await;
         let form = Form::new().text("alt", "").part("file", part);
@@ -558,8 +640,13 @@ mod tests {
         Ok(())
     }
 
+    #[test_context(RedisTestContext)]
     #[sqlx::test]
-    async fn can_handle_a_webp_image(pool: PgPool) -> sqlx::Result<()> {
+    #[serial(redis)]
+    async fn can_handle_a_webp_image(
+        _ctx: &mut RedisTestContext,
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let (client, generate_url) = init_web_server_for_test(pool).await;
         let part = get_image_part("image.webp", "image.webp", "image/webp").await;
         let form = Form::new().text("alt", "").part("file", part);
@@ -576,8 +663,13 @@ mod tests {
         Ok(())
     }
 
+    #[test_context(RedisTestContext)]
     #[sqlx::test]
-    async fn can_handle_an_animated_webp_image(pool: PgPool) -> sqlx::Result<()> {
+    #[serial(redis)]
+    async fn can_handle_an_animated_webp_image(
+        _ctx: &mut RedisTestContext,
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let (client, generate_url) = init_web_server_for_test(pool).await;
         let part = get_image_part("animated_image.webp", "image.webp", "image/webp").await;
         let form = Form::new().text("alt", "").part("file", part);
@@ -594,7 +686,7 @@ mod tests {
         Ok(())
     }
 
-    // TODO: Remove when GIFs can be resized
+    // TODO: Remove this test when GIFs can be resized
     #[sqlx::test]
     async fn can_reject_an_oversized_gif(pool: PgPool) -> sqlx::Result<()> {
         let (client, generate_url) = init_web_server_for_test(pool).await;
@@ -616,7 +708,7 @@ mod tests {
 
     // See https://www.bamsoftware.com/hacks/deflate.html
     #[sqlx::test]
-    async fn can_handle_png_bomb(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_png_bomb(pool: PgPool) -> sqlx::Result<()> {
         let (client, generate_url) = init_web_server_for_test(pool).await;
         let part = get_image_part("img_bomb.png", "image.png", &IMAGE_PNG.to_string()).await;
         let form = Form::new().text("alt", "").part("file", part);

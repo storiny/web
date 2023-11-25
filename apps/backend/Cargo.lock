@@ -3083,7 +3083,6 @@ dependencies = [
  "pin-project-lite",
  "ryu",
  "sha1_smol",
- "socket2 0.4.9",
  "tokio",
  "tokio-retry",
  "tokio-util",
