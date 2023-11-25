@@ -1,3 +1,4 @@
+pub mod external;
 pub mod login;
 pub mod mfa_preflight;
 pub mod recovery;

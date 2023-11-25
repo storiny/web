@@ -14,12 +14,12 @@ use oauth2::{
 /// * `dribbble_client_secret` - The Dribbble client secret.
 pub fn get_dribbble_oauth_client(
     api_server_url: &str,
-    dribbble_client_id: String,
-    dribbble_client_secret: String,
+    dribbble_client_id: &str,
+    dribbble_client_secret: &str,
 ) -> BasicClient {
     BasicClient::new(
-        ClientId::new(dribbble_client_id),
-        Some(ClientSecret::new(dribbble_client_secret)),
+        ClientId::new(dribbble_client_id.to_string()),
+        Some(ClientSecret::new(dribbble_client_secret.to_string())),
         AuthUrl::new("https://dribbble.com/oauth/authorize".to_string()).unwrap(),
         Some(TokenUrl::new("https://dribbble.com/oauth/token".to_string()).unwrap()),
     )

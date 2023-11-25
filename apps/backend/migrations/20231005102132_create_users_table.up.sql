@@ -36,9 +36,9 @@ CREATE TABLE IF NOT EXISTS users
 	disable_read_history      BOOL           NOT NULL DEFAULT FALSE,
 	allow_sensitive_content   BOOL           NOT NULL DEFAULT FALSE,
 	-- Third-party login credentials
-	login_apple_id            TEXT
+	login_apple_id            TEXT UNIQUE
 		CONSTRAINT login_apple_id_length CHECK (CHAR_LENGTH(login_apple_id) <= 256),
-	login_google_id           TEXT
+	login_google_id           TEXT UNIQUE
 		CONSTRAINT login_google_id_length CHECK (CHAR_LENGTH(login_google_id) <= 256),
 	-- Multi-factor auth
 	mfa_enabled               BOOL           NOT NULL DEFAULT FALSE,
