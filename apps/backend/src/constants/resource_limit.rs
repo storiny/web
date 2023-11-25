@@ -1,7 +1,7 @@
 /// The daily resource limit for individual user. The enum value is used as cache key part (`part`
 /// in `namespace:part:user_id`). Actual limit for individual resource type is returned from the
 /// [ResourceLimit::get_limit] method.
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 #[repr(i32)]
 pub enum ResourceLimit {
     /// The daily limit for posting assets.
@@ -43,8 +43,8 @@ impl ResourceLimit {
             ResourceLimit::LikeStory => 675,
             ResourceLimit::LikeComment => 675,
             ResourceLimit::LikeReply => 675,
-            ResourceLimit::BlockUser => 500,
-            ResourceLimit::MuteUser => 500,
+            ResourceLimit::BlockUser => 300,
+            ResourceLimit::MuteUser => 300,
             ResourceLimit::SendFriendRequest => 175,
             ResourceLimit::FollowUser => 400,
             ResourceLimit::FollowTag => 400,

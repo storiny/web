@@ -243,7 +243,7 @@ mod tests {
 
     #[test_context(LocalTestContext)]
     #[sqlx::test(fixtures("sitemap"))]
-    #[serial]
+    #[serial(s3)]
     async fn can_generate_sitemap(ctx: &mut LocalTestContext, pool: PgPool) {
         let s3_client = &ctx.s3_client;
         let ctx = get_job_ctx_for_test(pool, Some(s3_client.clone())).await;
@@ -264,7 +264,7 @@ mod tests {
 
     #[test_context(LocalTestContext)]
     #[sqlx::test(fixtures("large_dataset"))]
-    #[serial]
+    #[serial(s3)]
     async fn can_generate_sitemap_for_large_dataset(ctx: &mut LocalTestContext, pool: PgPool) {
         let s3_client = &ctx.s3_client;
         let ctx = get_job_ctx_for_test(pool, Some(s3_client.clone())).await;

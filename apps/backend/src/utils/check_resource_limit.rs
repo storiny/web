@@ -28,9 +28,76 @@ pub async fn check_resource_limit(
         .await
     {
         Ok(limit) => Ok(limit < resource_limit.get_limit()),
+        // Errors when the key is missing
         Err(_) => Ok(true),
     }
 }
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+    use super::*;
+    use crate::{
+        test_utils::RedisTestContext,
+        utils::incr_resource_limit::incr_resource_limit,
+    };
+    use futures::future;
+    use serial_test::serial;
+    use storiny_macros::test_context;
+
+    #[test_context(RedisTestContext)]
+    #[tokio::test]
+    #[serial(redis)]
+    async fn can_check_resource_limit_for_a_missing_key(ctx: &mut RedisTestContext) {
+        let redis_pool = &ctx.redis_pool;
+
+        let result = check_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64)
+            .await
+            .unwrap();
+
+        assert!(result);
+    }
+
+    #[test_context(RedisTestContext)]
+    #[tokio::test]
+    #[serial(redis)]
+    async fn can_check_resource_limit_for_an_existing_key(ctx: &mut RedisTestContext) {
+        let redis_pool = &ctx.redis_pool;
+
+        // Increment the resource limit
+        incr_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64)
+            .await
+            .unwrap();
+
+        let result = check_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64)
+            .await
+            .unwrap();
+
+        assert!(result);
+    }
+
+    #[test_context(RedisTestContext)]
+    #[tokio::test]
+    #[serial(redis)]
+    async fn can_return_false_when_exceeding_a_resource_limit(ctx: &mut RedisTestContext) {
+        let redis_pool = &ctx.redis_pool;
+        let mut incr_futures = vec![];
+
+        // Exceed the resource limit. Do not use [crate::test_utils::exceed_resource_limit] as it
+        // depends on [check_resource_limit].
+        for _ in 0..ResourceLimit::CreateStory.get_limit() + 1 {
+            incr_futures.push(incr_resource_limit(
+                redis_pool,
+                ResourceLimit::CreateStory,
+                1_i64,
+            ));
+        }
+
+        future::join_all(incr_futures).await;
+
+        let result = check_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64)
+            .await
+            .unwrap();
+
+        assert!(!result);
+    }
+}

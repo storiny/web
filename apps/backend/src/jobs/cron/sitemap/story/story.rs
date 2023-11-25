@@ -220,7 +220,7 @@ mod tests {
 
     #[test_context(LocalTestContext)]
     #[sqlx::test(fixtures("story"))]
-    #[serial]
+    #[serial(s3)]
     async fn can_generate_story_sitemap(
         ctx: &mut LocalTestContext,
         pool: PgPool,
@@ -256,7 +256,7 @@ mod tests {
 
     #[test_context(LocalTestContext)]
     #[sqlx::test(fixtures("large_dataset"))]
-    #[serial]
+    #[serial(s3)]
     async fn can_generate_story_sitemap_for_large_dataset(
         ctx: &mut LocalTestContext,
         pool: PgPool,

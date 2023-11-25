@@ -138,7 +138,7 @@ mod tests {
 
     #[test_context(LocalTestContext)]
     #[tokio::test]
-    #[serial]
+    #[serial(s3)]
     async fn can_generate_preset_sitemap(ctx: &mut LocalTestContext) {
         let config = get_app_config().unwrap();
         let s3_client = &ctx.s3_client;

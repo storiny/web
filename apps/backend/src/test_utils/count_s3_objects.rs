@@ -93,7 +93,7 @@ mod tests {
 
     #[test_context(LocalTestContext)]
     #[tokio::test]
-    #[serial]
+    #[serial(s3)]
     async fn can_count_objects_with_prefix(ctx: &mut LocalTestContext) {
         let s3_client = &ctx.s3_client;
 
@@ -101,7 +101,7 @@ mod tests {
         let result = s3_client
             .put_object(PutObjectRequest {
                 bucket: S3_BASE_BUCKET.to_string(),
-                key: "fruits/guava".to_string(),
+                key: "test-fruits/guava".to_string(),
                 ..Default::default()
             })
             .await;
@@ -111,7 +111,7 @@ mod tests {
         let result = count_s3_objects(
             &s3_client,
             S3_BASE_BUCKET,
-            Some("fruits/".to_string()),
+            Some("test-fruits/".to_string()),
             None,
         )
         .await
@@ -122,7 +122,7 @@ mod tests {
 
     #[test_context(LocalTestContext)]
     #[tokio::test]
-    #[serial]
+    #[serial(s3)]
     async fn can_count_more_than_1000_objects_with_prefix(ctx: &mut LocalTestContext) {
         let s3_client = &ctx.s3_client;
         let mut put_futures = vec![];
@@ -131,7 +131,7 @@ mod tests {
         for i in 0..1_200 {
             put_futures.push(s3_client.put_object(PutObjectRequest {
                 bucket: S3_BASE_BUCKET.to_string(),
-                key: format!("integers/{}", i),
+                key: format!("test-integers/{}", i),
                 ..Default::default()
             }));
         }
@@ -141,7 +141,7 @@ mod tests {
         let result = count_s3_objects(
             &s3_client,
             S3_BASE_BUCKET,
-            Some("integers/".to_string()),
+            Some("test-integers/".to_string()),
             None,
         )
         .await
@@ -158,7 +158,7 @@ mod tests {
         let result = s3_client
             .put_object(PutObjectRequest {
                 bucket: S3_BASE_BUCKET.to_string(),
-                key: "trees/oak".to_string(),
+                key: "test-trees/oak".to_string(),
                 ..Default::default()
             })
             .await;
@@ -169,16 +169,21 @@ mod tests {
         let result = s3_client
             .put_object(PutObjectRequest {
                 bucket: S3_BASE_BUCKET.to_string(),
-                key: "beverages/latte".to_string(),
+                key: "test-beverages/latte".to_string(),
                 ..Default::default()
             })
             .await;
 
         assert!(result.is_ok());
 
-        let result = count_s3_objects(&s3_client, S3_BASE_BUCKET, Some("trees/".to_string()), None)
-            .await
-            .unwrap();
+        let result = count_s3_objects(
+            &s3_client,
+            S3_BASE_BUCKET,
+            Some("test-trees/".to_string()),
+            None,
+        )
+        .await
+        .unwrap();
 
         assert_eq!(result, 1_u32);
     }

@@ -237,7 +237,7 @@ mod tests {
 
     #[test_context(LocalTestContext)]
     #[sqlx::test(fixtures("user"))]
-    #[serial]
+    #[serial(s3)]
     async fn can_generate_user_sitemap(
         ctx: &mut LocalTestContext,
         pool: PgPool,
@@ -280,7 +280,7 @@ mod tests {
 
     #[test_context(LocalTestContext)]
     #[sqlx::test(fixtures("large_dataset"))]
-    #[serial]
+    #[serial(s3)]
     async fn can_generate_user_sitemap_for_large_dataset(
         ctx: &mut LocalTestContext,
         pool: PgPool,
