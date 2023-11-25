@@ -150,9 +150,11 @@ mod tests {
         assert_eq!(result, 1_200_u32);
     }
 
+    #[test_context(LocalTestContext)]
     #[tokio::test]
-    async fn should_not_count_objects_not_starting_with_the_prefix() {
-        let s3_client = get_s3_client();
+    #[serial(s3)]
+    async fn should_not_count_objects_not_starting_with_the_prefix(ctx: &mut LocalTestContext) {
+        let s3_client = &ctx.s3_client;
 
         // Insert an object
         let result = s3_client
