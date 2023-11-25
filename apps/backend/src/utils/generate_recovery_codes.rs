@@ -21,7 +21,7 @@ pub fn generate_recovery_codes() -> Result<[String; 10], ()> {
                 return Err(());
             }
 
-            generate_attempts = generate_attempts + 1;
+            generate_attempts += 1;
             next_recovery_code = nanoid!(RECOVERY_CODE_LENGTH, &character_set).to_string();
         }
 

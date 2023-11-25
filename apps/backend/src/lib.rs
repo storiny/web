@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+use crate::error::ExternalAuthError;
 use deadpool_redis::Pool as RedisPool;
 use maxminddb::Reader;
 use oauth2::basic::BasicClient;
@@ -42,6 +43,14 @@ pub struct ConnectionTemplate {
     provider_icon: String,
     provider_name: String,
     error: Option<ConnectionError>,
+}
+
+/// Third-party login error template
+#[derive(TemplateOnce)]
+#[template(path = "external_auth_error.stpl")]
+pub struct ExternalAuthErrorTemplate {
+    provider_name: String,
+    error: ExternalAuthError,
 }
 
 /// Application state

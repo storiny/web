@@ -1,21 +1,21 @@
 use crate::{
-    error::AppError,
+    error::{
+        AppError,
+        ExternalAuthError,
+    },
     middlewares::identity::identity::Identity,
     models::notification::NotificationEntityType,
-    oauth::icons::youtube::YOUTUBE_LOGO,
-    routes::oauth::{
-        AuthRequest,
-        ConnectionError,
-    },
+    routes::oauth::AuthRequest,
     utils::{
         clear_user_sessions::clear_user_sessions,
+        generate_random_username::generate_random_username,
         get_client_device::get_client_device,
         get_client_location::get_client_location,
         get_user_sessions::get_user_sessions,
         truncate_str::truncate_str,
     },
     AppState,
-    ConnectionTemplate,
+    ExternalAuthErrorTemplate,
 };
 use actix_extended_session::Session;
 use actix_http::HttpMessage;
@@ -30,7 +30,6 @@ use actix_web::{
     HttpResponse,
 };
 use actix_web_validator::QsQuery;
-use itertools::Itertools;
 use oauth2::{
     reqwest::async_http_client,
     AuthorizationCode,
@@ -63,15 +62,15 @@ async fn handle_oauth_request(
     data: &web::Data<AppState>,
     session: &Session,
     params: &QsQuery<AuthRequest>,
-) -> Result<(), ConnectionError> {
+) -> Result<(), ExternalAuthError> {
     let oauth_token = session
         .get::<String>("oauth_token")
-        .map_err(|_| ConnectionError::Other)?
-        .ok_or(ConnectionError::Other)?;
+        .map_err(|_| ExternalAuthError::Other)?
+        .ok_or(ExternalAuthError::Other)?;
 
     // Check whether the CSRF token has been tampered
     if oauth_token != params.state {
-        return Err(ConnectionError::StateMismatch);
+        return Err(ExternalAuthError::StateMismatch);
     }
 
     // Remove the CSRF token from the session.
@@ -83,13 +82,13 @@ async fn handle_oauth_request(
         .exchange_code(code)
         .request_async(async_http_client)
         .await
-        .map_err(|_| ConnectionError::Other)?;
+        .map_err(|_| ExternalAuthError::Other)?;
 
     // Check if the `userinfo.email` and `userinfo.profile` scopes were granted, required for
     // obtaining the account details.
     if !token_res
         .scopes()
-        .ok_or(ConnectionError::InsufficientScopes)?
+        .ok_or(ExternalAuthError::InsufficientScopes)?
         .iter()
         .all(|scope| {
             vec![
@@ -99,7 +98,7 @@ async fn handle_oauth_request(
             .contains(&scope.as_str())
         })
     {
-        return Err(ConnectionError::InsufficientScopes);
+        return Err(ExternalAuthError::InsufficientScopes);
     }
 
     // Fetch the account details
@@ -112,18 +111,38 @@ async fn handle_oauth_request(
         )
         .send()
         .await
-        .map_err(|_| ConnectionError::Other)?
+        .map_err(|_| ExternalAuthError::Other)?
         .json::<Response>()
         .await
-        .map_err(|_| ConnectionError::Other)?;
+        .map_err(|_| ExternalAuthError::Other)?;
 
     // Check if Google returned an invalid response.
     if google_data.validate().is_err() {
-        return Err(ConnectionError::Other);
+        return Err(ExternalAuthError::Other);
     }
 
+    handle_google_profile_data(google_data, req, data, session).await
+}
+
+/// Handles Google account profile data response. It creates a session if the user has previously
+/// signed-in using Google, otherwise inserts a new user with the data based on the Google
+/// account profile response into the database.
+///
+/// * `google_data` - The response from the Google OAuth API call.
+/// * `req` - The HTTP request.
+/// * `data` - The shared API server data.
+/// * `session` - The session instance for the user.
+async fn handle_google_profile_data(
+    google_data: Response,
+    req: HttpRequest,
+    data: &web::Data<AppState>,
+    session: &Session,
+) -> Result<(), ExternalAuthError> {
     let pg_pool = &data.db_pool;
-    let mut txn = pg_pool.begin().await.map_err(|_| ConnectionError::Other)?;
+    let mut txn = pg_pool
+        .begin()
+        .await
+        .map_err(|_| ExternalAuthError::Other)?;
     let mut is_new_user = false;
 
     let user_id = match sqlx::query(
@@ -145,13 +164,12 @@ async fn handle_oauth_request(
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
                 .is_some()
             {
-                // TODO: Change this errors
-                return Err(ConnectionError::Other);
+                return Err(ExternalAuthError::UserDeleted);
             } else if result
                 .get::<Option<OffsetDateTime>, _>("deactivated_at")
                 .is_some()
             {
-                return Err(ConnectionError::Other);
+                return Err(ExternalAuthError::UserDeactivated);
             }
 
             result.get::<i64, _>("id")
@@ -170,17 +188,18 @@ async fn handle_oauth_request(
                 )
                 .bind(truncate_str(&google_data.name, 32))
                 .bind(
-                    // TODO:
-                    "random_username",
+                    generate_random_username(&google_data.name, &mut txn)
+                        .await
+                        .map_err(|_| ExternalAuthError::Other)?,
                 )
                 .bind(&google_data.email)
                 .bind(&google_data.id)
                 .fetch_one(&mut *txn)
                 .await
-                .map_err(|_| ConnectionError::Other)?
+                .map_err(|_| ExternalAuthError::Other)?
                 .get::<i64, _>("id")
             } else {
-                return Err(ConnectionError::Other);
+                return Err(ExternalAuthError::Other);
             }
         }
     };
@@ -213,38 +232,39 @@ async fn handle_oauth_request(
         }
     }
 
-    // Insert a login notification
-    sqlx::query(
-        r#"
-        WITH inserted_notification AS (
-            INSERT INTO notifications (entity_type)
-            VALUES ($1)
-            RETURNING id
-        )
-        INSERT
-        INTO
-            notification_outs (
-                notified_id,
-                notification_id,
-                rendered_content
-            )
-        SELECT
-            $2, (SELECT id FROM inserted_notification), $3
-        "#,
-    )
-    .bind(NotificationEntityType::LoginAttempt as i16)
-    .bind(user_id)
-    .bind(if let Some(location) = client_location_value {
-        format!("{client_device_value}:{location}")
-    } else {
-        client_device_value
-    })
-    .execute(&mut *txn)
-    .await?;
-
-    txn.commit().await.map_err(|_| ConnectionError::Other)?;
-
     if !is_new_user {
+        // Insert a login notification
+        sqlx::query(
+            r#"
+            WITH inserted_notification AS (
+                INSERT INTO notifications (entity_type)
+                VALUES ($1)
+                RETURNING id
+            )
+            INSERT
+            INTO
+                notification_outs (
+                    notified_id,
+                    notification_id,
+                    rendered_content
+                )
+            SELECT
+                $2, (SELECT id FROM inserted_notification), $3
+            "#,
+        )
+        .bind(NotificationEntityType::LoginAttempt as i16)
+        .bind(user_id)
+        .bind(if let Some(location) = client_location_value {
+            format!("{client_device_value}:{location}")
+        } else {
+            client_device_value
+        })
+        .execute(&mut *txn)
+        .await
+        .map_err(|_| ExternalAuthError::Other)?;
+
+        txn.commit().await.map_err(|_| ExternalAuthError::Other)?;
+
         // Check if the user maintains more than or equal to 10 sessions, and
         // delete all the previous sessions if the current number of active
         // sessions for the user exceeds the per user session limit (10).
@@ -253,21 +273,24 @@ async fn handle_oauth_request(
                 if sessions.len() >= 10 {
                     match clear_user_sessions(&data.redis, user_id).await {
                         Ok(_) => {}
-                        Err(_) => return Err(ConnectionError::Other),
+                        Err(_) => return Err(ExternalAuthError::Other),
                     };
                 }
             }
-            Err(_) => return Err(ConnectionError::Other),
+            Err(_) => return Err(ExternalAuthError::Other),
         };
+    } else {
+        txn.commit().await.map_err(|_| ExternalAuthError::Other)?;
     }
 
     Identity::login(&req.extensions(), user_id)
         .and_then(|_| Ok(()))
-        .map_err(|_| ConnectionError::Other)
+        .map_err(|_| ExternalAuthError::Other)
 }
 
 #[get("/v1/auth/external/google/callback")]
 async fn get(
+    req: HttpRequest,
     data: web::Data<AppState>,
     params: QsQuery<AuthRequest>,
     session: Session,
@@ -276,27 +299,165 @@ async fn get(
     // Redirect to the web server if already logged-in
     if user.is_some() {
         return Ok(HttpResponse::Found()
-            .append_header((header::LOCATION, &data.config.web_server_url.to_string()))
+            .append_header((header::LOCATION, data.config.web_server_url.to_string()))
             .finish());
     }
 
-    Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
-        ConnectionTemplate {
-            error: if let Ok(user_id) = user.id() {
-                handle_oauth_request(&data, &session, &params, user_id)
-                    .await
-                    .err()
-            } else {
-                Some(ConnectionError::Other)
-            },
-            provider_icon: YOUTUBE_LOGO.to_string(),
-            provider_name: "YouTube".to_string(),
-        }
-        .render_once()
-        .unwrap(),
-    ))
+    match handle_oauth_request(req, &data, &session, &params).await {
+        // Redirect to the web server location on successful login.
+        Ok(_) => Ok(HttpResponse::Found()
+            .append_header((header::LOCATION, data.config.web_server_url.to_string()))
+            .finish()),
+        Err(error) => Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
+            ExternalAuthErrorTemplate {
+                error,
+                provider_name: "Google".to_string(),
+            }
+            .render_once()
+            .unwrap(),
+        )),
+    }
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(get);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::test_utils::init_app_for_test;
+    use actix_web::{
+        test,
+        Responder,
+    };
+    use sqlx::PgPool;
+
+    #[get("/google-login")]
+    async fn post(req: HttpRequest, data: web::Data<AppState>, session: Session) -> impl Responder {
+        match handle_google_profile_data(
+            Response {
+                id: "1".to_string(),
+                email: "test@example.com".to_string(),
+                name: "Test Google account".to_string(),
+            },
+            req,
+            &data,
+            &session,
+        )
+        .await
+        {
+            Ok(_) => HttpResponse::Ok().finish(),
+            Err(_) => HttpResponse::InternalServerError().finish(),
+        }
+    }
+
+    #[sqlx::test]
+    async fn can_login_using_google(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, _, _) = init_app_for_test(post, pool, false, false, None).await;
+
+        let req = test::TestRequest::get().uri("/google-login").to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        // New user should be present in the database
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS (
+                SELECT 1 FROM users
+                WHERE login_google_id = $1
+            )
+            "#,
+        )
+        .bind("1")
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(result.get::<bool, _>("exists"));
+
+        // Should not insert a notification for new user
+        let result = sqlx::query(
+            r#"
+            SELECT
+                EXISTS (
+                    SELECT
+                        1
+                    FROM
+                        notification_outs
+                    WHERE
+                        notification_id = (
+                            SELECT id FROM notifications
+                            WHERE entity_type = $1
+                        )
+                   )
+            "#,
+        )
+        .bind(NotificationEntityType::LoginAttempt as i16)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_login_using_google_for_an_existing_user(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
+        // Update `login_google_id` for the current user
+        let result = sqlx::query(
+            r#"
+            UPDATE users
+            SET login_google_id = $1
+            WHERE id = $2
+            "#,
+        )
+        .bind("1")
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let req = test::TestRequest::get().uri("/google-login").to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        // New user should not be inserted in the database
+        let result = sqlx::query(r#"SELECT 1 FROM users"#)
+            .fetch_all(&mut *conn)
+            .await?;
+
+        assert_eq!(result.len(), 1);
+
+        // Should insert a notification
+        let result = sqlx::query(
+            r#"
+            SELECT
+                EXISTS (
+                    SELECT
+                        1
+                    FROM
+                        notification_outs
+                    WHERE
+                        notification_id = (
+                            SELECT id FROM notifications
+                            WHERE entity_type = $1
+                        )
+                   )
+            "#,
+        )
+        .bind(NotificationEntityType::LoginAttempt as i16)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
 }

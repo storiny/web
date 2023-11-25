@@ -25,7 +25,7 @@ async fn get(
     // Redirect to the web server if already logged-in
     if user.is_some() {
         return Ok(HttpResponse::Found()
-            .append_header((header::LOCATION, &data.config.web_server_url.to_string()))
+            .append_header((header::LOCATION, data.config.web_server_url.to_string()))
             .finish());
     }
 
