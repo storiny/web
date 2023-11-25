@@ -450,7 +450,7 @@ mod tests {
             assert_response_body_text,
             assert_toast_error_response,
             init_app_for_test,
-            res_to_string,
+            RedisTestContext,
         },
         utils::{
             get_client_device::ClientDevice,
@@ -459,7 +459,6 @@ mod tests {
         },
     };
     use actix_web::{
-        delete,
         get,
         services,
         test,
@@ -474,16 +473,18 @@ mod tests {
     };
     use redis::AsyncCommands;
     use serde_json::json;
+    use serial_test::serial;
     use sqlx::PgPool;
     use std::net::{
         Ipv4Addr,
         SocketAddr,
         SocketAddrV4,
     };
+    use storiny_macros::test_context;
     use uuid::Uuid;
 
-    /// Only for testing
-    #[get("/v1/auth/login")]
+    /// Returns the device and session data present in the session for testing
+    #[get("/get-device-and-location")]
     async fn get(session: Session) -> impl Responder {
         let location = session.get::<ClientLocation>("location").unwrap();
         let device = session.get::<ClientDevice>("device").unwrap();
@@ -491,68 +492,6 @@ mod tests {
             "location": location,
             "device": device
         }))
-    }
-
-    #[derive(Deserialize)]
-    struct Fragments {
-        user_id: String,
-        count: Option<i32>,
-    }
-
-    // Route to create `count` number of sessions for the user.
-    #[post("/create_sessions/{user_id}/{count}")]
-    async fn create_sessions(
-        path: web::Path<Fragments>,
-        data: web::Data<AppState>,
-    ) -> impl Responder {
-        let redis_pool = &data.redis;
-        let user_id = (&path.user_id).parse::<i64>().unwrap();
-        let count = (&path.count).clone().unwrap_or_default();
-        let mut conn = redis_pool.get().await.unwrap();
-
-        for _ in 0..count {
-            let _: () = conn
-                .set(
-                    &format!(
-                        "{}:{user_id}:{}",
-                        RedisNamespace::Session.to_string(),
-                        Uuid::new_v4()
-                    ),
-                    &serde_json::to_string(&UserSession {
-                        user_id,
-                        created_at: OffsetDateTime::now_utc().unix_timestamp(),
-                        ack: false,
-                        device: None,
-                        location: None,
-                    })
-                    .unwrap(),
-                )
-                .await
-                .unwrap();
-        }
-
-        HttpResponse::Ok().finish()
-    }
-
-    // Route to return the sessions for the user.
-    #[get("/get_sessions/{user_id}")]
-    async fn get_sessions(path: web::Path<Fragments>, data: web::Data<AppState>) -> impl Responder {
-        let redis_pool = &data.redis;
-        let user_id = (&path.user_id).parse::<i64>().unwrap();
-        let sessions = get_user_sessions(redis_pool, user_id).await.unwrap();
-        HttpResponse::Ok().json(sessions)
-    }
-
-    // Route to remove all the sessions for the user.
-    #[delete("/remove_sessions/{user_id}")]
-    async fn remove_sessions(
-        path: web::Path<Fragments>,
-        data: web::Data<AppState>,
-    ) -> impl Responder {
-        let redis_pool = &data.redis;
-        let user_id = (&path.user_id).parse::<i64>().unwrap();
-        clear_user_sessions(redis_pool, user_id).await.unwrap();
-        HttpResponse::Ok().finish()
     }
 
     /// Returns sample email and hashed password
@@ -635,40 +574,44 @@ mod tests {
         Ok(())
     }
 
+    #[test_context(RedisTestContext)]
     #[sqlx::test]
-    async fn can_clear_overflowing_sessions(pool: PgPool) -> sqlx::Result<()> {
+    #[serial(redis)]
+    async fn can_clear_overflowing_sessions(
+        ctx: &mut RedisTestContext,
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let redis_pool = &ctx.redis_pool;
+        let mut redis_conn = redis_pool.get().await.unwrap();
         let mut conn = pool.acquire().await?;
-        let (app, _, user_id) = init_app_for_test(
-            services![post, create_sessions, get_sessions, remove_sessions],
-            pool,
-            true,
-            true,
-            Some(1_i64),
-        )
-        .await;
+        let (app, _, user_id) = init_app_for_test(post, pool, true, true, None).await;
         let (email, password_hash, password) = get_sample_email_and_password();
 
-        // Remove all the previous sessions
-        let req = test::TestRequest::delete()
-            .uri(&format!("/remove_sessions/{}", user_id.unwrap()))
-            .to_request();
-        test::call_service(&app, req).await;
+        // Create 10 sessions (one is already created from `init_app_for_test`)
+        for _ in 0..9 {
+            let _: () = redis_conn
+                .set(
+                    &format!(
+                        "{}:{}:{}",
+                        RedisNamespace::Session.to_string(),
+                        user_id.unwrap(),
+                        Uuid::new_v4()
+                    ),
+                    &serde_json::to_string(&UserSession {
+                        user_id: user_id.unwrap(),
+                        ..Default::default()
+                    })
+                    .unwrap(),
+                )
+                .await
+                .unwrap();
+        }
 
-        // Create 10 sessions
-        let req = test::TestRequest::post()
-            .uri(&format!("/create_sessions/{}/{}", user_id.unwrap(), 10))
-            .to_request();
-        test::call_service(&app, req).await;
+        let sessions = get_user_sessions(redis_pool, user_id.unwrap())
+            .await
+            .unwrap();
 
-        let req = test::TestRequest::get()
-            .uri(&format!("/get_sessions/{}", user_id.unwrap()))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<(String, UserSession)>>(&res_to_string(res).await);
-
-        assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 10);
+        assert_eq!(sessions.len(), 10);
 
         // Insert the user
         sqlx::query(
@@ -707,20 +650,11 @@ mod tests {
         .await;
 
         // Should remove previous sessions
-        let req = test::TestRequest::get()
-            .uri(&format!("/get_sessions/{}", user_id.unwrap()))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-        let json = serde_json::from_str::<Vec<(String, UserSession)>>(&res_to_string(res).await);
+        let sessions = get_user_sessions(redis_pool, user_id.unwrap())
+            .await
+            .unwrap();
 
-        assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 1);
-
-        // Remove all the sessions
-        let req = test::TestRequest::delete()
-            .uri(&format!("/remove_sessions/{}", user_id.unwrap()))
-            .to_request();
-        test::call_service(&app, req).await;
+        assert_eq!(sessions.len(), 1);
 
         Ok(())
     }
@@ -1415,8 +1349,11 @@ mod tests {
         Ok(())
     }
 
+    #[test_context(RedisTestContext)]
     #[sqlx::test]
+    #[serial(redis)]
     async fn can_insert_client_device_and_location_into_the_session(
+        _ctx: &mut RedisTestContext,
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -1439,7 +1376,7 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        let post_req = test::TestRequest::post()
+        let req = test::TestRequest::post()
             .peer_addr(SocketAddr::from(SocketAddrV4::new(
                 Ipv4Addr::new(8, 8, 8, 8),
                 8080,
@@ -1450,22 +1387,23 @@ mod tests {
                 email: email.to_string(),
                 password: password.to_string(),
                 remember_me: true,
-                code:None
+                code: None
             })
             .to_request();
-        let post_res = test::call_service(&app, post_req).await;
-        let cookie_value = post_res
+        let res = test::call_service(&app, req).await;
+        let cookie_value = res
             .response()
             .cookies()
             .find(|cookie| cookie.name() == SESSION_COOKIE_NAME);
-        assert!(post_res.status().is_success());
+
+        assert!(res.status().is_success());
         assert!(cookie_value.is_some());
 
-        let get_req = test::TestRequest::get()
+        let req = test::TestRequest::get()
             .cookie(cookie_value.unwrap())
-            .uri("/v1/auth/login")
+            .uri("/get-device-and-location")
             .to_request();
-        let get_res = test::call_service(&app, get_req).await;
+        let res = test::call_service(&app, req).await;
 
         #[derive(Deserialize)]
         struct ClientSession {
@@ -1473,7 +1411,7 @@ mod tests {
             location: Option<ClientLocation>,
         }
 
-        let client_session = test::read_body_json::<ClientSession, _>(get_res).await;
+        let client_session = test::read_body_json::<ClientSession, _>(res).await;
 
         assert!(client_session.device.is_some());
         assert!(client_session.location.is_some());

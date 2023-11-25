@@ -173,7 +173,7 @@ pub async fn generate_user_sitemap(
             .map_err(|err| JobError::Failed(err))?;
 
         generated_result.url_count = generated_result.url_count + result_length;
-        generated_result.file_count = generated_result.file_count + 1;
+        generated_result.file_count += 1;
     }
 
     // Recurse if there are more rows to return.

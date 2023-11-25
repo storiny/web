@@ -5,6 +5,7 @@ pub mod delete_s3_objects;
 pub mod extract_session_key_from_cookie;
 pub mod flag;
 pub mod generate_connection_url;
+pub mod generate_random_username;
 pub mod generate_recovery_codes;
 pub mod generate_totp;
 pub mod get_cdn_url;

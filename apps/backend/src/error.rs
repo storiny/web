@@ -90,3 +90,19 @@ impl From<sqlx::Error> for AppError {
         AppError(err)
     }
 }
+
+/// An error raised during authentication flow originated from a third-party service, such as
+/// "Continue with Google".
+#[derive(Debug)]
+pub enum ExternalAuthError {
+    /// Insufficient scopes were returned on the callback endpoint
+    InsufficientScopes,
+    /// The CSRF token is tampered
+    StateMismatch,
+    /// The user associated with the third-party account is deleted
+    UserDeleted,
+    /// The user associated with the third-party account is deactivated
+    UserDeactivated,
+    /// Other connection error
+    Other,
+}
