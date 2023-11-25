@@ -22,7 +22,7 @@ pub async fn check_resource_limit(
     match conn
         .get::<_, u32>(&format!(
             "{}:{}:{user_id}",
-            RedisNamespace::ResourceLimit,
+            RedisNamespace::ResourceLimit.to_string(),
             resource_limit as i32
         ))
         .await

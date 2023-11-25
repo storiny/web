@@ -40,7 +40,7 @@ struct Fragments {
     story_id: String,
 }
 
-// TODO: Handle publishing and editing logic
+// TODO: Handle publishing and editing logic (with resource limit)
 
 /// Generates a unique slug for the story.
 ///
