@@ -73,4 +73,5 @@ pub struct OAuthClientMap {
     spotify: BasicClient,
     discord: BasicClient,
     dribbble: BasicClient,
+    google: BasicClient,
 }

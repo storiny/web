@@ -7,12 +7,12 @@ use oauth2::{
     TokenUrl,
 };
 
-/// Builds and returns YouTube oauth client.
+/// Builds and returns Google oauth client. Used for the "Sign in with Google" auth flow.
 ///
 /// * `api_server_url` - The public URL of the API server.
 /// * `google_client_id` - The Google client ID.
 /// * `google_client_secret` - The Google client secret.
-pub fn get_youtube_oauth_client(
+pub fn get_google_oauth_client(
     api_server_url: &str,
     google_client_id: &str,
     google_client_secret: &str,
@@ -24,6 +24,10 @@ pub fn get_youtube_oauth_client(
         Some(TokenUrl::new("https://www.googleapis.com/oauth2/v3/token".to_string()).unwrap()),
     )
     .set_redirect_uri(
-        RedirectUrl::new(format!("{}/{}", api_server_url, "oauth/youtube/callback")).unwrap(),
+        RedirectUrl::new(format!(
+            "{}/{}",
+            api_server_url, "v1/auth/external/google/callback"
+        ))
+        .unwrap(),
     )
 }

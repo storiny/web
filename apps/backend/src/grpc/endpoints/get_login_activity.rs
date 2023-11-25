@@ -126,9 +126,11 @@ mod tests {
             session_cookie::SESSION_COOKIE_NAME,
         },
         grpc::defs::login_activity_def::v1::GetLoginActivityRequest,
-        test_utils::test_grpc_service,
+        test_utils::{
+            test_grpc_service,
+            RedisTestContext,
+        },
         utils::{
-            clear_user_sessions::clear_user_sessions,
             get_client_device::ClientDevice,
             get_client_location::ClientLocation,
             get_user_sessions::UserSession,
@@ -140,24 +142,23 @@ mod tests {
         Key,
     };
     use redis::AsyncCommands;
+    use serial_test::serial;
     use sqlx::PgPool;
+    use storiny_macros::test_context;
     use time::OffsetDateTime;
     use tonic::Request;
     use uuid::Uuid;
 
+    #[test_context(RedisTestContext)]
     #[sqlx::test]
-    async fn can_return_login_activity(pool: PgPool) {
+    #[serial(redis)]
+    async fn can_return_login_activity(_ctx: &mut RedisTestContext, pool: PgPool) {
         test_grpc_service(
             pool,
             true,
             Box::new(|mut client, _, redis_pool, user_id| async move {
                 let config = get_app_config().unwrap();
                 let mut conn = redis_pool.get().await.unwrap();
-
-                // Remove all the previous sessions
-                clear_user_sessions(&redis_pool, user_id.unwrap())
-                    .await
-                    .unwrap();
 
                 // Insert a session
                 let session_key = format!("{}:{}", user_id.unwrap(), Uuid::new_v4().to_string());
@@ -175,7 +176,6 @@ mod tests {
                         &serde_json::to_string(&UserSession {
                             user_id: user_id.unwrap(),
                             created_at: OffsetDateTime::now_utc().unix_timestamp(),
-                            ack: false,
                             device: Some(ClientDevice {
                                 display_name: "Some device".to_string(),
                                 r#type: 0,
@@ -185,6 +185,7 @@ mod tests {
                                 lat: Some(0.0),
                                 lng: Some(0.0),
                             }),
+                            ..Default::default()
                         })
                         .unwrap(),
                     )
@@ -203,11 +204,6 @@ mod tests {
                 assert!(response.recent.is_some());
                 assert_eq!(response.logins.len(), 1);
                 assert!(response.recent.unwrap().is_active); // The only session should be active
-
-                // Remove all the sessions
-                clear_user_sessions(&redis_pool, user_id.unwrap())
-                    .await
-                    .unwrap();
             }),
         )
         .await;
