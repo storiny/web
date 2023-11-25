@@ -13,18 +13,19 @@ use actix_web::{
 };
 use actix_web_validator::Json;
 use redis::AsyncCommands;
-use serde::Deserialize;
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use validator::Validate;
 
-// TODO: Write tests
-
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Serialize, Deserialize, Validate)]
 struct Request {
     #[validate(length(min = 8, max = 512, message = "Invalid session"))]
     id: String,
 }
 
-#[post("/v1/me/sessions/acknowledge")]
+#[post("/v1/me/settings/sessions/acknowledge")]
 async fn post(user: Identity, payload: Json<Request>, data: web::Data<AppState>) -> impl Responder {
     match user.id() {
         Ok(user_id) => match (&data.redis).get().await {
@@ -74,4 +75,92 @@ async fn post(user: Identity, payload: Json<Request>, data: web::Data<AppState>)
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(post);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        test_utils::{
+            assert_toast_error_response,
+            init_app_for_test,
+            RedisTestContext,
+        },
+        utils::get_user_sessions::get_user_sessions,
+    };
+    use actix_web::test;
+    use serial_test::serial;
+    use sqlx::PgPool;
+    use storiny_macros::test_context;
+    use uuid::Uuid;
+
+    #[test_context(RedisTestContext)]
+    #[sqlx::test]
+    #[serial(redis)]
+    async fn can_acknowledge_a_session(
+        ctx: &mut RedisTestContext,
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let redis_pool = &ctx.redis_pool;
+        let mut redis_conn = redis_pool.get().await.unwrap();
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+        let session_token = Uuid::new_v4();
+
+        // Insert an unacknowledged session for the user
+        let _: () = redis_conn
+            .set(
+                &format!(
+                    "{}:{}:{}",
+                    RedisNamespace::Session.to_string(),
+                    user_id.unwrap(),
+                    session_token
+                ),
+                &serde_json::to_string(&UserSession {
+                    user_id: user_id.unwrap(),
+                    ..Default::default()
+                })
+                .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/settings/sessions/acknowledge")
+            .set_json(Request {
+                id: session_token.to_string(),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        // Session should get acknowledged in the cache
+        let sessions = get_user_sessions(&redis_pool, user_id.unwrap())
+            .await
+            .unwrap();
+
+        assert!(sessions.iter().any(|(_, session)| session.ack));
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_an_invalid_session(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/settings/sessions/acknowledge")
+            .set_json(Request {
+                id: "invalid_session".to_string(),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Session not found").await;
+
+        Ok(())
+    }
 }

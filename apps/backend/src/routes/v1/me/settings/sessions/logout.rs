@@ -10,22 +10,20 @@ use actix_web::{
     Responder,
 };
 use actix_web_validator::Json;
-use redis::{
-    AsyncCommands,
-    RedisResult,
+use redis::AsyncCommands;
+use serde::{
+    Deserialize,
+    Serialize,
 };
-use serde::Deserialize;
 use validator::Validate;
 
-// TODO: Write tests
-
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Serialize, Deserialize, Validate)]
 struct Request {
     #[validate(length(min = 8, max = 512, message = "Invalid session"))]
     id: String,
 }
 
-#[post("/v1/me/sessions/logout")]
+#[post("/v1/me/settings/sessions/logout")]
 async fn post(user: Identity, payload: Json<Request>, data: web::Data<AppState>) -> impl Responder {
     match user.id() {
         Ok(user_id) => match (&data.redis).get().await {
@@ -36,9 +34,8 @@ async fn post(user: Identity, payload: Json<Request>, data: web::Data<AppState>)
                     user_id.to_string(),
                     &payload.id
                 );
-                let result: RedisResult<()> = conn.del(cache_key).await;
 
-                match result {
+                match conn.del::<_, ()>(cache_key).await {
                     Ok(_) => HttpResponse::Ok().finish(),
                     Err(_) => HttpResponse::InternalServerError().finish(),
                 }
@@ -51,4 +48,102 @@ async fn post(user: Identity, payload: Json<Request>, data: web::Data<AppState>)
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(post);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        test_utils::{
+            init_app_for_test,
+            RedisTestContext,
+        },
+        utils::get_user_sessions::{
+            get_user_sessions,
+            UserSession,
+        },
+    };
+    use actix_web::test;
+    use serial_test::serial;
+    use sqlx::PgPool;
+    use storiny_macros::test_context;
+    use uuid::Uuid;
+
+    #[test_context(RedisTestContext)]
+    #[sqlx::test]
+    #[serial(redis)]
+    async fn can_logout_from_a_session(
+        ctx: &mut RedisTestContext,
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let redis_pool = &ctx.redis_pool;
+        let mut redis_conn = redis_pool.get().await.unwrap();
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, None).await;
+        let session_token = Uuid::new_v4();
+
+        // Insert a session for the user
+        let _: () = redis_conn
+            .set(
+                &format!(
+                    "{}:{}:{}",
+                    RedisNamespace::Session.to_string(),
+                    user_id.unwrap(),
+                    session_token
+                ),
+                &serde_json::to_string(&UserSession {
+                    user_id: user_id.unwrap(),
+                    ..Default::default()
+                })
+                .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        // Should have 2 sessions initially
+        let sessions = get_user_sessions(&redis_pool, user_id.unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(sessions.len(), 2);
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/settings/sessions/logout")
+            .set_json(Request {
+                id: session_token.to_string(),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        // Cache should only have the current session
+        let sessions = get_user_sessions(&redis_pool, user_id.unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(sessions.len(), 1);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn should_not_throw_when_logging_out_from_an_invalid_session(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/settings/sessions/logout")
+            .set_json(Request {
+                id: "invalid_session".to_string(),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        Ok(())
+    }
 }

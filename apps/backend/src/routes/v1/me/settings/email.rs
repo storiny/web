@@ -6,6 +6,7 @@ use crate::{
         ToastErrorResponse,
     },
     middlewares::identity::identity::Identity,
+    utils::clear_user_sessions::clear_user_sessions,
     AppState,
 };
 use actix_extended_session::Session;
@@ -108,8 +109,7 @@ async fn patch(
                             {
                                 Ok(_) => {
                                     // Log the user out and destroy all the sessions
-                                    // TODO: Purge all
-                                    // session.purge_all();
+                                    let _ = clear_user_sessions(&data.redis, user_id).await;
                                     user.logout();
 
                                     Ok(HttpResponse::NoContent().finish())
