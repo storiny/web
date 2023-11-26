@@ -66,7 +66,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::{
-        models::story::StoryCategory,
+        constants::story_category::StoryCategory,
         test_utils::{
             init_app_for_test,
             res_to_string,

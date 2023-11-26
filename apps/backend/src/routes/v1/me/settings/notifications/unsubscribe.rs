@@ -1,7 +1,7 @@
 use crate::{
+    constants::notification_entity_type::NotificationEntityType,
     error::AppError,
     middlewares::identity::identity::Identity,
-    models::notification::NotificationEntityType,
     AppState,
 };
 use actix_web::{

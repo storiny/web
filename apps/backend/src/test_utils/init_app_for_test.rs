@@ -5,6 +5,7 @@ use crate::{
         session_cookie::SESSION_COOKIE_NAME,
     },
     jobs::{
+        email::templated_email::TemplatedEmailJob,
         notify::{
             story_add_by_tag::NotifyStoryAddByTagJob,
             story_add_by_user::NotifyStoryAddByUserJob,
@@ -54,7 +55,6 @@ use rusoto_mock::{
     MockRequestDispatcher,
 };
 use rusoto_s3::S3Client;
-use rusoto_ses::SesClient;
 use rusoto_signature::Region;
 use serde::Deserialize;
 use sqlx::{
@@ -126,6 +126,11 @@ pub async fn init_app_for_test(
             .await
             .unwrap(),
     );
+    let templated_email_job_data = web::Data::new(
+        JobStorage::<TemplatedEmailJob>::connect(redis_connection_string.to_string())
+            .await
+            .unwrap(),
+    );
 
     // GeoIP service
     let geo_db = maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();
@@ -151,17 +156,13 @@ pub async fn init_app_for_test(
             .wrap(actix_web::middleware::NormalizePath::trim()) // Jobs
             .app_data(story_add_by_user_job_data.clone())
             .app_data(story_add_by_tag_job_data.clone())
+            .app_data(templated_email_job_data.clone())
             .app_data(web::Data::new(AppState {
                 config,
                 redis: redis_pool.clone(),
                 db_pool: db_pool.clone(),
                 geo_db,
                 ua_parser,
-                ses_client: SesClient::new_with(
-                    MockRequestDispatcher::default(),
-                    MockCredentialsProvider,
-                    Region::UsEast1,
-                ),
                 s3_client: S3Client::new_with(
                     MockRequestDispatcher::default(),
                     MockCredentialsProvider,

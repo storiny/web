@@ -1,7 +1,7 @@
 use crate::{
+    constants::story_category::STORY_CATEGORY_VEC,
     error::AppError,
     middlewares::identity::identity::Identity,
-    models::story::STORY_CATEGORY_VEC,
     AppState,
 };
 use actix_web::{

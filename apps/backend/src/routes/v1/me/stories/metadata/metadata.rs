@@ -1,15 +1,15 @@
 use crate::{
-    constants::sql_states::SqlState,
+    constants::{
+        sql_states::SqlState,
+        story_category::STORY_CATEGORY_VEC,
+        tag_regex::TAG_REGEX,
+    },
     error::{
         AppError,
         FormErrorResponse,
         ToastErrorResponse,
     },
     middlewares::identity::identity::Identity,
-    models::{
-        story::STORY_CATEGORY_VEC,
-        tag::TAG_REGEX,
-    },
     AppState,
 };
 use actix_web::{
@@ -234,12 +234,12 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::{
+        constants::story_category::StoryCategory,
         grpc::defs::story_def::v1::{
             StoryAgeRestriction,
             StoryLicense,
             StoryVisibility,
         },
-        models::story::StoryCategory,
         test_utils::{
             assert_form_error_response,
             assert_toast_error_response,

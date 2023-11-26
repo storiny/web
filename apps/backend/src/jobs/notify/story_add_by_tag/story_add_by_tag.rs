@@ -1,6 +1,6 @@
 use crate::{
+    constants::notification_entity_type::NotificationEntityType,
     jobs::init::SharedJobState,
-    models::notification::NotificationEntityType,
 };
 use apalis::prelude::*;
 use serde::{

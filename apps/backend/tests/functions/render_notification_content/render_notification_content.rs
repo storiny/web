@@ -4,7 +4,7 @@ mod tests {
         PgPool,
         Row,
     };
-    use storiny::models::notification::NotificationEntityType;
+    use storiny::constants::notification_entity_type::NotificationEntityType;
 
     #[sqlx::test(fixtures("system"))]
     async fn can_render_notification_content_for_login_attempt_type(

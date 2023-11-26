@@ -1,14 +1,14 @@
 use crate::{
+    constants::{
+        notification_entity_type::NotificationEntityType,
+        user_flag::UserFlag,
+    },
     error::{
         AppError,
         FormErrorResponse,
         ToastErrorResponse,
     },
     middlewares::identity::identity::Identity,
-    models::{
-        notification::NotificationEntityType,
-        user::UserFlag,
-    },
     utils::{
         clear_user_sessions::clear_user_sessions,
         flag::{

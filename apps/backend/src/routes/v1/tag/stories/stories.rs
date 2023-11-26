@@ -1,7 +1,7 @@
 use crate::{
+    constants::tag_regex::TAG_REGEX,
     error::AppError,
     middlewares::identity::identity::Identity,
-    models::tag::TAG_REGEX,
     AppState,
 };
 use actix_web::{

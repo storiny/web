@@ -1,7 +1,9 @@
 use crate::{
-    constants::reserved_usernames::RESERVED_USERNAMES,
+    constants::{
+        reserved_usernames::RESERVED_USERNAMES,
+        username_regex::USERNAME_REGEX,
+    },
     error::AppError,
-    models::user::USERNAME_REGEX,
     AppState,
 };
 use actix_web::{

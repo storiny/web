@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use sqlx::PgPool;
-    use storiny::models::notification::NotificationEntityType;
+    use storiny::constants::notification_entity_type::NotificationEntityType;
 
     #[sqlx::test(fixtures("notify_tag_followers"))]
     async fn can_notify_tag_followers(pool: PgPool) -> sqlx::Result<()> {

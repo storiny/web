@@ -7,6 +7,10 @@ use crate::{
             cleanup_s3::cleanup_s3,
             sitemap::refresh_sitemap,
         },
+        email::templated_email::{
+            send_templated_email,
+            TemplatedEmailJob,
+        },
         notify::{
             story_add_by_tag::{
                 notify_story_add_by_tag,
@@ -37,6 +41,7 @@ use apalis::{
 use deadpool_redis::Pool as RedisPool;
 use redis::aio::ConnectionManager;
 use rusoto_s3::S3Client;
+use rusoto_ses::SesClient;
 use sqlx::{
     Pool,
     Postgres,
@@ -55,6 +60,8 @@ pub struct SharedJobState {
     pub redis: RedisPool,
     /// Postgres connection pool
     pub db_pool: Pool<Postgres>,
+    /// AWS SES client instance
+    pub ses_client: SesClient,
     /// AWS S3 client instance
     pub s3_client: S3Client,
 }
@@ -64,17 +71,20 @@ pub struct SharedJobState {
 /// * `connection_manager` - The Redis async connection manager instance.
 /// * `redis_pool` - A Redis connection pool.
 /// * `db_pool` - A Postgres database connection pool.
+/// * `ses_client` - A SES client instance.
 /// * `s3_client` - A S3 client instance.
 pub async fn start_jobs(
     connection_manager: ConnectionManager,
     redis_pool: RedisPool,
     db_pool: Pool<Postgres>,
+    ses_client: SesClient,
     s3_client: S3Client,
 ) {
     let state = Arc::new(SharedJobState {
         config: get_app_config().unwrap(),
         redis: redis_pool,
         db_pool,
+        ses_client,
         s3_client,
     });
 
@@ -85,23 +95,35 @@ pub async fn start_jobs(
 
         let story_add_by_tag_state = state.clone();
         let story_add_by_tag_storage: JobStorage<NotifyStoryAddByTagJob> =
+            JobStorage::new(connection_manager.clone());
+
+        let templated_email_state = state.clone();
+        let templated_email_storage: JobStorage<TemplatedEmailJob> =
             JobStorage::new(connection_manager);
 
         Monitor::new()
             // Push notifications
-            .register_with_count(2, move |x| {
+            .register_with_count(4, move |x| {
                 WorkerBuilder::new(format!("notify-story-add-by-user-worker-{x}"))
                     .layer(TraceLayer::new())
                     .layer(Extension(story_add_by_user_state.clone()))
                     .with_storage(story_add_by_user_storage.clone())
                     .build_fn(notify_story_add_by_user)
             })
-            .register_with_count(2, move |x| {
+            .register_with_count(4, move |x| {
                 WorkerBuilder::new(format!("notify-story-add-by-tag-worker-{x}"))
                     .layer(TraceLayer::new())
                     .layer(Extension(story_add_by_tag_state.clone()))
                     .with_storage(story_add_by_tag_storage.clone())
                     .build_fn(notify_story_add_by_tag)
+            })
+            // Email
+            .register_with_count(6, move |x| {
+                WorkerBuilder::new(format!("templated-email-worker-{x}"))
+                    .layer(TraceLayer::new())
+                    .layer(Extension(templated_email_state.clone()))
+                    .with_storage(templated_email_storage.clone())
+                    .build_fn(send_templated_email)
             })
             // Cron
             .register(

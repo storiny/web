@@ -5,7 +5,7 @@ use serde::{
 use strum::Display;
 
 /// AWS SES template name
-#[derive(Display, Debug, Serialize, Deserialize)]
+#[derive(Display, Debug, Serialize, Deserialize, Copy, Clone)]
 pub enum EmailTemplate {
     #[strum(serialize = "EmailVerification")]
     EmailVerification,

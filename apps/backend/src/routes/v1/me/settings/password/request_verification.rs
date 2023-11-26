@@ -1,13 +1,14 @@
 use crate::{
-    constants::{
-        email_source::EMAIL_SOURCE,
-        email_templates::EmailTemplate,
-    },
+    constants::email_template::EmailTemplate,
     error::{
         AppError,
         ToastErrorResponse,
     },
     grpc::defs::token_def::v1::TokenType,
+    jobs::{
+        email::templated_email::TemplatedEmailJob,
+        storage::JobStorage,
+    },
     middlewares::identity::identity::Identity,
     AppState,
 };
@@ -16,6 +17,7 @@ use actix_web::{
     web,
     HttpResponse,
 };
+use apalis::prelude::Storage;
 use argon2::{
     password_hash::{
         rand_core::OsRng,
@@ -25,11 +27,6 @@ use argon2::{
     PasswordHasher,
 };
 use nanoid::nanoid;
-use rusoto_ses::{
-    Destination,
-    SendTemplatedEmailRequest,
-    Ses,
-};
 use serde::Serialize;
 use sqlx::Row;
 use time::{
@@ -49,7 +46,11 @@ fn generate_verification_code() -> String {
 }
 
 #[post("/v1/me/settings/password/add/request-verification")]
-async fn post(data: web::Data<AppState>, user: Identity) -> Result<HttpResponse, AppError> {
+async fn post(
+    data: web::Data<AppState>,
+    user: Identity,
+    templated_email_job_storage: web::Data<JobStorage<TemplatedEmailJob>>,
+) -> Result<HttpResponse, AppError> {
     match user.id() {
         Ok(user_id) => {
             let db_user = sqlx::query(
@@ -112,19 +113,14 @@ async fn post(data: web::Data<AppState>, user: Identity) -> Result<HttpResponse,
                         verification_code,
                     }) {
                         Ok(template_data) => {
-                            let ses = &data.ses_client;
-                            let _ = ses
-                                .send_templated_email(SendTemplatedEmailRequest {
-                                    destination: Destination {
-                                        to_addresses: Some(vec![
-                                            (&db_user.get::<String, _>("email")).to_string(),
-                                        ]),
-                                        ..Default::default()
-                                    },
-                                    source: EMAIL_SOURCE.to_string(),
-                                    template: EmailTemplate::PasswordAddVerification.to_string(),
+                            let mut templated_email_job =
+                                (&*templated_email_job_storage.into_inner()).clone();
+
+                            let _ = templated_email_job
+                                .push(TemplatedEmailJob {
+                                    destination: db_user.get::<String, _>("email"),
+                                    template: EmailTemplate::PasswordAddVerification,
                                     template_data,
-                                    ..Default::default()
                                 })
                                 .await;
 
