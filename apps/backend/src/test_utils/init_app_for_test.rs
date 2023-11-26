@@ -193,6 +193,7 @@ pub async fn init_app_for_test(
             )
             .bind("Some user".to_string())
             .bind("some_user".to_string())
+            // This email value should not be changed as it is hard-coded in some tests.
             .bind("someone@example.com".to_string())
             .fetch_one(&db_pool)
             .await

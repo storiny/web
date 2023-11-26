@@ -10,18 +10,22 @@ pub struct Config {
     pub host: String,
     /// App port
     pub port: String,
+    /// Realms server host
+    pub realms_host: String,
+    /// Realms server port
+    pub realms_port: String,
     /// GRPC service endpoint
     pub grpc_endpoint: String,
     /// MinIO server endpoint (only used locally and during tests)
     pub minio_endpoint: String,
+    /// Public URL of the realms server
+    pub realms_server_url: String,
     /// Public URL of the API server
     pub api_server_url: String,
     /// Public URL of the CDN server
     pub cdn_server_url: String,
     /// Public URL of the font-end web server
     pub web_server_url: String,
-    /// Allowed client origin (CORS)
-    pub allowed_origin: String,
     /// Postgres URL
     pub database_url: String,
     /// Redis host

@@ -95,14 +95,23 @@ impl From<sqlx::Error> for AppError {
 /// "Continue with Google".
 #[derive(Debug)]
 pub enum ExternalAuthError {
-    /// Insufficient scopes were returned on the callback endpoint
+    /// Insufficient scopes were returned on the callback endpoint.
     InsufficientScopes,
-    /// The CSRF token is tampered
+    /// The CSRF token is tampered.
     StateMismatch,
-    /// The user associated with the third-party account is deleted
+    /// The user associated with the third-party account is deleted.
     UserDeleted,
-    /// The user associated with the third-party account is deactivated
+    /// The user associated with the third-party account is deactivated.
     UserDeactivated,
-    /// Other connection error
-    Other,
+    /// The user associated with the third-party account is suspended.
+    UserSuspended,
+    /// The user must verify its password before proceeding. The user must also return the access
+    /// token with the verification request.
+    VerifyPassword(String),
+    /// The user provided an invalid password.
+    InvalidPassword,
+    /// The user provided an invalid access token during verification.
+    InvalidAccessToken,
+    /// Other connection error.
+    Other(String),
 }

@@ -3,16 +3,32 @@ use crate::{
     spec::EmbedType,
     utils::{
         decompress_url::decompress_url,
-        fetch_embed::{fetch_embed, ConsumerRequest},
+        fetch_embed::{
+            fetch_embed,
+            ConsumerRequest,
+        },
         get_metadata::get_metadata,
-        parse_html::{parse_html, ParseResult},
+        parse_html::{
+            parse_html,
+            ParseResult,
+        },
         resolve_provider::resolve_provider,
     },
-    IframeTemplate, PhotoTemplate,
+    IframeTemplate,
+    PhotoTemplate,
 };
-use actix_web::{get, http::header::ContentType, web, HttpResponse, Responder};
+use actix_web::{
+    get,
+    http::header::ContentType,
+    web,
+    HttpResponse,
+    Responder,
+};
 use sailfish::TemplateOnce;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use url::Url;
 
 /// Embed endpoint query params
@@ -51,7 +67,7 @@ struct PhotoEmbedData {
 
 /// Sends a webpage metadata object for the provided URL.
 ///
-/// * `url` - URL to fetch the metadata for
+/// * `url` - The URL to fetch the metadata for.
 async fn respond_with_metadata(url: &str) -> HttpResponse {
     let metadata = get_metadata(url, false).await;
 
