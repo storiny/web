@@ -68,6 +68,7 @@ use storiny::{
     },
     middlewares::identity::middleware::IdentityMiddleware,
     oauth::get_oauth_client_map,
+    realms::server::start_realms_server,
     *,
 };
 use tonic::codegen::CompressionEncoding;
@@ -212,131 +213,130 @@ async fn main() -> io::Result<()> {
             let grpc_future = start_grpc_server(config.clone(), db_pool.clone());
 
             // Start the main HTTP server
-            let http_future = async {
-                HttpServer::new(move || {
-                    let input = SimpleInputFunctionBuilder::new(Duration::from_secs(5), 25) // 25 requests / 5s
-                        .real_ip_key()
-                        .build();
+            let http_future = HttpServer::new(move || {
+                let input = SimpleInputFunctionBuilder::new(Duration::from_secs(5), 25) // 25 requests / 5s
+                    .real_ip_key()
+                    .build();
 
-                    // GeoIP service
-                    let geo_db =
-                        maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();
+                // GeoIP service
+                let geo_db = maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();
 
-                    // User-agent parser
-                    let ua_parser = UserAgentParser::from_path("./data/ua_parser/regexes.yaml")
-                        .expect("Cannot build user-agent parser");
+                // User-agent parser
+                let ua_parser = UserAgentParser::from_path("./data/ua_parser/regexes.yaml")
+                    .expect("Cannot build user-agent parser");
 
-                    // JSON validation error handler
-                    let json_config = JsonConfig::default().error_handler(|err, _| {
-                        let json_error = match &err {
-                            actix_web_validator::Error::Validate(error) => {
-                                FormErrorResponse::from(error)
-                            }
-                            _ => FormErrorResponse::new(Vec::new()),
-                        };
+                // JSON validation error handler
+                let json_config = JsonConfig::default().error_handler(|err, _| {
+                    let json_error = match &err {
+                        actix_web_validator::Error::Validate(error) => {
+                            FormErrorResponse::from(error)
+                        }
+                        _ => FormErrorResponse::new(Vec::new()),
+                    };
 
-                        actix_web::error::InternalError::from_response(
-                            err,
-                            HttpResponse::Conflict().json(json_error),
-                        )
-                        .into()
-                    });
+                    actix_web::error::InternalError::from_response(
+                        err,
+                        HttpResponse::Conflict().json(json_error),
+                    )
+                    .into()
+                });
 
-                    // Query validation error handler
-                    let qs_query_config = QsQueryConfig::default().error_handler(|err, _| {
-                        actix_web::error::InternalError::from_response(
-                            err,
-                            HttpResponse::Conflict().body("Invalid query parameters".to_string()),
-                        )
-                        .into()
-                    });
+                // Query validation error handler
+                let qs_query_config = QsQueryConfig::default().error_handler(|err, _| {
+                    actix_web::error::InternalError::from_response(
+                        err,
+                        HttpResponse::Conflict().body("Invalid query parameters".to_string()),
+                    )
+                    .into()
+                });
 
-                    // Path fragments validation error handler
-                    let path_config = PathConfig::default().error_handler(|err, _| {
-                        actix_web::error::InternalError::from_response(
-                            err,
-                            HttpResponse::Conflict().body("Invalid path fragments".to_string()),
-                        )
-                        .into()
-                    });
+                // Path fragments validation error handler
+                let path_config = PathConfig::default().error_handler(|err, _| {
+                    actix_web::error::InternalError::from_response(
+                        err,
+                        HttpResponse::Conflict().body("Invalid path fragments".to_string()),
+                    )
+                    .into()
+                });
 
-                    App::new()
-                        .wrap(IdentityMiddleware::default())
-                        .wrap(
-                            SessionMiddleware::builder(redis_store.clone(), secret_key.clone())
-                                .session_ttl(time::Duration::weeks(1))
-                                .cookie_name(SESSION_COOKIE_NAME.into())
-                                .cookie_same_site(SameSite::None)
-                                .cookie_domain(if config.is_dev {
-                                    None
-                                } else {
-                                    Some("storiny.com".into())
-                                })
-                                .cookie_path("/".to_string())
-                                .cookie_secure(!config.is_dev)
-                                .cookie_http_only(true)
-                                .build(),
-                        )
-                        .wrap(
-                            RateLimiter::builder(rate_limit_backend.clone(), input)
-                                .add_headers()
-                                .build(),
-                        )
-                        .wrap(
-                            Cors::default()
-                                .allowed_origin(&config.allowed_origin)
-                                .allowed_headers(vec![
-                                    header::CONTENT_TYPE,
-                                    header::AUTHORIZATION,
-                                    header::ACCEPT,
-                                    header::COOKIE,
-                                    header::SET_COOKIE,
-                                ])
-                                .supports_credentials()
-                                .max_age(3600),
-                        )
-                        .wrap(RequestIdentifier::with_uuid())
-                        .wrap(actix_web::middleware::Logger::new(
-                            "%a %t \"%r\" %s %b \"%{Referer}i\" \"%{User-Agent}i\" %T",
-                        ))
-                        .wrap(actix_web::middleware::Compress::default())
-                        .wrap(actix_web::middleware::NormalizePath::trim())
-                        // Jobs
-                        .app_data(story_add_by_user_job_data.clone())
-                        .app_data(story_add_by_tag_job_data.clone())
-                        // Validation
-                        .app_data(json_config)
-                        .app_data(qs_query_config)
-                        .app_data(path_config)
-                        // Application state
-                        .app_data(web::Data::new(AppState {
-                            config: get_app_config().unwrap(),
-                            redis: redis_pool.clone(),
-                            db_pool: db_pool.clone(),
-                            geo_db,
-                            ua_parser,
-                            s3_client: s3_client.clone(),
-                            ses_client: SesClient::new(Region::UsEast1),
-                            reqwest_client: reqwest::Client::builder()
-                                .user_agent("Storiny (https://storiny.com)")
-                                .build()
-                                .unwrap(),
-                            oauth_client_map: get_oauth_client_map(get_app_config().unwrap()),
-                        }))
-                        .configure(routes::init::init_common_routes)
-                        .configure(routes::init::init_oauth_routes)
-                        .configure(routes::init::init_v1_routes)
-                        .service(fs::Files::new("/", "./static"))
-                        .default_service(web::route().to(not_found))
-                })
-                .bind((host, port))?
-                .run()
-                .await?;
+                App::new()
+                    .wrap(IdentityMiddleware::default())
+                    .wrap(
+                        SessionMiddleware::builder(redis_store.clone(), secret_key.clone())
+                            .session_ttl(time::Duration::weeks(1))
+                            .cookie_name(SESSION_COOKIE_NAME.into())
+                            .cookie_same_site(SameSite::None)
+                            .cookie_domain(if config.is_dev {
+                                None
+                            } else {
+                                Some("storiny.com".into())
+                            })
+                            .cookie_path("/".to_string())
+                            .cookie_secure(!config.is_dev)
+                            .cookie_http_only(true)
+                            .build(),
+                    )
+                    .wrap(
+                        RateLimiter::builder(rate_limit_backend.clone(), input)
+                            .add_headers()
+                            .build(),
+                    )
+                    .wrap(
+                        Cors::default()
+                            .allowed_origin(&config.web_server_url)
+                            .allowed_headers(vec![
+                                header::CONTENT_TYPE,
+                                header::AUTHORIZATION,
+                                header::ACCEPT,
+                                header::COOKIE,
+                                header::SET_COOKIE,
+                            ])
+                            .supports_credentials()
+                            .max_age(3600),
+                    )
+                    .wrap(RequestIdentifier::with_uuid())
+                    .wrap(actix_web::middleware::Logger::new(
+                        "%a %t \"%r\" %s %b \"%{Referer}i\" \"%{User-Agent}i\" %T",
+                    ))
+                    .wrap(actix_web::middleware::Compress::default())
+                    .wrap(actix_web::middleware::NormalizePath::trim())
+                    // Jobs
+                    .app_data(story_add_by_user_job_data.clone())
+                    .app_data(story_add_by_tag_job_data.clone())
+                    // Validation
+                    .app_data(json_config)
+                    .app_data(qs_query_config)
+                    .app_data(path_config)
+                    // Application state
+                    .app_data(web::Data::new(AppState {
+                        config: get_app_config().unwrap(),
+                        redis: redis_pool.clone(),
+                        db_pool: db_pool.clone(),
+                        geo_db,
+                        ua_parser,
+                        s3_client: s3_client.clone(),
+                        ses_client: SesClient::new(Region::UsEast1),
+                        reqwest_client: reqwest::Client::builder()
+                            .user_agent("Storiny (https://storiny.com)")
+                            .build()
+                            .unwrap(),
+                        oauth_client_map: get_oauth_client_map(get_app_config().unwrap()),
+                    }))
+                    .configure(routes::init::init_common_routes)
+                    .configure(routes::init::init_oauth_routes)
+                    .configure(routes::init::init_v1_routes)
+                    .service(fs::Files::new("/", "./static"))
+                    .default_service(web::route().to(not_found))
+            })
+            .bind((host, port))?
+            .run();
 
-                Ok(())
-            };
+            // Start the realms server
+            let realms_future = start_realms_server();
 
-            future::try_join(grpc_future, http_future).await.unwrap();
+            future::try_join3(grpc_future, http_future, realms_future)
+                .await
+                .unwrap();
 
             Ok(())
         }

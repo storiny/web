@@ -23,6 +23,7 @@ pub mod jobs;
 pub mod middlewares;
 pub mod models;
 pub mod oauth;
+pub mod realms;
 pub mod routes;
 pub mod utils;
 
@@ -46,11 +47,14 @@ pub struct ConnectionTemplate {
 }
 
 /// Third-party login error template
-#[derive(TemplateOnce)]
-#[template(path = "external_auth_error.stpl")]
-pub struct ExternalAuthErrorTemplate {
+#[derive(TemplateOnce, Default)]
+#[template(path = "external_auth.stpl")]
+pub struct ExternalAuthTemplate {
     provider_name: String,
-    error: ExternalAuthError,
+    provider_id: String,
+    access_token: String,
+    error: Option<ExternalAuthError>,
+    is_password_invalid: bool,
 }
 
 /// Application state
