@@ -59,6 +59,7 @@ use storiny::{
         service::GrpcService,
     },
     jobs::{
+        email::templated_email::TemplatedEmailJob,
         init::start_jobs,
         notify::{
             story_add_by_tag::NotifyStoryAddByTagJob,
@@ -128,10 +129,7 @@ async fn main() -> io::Result<()> {
 
             log::info!(
                 "{}",
-                format!(
-                    "Starting back-end HTTP server at http://{}:{}",
-                    &host, &port
-                )
+                format!("Starting API HTTP server at http://{}:{}", &host, &port)
             );
 
             // Rate-limit
@@ -193,6 +191,9 @@ async fn main() -> io::Result<()> {
                 Region::UsEast1
             });
 
+            // AWS SES
+            let ses_client = SesClient::new(Region::UsEast1);
+
             // Init and start the background jobs
             let story_add_by_user_job_data = web::Data::new(
                 JobStorage::<NotifyStoryAddByUserJob>::new(redis_connection_manager.clone()),
@@ -200,11 +201,15 @@ async fn main() -> io::Result<()> {
             let story_add_by_tag_job_data = web::Data::new(
                 JobStorage::<NotifyStoryAddByTagJob>::new(redis_connection_manager.clone()),
             );
+            let templated_email_job_data = web::Data::new(JobStorage::<TemplatedEmailJob>::new(
+                redis_connection_manager.clone(),
+            ));
 
             start_jobs(
                 redis_connection_manager,
                 redis_pool.clone(),
                 db_pool.clone(),
+                ses_client,
                 s3_client.clone(),
             )
             .await;
@@ -295,14 +300,18 @@ async fn main() -> io::Result<()> {
                             .max_age(3600),
                     )
                     .wrap(RequestIdentifier::with_uuid())
-                    .wrap(actix_web::middleware::Logger::new(
-                        "%a %t \"%r\" %s %b \"%{Referer}i\" \"%{User-Agent}i\" %T",
-                    ))
+                    .wrap(
+                        actix_web::middleware::Logger::new(
+                            "%{x-request-id}o %a %t \"%r\" %s %b \"%{Referer}i\" %T",
+                        )
+                        .log_target("api"),
+                    )
                     .wrap(actix_web::middleware::Compress::default())
                     .wrap(actix_web::middleware::NormalizePath::trim())
                     // Jobs
                     .app_data(story_add_by_user_job_data.clone())
                     .app_data(story_add_by_tag_job_data.clone())
+                    .app_data(templated_email_job_data.clone())
                     // Validation
                     .app_data(json_config)
                     .app_data(qs_query_config)
@@ -315,7 +324,6 @@ async fn main() -> io::Result<()> {
                         geo_db,
                         ua_parser,
                         s3_client: s3_client.clone(),
-                        ses_client: SesClient::new(Region::UsEast1),
                         reqwest_client: reqwest::Client::builder()
                             .user_agent("Storiny (https://storiny.com)")
                             .build()

@@ -1,13 +1,14 @@
 use crate::{
-    constants::{
-        email_source::EMAIL_SOURCE,
-        email_templates::EmailTemplate,
-    },
+    constants::email_template::EmailTemplate,
     error::{
         AppError,
         FormErrorResponse,
     },
     grpc::defs::token_def::v1::TokenType,
+    jobs::{
+        email::templated_email::TemplatedEmailJob,
+        storage::JobStorage,
+    },
     AppState,
 };
 use actix_web::{
@@ -16,6 +17,7 @@ use actix_web::{
     HttpResponse,
 };
 use actix_web_validator::Json;
+use apalis::prelude::Storage;
 use argon2::{
     password_hash::{
         rand_core::OsRng,
@@ -26,11 +28,6 @@ use argon2::{
 };
 use email_address::EmailAddress;
 use nanoid::nanoid;
-use rusoto_ses::{
-    Destination,
-    SendTemplatedEmailRequest,
-    Ses,
-};
 use serde::{
     Deserialize,
     Serialize,
@@ -55,7 +52,11 @@ struct ResetPasswordEmailTemplateData {
 }
 
 #[post("/v1/auth/recovery")]
-async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpResponse, AppError> {
+async fn post(
+    payload: Json<Request>,
+    data: web::Data<AppState>,
+    templated_email_job_storage: web::Data<JobStorage<TemplatedEmailJob>>,
+) -> Result<HttpResponse, AppError> {
     if !EmailAddress::is_valid(&payload.email) {
         return Ok(HttpResponse::Conflict()
             .json(FormErrorResponse::new(vec![("email", "Invalid e-mail")])));
@@ -115,17 +116,14 @@ async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpR
                         link: format!("https://storiny.com/auth/reset-password/{}", token_id),
                     }) {
                         Ok(template_data) => {
-                            let ses = &data.ses_client;
-                            let _ = ses
-                                .send_templated_email(SendTemplatedEmailRequest {
-                                    destination: Destination {
-                                        to_addresses: Some(vec![(&payload.email).to_string()]),
-                                        ..Default::default()
-                                    },
-                                    source: EMAIL_SOURCE.to_string(),
-                                    template: EmailTemplate::PasswordReset.to_string(),
+                            let mut templated_email_job =
+                                (&*templated_email_job_storage.into_inner()).clone();
+
+                            let _ = templated_email_job
+                                .push(TemplatedEmailJob {
+                                    destination: (&payload.email).to_string(),
+                                    template: EmailTemplate::PasswordReset,
                                     template_data,
-                                    ..Default::default()
                                 })
                                 .await;
 

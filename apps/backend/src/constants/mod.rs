@@ -1,8 +1,9 @@
 pub mod account_activity_type;
 pub mod buckets;
 pub mod email_source;
-pub mod email_templates;
+pub mod email_template;
 pub mod image_size;
+pub mod notification_entity_type;
 pub mod pexels;
 pub mod redis_namespaces;
 pub mod report_type;
@@ -10,3 +11,7 @@ pub mod reserved_usernames;
 pub mod resource_limit;
 pub mod session_cookie;
 pub mod sql_states;
+pub mod story_category;
+pub mod tag_regex;
+pub mod user_flag;
+pub mod username_regex;

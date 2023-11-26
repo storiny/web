@@ -1,8 +1,8 @@
 use crate::{
     constants::{
-        email_source::EMAIL_SOURCE,
-        email_templates::EmailTemplate,
+        email_template::EmailTemplate,
         reserved_usernames::RESERVED_USERNAMES,
+        username_regex::USERNAME_REGEX,
     },
     error::{
         AppError,
@@ -10,8 +10,11 @@ use crate::{
         ToastErrorResponse,
     },
     grpc::defs::token_def::v1::TokenType,
+    jobs::{
+        email::templated_email::TemplatedEmailJob,
+        storage::JobStorage,
+    },
     middlewares::identity::identity::Identity,
-    models::user::USERNAME_REGEX,
     AppState,
 };
 use actix_web::{
@@ -20,6 +23,7 @@ use actix_web::{
     HttpResponse,
 };
 use actix_web_validator::Json;
+use apalis::prelude::Storage;
 use argon2::{
     password_hash::{
         rand_core::OsRng,
@@ -30,11 +34,6 @@ use argon2::{
 };
 use email_address::EmailAddress;
 use nanoid::nanoid;
-use rusoto_ses::{
-    Destination,
-    SendTemplatedEmailRequest,
-    Ses,
-};
 use serde::{
     Deserialize,
     Serialize,
@@ -75,6 +74,7 @@ async fn post(
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Option<Identity>,
+    templated_email_job_storage: web::Data<JobStorage<TemplatedEmailJob>>,
 ) -> Result<HttpResponse, AppError> {
     // Return if the user maintains a valid session
     if user.is_some() {
@@ -196,17 +196,14 @@ async fn post(
                         name: first_name.to_string(),
                     }) {
                         Ok(template_data) => {
-                            let ses = &data.ses_client;
-                            let _ = ses
-                                .send_templated_email(SendTemplatedEmailRequest {
-                                    destination: Destination {
-                                        to_addresses: Some(vec![(&payload.email).to_string()]),
-                                        ..Default::default()
-                                    },
-                                    source: EMAIL_SOURCE.to_string(),
-                                    template: EmailTemplate::EmailVerification.to_string(),
+                            let mut templated_email_job =
+                                (&*templated_email_job_storage.into_inner()).clone();
+
+                            let _ = templated_email_job
+                                .push(TemplatedEmailJob {
+                                    destination: (&payload.email).to_string(),
+                                    template: EmailTemplate::EmailVerification,
                                     template_data,
-                                    ..Default::default()
                                 })
                                 .await;
 

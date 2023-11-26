@@ -1,4 +1,4 @@
-use crate::models::user::UserFlag;
+use crate::constants::user_flag::UserFlag;
 
 pub struct Flag {
     flags: u32,

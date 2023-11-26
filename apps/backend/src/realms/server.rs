@@ -48,9 +48,10 @@ pub async fn start_realms_server() -> std::io::Result<()> {
 
     HttpServer::new(|| {
         App::new()
-            .wrap(actix_web::middleware::Logger::new(
-                "%a %t \"%r\" %s %b \"%{Referer}i\" \"%{User-Agent}i\" %T",
-            ))
+            .wrap(
+                actix_web::middleware::Logger::new("%a %t \"%r\" %s %b \"%{Referer}i\" %T")
+                    .log_target("realms"),
+            )
             .wrap(actix_web::middleware::Compress::default())
             .wrap(actix_web::middleware::NormalizePath::trim())
             .route("/", web::get().to(index))

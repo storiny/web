@@ -2,6 +2,7 @@ use crate::{
     constants::{
         account_activity_type::AccountActivityType,
         sql_states::SqlState,
+        username_regex::USERNAME_REGEX,
     },
     error::{
         AppError,
@@ -9,7 +10,6 @@ use crate::{
         ToastErrorResponse,
     },
     middlewares::identity::identity::Identity,
-    models::user::USERNAME_REGEX,
     AppState,
 };
 use actix_web::{

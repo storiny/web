@@ -1,4 +1,4 @@
-use crate::models::story::STORY_CATEGORY_VEC;
+use crate::constants::story_category::STORY_CATEGORY_VEC;
 use anyhow::anyhow;
 use itertools::Itertools;
 
@@ -37,7 +37,7 @@ pub fn decode_uri_encoded_story_categories(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::models::story::StoryCategory;
+    use crate::constants::story_category::StoryCategory;
 
     #[test]
     fn can_decode_uri_encoded_story_categories() {

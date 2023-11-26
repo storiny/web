@@ -1,5 +1,6 @@
 use crate::{
     constants::{
+        notification_entity_type::NotificationEntityType,
         resource_limit::ResourceLimit,
         sql_states::SqlState,
     },
@@ -8,7 +9,6 @@ use crate::{
         ToastErrorResponse,
     },
     middlewares::identity::identity::Identity,
-    models::notification::NotificationEntityType,
     utils::{
         check_resource_limit::check_resource_limit,
         incr_resource_limit::incr_resource_limit,

@@ -6,7 +6,6 @@ use maxminddb::Reader;
 use oauth2::basic::BasicClient;
 use routes::oauth::ConnectionError;
 use rusoto_s3::S3Client;
-use rusoto_ses::SesClient;
 use sailfish::TemplateOnce;
 use sqlx::{
     Pool,
@@ -69,8 +68,6 @@ pub struct AppState {
     pub geo_db: Reader<Vec<u8>>,
     /// User-agent parser instance
     pub ua_parser: UserAgentParser,
-    /// AWS SES client instance
-    pub ses_client: SesClient,
     /// AWS S3 client instance
     pub s3_client: S3Client,
     /// Reqwest client instance

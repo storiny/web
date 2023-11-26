@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use sqlx::PgPool;
-    use storiny::models::notification::NotificationEntityType;
+    use storiny::constants::notification_entity_type::NotificationEntityType;
 
     #[sqlx::test(fixtures("user", "notification"))]
     async fn can_insert_a_notification_out(pool: PgPool) -> sqlx::Result<()> {

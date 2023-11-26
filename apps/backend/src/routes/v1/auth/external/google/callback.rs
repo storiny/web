@@ -1,14 +1,14 @@
 use crate::{
-    constants::account_activity_type::AccountActivityType,
+    constants::{
+        account_activity_type::AccountActivityType,
+        notification_entity_type::NotificationEntityType,
+        user_flag::UserFlag,
+    },
     error::{
         AppError,
         ExternalAuthError,
     },
     middlewares::identity::identity::Identity,
-    models::{
-        notification::NotificationEntityType,
-        user::UserFlag,
-    },
     routes::oauth::AuthRequest,
     utils::{
         clear_user_sessions::clear_user_sessions,

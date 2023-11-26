@@ -320,7 +320,6 @@ mod tests {
         MockRequestDispatcher,
     };
     use rusoto_s3::S3Client;
-    use rusoto_ses::SesClient;
     use rusoto_signature::Region;
     use serial_test::serial;
     use sqlx::PgPool;
@@ -365,11 +364,6 @@ mod tests {
                     db_pool: db_pool.clone(),
                     geo_db,
                     ua_parser,
-                    ses_client: SesClient::new_with(
-                        MockRequestDispatcher::default(),
-                        MockCredentialsProvider,
-                        Region::UsEast1,
-                    ),
                     s3_client: S3Client::new_with(
                         MockRequestDispatcher::default(),
                         MockCredentialsProvider,
