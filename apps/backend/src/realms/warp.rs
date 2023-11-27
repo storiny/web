@@ -2,10 +2,7 @@ use deflate::{
     deflate_bytes_gzip_conf,
     Compression,
 };
-use futures_util::{
-    StreamExt,
-    TryFutureExt,
-};
+use futures_util::StreamExt;
 use gzip_header::GzBuilder;
 use hashbrown::{
     hash_map::Entry,
@@ -44,7 +41,6 @@ use warp::{
 use y_sync::{
     awareness::Awareness,
     net::BroadcastGroup,
-    sync::Error,
 };
 use yrs::{
     ReadTxn,
@@ -165,7 +161,7 @@ impl Realm {
     /// the document, and clear all the peers.
     pub async fn destroy(&self) {
         let mut realm_map = self.realm_map.lock().await;
-        let mut persistence_loop_task = self.persistence_loop_task.lock().await;
+        let persistence_loop_task = self.persistence_loop_task.lock().await;
         realm_map.remove(&self.doc_id);
 
         if persistence_loop_task.is_some() {
