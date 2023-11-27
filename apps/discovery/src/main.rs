@@ -1,14 +1,28 @@
 use actix_cors::Cors;
-use actix_extensible_rate_limit::{backend::SimpleInputFunctionBuilder, RateLimiter};
+use actix_extensible_rate_limit::{
+    backend::SimpleInputFunctionBuilder,
+    RateLimiter,
+};
 use actix_files as fs;
 use actix_web::{
-    http::{header, header::ContentType},
+    http::{
+        header,
+        header::ContentType,
+    },
     middleware::Logger,
-    web, App, HttpResponse, HttpServer, Responder,
+    web,
+    App,
+    HttpResponse,
+    HttpServer,
+    Responder,
 };
 use dotenv::dotenv;
 use redis::aio::ConnectionManager;
-use std::{env, io, time::Duration};
+use std::{
+    env,
+    io,
+    time::Duration,
+};
 use storiny_discovery::routes;
 
 mod middleware;

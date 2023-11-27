@@ -14,7 +14,7 @@ impl Flag {
     ///
     /// * `flags` - User flags.
     pub fn new(flags: u32) -> Self {
-        Flag { flags }
+        Self { flags }
     }
 
     /// Adds a new flag to the existing flags.
