@@ -1,6 +1,5 @@
 use super::warp as wp;
 use crate::config::get_app_config;
-use actix::Actor;
 
 pub async fn start_realms_server() -> std::io::Result<()> {
     let config = get_app_config().expect("Unable to load the environment configuration");
