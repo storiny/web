@@ -1,3 +1,5 @@
+# Taken from https://github.com/ua-parser/uap-core/blob/d668d6c6157db7737edfc0280adc6610c1b88029/regexes.yaml
+
 user_agent_parsers:
   #### SPECIAL CASES TOP ####
 

@@ -97,12 +97,14 @@ async fn not_found() -> impl Responder {
 /// * `db_pool` - The Postgres pool.
 async fn start_grpc_server(config: Config, db_pool: Pool<Postgres>) -> io::Result<()> {
     let endpoint = config.grpc_endpoint.clone();
-    let redis_pool = deadpool_redis::Config::from_url(format!(
-        "redis://{}:{}",
-        &config.redis_host, &config.redis_port
-    ))
-    .create_pool(Some(deadpool_redis::Runtime::Tokio1))
-    .unwrap();
+    let redis_pool = Arc::new(
+        deadpool_redis::Config::from_url(format!(
+            "redis://{}:{}",
+            &config.redis_host, &config.redis_port
+        ))
+        .create_pool(Some(deadpool_redis::Runtime::Tokio1))
+        .unwrap(),
+    );
 
     tokio::spawn(async move {
         tonic::transport::Server::builder()
@@ -223,7 +225,8 @@ async fn main() -> io::Result<()> {
             )
             .await;
 
-            // GeoIP service
+            // GeoIP service. This is kept in the memory for the entire lifecycle of the program to
+            // ensure fast loopups.
             let geo_db = maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();
 
             // User-agent parser

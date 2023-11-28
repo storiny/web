@@ -17,8 +17,8 @@ pub struct ClientLocation {
 
 /// Parses and return client's location information from IP.
 ///
-/// * `ip` - Client IP address
-/// * `reader` - GeoIP database reader instance
+/// * `ip` - The IP address of the client.
+/// * `reader` - The geo-ip database reader instance.
 pub fn get_client_location(ip: IpAddr, reader: &Reader<Vec<u8>>) -> ClientLocation {
     let lookup_result = reader.lookup::<geoip2::City>(ip);
 
