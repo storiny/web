@@ -77,6 +77,21 @@ pub enum FetchDocError {
     Decompression(String),
 }
 
+/// The error raised while entering a realm.
+#[derive(Error, Debug)]
+pub enum EnterRealmError {
+    #[error("the story could not be found in the database")]
+    MissingStory,
+    #[error("the realm is full and no more peers can subscribe")]
+    Full,
+    #[error("the peer is not allowed to enter the realm due to missing permissions")]
+    Forbidden,
+    #[error("error while fetching the doc from s3")]
+    FetchDoc(#[from] FetchDocError),
+    #[error("unable to enter the realm due to an internal error: {0}")]
+    Internal(String),
+}
+
 /// Fetches a document from the S3 object storage and returns the decompressed binary data.
 ///
 /// * `s3_client` - The S3 client instance.
@@ -124,7 +139,7 @@ async fn enter_realm(
     realm_map: RealmMap,
     db_pool: Arc<Pool<Postgres>>,
     s3_client: Arc<S3Client>,
-) -> Result<Arc<Realm>, Infallible> {
+) -> Result<Arc<Realm>, Rejection> {
     let inner_realm_map = realm_map.clone();
     let mut inner_realm_map = inner_realm_map.lock().await;
 
@@ -132,7 +147,7 @@ async fn enter_realm(
         Entry::Vacant(entry) => {
             log::info!("Validating realm for ID: `{doc_id}`");
 
-            let story = sqlx::query(
+            let story_doc = sqlx::query(
                 r#"
                 SELECT key FROM documents
                 WHERE story_id = $1
@@ -141,22 +156,27 @@ async fn enter_realm(
             .bind(&doc_id)
             .fetch_one(db_pool.deref())
             .await
-            // TODO: Remove unwraps, here and below
-            .unwrap();
+            .map_err(|error| {
+                if matches!(error, sqlx::Error::RowNotFound) {
+                    EnterRealmError::MissingStory
+                } else {
+                    EnterRealmError::Internal(error.to_string())
+                }
+            })?;
 
-            let doc_key = story.get::<Uuid, _>("key");
-            let body = fetch_doc_from_s3(s3_client.deref(), &doc_key.to_string())
+            let doc_key = story_doc.get::<Uuid, _>("key").to_string();
+            let doc_body = fetch_doc_from_s3(s3_client.deref(), &doc_key)
                 .await
-                .unwrap();
+                .map_err(EnterRealmError::from)?;
 
             log::info!("Creating a new realm with ID: `{doc_id}`");
 
             let doc = Doc::new();
 
             // The transaction is automatically committed at the end of this scope.
-            if !body.is_empty() {
+            if !doc_body.is_empty() {
                 let mut txn = doc.transact_mut();
-                let update = Update::decode_v2(&body).unwrap();
+                let update = Update::decode_v2(&doc_body).unwrap();
                 txn.apply_update(update);
             }
 
@@ -173,8 +193,14 @@ async fn enter_realm(
             entry.insert(realm).clone()
         }
         Entry::Occupied(entry) => {
+            let realm_entry = entry.get();
+
+            if !realm_entry.can_join().await {
+                return Err(EnterRealmError::Full);
+            }
+
             log::info!("Joining an existing realm with ID: `{doc_id}`");
-            entry.get().clone()
+            realm_entry.clone()
         }
     };
 
@@ -211,6 +237,7 @@ pub async fn start_realms_server(
         .and(warp::any().map(move || db_pool.clone()))
         .and(warp::any().map(move || s3_client.clone()))
         .and_then(enter_realm)
+        .and_then(|a| {})
         .and(warp::ws())
         .and_then(|realm, ws: Ws| async move {
             Ok::<_, Rejection>(ws.on_upgrade(move |socket| peer(socket, realm)))

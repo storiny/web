@@ -76,6 +76,7 @@ use sqlx::{
     Pool,
     Postgres,
 };
+use std::sync::Arc;
 use tonic::{
     Request,
     Response,
@@ -90,7 +91,7 @@ pub struct GrpcService {
     /// Postgres connection pool
     pub db_pool: Pool<Postgres>,
     /// Redis connection instance
-    pub redis_pool: RedisPool,
+    pub redis_pool: Arc<RedisPool>,
 }
 
 #[tonic::async_trait]
