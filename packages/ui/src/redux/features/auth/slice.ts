@@ -39,10 +39,11 @@ export const fetch_user = create_async_thunk<User>(
   {
     condition: (_, { getState: get_state }) => {
       const {
-        auth: { logged_in, status }
+        auth: { logged_in, user, status }
       } = get_state() as AppState;
 
-      if (!logged_in || status === "loading") {
+      // TODO: Should we send the request even if the user object is present in the cache? It currently breaks the purpose of refreshing the user (in `<Initializer />`) as no requests are sent to the server.
+      if (!logged_in || status === "loading" || user !== null) {
         // Do not send a request if logged out or the status is `loading`
         return false;
       }

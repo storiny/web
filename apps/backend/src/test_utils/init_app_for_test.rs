@@ -139,6 +139,25 @@ pub async fn init_app_for_test(
     let ua_parser = UserAgentParser::from_path("./data/ua_parser/regexes.yaml")
         .expect("Cannot build user-agent parser");
 
+    // Application state
+    let app_state = web::Data::new(AppState {
+        config,
+        redis: redis_pool.clone(),
+        db_pool: db_pool.clone(),
+        geo_db,
+        ua_parser,
+        s3_client: S3Client::new_with(
+            MockRequestDispatcher::default(),
+            MockCredentialsProvider,
+            Region::UsEast1,
+        ),
+        reqwest_client: reqwest::Client::builder()
+            .user_agent("Storiny (https://storiny.com)")
+            .build()
+            .unwrap(),
+        oauth_client_map: get_oauth_client_map(get_app_config().unwrap()),
+    });
+
     let service = test::init_service(
         App::new()
             .wrap(IdentityMiddleware::default())
@@ -157,23 +176,7 @@ pub async fn init_app_for_test(
             .app_data(story_add_by_user_job_data.clone())
             .app_data(story_add_by_tag_job_data.clone())
             .app_data(templated_email_job_data.clone())
-            .app_data(web::Data::new(AppState {
-                config,
-                redis: redis_pool.clone(),
-                db_pool: db_pool.clone(),
-                geo_db,
-                ua_parser,
-                s3_client: S3Client::new_with(
-                    MockRequestDispatcher::default(),
-                    MockCredentialsProvider,
-                    Region::UsEast1,
-                ),
-                reqwest_client: reqwest::Client::builder()
-                    .user_agent("Storiny (https://storiny.com)")
-                    .build()
-                    .unwrap(),
-                oauth_client_map: get_oauth_client_map(get_app_config().unwrap()),
-            }))
+            .app_data(app_state.clone())
             .service(post)
             .service(service_factory),
     )

@@ -4189,6 +4189,7 @@ dependencies = [
  "email_address",
  "env_logger",
  "envy",
+ "flate2",
  "futures",
  "futures-core",
  "futures-util",
