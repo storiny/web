@@ -111,7 +111,7 @@ export const use_yjs_collaboration = ({
     try {
       provider.disconnect();
     } catch {
-      // NOOP
+      // Noop
     }
   }, [provider]);
 

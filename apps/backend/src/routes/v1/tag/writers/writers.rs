@@ -13,6 +13,10 @@ use serde::{
     Deserialize,
     Serialize,
 };
+use serde_with::{
+    serde_as,
+    DisplayFromStr,
+};
 use sqlx::{
     FromRow,
     Postgres,
@@ -26,8 +30,10 @@ struct Fragments {
     tag_name: String,
 }
 
+#[serde_as]
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 struct Writer {
+    #[serde_as(as = "DisplayFromStr")]
     id: i64,
     name: String,
     username: String,

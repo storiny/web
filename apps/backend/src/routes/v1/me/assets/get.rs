@@ -13,6 +13,10 @@ use serde::{
     Deserialize,
     Serialize,
 };
+use serde_with::{
+    serde_as,
+    DisplayFromStr,
+};
 use sqlx::FromRow;
 use time::OffsetDateTime;
 use uuid::Uuid;
@@ -24,8 +28,10 @@ struct QueryParams {
     page: Option<u16>,
 }
 
+#[serde_as]
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 struct Asset {
+    #[serde_as(as = "DisplayFromStr")]
     id: i64,
     key: Uuid,
     hex: String,

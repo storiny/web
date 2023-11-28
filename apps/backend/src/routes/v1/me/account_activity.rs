@@ -14,6 +14,10 @@ use serde::{
     Deserialize,
     Serialize,
 };
+use serde_with::{
+    serde_as,
+    DisplayFromStr,
+};
 use sqlx::FromRow;
 use time::{
     format_description,
@@ -27,8 +31,10 @@ struct QueryParams {
     page: Option<u16>,
 }
 
+#[serde_as]
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 struct AccountActivity {
+    #[serde_as(as = "DisplayFromStr")]
     id: i64,
     r#type: i16,
     description: Option<String>,

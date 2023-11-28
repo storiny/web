@@ -72,7 +72,10 @@ use storiny::{
     middlewares::identity::middleware::IdentityMiddleware,
     oauth::get_oauth_client_map,
     realms::{
-        realm::RealmMap,
+        realm::{
+            RealmData,
+            RealmMap,
+        },
         server::start_realms_server,
     },
     *,
@@ -244,7 +247,7 @@ async fn main() -> io::Result<()> {
 
             // Realm map
             let realm_map: RealmMap = Arc::new(Mutex::new(HashMap::new()));
-            let realm_data = web::Data::from(realm_map.clone());
+            let realm_data: RealmData = web::Data::from(realm_map.clone());
 
             // Start the GRPC server
             let grpc_future = start_grpc_server(config.clone(), db_pool.clone());
@@ -314,7 +317,9 @@ async fn main() -> io::Result<()> {
                             .add_headers()
                             .build(),
                     )
-                    .wrap(
+                    .wrap(if config.is_dev {
+                        Cors::permissive()
+                    } else {
                         Cors::default()
                             .allowed_origin(&config.web_server_url)
                             .allowed_headers(vec![
@@ -325,8 +330,8 @@ async fn main() -> io::Result<()> {
                                 header::SET_COOKIE,
                             ])
                             .supports_credentials()
-                            .max_age(3600),
-                    )
+                            .max_age(3600)
+                    })
                     .wrap(RequestIdentifier::with_uuid())
                     .wrap(
                         actix_web::middleware::Logger::new(

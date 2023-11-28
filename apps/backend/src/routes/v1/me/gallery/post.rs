@@ -37,6 +37,10 @@ use serde::{
     Deserialize,
     Serialize,
 };
+use serde_with::{
+    serde_as,
+    DisplayFromStr,
+};
 use sqlx::Row;
 use std::{
     io::Cursor,
@@ -53,8 +57,10 @@ struct Request {
     id: String,
 }
 
+#[serde_as]
 #[derive(Debug, Serialize, Deserialize)]
 struct Response {
+    #[serde_as(as = "DisplayFromStr")]
     id: i64,
     key: String,
     hex: String,

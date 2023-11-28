@@ -15,6 +15,7 @@ use std::{
     ops::Deref,
     sync::Arc,
 };
+use strum::Display;
 use thiserror::Error;
 use tokio::{
     sync::Mutex,
@@ -25,8 +26,24 @@ use tokio::{
         Duration,
     },
 };
-use y_sync::net::BroadcastGroup;
+use y_sync::{
+    awareness::{
+        Awareness,
+        AwarenessUpdate,
+    },
+    net::BroadcastGroup,
+    sync::{
+        Message,
+        Protocol,
+    },
+};
 use yrs::{
+    encoding::write::Write,
+    updates::encoder::{
+        Encode,
+        Encoder,
+        EncoderV2,
+    },
     ReadTxn,
     StateVector,
     Transact,
@@ -36,12 +53,19 @@ use yrs_warp::ws::{
     WarpStream,
 };
 
+/// The realm map. Key corresponds to the document ID, while values are the respective realm manager
+/// instances.
+pub type RealmMap = Arc<Mutex<HashMap<i64, Arc<Realm>>>>;
+
+/// An alias for [RealmMap] type, used to extract the map inside actix services.
+pub type RealmData = actix_web::web::Data<Mutex<HashMap<i64, Arc<Realm>>>>;
+
 /// The maximum number of peers that can connect to a single realm.
-const MAX_PEERS_PER_REALM: u8 = 3;
+pub const MAX_PEERS_PER_REALM: u8 = 3;
 
 /// The loop interval duration (in seconds) after which the document gets persisted to the object
 /// storage.
-const PERSISTENCE_LOOP_DURATION: u64 = 180; // 3 minutes
+const PERSISTENCE_LOOP_DURATION: u64 = 60; // 1 minute
 
 /// The duration (in seconds) for which an empty realm (realm with no connected peers) is kept in
 /// the memory. This is to avoid downloading the entire document from the object storage again if
@@ -49,12 +73,60 @@ const PERSISTENCE_LOOP_DURATION: u64 = 180; // 3 minutes
 /// storage just before the realm is destroyed.
 const EMPTY_REALM_TIMEOUT: u64 = 45; // 45 seconds
 
-/// The maximum size of the binary document data after compression.
-const MAX_DOCUMENT_SIZE: u32 = 8_00_0000; // 8 megabytes
+/// The maximum size (in bytes) of the binary document data after compression.
+const MAX_DOCUMENT_SIZE: u32 = 80_00_000; // 8 megabytes
 
-/// The realm map. Key corresponds to the document ID, while values are the respective realm manager
-/// instances.
-pub type RealmMap = Arc<Mutex<HashMap<i64, Arc<Realm>>>>;
+/// The maximum size (in bytes) of the individual incoming awareness update. Awareness updates
+/// should normally never overflow this limit unless the peer is sending malformed updates, in
+/// which case we simply reject them.
+const MAX_AWARENESS_PAYLOAD_SIZE: usize = 10_00_000; // 1 megabyte
+
+/// Tag id for an internal message.
+const MSG_INTERNAL: u8 = 4;
+
+/// The reason for destroying a [Realm] instance.
+#[derive(Display, Debug)]
+pub enum RealmDestroyReason {
+    /// The story was published while the realm was active.
+    #[strum(serialize = "destroy:story_published")]
+    StoryPublished,
+    /// The story was deleted while the realm was active.
+    #[strum(serialize = "destroy:story_deleted")]
+    StoryDeleted,
+    /// Other reason
+    #[strum(serialize = "destroy:internal")]
+    Internal,
+}
+
+/// The error raised while persisting a document using the [Realm::serialize_doc_to_s3] method.
+#[derive(Error, Debug)]
+pub enum PersistDocError {
+    #[error("unable to acquire transaction on the doc")]
+    DocTransactionAck,
+    #[error("unable to upload the doc to S3: {0}")]
+    Upload(String),
+    #[error("unable to compress the document: {0}")]
+    Compression(String),
+}
+
+/// The realm sync protocol.
+struct RealmProtocol;
+
+impl Protocol for RealmProtocol {
+    /// Reply to awareness query or just incoming [AwarenessUpdate], where the current `awareness`
+    /// instance is being updated with incoming data.
+    fn handle_awareness_update(
+        &self,
+        awareness: &mut Awareness,
+        update: AwarenessUpdate,
+    ) -> Result<Option<Message>, y_sync::sync::Error> {
+        if update.encode_v2().len() < MAX_AWARENESS_PAYLOAD_SIZE {
+            awareness.apply_update(update)?;
+        }
+
+        Ok(None)
+    }
+}
 
 /// The realm manager. It handles the broadcasting of messages, peer subscriptions, and document
 /// persistence to the object storage.
@@ -85,17 +157,6 @@ pub struct Realm {
     /// since the last persistence call. If the new state vector is exactly equal to the last
     /// state vector, the persistence call is aborted.
     pub last_state_vector: Mutex<StateVector>,
-}
-
-/// The error raised while persisting a document using the [Realm::serialize_doc_to_s3] method.
-#[derive(Error, Debug)]
-pub enum PersistDocError {
-    #[error("unable to acquire transaction on the doc")]
-    DocTransactionAck,
-    #[error("unable to upload the doc to S3: {0}")]
-    Upload(String),
-    #[error("unable to compress the document: {0}")]
-    Compression(String),
 }
 
 impl Realm {
@@ -202,7 +263,16 @@ impl Realm {
     /// Removes the realm from the realm map and aborts the document persistence loop task,
     /// eventually dropping the entire realm instance. This will free up the memory occupied by
     /// the document, and clear all the peers.
-    pub async fn destroy(&self) {
+    pub async fn destroy(&self, reason: RealmDestroyReason) {
+        // Broadcast a realm destroy message to the peers with the reason.
+        if self.has_peers().await {
+            let mut encoder = EncoderV2::new();
+            encoder.write_var(MSG_INTERNAL);
+            encoder.write_string(&reason.to_string());
+
+            let _ = self.bc_group.broadcast(encoder.to_vec());
+        }
+
         let mut realm_map = self.realm_map.lock().await;
         let persistence_loop_task = self.persistence_loop_task.lock().await;
         realm_map.remove(&self.doc_id);
@@ -220,7 +290,7 @@ impl Realm {
     /// * `sink` - The websocket sink wrapper.
     /// * `stream` - The websocket stream wrapper.
     pub async fn subscribe(self: Arc<Self>, sink: Arc<Mutex<WarpSink>>, stream: WarpStream) {
-        let subscription = self.bc_group.subscribe(sink, stream);
+        let subscription = self.bc_group.subscribe_with(sink, stream, RealmProtocol);
 
         self.clone().start_persistence_loop().await;
         self.increment_peer_count().await;
@@ -238,12 +308,12 @@ impl Realm {
             sleep(Duration::from_secs(EMPTY_REALM_TIMEOUT)).await;
 
             // If there are still no peers after `EMPTY_REALM_TIMEOUT` seconds, destroy the realm
-            if self.no_peers().await {
+            if !self.has_peers().await {
                 let persist_result = self.persist_doc_to_s3().await;
 
                 // We check for the peers once more, as they might connect when the document was
                 // being persisted to the object storage.
-                if self.no_peers().await {
+                if !self.has_peers().await {
                     match persist_result {
                         Ok(doc_size) => log::info!(
                             "Dropped realm with ID: `{}`. Persisted {doc_size} bytes.",
@@ -255,22 +325,22 @@ impl Realm {
                         ),
                     };
 
-                    self.destroy().await;
+                    self.destroy(RealmDestroyReason::Internal).await;
                 }
             }
         }
+    }
+
+    /// Returns `true` if there is at-least one peer subscribed to this realm.
+    pub async fn has_peers(&self) -> bool {
+        let peer_count = self.peer_count.lock().await;
+        *peer_count > 0
     }
 
     /// Increments the `peer_count` by one.
     async fn increment_peer_count(&self) {
         let mut peer_count = self.peer_count.lock().await;
         *peer_count += 1;
-    }
-
-    /// Returns `true` if there are no peers subscribed to this realm.
-    async fn no_peers(&self) -> bool {
-        let peer_count = self.peer_count.lock().await;
-        *peer_count == 0
     }
 
     /// Spawns a child task that starts a document persistence loop, which internally calls the

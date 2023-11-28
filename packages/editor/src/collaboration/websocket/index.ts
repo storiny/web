@@ -52,7 +52,9 @@ enum Message {
   SYNC /*           */ = 0,
   AWARENESS /*      */ = 1,
   AUTH /*           */ = 2,
-  QUERY_AWARENESS /**/ = 3
+  QUERY_AWARENESS /**/ = 3,
+  // Internal messages sent by the server
+  INTERNAL /*       */ = 4
 }
 
 const MESSAGE_RECONNECT_TIMEOUT = 30000;
@@ -129,6 +131,19 @@ MESSAGE_HANDLERS[Message.AUTH] = (_, decoder, provider): void => {
   auth_protocol.readAuthMessage(decoder, provider.doc, (_, reason) =>
     provider.emit("auth", [reason as "forbidden" | "overloaded"])
   );
+};
+
+/**
+ * Internal event message sent by the server
+ * @param encoder Encoder
+ * @param decoder Decoder
+ * @param provider Websocket provider
+ */
+MESSAGE_HANDLERS[Message.INTERNAL] = (encoder, decoder, provider): void => {
+  encoding.writeVarUint(encoder, Message.SYNC);
+  const event = decoding.readVarString(decoder);
+  // TODO: Handle server sent events here (published and deleted)
+  provider.emit(event, []);
 };
 
 /**
@@ -464,6 +479,7 @@ export class WebsocketProvider {
         this.wsconnected &&
         MESSAGE_RECONNECT_TIMEOUT < Date.now() - this.ws_last_message_received
       ) {
+        // TODO: This is the culprit which is causing auto close of the WS.
         // Close the connection when no messages are received since a long duration,
         // Not even the client's own awareness updates (which are updated every 15 seconds)
         this.ws?.close();

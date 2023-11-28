@@ -1,5 +1,4 @@
 /* eslint-disable */
-import Long from "long";
 import _m0 from "protobufjs/minimal";
 import { Tag } from "../../tag_def/v1/def";
 import { ExtendedUser } from "../../user_def/v1/def";
@@ -199,6 +198,7 @@ export interface GetStoryResponse {
   doc_key: string;
   category: string;
   user_id: string;
+  /** Replace `uint32` with `uint64` when the read count overflows. */
   like_count: number;
   read_count: number;
   word_count: number;
@@ -806,10 +806,10 @@ export const GetStoryResponse = {
       writer.uint32(74).string(message.user_id);
     }
     if (message.like_count !== 0) {
-      writer.uint32(80).uint64(message.like_count);
+      writer.uint32(80).uint32(message.like_count);
     }
     if (message.read_count !== 0) {
-      writer.uint32(88).uint64(message.read_count);
+      writer.uint32(88).uint32(message.read_count);
     }
     if (message.word_count !== 0) {
       writer.uint32(96).uint32(message.word_count);
@@ -952,14 +952,14 @@ export const GetStoryResponse = {
             break;
           }
 
-          message.like_count = longToNumber(reader.uint64() as Long);
+          message.like_count = reader.uint32();
           continue;
         case 11:
           if (tag !== 88) {
             break;
           }
 
-          message.read_count = longToNumber(reader.uint64() as Long);
+          message.read_count = reader.uint32();
           continue;
         case 12:
           if (tag !== 96) {
@@ -1311,18 +1311,6 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
-
-function longToNumber(long: Long): number {
-  if (long.gt(globalThis.Number.MAX_SAFE_INTEGER)) {
-    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
-  }
-  return long.toNumber();
-}
-
-if (_m0.util.Long !== Long) {
-  _m0.util.Long = Long as any;
-  _m0.configure();
-}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

@@ -1901,7 +1901,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(update_result.get::<i64, _>("read_count"), 10);
+        assert_eq!(update_result.get::<i32, _>("read_count"), 10);
 
         // Soft-delete the story
         sqlx::query(
@@ -1926,7 +1926,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i64, _>("read_count"), 0);
+        assert_eq!(result.get::<i32, _>("read_count"), 0);
 
         Ok(())
     }
@@ -1949,7 +1949,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(update_result.get::<i64, _>("read_count"), 10);
+        assert_eq!(update_result.get::<i32, _>("read_count"), 10);
 
         // Unpublish the story
         sqlx::query(
@@ -1974,7 +1974,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i64, _>("read_count"), 0);
+        assert_eq!(result.get::<i32, _>("read_count"), 0);
 
         Ok(())
     }
