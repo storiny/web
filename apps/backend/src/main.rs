@@ -31,6 +31,7 @@ use actix_web_validator::{
 };
 use dotenv::dotenv;
 use futures::future;
+use hashbrown::HashMap;
 use redis::aio::ConnectionManager;
 use rusoto_s3::S3Client;
 use rusoto_ses::SesClient;
@@ -42,6 +43,7 @@ use sqlx::{
 };
 use std::{
     io,
+    sync::Arc,
     time::Duration,
 };
 use storiny::{
@@ -69,9 +71,13 @@ use storiny::{
     },
     middlewares::identity::middleware::IdentityMiddleware,
     oauth::get_oauth_client_map,
-    realms::server::start_realms_server,
+    realms::{
+        realm::RealmMap,
+        server::start_realms_server,
+    },
     *,
 };
+use tokio::sync::Mutex;
 use tonic::codegen::CompressionEncoding;
 use user_agent_parser::UserAgentParser;
 
@@ -236,11 +242,15 @@ async fn main() -> io::Result<()> {
                 oauth_client_map: get_oauth_client_map(get_app_config().unwrap()),
             });
 
+            // Realm map
+            let realm_map: RealmMap = Arc::new(Mutex::new(HashMap::new()));
+            let realm_data = web::Data::from(realm_map.clone());
+
             // Start the GRPC server
             let grpc_future = start_grpc_server(config.clone(), db_pool.clone());
 
             // Start the realms server
-            let realms_future = start_realms_server(db_pool.clone(), s3_client.clone());
+            let realms_future = start_realms_server(realm_map, db_pool, s3_client);
 
             // Start the main HTTP server
             let http_future = HttpServer::new(move || {
@@ -326,6 +336,8 @@ async fn main() -> io::Result<()> {
                     )
                     .wrap(actix_web::middleware::Compress::default())
                     .wrap(actix_web::middleware::NormalizePath::trim())
+                    // Realms
+                    .app_data(realm_data.clone())
                     // Jobs
                     .app_data(story_add_by_user_job_data.clone())
                     .app_data(story_add_by_tag_job_data.clone())

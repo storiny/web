@@ -1,6 +1,7 @@
 pub mod check_resource_limit;
 pub mod clear_user_sessions;
 pub mod decode_uri_encoded_story_categories;
+pub mod deflate_bytes_gzip;
 pub mod delete_s3_objects;
 pub mod extract_session_key_from_cookie;
 pub mod flag;
@@ -14,5 +15,6 @@ pub mod get_client_location;
 pub mod get_sitemap_change_freq;
 pub mod get_user_sessions;
 pub mod incr_resource_limit;
+pub mod inflate_bytes_gzip;
 pub mod md_to_html;
 pub mod truncate_str;

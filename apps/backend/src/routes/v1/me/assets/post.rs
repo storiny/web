@@ -372,11 +372,15 @@ mod tests {
             oauth_client_map: get_oauth_client_map(get_app_config().unwrap()),
         });
 
-        let server = HttpServer::new(move || App::new().app_data(app_state).service(unsecure_post))
-            .workers(1)
-            .listen(listener)
-            .unwrap()
-            .run();
+        let server = HttpServer::new(move || {
+            App::new()
+                .app_data(app_state.clone())
+                .service(unsecure_post)
+        })
+        .workers(1)
+        .listen(listener)
+        .unwrap()
+        .run();
 
         tokio::spawn(server);
 

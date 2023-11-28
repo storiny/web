@@ -5,14 +5,13 @@ use crate::{
         Realm,
         RealmMap,
     },
+    utils::inflate_bytes_gzip::inflate_bytes_gzip,
 };
-use flate2::read;
 use futures_util::StreamExt;
-use hashbrown::{
-    hash_map::Entry,
-    HashMap,
-};
+use hashbrown::hash_map::Entry;
+use rusoto_core::RusotoError;
 use rusoto_s3::{
+    GetObjectError,
     GetObjectRequest,
     S3Client,
     S3,
@@ -24,11 +23,11 @@ use sqlx::{
 };
 use std::{
     convert::Infallible,
-    io::Read,
     net::SocketAddr,
     ops::Deref,
     sync::Arc,
 };
+use thiserror::Error;
 use tokio::{
     io::AsyncReadExt,
     signal::unix::{
@@ -68,13 +67,59 @@ use yrs_warp::ws::{
 /// group.
 const BUFFER_CAP: usize = 35;
 
+/// The error raised while fetching a document from the object storage using the [fetch_doc_from_s3]
+/// function.
+#[derive(Error, Debug)]
+pub enum FetchDocError {
+    #[error("unable to fetch the doc from S3: {0}")]
+    ObjectError(#[from] RusotoError<GetObjectError>),
+    #[error("unable to decompress the document: {0}")]
+    Decompression(String),
+}
+
+/// Fetches a document from the S3 object storage and returns the decompressed binary data.
+///
+/// * `s3_client` - The S3 client instance.
+/// * `doc_key` - The key of the document.
+async fn fetch_doc_from_s3(s3_client: &S3Client, doc_key: &str) -> Result<Vec<u8>, FetchDocError> {
+    match s3_client
+        .get_object(GetObjectRequest {
+            bucket: S3_DOCS_BUCKET.to_string(),
+            key: doc_key.to_string(),
+            ..Default::default()
+        })
+        .await
+    {
+        Ok(output) => {
+            let mut compressed_data = Vec::new();
+            let mut stream = output.body.unwrap().into_async_read();
+            stream.read_to_end(&mut compressed_data).await.unwrap();
+
+            // Inflate the binary data
+            Ok(inflate_bytes_gzip(&compressed_data)
+                .await
+                .map_err(|error| FetchDocError::Decompression(error.to_string()))?)
+        }
+        Err(error) => {
+            if matches!(error, RusotoError::Service(GetObjectError::NoSuchKey(_))) {
+                // This document has been opened for the first time as it is not present in the
+                // object storage. An object will get uploaded by the realm manager when this
+                // document gets updated by the peers.
+                Ok(Vec::new())
+            } else {
+                Err(FetchDocError::from(error))
+            }
+        }
+    }
+}
+
 /// Joins an existing realm or creates a new one for the provided document ID.
 ///
 /// * `doc_id` - The document (story) ID.
 /// * `realm_map` - The realm map.
 /// * `db_pool` - The Postgres connection pool.
 /// * `s3_client` - The S3 client instance.
-async fn join_or_create_realm(
+async fn enter_realm(
     doc_id: i64,
     realm_map: RealmMap,
     db_pool: Arc<Pool<Postgres>>,
@@ -100,24 +145,9 @@ async fn join_or_create_realm(
             .unwrap();
 
             let doc_key = story.get::<Uuid, _>("key");
-            let mut body = Vec::new();
-
-            if let Ok(req) = s3_client
-                .deref()
-                .get_object(GetObjectRequest {
-                    bucket: S3_DOCS_BUCKET.to_string(),
-                    key: doc_key.to_string(),
-                    ..Default::default()
-                })
+            let body = fetch_doc_from_s3(s3_client.deref(), &doc_key.to_string())
                 .await
-            {
-                let mut gzipped_body = Vec::new();
-                let mut stream = req.body.unwrap().into_async_read();
-                stream.read_to_end(&mut gzipped_body).await.unwrap();
-
-                let mut gz = read::GzDecoder::new(&gzipped_body[..]);
-                gz.read_to_end(&mut body).unwrap();
-            }
+                .unwrap();
 
             log::info!("Creating a new realm with ID: `{doc_id}`");
 
@@ -152,6 +182,7 @@ async fn join_or_create_realm(
 }
 
 pub async fn start_realms_server(
+    realm_map: RealmMap,
     db_pool: Pool<Postgres>,
     s3_client: S3Client,
 ) -> std::io::Result<()> {
@@ -166,7 +197,6 @@ pub async fn start_realms_server(
     .parse()
     .expect("unable to parse the socket address");
 
-    let realm_map: RealmMap = Arc::new(Mutex::new(HashMap::new()));
     let db_pool = Arc::new(db_pool);
     let s3_client = Arc::new(s3_client);
 
@@ -180,7 +210,7 @@ pub async fn start_realms_server(
         .and(warp::any().map(move || realm_map.clone()))
         .and(warp::any().map(move || db_pool.clone()))
         .and(warp::any().map(move || s3_client.clone()))
-        .and_then(join_or_create_realm)
+        .and_then(enter_realm)
         .and(warp::ws())
         .and_then(|realm, ws: Ws| async move {
             Ok::<_, Rejection>(ws.on_upgrade(move |socket| peer(socket, realm)))

@@ -1,9 +1,10 @@
-use crate::constants::buckets::S3_DOCS_BUCKET;
-use deflate::{
-    deflate_bytes_gzip_conf,
-    Compression,
+use crate::{
+    constants::buckets::S3_DOCS_BUCKET,
+    utils::deflate_bytes_gzip::{
+        deflate_bytes_gzip,
+        CompressionLevel,
+    },
 };
-use gzip_header::GzBuilder;
 use hashbrown::HashMap;
 use rusoto_s3::{
     PutObjectRequest,
@@ -93,6 +94,8 @@ pub enum PersistDocError {
     DocTransactionAck,
     #[error("unable to upload the doc to S3: {0}")]
     Upload(String),
+    #[error("unable to compress the document: {0}")]
+    Compression(String),
 }
 
 impl Realm {
@@ -148,15 +151,19 @@ impl Realm {
                 txn.encode_state_as_update_v2(&StateVector::default())
             };
 
-            let mut gzipped_bytes =
-                deflate_bytes_gzip_conf(&doc_binary_data, Compression::Fast, GzBuilder::new());
-            let mut doc_size = gzipped_bytes.len();
+            let mut compressed_bytes = deflate_bytes_gzip(&doc_binary_data, None)
+                .await
+                .map_err(|err| PersistDocError::Compression(err.to_string()))?;
+
+            let mut doc_size = compressed_bytes.len();
 
             // If the document is too large, try compressing it with the highest compression level.
             if doc_size as u32 > MAX_DOCUMENT_SIZE {
-                gzipped_bytes =
-                    deflate_bytes_gzip_conf(&doc_binary_data, Compression::Best, GzBuilder::new());
-                doc_size = gzipped_bytes.len();
+                compressed_bytes =
+                    deflate_bytes_gzip(&doc_binary_data, Some(CompressionLevel::Best))
+                        .await
+                        .map_err(|err| PersistDocError::Compression(err.to_string()))?;
+                doc_size = compressed_bytes.len();
 
                 // If the document is still too large, we just reject persisting it to the object
                 // storage. This should be a very rare case unless the peers are sending malformed
@@ -176,7 +183,7 @@ impl Realm {
                     key: self.doc_key.to_string(),
                     content_type: Some("application/x-gzip".to_string()),
                     content_encoding: Some("gzip".to_string()),
-                    body: Some(gzipped_bytes.into()),
+                    body: Some(compressed_bytes.into()),
                     ..Default::default()
                 })
                 .await
