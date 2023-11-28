@@ -1,14 +1,10 @@
 use crate::{
     constants::buckets::S3_SITEMAPS_BUCKET,
     jobs::cron::sitemap::GenerateSitemapResponse,
+    utils::deflate_bytes_gzip::deflate_bytes_gzip,
 };
 use apalis::prelude::JobError;
 use async_recursion::async_recursion;
-use deflate::{
-    deflate_bytes_gzip_conf,
-    Compression,
-};
-use gzip_header::GzBuilder;
 use rusoto_s3::{
     PutObjectRequest,
     S3Client,
@@ -99,14 +95,17 @@ pub async fn generate_tag_sitemap(
 
         // This should never panic as the number of rows are always <= 50,000
         let url_set: UrlSet = UrlSet::new(result).unwrap();
-        let mut buf = Vec::new();
+        let mut buffer = Vec::new();
 
         url_set
-            .write(&mut buf)
+            .write(&mut buffer)
             .map_err(Box::new)
             .map_err(|err| JobError::Failed(err))?;
 
-        let gzipped_bytes = deflate_bytes_gzip_conf(&buf, Compression::Fast, GzBuilder::new());
+        let compressed_bytes = deflate_bytes_gzip(&buffer, None)
+            .await
+            .map_err(Box::new)
+            .map_err(|err| JobError::Failed(err))?;
 
         s3_client
             .put_object(PutObjectRequest {
@@ -118,7 +117,7 @@ pub async fn generate_tag_sitemap(
                     r#"attachment; filename="tags-{}.xml.gz""#,
                     index.unwrap_or_default()
                 )),
-                body: Some(gzipped_bytes.into()),
+                body: Some(compressed_bytes.into()),
                 ..Default::default()
             })
             .await

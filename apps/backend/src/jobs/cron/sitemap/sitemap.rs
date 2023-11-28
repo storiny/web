@@ -10,19 +10,17 @@ use crate::{
         },
         init::SharedJobState,
     },
-    utils::delete_s3_objects::delete_s3_objects,
+    utils::{
+        deflate_bytes_gzip::deflate_bytes_gzip,
+        delete_s3_objects::delete_s3_objects,
+    },
 };
 use apalis::prelude::*;
 use chrono::{
     DateTime,
     Utc,
 };
-use deflate::{
-    deflate_bytes_gzip_conf,
-    Compression,
-};
 use futures::future;
-use gzip_header::GzBuilder;
 use rusoto_s3::{
     PutObjectRequest,
     S3,
@@ -177,14 +175,17 @@ pub async fn refresh_sitemap(
 
     // Finally, upload the sitemap index file to the bucket.
 
-    let mut buf = Vec::new();
+    let mut buffer = Vec::new();
 
     index_sitemap
-        .write(&mut buf)
+        .write(&mut buffer)
         .map_err(Box::new)
         .map_err(|err| JobError::Failed(err))?;
 
-    let gzipped_bytes = deflate_bytes_gzip_conf(&buf, Compression::Fast, GzBuilder::new());
+    let compressed_bytes = deflate_bytes_gzip(&buffer, None)
+        .await
+        .map_err(Box::new)
+        .map_err(|err| JobError::Failed(err))?;
 
     s3_client
         .put_object(PutObjectRequest {
@@ -193,7 +194,7 @@ pub async fn refresh_sitemap(
             content_type: Some("application/x-gzip".to_string()),
             content_encoding: Some("gzip".to_string()),
             content_disposition: Some(r#"attachment; filename="index.xml.gz""#.to_string()),
-            body: Some(gzipped_bytes.into()),
+            body: Some(compressed_bytes.into()),
             ..Default::default()
         })
         .await

@@ -19,24 +19,22 @@ actix-web-validator = "5.0.1"
 anyhow = "1.0.75"
 apalis = { version = "0.4.7", default-features = false, features = ["extensions", "retry", "cron", "tokio-comp", "tracing", "redis", "chrono"] }
 argon2 = "0.5.2"
+async-compression = { version = "0.4.5", features = ["gzip", "tokio"] }
 async-recursion = "1.0.5"
 async-trait = "0.1.73"
 chrono = "0.4.31"
 colors-transform = "0.2.11"
 cookie = { version = "0.18.0", features = ["private", "signed"] }
 deadpool-redis = "0.13.0"
-deflate = { version = "1.0.0", features = ["gzip"] }
 derive_more = "0.99.17"
 dominant_color = "0.4.0"
 dotenv = "0.15.0"
 email_address = "0.2.4"
 env_logger = "0.10.0"
 envy = "0.4.2"
-flate2 = "1.0.28"
 futures = "0.3.29"
 futures-core = "0.3.28"
 futures-util = { version = "0.3.29", features = ["sink"] }
-gzip-header = "1.0.0"
 hashbrown = { version = "0.14.0", features = ["serde"] }
 image = { version = "0.24.7", default-features = false, features = ["gif", "png", "jpeg", "jpeg_rayon", "webp", "webp-encoder"] }
 itertools = "0.12.0"

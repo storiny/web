@@ -1,13 +1,9 @@
 use crate::{
     constants::buckets::S3_SITEMAPS_BUCKET,
     jobs::cron::sitemap::GenerateSitemapResponse,
+    utils::deflate_bytes_gzip::deflate_bytes_gzip,
 };
 use apalis::prelude::JobError;
-use deflate::{
-    deflate_bytes_gzip_conf,
-    Compression,
-};
-use gzip_header::GzBuilder;
 use rusoto_s3::{
     PutObjectRequest,
     S3Client,
@@ -67,14 +63,17 @@ pub async fn generate_preset_sitemap(
     let url_set: UrlSet = UrlSet::new(presets)
         .map_err(Box::new)
         .map_err(|err| JobError::Failed(err))?;
-    let mut buf = Vec::new();
+    let mut buffer = Vec::new();
 
     url_set
-        .write(&mut buf)
+        .write(&mut buffer)
         .map_err(Box::new)
         .map_err(|err| JobError::Failed(err))?;
 
-    let gzipped_bytes = deflate_bytes_gzip_conf(&buf, Compression::Fast, GzBuilder::new());
+    let compressed_bytes = deflate_bytes_gzip(&buffer, None)
+        .await
+        .map_err(Box::new)
+        .map_err(|err| JobError::Failed(err))?;
 
     s3_client
         .put_object(PutObjectRequest {
@@ -83,7 +82,7 @@ pub async fn generate_preset_sitemap(
             content_type: Some("application/x-gzip".to_string()),
             content_encoding: Some("gzip".to_string()),
             content_disposition: Some(r#"attachment; filename="presets.xml.gz""#.to_string()),
-            body: Some(gzipped_bytes.into()),
+            body: Some(compressed_bytes.into()),
             ..Default::default()
         })
         .await
