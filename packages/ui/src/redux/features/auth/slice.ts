@@ -32,7 +32,8 @@ export const fetch_user = create_async_thunk<User>(
   "auth/fetch_user",
   async () => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}/me`
+      `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}/me`,
+      { credentials: "include" }
     );
     return res.json();
   },

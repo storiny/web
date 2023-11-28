@@ -219,7 +219,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i64, _>("like_count"), 1);
+        assert_eq!(result.get::<i32, _>("like_count"), 1);
 
         Ok(())
     }
@@ -255,7 +255,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i64, _>("like_count"), 1);
+        assert_eq!(result.get::<i32, _>("like_count"), 1);
 
         // Soft-delete the story like
         sqlx::query(
@@ -281,7 +281,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i64, _>("like_count"), 0);
+        assert_eq!(result.get::<i32, _>("like_count"), 0);
 
         // Restore the story like
         sqlx::query(
@@ -307,7 +307,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i64, _>("like_count"), 1);
+        assert_eq!(result.get::<i32, _>("like_count"), 1);
 
         Ok(())
     }
@@ -343,7 +343,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i64, _>("like_count"), 1);
+        assert_eq!(result.get::<i32, _>("like_count"), 1);
 
         // Delete the story like
         sqlx::query(
@@ -368,7 +368,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i64, _>("like_count"), 0);
+        assert_eq!(result.get::<i32, _>("like_count"), 0);
 
         Ok(())
     }
@@ -416,7 +416,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i64, _>("like_count"), 2);
+        assert_eq!(result.get::<i32, _>("like_count"), 2);
 
         // Soft-delete the story like
         sqlx::query(
@@ -442,7 +442,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i64, _>("like_count"), 1);
+        assert_eq!(result.get::<i32, _>("like_count"), 1);
 
         // Delete the story like
         sqlx::query(
@@ -467,7 +467,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i64, _>("like_count"), 1);
+        assert_eq!(result.get::<i32, _>("like_count"), 1);
 
         Ok(())
     }

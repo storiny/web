@@ -870,10 +870,10 @@ impl serde::Serialize for GetStoryResponse {
             struct_ser.serialize_field("userId", &self.user_id)?;
         }
         if self.like_count != 0 {
-            struct_ser.serialize_field("likeCount", ToString::to_string(&self.like_count).as_str())?;
+            struct_ser.serialize_field("likeCount", &self.like_count)?;
         }
         if self.read_count != 0 {
-            struct_ser.serialize_field("readCount", ToString::to_string(&self.read_count).as_str())?;
+            struct_ser.serialize_field("readCount", &self.read_count)?;
         }
         if self.word_count != 0 {
             struct_ser.serialize_field("wordCount", &self.word_count)?;

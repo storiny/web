@@ -25,8 +25,9 @@ CREATE TABLE IF NOT EXISTS stories
 	preview_image                   UUID           REFERENCES assets (key) ON UPDATE CASCADE ON DELETE SET NULL,
 	-- Stats (use bigints)
 	word_count                      unsigned_int32 NOT NULL DEFAULT 0,
-	read_count                      unsigned_int64 NOT NULL DEFAULT 0,
-	like_count                      unsigned_int64 NOT NULL DEFAULT 0,
+	-- Replace `unsigned_int32` with `unsigned_int64` when the read count overflows.
+	read_count                      unsigned_int32 NOT NULL DEFAULT 0,
+	like_count                      unsigned_int32 NOT NULL DEFAULT 0,
 	comment_count                   unsigned_int32 NOT NULL DEFAULT 0,
 	-- Settings
 	disable_public_revision_history BOOL           NOT NULL DEFAULT FALSE,

@@ -47,8 +47,8 @@ struct Story {
     preview_image: Option<Uuid>,
     // Stats
     word_count: i32,
-    read_count: i64,
-    like_count: i64,
+    read_count: i32,
+    like_count: i32,
     comment_count: i32,
     // Settings
     disable_public_revision_history: bool,
@@ -195,8 +195,8 @@ pub async fn get_story(
         doc_key: story.doc_key.to_string(),
         category: story.category,
         user_id: story.user_id.to_string(),
-        like_count: story.like_count as u64,
-        read_count: story.read_count as u64,
+        like_count: story.like_count as u32,
+        read_count: story.read_count as u32,
         word_count: story.word_count as u32,
         comment_count: story.comment_count as u32,
         age_restriction: story.age_restriction as i32,

@@ -79,8 +79,9 @@ message GetStoryResponse {
   string doc_key /*                      */ = 7;
   string category /*                     */ = 8;
   string user_id /*                      */ = 9;
-  uint64 like_count /*                   */ = 10;
-  uint64 read_count /*                   */ = 11;
+  // Replace `uint32` with `uint64` when the read count overflows.
+  uint32 like_count /*                   */ = 10;
+  uint32 read_count /*                   */ = 11;
   uint32 word_count /*                   */ = 12;
   uint32 comment_count /*                */ = 13;
   StoryAgeRestriction age_restriction /* */ = 14;

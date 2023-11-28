@@ -82,10 +82,11 @@ pub struct GetStoryResponse {
     pub category: ::prost::alloc::string::String,
     #[prost(string, tag="9")]
     pub user_id: ::prost::alloc::string::String,
-    #[prost(uint64, tag="10")]
-    pub like_count: u64,
-    #[prost(uint64, tag="11")]
-    pub read_count: u64,
+    /// Replace `uint32` with `uint64` when the read count overflows.
+    #[prost(uint32, tag="10")]
+    pub like_count: u32,
+    #[prost(uint32, tag="11")]
+    pub read_count: u32,
     #[prost(uint32, tag="12")]
     pub word_count: u32,
     #[prost(uint32, tag="13")]

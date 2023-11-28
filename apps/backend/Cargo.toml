@@ -60,6 +60,7 @@ rusoto_signature = "0.48.0"
 sailfish = "0.8.0"
 serde = { version = "1.0.188", features = ["derive"] }
 serde_json = "1.0.105"
+serde_with = "3.4.0"
 sitemap-rs = "0.2.0"
 slugify = "0.1.0"
 sqlx = { version = "0.7.2", features = ["postgres", "time", "macros", "json", "migrate", "runtime-tokio", "sqlx-postgres", "uuid"] }

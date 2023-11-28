@@ -8,7 +8,8 @@ export const api_slice = create_api({
   /* eslint-disable prefer-snakecase/prefer-snakecase */
   reducerPath: "api",
   baseQuery: fetch_base_query({
-    baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}`
+    baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}`,
+    credentials: "include"
   }),
   tagTypes: [
     "Notification",

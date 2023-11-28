@@ -2,6 +2,10 @@ use serde::{
     Deserialize,
     Serialize,
 };
+use serde_with::{
+    serde_as,
+    DisplayFromStr,
+};
 use sqlx::{
     types::Json,
     FromRow,
@@ -11,8 +15,10 @@ use sqlx::{
 };
 use uuid::Uuid;
 
+#[serde_as]
 #[derive(Debug, Serialize, Deserialize)]
 struct User {
+    #[serde_as(as = "DisplayFromStr")]
     id: i64,
     name: String,
     username: String,
@@ -21,12 +27,14 @@ struct User {
     public_flags: i32,
 }
 
+#[serde_as]
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 pub struct Story {
+    #[serde_as(as = "DisplayFromStr")]
     id: i64,
     slug: String,
     title: String,
-    read_count: i64,
+    read_count: i32,
     // Joins
     user: Json<User>,
 }

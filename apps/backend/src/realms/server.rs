@@ -65,7 +65,7 @@ use yrs_warp::ws::{
 
 /// The maximum number of overflowing messages that are buffered in the memory for the broadcast
 /// group.
-const BUFFER_CAP: usize = 35;
+const BUFFER_CAP: usize = 36;
 
 /// The error raised while fetching a document from the object storage using the [fetch_doc_from_s3]
 /// function.

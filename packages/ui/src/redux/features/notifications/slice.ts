@@ -36,7 +36,8 @@ export const fetch_unread_notifications_count = create_async_thunk(
   "notifications/fetch_unread_notifications_count",
   async () => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}/me/unread-notifications`
+      `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}/me/unread-notifications`,
+      { credentials: "include" }
     );
     return res.json();
   },
