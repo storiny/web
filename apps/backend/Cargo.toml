@@ -32,6 +32,7 @@ dotenv = "0.15.0"
 email_address = "0.2.4"
 env_logger = "0.10.0"
 envy = "0.4.2"
+flate2 = "1.0.28"
 futures = "0.3.29"
 futures-core = "0.3.28"
 futures-util = { version = "0.3.29", features = ["sink"] }

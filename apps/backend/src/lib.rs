@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
-
+#[cfg(target_has_atomic = "ptr")]
+//
 use crate::error::ExternalAuthError;
 use deadpool_redis::Pool as RedisPool;
 use maxminddb::Reader;

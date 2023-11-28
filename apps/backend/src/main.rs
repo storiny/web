@@ -214,21 +214,39 @@ async fn main() -> io::Result<()> {
             )
             .await;
 
+            // GeoIP service
+            let geo_db = maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();
+
+            // User-agent parser
+            let ua_parser = UserAgentParser::from_path("./data/ua_parser/regexes.yaml")
+                .expect("Cannot build user-agent parser");
+
+            // Shared application state
+            let app_state = web::Data::new(AppState {
+                config: get_app_config().unwrap(),
+                redis: redis_pool.clone(),
+                db_pool: db_pool.clone(),
+                geo_db,
+                ua_parser,
+                s3_client: s3_client.clone(),
+                reqwest_client: reqwest::Client::builder()
+                    .user_agent("Storiny (https://storiny.com)")
+                    .build()
+                    .unwrap(),
+                oauth_client_map: get_oauth_client_map(get_app_config().unwrap()),
+            });
+
             // Start the GRPC server
             let grpc_future = start_grpc_server(config.clone(), db_pool.clone());
+
+            // Start the realms server
+            let realms_future = start_realms_server(db_pool.clone(), s3_client.clone());
 
             // Start the main HTTP server
             let http_future = HttpServer::new(move || {
                 let input = SimpleInputFunctionBuilder::new(Duration::from_secs(5), 25) // 25 requests / 5s
                     .real_ip_key()
                     .build();
-
-                // GeoIP service
-                let geo_db = maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();
-
-                // User-agent parser
-                let ua_parser = UserAgentParser::from_path("./data/ua_parser/regexes.yaml")
-                    .expect("Cannot build user-agent parser");
 
                 // JSON validation error handler
                 let json_config = JsonConfig::default().error_handler(|err, _| {
@@ -317,19 +335,8 @@ async fn main() -> io::Result<()> {
                     .app_data(qs_query_config)
                     .app_data(path_config)
                     // Application state
-                    .app_data(web::Data::new(AppState {
-                        config: get_app_config().unwrap(),
-                        redis: redis_pool.clone(),
-                        db_pool: db_pool.clone(),
-                        geo_db,
-                        ua_parser,
-                        s3_client: s3_client.clone(),
-                        reqwest_client: reqwest::Client::builder()
-                            .user_agent("Storiny (https://storiny.com)")
-                            .build()
-                            .unwrap(),
-                        oauth_client_map: get_oauth_client_map(get_app_config().unwrap()),
-                    }))
+                    .app_data(app_state.clone())
+                    // Routes
                     .configure(routes::init::init_common_routes)
                     .configure(routes::init::init_oauth_routes)
                     .configure(routes::init::init_v1_routes)
@@ -338,9 +345,6 @@ async fn main() -> io::Result<()> {
             })
             .bind((host, port))?
             .run();
-
-            // Start the realms server
-            let realms_future = start_realms_server();
 
             future::try_join3(grpc_future, http_future, realms_future)
                 .await

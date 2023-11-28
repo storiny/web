@@ -349,35 +349,34 @@ mod tests {
         let db_pool_clone = db_pool.clone();
         let redis_pool = get_redis_pool();
 
-        let server = HttpServer::new(move || {
-            // GeoIP service
-            let geo_db = maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();
+        // GeoIP service
+        let geo_db = maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();
 
-            // User-agent parser
-            let ua_parser = UserAgentParser::from_path("./data/ua_parser/regexes.yaml")
-                .expect("Cannot build user-agent parser");
+        // User-agent parser
+        let ua_parser = UserAgentParser::from_path("./data/ua_parser/regexes.yaml")
+            .expect("Cannot build user-agent parser");
 
-            App::new()
-                .app_data(web::Data::new(AppState {
-                    config: get_app_config().unwrap(),
-                    redis: redis_pool.clone(),
-                    db_pool: db_pool.clone(),
-                    geo_db,
-                    ua_parser,
-                    s3_client: S3Client::new_with(
-                        MockRequestDispatcher::default(),
-                        MockCredentialsProvider,
-                        Region::UsEast1,
-                    ),
-                    reqwest_client: reqwest::Client::new(),
-                    oauth_client_map: get_oauth_client_map(get_app_config().unwrap()),
-                }))
-                .service(unsecure_post)
-        })
-        .workers(1)
-        .listen(listener)
-        .unwrap()
-        .run();
+        // Application state
+        let app_state = web::Data::new(AppState {
+            config: get_app_config().unwrap(),
+            redis: redis_pool.clone(),
+            db_pool: db_pool.clone(),
+            geo_db,
+            ua_parser,
+            s3_client: S3Client::new_with(
+                MockRequestDispatcher::default(),
+                MockCredentialsProvider,
+                Region::UsEast1,
+            ),
+            reqwest_client: reqwest::Client::new(),
+            oauth_client_map: get_oauth_client_map(get_app_config().unwrap()),
+        });
+
+        let server = HttpServer::new(move || App::new().app_data(app_state).service(unsecure_post))
+            .workers(1)
+            .listen(listener)
+            .unwrap()
+            .run();
 
         tokio::spawn(server);
 

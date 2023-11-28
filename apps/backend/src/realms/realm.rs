@@ -1,27 +1,22 @@
+use crate::constants::buckets::S3_DOCS_BUCKET;
 use deflate::{
     deflate_bytes_gzip_conf,
     Compression,
 };
-use futures_util::StreamExt;
 use gzip_header::GzBuilder;
-use hashbrown::{
-    hash_map::Entry,
-    HashMap,
+use hashbrown::HashMap;
+use rusoto_s3::{
+    PutObjectRequest,
+    S3Client,
+    S3,
 };
 use std::{
-    convert::Infallible,
+    ops::Deref,
     sync::Arc,
 };
 use thiserror::Error;
 use tokio::{
-    signal::unix::{
-        signal,
-        SignalKind,
-    },
-    sync::{
-        Mutex,
-        RwLock,
-    },
+    sync::Mutex,
     task::JoinHandle,
     time::{
         self,
@@ -29,19 +24,7 @@ use tokio::{
         Duration,
     },
 };
-use warp::{
-    ws::{
-        WebSocket,
-        Ws,
-    },
-    Filter,
-    Rejection,
-    Reply,
-};
-use y_sync::{
-    awareness::Awareness,
-    net::BroadcastGroup,
-};
+use y_sync::net::BroadcastGroup;
 use yrs::{
     ReadTxn,
     StateVector,
@@ -52,12 +35,8 @@ use yrs_warp::ws::{
     WarpStream,
 };
 
-/// The maximum number of overflowing messages that are buffered in the memory for the broadcast
-/// group.
-const BUFFER_CAP: usize = 35;
-
 /// The maximum number of peers that can connect to a single realm.
-const MAX_PEERS_PER_REALM: usize = 3;
+const MAX_PEERS_PER_REALM: u8 = 3;
 
 /// The loop interval duration (in seconds) after which the document gets persisted to the object
 /// storage.
@@ -69,9 +48,12 @@ const PERSISTENCE_LOOP_DURATION: u64 = 180; // 3 minutes
 /// storage just before the realm is destroyed.
 const EMPTY_REALM_TIMEOUT: u64 = 45; // 45 seconds
 
+/// The maximum size of the binary document data after compression.
+const MAX_DOCUMENT_SIZE: u32 = 8_00_0000; // 8 megabytes
+
 /// The realm map. Key corresponds to the document ID, while values are the respective realm manager
 /// instances.
-pub type RealmMap = Arc<Mutex<HashMap<String, Arc<Realm>>>>;
+pub type RealmMap = Arc<Mutex<HashMap<i64, Arc<Realm>>>>;
 
 /// The realm manager. It handles the broadcasting of messages, peer subscriptions, and document
 /// persistence to the object storage.
@@ -83,8 +65,12 @@ pub struct Realm {
     pub peer_count: Mutex<u16>,
     /// The realm map. This is used to drop the realm manager.
     pub realm_map: RealmMap,
+    /// The S3 client instance.
+    pub s3_client: Arc<S3Client>,
     /// The ID of the document being edited.
-    pub doc_id: String,
+    pub doc_id: i64,
+    /// The UUID of the document, used as the key for the object storage.
+    pub doc_key: String,
     /// The document persistence loop. This is called every [PERSISTENCE_LOOP_DURATION] seconds,
     /// which executes the [Realm::persist_doc_to_s3] method that persists the document to the
     /// object storage over a fixed interval until the realm is destroyed.
@@ -105,7 +91,7 @@ pub struct Realm {
 pub enum PersistDocError {
     #[error("unable to acquire transaction on the doc")]
     DocTransactionAck,
-    #[error("unable to upload the doc to s3: {0}")]
+    #[error("unable to upload the doc to S3: {0}")]
     Upload(String),
 }
 
@@ -113,13 +99,23 @@ impl Realm {
     /// Creates a new realm.
     ///
     /// * `realm_map` - The realm map.
+    /// * `s3_client` - The S3 client instance.
     /// * `doc_id` - The ID of the document.
+    /// * `doc_key` - The UUID of the document, used as the key for the object storage.
     /// * `bc_group` - The broadcast group instance.
-    pub fn new(realm_map: RealmMap, doc_id: String, bc_group: BroadcastGroup) -> Self {
+    pub fn new(
+        realm_map: RealmMap,
+        s3_client: Arc<S3Client>,
+        doc_id: i64,
+        doc_key: String,
+        bc_group: BroadcastGroup,
+    ) -> Self {
         Self {
             bc_group,
             doc_id,
+            doc_key,
             realm_map,
+            s3_client,
             peer_count: Mutex::new(0),
             persistence_loop_task: Mutex::new(None),
             last_state_vector: Mutex::new(StateVector::default()),
@@ -133,18 +129,58 @@ impl Realm {
         let mut last_state_vec = self.last_state_vector.lock().await;
         let awareness = self.bc_group.awareness().read().await;
         let doc = awareness.doc();
-        let txn = doc
-            .try_transact()
-            .map_err(|_| PersistDocError::DocTransactionAck)?;
 
-        let next_state_vec = txn.state_vector();
+        let next_state_vec = {
+            let txn = doc
+                .try_transact()
+                .map_err(|_| PersistDocError::DocTransactionAck)?;
+
+            txn.state_vector()
+        };
 
         // Document has been updated since the last persistence call.
         if *last_state_vec != next_state_vec {
-            let doc_binary_data = txn.encode_state_as_update_v2(&StateVector::default());
-            let gzipped_bytes =
+            let doc_binary_data = {
+                let txn = doc
+                    .try_transact()
+                    .map_err(|_| PersistDocError::DocTransactionAck)?;
+
+                txn.encode_state_as_update_v2(&StateVector::default())
+            };
+
+            let mut gzipped_bytes =
                 deflate_bytes_gzip_conf(&doc_binary_data, Compression::Fast, GzBuilder::new());
-            let doc_size = gzipped_bytes.len();
+            let mut doc_size = gzipped_bytes.len();
+
+            // If the document is too large, try compressing it with the highest compression level.
+            if doc_size as u32 > MAX_DOCUMENT_SIZE {
+                gzipped_bytes =
+                    deflate_bytes_gzip_conf(&doc_binary_data, Compression::Best, GzBuilder::new());
+                doc_size = gzipped_bytes.len();
+
+                // If the document is still too large, we just reject persisting it to the object
+                // storage. This should be a very rare case unless the peers are sending malformed
+                // updates. We also update the last state vector here to avoid compressing the data
+                // again if there were not updates.
+                if doc_size as u32 > MAX_DOCUMENT_SIZE {
+                    *last_state_vec = next_state_vec;
+
+                    return Ok(0);
+                }
+            }
+
+            self.s3_client
+                .deref()
+                .put_object(PutObjectRequest {
+                    bucket: S3_DOCS_BUCKET.to_string(),
+                    key: self.doc_key.to_string(),
+                    content_type: Some("application/x-gzip".to_string()),
+                    content_encoding: Some("gzip".to_string()),
+                    body: Some(gzipped_bytes.into()),
+                    ..Default::default()
+                })
+                .await
+                .map_err(|error| PersistDocError::Upload(error.to_string()))?;
 
             // Update the state vector after the compression and uploading process.
             *last_state_vec = next_state_vec;
@@ -196,18 +232,24 @@ impl Realm {
 
             // If there are still no peers after `EMPTY_REALM_TIMEOUT` seconds, destroy the realm
             if self.no_peers().await {
-                match self.persist_doc_to_s3().await {
-                    Ok(doc_size) => log::info!(
-                        "Dropped realm with ID: `{}`. Persisted {doc_size} bytes.",
-                        self.doc_id
-                    ),
-                    Err(error) => log::info!(
-                        "Dropped realm with ID: `{}`. Failed to persist the document: {error}",
-                        self.doc_id
-                    ),
-                };
+                let persist_result = self.persist_doc_to_s3().await;
 
-                self.destroy().await;
+                // We check for the peers once more, as they might connect when the document was
+                // being persisted to the object storage.
+                if self.no_peers().await {
+                    match persist_result {
+                        Ok(doc_size) => log::info!(
+                            "Dropped realm with ID: `{}`. Persisted {doc_size} bytes.",
+                            self.doc_id
+                        ),
+                        Err(error) => log::info!(
+                            "Dropped realm with ID: `{}`. Failed to persist the document: {error}",
+                            self.doc_id
+                        ),
+                    };
+
+                    self.destroy().await;
+                }
             }
         }
     }
@@ -244,65 +286,4 @@ impl Realm {
             }));
         }
     }
-}
-
-pub async fn start() {
-    let realm_map: RealmMap = Arc::new(Mutex::new(HashMap::new()));
-
-    fn with_realms(
-        realm_map: RealmMap,
-    ) -> impl Filter<Extract = (RealmMap,), Error = Infallible> + Clone {
-        warp::any().map(move || realm_map.clone())
-    }
-
-    pub async fn join_or_create_realm(
-        doc_id: String,
-        realm_map: RealmMap,
-    ) -> Result<Arc<Realm>, Infallible> {
-        let inner_realm_map = realm_map.clone();
-        let mut inner_realm_map = inner_realm_map.lock().await;
-
-        let realm = match inner_realm_map.entry(doc_id.clone()) {
-            Entry::Vacant(entry) => {
-                log::info!("Creating a new realm with ID: `{doc_id}`");
-                let awareness = Arc::new(RwLock::new(Awareness::default()));
-                let bc_group = BroadcastGroup::new(awareness, BUFFER_CAP).await;
-                let realm = Arc::new(Realm::new(realm_map, doc_id, bc_group));
-                entry.insert(realm).clone()
-            }
-            Entry::Occupied(entry) => {
-                log::info!("Joining an existing realm with ID: `{doc_id}`");
-                entry.get().clone()
-            }
-        };
-
-        Ok(realm)
-    }
-
-    let ws = warp::any()
-        .and(warp::path::param::<String>())
-        .and(with_realms(realm_map))
-        .and_then(join_or_create_realm)
-        .and(warp::ws())
-        .and_then(ws_handler);
-
-    let mut stream = signal(SignalKind::terminate()).unwrap();
-
-    let (_, server) =
-        warp::serve(ws).bind_with_graceful_shutdown(([0, 0, 0, 0], 8081), async move {
-            stream.recv().await;
-        });
-
-    tokio::task::spawn(server);
-}
-
-async fn ws_handler(realm: Arc<Realm>, ws: Ws) -> Result<impl Reply, Rejection> {
-    Ok(ws.on_upgrade(move |socket| peer(socket, realm)))
-}
-
-async fn peer(ws: WebSocket, realm: Arc<Realm>) {
-    let (sink, stream) = ws.split();
-    let sink = Arc::new(Mutex::new(WarpSink::from(sink)));
-    let stream = WarpStream::from(stream);
-    realm.subscribe(sink, stream).await;
 }
