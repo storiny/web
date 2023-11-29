@@ -6,7 +6,11 @@ use crate::{
     },
     S3Client,
 };
-use hashbrown::HashMap;
+use futures::future;
+use lockable::{
+    AsyncLimit,
+    LockableHashMap,
+};
 use std::sync::Arc;
 use strum::Display;
 use thiserror::Error;
@@ -48,23 +52,25 @@ use yrs_warp::ws::{
 
 /// The realm map. Key corresponds to the document ID, while values are the respective realm manager
 /// instances.
-pub type RealmMap = Arc<Mutex<HashMap<i64, Arc<Realm>>>>;
+pub type RealmMap = Arc<LockableHashMap<i64, Arc<Realm>>>;
 
 /// An alias for [RealmMap] type, used to extract the map inside actix services.
-pub type RealmData = actix_web::web::Data<Mutex<HashMap<i64, Arc<Realm>>>>;
+pub type RealmData = actix_web::web::Data<LockableHashMap<i64, Arc<Realm>>>;
 
 /// The maximum number of peers that can connect to a single realm.
 const MAX_PEERS_PER_REALM: u16 = 3;
 
 /// The loop interval duration (in seconds) after which the document gets persisted to the object
 /// storage.
-const PERSISTENCE_LOOP_DURATION: u64 = 60; // 1 minute
+// const PERSISTENCE_LOOP_DURATION: u64 = 60; // 1 minute
+const PERSISTENCE_LOOP_DURATION: u64 = 5; // 1 minute
 
 /// The duration (in seconds) for which an empty realm (realm with no connected peers) is kept in
 /// the memory. This is to avoid downloading the entire document from the object storage again if
 /// the client gets disconnected just for a few seconds. The document is persisted to the object
 /// storage just before the realm is destroyed.
-const EMPTY_REALM_TIMEOUT: u64 = 30; // 30 seconds
+// const EMPTY_REALM_TIMEOUT: u64 = 30; // 30 seconds
+const EMPTY_REALM_TIMEOUT: u64 = 8; // 30 seconds
 
 /// The duration (in seconds) to wait before calling the [Realm::start_timeout_task] method after
 /// the last peer unsubscribes. This avoids spawning a task immediately after the last peer
@@ -96,7 +102,7 @@ pub enum RealmDestroyReason {
     Internal,
 }
 
-/// The error raised while persisting a document using the [Realm::serialize_doc_to_s3] method.
+/// The error raised while persisting a document using the [Realm::persist_doc_to_s3] method.
 #[derive(Error, Debug)]
 pub enum PersistDocError {
     #[error("unable to acquire transaction on the doc")]
@@ -105,6 +111,15 @@ pub enum PersistDocError {
     Upload(String),
     #[error("unable to compress the document: {0}")]
     Compression(String),
+}
+
+/// The reason for calling the [Realm::persist_doc_to_s3] method.
+#[derive(Debug)]
+enum PersistReason {
+    /// The persist method is called just before the realm is about to get dropped.
+    Drop,
+    /// The persist method has been called from the persistence loop.
+    PersistenceLoop,
 }
 
 /// The realm sync protocol.
@@ -219,6 +234,8 @@ impl Realm {
 
         // Document has been updated since the last persistence call.
         if *last_state_vec != next_state_vec {
+            log::info!("[{}] Persisting the doc…", self.doc_id);
+
             let doc_binary_data = {
                 let txn = doc
                     .try_transact()
@@ -267,6 +284,8 @@ impl Realm {
             // Update the state vector after the compression and uploading process.
             *last_state_vec = next_state_vec;
 
+            log::info!("[{}] Persisted {doc_size} bytes", self.doc_id);
+
             Ok(doc_size)
         } else {
             // Document has not been updated since the last persistence call.
@@ -274,9 +293,22 @@ impl Realm {
         }
     }
 
-    /// Removes the realm from the realm map and aborts the document persistence loop task,
-    /// eventually dropping the entire realm instance. This will free up the memory occupied by
-    /// the document, and clear all the peers.
+    /// Aborts all the inner task that have referenced this realm usign an Arc and broadcasts the
+    /// destroy reason to all the subscribed peers.
+    ///
+    /// It is the responsibility of the caller to remove this realm manually from the [RealmMap] in
+    /// order to completely remove it from memory. Attempting to remove this realm from the
+    /// realm map within this method would have caused a deadlock, as the realm map would need
+    /// to be locked within this method, while the caller would have already locked the
+    /// [RealmMap] before calling this method:
+    ///
+    /// ```rust,no-run
+    /// let mut realm = realm_map.async_lock(doc_id, AsyncLimit::no_limit()).await?;
+    ///
+    /// // This will cause a deadlock here, as the realm map has already been locked in the previous
+    /// // line, so we cannot lock it again inside the destroy method.
+    /// realm.destroy(reason).await;
+    /// ```
     pub async fn destroy(&self, reason: RealmDestroyReason) {
         // Broadcast a realm destroy message to the peers with the reason.
         if self.has_peers().await {
@@ -287,14 +319,47 @@ impl Realm {
             let _ = self.bc_group.broadcast(encoder.to_vec());
         }
 
-        let mut realm_map = self.realm_map.lock().await;
-        let persistence_loop_task = self.persistence_loop_task.lock().await;
-        realm_map.remove(&self.doc_id);
+        // Abort tasks that reference this realm using an Arc.
 
-        if persistence_loop_task.is_some() {
-            if let Some(join_handle) = persistence_loop_task.as_ref() {
-                join_handle.abort();
+        {
+            let mut persistence_loop_task = self.persistence_loop_task.lock().await;
+
+            if persistence_loop_task.is_some() {
+                if let Some(join_handle) = persistence_loop_task.as_ref() {
+                    join_handle.abort();
+                    *persistence_loop_task = None;
+                }
             }
+        }
+
+        {
+            let mut timeout_task = self.timeout_task.lock().await;
+
+            if timeout_task.is_some() {
+                if let Some(join_handle) = timeout_task.as_ref() {
+                    join_handle.abort();
+                    *timeout_task = None;
+                }
+            }
+        }
+
+        // Persist any updates before destroying
+        let _ = self.persist_doc_to_s3().await;
+    }
+
+    /// Removes the realm from the realm map and aborts the document persistence loop task,
+    /// eventually dropping the entire realm instance. This will free up the memory occupied by
+    /// the document, and clear all the peers.
+    async fn destroy_and_remove_from_map(&self, reason: RealmDestroyReason) {
+        // Lock the document entry until the realm is destroyed.
+        if let Ok(mut entry) = self
+            .realm_map
+            .async_lock(self.doc_id.clone(), AsyncLimit::no_limit())
+            .await
+        // This should never throw
+        {
+            self.destroy(reason).await;
+            entry.remove();
         }
     }
 
@@ -311,8 +376,11 @@ impl Realm {
         let subscription = self.bc_group.subscribe_with(sink, stream, RealmProtocol);
 
         self.increment_peer_count().await;
-        self.abort_timeout_task().await;
-        self.clone().start_persistence_loop().await;
+        future::join(
+            self.abort_timeout_task(),
+            self.clone().start_persistence_loop(),
+        )
+        .await;
 
         // Wait until the connection ends.
         let _ = subscription.completed().await;
@@ -320,16 +388,16 @@ impl Realm {
         let mut peer_count = self.peer_count.lock().await;
         *peer_count -= 1;
 
+        log::info!("---- {}", *peer_count);
+
         if *peer_count == 0 {
             drop(peer_count);
 
-            log::info!(
-                "Last peer unsubscribed from `{}`. Spawning the timeout task.",
-                self.doc_id
-            );
+            log::info!("[{}] Last peer unsubscribed", self.doc_id);
 
             // Start the timeout task after the last peer disconnects.
             sleep(Duration::from_secs(EMPTY_REALM_BURST_TIMEOUT)).await;
+
             self.clone().start_timeout_task().await;
         }
     }
@@ -355,6 +423,8 @@ impl Realm {
                     loop {
                         interval.tick().await;
 
+                        log::info!(".. ^^");
+
                         // Only persist if there is at-least one peer. The timeout task handles
                         // persisting the document when there are not peers.
                         if self_ref.has_peers().await {
@@ -373,6 +443,8 @@ impl Realm {
         let mut timeout_task = self.timeout_task.lock().await;
 
         if timeout_task.is_none() && !self.has_peers().await {
+            log::info!("[{}] Spawned timeout task", self.doc_id);
+
             *timeout_task = Some(tokio::spawn({
                 let self_ref = Arc::clone(&self);
                 async move {
@@ -380,31 +452,11 @@ impl Realm {
                     sleep(Duration::from_secs(EMPTY_REALM_TIMEOUT)).await;
 
                     // If there are still no peers after `EMPTY_REALM_TIMEOUT` seconds, destroy the
-                    // realm
+                    // realm.
                     if !self_ref.has_peers().await {
-                        let persist_result = self_ref.persist_doc_to_s3().await;
-
-                        // We check for the peers once more, as they might connect when the document
-                        // was being persisted to the object storage.
-                        if !self_ref.has_peers().await {
-                            match persist_result {
-                                Ok(doc_size) => match doc_size {
-                                    0 => {
-                                        log::info!("Dropped realm with ID: `{}`.", self_ref.doc_id)
-                                    }
-                                    _ => log::info!(
-                                        "Dropped realm with ID: `{}`. Persisted {doc_size} bytes.",
-                                        self_ref.doc_id
-                                    ),
-                                },
-                                Err(error) => log::info!(
-                                    "Dropped realm with ID: `{}`. Failed to persist the document: {error}",
-                                    self_ref.doc_id
-                                ),
-                            };
-
-                            self_ref.destroy(RealmDestroyReason::Internal).await;
-                        }
+                        self_ref
+                            .destroy_and_remove_from_map(RealmDestroyReason::Internal)
+                            .await;
                     }
                 }
             }));
@@ -419,10 +471,16 @@ impl Realm {
         if timeout_task.is_some() {
             if let Some(join_handle) = timeout_task.as_ref() {
                 join_handle.abort();
-                log::info!("Timeout task aborted for `{}`", self.doc_id);
-            }
+                log::info!("[{}] Aborted timeout task", self.doc_id);
 
-            *timeout_task = None;
+                *timeout_task = None;
+            }
         }
+    }
+}
+
+impl Drop for Realm {
+    fn drop(&mut self) {
+        log::info!("[{}] Dropped", self.doc_id);
     }
 }

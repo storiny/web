@@ -42,6 +42,7 @@ hashbrown = { version = "0.14.0", features = ["serde"] }
 image = { version = "0.24.7", default-features = false, features = ["gif", "png", "jpeg", "jpeg_rayon", "webp", "webp-encoder"] }
 itertools = "0.12.0"
 lazy_static = "1.4.0"
+lockable = { version = "0.0.6", default-features = false }
 log = "0.4.20"
 lz-str = "0.2.1"
 markdown = "1.0.0-alpha.14"

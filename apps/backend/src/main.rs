@@ -31,7 +31,7 @@ use actix_web_validator::{
 };
 use dotenv::dotenv;
 use futures::future;
-use hashbrown::HashMap;
+use lockable::LockableHashMap;
 use redis::aio::ConnectionManager;
 use sqlx::{
     postgres::PgPoolOptions,
@@ -77,7 +77,6 @@ use storiny::{
     },
     *,
 };
-use tokio::sync::Mutex;
 use tonic::codegen::CompressionEncoding;
 use user_agent_parser::UserAgentParser;
 
@@ -252,7 +251,7 @@ async fn main() -> io::Result<()> {
             });
 
             // Realm map
-            let realm_map: RealmMap = Arc::new(Mutex::new(HashMap::new()));
+            let realm_map: RealmMap = Arc::new(LockableHashMap::new());
             let realm_data: RealmData = web::Data::from(realm_map.clone());
 
             // Start the GRPC server

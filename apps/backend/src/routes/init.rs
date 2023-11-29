@@ -12,10 +12,16 @@ mod v1;
 #[path = "oauth/mod.rs"]
 mod oauth;
 
+// TODO Remove
+#[path = "term.rs"]
+mod term;
+
 /// Registers common API routes.
 ///
 /// * `cfg` - Web service config
 pub fn init_common_routes(cfg: &mut web::ServiceConfig) {
+    // TODO remove
+    term::init_routes(cfg);
     index::init_routes(cfg);
     health::init_routes(cfg);
 }
