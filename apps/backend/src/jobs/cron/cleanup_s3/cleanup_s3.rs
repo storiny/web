@@ -1,19 +1,17 @@
 use crate::{
     constants::buckets::S3_UPLOADS_BUCKET,
     jobs::init::SharedJobState,
+    S3Client,
 };
 use apalis::prelude::*;
 use async_recursion::async_recursion;
+use aws_sdk_s3::types::{
+    Delete,
+    ObjectIdentifier,
+};
 use chrono::{
     DateTime,
     Utc,
-};
-use rusoto_s3::{
-    Delete,
-    DeleteObjectsRequest,
-    ObjectIdentifier,
-    S3Client,
-    S3,
 };
 use sqlx::{
     postgres::PgRow,
@@ -56,69 +54,77 @@ pub async fn clean_assets(
     // million assets at once). Consider raising this limit if needed.
     if index.unwrap_or_default() >= 50_000 {
         return Err(JobError::Failed(Box::from(format!(
-            "Too many assets to delete: {}",
+            "too many assets to delete: {}",
             index.unwrap_or_default() as u32 * CHUNK_SIZE
         ))));
     }
 
-    let mut txn = db_pool
-        .begin()
+    let has_more_rows: bool;
+
+    {
+        let mut txn = db_pool
+            .begin()
+            .await
+            .map_err(Box::new)
+            .map_err(|err| JobError::Failed(err))?;
+
+        let result = sqlx::query(
+            r#"
+            DELETE
+            FROM
+                assets
+            WHERE
+                id IN (
+                    SELECT id
+                    FROM assets
+                    WHERE
+                       user_id IS NULL
+                    ORDER BY created_at
+                    LIMIT $1
+                )
+            RETURNING key
+            "#,
+        )
+        // Return a maximum of 999 rows per invocation. (+1) is added to determine whether
+        // there are more rows to return.
+        .bind((CHUNK_SIZE + 1) as i32)
+        .map(|row: PgRow| {
+            ObjectIdentifier::builder()
+                .set_key(Some(row.get::<Uuid, _>("key").to_string()))
+                .build()
+                // This will never panic as the key is always set.
+                .unwrap()
+        })
+        .fetch_all(&mut *txn)
         .await
         .map_err(Box::new)
         .map_err(|err| JobError::Failed(err))?;
 
-    let result = sqlx::query(
-        r#"
-        DELETE
-        FROM
-            assets
-        WHERE
-            id IN (
-                SELECT id
-                FROM assets
-                WHERE
-                   user_id IS NULL
-                ORDER BY created_at
-                LIMIT $1
-            )
-        RETURNING key
-        "#,
-    )
-    // Return a maximum of 999 rows per invocation. (+1) is added to determine whether
-    // there are more rows to return.
-    .bind((CHUNK_SIZE + 1) as i32)
-    .map(|row: PgRow| ObjectIdentifier {
-        key: row.get::<Uuid, _>("key").to_string(),
-        ..Default::default()
-    })
-    .fetch_all(&mut *txn)
-    .await
-    .map_err(Box::new)
-    .map_err(|err| JobError::Failed(err))?;
+        has_more_rows = result.len() as u32 > CHUNK_SIZE;
 
-    let has_more_rows = result.len() as u32 > CHUNK_SIZE;
+        // Delete objects from S3 if the list is non-empty
+        if !result.is_empty() {
+            let delete = Delete::builder()
+                .set_objects(Some(result))
+                .build()
+                .map_err(Box::new)
+                .map_err(|error| JobError::Failed(error))?;
 
-    // Delete objects from S3 if the list is non-empty
-    if !result.is_empty() {
-        s3_client
-            .delete_objects(DeleteObjectsRequest {
-                bucket: S3_UPLOADS_BUCKET.to_string(),
-                bypass_governance_retention: Some(true),
-                delete: Delete {
-                    objects: result,
-                    quiet: Some(true), // Only return the failed object keys
-                },
-                ..Default::default()
-            })
+            s3_client
+                .delete_objects()
+                .bucket(S3_UPLOADS_BUCKET)
+                .delete(delete)
+                .send()
+                .await
+                .map_err(|error| Box::new(error.into_service_error()))
+                .map_err(|error| JobError::Failed(error))?;
+        }
+
+        txn.commit()
             .await
             .map_err(Box::new)
             .map_err(|err| JobError::Failed(err))?;
     }
-
-    txn.commit()
-        .await
-        .map_err(Box::new)
-        .map_err(|err| JobError::Failed(err))?;
 
     // Recurse if there are more rows to return.
     if has_more_rows {
@@ -153,10 +159,6 @@ mod tests {
         utils::delete_s3_objects::delete_s3_objects,
     };
     use futures::future;
-    use rusoto_s3::{
-        PutObjectRequest,
-        S3Client,
-    };
     use serial_test::serial;
     use sqlx::PgPool;
     use storiny_macros::test_context;
@@ -169,7 +171,7 @@ mod tests {
     impl TestContext for LocalTestContext {
         async fn setup() -> LocalTestContext {
             LocalTestContext {
-                s3_client: get_s3_client(),
+                s3_client: get_s3_client().await,
             }
         }
 
@@ -209,11 +211,13 @@ mod tests {
         let mut put_futures = vec![];
 
         for key in object_keys {
-            put_futures.push(s3_client.put_object(PutObjectRequest {
-                bucket: S3_UPLOADS_BUCKET.to_string(),
-                key: key.to_string(),
-                ..Default::default()
-            }));
+            put_futures.push(
+                s3_client
+                    .put_object()
+                    .bucket(S3_UPLOADS_BUCKET)
+                    .key(key.to_string())
+                    .send(),
+            );
         }
 
         future::join_all(put_futures).await;

@@ -1,8 +1,10 @@
-use crate::constants::{
-    redis_namespaces::RedisNamespace,
-    resource_limit::ResourceLimit,
+use crate::{
+    constants::{
+        redis_namespaces::RedisNamespace,
+        resource_limit::ResourceLimit,
+    },
+    RedisPool,
 };
-use deadpool_redis::Pool as RedisPool;
 
 const HOURS_24_AS_SECONDS: i32 = 86400;
 

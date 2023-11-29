@@ -1,10 +1,6 @@
+use crate::S3Client;
 use anyhow::anyhow;
 use async_recursion::async_recursion;
-use rusoto_s3::{
-    ListObjectsV2Request,
-    S3Client,
-    S3,
-};
 
 /// Counts the number of S3 objects in the specified bucket.
 ///
@@ -21,31 +17,27 @@ pub async fn count_s3_objects(
     continuation_token: Option<String>,
 ) -> anyhow::Result<u32> {
     let mut num_objects: u32 = 0;
-    let list_objects_result = client
-        .list_objects_v2(ListObjectsV2Request {
-            bucket: bucket_name.to_string(),
-            max_keys: Some(1_000_i64),
-            prefix: prefix.clone(),
-            continuation_token,
-            ..Default::default()
-        })
-        .await
-        .map_err(|err| anyhow!("unable to list objects: {:?}", err))?;
 
-    if let Some(contents) = list_objects_result.contents {
-        num_objects = num_objects + contents.len() as u32;
-    }
+    let list_objects_result = client
+        .list_objects_v2()
+        .bucket(bucket_name)
+        .max_keys(1_000_i32)
+        .set_prefix(prefix.clone())
+        .set_continuation_token(continuation_token)
+        .send()
+        .await
+        .map_err(|error| error.into_service_error())
+        .map_err(|error| anyhow!("unable to list objects: {:?}", error))?;
+
+    num_objects += list_objects_result.contents().len() as u32;
 
     // Recurse until there are no more keys left
     if list_objects_result.is_truncated.unwrap_or_default() {
-        num_objects = num_objects
-            + count_s3_objects(
-                client,
-                bucket_name,
-                prefix,
-                list_objects_result.next_continuation_token,
-            )
-            .await?;
+        let next_continuation_token = list_objects_result.next_continuation_token.clone();
+        drop(list_objects_result);
+
+        num_objects +=
+            count_s3_objects(client, bucket_name, prefix, next_continuation_token).await?;
     }
 
     Ok(num_objects)
@@ -63,7 +55,6 @@ mod tests {
         utils::delete_s3_objects::delete_s3_objects,
     };
     use futures::future;
-    use rusoto_s3::PutObjectRequest;
     use serial_test::serial;
     use storiny_macros::test_context;
 
@@ -75,7 +66,7 @@ mod tests {
     impl TestContext for LocalTestContext {
         async fn setup() -> LocalTestContext {
             LocalTestContext {
-                s3_client: get_s3_client(),
+                s3_client: get_s3_client().await,
             }
         }
 
@@ -99,11 +90,10 @@ mod tests {
 
         // Insert an object
         let result = s3_client
-            .put_object(PutObjectRequest {
-                bucket: S3_BASE_BUCKET.to_string(),
-                key: "test-fruits/guava".to_string(),
-                ..Default::default()
-            })
+            .put_object()
+            .bucket(S3_BASE_BUCKET)
+            .key("test-fruits/guava")
+            .send()
             .await;
 
         assert!(result.is_ok());
@@ -129,11 +119,13 @@ mod tests {
 
         // Insert 1200 objects
         for i in 0..1_200 {
-            put_futures.push(s3_client.put_object(PutObjectRequest {
-                bucket: S3_BASE_BUCKET.to_string(),
-                key: format!("test-integers/{}", i),
-                ..Default::default()
-            }));
+            put_futures.push(
+                s3_client
+                    .put_object()
+                    .bucket(S3_BASE_BUCKET)
+                    .key(format!("test-integers/{}", i))
+                    .send(),
+            );
         }
 
         future::join_all(put_futures).await;
@@ -158,22 +150,20 @@ mod tests {
 
         // Insert an object
         let result = s3_client
-            .put_object(PutObjectRequest {
-                bucket: S3_BASE_BUCKET.to_string(),
-                key: "test-trees/oak".to_string(),
-                ..Default::default()
-            })
+            .put_object()
+            .bucket(S3_BASE_BUCKET)
+            .key("test-trees/oak")
+            .send()
             .await;
 
         assert!(result.is_ok());
 
         // Insert another object with a different prefix
         let result = s3_client
-            .put_object(PutObjectRequest {
-                bucket: S3_BASE_BUCKET.to_string(),
-                key: "test-beverages/latte".to_string(),
-                ..Default::default()
-            })
+            .put_object()
+            .bucket(S3_BASE_BUCKET)
+            .key("test-beverages/latte")
+            .send()
             .await;
 
         assert!(result.is_ok());

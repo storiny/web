@@ -37,11 +37,6 @@ use mime::{
     IMAGE_JPEG,
     IMAGE_PNG,
 };
-use rusoto_s3::{
-    DeleteObjectRequest,
-    PutObjectRequest,
-    S3,
-};
 use serde::{
     Deserialize,
     Serialize,
@@ -192,18 +187,17 @@ async fn handle_upload(
                             // encoder/decoder)
                             if is_gif {
                                 match s3_client
-                                    .put_object(PutObjectRequest {
-                                        bucket: S3_UPLOADS_BUCKET.to_string(),
-                                        key: object_key.to_string(),
-                                        content_type: Some(IMAGE_GIF.to_string()),
-                                        body: Some(img_bytes.into()),
-                                        ..Default::default()
-                                    })
+                                    .put_object()
+                                    .bucket(S3_UPLOADS_BUCKET)
+                                    .key(object_key.to_string())
+                                    .content_type(IMAGE_GIF.to_string())
+                                    .body(img_bytes.into())
+                                    .send()
                                     .await
                                 {
                                     Ok(_) => {}
                                     Err(_) => {
-                                        return Ok(HttpResponse::UnprocessableEntity().json(
+                                        return Ok(HttpResponse::InternalServerError().json(
                                             ToastErrorResponse::new("Could not upload the image"),
                                         ));
                                     }
@@ -214,18 +208,17 @@ async fn handle_upload(
                                     .unwrap();
 
                                 match s3_client
-                                    .put_object(PutObjectRequest {
-                                        bucket: S3_UPLOADS_BUCKET.to_string(),
-                                        key: object_key.to_string(),
-                                        content_type: Some(output_mime),
-                                        body: Some(bytes.into()),
-                                        ..Default::default()
-                                    })
+                                    .put_object()
+                                    .bucket(S3_UPLOADS_BUCKET)
+                                    .key(object_key.to_string())
+                                    .content_type(output_mime)
+                                    .body(bytes.into())
+                                    .send()
                                     .await
                                 {
                                     Ok(_) => {}
                                     Err(_) => {
-                                        return Ok(HttpResponse::UnprocessableEntity().json(
+                                        return Ok(HttpResponse::InternalServerError().json(
                                             ToastErrorResponse::new("Could not upload the image"),
                                         ));
                                     }
@@ -271,12 +264,12 @@ async fn handle_upload(
                                     // Delete the object from S3 if the database operation fails for
                                     // some reason.
                                     let _ = s3_client
-                                        .delete_object(DeleteObjectRequest {
-                                            bucket: S3_UPLOADS_BUCKET.to_string(),
-                                            key: object_key.to_string(),
-                                            ..Default::default()
-                                        })
+                                        .delete_object()
+                                        .bucket(S3_UPLOADS_BUCKET)
+                                        .key(object_key.to_string())
+                                        .send()
                                         .await;
+
                                     Ok(HttpResponse::InternalServerError().finish())
                                 }
                             }
@@ -304,29 +297,27 @@ mod tests {
             exceed_resource_limit,
             get_redis_pool,
             get_resource_limit,
+            get_s3_client,
             RedisTestContext,
+            TestContext,
         },
+        utils::delete_s3_objects::delete_s3_objects,
+        RedisPool,
+        S3Client,
     };
     use actix_web::{
         App,
         HttpServer,
     };
+    use futures::future;
     use reqwest::{
-        self,
         multipart::{
             Form,
             Part,
         },
         Body,
-        Client,
         StatusCode,
     };
-    use rusoto_mock::{
-        MockCredentialsProvider,
-        MockRequestDispatcher,
-    };
-    use rusoto_s3::S3Client;
-    use rusoto_signature::Region;
     use serial_test::serial;
     use sqlx::PgPool;
     use std::{
@@ -348,8 +339,12 @@ mod tests {
 
     /// Initializes and spawns an HTTP server for tests using `reqwest`
     ///
-    /// * `db_pool` - Postgres pool
-    async fn init_web_server_for_test(db_pool: PgPool) -> (Client, Box<dyn Fn(&str) -> String>) {
+    /// * `db_pool` - The Postgres connection pool.
+    /// * `s3_client` - The S3 client instance.
+    async fn init_web_server_for_test(
+        db_pool: PgPool,
+        s3_client: Option<S3Client>,
+    ) -> (reqwest::Client, Box<dyn Fn(&str) -> String>) {
         let listener = TcpListener::bind("localhost:0").unwrap();
         let port = listener.local_addr().unwrap().port();
         let db_pool_clone = db_pool.clone();
@@ -369,11 +364,7 @@ mod tests {
             db_pool: db_pool.clone(),
             geo_db,
             ua_parser,
-            s3_client: S3Client::new_with(
-                MockRequestDispatcher::default(),
-                MockCredentialsProvider,
-                Region::UsEast1,
-            ),
+            s3_client: s3_client.unwrap_or(get_s3_client().await),
             reqwest_client: reqwest::Client::new(),
             oauth_client_map: get_oauth_client_map(get_app_config().unwrap()),
         });
@@ -390,7 +381,7 @@ mod tests {
 
         tokio::spawn(server);
 
-        let client = Client::builder().build().unwrap();
+        let client = reqwest::Client::builder().build().unwrap();
 
         // URL generator for the server
         let generate_url =
@@ -431,13 +422,48 @@ mod tests {
             .unwrap()
     }
 
+    struct LocalTestContext {
+        s3_client: S3Client,
+        redis_pool: RedisPool,
+    }
+
+    #[async_trait::async_trait]
+    impl TestContext for LocalTestContext {
+        async fn setup() -> LocalTestContext {
+            LocalTestContext {
+                s3_client: get_s3_client().await,
+                redis_pool: get_redis_pool(),
+            }
+        }
+
+        async fn teardown(self) {
+            future::join(
+                async {
+                    let redis_pool = &self.redis_pool;
+                    let mut conn = redis_pool.get().await.unwrap();
+                    let _: String = redis::cmd("FLUSHDB")
+                        .query_async(&mut conn)
+                        .await
+                        .expect("Failed to FLUSHDB");
+                },
+                async {
+                    delete_s3_objects(&self.s3_client, S3_UPLOADS_BUCKET, None, None)
+                        .await
+                        .unwrap()
+                },
+            )
+            .await;
+        }
+    }
+
     // This test also asserts JPG/JPEG image handling
-    #[test_context(RedisTestContext)]
+    #[test_context(LocalTestContext)]
     #[sqlx::test]
-    #[serial(redis)]
-    async fn can_insert_an_asset(ctx: &mut RedisTestContext, pool: PgPool) -> sqlx::Result<()> {
+    #[serial(redis, s3)]
+    async fn can_insert_an_asset(ctx: &mut LocalTestContext, pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (client, generate_url) = init_web_server_for_test(pool).await;
+        let (client, generate_url) =
+            init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
         let part = get_image_part("normal.jpg", "image.jpg", &IMAGE_JPEG.to_string()).await;
         let form = Form::new().text("alt", "Some alt").part("file", part);
 
@@ -480,7 +506,7 @@ mod tests {
         ctx: &mut RedisTestContext,
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (client, generate_url) = init_web_server_for_test(pool).await;
+        let (client, generate_url) = init_web_server_for_test(pool, None).await;
         let part = get_image_part("normal.jpg", "image.jpg", &IMAGE_JPEG.to_string()).await;
         let form = Form::new().text("alt", "Some alt").part("file", part);
 
@@ -501,7 +527,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_reject_an_image_with_bad_mime_type(pool: PgPool) -> sqlx::Result<()> {
-        let (client, generate_url) = init_web_server_for_test(pool).await;
+        let (client, generate_url) = init_web_server_for_test(pool, None).await;
         let part = get_image_part("normal.jpg", "image.jpg", "text/plain").await;
         let form = Form::new().text("alt", "").part("file", part);
 
@@ -518,14 +544,15 @@ mod tests {
         Ok(())
     }
 
-    #[test_context(RedisTestContext)]
+    #[test_context(LocalTestContext)]
     #[sqlx::test]
-    #[serial(redis)]
+    #[serial(redis, s3)]
     async fn can_insert_an_asset_without_file_extension(
-        _ctx: &mut RedisTestContext,
+        ctx: &mut LocalTestContext,
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (client, generate_url) = init_web_server_for_test(pool).await;
+        let (client, generate_url) =
+            init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
         let part = get_image_part("normal.jpg", "image", &IMAGE_JPEG.to_string()).await;
         let form = Form::new().text("alt", "").part("file", part);
 
@@ -543,7 +570,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_reject_a_non_image_file(pool: PgPool) -> sqlx::Result<()> {
-        let (client, generate_url) = init_web_server_for_test(pool).await;
+        let (client, generate_url) = init_web_server_for_test(pool, None).await;
         let part = get_image_part("sample.txt", "invalid.jpg", &IMAGE_JPEG.to_string()).await;
         let form = Form::new().text("alt", "").part("file", part);
 
@@ -561,7 +588,7 @@ mod tests {
 
     #[sqlx::test]
     async fn can_reject_an_image_with_large_file_size(pool: PgPool) -> sqlx::Result<()> {
-        let (client, generate_url) = init_web_server_for_test(pool).await;
+        let (client, generate_url) = init_web_server_for_test(pool, None).await;
         let part = get_image_part("large_size.png", "image.png", &IMAGE_PNG.to_string()).await;
         let form = Form::new().text("alt", "").part("file", part);
 
@@ -578,14 +605,15 @@ mod tests {
         Ok(())
     }
 
-    #[test_context(RedisTestContext)]
+    #[test_context(LocalTestContext)]
     #[sqlx::test]
-    #[serial(redis)]
+    #[serial(redis, s3)]
     async fn can_scale_down_a_large_image(
-        _ctx: &mut RedisTestContext,
+        ctx: &mut LocalTestContext,
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (client, generate_url) = init_web_server_for_test(pool).await;
+        let (client, generate_url) =
+            init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
         let part = get_image_part("large_dims.jpg", "image.jpg", &IMAGE_JPEG.to_string()).await;
         let form = Form::new().text("alt", "").part("file", part);
 
@@ -603,11 +631,12 @@ mod tests {
         Ok(())
     }
 
-    #[test_context(RedisTestContext)]
+    #[test_context(LocalTestContext)]
     #[sqlx::test]
-    #[serial(redis)]
-    async fn can_handle_a_png_image(_ctx: &mut RedisTestContext, pool: PgPool) -> sqlx::Result<()> {
-        let (client, generate_url) = init_web_server_for_test(pool).await;
+    #[serial(redis, s3)]
+    async fn can_handle_a_png_image(ctx: &mut LocalTestContext, pool: PgPool) -> sqlx::Result<()> {
+        let (client, generate_url) =
+            init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
         let part = get_image_part("image.png", "image.png", &IMAGE_PNG.to_string()).await;
         let form = Form::new().text("alt", "").part("file", part);
 
@@ -623,11 +652,12 @@ mod tests {
         Ok(())
     }
 
-    #[test_context(RedisTestContext)]
+    #[test_context(LocalTestContext)]
     #[sqlx::test]
-    #[serial(redis)]
-    async fn can_handle_a_gif_image(_ctx: &mut RedisTestContext, pool: PgPool) -> sqlx::Result<()> {
-        let (client, generate_url) = init_web_server_for_test(pool).await;
+    #[serial(redis, s3)]
+    async fn can_handle_a_gif_image(ctx: &mut LocalTestContext, pool: PgPool) -> sqlx::Result<()> {
+        let (client, generate_url) =
+            init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
         let part = get_image_part("image.gif", "image.gif", &IMAGE_GIF.to_string()).await;
         let form = Form::new().text("alt", "").part("file", part);
 
@@ -643,14 +673,12 @@ mod tests {
         Ok(())
     }
 
-    #[test_context(RedisTestContext)]
+    #[test_context(LocalTestContext)]
     #[sqlx::test]
-    #[serial(redis)]
-    async fn can_handle_a_webp_image(
-        _ctx: &mut RedisTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let (client, generate_url) = init_web_server_for_test(pool).await;
+    #[serial(redis, s3)]
+    async fn can_handle_a_webp_image(ctx: &mut LocalTestContext, pool: PgPool) -> sqlx::Result<()> {
+        let (client, generate_url) =
+            init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
         let part = get_image_part("image.webp", "image.webp", "image/webp").await;
         let form = Form::new().text("alt", "").part("file", part);
 
@@ -666,14 +694,15 @@ mod tests {
         Ok(())
     }
 
-    #[test_context(RedisTestContext)]
+    #[test_context(LocalTestContext)]
     #[sqlx::test]
-    #[serial(redis)]
+    #[serial(redis, s3)]
     async fn can_handle_an_animated_webp_image(
-        _ctx: &mut RedisTestContext,
+        ctx: &mut LocalTestContext,
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (client, generate_url) = init_web_server_for_test(pool).await;
+        let (client, generate_url) =
+            init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
         let part = get_image_part("animated_image.webp", "image.webp", "image/webp").await;
         let form = Form::new().text("alt", "").part("file", part);
 
@@ -692,7 +721,7 @@ mod tests {
     // TODO: Remove this test when GIFs can be resized
     #[sqlx::test]
     async fn can_reject_an_oversized_gif(pool: PgPool) -> sqlx::Result<()> {
-        let (client, generate_url) = init_web_server_for_test(pool).await;
+        let (client, generate_url) = init_web_server_for_test(pool, None).await;
         let part = get_image_part("large_dims.gif", "image.gif", &IMAGE_GIF.to_string()).await;
         let form = Form::new().text("alt", "").part("file", part);
 
@@ -712,7 +741,7 @@ mod tests {
     // See https://www.bamsoftware.com/hacks/deflate.html
     #[sqlx::test]
     async fn can_reject_png_bomb(pool: PgPool) -> sqlx::Result<()> {
-        let (client, generate_url) = init_web_server_for_test(pool).await;
+        let (client, generate_url) = init_web_server_for_test(pool, None).await;
         let part = get_image_part("img_bomb.png", "image.png", &IMAGE_PNG.to_string()).await;
         let form = Form::new().text("alt", "").part("file", part);
 

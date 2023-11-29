@@ -33,9 +33,6 @@ use dotenv::dotenv;
 use futures::future;
 use hashbrown::HashMap;
 use redis::aio::ConnectionManager;
-use rusoto_s3::S3Client;
-use rusoto_ses::SesClient;
-use rusoto_signature::Region;
 use sqlx::{
     postgres::PgPoolOptions,
     Pool,
@@ -94,17 +91,14 @@ async fn not_found() -> impl Responder {
 /// Initializes and starts the GRPC service.
 ///
 /// * `config` - The environment configuration.
-/// * `db_pool` - The Postgres pool.
-async fn start_grpc_server(config: Config, db_pool: Pool<Postgres>) -> io::Result<()> {
+/// * `db_pool` - The Postgres connection pool.
+/// * `redis_pool` - The Redis connection pool.
+async fn start_grpc_server(
+    config: Config,
+    db_pool: Pool<Postgres>,
+    redis_pool: RedisPool,
+) -> io::Result<()> {
     let endpoint = config.grpc_endpoint.clone();
-    let redis_pool = Arc::new(
-        deadpool_redis::Config::from_url(format!(
-            "redis://{}:{}",
-            &config.redis_host, &config.redis_port
-        ))
-        .create_pool(Some(deadpool_redis::Runtime::Tokio1))
-        .unwrap(),
-    );
 
     tokio::spawn(async move {
         tonic::transport::Server::builder()
@@ -170,7 +164,7 @@ async fn main() -> io::Result<()> {
 
             // Postgres
             let db_pool = match PgPoolOptions::new()
-                .max_connections(25)
+                .max_connections(30)
                 .connect(&config.database_url)
                 .await
             {
@@ -192,18 +186,27 @@ async fn main() -> io::Result<()> {
                 }
             };
 
+            // AWS configuration
+            let shared_aws_config = aws_config::defaults(get_aws_behavior_version())
+                .region(get_aws_region())
+                .load()
+                .await;
+
             // AWS S3
-            let s3_client = S3Client::new(if config.is_dev {
-                Region::Custom {
-                    name: "us-east-1".to_string(),
-                    endpoint: config.minio_endpoint.to_string(),
-                }
+            let s3_client = S3Client::from_conf(if config.is_dev {
+                let config_builder = aws_sdk_s3::config::Builder::from(&shared_aws_config);
+
+                config_builder
+                    .endpoint_url(config.minio_endpoint.to_string())
+                    // Minio requires `force_path_style` set to `true`.
+                    .force_path_style(true)
+                    .build()
             } else {
-                Region::UsEast1
+                aws_sdk_s3::config::Builder::from(&shared_aws_config).build()
             });
 
             // AWS SES
-            let ses_client = SesClient::new(Region::UsEast1);
+            let ses_client = SesClient::new(&shared_aws_config);
 
             // Init and start the background jobs
             let story_add_by_user_job_data = web::Data::new(
@@ -253,7 +256,8 @@ async fn main() -> io::Result<()> {
             let realm_data: RealmData = web::Data::from(realm_map.clone());
 
             // Start the GRPC server
-            let grpc_future = start_grpc_server(config.clone(), db_pool.clone());
+            let grpc_future =
+                start_grpc_server(config.clone(), db_pool.clone(), redis_pool.clone());
 
             // Start the realms server
             let realms_future = start_realms_server(realm_map, db_pool, s3_client);

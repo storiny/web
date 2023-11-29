@@ -1,15 +1,16 @@
+#[cfg(not(test))]
+use crate::constants::email_source::EMAIL_SOURCE;
 use crate::{
-    constants::{
-        email_source::EMAIL_SOURCE,
-        email_template::EmailTemplate,
-    },
+    constants::email_template::EmailTemplate,
     jobs::init::SharedJobState,
+    SesClient,
 };
 use apalis::prelude::*;
-use rusoto_ses::{
+#[cfg(not(test))]
+use aws_sdk_sesv2::types::{
     Destination,
-    SendTemplatedEmailRequest,
-    Ses,
+    EmailContent,
+    Template,
 };
 use serde::{
     Deserialize,
@@ -41,29 +42,53 @@ pub async fn send_templated_email(job: TemplatedEmailJob, ctx: JobContext) -> Re
     );
 
     let state = ctx.data::<Arc<SharedJobState>>()?;
-    let ses_client = &state.ses_client;
-
-    let result = ses_client
-        .send_templated_email(SendTemplatedEmailRequest {
-            destination: Destination {
-                to_addresses: Some(vec![job.destination]),
-                ..Default::default()
-            },
-            source: EMAIL_SOURCE.to_string(),
-            template: job.template.to_string(),
-            template_data: job.template_data,
-            ..Default::default()
-        })
-        .await
-        .map_err(Box::new)
-        .map_err(|err| JobError::Failed(err))?;
+    let message_id = send_email(&state.ses_client, job).await?;
 
     log::info!(
         "Sent a templated email with message ID `{}`",
-        result.message_id
+        message_id.unwrap_or("empty message id".to_string())
     );
 
     Ok(())
+}
+
+/// Returns a mock message ID.
+#[cfg(test)]
+async fn send_email(
+    _ses_client: &SesClient,
+    _job: TemplatedEmailJob,
+) -> Result<Option<String>, JobError> {
+    Ok(Some("test".to_string()))
+}
+
+/// Sends an email and returns its message ID.
+///
+/// * `ses_client` - The Ses client instance.
+/// * `job` - The templated email job.
+#[cfg(not(test))]
+async fn send_email(
+    ses_client: &SesClient,
+    job: TemplatedEmailJob,
+) -> Result<Option<String>, JobError> {
+    ses_client
+        .send_email()
+        .from_email_address(EMAIL_SOURCE)
+        .destination(Destination::builder().to_addresses(job.destination).build())
+        .content(
+            EmailContent::builder()
+                .template(
+                    Template::builder()
+                        .template_name(job.template.to_string())
+                        .template_data(job.template_data)
+                        .build(),
+                )
+                .build(),
+        )
+        .send()
+        .await
+        .map_err(|error| Box::new(error.into_service_error()))
+        .map_err(|error| JobError::Failed(error))
+        .map(|output| output.message_id)
 }
 
 #[cfg(test)]

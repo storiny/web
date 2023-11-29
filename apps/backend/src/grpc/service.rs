@@ -70,13 +70,12 @@ use crate::{
         },
         endpoints,
     },
+    RedisPool,
 };
-use deadpool_redis::Pool as RedisPool;
 use sqlx::{
     Pool,
     Postgres,
 };
-use std::sync::Arc;
 use tonic::{
     Request,
     Response,
@@ -91,7 +90,7 @@ pub struct GrpcService {
     /// Postgres connection pool
     pub db_pool: Pool<Postgres>,
     /// Redis connection instance
-    pub redis_pool: Arc<RedisPool>,
+    pub redis_pool: RedisPool,
 }
 
 #[tonic::async_trait]

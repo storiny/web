@@ -12,10 +12,6 @@ use actix_web::{
     web,
     HttpResponse,
 };
-use rusoto_s3::{
-    DeleteObjectRequest,
-    S3,
-};
 use serde::Deserialize;
 use sqlx::Row;
 use uuid::Uuid;
@@ -52,11 +48,10 @@ async fn delete(
 
                         // Delete the object from S3
                         let delete_result = s3_client
-                            .delete_object(DeleteObjectRequest {
-                                bucket: S3_UPLOADS_BUCKET.to_string(),
-                                key: asset_key.to_string(),
-                                ..Default::default()
-                            })
+                            .delete_object()
+                            .bucket(S3_UPLOADS_BUCKET)
+                            .key(asset_key.to_string())
+                            .send()
                             .await;
 
                         if delete_result.is_ok() {

@@ -4,17 +4,10 @@ use crate::{
         deflate_bytes_gzip,
         CompressionLevel,
     },
+    S3Client,
 };
 use hashbrown::HashMap;
-use rusoto_s3::{
-    PutObjectRequest,
-    S3Client,
-    S3,
-};
-use std::{
-    ops::Deref,
-    sync::Arc,
-};
+use std::sync::Arc;
 use strum::Display;
 use thiserror::Error;
 use tokio::{
@@ -144,7 +137,7 @@ pub struct Realm {
     /// The realm map. This is used to drop the realm manager.
     realm_map: RealmMap,
     /// The S3 client instance.
-    s3_client: Arc<S3Client>,
+    s3_client: S3Client,
     /// The ID of the document being edited.
     pub doc_id: i64,
     /// The UUID of the document, used as the key for the object storage.
@@ -177,7 +170,7 @@ impl Realm {
     /// * `bc_group` - The broadcast group instance.
     pub fn new(
         realm_map: RealmMap,
-        s3_client: Arc<S3Client>,
+        s3_client: S3Client,
         doc_id: i64,
         doc_key: String,
         bc_group: BroadcastGroup,
@@ -260,16 +253,15 @@ impl Realm {
             }
 
             self.s3_client
-                .deref()
-                .put_object(PutObjectRequest {
-                    bucket: S3_DOCS_BUCKET.to_string(),
-                    key: self.doc_key.to_string(),
-                    content_type: Some("application/x-gzip".to_string()),
-                    content_encoding: Some("gzip".to_string()),
-                    body: Some(compressed_bytes.into()),
-                    ..Default::default()
-                })
+                .put_object()
+                .bucket(S3_DOCS_BUCKET)
+                .key(&self.doc_key)
+                .content_type("application/gzip")
+                .content_encoding("gzip")
+                .body(compressed_bytes.into())
+                .send()
                 .await
+                .map_err(|error| error.into_service_error())
                 .map_err(|error| PersistDocError::Upload(error.to_string()))?;
 
             // Update the state vector after the compression and uploading process.

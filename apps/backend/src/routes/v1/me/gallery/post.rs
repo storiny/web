@@ -28,11 +28,6 @@ use image::{
     ImageOutputFormat,
 };
 use mime::IMAGE_JPEG;
-use rusoto_s3::{
-    DeleteObjectRequest,
-    PutObjectRequest,
-    S3,
-};
 use serde::{
     Deserialize,
     Serialize,
@@ -197,13 +192,12 @@ async fn post(
                                                 .unwrap();
 
                                                 match s3_client
-                                                    .put_object(PutObjectRequest {
-                                                        bucket: S3_UPLOADS_BUCKET.to_string(),
-                                                        key: object_key.to_string(),
-                                                        content_type: Some(IMAGE_JPEG.to_string()),
-                                                        body: Some(bytes.into()),
-                                                        ..Default::default()
-                                                    })
+                                                    .put_object()
+                                                    .bucket(S3_UPLOADS_BUCKET)
+                                                    .key(object_key.to_string())
+                                                    .content_type(IMAGE_JPEG.to_string())
+                                                    .body(bytes.into())
+                                                    .send()
                                                     .await
                                                 {
                                                     Ok(_) => {}
@@ -262,13 +256,12 @@ async fn post(
                                                         // operation fails for
                                                         // some reason.
                                                         let _ = s3_client
-                                                            .delete_object(DeleteObjectRequest {
-                                                                bucket: S3_UPLOADS_BUCKET
-                                                                    .to_string(),
-                                                                key: object_key.to_string(),
-                                                                ..Default::default()
-                                                            })
+                                                            .delete_object()
+                                                            .bucket(S3_UPLOADS_BUCKET)
+                                                            .key(object_key.to_string())
+                                                            .send()
                                                             .await;
+
                                                         Ok(HttpResponse::InternalServerError()
                                                             .finish())
                                                     }

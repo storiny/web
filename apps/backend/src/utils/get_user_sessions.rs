@@ -4,8 +4,8 @@ use crate::{
         get_client_device::ClientDevice,
         get_client_location::ClientLocation,
     },
+    RedisPool,
 };
-use deadpool_redis::Pool as RedisPool;
 use futures::stream::StreamExt;
 use redis::{
     AsyncCommands,

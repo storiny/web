@@ -21,10 +21,6 @@ use chrono::{
     Utc,
 };
 use futures::future;
-use rusoto_s3::{
-    PutObjectRequest,
-    S3,
-};
 use sitemap_rs::{
     sitemap::Sitemap,
     sitemap_index::SitemapIndex,
@@ -188,18 +184,17 @@ pub async fn refresh_sitemap(
         .map_err(|err| JobError::Failed(err))?;
 
     s3_client
-        .put_object(PutObjectRequest {
-            bucket: S3_SITEMAPS_BUCKET.to_string(),
-            key: "index.xml.gz".to_string(),
-            content_type: Some("application/x-gzip".to_string()),
-            content_encoding: Some("gzip".to_string()),
-            content_disposition: Some(r#"attachment; filename="index.xml.gz""#.to_string()),
-            body: Some(compressed_bytes.into()),
-            ..Default::default()
-        })
+        .put_object()
+        .bucket(S3_SITEMAPS_BUCKET)
+        .key("index.xml.gz")
+        .content_type("application/gzip")
+        .content_encoding("gzip")
+        .content_disposition(r#"attachment; filename="index.xml.gz""#)
+        .body(compressed_bytes.into())
+        .send()
         .await
-        .map_err(Box::new)
-        .map_err(|err| JobError::Failed(err))?;
+        .map_err(|error| Box::new(error.into_service_error()))
+        .map_err(|error| JobError::Failed(error))?;
 
     log::info!("Regenerate sitemap index file");
 
@@ -212,13 +207,15 @@ pub async fn refresh_sitemap(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{
-        count_s3_objects,
-        get_job_ctx_for_test,
-        get_s3_client,
-        TestContext,
+    use crate::{
+        test_utils::{
+            count_s3_objects,
+            get_job_ctx_for_test,
+            get_s3_client,
+            TestContext,
+        },
+        S3Client,
     };
-    use rusoto_s3::S3Client;
     use serial_test::serial;
     use sqlx::PgPool;
     use storiny_macros::test_context;
@@ -231,7 +228,7 @@ mod tests {
     impl TestContext for LocalTestContext {
         async fn setup() -> LocalTestContext {
             LocalTestContext {
-                s3_client: get_s3_client(),
+                s3_client: get_s3_client().await,
             }
         }
 

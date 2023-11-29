@@ -1,8 +1,10 @@
-use crate::test_utils::{
-    get_redis_pool,
-    TestContext,
+use crate::{
+    test_utils::{
+        get_redis_pool,
+        TestContext,
+    },
+    RedisPool,
 };
-use deadpool_redis::Pool as RedisPool;
 
 /// The test context with Redis connection pool. Flushes the entire Redis database on teardown.
 pub struct RedisTestContext {

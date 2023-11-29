@@ -1,5 +1,7 @@
-use crate::utils::get_user_sessions::get_user_sessions;
-use deadpool_redis::Pool as RedisPool;
+use crate::{
+    utils::get_user_sessions::get_user_sessions,
+    RedisPool,
+};
 
 /// Clears all the active sessions for a user using its ID.
 ///
