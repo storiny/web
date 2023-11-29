@@ -1,12 +1,9 @@
+use crate::S3Client;
 use anyhow::anyhow;
 use async_recursion::async_recursion;
-use rusoto_s3::{
+use aws_sdk_s3::types::{
     Delete,
-    DeleteObjectsRequest,
-    ListObjectsV2Request,
     ObjectIdentifier,
-    S3Client,
-    S3,
 };
 
 /// Deletes all the S3 objects in the specified bucket. Returns the number of objects that were
@@ -24,63 +21,60 @@ pub async fn delete_s3_objects(
     prefix: Option<String>,
     continuation_token: Option<String>,
 ) -> anyhow::Result<u32> {
+    let mut num_deleted: u32;
+
     let list_objects_result = client
-        .list_objects_v2(ListObjectsV2Request {
-            bucket: bucket_name.to_string(),
-            max_keys: Some(1_000_i64),
-            prefix: prefix.clone(),
-            continuation_token,
-            ..Default::default()
-        })
+        .list_objects_v2()
+        .bucket(bucket_name)
+        .max_keys(1_000_i32)
+        .set_prefix(prefix.clone())
+        .set_continuation_token(continuation_token)
+        .send()
         .await
-        .map_err(|err| anyhow!("unable to list objects: {:?}", err))?;
+        .map_err(|error| error.into_service_error())
+        .map_err(|error| anyhow!("unable to list objects: {:?}", error))?;
 
-    let mut objects_to_delete: Vec<ObjectIdentifier> = vec![];
-
-    if let Some(contents) = list_objects_result.contents {
-        for obj in contents {
-            if let Some(obj_key) = obj.key {
-                objects_to_delete.push(ObjectIdentifier {
-                    key: obj_key,
-                    ..Default::default()
-                });
-            }
-        }
-    }
+    let objects_to_delete = list_objects_result
+        .contents()
+        .into_iter()
+        .filter_map(|obj| {
+            ObjectIdentifier::builder()
+                .set_key(obj.key.clone())
+                .build()
+                .ok()
+        })
+        .collect::<Vec<_>>();
 
     if objects_to_delete.is_empty() {
         return Ok(0);
     }
 
-    // Delete the objects
-    let delete_result = client
-        .delete_objects(DeleteObjectsRequest {
-            bucket: bucket_name.to_string(),
-            bypass_governance_retention: Some(true),
-            delete: Delete {
-                objects: objects_to_delete,
-                quiet: Some(false), // Return all the deleted keys
-            },
-            ..Default::default()
-        })
-        .await
-        .map_err(|err| anyhow!("unable to delete objects: {:?}", err))?;
+    {
+        let delete = Delete::builder()
+            .set_objects(Some(objects_to_delete))
+            .build()
+            .map_err(|error| anyhow!("unable to build the delete object: {:?}", error))?;
 
-    let mut num_deleted = match delete_result.deleted {
-        Some(deleted) => deleted.len() as u32,
-        None => 0,
-    };
+        // Delete the objects
+        let delete_result = client
+            .delete_objects()
+            .bucket(bucket_name)
+            .delete(delete)
+            .send()
+            .await
+            .map_err(|error| error.into_service_error())
+            .map_err(|error| anyhow!("unable to delete objects: {:?}", error))?;
+
+        num_deleted = delete_result.deleted().len() as u32;
+    }
 
     // Recurse until there are no more keys left
     if list_objects_result.is_truncated.unwrap_or_default() {
-        num_deleted = num_deleted
-            + delete_s3_objects(
-                client,
-                bucket_name,
-                prefix,
-                list_objects_result.next_continuation_token,
-            )
-            .await?;
+        let next_continuation_token = list_objects_result.next_continuation_token.clone();
+        drop(list_objects_result);
+
+        num_deleted +=
+            delete_s3_objects(client, bucket_name, prefix, next_continuation_token).await?;
     }
 
     Ok(num_deleted)
@@ -96,13 +90,8 @@ mod tests {
             TestContext,
         },
     };
+    use aws_sdk_s3::operation::get_object::GetObjectError;
     use futures::future;
-    use rusoto_core::RusotoError;
-    use rusoto_s3::{
-        GetObjectError,
-        GetObjectRequest,
-        PutObjectRequest,
-    };
     use serial_test::serial;
     use storiny_macros::test_context;
 
@@ -114,7 +103,7 @@ mod tests {
     impl TestContext for LocalTestContext {
         async fn setup() -> LocalTestContext {
             LocalTestContext {
-                s3_client: get_s3_client(),
+                s3_client: get_s3_client().await,
             }
         }
 
@@ -138,11 +127,10 @@ mod tests {
 
         // Insert an object
         let result = s3_client
-            .put_object(PutObjectRequest {
-                bucket: S3_BASE_BUCKET.to_string(),
-                key: "test-fruits/guava".to_string(),
-                ..Default::default()
-            })
+            .put_object()
+            .bucket(S3_BASE_BUCKET)
+            .key("test-fruits/guava")
+            .send()
             .await;
 
         assert!(result.is_ok());
@@ -160,17 +148,14 @@ mod tests {
 
         // Object should get deleted
         let result = s3_client
-            .get_object(GetObjectRequest {
-                bucket: S3_BASE_BUCKET.to_string(),
-                key: "test-fruits/guava".to_string(),
-                ..Default::default()
-            })
-            .await;
+            .get_object()
+            .bucket(S3_BASE_BUCKET)
+            .key("test-fruits/guava")
+            .send()
+            .await
+            .map_err(|error| error.into_service_error());
 
-        assert!(matches!(
-            result.unwrap_err(),
-            RusotoError::Service(GetObjectError::NoSuchKey(..))
-        ));
+        assert!(matches!(result.unwrap_err(), GetObjectError::NoSuchKey(_)));
     }
 
     #[test_context(LocalTestContext)]
@@ -182,11 +167,13 @@ mod tests {
 
         // Insert 1200 objects
         for i in 0..1_200 {
-            put_futures.push(s3_client.put_object(PutObjectRequest {
-                bucket: S3_BASE_BUCKET.to_string(),
-                key: format!("test-integers/{}", i),
-                ..Default::default()
-            }));
+            put_futures.push(
+                s3_client
+                    .put_object()
+                    .bucket(S3_BASE_BUCKET)
+                    .key(format!("test-integers/{}", i))
+                    .send(),
+            );
         }
 
         future::join_all(put_futures).await;
@@ -211,22 +198,20 @@ mod tests {
 
         // Insert an object
         let result = s3_client
-            .put_object(PutObjectRequest {
-                bucket: S3_BASE_BUCKET.to_string(),
-                key: "test-trees/oak".to_string(),
-                ..Default::default()
-            })
+            .put_object()
+            .bucket(S3_BASE_BUCKET)
+            .key("test-trees/oak")
+            .send()
             .await;
 
         assert!(result.is_ok());
 
         // Insert another object with a different prefix
         let result = s3_client
-            .put_object(PutObjectRequest {
-                bucket: S3_BASE_BUCKET.to_string(),
-                key: "test-beverages/latte".to_string(),
-                ..Default::default()
-            })
+            .put_object()
+            .bucket(S3_BASE_BUCKET)
+            .key("test-beverages/latte")
+            .send()
             .await;
 
         assert!(result.is_ok());

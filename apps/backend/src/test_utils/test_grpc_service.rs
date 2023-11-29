@@ -8,8 +8,8 @@ use crate::{
         service::GrpcService,
     },
     test_utils::get_redis_pool,
+    RedisPool,
 };
-use deadpool_redis::Pool as RedisPool;
 use sqlx::PgPool;
 use std::{
     future::Future,

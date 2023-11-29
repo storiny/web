@@ -2,13 +2,9 @@ use crate::{
     constants::buckets::S3_SITEMAPS_BUCKET,
     jobs::cron::sitemap::GenerateSitemapResponse,
     utils::deflate_bytes_gzip::deflate_bytes_gzip,
+    S3Client,
 };
 use apalis::prelude::JobError;
-use rusoto_s3::{
-    PutObjectRequest,
-    S3Client,
-    S3,
-};
 use sitemap_rs::{
     url::{
         ChangeFrequency,
@@ -76,18 +72,17 @@ pub async fn generate_preset_sitemap(
         .map_err(|err| JobError::Failed(err))?;
 
     s3_client
-        .put_object(PutObjectRequest {
-            bucket: S3_SITEMAPS_BUCKET.to_string(),
-            key: "presets.xml.gz".to_string(),
-            content_type: Some("application/x-gzip".to_string()),
-            content_encoding: Some("gzip".to_string()),
-            content_disposition: Some(r#"attachment; filename="presets.xml.gz""#.to_string()),
-            body: Some(compressed_bytes.into()),
-            ..Default::default()
-        })
+        .put_object()
+        .bucket(S3_SITEMAPS_BUCKET)
+        .key("presets.xml.gz")
+        .content_type("application/gzip")
+        .content_encoding("gzip")
+        .content_disposition(r#"attachment; filename="presets.xml.gz""#)
+        .body(compressed_bytes.into())
+        .send()
         .await
-        .map_err(Box::new)
-        .map_err(|err| JobError::Failed(err))?;
+        .map_err(|error| Box::new(error.into_service_error()))
+        .map_err(|error| JobError::Failed(error))?;
 
     Ok(GenerateSitemapResponse {
         url_count: preset_count as u32,
@@ -106,7 +101,6 @@ mod tests {
             TestContext,
         },
     };
-    use rusoto_s3::DeleteObjectRequest;
     use serial_test::serial;
     use storiny_macros::test_context;
 
@@ -118,18 +112,17 @@ mod tests {
     impl TestContext for LocalTestContext {
         async fn setup() -> LocalTestContext {
             LocalTestContext {
-                s3_client: get_s3_client(),
+                s3_client: get_s3_client().await,
             }
         }
 
         async fn teardown(self) {
             let _ = &self
                 .s3_client
-                .delete_object(DeleteObjectRequest {
-                    bucket: S3_SITEMAPS_BUCKET.to_string(),
-                    key: "presets.xml.gz".to_string(),
-                    ..Default::default()
-                })
+                .delete_object()
+                .bucket(S3_SITEMAPS_BUCKET)
+                .key("presets.xml.gz")
+                .send()
                 .await
                 .unwrap();
         }

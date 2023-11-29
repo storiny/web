@@ -2,17 +2,24 @@
 #[cfg(target_has_atomic = "ptr")]
 //
 use crate::error::ExternalAuthError;
-use deadpool_redis::Pool as RedisPool;
+use aws_config::{
+    BehaviorVersion,
+    Region,
+};
 use maxminddb::Reader;
 use oauth2::basic::BasicClient;
 use routes::oauth::ConnectionError;
-use rusoto_s3::S3Client;
 use sailfish::TemplateOnce;
 use sqlx::{
     Pool,
     Postgres,
 };
 use user_agent_parser::UserAgentParser;
+
+// Aliases
+pub use aws_sdk_s3::Client as S3Client;
+pub use aws_sdk_sesv2::Client as SesClient;
+pub use deadpool_redis::Pool as RedisPool;
 
 pub mod config;
 pub mod constants;
@@ -85,4 +92,14 @@ pub struct OAuthClientMap {
     discord: BasicClient,
     dribbble: BasicClient,
     google: BasicClient,
+}
+
+/// Returns the behavior version for AWS services.
+pub fn get_aws_behavior_version() -> BehaviorVersion {
+    BehaviorVersion::v2023_11_09()
+}
+
+/// Returns the region for AWS services.
+pub fn get_aws_region() -> Region {
+    Region::new("us-east-1")
 }

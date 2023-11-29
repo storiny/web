@@ -17,7 +17,10 @@ use crate::{
         middleware::IdentityMiddleware,
     },
     oauth::get_oauth_client_map,
-    test_utils::get_redis_pool,
+    test_utils::{
+        get_redis_pool,
+        get_s3_client,
+    },
     AppState,
 };
 use actix_extended_session::{
@@ -50,12 +53,6 @@ use actix_web::{
     Responder,
 };
 use rand::Rng;
-use rusoto_mock::{
-    MockCredentialsProvider,
-    MockRequestDispatcher,
-};
-use rusoto_s3::S3Client;
-use rusoto_signature::Region;
 use serde::Deserialize;
 use sqlx::{
     PgPool,
@@ -146,11 +143,7 @@ pub async fn init_app_for_test(
         db_pool: db_pool.clone(),
         geo_db,
         ua_parser,
-        s3_client: S3Client::new_with(
-            MockRequestDispatcher::default(),
-            MockCredentialsProvider,
-            Region::UsEast1,
-        ),
+        s3_client: get_s3_client().await,
         reqwest_client: reqwest::Client::builder()
             .user_agent("Storiny (https://storiny.com)")
             .build()

@@ -6,16 +6,12 @@ use crate::{
         RealmMap,
     },
     utils::inflate_bytes_gzip::inflate_bytes_gzip,
+    S3Client,
 };
+use aws_sdk_s3::operation::get_object::GetObjectError;
 use futures_util::StreamExt;
 use hashbrown::hash_map::Entry;
-use rusoto_core::RusotoError;
-use rusoto_s3::{
-    GetObjectError,
-    GetObjectRequest,
-    S3Client,
-    S3,
-};
+use serde::Serialize;
 use sqlx::{
     Pool,
     Postgres,
@@ -24,7 +20,6 @@ use sqlx::{
 use std::{
     convert::Infallible,
     net::SocketAddr,
-    ops::Deref,
     sync::Arc,
 };
 use thiserror::Error;
@@ -41,12 +36,17 @@ use tokio::{
 };
 use uuid::Uuid;
 use warp::{
+    http::StatusCode,
+    reject,
+    reject::Reject,
+    reply,
     ws::{
         WebSocket,
         Ws,
     },
     Filter,
     Rejection,
+    Reply,
 };
 use y_sync::{
     awareness::Awareness,
@@ -72,7 +72,7 @@ const BUFFER_CAP: usize = 36;
 #[derive(Error, Debug)]
 pub enum FetchDocError {
     #[error("unable to fetch the doc from S3: {0}")]
-    ObjectError(#[from] RusotoError<GetObjectError>),
+    ObjectError(#[from] GetObjectError),
     #[error("unable to decompress the document: {0}")]
     Decompression(String),
 }
@@ -92,22 +92,74 @@ pub enum EnterRealmError {
     Internal(String),
 }
 
+impl Reject for EnterRealmError {}
+
+/// The error response with a reason.
+#[derive(Debug, Serialize)]
+struct ErrorResponse {
+    reason: String,
+}
+
+/// Rejection handler that maps rejections into responses.
+async fn handle_rejection(err: Rejection) -> Result<impl Reply, Infallible> {
+    if err.is_not_found() {
+        Ok(reply::with_status("Not found", StatusCode::NOT_FOUND).into_response())
+    } else if let Some(realm_error) = err.find::<EnterRealmError>() {
+        match realm_error {
+            EnterRealmError::MissingStory => Ok(reply::with_status(
+                reply::json(&ErrorResponse {
+                    reason: "unknown_story".to_string(),
+                }),
+                StatusCode::BAD_REQUEST,
+            )
+            .into_response()),
+            EnterRealmError::Full => Ok(reply::with_status(
+                reply::json(&ErrorResponse {
+                    reason: "realm_full".to_string(),
+                }),
+                StatusCode::BAD_REQUEST,
+            )
+            .into_response()),
+            EnterRealmError::Forbidden => Ok(reply::with_status(
+                reply::json(&ErrorResponse {
+                    reason: "forbidden".to_string(),
+                }),
+                StatusCode::FORBIDDEN,
+            )
+            .into_response()),
+            EnterRealmError::FetchDoc(_) | EnterRealmError::Internal(_) => Ok(reply::with_status(
+                reply::json(&ErrorResponse {
+                    reason: "internal".to_string(),
+                }),
+                StatusCode::INTERNAL_SERVER_ERROR,
+            )
+            .into_response()),
+        }
+    } else {
+        log::error!("unhandled rejection: {:?}", err);
+        Ok(
+            reply::with_status("Internal server error", StatusCode::INTERNAL_SERVER_ERROR)
+                .into_response(),
+        )
+    }
+}
+
 /// Fetches a document from the S3 object storage and returns the decompressed binary data.
 ///
 /// * `s3_client` - The S3 client instance.
 /// * `doc_key` - The key of the document.
 async fn fetch_doc_from_s3(s3_client: &S3Client, doc_key: &str) -> Result<Vec<u8>, FetchDocError> {
     match s3_client
-        .get_object(GetObjectRequest {
-            bucket: S3_DOCS_BUCKET.to_string(),
-            key: doc_key.to_string(),
-            ..Default::default()
-        })
+        .get_object()
+        .bucket(S3_DOCS_BUCKET)
+        .key(doc_key)
+        .send()
         .await
+        .map_err(|error| error.into_service_error())
     {
         Ok(output) => {
             let mut compressed_data = Vec::new();
-            let mut stream = output.body.unwrap().into_async_read();
+            let mut stream = output.body.into_async_read();
             stream.read_to_end(&mut compressed_data).await.unwrap();
 
             // Inflate the binary data
@@ -116,7 +168,7 @@ async fn fetch_doc_from_s3(s3_client: &S3Client, doc_key: &str) -> Result<Vec<u8
                 .map_err(|error| FetchDocError::Decompression(error.to_string()))?)
         }
         Err(error) => {
-            if matches!(error, RusotoError::Service(GetObjectError::NoSuchKey(_))) {
+            if matches!(error, GetObjectError::NoSuchKey(_)) {
                 // This document has been opened for the first time as it is not present in the
                 // object storage. An object will get uploaded by the realm manager when this
                 // document gets updated by the peers.
@@ -137,8 +189,8 @@ async fn fetch_doc_from_s3(s3_client: &S3Client, doc_key: &str) -> Result<Vec<u8
 async fn enter_realm(
     doc_id: i64,
     realm_map: RealmMap,
-    db_pool: Arc<Pool<Postgres>>,
-    s3_client: Arc<S3Client>,
+    db_pool: Pool<Postgres>,
+    s3_client: S3Client,
 ) -> Result<Arc<Realm>, Rejection> {
     let inner_realm_map = realm_map.clone();
     let mut inner_realm_map = inner_realm_map.lock().await;
@@ -154,20 +206,20 @@ async fn enter_realm(
                 "#,
             )
             .bind(&doc_id)
-            .fetch_one(db_pool.deref())
+            .fetch_one(&db_pool)
             .await
             .map_err(|error| {
-                if matches!(error, sqlx::Error::RowNotFound) {
+                reject::custom(if matches!(error, sqlx::Error::RowNotFound) {
                     EnterRealmError::MissingStory
                 } else {
                     EnterRealmError::Internal(error.to_string())
-                }
+                })
             })?;
 
             let doc_key = story_doc.get::<Uuid, _>("key").to_string();
-            let doc_body = fetch_doc_from_s3(s3_client.deref(), &doc_key)
+            let doc_body = fetch_doc_from_s3(&s3_client, &doc_key)
                 .await
-                .map_err(EnterRealmError::from)?;
+                .map_err(|error| reject::custom(EnterRealmError::from(error)))?;
 
             log::info!("Creating a new realm with ID: `{doc_id}`");
 
@@ -196,7 +248,7 @@ async fn enter_realm(
             let realm_entry = entry.get();
 
             if !realm_entry.can_join().await {
-                return Err(EnterRealmError::Full);
+                return Err(reject::custom(EnterRealmError::Full));
             }
 
             log::info!("Joining an existing realm with ID: `{doc_id}`");
@@ -207,6 +259,19 @@ async fn enter_realm(
     Ok(realm)
 }
 
+/// Incoming realm peer handler.
+async fn peer(ws: WebSocket, realm: Arc<Realm>) {
+    let (sink, stream) = ws.split();
+    let sink = Arc::new(Mutex::new(WarpSink::from(sink)));
+    let stream = WarpStream::from(stream);
+    realm.subscribe(sink, stream).await;
+}
+
+/// Starts the realms server.
+///
+/// * `realm_map` - The realm map.
+/// * `db_pool` - The Postgres connection pool.
+/// * `s3_client` - The S3 client instance.
 pub async fn start_realms_server(
     realm_map: RealmMap,
     db_pool: Pool<Postgres>,
@@ -223,9 +288,6 @@ pub async fn start_realms_server(
     .parse()
     .expect("unable to parse the socket address");
 
-    let db_pool = Arc::new(db_pool);
-    let s3_client = Arc::new(s3_client);
-
     log::info!(
         "{}",
         format!("Starting realms server at http://{}:{}", &host, &port)
@@ -237,11 +299,11 @@ pub async fn start_realms_server(
         .and(warp::any().map(move || db_pool.clone()))
         .and(warp::any().map(move || s3_client.clone()))
         .and_then(enter_realm)
-        .and_then(|a| {})
         .and(warp::ws())
         .and_then(|realm, ws: Ws| async move {
             Ok::<_, Rejection>(ws.on_upgrade(move |socket| peer(socket, realm)))
-        });
+        })
+        .recover(handle_rejection);
 
     let mut stream = signal(SignalKind::terminate()).unwrap();
     let (_, server) = warp::serve(realms).bind_with_graceful_shutdown(socket_addr, async move {
@@ -251,11 +313,4 @@ pub async fn start_realms_server(
     tokio::task::spawn(server);
 
     Ok(())
-}
-
-async fn peer(ws: WebSocket, realm: Arc<Realm>) {
-    let (sink, stream) = ws.split();
-    let sink = Arc::new(Mutex::new(WarpSink::from(sink)));
-    let stream = WarpStream::from(stream);
-    realm.subscribe(sink, stream).await;
 }

@@ -1,8 +1,10 @@
-use crate::constants::{
-    redis_namespaces::RedisNamespace,
-    resource_limit::ResourceLimit,
+use crate::{
+    constants::{
+        redis_namespaces::RedisNamespace,
+        resource_limit::ResourceLimit,
+    },
+    RedisPool,
 };
-use deadpool_redis::Pool as RedisPool;
 use redis::AsyncCommands;
 
 /// Determines whether a resource operation can be performed by checking the daily resource limit

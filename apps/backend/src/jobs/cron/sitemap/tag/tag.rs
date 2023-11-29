@@ -2,14 +2,10 @@ use crate::{
     constants::buckets::S3_SITEMAPS_BUCKET,
     jobs::cron::sitemap::GenerateSitemapResponse,
     utils::deflate_bytes_gzip::deflate_bytes_gzip,
+    S3Client,
 };
 use apalis::prelude::JobError;
 use async_recursion::async_recursion;
-use rusoto_s3::{
-    PutObjectRequest,
-    S3Client,
-    S3,
-};
 use sitemap_rs::{
     url::{
         ChangeFrequency,
@@ -108,23 +104,22 @@ pub async fn generate_tag_sitemap(
             .map_err(|err| JobError::Failed(err))?;
 
         s3_client
-            .put_object(PutObjectRequest {
-                bucket: S3_SITEMAPS_BUCKET.to_string(),
-                key: format!("tags-{}.xml.gz", index.unwrap_or_default()),
-                content_type: Some("application/x-gzip".to_string()),
-                content_encoding: Some("gzip".to_string()),
-                content_disposition: Some(format!(
-                    r#"attachment; filename="tags-{}.xml.gz""#,
-                    index.unwrap_or_default()
-                )),
-                body: Some(compressed_bytes.into()),
-                ..Default::default()
-            })
+            .put_object()
+            .bucket(S3_SITEMAPS_BUCKET)
+            .key(format!("tags-{}.xml.gz", index.unwrap_or_default()))
+            .content_type("application/gzip")
+            .content_encoding("gzip")
+            .content_disposition(format!(
+                r#"attachment; filename="tags-{}.xml.gz""#,
+                index.unwrap_or_default()
+            ))
+            .body(compressed_bytes.into())
+            .send()
             .await
-            .map_err(Box::new)
-            .map_err(|err| JobError::Failed(err))?;
+            .map_err(|error| Box::new(error.into_service_error()))
+            .map_err(|error| JobError::Failed(error))?;
 
-        generated_result.url_count = generated_result.url_count + result_length;
+        generated_result.url_count += result_length;
         generated_result.file_count += 1;
     }
 
@@ -139,8 +134,8 @@ pub async fn generate_tag_sitemap(
         )
         .await?;
 
-        generated_result.url_count = generated_result.url_count + next_result.url_count;
-        generated_result.file_count = generated_result.file_count + next_result.file_count;
+        generated_result.url_count += next_result.url_count;
+        generated_result.file_count += next_result.file_count;
     }
 
     Ok(generated_result)
@@ -170,7 +165,7 @@ mod tests {
     impl TestContext for LocalTestContext {
         async fn setup() -> LocalTestContext {
             LocalTestContext {
-                s3_client: get_s3_client(),
+                s3_client: get_s3_client().await,
             }
         }
 

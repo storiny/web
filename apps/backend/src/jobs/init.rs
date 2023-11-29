@@ -23,6 +23,9 @@ use crate::{
         },
         storage::JobStorage,
     },
+    RedisPool,
+    S3Client,
+    SesClient,
 };
 use apalis::{
     cron::{
@@ -38,10 +41,7 @@ use apalis::{
         *,
     },
 };
-use deadpool_redis::Pool as RedisPool;
 use redis::aio::ConnectionManager;
-use rusoto_s3::S3Client;
-use rusoto_ses::SesClient;
 use sqlx::{
     Pool,
     Postgres,

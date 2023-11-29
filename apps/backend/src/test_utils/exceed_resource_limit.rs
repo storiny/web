@@ -1,8 +1,8 @@
 use crate::{
     constants::resource_limit::ResourceLimit,
     utils::incr_resource_limit::incr_resource_limit,
+    RedisPool,
 };
-use deadpool_redis::Pool as RedisPool;
 use futures::future;
 
 /// Exceeds the resource limit for the provided resource type and user ID (used only for tests).
