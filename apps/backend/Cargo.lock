@@ -2702,6 +2702,15 @@ dependencies = [
 
 [[package]]
 name = "itertools"
+version = "0.10.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b0fd2260e829bddf4cb6ea802289de2f86d6a7a690192fbe91b3f46e0f2c8473"
+dependencies = [
+ "either",
+]
+
+[[package]]
+name = "itertools"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b1c173a5686ce8bfa551b3563d0c2170bf24ca44da99c7ca4bfdab5418c3fe57"
@@ -2881,6 +2890,19 @@ checksum = "c1cc9717a20b1bb222f333e6a92fd32f7d8a18ddc5a3191a11af45dcbf4dcd16"
 dependencies = [
  "autocfg",
  "scopeguard",
+]
+
+[[package]]
+name = "lockable"
+version = "0.0.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "765a8320c5cb94647bca3dec5defabc788934349dd290fa262d0eb4d551f4b01"
+dependencies = [
+ "derive_more",
+ "futures",
+ "itertools 0.10.5",
+ "thiserror",
+ "tokio",
 ]
 
 [[package]]
@@ -4619,6 +4641,7 @@ dependencies = [
  "itertools 0.12.0",
  "just",
  "lazy_static",
+ "lockable",
  "log",
  "lz-str",
  "markdown",

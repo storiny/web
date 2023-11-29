@@ -10,7 +10,7 @@ use crate::{
 };
 use aws_sdk_s3::operation::get_object::GetObjectError;
 use futures_util::StreamExt;
-use hashbrown::hash_map::Entry;
+use lockable::AsyncLimit;
 use serde::Serialize;
 use sqlx::{
     Pool,
@@ -192,71 +192,71 @@ async fn enter_realm(
     db_pool: Pool<Postgres>,
     s3_client: S3Client,
 ) -> Result<Arc<Realm>, Rejection> {
-    let inner_realm_map = realm_map.clone();
-    let mut inner_realm_map = inner_realm_map.lock().await;
+    let mut realm_guard = realm_map
+        .async_lock(doc_id.clone(), AsyncLimit::no_limit())
+        .await
+        // This should never throw
+        .map_err(|error| reject::custom(EnterRealmError::Internal(error.to_string())))?;
 
-    let realm = match inner_realm_map.entry(doc_id.clone()) {
-        Entry::Vacant(entry) => {
-            log::info!("Validating realm for ID: `{doc_id}`");
+    if let Some(realm) = realm_guard.value() {
+        if !realm.can_join().await {
+            return Err(reject::custom(EnterRealmError::Full));
+        }
 
-            let story_doc = sqlx::query(
-                r#"
-                SELECT key FROM documents
-                WHERE story_id = $1
-                "#,
-            )
-            .bind(&doc_id)
-            .fetch_one(&db_pool)
+        log::info!("[{doc_id}] Joining a realm…");
+
+        Ok(realm.clone())
+    } else {
+        log::info!("[{doc_id}] Validating a new peer…");
+
+        // TODO move this fetch outside the entry method
+        let story_doc = sqlx::query(
+            r#"
+            SELECT key FROM documents
+            WHERE story_id = $1
+            "#,
+        )
+        .bind(&doc_id)
+        .fetch_one(&db_pool)
+        .await
+        .map_err(|error| {
+            reject::custom(if matches!(error, sqlx::Error::RowNotFound) {
+                EnterRealmError::MissingStory
+            } else {
+                EnterRealmError::Internal(error.to_string())
+            })
+        })?;
+
+        let doc_key = story_doc.get::<Uuid, _>("key").to_string();
+        let doc_body = fetch_doc_from_s3(&s3_client, &doc_key)
             .await
-            .map_err(|error| {
-                reject::custom(if matches!(error, sqlx::Error::RowNotFound) {
-                    EnterRealmError::MissingStory
-                } else {
-                    EnterRealmError::Internal(error.to_string())
-                })
-            })?;
+            .map_err(|error| reject::custom(EnterRealmError::from(error)))?;
 
-            let doc_key = story_doc.get::<Uuid, _>("key").to_string();
-            let doc_body = fetch_doc_from_s3(&s3_client, &doc_key)
-                .await
-                .map_err(|error| reject::custom(EnterRealmError::from(error)))?;
+        log::info!("[{doc_id}] Created a realm");
 
-            log::info!("Creating a new realm with ID: `{doc_id}`");
+        let doc = Doc::new();
 
-            let doc = Doc::new();
-
-            // The transaction is automatically committed at the end of this scope.
-            if !doc_body.is_empty() {
-                let mut txn = doc.transact_mut();
-                let update = Update::decode_v2(&doc_body).unwrap();
-                txn.apply_update(update);
-            }
-
-            let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
-            let bc_group = BroadcastGroup::new(awareness, BUFFER_CAP).await;
-            let realm = Arc::new(Realm::new(
-                realm_map.clone(),
-                s3_client.clone(),
-                doc_id,
-                doc_key.to_string(),
-                bc_group,
-            ));
-
-            entry.insert(realm).clone()
+        // The transaction is automatically committed at the end of this scope.
+        if !doc_body.is_empty() {
+            let mut txn = doc.transact_mut();
+            let update = Update::decode_v2(&doc_body).unwrap();
+            txn.apply_update(update);
         }
-        Entry::Occupied(entry) => {
-            let realm_entry = entry.get();
 
-            if !realm_entry.can_join().await {
-                return Err(reject::custom(EnterRealmError::Full));
-            }
+        let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
+        let bc_group = BroadcastGroup::new(awareness, BUFFER_CAP).await;
+        let realm = Arc::new(Realm::new(
+            realm_map.clone(),
+            s3_client.clone(),
+            doc_id,
+            doc_key.to_string(),
+            bc_group,
+        ));
 
-            log::info!("Joining an existing realm with ID: `{doc_id}`");
-            realm_entry.clone()
-        }
-    };
+        realm_guard.insert(realm.clone());
 
-    Ok(realm)
+        Ok(realm)
+    }
 }
 
 /// Incoming realm peer handler.
