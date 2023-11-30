@@ -6,6 +6,7 @@ use crate::{
     },
     S3Client,
 };
+use hashbrown::HashMap;
 use lockable::{
     AsyncLimit,
     LockableHashMap,
@@ -13,6 +14,7 @@ use lockable::{
 use std::sync::Arc;
 use strum::Display;
 use thiserror::Error;
+use time::OffsetDateTime;
 use tokio::{
     sync::{
         Mutex,
@@ -20,11 +22,12 @@ use tokio::{
     },
     task::JoinHandle,
     time::{
-        self,
+        interval,
         timeout,
         Duration,
     },
 };
+use uuid::Uuid;
 use y_sync::{
     awareness::{
         Awareness,
@@ -77,11 +80,16 @@ const MAX_AWARENESS_PAYLOAD_SIZE: usize = 10_00_000; // 1 megabyte
 /// The timeout (in seconds) for uploading a document to the object storage.
 const DOC_UPLOAD_TIMEOUT: u64 = 10; // 15 seconds
 
+/// The maximum duration (in seconds) after which the realm will get destroyed and the peers would
+/// need to subscribe again. This can happen when the peer leaves the connection open for an
+/// absurdly large duration of time.
+const REALM_LIFETIME: i64 = 28_800; // 8 hours
+
 /// Tag id for an internal message.
 const MSG_INTERNAL: u8 = 4;
 
 /// The reason for destroying a [Realm] instance.
-#[derive(Display, Debug)]
+#[derive(Display, Debug, PartialEq)]
 pub enum RealmDestroyReason {
     /// The story was published while the realm was active.
     #[strum(serialize = "destroy:story_published")]
@@ -89,6 +97,12 @@ pub enum RealmDestroyReason {
     /// The story was deleted while the realm was active.
     #[strum(serialize = "destroy:story_deleted")]
     StoryDeleted,
+    /// The document size exceeded the [MAX_DOCUMENT_SIZE] limit.
+    #[strum(serialize = "destroy:doc_overload")]
+    DocOverload,
+    /// The [REALM_LIFETIME] was exceeded.
+    #[strum(serialize = "destroy:lifetime_exceeded")]
+    LifetimeExceeded,
     /// Other reason
     #[strum(serialize = "destroy:internal")]
     Internal,
@@ -103,6 +117,13 @@ pub enum PersistDocError {
     Upload(String),
     #[error("unable to compress the document: {0}")]
     Compression(String),
+}
+
+/// The error raised while trying to subscribe to a realm using the [Realm::subscribe] method.
+#[derive(Debug)]
+pub enum SubscribeError {
+    /// The realm cannot accept more peers. This is governed by the [MAX_PEERS_PER_REALM] value.
+    RealmFull,
 }
 
 /// The realm sync protocol.
@@ -127,19 +148,28 @@ impl Protocol for RealmProtocol {
 /// The realm manager. It handles the broadcasting of messages, peer subscriptions, and document
 /// persistence to the object storage.
 pub struct Realm {
-    /// The broadcast group. This everything related to the document, such as awareness data and
-    /// clients.
-    bc_group: BroadcastGroup,
-    /// The number of peers that have currently subscribed to this realm.
-    peer_count: RwLock<u16>,
-    /// The realm map. This is used to drop the realm manager.
-    realm_map: RealmMap,
-    /// The S3 client instance.
-    s3_client: S3Client,
     /// The ID of the document being edited.
     pub doc_id: i64,
     /// The UUID of the document, used as the key for the object storage.
     pub doc_key: String,
+    /// The broadcast group. This everything related to the document, such as awareness data and
+    /// clients.
+    bc_group: BroadcastGroup,
+    /// The realm map. This is used to drop the realm manager.
+    realm_map: RealmMap,
+    /// The map with key as the UUID of the peer and value as a tuple with the first element being
+    /// the user ID of the peer and second element being the abortable subscription task for the
+    /// peer.
+    ///
+    /// Peer UUID is used as the key instead of user ID of the peer as the same user can edit the
+    /// same document from multiple devices.
+    ///
+    /// This map is used when destroying a realm to unsubscribe all the peers by aborting their
+    /// individual subscription tasks. This can also be used to force unsubscribe a specific peer
+    /// by aborting their subscription task.
+    peer_map: RwLock<HashMap<Uuid, (i64, JoinHandle<()>)>>,
+    /// The S3 client instance.
+    s3_client: S3Client,
     /// The document persistence loop. This is called every [PERSISTENCE_LOOP_DURATION] seconds,
     /// which executes the [Realm::persist_doc_to_s3] method that persists the document to the
     /// object storage over a fixed interval until the realm is destroyed.
@@ -161,6 +191,8 @@ pub struct Realm {
     /// since the last persistence call. If the new state vector is exactly equal to the last
     /// state vector, the persistence call is aborted.
     last_state_vector: RwLock<StateVector>,
+    /// The unix timestamp of the instant this realm was created.
+    pub created_at: i64,
 }
 
 impl Realm {
@@ -184,31 +216,149 @@ impl Realm {
             doc_key,
             realm_map,
             s3_client,
-            peer_count: RwLock::new(0),
+            peer_map: RwLock::new(HashMap::new()),
             persistence_loop_task: RwLock::new(None),
             last_state_vector: RwLock::new(StateVector::default()),
             is_last_persistence_iteration: RwLock::new(false),
             is_being_destroyed: RwLock::new(false),
+            created_at: OffsetDateTime::now_utc().unix_timestamp(),
         }
     }
 
     /// Determines whether new peers can join this realm. The peer count is capped by
     /// [MAX_PEERS_PER_REALM].
     pub async fn can_join(&self) -> bool {
-        let peer_count = self.peer_count.read().await;
-        *peer_count < MAX_PEERS_PER_REALM
+        let peer_map = self.peer_map.read().await;
+        (peer_map.len() as u16) < MAX_PEERS_PER_REALM
     }
 
     /// Returns `true` if there is at-least one peer subscribed to this realm.
     pub async fn has_peers(&self) -> bool {
-        let peer_count = self.peer_count.read().await;
-        *peer_count > 0
+        let peer_map = self.peer_map.read().await;
+        peer_map.len() > 0
+    }
+
+    /// Subscribes a new peer to the broadcast group and waits until the connection for the peer is
+    /// closed.
+    ///
+    /// * `peer_id` - The UUID of the peer.
+    /// * `user_id` - The user ID of the peer.
+    /// * `sink` - The websocket sink wrapper.
+    /// * `stream` - The websocket stream wrapper.
+    pub async fn subscribe(
+        self: Arc<Self>,
+        peer_id: Uuid,
+        user_id: i64,
+        sink: Arc<Mutex<WarpSink>>,
+        stream: WarpStream,
+    ) -> Result<(), SubscribeError> {
+        if !self.can_join().await {
+            return Err(SubscribeError::RealmFull);
+        }
+
+        let mut peer_map = self.peer_map.write().await;
+        let subscription = self.bc_group.subscribe_with(sink, stream, RealmProtocol);
+
+        if !self.is_persistence_loop_task_running().await {
+            self.clone().start_persistence_loop().await;
+        }
+
+        let sub_handle = tokio::spawn({
+            let self_ref = Arc::clone(&self);
+            async move {
+                // Wait until the connection ends.
+                let _ = subscription.completed().await;
+
+                let mut peer_map = self_ref.peer_map.write().await;
+                peer_map.remove(&peer_id);
+            }
+        });
+
+        peer_map.insert(peer_id, (user_id, sub_handle));
+
+        Ok(())
+    }
+
+    /// Aborts the inner persistence loop task that has referenced this realm using an Arc and
+    /// broadcasts the destroy reason to all the subscribed peers.
+    ///
+    /// It is the responsibility of the caller to remove this realm manually from the [RealmMap] in
+    /// order to completely remove it from memory. Attempting to remove this realm from the
+    /// realm map within this method would have caused a deadlock, as the realm map would need
+    /// to be locked within this method, while the caller would have already locked the
+    /// [RealmMap] before calling this method:
+    ///
+    /// ```rust,no-run
+    /// let mut realm = realm_map.async_lock(doc_id, AsyncLimit::no_limit()).await?;
+    ///
+    /// // This will cause a deadlock here, as the realm map has already been locked in the previous
+    /// // line, so we cannot lock it again inside the destroy method.
+    /// realm.destroy(reason).await;
+    /// ```
+    ///
+    /// This is the correct way to destroy a realm:
+    ///
+    /// ```rust,no-run
+    /// let mut realm_outer = realm_map
+    ///     .async_lock(doc_id, AsyncLimit::no_limit())
+    ///     .await
+    ///     .expect("unable to acquire the lock");
+    /// let realm = realm_outer.value().expect("invalid realm");
+    ///
+    /// realm.destroy(reason).await;
+    /// realm_outer.remove();
+    /// ```
+    #[async_recursion::async_recursion]
+    pub async fn destroy(&self, reason: RealmDestroyReason) {
+        {
+            let is_being_destroyed = self.is_being_destroyed.read().await;
+
+            if *is_being_destroyed {
+                return;
+            }
+        }
+
+        // Broadcast a realm destroy message to the peers with the reason.
+        if self.has_peers().await {
+            let mut encoder = EncoderV2::new();
+            encoder.write_var(MSG_INTERNAL);
+            encoder.write_string(&reason.to_string());
+
+            let _ = self.bc_group.broadcast(encoder.to_vec());
+        }
+
+        // Unsubscribe all the peers
+        {
+            let mut peer_map = self.peer_map.write().await;
+
+            for (_, sub_handle) in peer_map.values() {
+                sub_handle.abort();
+            }
+
+            peer_map.clear();
+        }
+
+        if reason != RealmDestroyReason::DocOverload {
+            // Persist any updates before destroying
+            let _ = self.persist_doc_to_s3().await;
+        }
+
+        {
+            let mut persistence_loop_task = self.persistence_loop_task.write().await;
+
+            if persistence_loop_task.is_some() {
+                if let Some(join_handle) = persistence_loop_task.as_ref() {
+                    join_handle.abort();
+                    *persistence_loop_task = None;
+                }
+            }
+        }
     }
 
     /// Serializes the present document state to binary data, deflates it using GZIP, and uploads it
     /// to the S3 docs bucket. Returns the size (in bytes) of the document at the time of uploading
     /// it to the object storage.
-    pub async fn persist_doc_to_s3(&self) -> Result<usize, PersistDocError> {
+    async fn persist_doc_to_s3(&self) -> Result<usize, PersistDocError> {
         let mut last_state_vec = self.last_state_vector.write().await;
         let awareness = self.bc_group.awareness().read().await;
         let doc = awareness.doc();
@@ -252,19 +402,17 @@ impl Realm {
                         .map_err(|err| PersistDocError::Compression(err.to_string()))?;
                 doc_size = compressed_bytes.len();
 
-                // If the document is still too large, we simply reject persisting it to the object
-                // storage. This should be a very rare case unless the peers are sending malformed
-                // updates. We also update the last state vector here to avoid compressing the data
-                // again if there were not updates.
+                // If the document is still too large, we simply destroy the realm to avoid memory
+                // issues. This should be a very rare case unless the peers are sending malformed
+                // updates.
                 if doc_size as u32 > MAX_DOCUMENT_SIZE {
                     log::warn!(
-                        "[{}] Persistence skipped due to unexpectedly large document size ({doc_size} bytes)",
+                        "[{}] Dropping due to unexpectedly large document size ({doc_size} bytes)",
                         self.doc_id
                     );
 
-                    *last_state_vec = next_state_vec;
-
-                    return Ok(0);
+                    self.destroy_and_remove_from_map(RealmDestroyReason::DocOverload)
+                        .await;
                 }
             }
 
@@ -280,7 +428,7 @@ impl Realm {
                     .send(),
             )
             .await
-            .map_err(|timout_error| PersistDocError::Upload(timout_error.to_string()))?
+            .map_err(|timeout_error| PersistDocError::Upload(timeout_error.to_string()))?
             .map_err(|s3_error| s3_error.into_service_error())
             .map_err(|s3_error| PersistDocError::Upload(s3_error.to_string()))?;
 
@@ -293,68 +441,6 @@ impl Realm {
         } else {
             // Document has not been updated since the last persistence call.
             Ok(0)
-        }
-    }
-
-    /// Aborts the inner persistence loop task that has referenced this realm using an Arc and
-    /// broadcasts the destroy reason to all the subscribed peers.
-    ///
-    /// It is the responsibility of the caller to remove this realm manually from the [RealmMap] in
-    /// order to completely remove it from memory. Attempting to remove this realm from the
-    /// realm map within this method would have caused a deadlock, as the realm map would need
-    /// to be locked within this method, while the caller would have already locked the
-    /// [RealmMap] before calling this method:
-    ///
-    /// ```rust,no-run
-    /// let mut realm = realm_map.async_lock(doc_id, AsyncLimit::no_limit()).await?;
-    ///
-    /// // This will cause a deadlock here, as the realm map has already been locked in the previous
-    /// // line, so we cannot lock it again inside the destroy method.
-    /// realm.destroy(reason).await;
-    /// ```
-    ///
-    /// This is the correct way to destroy a realm:
-    ///
-    /// ```rust,no-run
-    /// let mut realm_outer = realm_map
-    ///     .async_lock(doc_id, AsyncLimit::no_limit())
-    ///     .await
-    ///     .expect("unable to acquire the lock");
-    /// let realm = realm_outer.value().expect("invalid realm");
-    ///
-    /// realm.destroy(reason).await;
-    /// realm_outer.remove();
-    /// ```
-    pub async fn destroy(&self, reason: RealmDestroyReason) {
-        let is_being_destroyed = self.is_being_destroyed.read().await;
-
-        if *is_being_destroyed {
-            return;
-        }
-
-        drop(is_being_destroyed);
-
-        // Broadcast a realm destroy message to the peers with the reason.
-        if self.has_peers().await {
-            let mut encoder = EncoderV2::new();
-            encoder.write_var(MSG_INTERNAL);
-            encoder.write_string(&reason.to_string());
-
-            let _ = self.bc_group.broadcast(encoder.to_vec());
-        }
-
-        // Persist any updates before destroying
-        let _ = self.persist_doc_to_s3().await;
-
-        {
-            let mut persistence_loop_task = self.persistence_loop_task.write().await;
-
-            if persistence_loop_task.is_some() {
-                if let Some(join_handle) = persistence_loop_task.as_ref() {
-                    join_handle.abort();
-                    *persistence_loop_task = None;
-                }
-            }
         }
     }
 
@@ -379,45 +465,6 @@ impl Realm {
         loop_task.is_some()
     }
 
-    /// Subscribes a new peer to the broadcast group and waits until the connection for the peer is
-    /// closed.
-    ///
-    /// * `sink` - The websocket sink wrapper.
-    /// * `stream` - The websocket stream wrapper.
-    pub async fn subscribe(self: Arc<Self>, sink: Arc<Mutex<WarpSink>>, stream: WarpStream) {
-        if !self.can_join().await {
-            return;
-        }
-
-        let subscription = self.bc_group.subscribe_with(sink, stream, RealmProtocol);
-
-        self.increment_peer_count().await;
-
-        if !self.is_persistence_loop_task_running().await {
-            self.clone().start_persistence_loop().await;
-        }
-
-        // Wait until the connection ends.
-        let _ = subscription.completed().await;
-
-        self.decrement_peer_count().await;
-    }
-
-    /// Increments the `peer_count` by one.
-    async fn increment_peer_count(&self) {
-        let mut peer_count = self.peer_count.write().await;
-        *peer_count += 1;
-    }
-
-    /// Decrements the `peer_count` by one.
-    async fn decrement_peer_count(&self) {
-        let mut peer_count = self.peer_count.write().await;
-
-        if *peer_count > 0 {
-            *peer_count -= 1;
-        }
-    }
-
     /// Spawns a child task that starts a document persistence loop, which internally calls the
     /// [Realm::persist_doc_to_s3] method every [PERSISTENCE_LOOP_DURATION] seconds. The task is
     /// aborted when the [Realm] instance is destroyed.
@@ -425,13 +472,26 @@ impl Realm {
         let mut persistence_loop_task = self.persistence_loop_task.write().await;
 
         if persistence_loop_task.is_none() {
-            let mut interval = time::interval(Duration::from_secs(PERSISTENCE_LOOP_DURATION));
+            let mut interval = interval(Duration::from_secs(PERSISTENCE_LOOP_DURATION));
 
             *persistence_loop_task = Some(tokio::spawn({
                 let self_ref = Arc::clone(&self);
                 async move {
                     loop {
                         interval.tick().await;
+
+                        // Check for realm lifetime
+                        if self_ref.created_at + REALM_LIFETIME
+                            < OffsetDateTime::now_utc().unix_timestamp()
+                        {
+                            log::info!("[{}] Lifetime exceeded, dropping…", self_ref.doc_id);
+
+                            self_ref
+                                .destroy_and_remove_from_map(RealmDestroyReason::LifetimeExceeded)
+                                .await;
+
+                            return;
+                        }
 
                         let mut is_last_persistence_iteration =
                             self_ref.is_last_persistence_iteration.write().await;

@@ -4,6 +4,10 @@ use crate::{
         ToastErrorResponse,
     },
     middlewares::identity::identity::Identity,
+    realms::realm::{
+        RealmData,
+        RealmDestroyReason,
+    },
     AppState,
 };
 use actix_web::{
@@ -11,6 +15,7 @@ use actix_web::{
     web,
     HttpResponse,
 };
+use lockable::AsyncLimit;
 use serde::Deserialize;
 use validator::Validate;
 
@@ -24,23 +29,25 @@ async fn delete(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
+    realm_map: RealmData,
 ) -> Result<HttpResponse, AppError> {
     match user.id() {
-        Ok(user_id) => {
-            match path.story_id.parse::<i64>() {
-                Ok(story_id) => {
+        Ok(user_id) => match path.story_id.parse::<i64>() {
+            Ok(story_id) => {
+                if let Ok(mut realm) = realm_map.async_lock(story_id, AsyncLimit::no_limit()).await
+                {
                     match sqlx::query(
                         r#"
-                    UPDATE stories
-                    SET
-                        deleted_at = now(),
-                        published_at = NULL
-                    WHERE
-                        user_id = $1
-                        AND id = $2
-                        AND published_at IS NOT NULL
-                        AND deleted_at IS NULL
-                    "#,
+                        UPDATE stories
+                        SET
+                            deleted_at = now(),
+                            published_at = NULL
+                        WHERE
+                            user_id = $1
+                            AND id = $2
+                            AND published_at IS NOT NULL
+                            AND deleted_at IS NULL
+                        "#,
                     )
                     .bind(user_id)
                     .bind(story_id)
@@ -50,12 +57,23 @@ async fn delete(
                     {
                         0 => Ok(HttpResponse::BadRequest()
                             .json(ToastErrorResponse::new("Story not found"))),
-                        _ => Ok(HttpResponse::NoContent().finish()),
+                        _ => {
+                            // Drop the realm
+                            if let Some(realm_inner) = realm.value() {
+                                realm_inner.destroy(RealmDestroyReason::StoryDeleted).await;
+                            }
+
+                            realm.remove();
+
+                            Ok(HttpResponse::NoContent().finish())
+                        }
                     }
+                } else {
+                    return Ok(HttpResponse::InternalServerError().finish());
                 }
-                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid story ID")),
             }
-        }
+            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid story ID")),
+        },
         Err(_) => Ok(HttpResponse::InternalServerError().finish()),
     }
 }

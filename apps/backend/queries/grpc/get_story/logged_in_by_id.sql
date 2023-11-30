@@ -5,7 +5,7 @@ SELECT
 	s.description,
 	s.splash_id,
 	s.splash_hex,
-	s.category::TEXT as "category!",
+	s.category::TEXT             AS "category!",
 	s.age_restriction,
 	s.visibility,
 	s.license,
@@ -114,6 +114,7 @@ FROM
 		-- Join document
 		INNER JOIN documents AS "s->document"
 				   ON s.id = "s->document".story_id
+					   AND "s->document".is_editable IS FALSE
 		-- Join user
 		INNER JOIN users "s->user"
 				   ON "s->user".id = s.user_id

@@ -1268,6 +1268,112 @@ mod tests {
     //
 
     #[sqlx::test(fixtures("user"))]
+    async fn can_set_editable_document_story_id_as_null_when_soft_deleting_the_story(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
+
+        // Update the document
+        let update_result = sqlx::query(
+            r#"
+            UPDATE documents
+            SET
+                key = $1,
+                is_editable = TRUE
+            WHERE story_id = $2
+            RETURNING key
+            "#,
+        )
+        .bind(Uuid::new_v4())
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(update_result.try_get::<Uuid, _>("key").is_ok());
+
+        // Soft-delete the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Should set `story_id` to `NULL` on the document
+        let result = sqlx::query(
+            r#"
+            SELECT story_id FROM documents
+            WHERE key = $1
+            "#,
+        )
+        .bind(update_result.get::<Uuid, _>("key"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(result.get::<Option<i64>, _>("story_id").is_none());
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_set_editable_document_story_id_as_null_when_unpublishing_the_story(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
+
+        // Update the document
+        let update_result = sqlx::query(
+            r#"
+            UPDATE documents
+            SET
+                key = $1,
+                is_editable = TRUE
+            WHERE story_id = $2
+            RETURNING key
+            "#,
+        )
+        .bind(Uuid::new_v4())
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(update_result.try_get::<Uuid, _>("key").is_ok());
+
+        // Unpublish the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Should set `story_id` to `NULL` on the document
+        let result = sqlx::query(
+            r#"
+            SELECT story_id FROM documents
+            WHERE key = $1
+            "#,
+        )
+        .bind(update_result.get::<Uuid, _>("key"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(result.get::<Option<i64>, _>("story_id").is_none());
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
     async fn should_not_delete_document_when_the_story_is_soft_deleted(
         pool: PgPool,
     ) -> sqlx::Result<()> {

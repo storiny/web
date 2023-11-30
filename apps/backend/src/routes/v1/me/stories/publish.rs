@@ -11,6 +11,10 @@ use crate::{
         storage::JobStorage,
     },
     middlewares::identity::identity::Identity,
+    realms::realm::{
+        RealmData,
+        RealmDestroyReason,
+    },
     AppState,
 };
 use actix_web::{
@@ -21,6 +25,7 @@ use actix_web::{
 };
 use apalis::prelude::Storage;
 use futures::future;
+use lockable::AsyncLimit;
 use nanoid::nanoid;
 use serde::Deserialize;
 use slugify::slugify;
@@ -40,7 +45,7 @@ struct Fragments {
     story_id: String,
 }
 
-// TODO: Handle publishing and editing logic (with resource limit)
+// TODO: Write tests (with resource limit)
 
 /// Generates a unique slug for the story.
 ///
@@ -101,6 +106,7 @@ async fn post(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
+    realm_map: RealmData,
     notify_story_add_by_user_job_storage: web::Data<JobStorage<NotifyStoryAddByUserJob>>,
     notify_story_add_by_tag_job_storage: web::Data<JobStorage<NotifyStoryAddByTagJob>>,
 ) -> Result<HttpResponse, AppError> {
@@ -108,79 +114,94 @@ async fn post(
         Ok(user_id) => {
             match path.story_id.parse::<i64>() {
                 Ok(story_id) => {
-                    let pg_pool = &data.db_pool;
-                    let mut txn = pg_pool.begin().await?;
-
-                    match sqlx::query(
-                        r#"
-                        SELECT title FROM stories
-                        WHERE
-                            user_id = $1
-                            AND id = $2
-                            AND published_at IS NULL
-                            AND deleted_at IS NULL
-                        "#,
-                    )
-                    .bind(user_id)
-                    .bind(story_id)
-                    .fetch_one(&mut *txn)
-                    .await
+                    if let Ok(mut realm) =
+                        realm_map.async_lock(story_id, AsyncLimit::no_limit()).await
                     {
-                        Ok(story) => {
-                            let story_slug = generate_story_slug(
-                                &mut txn,
-                                &story_id,
-                                &story.get::<String, _>("title"),
-                            )
-                            .await?;
+                        let pg_pool = &data.db_pool;
+                        let mut txn = pg_pool.begin().await?;
 
-                            match sqlx::query(
-                                r#"
-                                UPDATE stories
-                                SET
-                                    published_at = now(),
-                                    slug = $3
-                                WHERE
-                                    user_id = $1
-                                    AND id = $2
-                                    AND published_at IS NULL
-                                    AND deleted_at IS NULL
-                                "#,
-                            )
-                            .bind(user_id)
-                            .bind(story_id)
-                            .bind(story_slug)
-                            .execute(&mut *txn)
-                            .await?
-                            .rows_affected()
-                            {
-                                0 => Ok(HttpResponse::BadRequest()
-                                    .json(ToastErrorResponse::new("Story not found"))),
-                                _ => {
-                                    txn.commit().await?;
+                        match sqlx::query(
+                            r#"
+                            SELECT title FROM stories
+                            WHERE
+                                user_id = $1
+                                AND id = $2
+                                AND published_at IS NULL
+                                AND deleted_at IS NULL
+                            "#,
+                        )
+                        .bind(user_id)
+                        .bind(story_id)
+                        .fetch_one(&mut *txn)
+                        .await
+                        {
+                            Ok(story) => {
+                                // Drop the realm
+                                if let Some(realm_inner) = realm.value() {
+                                    realm_inner
+                                        .destroy(RealmDestroyReason::StoryPublished)
+                                        .await;
+                                }
 
-                                    // Queue push notification jobs
-                                    let mut notify_story_add_by_user_job =
-                                        (&*notify_story_add_by_user_job_storage.into_inner())
-                                            .clone();
-                                    let mut notify_story_add_by_tag_job =
-                                        (&*notify_story_add_by_tag_job_storage.into_inner())
-                                            .clone();
+                                realm.remove();
 
-                                    let _ = future::try_join(
-                                        notify_story_add_by_user_job
-                                            .push(NotifyStoryAddByUserJob { story_id }),
-                                        notify_story_add_by_tag_job
-                                            .push(NotifyStoryAddByTagJob { story_id }),
-                                    )
-                                    .await;
+                                let story_slug = generate_story_slug(
+                                    &mut txn,
+                                    &story_id,
+                                    &story.get::<String, _>("title"),
+                                )
+                                .await?;
 
-                                    Ok(HttpResponse::NoContent().finish())
+                                match sqlx::query(
+                                    r#"
+                                    UPDATE stories
+                                    SET
+                                        published_at = now(),
+                                        slug = $3
+                                    WHERE
+                                        user_id = $1
+                                        AND id = $2
+                                        AND published_at IS NULL
+                                        AND deleted_at IS NULL
+                                    "#,
+                                )
+                                .bind(user_id)
+                                .bind(story_id)
+                                .bind(story_slug)
+                                .execute(&mut *txn)
+                                .await?
+                                .rows_affected()
+                                {
+                                    0 => Ok(HttpResponse::BadRequest()
+                                        .json(ToastErrorResponse::new("Story not found"))),
+                                    _ => {
+                                        txn.commit().await?;
+
+                                        // Queue push notification jobs
+                                        let mut notify_story_add_by_user_job =
+                                            (&*notify_story_add_by_user_job_storage.into_inner())
+                                                .clone();
+                                        let mut notify_story_add_by_tag_job =
+                                            (&*notify_story_add_by_tag_job_storage.into_inner())
+                                                .clone();
+
+                                        let _ = future::try_join(
+                                            notify_story_add_by_user_job
+                                                .push(NotifyStoryAddByUserJob { story_id }),
+                                            notify_story_add_by_tag_job
+                                                .push(NotifyStoryAddByTagJob { story_id }),
+                                        )
+                                        .await;
+
+                                        Ok(HttpResponse::NoContent().finish())
+                                    }
                                 }
                             }
+                            Err(_) => Ok(HttpResponse::BadRequest()
+                                .json(ToastErrorResponse::new("Story not found"))),
                         }
-                        Err(_) => Ok(HttpResponse::BadRequest()
-                            .json(ToastErrorResponse::new("Story not found"))),
+                    } else {
+                        return Ok(HttpResponse::InternalServerError().finish());
                     }
                 }
                 Err(_) => Ok(HttpResponse::BadRequest().body("Invalid story ID")),
@@ -196,13 +217,31 @@ async fn put(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
+    realm_map: RealmData,
 ) -> Result<HttpResponse, AppError> {
     match user.id() {
-        Ok(user_id) => {
-            match path.story_id.parse::<i64>() {
-                Ok(story_id) => {
+        Ok(user_id) => match path.story_id.parse::<i64>() {
+            Ok(story_id) => {
+                if let Ok(mut realm) = realm_map.async_lock(story_id, AsyncLimit::no_limit()).await
+                {
                     match sqlx::query(
                         r#"
+                        WITH delete_document AS (
+                            DELETE FROM documents
+                            WHERE
+                                story_id = $2
+                                AND is_editable IS FALSE
+                                AND EXISTS (
+                                    SELECT 1 FROM documents
+                                    WHERE story_id = $2
+                                    AND is_editable IS TRUE
+                                )
+                        ),
+                        updated_document AS (
+                            UPDATE documents
+                            SET is_editable = FALSE
+                            WHERE story_id = $2
+                        )
                         UPDATE stories
                         SET edited_at = now()
                         WHERE
@@ -220,12 +259,25 @@ async fn put(
                     {
                         0 => Ok(HttpResponse::BadRequest()
                             .json(ToastErrorResponse::new("Story not found"))),
-                        _ => Ok(HttpResponse::NoContent().finish()),
+                        _ => {
+                            // Drop the realm
+                            if let Some(realm_inner) = realm.value() {
+                                realm_inner
+                                    .destroy(RealmDestroyReason::StoryPublished)
+                                    .await;
+                            }
+
+                            realm.remove();
+
+                            Ok(HttpResponse::NoContent().finish())
+                        }
                     }
+                } else {
+                    return Ok(HttpResponse::InternalServerError().finish());
                 }
-                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid story ID")),
             }
-        }
+            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid story ID")),
+        },
         Err(_) => Ok(HttpResponse::InternalServerError().finish()),
     }
 }
