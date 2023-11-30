@@ -15,7 +15,10 @@ use std::sync::Arc;
 use strum::Display;
 use thiserror::Error;
 use tokio::{
-    sync::Mutex,
+    sync::{
+        Mutex,
+        RwLock,
+    },
     task::JoinHandle,
     time::{
         self,
@@ -148,7 +151,7 @@ pub struct Realm {
     /// clients.
     bc_group: BroadcastGroup,
     /// The number of peers that have currently subscribed to this realm.
-    peer_count: Mutex<u16>,
+    peer_count: RwLock<u16>,
     /// The realm map. This is used to drop the realm manager.
     realm_map: RealmMap,
     /// The S3 client instance.
@@ -159,7 +162,7 @@ pub struct Realm {
     pub doc_key: String,
     /// The realm timeout loop. This is called when there are no peers subscribed to this realm. It
     /// waits for [EMPTY_REALM_TIMEOUT] seconds for peers before destroying the realm manager.
-    timeout_task: Mutex<Option<JoinHandle<()>>>,
+    timeout_task: RwLock<Option<JoinHandle<()>>>,
     /// The document persistence loop. This is called every [PERSISTENCE_LOOP_DURATION] seconds,
     /// which executes the [Realm::persist_doc_to_s3] method that persists the document to the
     /// object storage over a fixed interval until the realm is destroyed.
@@ -167,12 +170,12 @@ pub struct Realm {
     /// A mutex is used to abort the task when calling the [Realm::destroy] method, as the
     /// [Realm::start_persistence_loop] moves the `Arc<Self>` into the spawned task, which needs to
     /// be aborted so that the realm can be dropped.
-    persistence_loop_task: Mutex<Option<JoinHandle<()>>>,
+    persistence_loop_task: RwLock<Option<JoinHandle<()>>>,
     /// The state vector value when the document was last persisted to the object storage. This is
     /// compared against the new state vector to determine whether the document has been updated
     /// since the last persistence call. If the new state vector is exactly equal to the last
     /// state vector, the persistence call is aborted.
-    last_state_vector: Mutex<StateVector>,
+    last_state_vector: RwLock<StateVector>,
 }
 
 impl Realm {
@@ -196,23 +199,23 @@ impl Realm {
             doc_key,
             realm_map,
             s3_client,
-            peer_count: Mutex::new(0),
-            timeout_task: Mutex::new(None),
-            persistence_loop_task: Mutex::new(None),
-            last_state_vector: Mutex::new(StateVector::default()),
+            peer_count: RwLock::new(0),
+            timeout_task: RwLock::new(None),
+            persistence_loop_task: RwLock::new(None),
+            last_state_vector: RwLock::new(StateVector::default()),
         }
     }
 
     /// Determines whether new peers can join this realm. The peer count is capped by
     /// [MAX_PEERS_PER_REALM].
     pub async fn can_join(&self) -> bool {
-        let peer_count = self.peer_count.lock().await;
+        let peer_count = self.peer_count.read().await;
         *peer_count < MAX_PEERS_PER_REALM
     }
 
     /// Returns `true` if there is at-least one peer subscribed to this realm.
     pub async fn has_peers(&self) -> bool {
-        let peer_count = self.peer_count.lock().await;
+        let peer_count = self.peer_count.read().await;
         *peer_count > 0
     }
 
@@ -220,7 +223,7 @@ impl Realm {
     /// to the S3 docs bucket. Returns the size (in bytes) of the document at the time of uploading
     /// it to the object storage.
     pub async fn persist_doc_to_s3(&self) -> Result<usize, PersistDocError> {
-        let mut last_state_vec = self.last_state_vector.lock().await;
+        let mut last_state_vec = self.last_state_vector.write().await;
         let awareness = self.bc_group.awareness().read().await;
         let doc = awareness.doc();
 
@@ -322,7 +325,7 @@ impl Realm {
         // Abort tasks that reference this realm using an Arc.
 
         {
-            let mut persistence_loop_task = self.persistence_loop_task.lock().await;
+            let mut persistence_loop_task = self.persistence_loop_task.write().await;
 
             if persistence_loop_task.is_some() {
                 if let Some(join_handle) = persistence_loop_task.as_ref() {
@@ -333,7 +336,7 @@ impl Realm {
         }
 
         {
-            let mut timeout_task = self.timeout_task.lock().await;
+            let mut timeout_task = self.timeout_task.write().await;
 
             if timeout_task.is_some() {
                 if let Some(join_handle) = timeout_task.as_ref() {
@@ -358,9 +361,20 @@ impl Realm {
             .await
         // This should never throw
         {
+            let rel = entry.value().unwrap().clone();
+            drop(entry);
+            let wk = Arc::downgrade(&rel);
+            log::info!("before:: {}", wk.strong_count());
             self.destroy(reason).await;
-            entry.remove();
+            // entry.remove();
+            log::info!("after:: {:#?}", wk.strong_count());
         }
+    }
+
+    /// Returns `true` if the timeout task is running.
+    async fn is_timeout_task_running(&self) -> bool {
+        let timeout_task = self.timeout_task.read().await;
+        timeout_task.is_some()
     }
 
     /// Subscribes a new peer to the broadcast group and waits until the connection for the peer is
@@ -385,10 +399,11 @@ impl Realm {
         // Wait until the connection ends.
         let _ = subscription.completed().await;
 
-        let mut peer_count = self.peer_count.lock().await;
-        *peer_count -= 1;
+        let mut peer_count = self.peer_count.write().await;
 
-        log::info!("---- {}", *peer_count);
+        if *peer_count > 0 {
+            *peer_count -= 1;
+        }
 
         if *peer_count == 0 {
             drop(peer_count);
@@ -404,7 +419,7 @@ impl Realm {
 
     /// Increments the `peer_count` by one.
     async fn increment_peer_count(&self) {
-        let mut peer_count = self.peer_count.lock().await;
+        let mut peer_count = self.peer_count.write().await;
         *peer_count += 1;
     }
 
@@ -412,7 +427,7 @@ impl Realm {
     /// [Realm::persist_doc_to_s3] method every [PERSISTENCE_LOOP_DURATION] seconds. The task is
     /// aborted when the [Realm] instance is destroyed.
     async fn start_persistence_loop(self: Arc<Self>) {
-        let mut persistence_loop_task = self.persistence_loop_task.lock().await;
+        let mut persistence_loop_task = self.persistence_loop_task.write().await;
 
         if persistence_loop_task.is_none() {
             let mut interval = time::interval(Duration::from_secs(PERSISTENCE_LOOP_DURATION));
@@ -426,8 +441,8 @@ impl Realm {
                         log::info!(".. ^^");
 
                         // Only persist if there is at-least one peer. The timeout task handles
-                        // persisting the document when there are not peers.
-                        if self_ref.has_peers().await {
+                        // persisting the document when there are no peers.
+                        if self_ref.has_peers().await && !self_ref.is_timeout_task_running().await {
                             let _ = self_ref.persist_doc_to_s3().await;
                         }
                     }
@@ -440,7 +455,7 @@ impl Realm {
     /// no new peers during the timeout, the current document state gets persisted to the object
     /// storage and realm manager is destroyed.
     async fn start_timeout_task(self: Arc<Self>) {
-        let mut timeout_task = self.timeout_task.lock().await;
+        let mut timeout_task = self.timeout_task.write().await;
 
         if timeout_task.is_none() && !self.has_peers().await {
             log::info!("[{}] Spawned timeout task", self.doc_id);
@@ -466,7 +481,7 @@ impl Realm {
     /// Aborts the timeout task if it is running. The is called when a new peer connects while the
     /// timeout task is running.
     async fn abort_timeout_task(&self) {
-        let mut timeout_task = self.timeout_task.lock().await;
+        let mut timeout_task = self.timeout_task.write().await;
 
         if timeout_task.is_some() {
             if let Some(join_handle) = timeout_task.as_ref() {
