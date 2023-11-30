@@ -168,9 +168,17 @@ CREATE OR REPLACE FUNCTION story_after_update_trigger_proc(
 AS
 $$
 BEGIN
-	-- Story (published) soft-deleted or unpublished
+	-- Story soft-deleted or unpublished
 	IF ((OLD.deleted_at IS NULL AND NEW.deleted_at IS NOT NULL) OR
 		(OLD.published_at IS NOT NULL AND NEW.published_at IS NULL)) THEN
+		-- Drop the editable document
+		UPDATE documents
+		SET
+			story_id = NULL
+		WHERE
+			  story_id = NEW.id
+		  AND is_editable IS TRUE;
+		--
 		-- Drop relations for published (now soft-deleted or unpublished) story
 		IF (OLD.published_at IS NOT NULL) THEN
 			-- Soft-delete comments

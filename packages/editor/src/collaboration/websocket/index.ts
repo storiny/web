@@ -186,6 +186,7 @@ const setup_ws = (provider: WebsocketProvider): void => {
     provider.synced = false;
 
     websocket.onmessage = (event): void => {
+      // TODO: Check if this is a custom message
       provider.ws_last_message_received = Date.now();
       const encoder = read_message(provider, new Uint8Array(event.data), true);
 
@@ -199,6 +200,8 @@ const setup_ws = (provider: WebsocketProvider): void => {
     };
 
     websocket.onclose = (event): void => {
+      // TODO: remove console
+      console.log(event);
       provider.emit("connection-close", [event, provider]);
       provider.ws = null;
       provider.wsconnecting = false;
@@ -221,20 +224,24 @@ const setup_ws = (provider: WebsocketProvider): void => {
             status: "disconnected"
           }
         ]);
-      } else {
+        // Codes > 3000 indicate a client or internal error sent by the server.
+      } else if (event.code < 3000) {
         provider.ws_unsuccessful_reconnects++;
       }
 
-      // Start with no reconnect timeout and increase the timeout by
-      // Using exponential backoff starting with 100ms
-      setTimeout(
-        setup_ws,
-        Math.min(
-          Math.pow(2, provider.ws_unsuccessful_reconnects) * 100,
-          provider.max_backoff_time
-        ),
-        provider
-      );
+      // Do not reconnect for client or internal server sent errors.
+      if (event.code < 3000) {
+        // Start with no reconnect timeout and increase the timeout by
+        // Using exponential backoff starting with 100ms
+        setTimeout(
+          setup_ws,
+          Math.min(
+            Math.pow(2, provider.ws_unsuccessful_reconnects) * 100,
+            provider.max_backoff_time
+          ),
+          provider
+        );
+      }
     };
 
     websocket.onopen = (): void => {
@@ -326,6 +333,7 @@ export class WebsocketProvider {
   /**
    * Ctor
    * @param server_url URL of the server
+   * @param auth_token Session cookie value
    * @param roomname Room / document name (gets appended to the `server_url`)
    * @param doc Document
    * @param connect Whether to initiate the connection
@@ -338,6 +346,7 @@ export class WebsocketProvider {
    */
   constructor(
     server_url: string,
+    auth_token: string,
     roomname: string,
     doc: Doc,
     {
@@ -368,8 +377,8 @@ export class WebsocketProvider {
     this.observers = new Map<string, Set<any>>();
     this.max_backoff_time = max_backoff_time;
     this.bc_channel = `${server_url}/${roomname}`;
-    this.url = `${server_url}/${roomname}${
-      encoded_params.length === 0 ? "" : "?" + encoded_params
+    this.url = `${server_url}/${roomname}?auth_token=${auth_token}${
+      encoded_params.length === 0 ? "" : "&" + encoded_params
     }`;
     this.roomname = roomname;
     this.doc = doc;

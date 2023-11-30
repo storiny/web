@@ -3,9 +3,9 @@ import "server-only";
 import { Status } from "@grpc/grpc-js/build/src/constants";
 import { cookies } from "next/headers";
 
+import { SESSION_COOKIE_ID } from "~/common/constants";
 import { get_user_id } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
-import { SESSION_COOKIE_ID } from "~/common/utils/get-session-token";
 
 /**
  * Checks whether the user maintains a valid session by sending a

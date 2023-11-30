@@ -259,7 +259,7 @@ async fn main() -> io::Result<()> {
                 start_grpc_server(config.clone(), db_pool.clone(), redis_pool.clone());
 
             // Start the realms server
-            let realms_future = start_realms_server(realm_map, db_pool, s3_client);
+            let realms_future = start_realms_server(realm_map, db_pool, redis_pool, s3_client);
 
             // Start the main HTTP server
             let http_future = HttpServer::new(move || {
@@ -315,7 +315,9 @@ async fn main() -> io::Result<()> {
                             })
                             .cookie_path("/".to_string())
                             .cookie_secure(!config.is_dev)
-                            .cookie_http_only(true)
+                            // Cookie is read from the client side and used as the auth token for
+                            // the realms endpoint.
+                            .cookie_http_only(false)
                             .build(),
                     )
                     .wrap(
