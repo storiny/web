@@ -19,14 +19,11 @@ async fn get(realm_map: RealmData) -> impl Responder {
             .async_lock(38845050418889731_i64, AsyncLimit::no_limit())
             .await
             .unwrap();
-        let rel = realm.value().unwrap();
-        let wk = Arc::downgrade(rel);
-        log::info!("before:: {}", wk.strong_count());
         {
+            let rel = realm.value().unwrap();
             rel.destroy(RealmDestroyReason::StoryPublished).await;
-            realm.remove();
         }
-        log::info!("after:: {}", wk.strong_count());
+        realm.remove();
     }
 
     HttpResponse::Ok()
