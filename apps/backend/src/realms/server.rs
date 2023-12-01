@@ -534,412 +534,504 @@ pub async fn start_realms_server(
 
 #[cfg(test)]
 mod tests {
+    use crate::{
+        config::get_app_config,
+        constants::{
+            buckets::S3_DOCS_BUCKET,
+            redis_namespaces::RedisNamespace,
+            session_cookie::SESSION_COOKIE_NAME,
+        },
+        realms::{
+            realm::RealmMap,
+            server::{
+                start_realms_server,
+                EnterRealmError,
+            },
+        },
+        test_utils::{
+            count_s3_objects,
+            get_redis_pool,
+            get_s3_client,
+            RedisTestContext,
+            TestContext,
+        },
+        utils::{
+            deflate_bytes_gzip::deflate_bytes_gzip,
+            delete_s3_objects::delete_s3_objects,
+            get_user_sessions::UserSession,
+        },
+        RedisPool,
+        S3Client,
+    };
+    use cookie::{
+        Cookie,
+        CookieJar,
+        Key,
+    };
     use futures_util::{
-        ready,
+        future,
         stream::{
             SplitSink,
             SplitStream,
         },
         SinkExt,
-        Stream,
         StreamExt,
     };
-    use std::{
-        net::SocketAddr,
-        pin::Pin,
-        str::FromStr,
-        sync::Arc,
-        task::{
-            Context,
-            Poll,
-        },
-        time::Duration,
+    use lockable::{
+        AsyncLimit,
+        LockableHashMap,
     };
-    use tokio::{
-        net::TcpStream,
-        sync::{
-            Mutex,
-            Notify,
-            RwLock,
-        },
-        task,
-        task::JoinHandle,
-        time::{
-            sleep,
-            timeout,
-        },
+    use redis::AsyncCommands;
+    use serial_test::serial;
+    use sqlx::{
+        PgPool,
+        Row,
     };
+    use std::sync::Arc;
+    use storiny_macros::test_context;
+    use tokio::net::TcpStream;
     use tokio_tungstenite::{
         tungstenite::Message,
         MaybeTlsStream,
         WebSocketStream,
     };
-    use warp::{
-        ws::{
-            WebSocket,
-            Ws,
-        },
-        Filter,
-        Rejection,
-        Reply,
-        Sink,
-    };
-    use y_sync::{
-        awareness::Awareness,
-        net::{
-            BroadcastGroup,
-            Connection,
-        },
-        sync::Error,
-    };
+    use uuid::Uuid;
     use yrs::{
-        updates::encoder::Encode,
         Doc,
-        GetString,
-        Text,
+        ReadTxn,
+        StateVector,
         Transact,
-        UpdateSubscription,
-    };
-    use yrs_warp::ws::{
-        WarpSink,
-        WarpStream,
     };
 
-    async fn start_server(
-        addr: &str,
-        bcast: Arc<BroadcastGroup>,
-    ) -> Result<JoinHandle<()>, Box<dyn std::error::Error>> {
-        let addr = SocketAddr::from_str(addr)?;
-        let ws = warp::path("test-room")
-            .and(warp::ws())
-            .and(warp::any().map(move || bcast.clone()))
-            .and_then(ws_handler);
-
-        Ok(tokio::spawn(async move {
-            warp::serve(ws).run(addr).await;
-        }))
+    struct LocalTestContext {
+        s3_client: S3Client,
+        redis_pool: RedisPool,
     }
 
-    async fn ws_handler(ws: Ws, bcast: Arc<BroadcastGroup>) -> Result<impl Reply, Rejection> {
-        Ok(ws.on_upgrade(move |socket| peer(socket, bcast)))
-    }
-
-    async fn peer(ws: WebSocket, bcast: Arc<BroadcastGroup>) {
-        let (sink, stream) = ws.split();
-        let sink = Arc::new(Mutex::new(WarpSink::from(sink)));
-        let stream = WarpStream::from(stream);
-        let sub = bcast.subscribe(sink, stream);
-        match sub.completed().await {
-            Ok(_) => println!("broadcasting for channel finished successfully"),
-            Err(e) => eprintln!("broadcasting for channel finished abruptly: {}", e),
-        }
-    }
-
-    struct TungsteniteSink(SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>);
-
-    impl Sink<Vec<u8>> for TungsteniteSink {
-        type Error = Error;
-
-        fn poll_ready(
-            mut self: Pin<&mut Self>,
-            cx: &mut Context<'_>,
-        ) -> Poll<Result<(), Self::Error>> {
-            let sink = unsafe { Pin::new_unchecked(&mut self.0) };
-            let result = ready!(sink.poll_ready(cx));
-            match result {
-                Ok(_) => Poll::Ready(Ok(())),
-                Err(e) => Poll::Ready(Err(Error::Other(Box::new(e)))),
+    #[async_trait::async_trait]
+    impl TestContext for LocalTestContext {
+        async fn setup() -> LocalTestContext {
+            LocalTestContext {
+                s3_client: get_s3_client().await,
+                redis_pool: get_redis_pool(),
             }
         }
 
-        fn start_send(mut self: Pin<&mut Self>, item: Vec<u8>) -> Result<(), Self::Error> {
-            let sink = unsafe { Pin::new_unchecked(&mut self.0) };
-            let result = sink.start_send(Message::binary(item));
-            match result {
-                Ok(_) => Ok(()),
-                Err(e) => Err(Error::Other(Box::new(e))),
-            }
-        }
-
-        fn poll_flush(
-            mut self: Pin<&mut Self>,
-            cx: &mut Context<'_>,
-        ) -> Poll<Result<(), Self::Error>> {
-            let sink = unsafe { Pin::new_unchecked(&mut self.0) };
-            let result = ready!(sink.poll_flush(cx));
-            match result {
-                Ok(_) => Poll::Ready(Ok(())),
-                Err(e) => Poll::Ready(Err(Error::Other(Box::new(e)))),
-            }
-        }
-
-        fn poll_close(
-            mut self: Pin<&mut Self>,
-            cx: &mut Context<'_>,
-        ) -> Poll<Result<(), Self::Error>> {
-            let sink = unsafe { Pin::new_unchecked(&mut self.0) };
-            let result = ready!(sink.poll_close(cx));
-            match result {
-                Ok(_) => Poll::Ready(Ok(())),
-                Err(e) => Poll::Ready(Err(Error::Other(Box::new(e)))),
-            }
+        async fn teardown(self) {
+            future::join(
+                async {
+                    let redis_pool = &self.redis_pool;
+                    let mut conn = redis_pool.get().await.unwrap();
+                    let _: String = redis::cmd("FLUSHDB")
+                        .query_async(&mut conn)
+                        .await
+                        .expect("Failed to FLUSHDB");
+                },
+                async {
+                    delete_s3_objects(&self.s3_client, S3_DOCS_BUCKET, None, None)
+                        .await
+                        .unwrap()
+                },
+            )
+            .await;
         }
     }
 
-    struct TungsteniteStream(SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>);
+    /// Initializes and spawns a realms server for tests.
+    ///
+    /// * `db_pool` - The Postgres connection pool.
+    /// * `s3_client` - The S3 client instance.
+    /// * `logged_in` - The logged in flag. If set to `true`, a valid authentication token will get
+    ///   appended to the realm server endpoint.
+    /// * `insert_story` - The boolean flag indicating whether to insert a story.
+    async fn init_realms_server_for_test(
+        db_pool: PgPool,
+        s3_client: Option<S3Client>,
+        logged_in: bool,
+        insert_story: bool,
+    ) -> (
+        RealmMap,
+        // User ID
+        i64,
+        // Story ID
+        i64,
+        SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>,
+        SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>,
+    ) {
+        let config = get_app_config().unwrap();
+        let realm_map: RealmMap = Arc::new(LockableHashMap::new());
+        let redis_pool = get_redis_pool();
+        let user_id = 1_i64;
+        let story_id = 2_i64;
+        let mut auth_token: String = "".to_string();
 
-    impl Stream for TungsteniteStream {
-        type Item = Result<Vec<u8>, Error>;
+        start_realms_server(
+            realm_map.clone(),
+            db_pool.clone(),
+            redis_pool.clone(),
+            s3_client.unwrap_or(get_s3_client().await),
+        )
+        .await
+        .expect("unable to start the server");
 
-        fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
-            let stream = unsafe { Pin::new_unchecked(&mut self.0) };
-            let result = ready!(stream.poll_next(cx));
-            match result {
-                None => Poll::Ready(None),
-                Some(Ok(msg)) => Poll::Ready(Some(Ok(msg.into_data()))),
-                Some(Err(e)) => Poll::Ready(Some(Err(Error::Other(Box::new(e))))),
-            }
+        // Insert a story
+        if insert_story {
+            sqlx::query(
+                r#"
+                WITH inserted_user AS (
+                    INSERT INTO users (id, name, username, email)
+                    VALUES ($1, $2, $3, $4)
+                )
+                INSERT INTO stories (id, user_id)
+                VALUES ($5, $1)
+                "#,
+            )
+            .bind(&user_id)
+            .bind("Some user")
+            .bind("some_user")
+            .bind("someone@example.com")
+            .bind(&story_id)
+            .execute(&db_pool)
+            .await
+            .expect("unable to insert the story");
         }
-    }
 
-    async fn client(
-        addr: &str,
-        doc: Doc,
-    ) -> Result<Connection<TungsteniteSink, TungsteniteStream>, Box<dyn std::error::Error>> {
-        let (stream, _) = tokio_tungstenite::connect_async(addr).await?;
-        let (sink, stream) = stream.split();
-        let sink = TungsteniteSink(sink);
-        let stream = TungsteniteStream(stream);
-        Ok(Connection::new(
-            Arc::new(RwLock::new(Awareness::new(doc))),
-            sink,
-            stream,
+        // Insert a session
+        if logged_in {
+            let mut conn = redis_pool.get().await.unwrap();
+            let session_key = format!("{}:{}", user_id, Uuid::new_v4().to_string());
+            let secret_key = Key::from(&config.session_secret_key.as_bytes());
+            let cookie = Cookie::new(SESSION_COOKIE_NAME, session_key.clone());
+            let mut jar = CookieJar::new();
+
+            jar.signed_mut(&secret_key).add(cookie);
+
+            let cookie = jar.delta().next().unwrap();
+
+            let _: () = conn
+                .set(
+                    &format!("{}:{session_key}", RedisNamespace::Session.to_string()),
+                    &serde_json::to_string(&UserSession {
+                        user_id,
+                        ..Default::default()
+                    })
+                    .unwrap(),
+                )
+                .await
+                .unwrap();
+
+            auth_token = cookie.value().to_string();
+        }
+
+        let endpoint = url::Url::parse(&format!(
+            "ws://{}:{}/{story_id}?auth_token={auth_token}",
+            &config.realms_host, &config.realms_port
         ))
+        .unwrap();
+
+        let (ws_stream, _) = tokio_tungstenite::connect_async(endpoint)
+            .await
+            .expect("failed to connect");
+
+        let (tx, rx) = ws_stream.split();
+
+        (realm_map, user_id, story_id, tx, rx)
     }
 
-    fn create_notifier(doc: &Doc) -> (Arc<Notify>, UpdateSubscription) {
-        let notify = Arc::new(Notify::new());
-        let subscription = {
-            let notify = notify.clone();
-            doc.observe_update_v1(move |_, _| notify.notify_waiters())
-                .unwrap()
-        };
+    #[sqlx::test]
+    #[serial(realm)]
+    async fn can_reject_unauthorized_peers(pool: PgPool) {
+        let (_, _, _, mut tx, rx) = init_realms_server_for_test(pool, None, false, false).await;
 
-        (notify, subscription)
+        rx.for_each(|message| async {
+            let message = message.unwrap();
+            assert!(message.is_close());
+            assert_eq!(
+                message.to_string(),
+                EnterRealmError::Unauthorized.to_string()
+            );
+        })
+        .await;
+
+        tx.close().await.unwrap();
     }
 
-    const TIMEOUT: Duration = Duration::from_secs(5);
+    #[test_context(RedisTestContext)]
+    #[sqlx::test]
+    #[serial(realm)]
+    async fn can_accept_authorized_peers(_ctx: &mut RedisTestContext, pool: PgPool) {
+        let (_, _, _, mut tx, mut rx) = init_realms_server_for_test(pool, None, true, false).await;
 
-    #[tokio::test]
-    async fn change_introduced_by_server_reaches_subscribed_clients()
-    -> Result<(), Box<dyn std::error::Error>> {
-        let doc = Doc::with_client_id(1);
-        let text = doc.get_or_insert_text("test");
-        let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
-        let bcast = BroadcastGroup::new(awareness.clone(), 10).await;
-        let server = start_server("0.0.0.0:6600", Arc::new(bcast)).await?;
-
-        let doc = Doc::new();
-        let (n, sub) = create_notifier(&doc);
-        let c1 = client("ws://localhost:6600/test-room", doc).await?;
-
-        {
-            let lock = awareness.write().await;
-            text.push(&mut lock.doc().transact_mut(), "abc");
+        if let Ok(message) = rx.next().await.unwrap() {
+            assert_eq!(
+                message.to_string(),
+                EnterRealmError::MissingStory.to_string()
+            );
         }
 
-        timeout(TIMEOUT, n.notified()).await?;
+        tx.close().await.unwrap();
+    }
 
-        {
-            let awareness = c1.awareness().read().await;
-            let doc = awareness.doc();
-            let text = doc.get_or_insert_text("test");
-            let str = text.get_string(&doc.transact());
-            assert_eq!(str, "abc".to_string());
+    #[test_context(RedisTestContext)]
+    #[sqlx::test]
+    #[serial(realm)]
+    async fn can_reject_peer_for_a_missing_story(_ctx: &mut RedisTestContext, pool: PgPool) {
+        let (_, _, _, mut tx, mut rx) = init_realms_server_for_test(pool, None, true, false).await;
+
+        if let Ok(message) = rx.next().await.unwrap() {
+            assert_eq!(
+                message.to_string(),
+                EnterRealmError::MissingStory.to_string()
+            );
         }
+
+        tx.close().await.unwrap();
+    }
+
+    #[test_context(RedisTestContext)]
+    #[sqlx::test]
+    #[serial(realm)]
+    async fn can_reject_peer_for_a_soft_deleted_story(
+        _ctx: &mut RedisTestContext,
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Insert a soft-deleted story
+        let result = sqlx::query(
+            r#"
+            WITH inserted_user AS (
+                INSERT INTO users (id, name, username, email)
+                VALUES ($1, $2, $3, $4)
+            )
+            INSERT INTO stories (id, user_id, deleted_at)
+            VALUES ($5, $1, now())
+            "#,
+        )
+        .bind(1_i64)
+        .bind("Some user")
+        .bind("some_user")
+        .bind("someone@example.com")
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let (_, _, _, mut tx, mut rx) = init_realms_server_for_test(pool, None, true, false).await;
+
+        if let Ok(message) = rx.next().await.unwrap() {
+            assert_eq!(
+                message.to_string(),
+                EnterRealmError::MissingStory.to_string()
+            );
+        }
+
+        tx.close().await.unwrap();
 
         Ok(())
     }
 
-    #[tokio::test]
-    async fn subscribed_client_fetches_initial_state() -> Result<(), Box<dyn std::error::Error>> {
-        let doc = Doc::with_client_id(1);
-        let text = doc.get_or_insert_text("test");
+    #[test_context(RedisTestContext)]
+    #[sqlx::test]
+    #[serial(realm)]
+    async fn can_create_a_realm_for_a_draft(_ctx: &mut RedisTestContext, pool: PgPool) {
+        let (realm_map, _, story_id, mut tx, _) =
+            init_realms_server_for_test(pool, None, true, true).await;
 
-        text.push(&mut doc.transact_mut(), "abc");
+        tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
 
-        let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
-        let bcast = BroadcastGroup::new(awareness.clone(), 10).await;
-        let server = start_server("0.0.0.0:6601", Arc::new(bcast)).await?;
+        // Realm should be present in the map
+        let realm = realm_map
+            .async_lock(story_id, AsyncLimit::no_limit())
+            .await
+            .unwrap();
 
-        let doc = Doc::new();
-        let (n, sub) = create_notifier(&doc);
-        let c1 = client("ws://localhost:6601/test-room", doc).await?;
+        assert!(realm.value().is_some());
 
-        timeout(TIMEOUT, n.notified()).await?;
+        tx.close().await.unwrap();
+    }
 
-        {
-            let awareness = c1.awareness().read().await;
-            let doc = awareness.doc();
-            let text = doc.get_or_insert_text("test");
-            let str = text.get_string(&doc.transact());
-            assert_eq!(str, "abc".to_string());
-        }
+    #[test_context(LocalTestContext)]
+    #[sqlx::test]
+    #[serial(realm)]
+    async fn can_create_a_realm_for_a_published_story(
+        ctx: &mut LocalTestContext,
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let s3_client = &ctx.s3_client;
+        let mut conn = pool.acquire().await?;
+
+        // Insert a published story
+        let result = sqlx::query(
+            r#"
+            WITH inserted_user AS (
+                INSERT INTO users (id, name, username, email)
+                VALUES ($1, $2, $3, $4)
+            )
+            INSERT INTO stories (id, user_id, published_at)
+            VALUES ($5, $1, now())
+            "#,
+        )
+        .bind(1_i64)
+        .bind("Some user")
+        .bind("some_user")
+        .bind("someone@example.com")
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Attach the document to object storage
+        let document = sqlx::query(
+            r#"
+            SELECT key FROM documents
+            WHERE
+                story_id = $1
+                AND is_editable IS FALSE
+            "#,
+        )
+        .bind(2_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        let doc_body = Doc::new()
+            .transact()
+            .encode_state_as_update_v2(&StateVector::default());
+        let data = deflate_bytes_gzip(&doc_body, None).await.unwrap();
+
+        s3_client
+            .put_object()
+            .bucket(S3_DOCS_BUCKET)
+            .key(document.get::<Uuid, _>("key").to_string())
+            .body(data.into())
+            .send()
+            .await
+            .unwrap();
+
+        let documents = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
+            .await
+            .unwrap();
+
+        assert_eq!(documents, 1_u32);
+
+        let (realm_map, _, story_id, mut tx, _) =
+            init_realms_server_for_test(pool, Some(s3_client.clone()), true, false).await;
+
+        tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+
+        // Realm should be present in the map
+        let realm = realm_map
+            .async_lock(story_id, AsyncLimit::no_limit())
+            .await
+            .unwrap();
+
+        assert!(realm.value().is_some());
+
+        // Should insert an editable document
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS (
+                SELECT 1 FROM documents
+                WHERE 
+                    story_id = $1
+                    AND is_editable IS TRUE
+            )
+            "#,
+        )
+        .bind(&story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(result.get::<bool, _>("exists"));
+
+        // Should also make a copy of the original document in the object storage.
+        let documents = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
+            .await
+            .unwrap();
+
+        assert_eq!(documents, 2_u32);
+
+        tx.close().await.unwrap();
 
         Ok(())
     }
 
-    #[tokio::test]
-    async fn changes_from_one_client_reach_others() -> Result<(), Box<dyn std::error::Error>> {
-        let doc = Doc::with_client_id(1);
-        let text = doc.get_or_insert_text("test");
+    #[test_context(LocalTestContext)]
+    #[sqlx::test]
+    #[serial(realm)]
+    async fn can_reject_a_corrupted_document(
+        ctx: &mut LocalTestContext,
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let s3_client = &ctx.s3_client;
+        let mut conn = pool.acquire().await?;
 
-        let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
-        let bcast = BroadcastGroup::new(awareness.clone(), 10).await;
-        let server = start_server("0.0.0.0:6602", Arc::new(bcast)).await?;
+        // Insert a story
+        let result = sqlx::query(
+            r#"
+            WITH inserted_user AS (
+                INSERT INTO users (id, name, username, email)
+                VALUES ($1, $2, $3, $4)
+            )
+            INSERT INTO stories (id, user_id)
+            VALUES ($5, $1)
+            "#,
+        )
+        .bind(1_i64)
+        .bind("Some user")
+        .bind("some_user")
+        .bind("someone@example.com")
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
 
-        let d1 = Doc::with_client_id(2);
-        let c1 = client("ws://localhost:6602/test-room", d1).await?;
-        // by default changes made by document on the client side are not propagated automatically
-        let sub11 = {
-            let sink = c1.sink();
-            let a = c1.awareness().write().await;
-            let doc = a.doc();
-            doc.observe_update_v1(move |txn, e| {
-                let update = e.update.to_owned();
-                if let Some(sink) = sink.upgrade() {
-                    task::spawn(async move {
-                        let msg =
-                            y_sync::sync::Message::Sync(y_sync::sync::SyncMessage::Update(update))
-                                .encode_v1();
-                        let mut sink = sink.lock().await;
-                        sink.send(msg).await.unwrap();
-                    });
-                }
-            })
-            .unwrap()
-        };
+        assert_eq!(result.rows_affected(), 1);
 
-        let d2 = Doc::with_client_id(3);
-        let (n2, sub2) = create_notifier(&d2);
-        let c2 = client("ws://localhost:6602/test-room", d2).await?;
+        // Attach the document to object storage with invalid data
+        let document = sqlx::query(
+            r#"
+            SELECT key FROM documents
+            WHERE
+                story_id = $1
+                AND is_editable IS FALSE
+            "#,
+        )
+        .bind(2_i64)
+        .fetch_one(&mut *conn)
+        .await?;
 
-        {
-            let a = c1.awareness().write().await;
-            let doc = a.doc();
-            let text = doc.get_or_insert_text("test");
-            text.push(&mut doc.transact_mut(), "def");
+        let data = deflate_bytes_gzip("bad data".as_bytes(), None)
+            .await
+            .unwrap();
+
+        s3_client
+            .put_object()
+            .bucket(S3_DOCS_BUCKET)
+            .key(document.get::<Uuid, _>("key").to_string())
+            .body(data.into())
+            .send()
+            .await
+            .unwrap();
+
+        let documents = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
+            .await
+            .unwrap();
+
+        assert_eq!(documents, 1_u32);
+
+        let (_, _, _, mut tx, mut rx) =
+            init_realms_server_for_test(pool, Some(s3_client.clone()), true, false).await;
+
+        if let Ok(message) = rx.next().await.unwrap() {
+            assert_eq!(
+                message.to_string(),
+                EnterRealmError::DocCorrupted.to_string()
+            );
         }
 
-        timeout(TIMEOUT, n2.notified()).await?;
-
-        {
-            let awareness = c2.awareness().read().await;
-            let doc = awareness.doc();
-            let text = doc.get_or_insert_text("test");
-            let str = text.get_string(&doc.transact());
-            assert_eq!(str, "def".to_string());
-        }
-
-        Ok(())
-    }
-
-    #[tokio::test]
-    async fn client_failure_doesnt_affect_others() -> Result<(), Box<dyn std::error::Error>> {
-        let doc = Doc::with_client_id(1);
-        let text = doc.get_or_insert_text("test");
-
-        let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
-        let bcast = BroadcastGroup::new(awareness.clone(), 10).await;
-        let server = start_server("0.0.0.0:6603", Arc::new(bcast)).await?;
-
-        let d1 = Doc::with_client_id(2);
-        let c1 = client("ws://localhost:6603/test-room", d1).await?;
-        // by default changes made by document on the client side are not propagated automatically
-        let sub11 = {
-            let sink = c1.sink();
-            let a = c1.awareness().write().await;
-            let doc = a.doc();
-            doc.observe_update_v1(move |txn, e| {
-                let update = e.update.to_owned();
-                if let Some(sink) = sink.upgrade() {
-                    task::spawn(async move {
-                        let msg =
-                            y_sync::sync::Message::Sync(y_sync::sync::SyncMessage::Update(update))
-                                .encode_v1();
-                        let mut sink = sink.lock().await;
-                        sink.send(msg).await.unwrap();
-                    });
-                }
-            })
-            .unwrap()
-        };
-
-        let d2 = Doc::with_client_id(3);
-        let (n2, sub2) = create_notifier(&d2);
-        let c2 = client("ws://localhost:6603/test-room", d2).await?;
-
-        let d3 = Doc::with_client_id(4);
-        let (n3, sub3) = create_notifier(&d3);
-        let c3 = client("ws://localhost:6603/test-room", d3).await?;
-
-        {
-            let a = c1.awareness().write().await;
-            let doc = a.doc();
-            let text = doc.get_or_insert_text("test");
-            text.push(&mut doc.transact_mut(), "abc");
-        }
-
-        // on the first try both C2 and C3 should receive the update
-        //timeout(TIMEOUT, n2.notified()).await.unwrap();
-        //timeout(TIMEOUT, n3.notified()).await.unwrap();
-        sleep(TIMEOUT).await;
-
-        {
-            let awareness = c2.awareness().read().await;
-            let doc = awareness.doc();
-            let text = doc.get_or_insert_text("test");
-            let str = text.get_string(&doc.transact());
-            assert_eq!(str, "abc".to_string());
-        }
-        {
-            let awareness = c3.awareness().read().await;
-            let doc = awareness.doc();
-            let text = doc.get_or_insert_text("test");
-            let str = text.get_string(&doc.transact());
-            assert_eq!(str, "abc".to_string());
-        }
-
-        // drop client, causing abrupt ending
-        drop(c3);
-        drop(n3);
-        drop(sub3);
-        // C2 notification subscription has been realized, we need to refresh it
-        drop(n2);
-        drop(sub2);
-
-        let (n2, sub2) = {
-            let a = c2.awareness().write().await;
-            let doc = a.doc();
-            create_notifier(doc)
-        };
-
-        {
-            let a = c1.awareness().write().await;
-            let doc = a.doc();
-            let text = doc.get_or_insert_text("test");
-            text.push(&mut doc.transact_mut(), "def");
-        }
-
-        timeout(TIMEOUT, n2.notified()).await.unwrap();
-
-        {
-            let awareness = c2.awareness().read().await;
-            let doc = awareness.doc();
-            let text = doc.get_or_insert_text("test");
-            let str = text.get_string(&doc.transact());
-            assert_eq!(str, "abcdef".to_string());
-        }
+        tx.close().await.unwrap();
 
         Ok(())
     }

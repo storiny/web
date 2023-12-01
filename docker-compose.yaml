@@ -55,19 +55,19 @@ services:
       - ./docker/redis/users.acl:/opt/bitnami/redis/mounted-etc/users.acl
     command: /opt/bitnami/scripts/redis/run.sh --maxmemory 100mb
 
-  postgres:
-    container_name: "storiny-postgres"
-    image: postgres
-    restart: always
-    environment:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "pg_pass"
-      POSTGRES_DB: "primary"
-      PGDATA: "/var/lib/postgresql/data/pgdata"
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./docker/tmp/postgres:/var/lib/postgresql/data
+#  postgres:
+#    container_name: "storiny-postgres"
+#    image: postgres
+#    restart: always
+#    environment:
+#      POSTGRES_USER: "postgres"
+#      POSTGRES_PASSWORD: "pg_pass"
+#      POSTGRES_DB: "primary"
+#      PGDATA: "/var/lib/postgresql/data/pgdata"
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - ./docker/tmp/postgres:/var/lib/postgresql/data
 
 #  elasticsearch:
 #    container_name: "storiny-elasticsearch"

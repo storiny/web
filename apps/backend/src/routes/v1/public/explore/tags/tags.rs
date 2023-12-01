@@ -14,10 +14,7 @@ use serde::{
     Deserialize,
     Serialize,
 };
-use serde_with::{
-    serde_as,
-    DisplayFromStr,
-};
+
 use sqlx::{
     FromRow,
     Postgres,
@@ -36,10 +33,9 @@ struct QueryParams {
     query: Option<String>,
 }
 
-#[serde_as]
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 struct Tag {
-    #[serde_as(as = "DisplayFromStr")]
+    #[serde(with = "crate::snowflake_id")]
     id: i64,
     name: String,
     follower_count: i32,

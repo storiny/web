@@ -11,10 +11,7 @@ use serde::{
     Deserialize,
     Serialize,
 };
-use serde_with::{
-    serde_as,
-    DisplayFromStr,
-};
+
 use sqlx::{
     types::Json,
     FromRow,
@@ -27,18 +24,16 @@ struct Fragments {
     story_id: String,
 }
 
-#[serde_as]
 #[derive(Debug, Serialize, Deserialize)]
 struct User {
-    #[serde_as(as = "DisplayFromStr")]
+    #[serde(with = "crate::snowflake_id")]
     id: i64,
     username: String,
 }
 
-#[serde_as]
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 struct Story {
-    #[serde_as(as = "DisplayFromStr")]
+    #[serde(with = "crate::snowflake_id")]
     id: i64,
     slug: String,
     title: String,

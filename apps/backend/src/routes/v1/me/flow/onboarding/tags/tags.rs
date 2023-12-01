@@ -14,10 +14,7 @@ use serde::{
     Deserialize,
     Serialize,
 };
-use serde_with::{
-    serde_as,
-    DisplayFromStr,
-};
+
 use sqlx::FromRow;
 use validator::Validate;
 
@@ -27,10 +24,9 @@ struct QueryParams {
     encoded_categories: String,
 }
 
-#[serde_as]
 #[derive(sqlx::Type, Debug, Serialize, Deserialize)]
 struct Tag {
-    #[serde_as(as = "DisplayFromStr")]
+    #[serde(with = "crate::snowflake_id")]
     id: i64,
     name: String,
 }
