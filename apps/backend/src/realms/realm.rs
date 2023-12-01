@@ -493,10 +493,15 @@ impl Realm {
                             return;
                         }
 
+                        let is_first_persistence_iteration = self_ref.created_at
+                            + (PERSISTENCE_LOOP_DURATION as i64)
+                            > OffsetDateTime::now_utc().unix_timestamp();
+
                         let mut is_last_persistence_iteration =
                             self_ref.is_last_persistence_iteration.write().await;
 
-                        if self_ref.has_peers().await {
+                        // Always persist the document for the first persistence cycle
+                        if is_first_persistence_iteration || self_ref.has_peers().await {
                             *is_last_persistence_iteration = false;
                             drop(is_last_persistence_iteration);
 

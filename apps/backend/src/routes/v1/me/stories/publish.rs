@@ -224,52 +224,77 @@ async fn put(
             Ok(story_id) => {
                 if let Ok(mut realm) = realm_map.async_lock(story_id, AsyncLimit::no_limit()).await
                 {
+                    let pg_pool = &data.db_pool;
+                    let mut txn = pg_pool.begin().await?;
+
                     match sqlx::query(
                         r#"
-                        WITH delete_document AS (
-                            DELETE FROM documents
-                            WHERE
-                                story_id = $2
-                                AND is_editable IS FALSE
-                                AND EXISTS (
-                                    SELECT 1 FROM documents
-                                    WHERE story_id = $2
-                                    AND is_editable IS TRUE
-                                )
-                        ),
-                        updated_document AS (
-                            UPDATE documents
-                            SET is_editable = FALSE
-                            WHERE story_id = $2
-                        )
-                        UPDATE stories
-                        SET edited_at = now()
+                        UPDATE documents
+                        SET story_id = NULL
                         WHERE
-                            user_id = $1
-                            AND id = $2
-                            AND published_at IS NOT NULL
-                            AND deleted_at IS NULL
+                            story_id = $1
+                            AND is_editable IS FALSE
+                        AND EXISTS (
+                            SELECT 1 FROM documents d
+                            WHERE d.story_id = $1
+                                AND d.is_editable IS TRUE
+                        )
+                        RETURNING id
                         "#,
                     )
-                    .bind(user_id)
-                    .bind(story_id)
-                    .execute(&data.db_pool)
-                    .await?
-                    .rows_affected()
+                    .bind(&story_id)
+                    .fetch_one(&mut *txn)
+                    .await
                     {
-                        0 => Ok(HttpResponse::BadRequest()
-                            .json(ToastErrorResponse::new("Story not found"))),
-                        _ => {
-                            // Drop the realm
-                            if let Some(realm_inner) = realm.value() {
-                                realm_inner
-                                    .destroy(RealmDestroyReason::StoryPublished)
-                                    .await;
+                        Ok(_) => {
+                            match sqlx::query(
+                                r#"
+                                WITH updated_document AS (
+                                    UPDATE documents
+                                    SET is_editable = FALSE
+                                    WHERE story_id = $2
+                                )
+                                UPDATE stories
+                                SET edited_at = now()
+                                WHERE
+                                    user_id = $1
+                                    AND id = $2
+                                    AND published_at IS NOT NULL
+                                    AND deleted_at IS NULL
+                                "#,
+                            )
+                            .bind(&user_id)
+                            .bind(&story_id)
+                            .execute(&mut *txn)
+                            .await?
+                            .rows_affected()
+                            {
+                                0 => Ok(HttpResponse::BadRequest()
+                                    .json(ToastErrorResponse::new("Story not found"))),
+                                _ => {
+                                    // Drop the realm
+                                    if let Some(realm_inner) = realm.value() {
+                                        realm_inner
+                                            .destroy(RealmDestroyReason::StoryPublished)
+                                            .await;
+                                    }
+
+                                    realm.remove();
+
+                                    txn.commit().await?;
+
+                                    Ok(HttpResponse::NoContent().finish())
+                                }
                             }
-
-                            realm.remove();
-
-                            Ok(HttpResponse::NoContent().finish())
+                        }
+                        Err(error) => {
+                            if matches!(error, sqlx::Error::RowNotFound) {
+                                Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
+                                    "Story does not exist or has not been edited yet",
+                                )))
+                            } else {
+                                Ok(HttpResponse::InternalServerError().finish())
+                            }
                         }
                     }
                 } else {
