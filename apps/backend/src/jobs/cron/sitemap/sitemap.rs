@@ -216,7 +216,7 @@ mod tests {
         },
         S3Client,
     };
-    use serial_test::serial;
+
     use sqlx::PgPool;
     use storiny_macros::test_context;
 
@@ -239,45 +239,47 @@ mod tests {
         }
     }
 
-    #[test_context(LocalTestContext)]
-    #[sqlx::test(fixtures("sitemap"))]
-    #[serial(s3)]
-    async fn can_generate_sitemap(ctx: &mut LocalTestContext, pool: PgPool) {
-        let s3_client = &ctx.s3_client;
-        let ctx = get_job_ctx_for_test(pool, Some(s3_client.clone())).await;
-        let result = refresh_sitemap(SitemapJob { 0: Utc::now() }, ctx).await;
-        // 1 preset file + 1 story file + 1 user file + 1 tag file + 1 index sitemap file
-        let expected_sitemap_file_count = 5;
+    mod serial {
+        use super::*;
 
-        assert!(result.is_ok());
-        assert_eq!(result.unwrap().file_count, expected_sitemap_file_count);
+        #[test_context(LocalTestContext)]
+        #[sqlx::test(fixtures("sitemap"))]
+        async fn can_generate_sitemap(ctx: &mut LocalTestContext, pool: PgPool) {
+            let s3_client = &ctx.s3_client;
+            let ctx = get_job_ctx_for_test(pool, Some(s3_client.clone())).await;
+            let result = refresh_sitemap(SitemapJob { 0: Utc::now() }, ctx).await;
+            // 1 preset file + 1 story file + 1 user file + 1 tag file + 1 index sitemap file
+            let expected_sitemap_file_count = 5;
 
-        // Sitemaps should be present in the bucket
-        let sitemap_count = count_s3_objects(&s3_client, S3_SITEMAPS_BUCKET, None, None)
-            .await
-            .unwrap();
+            assert!(result.is_ok());
+            assert_eq!(result.unwrap().file_count, expected_sitemap_file_count);
 
-        assert_eq!(sitemap_count, expected_sitemap_file_count);
-    }
+            // Sitemaps should be present in the bucket
+            let sitemap_count = count_s3_objects(&s3_client, S3_SITEMAPS_BUCKET, None, None)
+                .await
+                .unwrap();
 
-    #[test_context(LocalTestContext)]
-    #[sqlx::test(fixtures("large_dataset"))]
-    #[serial(s3)]
-    async fn can_generate_sitemap_for_large_dataset(ctx: &mut LocalTestContext, pool: PgPool) {
-        let s3_client = &ctx.s3_client;
-        let ctx = get_job_ctx_for_test(pool, Some(s3_client.clone())).await;
-        let result = refresh_sitemap(SitemapJob { 0: Utc::now() }, ctx).await;
-        // 1 preset file + 3 story files + 3 user files + 3 tag files + 1 index sitemap file
-        let expected_sitemap_file_count = 11;
+            assert_eq!(sitemap_count, expected_sitemap_file_count);
+        }
 
-        assert!(result.is_ok());
-        assert_eq!(result.unwrap().file_count, expected_sitemap_file_count);
+        #[test_context(LocalTestContext)]
+        #[sqlx::test(fixtures("large_dataset"))]
+        async fn can_generate_sitemap_for_large_dataset(ctx: &mut LocalTestContext, pool: PgPool) {
+            let s3_client = &ctx.s3_client;
+            let ctx = get_job_ctx_for_test(pool, Some(s3_client.clone())).await;
+            let result = refresh_sitemap(SitemapJob { 0: Utc::now() }, ctx).await;
+            // 1 preset file + 3 story files + 3 user files + 3 tag files + 1 index sitemap file
+            let expected_sitemap_file_count = 11;
 
-        // Sitemaps should be present in the bucket
-        let sitemap_count = count_s3_objects(&s3_client, S3_SITEMAPS_BUCKET, None, None)
-            .await
-            .unwrap();
+            assert!(result.is_ok());
+            assert_eq!(result.unwrap().file_count, expected_sitemap_file_count);
 
-        assert_eq!(sitemap_count, expected_sitemap_file_count);
+            // Sitemaps should be present in the bucket
+            let sitemap_count = count_s3_objects(&s3_client, S3_SITEMAPS_BUCKET, None, None)
+                .await
+                .unwrap();
+
+            assert_eq!(sitemap_count, expected_sitemap_file_count);
+        }
     }
 }

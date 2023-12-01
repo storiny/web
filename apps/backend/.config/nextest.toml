@@ -21,7 +21,9 @@ retries = 0
 
 # The number of threads to run tests with. Supported values are either an integer or
 # the string "num-cpus". Can be overridden through the `--test-threads` option.
-test-threads = "num-cpus"
+# TODO: Consider running tests on multiple threads
+# test-threads = "num-cpus"
+test-threads = 1
 
 # The number of threads required for each test. This is generally used in overrides to
 # mark certain tests as heavier than others. However, it can also be set as a global parameter.
@@ -108,14 +110,13 @@ store-success-output = false
 # <description> element.
 store-failure-output = true
 
-# This profile is activated if MIRI_SYSROOT is set.
-[profile.default-miri]
-# Miri tests take up a lot of memory, so only run 1 test at a time by default.
-test-threads = 1
-
 [test-groups]
 serial-integration = { max-threads = 1 }
 
 [[profile.default.overrides]]
 filter = 'test(serial::)'
 test-group = 'serial-integration'
+
+[[profile.default.overrides]]
+filter = 'test(large_dataset) + test(long_running::)'
+slow-timeout = { period = "360s", terminate-after = 3 }

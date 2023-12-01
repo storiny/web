@@ -69,7 +69,10 @@ mod tests {
         },
         test_utils::test_grpc_service,
     };
-    use sqlx::PgPool;
+    use sqlx::{
+        PgPool,
+        Row,
+    };
     use tonic::Request;
 
     #[sqlx::test]
@@ -79,10 +82,9 @@ mod tests {
             false,
             Box::new(|mut client, pool, _, _| async move {
                 // Insert the user
-                sqlx::query(
+                let result = sqlx::query(
                     r#"
                     INSERT INTO users(
-                        id,
                         name,
                         username,
                         email,
@@ -93,10 +95,10 @@ mod tests {
                         following_list_visibility,
                         friend_list_visibility
                     )
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                    RETURNING id
                     "#,
                 )
-                .bind(1_i64)
                 .bind("Some user".to_string())
                 .bind("some_user".to_string())
                 .bind("someone@example.com".to_string())
@@ -106,13 +108,15 @@ mod tests {
                 .bind(IncomingFriendRequest::None as i16)
                 .bind(RelationVisibility::None as i16)
                 .bind(RelationVisibility::None as i16)
-                .execute(&pool)
+                .fetch_one(&pool)
                 .await
                 .unwrap();
 
+                let user_id = result.get::<i64, _>("id");
+
                 let response = client
                     .get_privacy_settings(Request::new(GetPrivacySettingsRequest {
-                        id: 1_i64.to_string(),
+                        id: user_id.to_string(),
                     }))
                     .await
                     .unwrap()

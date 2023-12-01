@@ -10,7 +10,10 @@ use crate::{
     test_utils::get_redis_pool,
     RedisPool,
 };
-use sqlx::PgPool;
+use sqlx::{
+    PgPool,
+    Row,
+};
 use std::{
     future::Future,
     sync::Arc,
@@ -41,21 +44,25 @@ pub async fn test_grpc_service<B>(
 ) where
     B: Future<Output = ()>,
 {
+    let mut user_id: i64 = 1_i64;
+
     if insert_user {
         // Insert the user
-        sqlx::query(
+        let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email)
-            VALUES ($1, $2, $3, $4)
+            INSERT INTO users(name, username, email)
+            VALUES ($1, $2, $3)
+            RETURNING id
             "#,
         )
-        .bind(1_i64)
         .bind("Some user".to_string())
         .bind("some_user".to_string())
         .bind("someone@example.com".to_string())
-        .execute(&db_pool)
+        .fetch_one(&db_pool)
         .await
         .unwrap();
+
+        user_id = result.get::<i64, _>("id");
     }
 
     let socket = Arc::new(NamedTempFile::new().unwrap().into_temp_path());
@@ -101,7 +108,7 @@ pub async fn test_grpc_service<B>(
         client,
         db_pool.clone(),
         redis_pool.clone(),
-        if insert_user { Some(1_i64) } else { None },
+        if insert_user { Some(user_id) } else { None },
     );
 
     tokio::select! {

@@ -83,7 +83,6 @@ storiny_macros = { version = "0.1.0", path = "macros" }
 just = "1.14.0"
 quote = "1.0.33"
 reqwest = { version = "0.11.22", default-features = false, features = ["cookies", "json", "multipart", "stream"] }
-serial_test = "2.0.0"
 tempfile = "3.8.1"
 tokio = { version = "1.32.0", features = ["time"] }
 tokio-stream = { version = "0.1.14", features = ["net"] }

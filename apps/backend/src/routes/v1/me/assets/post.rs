@@ -314,7 +314,7 @@ mod tests {
         Body,
         StatusCode,
     };
-    use serial_test::serial;
+
     use sqlx::PgPool;
     use std::{
         net::TcpListener,
@@ -452,75 +452,6 @@ mod tests {
         }
     }
 
-    // This test also asserts JPG/JPEG image handling
-    #[test_context(LocalTestContext)]
-    #[sqlx::test]
-    #[serial(redis, s3)]
-    async fn can_insert_an_asset(ctx: &mut LocalTestContext, pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (client, generate_url) =
-            init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
-        let part = get_image_part("normal.jpg", "image.jpg", &IMAGE_JPEG.to_string()).await;
-        let form = Form::new().text("alt", "Some alt").part("file", part);
-
-        let res = client
-            .post(generate_url("/v1/me/assets"))
-            .multipart(form)
-            .send()
-            .await
-            .unwrap();
-
-        assert!(res.status().is_success());
-        let json = res.json::<Response>().await;
-        assert!(json.is_ok());
-
-        // Should insert metadata into the database
-        let result = sqlx::query(
-            r#"
-            SELECT alt FROM assets
-            WHERE id = $1
-            "#,
-        )
-        .bind(json.unwrap().id)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert_eq!(result.get::<String, _>("alt"), "Some alt".to_string());
-
-        // Should also increment the resource limit
-        let result = get_resource_limit(&ctx.redis_pool, ResourceLimit::CreateAsset, 1_i64).await;
-
-        assert_eq!(result, 1);
-
-        Ok(())
-    }
-
-    #[test_context(RedisTestContext)]
-    #[sqlx::test]
-    #[serial(redis)]
-    async fn can_reject_an_asset_on_exceeding_the_resource_limit(
-        ctx: &mut RedisTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let (client, generate_url) = init_web_server_for_test(pool, None).await;
-        let part = get_image_part("normal.jpg", "image.jpg", &IMAGE_JPEG.to_string()).await;
-        let form = Form::new().text("alt", "Some alt").part("file", part);
-
-        // Exceed the resource limit
-        exceed_resource_limit(&ctx.redis_pool, ResourceLimit::CreateAsset, 1_i64).await;
-
-        let res = client
-            .post(generate_url("/v1/me/assets"))
-            .multipart(form)
-            .send()
-            .await
-            .unwrap();
-
-        assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
-
-        Ok(())
-    }
-
     #[sqlx::test]
     async fn can_reject_an_image_with_bad_mime_type(pool: PgPool) -> sqlx::Result<()> {
         let (client, generate_url) = init_web_server_for_test(pool, None).await;
@@ -536,30 +467,6 @@ mod tests {
 
         assert!(res.status().is_client_error());
         assert_eq!(res.text().await.unwrap(), "Unsupported image type");
-
-        Ok(())
-    }
-
-    #[test_context(LocalTestContext)]
-    #[sqlx::test]
-    #[serial(redis, s3)]
-    async fn can_insert_an_asset_without_file_extension(
-        ctx: &mut LocalTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let (client, generate_url) =
-            init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
-        let part = get_image_part("normal.jpg", "image", &IMAGE_JPEG.to_string()).await;
-        let form = Form::new().text("alt", "").part("file", part);
-
-        let res = client
-            .post(generate_url("/v1/me/assets"))
-            .multipart(form)
-            .send()
-            .await
-            .unwrap();
-
-        assert!(res.status().is_success());
 
         Ok(())
     }
@@ -601,119 +508,6 @@ mod tests {
         Ok(())
     }
 
-    #[test_context(LocalTestContext)]
-    #[sqlx::test]
-    #[serial(redis, s3)]
-    async fn can_scale_down_a_large_image(
-        ctx: &mut LocalTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let (client, generate_url) =
-            init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
-        let part = get_image_part("large_dims.jpg", "image.jpg", &IMAGE_JPEG.to_string()).await;
-        let form = Form::new().text("alt", "").part("file", part);
-
-        let res = client
-            .post(generate_url("/v1/me/assets"))
-            .multipart(form)
-            .send()
-            .await
-            .unwrap();
-
-        assert!(res.status().is_success());
-        let json = res.json::<Response>().await.unwrap();
-        assert_eq!(json.width, 2048); // 2k limit
-
-        Ok(())
-    }
-
-    #[test_context(LocalTestContext)]
-    #[sqlx::test]
-    #[serial(redis, s3)]
-    async fn can_handle_a_png_image(ctx: &mut LocalTestContext, pool: PgPool) -> sqlx::Result<()> {
-        let (client, generate_url) =
-            init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
-        let part = get_image_part("image.png", "image.png", &IMAGE_PNG.to_string()).await;
-        let form = Form::new().text("alt", "").part("file", part);
-
-        let res = client
-            .post(generate_url("/v1/me/assets"))
-            .multipart(form)
-            .send()
-            .await
-            .unwrap();
-
-        assert!(res.status().is_success());
-
-        Ok(())
-    }
-
-    #[test_context(LocalTestContext)]
-    #[sqlx::test]
-    #[serial(redis, s3)]
-    async fn can_handle_a_gif_image(ctx: &mut LocalTestContext, pool: PgPool) -> sqlx::Result<()> {
-        let (client, generate_url) =
-            init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
-        let part = get_image_part("image.gif", "image.gif", &IMAGE_GIF.to_string()).await;
-        let form = Form::new().text("alt", "").part("file", part);
-
-        let res = client
-            .post(generate_url("/v1/me/assets"))
-            .multipart(form)
-            .send()
-            .await
-            .unwrap();
-
-        assert!(res.status().is_success());
-
-        Ok(())
-    }
-
-    #[test_context(LocalTestContext)]
-    #[sqlx::test]
-    #[serial(redis, s3)]
-    async fn can_handle_a_webp_image(ctx: &mut LocalTestContext, pool: PgPool) -> sqlx::Result<()> {
-        let (client, generate_url) =
-            init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
-        let part = get_image_part("image.webp", "image.webp", "image/webp").await;
-        let form = Form::new().text("alt", "").part("file", part);
-
-        let res = client
-            .post(generate_url("/v1/me/assets"))
-            .multipart(form)
-            .send()
-            .await
-            .unwrap();
-
-        assert!(res.status().is_success());
-
-        Ok(())
-    }
-
-    #[test_context(LocalTestContext)]
-    #[sqlx::test]
-    #[serial(redis, s3)]
-    async fn can_handle_an_animated_webp_image(
-        ctx: &mut LocalTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let (client, generate_url) =
-            init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
-        let part = get_image_part("animated_image.webp", "image.webp", "image/webp").await;
-        let form = Form::new().text("alt", "").part("file", part);
-
-        let res = client
-            .post(generate_url("/v1/me/assets"))
-            .multipart(form)
-            .send()
-            .await
-            .unwrap();
-
-        assert!(res.status().is_success());
-
-        Ok(())
-    }
-
     // TODO: Remove this test when GIFs can be resized
     #[sqlx::test]
     async fn can_reject_an_oversized_gif(pool: PgPool) -> sqlx::Result<()> {
@@ -751,5 +545,217 @@ mod tests {
         assert!(res.status().is_client_error());
 
         Ok(())
+    }
+
+    mod serial {
+        use super::*;
+
+        // This test also asserts JPG/JPEG image handling
+        #[test_context(LocalTestContext)]
+        #[sqlx::test]
+        async fn can_insert_an_asset(ctx: &mut LocalTestContext, pool: PgPool) -> sqlx::Result<()> {
+            let mut conn = pool.acquire().await?;
+            let (client, generate_url) =
+                init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
+            let part = get_image_part("normal.jpg", "image.jpg", &IMAGE_JPEG.to_string()).await;
+            let form = Form::new().text("alt", "Some alt").part("file", part);
+
+            let res = client
+                .post(generate_url("/v1/me/assets"))
+                .multipart(form)
+                .send()
+                .await
+                .unwrap();
+
+            assert!(res.status().is_success());
+            let json = res.json::<Response>().await;
+            assert!(json.is_ok());
+
+            // Should insert metadata into the database
+            let result = sqlx::query(
+                r#"
+                SELECT alt FROM assets
+                WHERE id = $1
+                "#,
+            )
+            .bind(json.unwrap().id)
+            .fetch_one(&mut *conn)
+            .await?;
+
+            assert_eq!(result.get::<String, _>("alt"), "Some alt".to_string());
+
+            // Should also increment the resource limit
+            let result =
+                get_resource_limit(&ctx.redis_pool, ResourceLimit::CreateAsset, 1_i64).await;
+
+            assert_eq!(result, 1);
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_reject_an_asset_on_exceeding_the_resource_limit(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let (client, generate_url) = init_web_server_for_test(pool, None).await;
+            let part = get_image_part("normal.jpg", "image.jpg", &IMAGE_JPEG.to_string()).await;
+            let form = Form::new().text("alt", "Some alt").part("file", part);
+
+            // Exceed the resource limit
+            exceed_resource_limit(&ctx.redis_pool, ResourceLimit::CreateAsset, 1_i64).await;
+
+            let res = client
+                .post(generate_url("/v1/me/assets"))
+                .multipart(form)
+                .send()
+                .await
+                .unwrap();
+
+            assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
+
+            Ok(())
+        }
+
+        #[test_context(LocalTestContext)]
+        #[sqlx::test]
+        async fn can_insert_an_asset_without_file_extension(
+            ctx: &mut LocalTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let (client, generate_url) =
+                init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
+            let part = get_image_part("normal.jpg", "image", &IMAGE_JPEG.to_string()).await;
+            let form = Form::new().text("alt", "").part("file", part);
+
+            let res = client
+                .post(generate_url("/v1/me/assets"))
+                .multipart(form)
+                .send()
+                .await
+                .unwrap();
+
+            assert!(res.status().is_success());
+
+            Ok(())
+        }
+
+        #[test_context(LocalTestContext)]
+        #[sqlx::test]
+        async fn can_scale_down_a_large_image(
+            ctx: &mut LocalTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let (client, generate_url) =
+                init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
+            let part = get_image_part("large_dims.jpg", "image.jpg", &IMAGE_JPEG.to_string()).await;
+            let form = Form::new().text("alt", "").part("file", part);
+
+            let res = client
+                .post(generate_url("/v1/me/assets"))
+                .multipart(form)
+                .send()
+                .await
+                .unwrap();
+
+            assert!(res.status().is_success());
+            let json = res.json::<Response>().await.unwrap();
+            assert_eq!(json.width, 2048); // 2k limit
+
+            Ok(())
+        }
+
+        #[test_context(LocalTestContext)]
+        #[sqlx::test]
+        async fn can_handle_a_png_image(
+            ctx: &mut LocalTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let (client, generate_url) =
+                init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
+            let part = get_image_part("image.png", "image.png", &IMAGE_PNG.to_string()).await;
+            let form = Form::new().text("alt", "").part("file", part);
+
+            let res = client
+                .post(generate_url("/v1/me/assets"))
+                .multipart(form)
+                .send()
+                .await
+                .unwrap();
+
+            assert!(res.status().is_success());
+
+            Ok(())
+        }
+
+        #[test_context(LocalTestContext)]
+        #[sqlx::test]
+        async fn can_handle_a_gif_image(
+            ctx: &mut LocalTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let (client, generate_url) =
+                init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
+            let part = get_image_part("image.gif", "image.gif", &IMAGE_GIF.to_string()).await;
+            let form = Form::new().text("alt", "").part("file", part);
+
+            let res = client
+                .post(generate_url("/v1/me/assets"))
+                .multipart(form)
+                .send()
+                .await
+                .unwrap();
+
+            assert!(res.status().is_success());
+
+            Ok(())
+        }
+
+        #[test_context(LocalTestContext)]
+        #[sqlx::test]
+        async fn can_handle_a_webp_image(
+            ctx: &mut LocalTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let (client, generate_url) =
+                init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
+            let part = get_image_part("image.webp", "image.webp", "image/webp").await;
+            let form = Form::new().text("alt", "").part("file", part);
+
+            let res = client
+                .post(generate_url("/v1/me/assets"))
+                .multipart(form)
+                .send()
+                .await
+                .unwrap();
+
+            assert!(res.status().is_success());
+
+            Ok(())
+        }
+
+        #[test_context(LocalTestContext)]
+        #[sqlx::test]
+        async fn can_handle_an_animated_webp_image(
+            ctx: &mut LocalTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let (client, generate_url) =
+                init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
+            let part = get_image_part("animated_image.webp", "image.webp", "image/webp").await;
+            let form = Form::new().text("alt", "").part("file", part);
+
+            let res = client
+                .post(generate_url("/v1/me/assets"))
+                .multipart(form)
+                .send()
+                .await
+                .unwrap();
+
+            assert!(res.status().is_success());
+
+            Ok(())
+        }
     }
 }

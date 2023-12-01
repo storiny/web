@@ -55,7 +55,7 @@ mod tests {
         utils::delete_s3_objects::delete_s3_objects,
     };
     use futures::future;
-    use serial_test::serial;
+
     use storiny_macros::test_context;
 
     struct LocalTestContext {
@@ -82,101 +82,102 @@ mod tests {
         }
     }
 
-    #[test_context(LocalTestContext)]
-    #[tokio::test]
-    #[serial(s3)]
-    async fn can_count_objects_with_prefix(ctx: &mut LocalTestContext) {
-        let s3_client = &ctx.s3_client;
+    mod serial {
+        use super::*;
 
-        // Insert an object
-        let result = s3_client
-            .put_object()
-            .bucket(S3_BASE_BUCKET)
-            .key("test-fruits/guava")
-            .send()
-            .await;
+        #[test_context(LocalTestContext)]
+        #[tokio::test]
+        async fn can_count_objects_with_prefix(ctx: &mut LocalTestContext) {
+            let s3_client = &ctx.s3_client;
 
-        assert!(result.is_ok());
+            // Insert an object
+            let result = s3_client
+                .put_object()
+                .bucket(S3_BASE_BUCKET)
+                .key("test-fruits/guava")
+                .send()
+                .await;
 
-        let result = count_s3_objects(
-            &s3_client,
-            S3_BASE_BUCKET,
-            Some("test-fruits/".to_string()),
-            None,
-        )
-        .await
-        .unwrap();
+            assert!(result.is_ok());
 
-        assert_eq!(result, 1_u32);
-    }
+            let result = count_s3_objects(
+                &s3_client,
+                S3_BASE_BUCKET,
+                Some("test-fruits/".to_string()),
+                None,
+            )
+            .await
+            .unwrap();
 
-    #[test_context(LocalTestContext)]
-    #[tokio::test]
-    #[serial(s3)]
-    async fn can_count_more_than_1000_objects_with_prefix(ctx: &mut LocalTestContext) {
-        let s3_client = &ctx.s3_client;
-        let mut put_futures = vec![];
-
-        // Insert 1200 objects
-        for i in 0..1_200 {
-            put_futures.push(
-                s3_client
-                    .put_object()
-                    .bucket(S3_BASE_BUCKET)
-                    .key(format!("test-integers/{}", i))
-                    .send(),
-            );
+            assert_eq!(result, 1_u32);
         }
 
-        future::join_all(put_futures).await;
+        #[test_context(LocalTestContext)]
+        #[tokio::test]
+        async fn can_count_more_than_1000_objects_with_prefix(ctx: &mut LocalTestContext) {
+            let s3_client = &ctx.s3_client;
+            let mut put_futures = vec![];
 
-        let result = count_s3_objects(
-            &s3_client,
-            S3_BASE_BUCKET,
-            Some("test-integers/".to_string()),
-            None,
-        )
-        .await
-        .unwrap();
+            // Insert 1200 objects
+            for i in 0..1_200 {
+                put_futures.push(
+                    s3_client
+                        .put_object()
+                        .bucket(S3_BASE_BUCKET)
+                        .key(format!("test-integers/{}", i))
+                        .send(),
+                );
+            }
 
-        assert_eq!(result, 1_200_u32);
-    }
+            future::join_all(put_futures).await;
 
-    #[test_context(LocalTestContext)]
-    #[tokio::test]
-    #[serial(s3)]
-    async fn should_not_count_objects_not_starting_with_the_prefix(ctx: &mut LocalTestContext) {
-        let s3_client = &ctx.s3_client;
+            let result = count_s3_objects(
+                &s3_client,
+                S3_BASE_BUCKET,
+                Some("test-integers/".to_string()),
+                None,
+            )
+            .await
+            .unwrap();
 
-        // Insert an object
-        let result = s3_client
-            .put_object()
-            .bucket(S3_BASE_BUCKET)
-            .key("test-trees/oak")
-            .send()
-            .await;
+            assert_eq!(result, 1_200_u32);
+        }
 
-        assert!(result.is_ok());
+        #[test_context(LocalTestContext)]
+        #[tokio::test]
+        async fn should_not_count_objects_not_starting_with_the_prefix(ctx: &mut LocalTestContext) {
+            let s3_client = &ctx.s3_client;
 
-        // Insert another object with a different prefix
-        let result = s3_client
-            .put_object()
-            .bucket(S3_BASE_BUCKET)
-            .key("test-beverages/latte")
-            .send()
-            .await;
+            // Insert an object
+            let result = s3_client
+                .put_object()
+                .bucket(S3_BASE_BUCKET)
+                .key("test-trees/oak")
+                .send()
+                .await;
 
-        assert!(result.is_ok());
+            assert!(result.is_ok());
 
-        let result = count_s3_objects(
-            &s3_client,
-            S3_BASE_BUCKET,
-            Some("test-trees/".to_string()),
-            None,
-        )
-        .await
-        .unwrap();
+            // Insert another object with a different prefix
+            let result = s3_client
+                .put_object()
+                .bucket(S3_BASE_BUCKET)
+                .key("test-beverages/latte")
+                .send()
+                .await;
 
-        assert_eq!(result, 1_u32);
+            assert!(result.is_ok());
+
+            let result = count_s3_objects(
+                &s3_client,
+                S3_BASE_BUCKET,
+                Some("test-trees/".to_string()),
+                None,
+            )
+            .await
+            .unwrap();
+
+            assert_eq!(result, 1_u32);
+        }
     }
 }

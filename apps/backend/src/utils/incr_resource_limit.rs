@@ -40,70 +40,72 @@ mod tests {
     use super::*;
     use crate::test_utils::RedisTestContext;
     use redis::AsyncCommands;
-    use serial_test::serial;
+
     use storiny_macros::test_context;
 
-    #[test_context(RedisTestContext)]
-    #[tokio::test]
-    #[serial(redis)]
-    async fn can_increment_resource_limit_for_a_missing_key(ctx: &mut RedisTestContext) {
-        let redis_pool = &ctx.redis_pool;
-        let mut conn = redis_pool.get().await.unwrap();
+    mod serial {
+        use super::*;
 
-        incr_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64)
-            .await
-            .unwrap();
+        #[test_context(RedisTestContext)]
+        #[tokio::test]
+        async fn can_increment_resource_limit_for_a_missing_key(ctx: &mut RedisTestContext) {
+            let redis_pool = &ctx.redis_pool;
+            let mut conn = redis_pool.get().await.unwrap();
 
-        // Key should be present in the cache
-        let cache_key = format!(
-            "{}:{}:{}",
-            RedisNamespace::ResourceLimit.to_string(),
-            ResourceLimit::CreateStory as i32,
-            1
-        );
+            incr_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64)
+                .await
+                .unwrap();
 
-        let result: String = conn.get(&cache_key).await.unwrap();
+            // Key should be present in the cache
+            let cache_key = format!(
+                "{}:{}:{}",
+                RedisNamespace::ResourceLimit.to_string(),
+                ResourceLimit::CreateStory as i32,
+                1
+            );
 
-        assert_eq!(result, "1");
+            let result: String = conn.get(&cache_key).await.unwrap();
 
-        // Should also set an expiry on the key
-        let ttl: i32 = conn.ttl(&cache_key).await.unwrap();
+            assert_eq!(result, "1");
 
-        assert_ne!(ttl, -1);
-    }
+            // Should also set an expiry on the key
+            let ttl: i32 = conn.ttl(&cache_key).await.unwrap();
 
-    #[test_context(RedisTestContext)]
-    #[tokio::test]
-    #[serial(redis)]
-    async fn can_increment_resource_limit_for_an_existing_key(ctx: &mut RedisTestContext) {
-        let redis_pool = &ctx.redis_pool;
-        let mut conn = redis_pool.get().await.unwrap();
+            assert_ne!(ttl, -1);
+        }
 
-        // Increment for the first time
-        incr_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64)
-            .await
-            .unwrap();
+        #[test_context(RedisTestContext)]
+        #[tokio::test]
+        async fn can_increment_resource_limit_for_an_existing_key(ctx: &mut RedisTestContext) {
+            let redis_pool = &ctx.redis_pool;
+            let mut conn = redis_pool.get().await.unwrap();
 
-        // Increment again
-        incr_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64)
-            .await
-            .unwrap();
+            // Increment for the first time
+            incr_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64)
+                .await
+                .unwrap();
 
-        // Key should be present in the cache with the correct value
-        let cache_key = format!(
-            "{}:{}:{}",
-            RedisNamespace::ResourceLimit.to_string(),
-            ResourceLimit::CreateStory as i32,
-            1
-        );
+            // Increment again
+            incr_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64)
+                .await
+                .unwrap();
 
-        let result: String = conn.get(&cache_key).await.unwrap();
+            // Key should be present in the cache with the correct value
+            let cache_key = format!(
+                "{}:{}:{}",
+                RedisNamespace::ResourceLimit.to_string(),
+                ResourceLimit::CreateStory as i32,
+                1
+            );
 
-        assert_eq!(result, "2");
+            let result: String = conn.get(&cache_key).await.unwrap();
 
-        // Should not reset expiry on the key
-        let ttl: i32 = conn.ttl(&cache_key).await.unwrap();
+            assert_eq!(result, "2");
 
-        assert_ne!(ttl, -1);
+            // Should not reset expiry on the key
+            let ttl: i32 = conn.ttl(&cache_key).await.unwrap();
+
+            assert_ne!(ttl, -1);
+        }
     }
 }

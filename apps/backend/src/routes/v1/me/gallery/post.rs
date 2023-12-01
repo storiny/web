@@ -299,95 +299,12 @@ mod tests {
     };
     use actix_http::StatusCode;
     use actix_web::test;
-    use serial_test::serial;
+
     use sqlx::{
         PgPool,
         Row,
     };
     use storiny_macros::test_context;
-
-    #[test_context(RedisTestContext)]
-    #[sqlx::test]
-    #[serial(redis)]
-    async fn can_upload_a_photo_from_pexels(
-        ctx: &mut RedisTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
-
-        let req = test::TestRequest::post()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/gallery")
-            .set_json(Request {
-                id: "2014422".to_string(),
-            })
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Response>(&res_to_string(res).await).unwrap();
-
-        // Asset should be present in the database
-        let result = sqlx::query(
-            r#"
-            SELECT EXISTS(
-                SELECT 1 FROM assets
-                WHERE user_id = $1 AND id = $2
-            )
-            "#,
-        )
-        .bind(user_id.unwrap())
-        .bind(json.id)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(result.get::<bool, _>("exists"));
-
-        // Should also increment the resource limit
-        let result = get_resource_limit(
-            &ctx.redis_pool,
-            ResourceLimit::CreateAsset,
-            user_id.unwrap(),
-        )
-        .await;
-
-        assert_eq!(result, 1);
-
-        Ok(())
-    }
-
-    #[test_context(RedisTestContext)]
-    #[sqlx::test]
-    #[serial(redis)]
-    async fn can_reject_photo_on_exceeding_the_resource_limit(
-        ctx: &mut RedisTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
-
-        // Exceed the resource limit
-        exceed_resource_limit(
-            &ctx.redis_pool,
-            ResourceLimit::CreateAsset,
-            user_id.unwrap(),
-        )
-        .await;
-
-        let req = test::TestRequest::post()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/gallery")
-            .set_json(Request {
-                id: "2014422".to_string(),
-            })
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
-
-        Ok(())
-    }
 
     #[sqlx::test]
     async fn can_reject_an_invalid_photo(pool: PgPool) -> sqlx::Result<()> {
@@ -406,5 +323,90 @@ mod tests {
         assert_response_body_text(res, "Photo not found").await;
 
         Ok(())
+    }
+
+    mod serial {
+        use super::*;
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_upload_a_photo_from_pexels(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let mut conn = pool.acquire().await?;
+            let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
+            let req = test::TestRequest::post()
+                .cookie(cookie.unwrap())
+                .uri("/v1/me/gallery")
+                .set_json(Request {
+                    id: "2014422".to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_success());
+
+            let json = serde_json::from_str::<Response>(&res_to_string(res).await).unwrap();
+
+            // Asset should be present in the database
+            let result = sqlx::query(
+                r#"
+                SELECT EXISTS(
+                    SELECT 1 FROM assets
+                    WHERE user_id = $1 AND id = $2
+                )
+                "#,
+            )
+            .bind(user_id.unwrap())
+            .bind(json.id)
+            .fetch_one(&mut *conn)
+            .await?;
+
+            assert!(result.get::<bool, _>("exists"));
+
+            // Should also increment the resource limit
+            let result = get_resource_limit(
+                &ctx.redis_pool,
+                ResourceLimit::CreateAsset,
+                user_id.unwrap(),
+            )
+            .await;
+
+            assert_eq!(result, 1);
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_reject_photo_on_exceeding_the_resource_limit(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
+            // Exceed the resource limit
+            exceed_resource_limit(
+                &ctx.redis_pool,
+                ResourceLimit::CreateAsset,
+                user_id.unwrap(),
+            )
+            .await;
+
+            let req = test::TestRequest::post()
+                .cookie(cookie.unwrap())
+                .uri("/v1/me/gallery")
+                .set_json(Request {
+                    id: "2014422".to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
+
+            Ok(())
+        }
     }
 }

@@ -142,70 +142,74 @@ mod tests {
         Key,
     };
     use redis::AsyncCommands;
-    use serial_test::serial;
+
     use sqlx::PgPool;
     use storiny_macros::test_context;
     use time::OffsetDateTime;
     use tonic::Request;
     use uuid::Uuid;
 
-    #[test_context(RedisTestContext)]
-    #[sqlx::test]
-    #[serial(redis)]
-    async fn can_return_login_activity(_ctx: &mut RedisTestContext, pool: PgPool) {
-        test_grpc_service(
-            pool,
-            true,
-            Box::new(|mut client, _, redis_pool, user_id| async move {
-                let config = get_app_config().unwrap();
-                let mut conn = redis_pool.get().await.unwrap();
+    mod serial {
+        use super::*;
 
-                // Insert a session
-                let session_key = format!("{}:{}", user_id.unwrap(), Uuid::new_v4().to_string());
-                let secret_key = Key::from(&config.session_secret_key.as_bytes());
-                let cookie = Cookie::new(SESSION_COOKIE_NAME, session_key.clone());
-                let mut jar = CookieJar::new();
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_return_login_activity(_ctx: &mut RedisTestContext, pool: PgPool) {
+            test_grpc_service(
+                pool,
+                true,
+                Box::new(|mut client, _, redis_pool, user_id| async move {
+                    let config = get_app_config().unwrap();
+                    let mut conn = redis_pool.get().await.unwrap();
 
-                jar.signed_mut(&secret_key).add(cookie);
+                    // Insert a session
+                    let session_key =
+                        format!("{}:{}", user_id.unwrap(), Uuid::new_v4().to_string());
+                    let secret_key = Key::from(&config.session_secret_key.as_bytes());
+                    let cookie = Cookie::new(SESSION_COOKIE_NAME, session_key.clone());
+                    let mut jar = CookieJar::new();
 
-                let cookie = jar.delta().next().unwrap();
+                    jar.signed_mut(&secret_key).add(cookie);
 
-                let _: () = conn
-                    .set(
-                        &format!("{}:{session_key}", RedisNamespace::Session.to_string()),
-                        &serde_json::to_string(&UserSession {
-                            user_id: user_id.unwrap(),
-                            created_at: OffsetDateTime::now_utc().unix_timestamp(),
-                            device: Some(ClientDevice {
-                                display_name: "Some device".to_string(),
-                                r#type: 0,
-                            }),
-                            location: Some(ClientLocation {
-                                display_name: "Some location".to_string(),
-                                lat: Some(0.0),
-                                lng: Some(0.0),
-                            }),
-                            ..Default::default()
-                        })
-                        .unwrap(),
-                    )
-                    .await
-                    .unwrap();
+                    let cookie = jar.delta().next().unwrap();
 
-                let response = client
-                    .get_login_activity(Request::new(GetLoginActivityRequest {
-                        id: user_id.unwrap().to_string(),
-                        token: cookie.value().to_string(),
-                    }))
-                    .await
-                    .unwrap()
-                    .into_inner();
+                    let _: () = conn
+                        .set(
+                            &format!("{}:{session_key}", RedisNamespace::Session.to_string()),
+                            &serde_json::to_string(&UserSession {
+                                user_id: user_id.unwrap(),
+                                created_at: OffsetDateTime::now_utc().unix_timestamp(),
+                                device: Some(ClientDevice {
+                                    display_name: "Some device".to_string(),
+                                    r#type: 0,
+                                }),
+                                location: Some(ClientLocation {
+                                    display_name: "Some location".to_string(),
+                                    lat: Some(0.0),
+                                    lng: Some(0.0),
+                                }),
+                                ..Default::default()
+                            })
+                            .unwrap(),
+                        )
+                        .await
+                        .unwrap();
 
-                assert!(response.recent.is_some());
-                assert_eq!(response.logins.len(), 1);
-                assert!(response.recent.unwrap().is_active); // The only session should be active
-            }),
-        )
-        .await;
+                    let response = client
+                        .get_login_activity(Request::new(GetLoginActivityRequest {
+                            id: user_id.unwrap().to_string(),
+                            token: cookie.value().to_string(),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    assert!(response.recent.is_some());
+                    assert_eq!(response.logins.len(), 1);
+                    assert!(response.recent.unwrap().is_active); // The only session should be active
+                }),
+            )
+            .await;
+        }
     }
 }

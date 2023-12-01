@@ -92,7 +92,7 @@ mod tests {
         test_grpc_service(
             pool,
             true,
-            Box::new(|mut client, pool, _, _| async move {
+            Box::new(|mut client, pool, _, user_id| async move {
                 // Update the notification settings
                 let result = sqlx::query(
                     r#"
@@ -115,7 +115,7 @@ mod tests {
                     WHERE user_id = $1
                     "#,
                 )
-                .bind(1_i64)
+                .bind(user_id.unwrap())
                 .execute(&pool)
                 .await
                 .unwrap();
@@ -124,7 +124,7 @@ mod tests {
 
                 let response = client
                     .get_notification_settings(Request::new(GetNotificationSettingsRequest {
-                        id: 1_i64.to_string(),
+                        id: user_id.unwrap().to_string(),
                     }))
                     .await
                     .unwrap()
