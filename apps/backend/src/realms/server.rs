@@ -280,7 +280,6 @@ async fn enter_realm(
                 .get::<Option<OffsetDateTime>, _>("published_at")
                 .is_some()
             {
-                log::info!("reach 1");
                 // Fetch the editable document
                 let result = sqlx::query(
                     r#"
@@ -319,10 +318,27 @@ async fn enter_realm(
                     }
                 })?;
 
-                log::info!("reach 2");
+                let inserted_doc_key = result.get::<Option<Uuid>, _>("inserted_doc_key");
+                let editable_doc_key = result.get::<Option<Uuid>, _>("editable_doc_key");
+
+                let final_doc_key: Option<Uuid> = {
+                    if inserted_doc_key.is_some() {
+                        inserted_doc_key
+                    } else if editable_doc_key.is_some() {
+                        editable_doc_key
+                    } else {
+                        None
+                    }
+                };
+
+                if final_doc_key.is_none() {
+                    return Err(EnterRealmError::Internal);
+                }
+
+                let final_doc_key = final_doc_key.unwrap();
 
                 // Copy the original story data to a new editable document.
-                if let Some(inserted_doc_key) = result.get::<Option<Uuid>, _>("inserted_doc_key") {
+                if let Some(inserted_doc_key) = inserted_doc_key {
                     let original_doc_key = result.get::<Uuid, _>("original_doc_key").to_string();
 
                     match s3_client
@@ -337,12 +353,19 @@ async fn enter_realm(
                                 .copy_object()
                                 .bucket(S3_DOCS_BUCKET)
                                 .key(inserted_doc_key.to_string())
-                                .copy_source(format!("{}/{original_doc_key}", S3_DOCS_BUCKET,))
+                                .copy_source(format!("{}/{original_doc_key}", S3_DOCS_BUCKET))
                                 .send()
                                 .await
                                 .map_err(|_| EnterRealmError::Internal)?;
                         }
                         Err(error) => {
+                            let _ = s3_client
+                                .delete_object()
+                                .bucket(S3_DOCS_BUCKET)
+                                .key(inserted_doc_key.to_string())
+                                .send()
+                                .await;
+
                             if !matches!(error.into_service_error(), HeadObjectError::NotFound(_)) {
                                 return Err(EnterRealmError::Internal);
                             }
@@ -350,11 +373,7 @@ async fn enter_realm(
                     }
                 };
 
-                log::info!("reach 3");
-
-                result
-                    .get::<Option<Uuid>, _>("inserted_doc_key")
-                    .unwrap_or(result.get::<Uuid, _>("editable_doc_key"))
+                final_doc_key
             } else {
                 sqlx::query(
                     r#"
@@ -514,4 +533,414 @@ pub async fn start_realms_server(
 }
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+    use futures_util::{
+        ready,
+        stream::{
+            SplitSink,
+            SplitStream,
+        },
+        SinkExt,
+        Stream,
+        StreamExt,
+    };
+    use std::{
+        net::SocketAddr,
+        pin::Pin,
+        str::FromStr,
+        sync::Arc,
+        task::{
+            Context,
+            Poll,
+        },
+        time::Duration,
+    };
+    use tokio::{
+        net::TcpStream,
+        sync::{
+            Mutex,
+            Notify,
+            RwLock,
+        },
+        task,
+        task::JoinHandle,
+        time::{
+            sleep,
+            timeout,
+        },
+    };
+    use tokio_tungstenite::{
+        tungstenite::Message,
+        MaybeTlsStream,
+        WebSocketStream,
+    };
+    use warp::{
+        ws::{
+            WebSocket,
+            Ws,
+        },
+        Filter,
+        Rejection,
+        Reply,
+        Sink,
+    };
+    use y_sync::{
+        awareness::Awareness,
+        net::{
+            BroadcastGroup,
+            Connection,
+        },
+        sync::Error,
+    };
+    use yrs::{
+        updates::encoder::Encode,
+        Doc,
+        GetString,
+        Text,
+        Transact,
+        UpdateSubscription,
+    };
+    use yrs_warp::ws::{
+        WarpSink,
+        WarpStream,
+    };
+
+    async fn start_server(
+        addr: &str,
+        bcast: Arc<BroadcastGroup>,
+    ) -> Result<JoinHandle<()>, Box<dyn std::error::Error>> {
+        let addr = SocketAddr::from_str(addr)?;
+        let ws = warp::path("test-room")
+            .and(warp::ws())
+            .and(warp::any().map(move || bcast.clone()))
+            .and_then(ws_handler);
+
+        Ok(tokio::spawn(async move {
+            warp::serve(ws).run(addr).await;
+        }))
+    }
+
+    async fn ws_handler(ws: Ws, bcast: Arc<BroadcastGroup>) -> Result<impl Reply, Rejection> {
+        Ok(ws.on_upgrade(move |socket| peer(socket, bcast)))
+    }
+
+    async fn peer(ws: WebSocket, bcast: Arc<BroadcastGroup>) {
+        let (sink, stream) = ws.split();
+        let sink = Arc::new(Mutex::new(WarpSink::from(sink)));
+        let stream = WarpStream::from(stream);
+        let sub = bcast.subscribe(sink, stream);
+        match sub.completed().await {
+            Ok(_) => println!("broadcasting for channel finished successfully"),
+            Err(e) => eprintln!("broadcasting for channel finished abruptly: {}", e),
+        }
+    }
+
+    struct TungsteniteSink(SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>);
+
+    impl Sink<Vec<u8>> for TungsteniteSink {
+        type Error = Error;
+
+        fn poll_ready(
+            mut self: Pin<&mut Self>,
+            cx: &mut Context<'_>,
+        ) -> Poll<Result<(), Self::Error>> {
+            let sink = unsafe { Pin::new_unchecked(&mut self.0) };
+            let result = ready!(sink.poll_ready(cx));
+            match result {
+                Ok(_) => Poll::Ready(Ok(())),
+                Err(e) => Poll::Ready(Err(Error::Other(Box::new(e)))),
+            }
+        }
+
+        fn start_send(mut self: Pin<&mut Self>, item: Vec<u8>) -> Result<(), Self::Error> {
+            let sink = unsafe { Pin::new_unchecked(&mut self.0) };
+            let result = sink.start_send(Message::binary(item));
+            match result {
+                Ok(_) => Ok(()),
+                Err(e) => Err(Error::Other(Box::new(e))),
+            }
+        }
+
+        fn poll_flush(
+            mut self: Pin<&mut Self>,
+            cx: &mut Context<'_>,
+        ) -> Poll<Result<(), Self::Error>> {
+            let sink = unsafe { Pin::new_unchecked(&mut self.0) };
+            let result = ready!(sink.poll_flush(cx));
+            match result {
+                Ok(_) => Poll::Ready(Ok(())),
+                Err(e) => Poll::Ready(Err(Error::Other(Box::new(e)))),
+            }
+        }
+
+        fn poll_close(
+            mut self: Pin<&mut Self>,
+            cx: &mut Context<'_>,
+        ) -> Poll<Result<(), Self::Error>> {
+            let sink = unsafe { Pin::new_unchecked(&mut self.0) };
+            let result = ready!(sink.poll_close(cx));
+            match result {
+                Ok(_) => Poll::Ready(Ok(())),
+                Err(e) => Poll::Ready(Err(Error::Other(Box::new(e)))),
+            }
+        }
+    }
+
+    struct TungsteniteStream(SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>);
+
+    impl Stream for TungsteniteStream {
+        type Item = Result<Vec<u8>, Error>;
+
+        fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
+            let stream = unsafe { Pin::new_unchecked(&mut self.0) };
+            let result = ready!(stream.poll_next(cx));
+            match result {
+                None => Poll::Ready(None),
+                Some(Ok(msg)) => Poll::Ready(Some(Ok(msg.into_data()))),
+                Some(Err(e)) => Poll::Ready(Some(Err(Error::Other(Box::new(e))))),
+            }
+        }
+    }
+
+    async fn client(
+        addr: &str,
+        doc: Doc,
+    ) -> Result<Connection<TungsteniteSink, TungsteniteStream>, Box<dyn std::error::Error>> {
+        let (stream, _) = tokio_tungstenite::connect_async(addr).await?;
+        let (sink, stream) = stream.split();
+        let sink = TungsteniteSink(sink);
+        let stream = TungsteniteStream(stream);
+        Ok(Connection::new(
+            Arc::new(RwLock::new(Awareness::new(doc))),
+            sink,
+            stream,
+        ))
+    }
+
+    fn create_notifier(doc: &Doc) -> (Arc<Notify>, UpdateSubscription) {
+        let notify = Arc::new(Notify::new());
+        let subscription = {
+            let notify = notify.clone();
+            doc.observe_update_v1(move |_, _| notify.notify_waiters())
+                .unwrap()
+        };
+
+        (notify, subscription)
+    }
+
+    const TIMEOUT: Duration = Duration::from_secs(5);
+
+    #[tokio::test]
+    async fn change_introduced_by_server_reaches_subscribed_clients()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let doc = Doc::with_client_id(1);
+        let text = doc.get_or_insert_text("test");
+        let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
+        let bcast = BroadcastGroup::new(awareness.clone(), 10).await;
+        let server = start_server("0.0.0.0:6600", Arc::new(bcast)).await?;
+
+        let doc = Doc::new();
+        let (n, sub) = create_notifier(&doc);
+        let c1 = client("ws://localhost:6600/test-room", doc).await?;
+
+        {
+            let lock = awareness.write().await;
+            text.push(&mut lock.doc().transact_mut(), "abc");
+        }
+
+        timeout(TIMEOUT, n.notified()).await?;
+
+        {
+            let awareness = c1.awareness().read().await;
+            let doc = awareness.doc();
+            let text = doc.get_or_insert_text("test");
+            let str = text.get_string(&doc.transact());
+            assert_eq!(str, "abc".to_string());
+        }
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn subscribed_client_fetches_initial_state() -> Result<(), Box<dyn std::error::Error>> {
+        let doc = Doc::with_client_id(1);
+        let text = doc.get_or_insert_text("test");
+
+        text.push(&mut doc.transact_mut(), "abc");
+
+        let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
+        let bcast = BroadcastGroup::new(awareness.clone(), 10).await;
+        let server = start_server("0.0.0.0:6601", Arc::new(bcast)).await?;
+
+        let doc = Doc::new();
+        let (n, sub) = create_notifier(&doc);
+        let c1 = client("ws://localhost:6601/test-room", doc).await?;
+
+        timeout(TIMEOUT, n.notified()).await?;
+
+        {
+            let awareness = c1.awareness().read().await;
+            let doc = awareness.doc();
+            let text = doc.get_or_insert_text("test");
+            let str = text.get_string(&doc.transact());
+            assert_eq!(str, "abc".to_string());
+        }
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn changes_from_one_client_reach_others() -> Result<(), Box<dyn std::error::Error>> {
+        let doc = Doc::with_client_id(1);
+        let text = doc.get_or_insert_text("test");
+
+        let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
+        let bcast = BroadcastGroup::new(awareness.clone(), 10).await;
+        let server = start_server("0.0.0.0:6602", Arc::new(bcast)).await?;
+
+        let d1 = Doc::with_client_id(2);
+        let c1 = client("ws://localhost:6602/test-room", d1).await?;
+        // by default changes made by document on the client side are not propagated automatically
+        let sub11 = {
+            let sink = c1.sink();
+            let a = c1.awareness().write().await;
+            let doc = a.doc();
+            doc.observe_update_v1(move |txn, e| {
+                let update = e.update.to_owned();
+                if let Some(sink) = sink.upgrade() {
+                    task::spawn(async move {
+                        let msg =
+                            y_sync::sync::Message::Sync(y_sync::sync::SyncMessage::Update(update))
+                                .encode_v1();
+                        let mut sink = sink.lock().await;
+                        sink.send(msg).await.unwrap();
+                    });
+                }
+            })
+            .unwrap()
+        };
+
+        let d2 = Doc::with_client_id(3);
+        let (n2, sub2) = create_notifier(&d2);
+        let c2 = client("ws://localhost:6602/test-room", d2).await?;
+
+        {
+            let a = c1.awareness().write().await;
+            let doc = a.doc();
+            let text = doc.get_or_insert_text("test");
+            text.push(&mut doc.transact_mut(), "def");
+        }
+
+        timeout(TIMEOUT, n2.notified()).await?;
+
+        {
+            let awareness = c2.awareness().read().await;
+            let doc = awareness.doc();
+            let text = doc.get_or_insert_text("test");
+            let str = text.get_string(&doc.transact());
+            assert_eq!(str, "def".to_string());
+        }
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn client_failure_doesnt_affect_others() -> Result<(), Box<dyn std::error::Error>> {
+        let doc = Doc::with_client_id(1);
+        let text = doc.get_or_insert_text("test");
+
+        let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
+        let bcast = BroadcastGroup::new(awareness.clone(), 10).await;
+        let server = start_server("0.0.0.0:6603", Arc::new(bcast)).await?;
+
+        let d1 = Doc::with_client_id(2);
+        let c1 = client("ws://localhost:6603/test-room", d1).await?;
+        // by default changes made by document on the client side are not propagated automatically
+        let sub11 = {
+            let sink = c1.sink();
+            let a = c1.awareness().write().await;
+            let doc = a.doc();
+            doc.observe_update_v1(move |txn, e| {
+                let update = e.update.to_owned();
+                if let Some(sink) = sink.upgrade() {
+                    task::spawn(async move {
+                        let msg =
+                            y_sync::sync::Message::Sync(y_sync::sync::SyncMessage::Update(update))
+                                .encode_v1();
+                        let mut sink = sink.lock().await;
+                        sink.send(msg).await.unwrap();
+                    });
+                }
+            })
+            .unwrap()
+        };
+
+        let d2 = Doc::with_client_id(3);
+        let (n2, sub2) = create_notifier(&d2);
+        let c2 = client("ws://localhost:6603/test-room", d2).await?;
+
+        let d3 = Doc::with_client_id(4);
+        let (n3, sub3) = create_notifier(&d3);
+        let c3 = client("ws://localhost:6603/test-room", d3).await?;
+
+        {
+            let a = c1.awareness().write().await;
+            let doc = a.doc();
+            let text = doc.get_or_insert_text("test");
+            text.push(&mut doc.transact_mut(), "abc");
+        }
+
+        // on the first try both C2 and C3 should receive the update
+        //timeout(TIMEOUT, n2.notified()).await.unwrap();
+        //timeout(TIMEOUT, n3.notified()).await.unwrap();
+        sleep(TIMEOUT).await;
+
+        {
+            let awareness = c2.awareness().read().await;
+            let doc = awareness.doc();
+            let text = doc.get_or_insert_text("test");
+            let str = text.get_string(&doc.transact());
+            assert_eq!(str, "abc".to_string());
+        }
+        {
+            let awareness = c3.awareness().read().await;
+            let doc = awareness.doc();
+            let text = doc.get_or_insert_text("test");
+            let str = text.get_string(&doc.transact());
+            assert_eq!(str, "abc".to_string());
+        }
+
+        // drop client, causing abrupt ending
+        drop(c3);
+        drop(n3);
+        drop(sub3);
+        // C2 notification subscription has been realized, we need to refresh it
+        drop(n2);
+        drop(sub2);
+
+        let (n2, sub2) = {
+            let a = c2.awareness().write().await;
+            let doc = a.doc();
+            create_notifier(doc)
+        };
+
+        {
+            let a = c1.awareness().write().await;
+            let doc = a.doc();
+            let text = doc.get_or_insert_text("test");
+            text.push(&mut doc.transact_mut(), "def");
+        }
+
+        timeout(TIMEOUT, n2.notified()).await.unwrap();
+
+        {
+            let awareness = c2.awareness().read().await;
+            let doc = awareness.doc();
+            let text = doc.get_or_insert_text("test");
+            let str = text.get_string(&doc.transact());
+            assert_eq!(str, "abcdef".to_string());
+        }
+
+        Ok(())
+    }
+}

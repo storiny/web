@@ -200,7 +200,7 @@ async fn handle_google_profile_data(
             Err(error) => match error {
                 // Skip password verification if the user with the provided email does not exist or
                 // has not set a password.
-                sqlx::error::Error::RowNotFound => {}
+                sqlx::Error::RowNotFound => {}
                 _ => return Err(ExternalAuthError::Other(error.to_string())),
             },
         }
@@ -227,7 +227,7 @@ async fn handle_google_profile_data(
                 }
             }
             Err(error) => {
-                if !matches!(error, sqlx::error::Error::RowNotFound) {
+                if !matches!(error, sqlx::Error::RowNotFound) {
                     return Err(ExternalAuthError::Other(error.to_string()));
                 }
             }
@@ -265,7 +265,7 @@ async fn handle_google_profile_data(
         ),
         Err(err) => {
             // Upsert a user
-            if matches!(err, sqlx::error::Error::RowNotFound) {
+            if matches!(err, sqlx::Error::RowNotFound) {
                 let upsert_result = sqlx::query(
                     r#"
                     WITH inserted_user AS (

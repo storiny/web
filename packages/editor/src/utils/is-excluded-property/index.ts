@@ -12,7 +12,8 @@ const BASE_EXCLUDED_PROPERTIES = new Set<string>([
   "__key",
   "__parent",
   "__next",
-  "__prev"
+  "__prev",
+  "__dir" // We currently do not support bi-directional text
 ]);
 const ELEMENT_EXCLUDED_PROPERTIES = new Set<string>([
   "__first",
@@ -20,7 +21,7 @@ const ELEMENT_EXCLUDED_PROPERTIES = new Set<string>([
   "__size"
 ]);
 const ROOT_EXCLUDED_PROPERTIES = new Set<string>(["__cachedText"]);
-const TEXT_EXCLUDED_PROPERTIES = new Set<string>(["__text"]);
+const TEXT_EXCLUDED_PROPERTIES = new Set<string>(["__text", "__style"]);
 
 /**
  * Predicate function for determining excluded properties
@@ -37,14 +38,10 @@ export const is_excluded_property = (
     return true;
   }
 
-  if ($is_text_node(node)) {
-    if (TEXT_EXCLUDED_PROPERTIES.has(name)) {
-      return true;
-    }
-  } else if (
-    $is_element_node(node) &&
-    (ELEMENT_EXCLUDED_PROPERTIES.has(name) ||
-      ($is_root_node(node) && ROOT_EXCLUDED_PROPERTIES.has(name)))
+  if (
+    ($is_text_node(node) && TEXT_EXCLUDED_PROPERTIES.has(name)) ||
+    ($is_element_node(node) && ELEMENT_EXCLUDED_PROPERTIES.has(name)) ||
+    ($is_root_node(node) && ROOT_EXCLUDED_PROPERTIES.has(name))
   ) {
     return true;
   }
