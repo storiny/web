@@ -20,7 +20,7 @@ use tonic::{
 
 #[derive(Debug, Deserialize)]
 struct CacheResponse {
-    user_id: String,
+    user_id: i64,
 }
 
 /// Returns the user's ID using the session token.
@@ -55,7 +55,9 @@ pub async fn get_user_id(
         .map_err(|_| Status::internal("Unable to deserialize the session state"))?
         .user_id;
 
-    Ok(Response::new(GetUserIdResponse { id: user_id }))
+    Ok(Response::new(GetUserIdResponse {
+        id: user_id.to_string(),
+    }))
 }
 
 #[cfg(test)]

@@ -15,10 +15,7 @@ use serde::{
     Deserialize,
     Serialize,
 };
-use serde_with::{
-    serde_as,
-    DisplayFromStr,
-};
+
 use sqlx::{
     FromRow,
     Postgres,
@@ -46,18 +43,16 @@ struct QueryParams {
     query: Option<String>,
 }
 
-#[serde_as]
 #[derive(sqlx::Type, Debug, Serialize, Deserialize)]
 struct Tag {
-    #[serde_as(as = "DisplayFromStr")]
+    #[serde(with = "crate::snowflake_id")]
     id: i64,
     name: String,
 }
 
-#[serde_as]
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 struct PublishedStory {
-    #[serde_as(as = "DisplayFromStr")]
+    #[serde(with = "crate::snowflake_id")]
     id: i64,
     title: String,
     slug: String,
@@ -67,7 +62,7 @@ struct PublishedStory {
     category: String,
     age_restriction: i16,
     license: i16,
-    #[serde_as(as = "DisplayFromStr")]
+    #[serde(with = "crate::snowflake_id")]
     user_id: i64,
     // Stats
     word_count: i32,
@@ -86,10 +81,9 @@ struct PublishedStory {
     is_bookmarked: bool,
 }
 
-#[serde_as]
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 struct DeletedStory {
-    #[serde_as(as = "DisplayFromStr")]
+    #[serde(with = "crate::snowflake_id")]
     id: i64,
     title: String,
     description: Option<String>,
@@ -98,7 +92,7 @@ struct DeletedStory {
     category: String,
     age_restriction: i16,
     license: i16,
-    #[serde_as(as = "DisplayFromStr")]
+    #[serde(with = "crate::snowflake_id")]
     user_id: i64,
     // Stats
     word_count: i32,

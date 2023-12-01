@@ -15,10 +15,7 @@ use serde::{
     Deserialize,
     Serialize,
 };
-use serde_with::{
-    serde_as,
-    DisplayFromStr,
-};
+
 use sqlx::{
     types::Json,
     FromRow,
@@ -41,10 +38,9 @@ struct QueryParams {
     r#type: Option<String>,
 }
 
-#[serde_as]
 #[derive(Debug, Serialize, Deserialize)]
 struct Actor {
-    #[serde_as(as = "DisplayFromStr")]
+    #[serde(with = "crate::snowflake_id")]
     id: i64,
     name: String,
     username: String,
@@ -53,10 +49,9 @@ struct Actor {
     public_flags: i32,
 }
 
-#[serde_as]
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 struct Notification {
-    #[serde_as(as = "DisplayFromStr")]
+    #[serde(with = "crate::snowflake_id")]
     id: i64,
     rendered_content: String,
     r#type: i16,

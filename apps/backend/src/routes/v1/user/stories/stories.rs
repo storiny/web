@@ -15,10 +15,7 @@ use serde::{
     Deserialize,
     Serialize,
 };
-use serde_with::{
-    serde_as,
-    DisplayFromStr,
-};
+
 use sqlx::{
     types::Json,
     FromRow,
@@ -46,10 +43,9 @@ struct QueryParams {
     query: Option<String>,
 }
 
-#[serde_as]
 #[derive(Debug, Serialize, Deserialize)]
 struct User {
-    #[serde_as(as = "DisplayFromStr")]
+    #[serde(with = "crate::snowflake_id")]
     id: i64,
     name: String,
     username: String,
@@ -58,18 +54,16 @@ struct User {
     public_flags: i32,
 }
 
-#[serde_as]
 #[derive(sqlx::Type, Debug, Serialize, Deserialize)]
 struct Tag {
-    #[serde_as(as = "DisplayFromStr")]
+    #[serde(with = "crate::snowflake_id")]
     id: i64,
     name: String,
 }
 
-#[serde_as]
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 struct Story {
-    #[serde_as(as = "DisplayFromStr")]
+    #[serde(with = "crate::snowflake_id")]
     id: i64,
     title: String,
     slug: String,
@@ -79,7 +73,7 @@ struct Story {
     category: String,
     age_restriction: i16,
     license: i16,
-    #[serde_as(as = "DisplayFromStr")]
+    #[serde(with = "crate::snowflake_id")]
     user_id: i64,
     // Stats
     word_count: i32,

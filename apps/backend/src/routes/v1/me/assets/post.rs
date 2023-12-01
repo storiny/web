@@ -41,10 +41,7 @@ use serde::{
     Deserialize,
     Serialize,
 };
-use serde_with::{
-    serde_as,
-    DisplayFromStr,
-};
+
 use sqlx::Row;
 use std::io::{
     BufReader,
@@ -61,10 +58,9 @@ struct UploadAsset {
     file: TempFile,
 }
 
-#[serde_as]
 #[derive(Debug, Serialize, Deserialize)]
 struct Response {
-    #[serde_as(as = "DisplayFromStr")]
+    #[serde(with = "crate::snowflake_id")]
     id: i64,
     key: String,
     hex: String,

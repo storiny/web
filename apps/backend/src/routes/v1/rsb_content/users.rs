@@ -2,10 +2,7 @@ use serde::{
     Deserialize,
     Serialize,
 };
-use serde_with::{
-    serde_as,
-    DisplayFromStr,
-};
+
 use sqlx::{
     FromRow,
     Pool,
@@ -14,10 +11,9 @@ use sqlx::{
 };
 use uuid::Uuid;
 
-#[serde_as]
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 pub struct User {
-    #[serde_as(as = "DisplayFromStr")]
+    #[serde(with = "crate::snowflake_id")]
     id: i64,
     name: String,
     username: String,
