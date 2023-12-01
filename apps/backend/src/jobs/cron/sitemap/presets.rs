@@ -101,7 +101,7 @@ mod tests {
             TestContext,
         },
     };
-    use serial_test::serial;
+
     use storiny_macros::test_context;
 
     struct LocalTestContext {
@@ -128,26 +128,29 @@ mod tests {
         }
     }
 
-    #[test_context(LocalTestContext)]
-    #[tokio::test]
-    #[serial(s3)]
-    async fn can_generate_preset_sitemap(ctx: &mut LocalTestContext) {
-        let config = get_app_config().unwrap();
-        let s3_client = &ctx.s3_client;
-        let result = generate_preset_sitemap(&s3_client, &config.web_server_url).await;
+    mod serial {
+        use super::*;
 
-        assert!(result.is_ok());
+        #[test_context(LocalTestContext)]
+        #[tokio::test]
+        async fn can_generate_preset_sitemap(ctx: &mut LocalTestContext) {
+            let config = get_app_config().unwrap();
+            let s3_client = &ctx.s3_client;
+            let result = generate_preset_sitemap(&s3_client, &config.web_server_url).await;
 
-        // Sitemap file should be present in the bucket
-        let sitemap_count = count_s3_objects(
-            &s3_client,
-            S3_SITEMAPS_BUCKET,
-            Some("presets.xml.gz".to_string()),
-            None,
-        )
-        .await
-        .unwrap();
+            assert!(result.is_ok());
 
-        assert_eq!(sitemap_count, 1);
+            // Sitemap file should be present in the bucket
+            let sitemap_count = count_s3_objects(
+                &s3_client,
+                S3_SITEMAPS_BUCKET,
+                Some("presets.xml.gz".to_string()),
+                None,
+            )
+            .await
+            .unwrap();
+
+            assert_eq!(sitemap_count, 1);
+        }
     }
 }

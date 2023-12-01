@@ -17,6 +17,10 @@ use crate::{
         middleware::IdentityMiddleware,
     },
     oauth::get_oauth_client_map,
+    realms::realm::{
+        RealmData,
+        RealmMap,
+    },
     test_utils::{
         get_redis_pool,
         get_s3_client,
@@ -52,12 +56,14 @@ use actix_web::{
     HttpResponse,
     Responder,
 };
+use lockable::LockableHashMap;
 use rand::Rng;
 use serde::Deserialize;
 use sqlx::{
     PgPool,
     Row,
 };
+use std::sync::Arc;
 use user_agent_parser::UserAgentParser;
 
 #[derive(Deserialize)]
@@ -136,6 +142,10 @@ pub async fn init_app_for_test(
     let ua_parser = UserAgentParser::from_path("./data/ua_parser/regexes.yaml")
         .expect("Cannot build user-agent parser");
 
+    // Realm map
+    let realm_map: RealmMap = Arc::new(LockableHashMap::new());
+    let realm_data: RealmData = web::Data::from(realm_map.clone());
+
     // Application state
     let app_state = web::Data::new(AppState {
         config,
@@ -167,10 +177,14 @@ pub async fn init_app_for_test(
                     .cookie_http_only(false)
                     .build(),
             )
-            .wrap(actix_web::middleware::NormalizePath::trim()) // Jobs
+            .wrap(actix_web::middleware::NormalizePath::trim())
+            // Realms
+            .app_data(realm_data.clone())
+            // Jobs
             .app_data(story_add_by_user_job_data.clone())
             .app_data(story_add_by_tag_job_data.clone())
             .app_data(templated_email_job_data.clone())
+            // Application state
             .app_data(app_state.clone())
             .service(post)
             .service(service_factory),

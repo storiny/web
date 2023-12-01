@@ -533,7 +533,7 @@ pub async fn start_realms_server(
 }
 
 #[cfg(test)]
-mod tests {
+pub mod tests {
     use crate::{
         config::get_app_config,
         constants::{
@@ -582,7 +582,6 @@ mod tests {
         LockableHashMap,
     };
     use redis::AsyncCommands;
-    use serial_test::serial;
     use sqlx::{
         PgPool,
         Row,
@@ -637,26 +636,27 @@ mod tests {
         }
     }
 
-    /// Initializes and spawns a realms server for tests.
+    /// Initializes and spawns a realms server for tests. This function is intentionally public for
+    /// use in [crate::realms::realm].
     ///
     /// * `db_pool` - The Postgres connection pool.
     /// * `s3_client` - The S3 client instance.
     /// * `logged_in` - The logged in flag. If set to `true`, a valid authentication token will get
     ///   appended to the realm server endpoint.
     /// * `insert_story` - The boolean flag indicating whether to insert a story.
-    async fn init_realms_server_for_test(
+    pub async fn init_realms_server_for_test(
         db_pool: PgPool,
         s3_client: Option<S3Client>,
         logged_in: bool,
         insert_story: bool,
     ) -> (
+        // Endpoint
+        url::Url,
         RealmMap,
         // User ID
         i64,
         // Story ID
         i64,
-        SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>,
-        SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>,
     ) {
         let config = get_app_config().unwrap();
         let realm_map: RealmMap = Arc::new(LockableHashMap::new());
@@ -729,310 +729,347 @@ mod tests {
         ))
         .unwrap();
 
+        (endpoint, realm_map, user_id, story_id)
+    }
+
+    /// Returns a peer client. This function is intentionally public for use in
+    /// [crate::realms::realm].
+    ///
+    /// * `endpoint` - The realm server connection endpoint.
+    pub async fn peer(
+        endpoint: url::Url,
+    ) -> (
+        SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>,
+        SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>,
+    ) {
         let (ws_stream, _) = tokio_tungstenite::connect_async(endpoint)
             .await
             .expect("failed to connect");
 
-        let (tx, rx) = ws_stream.split();
-
-        (realm_map, user_id, story_id, tx, rx)
+        ws_stream.split()
     }
 
-    #[sqlx::test]
-    #[serial(realm)]
-    async fn can_reject_unauthorized_peers(pool: PgPool) {
-        let (_, _, _, mut tx, rx) = init_realms_server_for_test(pool, None, false, false).await;
+    mod serial {
+        use super::*;
+        use crate::realms::realm::MAX_PEERS_PER_REALM;
 
-        rx.for_each(|message| async {
-            let message = message.unwrap();
-            assert!(message.is_close());
-            assert_eq!(
-                message.to_string(),
-                EnterRealmError::Unauthorized.to_string()
-            );
-        })
-        .await;
+        #[sqlx::test]
+        async fn can_reject_unauthorized_peers(pool: PgPool) {
+            let (endpoint, _, _, _) = init_realms_server_for_test(pool, None, false, false).await;
+            let (mut tx, rx) = peer(endpoint).await;
 
-        tx.close().await.unwrap();
-    }
+            rx.for_each(|message| async {
+                let message = message.unwrap();
+                assert!(message.is_close());
+                assert_eq!(
+                    message.to_string(),
+                    EnterRealmError::Unauthorized.to_string()
+                );
+            })
+            .await;
 
-    #[test_context(RedisTestContext)]
-    #[sqlx::test]
-    #[serial(realm)]
-    async fn can_accept_authorized_peers(_ctx: &mut RedisTestContext, pool: PgPool) {
-        let (_, _, _, mut tx, mut rx) = init_realms_server_for_test(pool, None, true, false).await;
-
-        if let Ok(message) = rx.next().await.unwrap() {
-            assert_eq!(
-                message.to_string(),
-                EnterRealmError::MissingStory.to_string()
-            );
+            tx.close().await.unwrap();
         }
 
-        tx.close().await.unwrap();
-    }
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_accept_authorized_peers(_ctx: &mut RedisTestContext, pool: PgPool) {
+            let (endpoint, _, _, _) = init_realms_server_for_test(pool, None, true, false).await;
+            let (mut tx, mut rx) = peer(endpoint).await;
 
-    #[test_context(RedisTestContext)]
-    #[sqlx::test]
-    #[serial(realm)]
-    async fn can_reject_peer_for_a_missing_story(_ctx: &mut RedisTestContext, pool: PgPool) {
-        let (_, _, _, mut tx, mut rx) = init_realms_server_for_test(pool, None, true, false).await;
+            if let Ok(message) = rx.next().await.unwrap() {
+                assert_eq!(
+                    message.to_string(),
+                    EnterRealmError::MissingStory.to_string()
+                );
+            }
 
-        if let Ok(message) = rx.next().await.unwrap() {
-            assert_eq!(
-                message.to_string(),
-                EnterRealmError::MissingStory.to_string()
-            );
+            tx.close().await.unwrap();
         }
 
-        tx.close().await.unwrap();
-    }
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_reject_peer_for_a_missing_story(_ctx: &mut RedisTestContext, pool: PgPool) {
+            let (endpoint, _, _, _) = init_realms_server_for_test(pool, None, true, false).await;
+            let (mut tx, mut rx) = peer(endpoint).await;
 
-    #[test_context(RedisTestContext)]
-    #[sqlx::test]
-    #[serial(realm)]
-    async fn can_reject_peer_for_a_soft_deleted_story(
-        _ctx: &mut RedisTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
+            if let Ok(message) = rx.next().await.unwrap() {
+                assert_eq!(
+                    message.to_string(),
+                    EnterRealmError::MissingStory.to_string()
+                );
+            }
 
-        // Insert a soft-deleted story
-        let result = sqlx::query(
-            r#"
-            WITH inserted_user AS (
-                INSERT INTO users (id, name, username, email)
-                VALUES ($1, $2, $3, $4)
+            tx.close().await.unwrap();
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_reject_peer_when_the_realm_is_full(_ctx: &mut RedisTestContext, pool: PgPool) {
+            let (endpoint, _, _, _) = init_realms_server_for_test(pool, None, true, true).await;
+            let mut peers = vec![];
+
+            for _ in 0..MAX_PEERS_PER_REALM {
+                // The `peers` array is used here because this peer will disconnect when it goes out
+                // of this scope.
+                peers.push(peer(endpoint.clone()).await);
+            }
+
+            let (mut tx, mut rx) = peer(endpoint).await;
+
+            if let Ok(message) = rx.next().await.unwrap() {
+                assert_eq!(message.to_string(), EnterRealmError::Full.to_string());
+            }
+
+            tx.close().await.unwrap();
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_reject_peer_for_a_soft_deleted_story(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let mut conn = pool.acquire().await?;
+
+            // Insert a soft-deleted story
+            let result = sqlx::query(
+                r#"
+                WITH inserted_user AS (
+                    INSERT INTO users (id, name, username, email)
+                    VALUES ($1, $2, $3, $4)
+                )
+                INSERT INTO stories (id, user_id, deleted_at)
+                VALUES ($5, $1, now())
+                "#,
             )
-            INSERT INTO stories (id, user_id, deleted_at)
-            VALUES ($5, $1, now())
-            "#,
-        )
-        .bind(1_i64)
-        .bind("Some user")
-        .bind("some_user")
-        .bind("someone@example.com")
-        .bind(2_i64)
-        .execute(&mut *conn)
-        .await?;
+            .bind(1_i64)
+            .bind("Some user")
+            .bind("some_user")
+            .bind("someone@example.com")
+            .bind(2_i64)
+            .execute(&mut *conn)
+            .await?;
 
-        assert_eq!(result.rows_affected(), 1);
+            assert_eq!(result.rows_affected(), 1);
 
-        let (_, _, _, mut tx, mut rx) = init_realms_server_for_test(pool, None, true, false).await;
+            let (endpoint, _, _, _) = init_realms_server_for_test(pool, None, true, false).await;
+            let (mut tx, mut rx) = peer(endpoint).await;
 
-        if let Ok(message) = rx.next().await.unwrap() {
-            assert_eq!(
-                message.to_string(),
-                EnterRealmError::MissingStory.to_string()
-            );
+            if let Ok(message) = rx.next().await.unwrap() {
+                assert_eq!(
+                    message.to_string(),
+                    EnterRealmError::MissingStory.to_string()
+                );
+            }
+
+            tx.close().await.unwrap();
+
+            Ok(())
         }
 
-        tx.close().await.unwrap();
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_create_a_realm_for_a_draft(_ctx: &mut RedisTestContext, pool: PgPool) {
+            let (endpoint, realm_map, _, story_id) =
+                init_realms_server_for_test(pool, None, true, true).await;
+            let (mut tx, _) = peer(endpoint).await;
 
-        Ok(())
-    }
+            tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
 
-    #[test_context(RedisTestContext)]
-    #[sqlx::test]
-    #[serial(realm)]
-    async fn can_create_a_realm_for_a_draft(_ctx: &mut RedisTestContext, pool: PgPool) {
-        let (realm_map, _, story_id, mut tx, _) =
-            init_realms_server_for_test(pool, None, true, true).await;
+            // Realm should be present in the map
+            let realm = realm_map
+                .async_lock(story_id, AsyncLimit::no_limit())
+                .await
+                .unwrap();
 
-        tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+            assert!(realm.value().is_some());
 
-        // Realm should be present in the map
-        let realm = realm_map
-            .async_lock(story_id, AsyncLimit::no_limit())
-            .await
-            .unwrap();
+            tx.close().await.unwrap();
+        }
 
-        assert!(realm.value().is_some());
+        #[test_context(LocalTestContext)]
+        #[sqlx::test]
+        async fn can_create_a_realm_for_a_published_story(
+            ctx: &mut LocalTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let s3_client = &ctx.s3_client;
+            let mut conn = pool.acquire().await?;
 
-        tx.close().await.unwrap();
-    }
-
-    #[test_context(LocalTestContext)]
-    #[sqlx::test]
-    #[serial(realm)]
-    async fn can_create_a_realm_for_a_published_story(
-        ctx: &mut LocalTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let s3_client = &ctx.s3_client;
-        let mut conn = pool.acquire().await?;
-
-        // Insert a published story
-        let result = sqlx::query(
-            r#"
-            WITH inserted_user AS (
-                INSERT INTO users (id, name, username, email)
-                VALUES ($1, $2, $3, $4)
+            // Insert a published story
+            let result = sqlx::query(
+                r#"
+                WITH inserted_user AS (
+                    INSERT INTO users (id, name, username, email)
+                    VALUES ($1, $2, $3, $4)
+                )
+                INSERT INTO stories (id, user_id, published_at)
+                VALUES ($5, $1, now())
+                "#,
             )
-            INSERT INTO stories (id, user_id, published_at)
-            VALUES ($5, $1, now())
-            "#,
-        )
-        .bind(1_i64)
-        .bind("Some user")
-        .bind("some_user")
-        .bind("someone@example.com")
-        .bind(2_i64)
-        .execute(&mut *conn)
-        .await?;
+            .bind(1_i64)
+            .bind("Some user")
+            .bind("some_user")
+            .bind("someone@example.com")
+            .bind(2_i64)
+            .execute(&mut *conn)
+            .await?;
 
-        assert_eq!(result.rows_affected(), 1);
+            assert_eq!(result.rows_affected(), 1);
 
-        // Attach the document to object storage
-        let document = sqlx::query(
-            r#"
-            SELECT key FROM documents
-            WHERE
-                story_id = $1
-                AND is_editable IS FALSE
-            "#,
-        )
-        .bind(2_i64)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        let doc_body = Doc::new()
-            .transact()
-            .encode_state_as_update_v2(&StateVector::default());
-        let data = deflate_bytes_gzip(&doc_body, None).await.unwrap();
-
-        s3_client
-            .put_object()
-            .bucket(S3_DOCS_BUCKET)
-            .key(document.get::<Uuid, _>("key").to_string())
-            .body(data.into())
-            .send()
-            .await
-            .unwrap();
-
-        let documents = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
-            .await
-            .unwrap();
-
-        assert_eq!(documents, 1_u32);
-
-        let (realm_map, _, story_id, mut tx, _) =
-            init_realms_server_for_test(pool, Some(s3_client.clone()), true, false).await;
-
-        tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
-
-        // Realm should be present in the map
-        let realm = realm_map
-            .async_lock(story_id, AsyncLimit::no_limit())
-            .await
-            .unwrap();
-
-        assert!(realm.value().is_some());
-
-        // Should insert an editable document
-        let result = sqlx::query(
-            r#"
-            SELECT EXISTS (
-                SELECT 1 FROM documents
-                WHERE 
+            // Attach the document to object storage
+            let document = sqlx::query(
+                r#"
+                SELECT key FROM documents
+                WHERE
                     story_id = $1
-                    AND is_editable IS TRUE
+                    AND is_editable IS FALSE
+                "#,
             )
-            "#,
-        )
-        .bind(&story_id)
-        .fetch_one(&mut *conn)
-        .await?;
+            .bind(2_i64)
+            .fetch_one(&mut *conn)
+            .await?;
 
-        assert!(result.get::<bool, _>("exists"));
+            let doc_body = Doc::new()
+                .transact()
+                .encode_state_as_update_v2(&StateVector::default());
+            let data = deflate_bytes_gzip(&doc_body, None).await.unwrap();
 
-        // Should also make a copy of the original document in the object storage.
-        let documents = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
-            .await
-            .unwrap();
+            s3_client
+                .put_object()
+                .bucket(S3_DOCS_BUCKET)
+                .key(document.get::<Uuid, _>("key").to_string())
+                .body(data.into())
+                .send()
+                .await
+                .unwrap();
 
-        assert_eq!(documents, 2_u32);
+            let documents = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
+                .await
+                .unwrap();
 
-        tx.close().await.unwrap();
+            assert_eq!(documents, 1_u32);
 
-        Ok(())
-    }
+            let (endpoint, realm_map, _, story_id) =
+                init_realms_server_for_test(pool, Some(s3_client.clone()), true, false).await;
+            let (mut tx, _) = peer(endpoint).await;
 
-    #[test_context(LocalTestContext)]
-    #[sqlx::test]
-    #[serial(realm)]
-    async fn can_reject_a_corrupted_document(
-        ctx: &mut LocalTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let s3_client = &ctx.s3_client;
-        let mut conn = pool.acquire().await?;
+            tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
 
-        // Insert a story
-        let result = sqlx::query(
-            r#"
-            WITH inserted_user AS (
-                INSERT INTO users (id, name, username, email)
-                VALUES ($1, $2, $3, $4)
+            // Realm should be present in the map
+            let realm = realm_map
+                .async_lock(story_id, AsyncLimit::no_limit())
+                .await
+                .unwrap();
+
+            assert!(realm.value().is_some());
+
+            // Should insert an editable document
+            let result = sqlx::query(
+                r#"
+                SELECT EXISTS (
+                    SELECT 1 FROM documents
+                    WHERE 
+                        story_id = $1
+                        AND is_editable IS TRUE
+                )
+                "#,
             )
-            INSERT INTO stories (id, user_id)
-            VALUES ($5, $1)
-            "#,
-        )
-        .bind(1_i64)
-        .bind("Some user")
-        .bind("some_user")
-        .bind("someone@example.com")
-        .bind(2_i64)
-        .execute(&mut *conn)
-        .await?;
+            .bind(&story_id)
+            .fetch_one(&mut *conn)
+            .await?;
 
-        assert_eq!(result.rows_affected(), 1);
+            assert!(result.get::<bool, _>("exists"));
 
-        // Attach the document to object storage with invalid data
-        let document = sqlx::query(
-            r#"
-            SELECT key FROM documents
-            WHERE
-                story_id = $1
-                AND is_editable IS FALSE
-            "#,
-        )
-        .bind(2_i64)
-        .fetch_one(&mut *conn)
-        .await?;
+            // Should also make a copy of the original document in the object storage.
+            let documents = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
+                .await
+                .unwrap();
 
-        let data = deflate_bytes_gzip("bad data".as_bytes(), None)
-            .await
-            .unwrap();
+            assert_eq!(documents, 2_u32);
 
-        s3_client
-            .put_object()
-            .bucket(S3_DOCS_BUCKET)
-            .key(document.get::<Uuid, _>("key").to_string())
-            .body(data.into())
-            .send()
-            .await
-            .unwrap();
+            tx.close().await.unwrap();
 
-        let documents = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
-            .await
-            .unwrap();
-
-        assert_eq!(documents, 1_u32);
-
-        let (_, _, _, mut tx, mut rx) =
-            init_realms_server_for_test(pool, Some(s3_client.clone()), true, false).await;
-
-        if let Ok(message) = rx.next().await.unwrap() {
-            assert_eq!(
-                message.to_string(),
-                EnterRealmError::DocCorrupted.to_string()
-            );
+            Ok(())
         }
 
-        tx.close().await.unwrap();
+        #[test_context(LocalTestContext)]
+        #[sqlx::test]
+        async fn can_reject_a_corrupted_document(
+            ctx: &mut LocalTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let s3_client = &ctx.s3_client;
+            let mut conn = pool.acquire().await?;
 
-        Ok(())
+            // Insert a story
+            let result = sqlx::query(
+                r#"
+                WITH inserted_user AS (
+                    INSERT INTO users (id, name, username, email)
+                    VALUES ($1, $2, $3, $4)
+                )
+                INSERT INTO stories (id, user_id)
+                VALUES ($5, $1)
+                "#,
+            )
+            .bind(1_i64)
+            .bind("Some user")
+            .bind("some_user")
+            .bind("someone@example.com")
+            .bind(2_i64)
+            .execute(&mut *conn)
+            .await?;
+
+            assert_eq!(result.rows_affected(), 1);
+
+            // Attach the document to object storage with invalid data
+            let document = sqlx::query(
+                r#"
+                SELECT key FROM documents
+                WHERE
+                    story_id = $1
+                    AND is_editable IS FALSE
+                "#,
+            )
+            .bind(2_i64)
+            .fetch_one(&mut *conn)
+            .await?;
+
+            let data = deflate_bytes_gzip("bad data".as_bytes(), None)
+                .await
+                .unwrap();
+
+            s3_client
+                .put_object()
+                .bucket(S3_DOCS_BUCKET)
+                .key(document.get::<Uuid, _>("key").to_string())
+                .body(data.into())
+                .send()
+                .await
+                .unwrap();
+
+            let documents = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
+                .await
+                .unwrap();
+
+            assert_eq!(documents, 1_u32);
+
+            let (endpoint, _, _, _) =
+                init_realms_server_for_test(pool, Some(s3_client.clone()), true, false).await;
+            let (mut tx, mut rx) = peer(endpoint).await;
+
+            if let Ok(message) = rx.next().await.unwrap() {
+                assert_eq!(
+                    message.to_string(),
+                    EnterRealmError::DocCorrupted.to_string()
+                );
+            }
+
+            tx.close().await.unwrap();
+
+            Ok(())
+        }
     }
 }

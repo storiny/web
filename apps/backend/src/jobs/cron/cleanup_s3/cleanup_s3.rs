@@ -264,7 +264,7 @@ mod tests {
         },
         utils::delete_s3_objects::delete_s3_objects,
     };
-    use serial_test::serial;
+
     use sqlx::PgPool;
     use storiny_macros::test_context;
 
@@ -379,91 +379,91 @@ mod tests {
         assert_eq!(object_count, count as u32);
     }
 
-    // Assets
+    mod serial {
+        use super::*;
 
-    #[test_context(LocalTestContext)]
-    #[sqlx::test]
-    #[serial(s3)]
-    async fn can_clean_assets_table_and_s3(
-        ctx: &mut LocalTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let s3_client = &ctx.s3_client;
+        // Assets
 
-        // Generate some assets
-        generate_dummy_assets(5, &pool, s3_client).await;
+        #[test_context(LocalTestContext)]
+        #[sqlx::test]
+        async fn can_clean_assets_table_and_s3(
+            ctx: &mut LocalTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let s3_client = &ctx.s3_client;
 
-        let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
-        let result = cleanup_s3(S3CleanupJob { 0: Utc::now() }, ctx).await;
+            // Generate some assets
+            generate_dummy_assets(5, &pool, s3_client).await;
 
-        assert!(result.is_ok());
+            let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
+            let result = cleanup_s3(S3CleanupJob { 0: Utc::now() }, ctx).await;
 
-        // Assets should not be present in the database
-        let result = sqlx::query(r#"SELECT 1 FROM assets"#)
-            .fetch_all(&pool)
-            .await?;
+            assert!(result.is_ok());
 
-        assert!(result.is_empty());
+            // Assets should not be present in the database
+            let result = sqlx::query(r#"SELECT 1 FROM assets"#)
+                .fetch_all(&pool)
+                .await?;
 
-        // Objects should not be present in the bucket
-        let object_count = count_s3_objects(&s3_client, S3_UPLOADS_BUCKET, None, None)
-            .await
-            .unwrap();
+            assert!(result.is_empty());
 
-        assert_eq!(object_count, 0);
+            // Objects should not be present in the bucket
+            let object_count = count_s3_objects(&s3_client, S3_UPLOADS_BUCKET, None, None)
+                .await
+                .unwrap();
 
-        Ok(())
-    }
+            assert_eq!(object_count, 0);
 
-    #[test_context(LocalTestContext)]
-    #[sqlx::test]
-    #[serial(s3)]
-    async fn can_clean_assets_table_and_s3_for_large_dataset(
-        ctx: &mut LocalTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let s3_client = &ctx.s3_client;
+            Ok(())
+        }
 
-        // Generate a large number of assets
-        generate_dummy_assets(2500, &pool, s3_client).await;
+        #[test_context(LocalTestContext)]
+        #[sqlx::test]
+        async fn can_clean_assets_table_and_s3_for_large_dataset(
+            ctx: &mut LocalTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let s3_client = &ctx.s3_client;
 
-        let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
-        let result = cleanup_s3(S3CleanupJob { 0: Utc::now() }, ctx).await;
+            // Generate a large number of assets
+            generate_dummy_assets(2500, &pool, s3_client).await;
 
-        assert!(result.is_ok());
+            let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
+            let result = cleanup_s3(S3CleanupJob { 0: Utc::now() }, ctx).await;
 
-        // Assets should not be present in the database
-        let result = sqlx::query(r#"SELECT 1 FROM assets"#)
-            .fetch_all(&pool)
-            .await?;
+            assert!(result.is_ok());
 
-        assert!(result.is_empty());
+            // Assets should not be present in the database
+            let result = sqlx::query(r#"SELECT 1 FROM assets"#)
+                .fetch_all(&pool)
+                .await?;
 
-        // Objects should not be present in the bucket
-        let object_count = count_s3_objects(&s3_client, S3_UPLOADS_BUCKET, None, None)
-            .await
-            .unwrap();
+            assert!(result.is_empty());
 
-        assert_eq!(object_count, 0);
+            // Objects should not be present in the bucket
+            let object_count = count_s3_objects(&s3_client, S3_UPLOADS_BUCKET, None, None)
+                .await
+                .unwrap();
 
-        Ok(())
-    }
+            assert_eq!(object_count, 0);
 
-    #[test_context(LocalTestContext)]
-    #[sqlx::test(fixtures("user"))]
-    #[serial(s3)]
-    async fn should_not_delete_valid_assets(
-        ctx: &mut LocalTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let s3_client = &ctx.s3_client;
+            Ok(())
+        }
 
-        // Generate a single asset
-        generate_dummy_assets(1, &pool, s3_client).await;
+        #[test_context(LocalTestContext)]
+        #[sqlx::test(fixtures("user"))]
+        async fn should_not_delete_valid_assets(
+            ctx: &mut LocalTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let s3_client = &ctx.s3_client;
 
-        // Update the user_id of the asset
-        let result = sqlx::query(
-            r#"
+            // Generate a single asset
+            generate_dummy_assets(1, &pool, s3_client).await;
+
+            // Update the user_id of the asset
+            let result = sqlx::query(
+                r#"
             WITH selected_asset AS (
                 SELECT id FROM assets
             )
@@ -471,133 +471,131 @@ mod tests {
             SET user_id = $1
             WHERE id = (SELECT id FROM selected_asset)
             "#,
-        )
-        .bind(1_i64)
-        .execute(&pool)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
-        let result = cleanup_s3(S3CleanupJob { 0: Utc::now() }, ctx).await;
-
-        assert!(result.is_ok());
-
-        // Asset should still be present in the database
-        let result = sqlx::query(r#"SELECT 1 FROM assets"#)
-            .fetch_all(&pool)
+            )
+            .bind(1_i64)
+            .execute(&pool)
             .await?;
 
-        assert_eq!(result.len(), 1);
+            assert_eq!(result.rows_affected(), 1);
 
-        // Object should still be present in the bucket
-        let object_count = count_s3_objects(&s3_client, S3_UPLOADS_BUCKET, None, None)
-            .await
-            .unwrap();
+            let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
+            let result = cleanup_s3(S3CleanupJob { 0: Utc::now() }, ctx).await;
 
-        assert_eq!(object_count, 1);
+            assert!(result.is_ok());
 
-        Ok(())
-    }
+            // Asset should still be present in the database
+            let result = sqlx::query(r#"SELECT 1 FROM assets"#)
+                .fetch_all(&pool)
+                .await?;
 
-    // Documents
+            assert_eq!(result.len(), 1);
 
-    #[test_context(LocalTestContext)]
-    #[sqlx::test]
-    #[serial(s3)]
-    async fn can_clean_documents_table_and_s3(
-        ctx: &mut LocalTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let s3_client = &ctx.s3_client;
+            // Object should still be present in the bucket
+            let object_count = count_s3_objects(&s3_client, S3_UPLOADS_BUCKET, None, None)
+                .await
+                .unwrap();
 
-        // Generate some documents
-        generate_dummy_documents(5, &pool, s3_client).await;
+            assert_eq!(object_count, 1);
 
-        let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
-        let result = cleanup_s3(S3CleanupJob { 0: Utc::now() }, ctx).await;
+            Ok(())
+        }
 
-        assert!(result.is_ok());
+        // Documents
 
-        // Documents should not be present in the database
-        let result = sqlx::query(r#"SELECT 1 FROM documents"#)
-            .fetch_all(&pool)
-            .await?;
+        #[test_context(LocalTestContext)]
+        #[sqlx::test]
+        async fn can_clean_documents_table_and_s3(
+            ctx: &mut LocalTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let s3_client = &ctx.s3_client;
 
-        assert!(result.is_empty());
+            // Generate some documents
+            generate_dummy_documents(5, &pool, s3_client).await;
 
-        // Objects should not be present in the bucket
-        let object_count = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
-            .await
-            .unwrap();
+            let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
+            let result = cleanup_s3(S3CleanupJob { 0: Utc::now() }, ctx).await;
 
-        assert_eq!(object_count, 0);
+            assert!(result.is_ok());
 
-        Ok(())
-    }
+            // Documents should not be present in the database
+            let result = sqlx::query(r#"SELECT 1 FROM documents"#)
+                .fetch_all(&pool)
+                .await?;
 
-    #[test_context(LocalTestContext)]
-    #[sqlx::test]
-    #[serial(s3)]
-    async fn can_clean_documents_table_and_s3_for_large_dataset(
-        ctx: &mut LocalTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let s3_client = &ctx.s3_client;
+            assert!(result.is_empty());
 
-        // Generate a large number of documents
-        generate_dummy_documents(2500, &pool, s3_client).await;
+            // Objects should not be present in the bucket
+            let object_count = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
+                .await
+                .unwrap();
 
-        let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
-        let result = cleanup_s3(S3CleanupJob { 0: Utc::now() }, ctx).await;
+            assert_eq!(object_count, 0);
 
-        assert!(result.is_ok());
+            Ok(())
+        }
 
-        // Documents should not be present in the database
-        let result = sqlx::query(r#"SELECT 1 FROM documents"#)
-            .fetch_all(&pool)
-            .await?;
+        #[test_context(LocalTestContext)]
+        #[sqlx::test]
+        async fn can_clean_documents_table_and_s3_for_large_dataset(
+            ctx: &mut LocalTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let s3_client = &ctx.s3_client;
 
-        assert!(result.is_empty());
+            // Generate a large number of documents
+            generate_dummy_documents(2500, &pool, s3_client).await;
 
-        // Objects should not be present in the bucket
-        let object_count = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
-            .await
-            .unwrap();
+            let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
+            let result = cleanup_s3(S3CleanupJob { 0: Utc::now() }, ctx).await;
 
-        assert_eq!(object_count, 0);
+            assert!(result.is_ok());
 
-        Ok(())
-    }
+            // Documents should not be present in the database
+            let result = sqlx::query(r#"SELECT 1 FROM documents"#)
+                .fetch_all(&pool)
+                .await?;
 
-    #[test_context(LocalTestContext)]
-    #[sqlx::test(fixtures("user", "story"))]
-    #[serial(s3)]
-    async fn should_not_delete_valid_documents(
-        ctx: &mut LocalTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let s3_client = &ctx.s3_client;
+            assert!(result.is_empty());
 
-        // A document is automatically created when a story is inserted due to the trigger.
-        let result = sqlx::query(r#"SELECT 1 FROM documents"#)
-            .fetch_all(&pool)
-            .await?;
+            // Objects should not be present in the bucket
+            let object_count = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
+                .await
+                .unwrap();
 
-        assert_eq!(result.len(), 1);
+            assert_eq!(object_count, 0);
 
-        let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
-        let result = cleanup_s3(S3CleanupJob { 0: Utc::now() }, ctx).await;
+            Ok(())
+        }
 
-        assert!(result.is_ok());
+        #[test_context(LocalTestContext)]
+        #[sqlx::test(fixtures("user", "story"))]
+        async fn should_not_delete_valid_documents(
+            ctx: &mut LocalTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let s3_client = &ctx.s3_client;
 
-        // Document should still be present in the database
-        let result = sqlx::query(r#"SELECT 1 FROM documents"#)
-            .fetch_all(&pool)
-            .await?;
+            // A document is automatically created when a story is inserted due to the trigger.
+            let result = sqlx::query(r#"SELECT 1 FROM documents"#)
+                .fetch_all(&pool)
+                .await?;
 
-        assert_eq!(result.len(), 1);
+            assert_eq!(result.len(), 1);
 
-        Ok(())
+            let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
+            let result = cleanup_s3(S3CleanupJob { 0: Utc::now() }, ctx).await;
+
+            assert!(result.is_ok());
+
+            // Document should still be present in the database
+            let result = sqlx::query(r#"SELECT 1 FROM documents"#)
+                .fetch_all(&pool)
+                .await?;
+
+            assert_eq!(result.len(), 1);
+
+            Ok(())
+        }
     }
 }

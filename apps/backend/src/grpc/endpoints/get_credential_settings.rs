@@ -67,7 +67,10 @@ mod tests {
         },
         test_utils::test_grpc_service,
     };
-    use sqlx::PgPool;
+    use sqlx::{
+        PgPool,
+        Row,
+    };
     use tonic::Request;
 
     #[sqlx::test]
@@ -77,10 +80,9 @@ mod tests {
             false,
             Box::new(|mut client, pool, _, _| async move {
                 // Insert the user
-                sqlx::query(
+                let result = sqlx::query(
                     r#"
                     INSERT INTO users(
-                        id,
                         name,
                         username,
                         email,
@@ -89,23 +91,25 @@ mod tests {
                         login_google_id,
                         mfa_enabled
                     )
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, TRUE)
+                    VALUES ($1, $2, $3, $4, $5, $6, TRUE)
+                    RETURNING id
                     "#,
                 )
-                .bind(1_i64)
                 .bind("Some user".to_string())
                 .bind("some_user".to_string())
                 .bind("someone@example.com".to_string())
                 .bind("some_hashed_password")
                 .bind("some_apple_id")
                 .bind("some_google_id")
-                .execute(&pool)
+                .fetch_one(&pool)
                 .await
                 .unwrap();
 
+                let user_id = result.get::<i64, _>("id");
+
                 let response = client
                     .get_credential_settings(Request::new(GetCredentialSettingsRequest {
-                        id: 1_i64.to_string(),
+                        id: user_id.to_string(),
                     }))
                     .await
                     .unwrap()

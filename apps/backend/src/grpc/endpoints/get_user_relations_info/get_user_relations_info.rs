@@ -127,7 +127,7 @@ mod tests {
 
                 let response = client
                     .get_user_relations_info(Request::new(GetUserRelationsInfoRequest {
-                        id: 1_i64.to_string(),
+                        id: user_id.unwrap().to_string(),
                     }))
                     .await
                     .unwrap()
@@ -182,7 +182,7 @@ mod tests {
                 // Should return all the relations initially
                 let response = client
                     .get_user_relations_info(Request::new(GetUserRelationsInfoRequest {
-                        id: 1_i64.to_string(),
+                        id: user_id.unwrap().to_string(),
                     }))
                     .await
                     .unwrap()
@@ -225,7 +225,7 @@ mod tests {
 
                 let response = client
                     .get_user_relations_info(Request::new(GetUserRelationsInfoRequest {
-                        id: 1_i64.to_string(),
+                        id: user_id.unwrap().to_string(),
                     }))
                     .await
                     .unwrap()

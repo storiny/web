@@ -31,20 +31,23 @@ mod tests {
         test_utils::RedisTestContext,
         utils::check_resource_limit::check_resource_limit,
     };
-    use serial_test::serial;
+
     use storiny_macros::test_context;
 
-    #[test_context(RedisTestContext)]
-    #[tokio::test]
-    #[serial(redis)]
-    async fn can_exceed_resource_limit(ctx: &mut RedisTestContext) {
-        let redis_pool = &ctx.redis_pool;
-        exceed_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64).await;
+    mod serial {
+        use super::*;
 
-        let result = check_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64)
-            .await
-            .unwrap();
+        #[test_context(RedisTestContext)]
+        #[tokio::test]
+        async fn can_exceed_resource_limit(ctx: &mut RedisTestContext) {
+            let redis_pool = &ctx.redis_pool;
+            exceed_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64).await;
 
-        assert!(!result);
+            let result = check_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64)
+                .await
+                .unwrap();
+
+            assert!(!result);
+        }
     }
 }

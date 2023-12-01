@@ -112,106 +112,12 @@ mod tests {
     };
     use actix_http::StatusCode;
     use actix_web::test;
-    use serial_test::serial;
+
     use sqlx::{
         PgPool,
         Row,
     };
     use storiny_macros::test_context;
-
-    #[test_context(RedisTestContext)]
-    #[sqlx::test(fixtures("liked_reply"))]
-    #[serial(redis)]
-    async fn can_like_a_reply(ctx: &mut RedisTestContext, pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
-
-        let req = test::TestRequest::post()
-            .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/liked-replies/{}", 3))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // Reply like should be present in the database
-        let result = sqlx::query(
-            r#"
-            SELECT EXISTS(
-                SELECT 1 FROM reply_likes
-                WHERE user_id = $1 AND reply_id = $2
-            )
-            "#,
-        )
-        .bind(user_id)
-        .bind(3_i64)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(result.get::<bool, _>("exists"));
-
-        // Should also increment the resource limit
-        let result =
-            get_resource_limit(&ctx.redis_pool, ResourceLimit::LikeReply, user_id.unwrap()).await;
-
-        assert_eq!(result, 1);
-
-        Ok(())
-    }
-
-    #[test_context(RedisTestContext)]
-    #[sqlx::test]
-    #[serial(redis)]
-    async fn can_reject_reply_like_on_exceeding_the_resource_limit(
-        ctx: &mut RedisTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
-
-        // Exceed the resource limit
-        exceed_resource_limit(&ctx.redis_pool, ResourceLimit::LikeReply, user_id.unwrap()).await;
-
-        let req = test::TestRequest::post()
-            .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/liked-replies/{}", 3))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
-
-        Ok(())
-    }
-
-    #[test_context(RedisTestContext)]
-    #[sqlx::test(fixtures("liked_reply"))]
-    #[serial(redis)]
-    async fn should_not_throw_when_liking_an_already_liked_reply(
-        _ctx: &mut RedisTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
-
-        // Like the reply for the first time
-        let req = test::TestRequest::post()
-            .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/me/liked-replies/{}", 3))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // Try liking the reply again
-        let req = test::TestRequest::post()
-            .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/liked-replies/{}", 3))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        // Should not throw
-        assert!(res.status().is_success());
-
-        Ok(())
-    }
 
     #[sqlx::test(fixtures("liked_reply"))]
     async fn should_not_like_a_soft_deleted_reply(pool: PgPool) -> sqlx::Result<()> {
@@ -259,5 +165,102 @@ mod tests {
         assert_response_body_text(res, "Reply does not exist").await;
 
         Ok(())
+    }
+
+    mod serial {
+        use super::*;
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("liked_reply"))]
+        async fn can_like_a_reply(ctx: &mut RedisTestContext, pool: PgPool) -> sqlx::Result<()> {
+            let mut conn = pool.acquire().await?;
+            let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
+            let req = test::TestRequest::post()
+                .cookie(cookie.unwrap())
+                .uri(&format!("/v1/me/liked-replies/{}", 3))
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_success());
+
+            // Reply like should be present in the database
+            let result = sqlx::query(
+                r#"
+                SELECT EXISTS(
+                    SELECT 1 FROM reply_likes
+                    WHERE user_id = $1 AND reply_id = $2
+                )
+                "#,
+            )
+            .bind(user_id)
+            .bind(3_i64)
+            .fetch_one(&mut *conn)
+            .await?;
+
+            assert!(result.get::<bool, _>("exists"));
+
+            // Should also increment the resource limit
+            let result =
+                get_resource_limit(&ctx.redis_pool, ResourceLimit::LikeReply, user_id.unwrap())
+                    .await;
+
+            assert_eq!(result, 1);
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_reject_reply_like_on_exceeding_the_resource_limit(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
+            // Exceed the resource limit
+            exceed_resource_limit(&ctx.redis_pool, ResourceLimit::LikeReply, user_id.unwrap())
+                .await;
+
+            let req = test::TestRequest::post()
+                .cookie(cookie.unwrap())
+                .uri(&format!("/v1/me/liked-replies/{}", 3))
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("liked_reply"))]
+        async fn should_not_throw_when_liking_an_already_liked_reply(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
+
+            // Like the reply for the first time
+            let req = test::TestRequest::post()
+                .cookie(cookie.clone().unwrap())
+                .uri(&format!("/v1/me/liked-replies/{}", 3))
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_success());
+
+            // Try liking the reply again
+            let req = test::TestRequest::post()
+                .cookie(cookie.unwrap())
+                .uri(&format!("/v1/me/liked-replies/{}", 3))
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            // Should not throw
+            assert!(res.status().is_success());
+
+            Ok(())
+        }
     }
 }

@@ -36,33 +36,35 @@ mod tests {
         test_utils::RedisTestContext,
         utils::incr_resource_limit::incr_resource_limit,
     };
-    use serial_test::serial;
+
     use storiny_macros::test_context;
 
-    #[test_context(RedisTestContext)]
-    #[tokio::test]
-    #[serial(redis)]
-    async fn can_get_resource_limit(ctx: &mut RedisTestContext) {
-        let redis_pool = &ctx.redis_pool;
+    mod serial {
+        use super::*;
 
-        // Insert a cache record
-        incr_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64)
-            .await
-            .unwrap();
+        #[test_context(RedisTestContext)]
+        #[tokio::test]
+        async fn can_return_resource_limit(ctx: &mut RedisTestContext) {
+            let redis_pool = &ctx.redis_pool;
 
-        let result = get_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64).await;
+            // Insert a cache record
+            incr_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64)
+                .await
+                .unwrap();
 
-        assert_eq!(result, 1);
-    }
+            let result = get_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64).await;
 
-    #[test_context(RedisTestContext)]
-    #[tokio::test]
-    #[should_panic]
-    #[serial(redis)]
-    async fn can_panic_when_the_resource_limit_is_missing_from_the_cache(
-        ctx: &mut RedisTestContext,
-    ) {
-        let redis_pool = &ctx.redis_pool;
-        get_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64).await;
+            assert_eq!(result, 1);
+        }
+
+        #[test_context(RedisTestContext)]
+        #[tokio::test]
+        #[should_panic]
+        async fn can_panic_when_the_resource_limit_is_missing_from_the_cache(
+            ctx: &mut RedisTestContext,
+        ) {
+            let redis_pool = &ctx.redis_pool;
+            get_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64).await;
+        }
     }
 }

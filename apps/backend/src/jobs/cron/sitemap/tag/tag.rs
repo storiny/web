@@ -153,7 +153,7 @@ mod tests {
         },
         utils::delete_s3_objects::delete_s3_objects,
     };
-    use serial_test::serial;
+
     use sqlx::PgPool;
     use storiny_macros::test_context;
 
@@ -181,75 +181,77 @@ mod tests {
         }
     }
 
-    #[test_context(LocalTestContext)]
-    #[sqlx::test(fixtures("tag"))]
-    #[serial(s3)]
-    async fn can_generate_tag_sitemap(
-        ctx: &mut LocalTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let config = get_app_config().unwrap();
-        let s3_client = &ctx.s3_client;
-        let result =
-            generate_tag_sitemap(&pool, &s3_client, &config.web_server_url, None, None).await;
+    mod serial {
+        use super::*;
 
-        assert!(result.is_ok());
-        assert_eq!(
-            result.unwrap(),
-            GenerateSitemapResponse {
-                url_count: 5,
-                file_count: 1,
-            }
-        );
+        #[test_context(LocalTestContext)]
+        #[sqlx::test(fixtures("tag"))]
+        async fn can_generate_tag_sitemap(
+            ctx: &mut LocalTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let config = get_app_config().unwrap();
+            let s3_client = &ctx.s3_client;
+            let result =
+                generate_tag_sitemap(&pool, &s3_client, &config.web_server_url, None, None).await;
 
-        // Sitemaps should be present in the bucket
-        let sitemap_count = count_s3_objects(
-            &s3_client,
-            S3_SITEMAPS_BUCKET,
-            Some("tags-".to_string()),
-            None,
-        )
-        .await
-        .unwrap();
+            assert!(result.is_ok());
+            assert_eq!(
+                result.unwrap(),
+                GenerateSitemapResponse {
+                    url_count: 5,
+                    file_count: 1,
+                }
+            );
 
-        assert_eq!(sitemap_count, 1);
+            // Sitemaps should be present in the bucket
+            let sitemap_count = count_s3_objects(
+                &s3_client,
+                S3_SITEMAPS_BUCKET,
+                Some("tags-".to_string()),
+                None,
+            )
+            .await
+            .unwrap();
 
-        Ok(())
-    }
+            assert_eq!(sitemap_count, 1);
 
-    #[test_context(LocalTestContext)]
-    #[sqlx::test(fixtures("large_dataset"))]
-    #[serial(s3)]
-    async fn can_generate_tag_sitemap_for_large_dataset(
-        ctx: &mut LocalTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let config = get_app_config().unwrap();
-        let s3_client = &ctx.s3_client;
-        let result =
-            generate_tag_sitemap(&pool, &s3_client, &config.web_server_url, None, None).await;
+            Ok(())
+        }
 
-        assert!(result.is_ok());
-        assert_eq!(
-            result.unwrap(),
-            GenerateSitemapResponse {
-                url_count: 125700,
-                file_count: 3,
-            }
-        );
+        #[test_context(LocalTestContext)]
+        #[sqlx::test(fixtures("large_dataset"))]
+        async fn can_generate_tag_sitemap_for_large_dataset(
+            ctx: &mut LocalTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let config = get_app_config().unwrap();
+            let s3_client = &ctx.s3_client;
+            let result =
+                generate_tag_sitemap(&pool, &s3_client, &config.web_server_url, None, None).await;
 
-        // Sitemaps should be present in the bucket
-        let sitemap_count = count_s3_objects(
-            &s3_client,
-            S3_SITEMAPS_BUCKET,
-            Some("tags-".to_string()),
-            None,
-        )
-        .await
-        .unwrap();
+            assert!(result.is_ok());
+            assert_eq!(
+                result.unwrap(),
+                GenerateSitemapResponse {
+                    url_count: 125700,
+                    file_count: 3,
+                }
+            );
 
-        assert_eq!(sitemap_count, 3);
+            // Sitemaps should be present in the bucket
+            let sitemap_count = count_s3_objects(
+                &s3_client,
+                S3_SITEMAPS_BUCKET,
+                Some("tags-".to_string()),
+                None,
+            )
+            .await
+            .unwrap();
 
-        Ok(())
+            assert_eq!(sitemap_count, 3);
+
+            Ok(())
+        }
     }
 }

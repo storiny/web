@@ -182,108 +182,12 @@ mod tests {
         http::StatusCode,
         test,
     };
-    use serial_test::serial;
+
     use sqlx::{
         PgPool,
         Row,
     };
     use storiny_macros::test_context;
-
-    #[test_context(RedisTestContext)]
-    #[sqlx::test(fixtures("reply"))]
-    #[serial(redis)]
-    async fn can_add_a_reply(ctx: &mut RedisTestContext, pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
-
-        let req = test::TestRequest::post()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/replies")
-            .set_json(Request {
-                content: "Sample **reply** content!".to_string(),
-                comment_id: "3".to_string(),
-            })
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // Reply should be present in the database, with rendered markdown
-        let result = sqlx::query(
-            r#"
-            SELECT id, rendered_content FROM replies
-            WHERE user_id = $1 AND comment_id = $2
-            "#,
-        )
-        .bind(user_id.unwrap())
-        .bind(3_i64)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert_eq!(
-            result.get::<String, _>("rendered_content"),
-            md_to_html(MarkdownSource::Response("Sample **reply** content!"))
-        );
-
-        // Should also insert a notification
-        let notification_result = sqlx::query(
-            r#"
-            SELECT EXISTS (
-                SELECT 1 FROM notifications
-                WHERE entity_id = $1
-            )
-            "#,
-        )
-        .bind(result.get::<i64, _>("id"))
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(notification_result.get::<bool, _>("exists"));
-
-        // Should also increment the resource limit
-        let result = get_resource_limit(
-            &ctx.redis_pool,
-            ResourceLimit::CreateReply,
-            user_id.unwrap(),
-        )
-        .await;
-
-        assert_eq!(result, 1);
-
-        Ok(())
-    }
-
-    #[test_context(RedisTestContext)]
-    #[sqlx::test]
-    #[serial(redis)]
-    async fn can_reject_reply_on_exceeding_the_resource_limit(
-        ctx: &mut RedisTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
-
-        // Exceed the resource limit
-        exceed_resource_limit(
-            &ctx.redis_pool,
-            ResourceLimit::CreateReply,
-            user_id.unwrap(),
-        )
-        .await;
-
-        let req = test::TestRequest::post()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/replies")
-            .set_json(Request {
-                content: "Sample **reply** content!".to_string(),
-                comment_id: "3".to_string(),
-            })
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
-
-        Ok(())
-    }
 
     #[sqlx::test(fixtures("reply"))]
     async fn can_reject_reply_for_a_soft_deleted_comment(pool: PgPool) -> sqlx::Result<()> {
@@ -371,5 +275,103 @@ mod tests {
         assert_toast_error_response(res, "Comment does not exist").await;
 
         Ok(())
+    }
+
+    mod serial {
+        use super::*;
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("reply"))]
+        async fn can_add_a_reply(ctx: &mut RedisTestContext, pool: PgPool) -> sqlx::Result<()> {
+            let mut conn = pool.acquire().await?;
+            let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
+            let req = test::TestRequest::post()
+                .cookie(cookie.unwrap())
+                .uri("/v1/me/replies")
+                .set_json(Request {
+                    content: "Sample **reply** content!".to_string(),
+                    comment_id: "3".to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_success());
+
+            // Reply should be present in the database, with rendered markdown
+            let result = sqlx::query(
+                r#"
+                SELECT id, rendered_content FROM replies
+                WHERE user_id = $1 AND comment_id = $2
+                "#,
+            )
+            .bind(user_id.unwrap())
+            .bind(3_i64)
+            .fetch_one(&mut *conn)
+            .await?;
+
+            assert_eq!(
+                result.get::<String, _>("rendered_content"),
+                md_to_html(MarkdownSource::Response("Sample **reply** content!"))
+            );
+
+            // Should also insert a notification
+            let notification_result = sqlx::query(
+                r#"
+                SELECT EXISTS (
+                    SELECT 1 FROM notifications
+                    WHERE entity_id = $1
+                )
+                "#,
+            )
+            .bind(result.get::<i64, _>("id"))
+            .fetch_one(&mut *conn)
+            .await?;
+
+            assert!(notification_result.get::<bool, _>("exists"));
+
+            // Should also increment the resource limit
+            let result = get_resource_limit(
+                &ctx.redis_pool,
+                ResourceLimit::CreateReply,
+                user_id.unwrap(),
+            )
+            .await;
+
+            assert_eq!(result, 1);
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_reject_reply_on_exceeding_the_resource_limit(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
+            // Exceed the resource limit
+            exceed_resource_limit(
+                &ctx.redis_pool,
+                ResourceLimit::CreateReply,
+                user_id.unwrap(),
+            )
+            .await;
+
+            let req = test::TestRequest::post()
+                .cookie(cookie.unwrap())
+                .uri("/v1/me/replies")
+                .set_json(Request {
+                    content: "Sample **reply** content!".to_string(),
+                    comment_id: "3".to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
+
+            Ok(())
+        }
     }
 }

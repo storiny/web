@@ -98,106 +98,12 @@ mod tests {
         http::StatusCode,
         test,
     };
-    use serial_test::serial;
+
     use sqlx::{
         PgPool,
         Row,
     };
     use storiny_macros::test_context;
-
-    #[test_context(RedisTestContext)]
-    #[sqlx::test(fixtures("followed_tag"))]
-    #[serial(redis)]
-    async fn can_follow_a_tag(ctx: &mut RedisTestContext, pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
-
-        let req = test::TestRequest::post()
-            .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/followed-tags/{}", 2))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // Followed tag relation should be present in the database
-        let result = sqlx::query(
-            r#"
-            SELECT EXISTS(
-                SELECT 1 FROM tag_followers
-                WHERE user_id = $1 AND tag_id = $2
-            )
-            "#,
-        )
-        .bind(user_id.unwrap())
-        .bind(2_i64)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(result.get::<bool, _>("exists"));
-
-        // Should also increment the resource limit
-        let result =
-            get_resource_limit(&ctx.redis_pool, ResourceLimit::FollowTag, user_id.unwrap()).await;
-
-        assert_eq!(result, 1);
-
-        Ok(())
-    }
-
-    #[test_context(RedisTestContext)]
-    #[sqlx::test]
-    #[serial(redis)]
-    async fn can_reject_followed_tag_on_exceeding_the_resource_limit(
-        ctx: &mut RedisTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
-
-        // Exceed the resource limit
-        exceed_resource_limit(&ctx.redis_pool, ResourceLimit::FollowTag, user_id.unwrap()).await;
-
-        let req = test::TestRequest::post()
-            .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/followed-tags/{}", 2))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
-
-        Ok(())
-    }
-
-    #[test_context(RedisTestContext)]
-    #[sqlx::test(fixtures("followed_tag"))]
-    #[serial(redis)]
-    async fn should_not_throw_when_following_an_already_followed_tag(
-        _ctx: &mut RedisTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
-
-        // Follow the tag for the first time
-        let req = test::TestRequest::post()
-            .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/me/followed-tags/{}", 2))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // Try following the tag again
-        let req = test::TestRequest::post()
-            .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/followed-tags/{}", 2))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        // Should not throw
-        assert!(res.status().is_success());
-
-        Ok(())
-    }
 
     #[sqlx::test]
     async fn can_reject_followed_tag_for_a_missing_tag(pool: PgPool) -> sqlx::Result<()> {
@@ -205,7 +111,7 @@ mod tests {
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/followed_tags/{}", 12345))
+            .uri(&format!("/v1/me/followed-tags/{}", 12345))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -213,5 +119,102 @@ mod tests {
         assert_response_body_text(res, "Tag does not exist").await;
 
         Ok(())
+    }
+
+    mod serial {
+        use super::*;
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("followed_tag"))]
+        async fn can_follow_a_tag(ctx: &mut RedisTestContext, pool: PgPool) -> sqlx::Result<()> {
+            let mut conn = pool.acquire().await?;
+            let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
+            let req = test::TestRequest::post()
+                .cookie(cookie.unwrap())
+                .uri(&format!("/v1/me/followed-tags/{}", 2))
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_success());
+
+            // Followed tag relation should be present in the database
+            let result = sqlx::query(
+                r#"
+                SELECT EXISTS(
+                    SELECT 1 FROM tag_followers
+                    WHERE user_id = $1 AND tag_id = $2
+                )
+                "#,
+            )
+            .bind(user_id.unwrap())
+            .bind(2_i64)
+            .fetch_one(&mut *conn)
+            .await?;
+
+            assert!(result.get::<bool, _>("exists"));
+
+            // Should also increment the resource limit
+            let result =
+                get_resource_limit(&ctx.redis_pool, ResourceLimit::FollowTag, user_id.unwrap())
+                    .await;
+
+            assert_eq!(result, 1);
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_reject_followed_tag_on_exceeding_the_resource_limit(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
+            // Exceed the resource limit
+            exceed_resource_limit(&ctx.redis_pool, ResourceLimit::FollowTag, user_id.unwrap())
+                .await;
+
+            let req = test::TestRequest::post()
+                .cookie(cookie.unwrap())
+                .uri(&format!("/v1/me/followed-tags/{}", 2))
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("followed_tag"))]
+        async fn should_not_throw_when_following_an_already_followed_tag(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
+
+            // Follow the tag for the first time
+            let req = test::TestRequest::post()
+                .cookie(cookie.clone().unwrap())
+                .uri(&format!("/v1/me/followed-tags/{}", 2))
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_success());
+
+            // Try following the tag again
+            let req = test::TestRequest::post()
+                .cookie(cookie.unwrap())
+                .uri(&format!("/v1/me/followed-tags/{}", 2))
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            // Should not throw
+            assert!(res.status().is_success());
+
+            Ok(())
+        }
     }
 }

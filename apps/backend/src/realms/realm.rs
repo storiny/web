@@ -63,7 +63,7 @@ pub type RealmMap = Arc<LockableHashMap<i64, Arc<Realm>>>;
 pub type RealmData = actix_web::web::Data<LockableHashMap<i64, Arc<Realm>>>;
 
 /// The maximum number of peers that can connect to a single realm.
-const MAX_PEERS_PER_REALM: u16 = 3;
+pub const MAX_PEERS_PER_REALM: u16 = 3;
 
 /// The loop interval duration (in seconds) after which the document gets persisted to the object
 /// storage.
@@ -530,5 +530,204 @@ impl Realm {
 impl Drop for Realm {
     fn drop(&mut self) {
         log::info!("[{}] Dropped", self.doc_id);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        test_utils::{
+            get_s3_client,
+            TestContext,
+        },
+        utils::delete_s3_objects::delete_s3_objects,
+    };
+    use storiny_macros::test_context;
+    use yrs::Doc;
+
+    /// Initializes and returns a tuple consisting of a realm map and a realm instance.
+    ///
+    /// * `doc_id` - The ID of the document.
+    /// * `doc_key` - The UUID of the document, used as the key for the object storage.
+    /// * `s3_client` - The S3 client instance.
+    async fn init_realm(doc_id: i64, doc_key: &str, s3_client: S3Client) -> (RealmMap, Arc<Realm>) {
+        let realm_map: RealmMap = Arc::new(LockableHashMap::new());
+        let doc = Doc::new();
+        let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
+        let bc_group = BroadcastGroup::new(awareness, 10).await;
+        let realm = Arc::new(Realm::new(
+            realm_map.clone(),
+            s3_client.clone(),
+            doc_id.clone(),
+            doc_key.to_string(),
+            bc_group,
+        ));
+
+        {
+            let mut realm_guard = realm_map
+                .async_lock(doc_id, AsyncLimit::no_limit())
+                .await
+                .unwrap();
+
+            realm_guard.insert(realm.clone());
+        }
+
+        (realm_map, realm)
+    }
+
+    struct LocalTestContext {
+        s3_client: S3Client,
+    }
+
+    #[async_trait::async_trait]
+    impl TestContext for LocalTestContext {
+        async fn setup() -> LocalTestContext {
+            LocalTestContext {
+                s3_client: get_s3_client().await,
+            }
+        }
+
+        async fn teardown(self) {
+            delete_s3_objects(&self.s3_client, S3_DOCS_BUCKET, None, None)
+                .await
+                .unwrap();
+        }
+    }
+
+    mod serial {
+        use super::*;
+        use crate::realms::server::tests::{
+            init_realms_server_for_test,
+            peer,
+        };
+        use futures_util::{
+            SinkExt,
+            StreamExt,
+        };
+        use sqlx::PgPool;
+        use yrs::{
+            encoding::read::{
+                Cursor,
+                Read,
+            },
+            updates::decoder::DecoderV2,
+        };
+
+        #[test_context(LocalTestContext)]
+        #[tokio::test]
+        async fn can_create_a_realm_instance(ctx: &mut LocalTestContext) {
+            let s3_client = &ctx.s3_client;
+            let (realm_map, _) = init_realm(1_i64, "test", s3_client.clone()).await;
+
+            let realm_guard = realm_map
+                .async_lock(1_i64, AsyncLimit::no_limit())
+                .await
+                .unwrap();
+
+            assert!(realm_guard.value().is_some());
+        }
+
+        #[test_context(LocalTestContext)]
+        #[sqlx::test]
+        async fn can_subscribe_to_a_realm_instance(ctx: &mut LocalTestContext, pool: PgPool) {
+            let s3_client = &ctx.s3_client;
+            let (endpoint, realm_map, _, story_id) =
+                init_realms_server_for_test(pool, Some(s3_client.clone()), true, true).await;
+            let _ = peer(endpoint).await;
+
+            tokio::time::sleep(Duration::from_secs(5)).await;
+
+            let realm_outer = realm_map
+                .async_lock(story_id, AsyncLimit::no_limit())
+                .await
+                .unwrap();
+            let realm = realm_outer.value();
+
+            assert!(realm.is_some())
+        }
+
+        #[test_context(LocalTestContext)]
+        #[sqlx::test]
+        async fn can_destroy_a_realm_instance_with_a_reason(
+            ctx: &mut LocalTestContext,
+            pool: PgPool,
+        ) {
+            let s3_client = &ctx.s3_client;
+            let (endpoint, realm_map, _, story_id) =
+                init_realms_server_for_test(pool, Some(s3_client.clone()), true, true).await;
+            let (mut tx, mut rx) = peer(endpoint).await;
+
+            tokio::time::sleep(Duration::from_secs(5)).await;
+
+            let mut realm_outer = realm_map
+                .async_lock(story_id, AsyncLimit::no_limit())
+                .await
+                .unwrap();
+            let realm = realm_outer.value().expect("realm not found");
+
+            realm.destroy(RealmDestroyReason::Internal).await;
+            realm_outer.remove();
+
+            // The peer should receive an internal destroy message
+            if let Ok(message) = rx.next().await.unwrap() {
+                assert!(message.is_binary());
+
+                let message_data = message.into_data();
+                let mut decoder = DecoderV2::new(Cursor::new(&message_data)).unwrap();
+
+                assert_eq!(decoder.read_var::<u8>().unwrap(), MSG_INTERNAL);
+                assert_eq!(
+                    decoder.read_string().unwrap().to_string(),
+                    RealmDestroyReason::Internal.to_string()
+                );
+            }
+
+            tx.close().await.unwrap();
+        }
+
+        mod long_running {
+            use super::*;
+
+            #[test_context(LocalTestContext)]
+            #[sqlx::test]
+            async fn can_destroy_the_realm_instance_after_the_last_peer_unsubscribes(
+                ctx: &mut LocalTestContext,
+                pool: PgPool,
+            ) {
+                let s3_client = &ctx.s3_client;
+                let (endpoint, realm_map, _, story_id) =
+                    init_realms_server_for_test(pool, Some(s3_client.clone()), true, true).await;
+                let (mut tx, _) = peer(endpoint).await;
+
+                tokio::time::sleep(Duration::from_secs(5)).await;
+
+                {
+                    // Realm should be present in the map
+                    let realm = realm_map
+                        .async_lock(story_id, AsyncLimit::no_limit())
+                        .await
+                        .unwrap();
+
+                    assert!(realm.value().is_some());
+                }
+
+                // Drop the peer
+                tx.close().await.unwrap();
+
+                // The realm is guaranteed to be dropped within the next two persistence cycles.
+                tokio::time::sleep(Duration::from_secs(PERSISTENCE_LOOP_DURATION * 2)).await;
+
+                {
+                    // Realm should not be present in the map
+                    let realm = realm_map
+                        .async_lock(story_id, AsyncLimit::no_limit())
+                        .await
+                        .unwrap();
+
+                    assert!(realm.value().is_none());
+                }
+            }
+        }
     }
 }

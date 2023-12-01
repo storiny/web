@@ -174,154 +174,11 @@ mod tests {
         http::StatusCode,
         test,
     };
-    use serial_test::serial;
     use sqlx::{
         PgPool,
         Row,
     };
     use storiny_macros::test_context;
-
-    #[test_context(RedisTestContext)]
-    #[sqlx::test(fixtures("friend"))]
-    #[serial(redis)]
-    async fn can_send_a_friend_request(
-        ctx: &mut RedisTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
-
-        let req = test::TestRequest::post()
-            .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/friends/{}", 2))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // Friend request should be present in the database
-        let result = sqlx::query(
-            r#"
-            SELECT EXISTS(
-                SELECT 1 FROM friends
-                WHERE transmitter_id = $1 AND receiver_id = $2 AND accepted_at IS NULL
-            )
-            "#,
-        )
-        .bind(user_id.unwrap())
-        .bind(2_i64)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(result.get::<bool, _>("exists"));
-
-        // Should also insert a notification
-        let result = sqlx::query(
-            r#"
-            SELECT EXISTS (
-                SELECT 1 FROM notifications
-                WHERE entity_id = $1
-            )
-            "#,
-        )
-        .bind(user_id.unwrap())
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(result.get::<bool, _>("exists"));
-
-        // Should also increment the resource limit
-        let result = get_resource_limit(
-            &ctx.redis_pool,
-            ResourceLimit::SendFriendRequest,
-            user_id.unwrap(),
-        )
-        .await;
-
-        assert_eq!(result, 1);
-
-        Ok(())
-    }
-
-    #[test_context(RedisTestContext)]
-    #[sqlx::test]
-    #[serial(redis)]
-    async fn can_reject_friend_request_on_exceeding_the_resource_limit(
-        ctx: &mut RedisTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
-
-        // Exceed the resource limit
-        exceed_resource_limit(
-            &ctx.redis_pool,
-            ResourceLimit::SendFriendRequest,
-            user_id.unwrap(),
-        )
-        .await;
-
-        let req = test::TestRequest::post()
-            .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/friends/{}", 2))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
-
-        Ok(())
-    }
-
-    #[test_context(RedisTestContext)]
-    #[sqlx::test(fixtures("friend"))]
-    #[serial(redis)]
-    async fn should_not_throw_when_sending_a_friend_request_to_an_existing_friend(
-        _ctx: &mut RedisTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
-
-        // Send the friend request for the first time
-        let req = test::TestRequest::post()
-            .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/me/friends/{}", 2))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // Try sending the friend request again
-        let req = test::TestRequest::post()
-            .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/friends/{}", 2))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        // Should not throw
-        assert!(res.status().is_success());
-
-        // Should not insert another notification
-        let result = sqlx::query(
-            r#"
-            SELECT
-                1
-            FROM
-                notification_outs
-            WHERE
-                notification_id = (
-                    SELECT id FROM notifications
-                    WHERE entity_id = $1
-                )
-            "#,
-        )
-        .bind(user_id.unwrap())
-        .fetch_all(&mut *conn)
-        .await?;
-
-        assert_eq!(result.len(), 1);
-
-        Ok(())
-    }
 
     #[sqlx::test(fixtures("friend"))]
     async fn should_not_send_friend_request_to_a_soft_deleted_user(
@@ -486,5 +343,148 @@ mod tests {
         assert_toast_error_response(res, "User does not exist").await;
 
         Ok(())
+    }
+
+    mod serial {
+        use super::*;
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("friend"))]
+        async fn can_send_a_friend_request(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let mut conn = pool.acquire().await?;
+            let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
+            let req = test::TestRequest::post()
+                .cookie(cookie.unwrap())
+                .uri(&format!("/v1/me/friends/{}", 2))
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_success());
+
+            // Friend request should be present in the database
+            let result = sqlx::query(
+                r#"
+                SELECT EXISTS(
+                    SELECT 1 FROM friends
+                    WHERE transmitter_id = $1 AND receiver_id = $2 AND accepted_at IS NULL
+                )
+                "#,
+            )
+            .bind(user_id.unwrap())
+            .bind(2_i64)
+            .fetch_one(&mut *conn)
+            .await?;
+
+            assert!(result.get::<bool, _>("exists"));
+
+            // Should also insert a notification
+            let result = sqlx::query(
+                r#"
+                SELECT EXISTS (
+                    SELECT 1 FROM notifications
+                    WHERE entity_id = $1
+                )
+                "#,
+            )
+            .bind(user_id.unwrap())
+            .fetch_one(&mut *conn)
+            .await?;
+
+            assert!(result.get::<bool, _>("exists"));
+
+            // Should also increment the resource limit
+            let result = get_resource_limit(
+                &ctx.redis_pool,
+                ResourceLimit::SendFriendRequest,
+                user_id.unwrap(),
+            )
+            .await;
+
+            assert_eq!(result, 1);
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_reject_friend_request_on_exceeding_the_resource_limit(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
+            // Exceed the resource limit
+            exceed_resource_limit(
+                &ctx.redis_pool,
+                ResourceLimit::SendFriendRequest,
+                user_id.unwrap(),
+            )
+            .await;
+
+            let req = test::TestRequest::post()
+                .cookie(cookie.unwrap())
+                .uri(&format!("/v1/me/friends/{}", 2))
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("friend"))]
+        async fn should_not_throw_when_sending_a_friend_request_to_an_existing_friend(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let mut conn = pool.acquire().await?;
+            let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
+            // Send the friend request for the first time
+            let req = test::TestRequest::post()
+                .cookie(cookie.clone().unwrap())
+                .uri(&format!("/v1/me/friends/{}", 2))
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_success());
+
+            // Try sending the friend request again
+            let req = test::TestRequest::post()
+                .cookie(cookie.unwrap())
+                .uri(&format!("/v1/me/friends/{}", 2))
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            // Should not throw
+            assert!(res.status().is_success());
+
+            // Should not insert another notification
+            let result = sqlx::query(
+                r#"
+                SELECT
+                    1
+                FROM
+                    notification_outs
+                WHERE
+                    notification_id = (
+                        SELECT id FROM notifications
+                        WHERE entity_id = $1
+                    )
+                "#,
+            )
+            .bind(user_id.unwrap())
+            .fetch_all(&mut *conn)
+            .await?;
+
+            assert_eq!(result.len(), 1);
+
+            Ok(())
+        }
     }
 }

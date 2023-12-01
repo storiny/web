@@ -64,68 +64,10 @@ mod tests {
         },
     };
     use actix_web::test;
-    use serial_test::serial;
+
     use sqlx::PgPool;
     use storiny_macros::test_context;
     use uuid::Uuid;
-
-    #[test_context(RedisTestContext)]
-    #[sqlx::test]
-    #[serial(redis)]
-    async fn can_logout_from_a_session(
-        ctx: &mut RedisTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let redis_pool = &ctx.redis_pool;
-        let mut redis_conn = redis_pool.get().await.unwrap();
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, None).await;
-        let session_token = Uuid::new_v4();
-
-        // Insert a session for the user
-        let _: () = redis_conn
-            .set(
-                &format!(
-                    "{}:{}:{}",
-                    RedisNamespace::Session.to_string(),
-                    user_id.unwrap(),
-                    session_token
-                ),
-                &serde_json::to_string(&UserSession {
-                    user_id: user_id.unwrap(),
-                    ..Default::default()
-                })
-                .unwrap(),
-            )
-            .await
-            .unwrap();
-
-        // Should have 2 sessions initially
-        let sessions = get_user_sessions(&redis_pool, user_id.unwrap())
-            .await
-            .unwrap();
-
-        assert_eq!(sessions.len(), 2);
-
-        let req = test::TestRequest::post()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/settings/sessions/logout")
-            .set_json(Request {
-                id: session_token.to_string(),
-            })
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // Cache should only have the current session
-        let sessions = get_user_sessions(&redis_pool, user_id.unwrap())
-            .await
-            .unwrap();
-
-        assert_eq!(sessions.len(), 1);
-
-        Ok(())
-    }
 
     #[sqlx::test]
     async fn should_not_throw_when_logging_out_from_an_invalid_session(
@@ -145,5 +87,66 @@ mod tests {
         assert!(res.status().is_success());
 
         Ok(())
+    }
+
+    mod serial {
+        use super::*;
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_logout_from_a_session(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let redis_pool = &ctx.redis_pool;
+            let mut redis_conn = redis_pool.get().await.unwrap();
+            let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, None).await;
+            let session_token = Uuid::new_v4();
+
+            // Insert a session for the user
+            let _: () = redis_conn
+                .set(
+                    &format!(
+                        "{}:{}:{}",
+                        RedisNamespace::Session.to_string(),
+                        user_id.unwrap(),
+                        session_token
+                    ),
+                    &serde_json::to_string(&UserSession {
+                        user_id: user_id.unwrap(),
+                        ..Default::default()
+                    })
+                    .unwrap(),
+                )
+                .await
+                .unwrap();
+
+            // Should have 2 sessions initially
+            let sessions = get_user_sessions(&redis_pool, user_id.unwrap())
+                .await
+                .unwrap();
+
+            assert_eq!(sessions.len(), 2);
+
+            let req = test::TestRequest::post()
+                .cookie(cookie.unwrap())
+                .uri("/v1/me/settings/sessions/logout")
+                .set_json(Request {
+                    id: session_token.to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_success());
+
+            // Cache should only have the current session
+            let sessions = get_user_sessions(&redis_pool, user_id.unwrap())
+                .await
+                .unwrap();
+
+            assert_eq!(sessions.len(), 1);
+
+            Ok(())
+        }
     }
 }

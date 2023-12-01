@@ -473,7 +473,7 @@ mod tests {
     };
     use redis::AsyncCommands;
     use serde_json::json;
-    use serial_test::serial;
+
     use sqlx::PgPool;
     use std::net::{
         Ipv4Addr,
@@ -570,91 +570,6 @@ mod tests {
         .await?;
 
         assert!(result.get::<bool, _>("exists"));
-
-        Ok(())
-    }
-
-    #[test_context(RedisTestContext)]
-    #[sqlx::test]
-    #[serial(redis)]
-    async fn can_clear_overflowing_sessions(
-        ctx: &mut RedisTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let redis_pool = &ctx.redis_pool;
-        let mut redis_conn = redis_pool.get().await.unwrap();
-        let mut conn = pool.acquire().await?;
-        let (app, _, user_id) = init_app_for_test(post, pool, true, true, None).await;
-        let (email, password_hash, password) = get_sample_email_and_password();
-
-        // Create 10 sessions (one is already created from `init_app_for_test`)
-        for _ in 0..9 {
-            let _: () = redis_conn
-                .set(
-                    &format!(
-                        "{}:{}:{}",
-                        RedisNamespace::Session.to_string(),
-                        user_id.unwrap(),
-                        Uuid::new_v4()
-                    ),
-                    &serde_json::to_string(&UserSession {
-                        user_id: user_id.unwrap(),
-                        ..Default::default()
-                    })
-                    .unwrap(),
-                )
-                .await
-                .unwrap();
-        }
-
-        let sessions = get_user_sessions(redis_pool, user_id.unwrap())
-            .await
-            .unwrap();
-
-        assert_eq!(sessions.len(), 10);
-
-        // Insert the user
-        sqlx::query(
-            r#"
-            INSERT INTO users(id, name, username, email, password, email_verified)
-            VALUES ($1, $2, $3, $4, $5, TRUE)
-            "#,
-        )
-        .bind(user_id.unwrap())
-        .bind("Sample user".to_string())
-        .bind("sample_user".to_string())
-        .bind((&email).to_string())
-        .bind(password_hash)
-        .execute(&mut *conn)
-        .await?;
-
-        let req = test::TestRequest::post()
-            .uri("/v1/auth/login")
-            .set_json(Request {
-                email: email.to_string(),
-                password: password.to_string(),
-                remember_me: true,
-                code: None,
-            })
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-        assert_response_body_text(
-            res,
-            &serde_json::to_string(&Response {
-                result: "success".to_string(),
-            })
-            .unwrap_or_default(),
-        )
-        .await;
-
-        // Should remove previous sessions
-        let sessions = get_user_sessions(redis_pool, user_id.unwrap())
-            .await
-            .unwrap();
-
-        assert_eq!(sessions.len(), 1);
 
         Ok(())
     }
@@ -1349,76 +1264,6 @@ mod tests {
         Ok(())
     }
 
-    #[test_context(RedisTestContext)]
-    #[sqlx::test]
-    #[serial(redis)]
-    async fn can_insert_client_device_and_location_into_the_session(
-        _ctx: &mut RedisTestContext,
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(services![get, post], pool, false, false, None)
-            .await
-            .0;
-        let (email, password_hash, password) = get_sample_email_and_password();
-
-        // Insert the user
-        sqlx::query(
-            r#"
-            INSERT INTO users(name, username, email, password, email_verified)
-            VALUES ($1, $2, $3, $4, TRUE)
-            "#,
-        )
-        .bind("Sample user".to_string())
-        .bind("sample_user".to_string())
-        .bind((&email).to_string())
-        .bind(password_hash)
-        .execute(&mut *conn)
-        .await?;
-
-        let req = test::TestRequest::post()
-            .peer_addr(SocketAddr::from(SocketAddrV4::new(
-                Ipv4Addr::new(8, 8, 8, 8),
-                8080,
-            )))
-            .append_header(("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:40.0) Gecko/20100101 Firefox/40.0"))
-            .uri("/v1/auth/login")
-            .set_json(Request {
-                email: email.to_string(),
-                password: password.to_string(),
-                remember_me: true,
-                code: None
-            })
-            .to_request();
-        let res = test::call_service(&app, req).await;
-        let cookie_value = res
-            .response()
-            .cookies()
-            .find(|cookie| cookie.name() == SESSION_COOKIE_NAME);
-
-        assert!(res.status().is_success());
-        assert!(cookie_value.is_some());
-
-        let req = test::TestRequest::get()
-            .cookie(cookie_value.unwrap())
-            .uri("/get-device-and-location")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        #[derive(Deserialize)]
-        struct ClientSession {
-            device: Option<ClientDevice>,
-            location: Option<ClientLocation>,
-        }
-
-        let client_session = test::read_body_json::<ClientSession, _>(res).await;
-
-        assert!(client_session.device.is_some());
-        assert!(client_session.location.is_some());
-
-        Ok(())
-    }
-
     #[sqlx::test]
     async fn can_send_non_persistent_cookie_if_remember_me_is_set_to_false(
         pool: PgPool,
@@ -1663,5 +1508,162 @@ mod tests {
         );
 
         Ok(())
+    }
+
+    mod serial {
+        use super::*;
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_clear_overflowing_sessions(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let redis_pool = &ctx.redis_pool;
+            let mut redis_conn = redis_pool.get().await.unwrap();
+            let mut conn = pool.acquire().await?;
+            let (app, _, user_id) = init_app_for_test(post, pool, true, true, None).await;
+            let (email, password_hash, password) = get_sample_email_and_password();
+
+            // Create 10 sessions (one is already created from `init_app_for_test`)
+            for _ in 0..9 {
+                let _: () = redis_conn
+                    .set(
+                        &format!(
+                            "{}:{}:{}",
+                            RedisNamespace::Session.to_string(),
+                            user_id.unwrap(),
+                            Uuid::new_v4()
+                        ),
+                        &serde_json::to_string(&UserSession {
+                            user_id: user_id.unwrap(),
+                            ..Default::default()
+                        })
+                        .unwrap(),
+                    )
+                    .await
+                    .unwrap();
+            }
+
+            let sessions = get_user_sessions(redis_pool, user_id.unwrap())
+                .await
+                .unwrap();
+
+            assert_eq!(sessions.len(), 10);
+
+            // Insert the user
+            sqlx::query(
+                r#"
+                INSERT INTO users(id, name, username, email, password, email_verified)
+                VALUES ($1, $2, $3, $4, $5, TRUE)
+                "#,
+            )
+            .bind(user_id.unwrap())
+            .bind("Sample user".to_string())
+            .bind("sample_user".to_string())
+            .bind((&email).to_string())
+            .bind(password_hash)
+            .execute(&mut *conn)
+            .await?;
+
+            let req = test::TestRequest::post()
+                .uri("/v1/auth/login")
+                .set_json(Request {
+                    email: email.to_string(),
+                    password: password.to_string(),
+                    remember_me: true,
+                    code: None,
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_success());
+            assert_response_body_text(
+                res,
+                &serde_json::to_string(&Response {
+                    result: "success".to_string(),
+                })
+                .unwrap_or_default(),
+            )
+            .await;
+
+            // Should remove previous sessions
+            let sessions = get_user_sessions(redis_pool, user_id.unwrap())
+                .await
+                .unwrap();
+
+            assert_eq!(sessions.len(), 1);
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_insert_client_device_and_location_into_the_session(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let mut conn = pool.acquire().await?;
+            let app = init_app_for_test(services![get, post], pool, false, false, None)
+                .await
+                .0;
+            let (email, password_hash, password) = get_sample_email_and_password();
+
+            // Insert the user
+            sqlx::query(
+                r#"
+                INSERT INTO users(name, username, email, password, email_verified)
+                VALUES ($1, $2, $3, $4, TRUE)
+                "#,
+            )
+            .bind("Sample user".to_string())
+            .bind("sample_user".to_string())
+            .bind((&email).to_string())
+            .bind(password_hash)
+            .execute(&mut *conn)
+            .await?;
+
+            let req = test::TestRequest::post()
+                .peer_addr(SocketAddr::from(SocketAddrV4::new(
+                    Ipv4Addr::new(8, 8, 8, 8),
+                    8080,
+                )))
+                .append_header(("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:40.0) Gecko/20100101 Firefox/40.0"))
+                .uri("/v1/auth/login")
+                .set_json(Request {
+                    email: email.to_string(),
+                    password: password.to_string(),
+                    remember_me: true,
+                    code: None
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+            let cookie_value = res
+                .response()
+                .cookies()
+                .find(|cookie| cookie.name() == SESSION_COOKIE_NAME);
+
+            assert!(res.status().is_success());
+            assert!(cookie_value.is_some());
+
+            let req = test::TestRequest::get()
+                .cookie(cookie_value.unwrap())
+                .uri("/get-device-and-location")
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            #[derive(Deserialize)]
+            struct ClientSession {
+                device: Option<ClientDevice>,
+                location: Option<ClientLocation>,
+            }
+
+            let client_session = test::read_body_json::<ClientSession, _>(res).await;
+
+            assert!(client_session.device.is_some());
+            assert!(client_session.location.is_some());
+
+            Ok(())
+        }
     }
 }

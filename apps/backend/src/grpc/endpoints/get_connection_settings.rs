@@ -132,7 +132,7 @@ mod tests {
 
                 let response = client
                     .get_connection_settings(Request::new(GetConnectionSettingsRequest {
-                        id: 1_i64.to_string(),
+                        id: user_id.unwrap().to_string(),
                     }))
                     .await
                     .unwrap()
