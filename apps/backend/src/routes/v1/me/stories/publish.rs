@@ -45,8 +45,6 @@ struct Fragments {
     story_id: String,
 }
 
-// TODO: Write tests (with resource limit)
-
 /// Generates a unique slug for the story.
 ///
 /// * `txn` - A Postgres transaction.
@@ -519,11 +517,16 @@ mod tests {
         let (app, cookie, user_id) =
             init_app_for_test(services![post, put], pool, true, false, None).await;
 
-        // Insert a published story
+        // Insert a published story with an editable document
         let result = sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, published_at)
-            VALUES ($1, $2, now())
+            WITH inserted_story AS (
+                INSERT INTO stories(id, user_id, published_at)
+                VALUES ($1, $2, now())
+                RETURNING id
+            )
+            INSERT INTO documents (story_id, is_editable)
+            VALUES ($1, TRUE)
             "#,
         )
         .bind(2_i64)
@@ -562,6 +565,40 @@ mod tests {
     }
 
     #[sqlx::test]
+    async fn should_not_edit_a_story_not_having_an_editable_document(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) =
+            init_app_for_test(services![post, put], pool, true, false, None).await;
+
+        // Insert a published story
+        let result = sqlx::query(
+            r#"
+            INSERT INTO stories(id, user_id, published_at)
+            VALUES ($1, $2, now())
+            "#,
+        )
+        .bind(2_i64)
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let req = test::TestRequest::put()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/stories/{}/publish", 2))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Story does not exist or has not been edited yet").await;
+
+        Ok(())
+    }
+
+    #[sqlx::test]
     async fn should_not_edit_unpublished_stories(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) =
@@ -588,7 +625,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Story not found").await;
+        assert_toast_error_response(res, "Story does not exist or has not been edited yet").await;
 
         Ok(())
     }
@@ -620,7 +657,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Story not found").await;
+        assert_toast_error_response(res, "Story does not exist or has not been edited yet").await;
 
         Ok(())
     }
@@ -637,7 +674,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Story not found").await;
+        assert_toast_error_response(res, "Story does not exist or has not been edited yet").await;
 
         Ok(())
     }
