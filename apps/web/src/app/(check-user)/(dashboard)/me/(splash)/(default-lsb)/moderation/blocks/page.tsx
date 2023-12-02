@@ -18,7 +18,7 @@ const Page = async (): Promise<React.ReactElement | undefined> => {
     }
 
     const block_count_response = await get_user_block_count({
-      id: user_id
+      user_id
     });
 
     return <ModerationBlocksClient {...block_count_response} />;

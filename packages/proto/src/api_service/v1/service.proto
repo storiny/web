@@ -97,7 +97,11 @@ service ApiService {
    * Returns the comment's data
    */
   rpc GetComment(comment_def.v1.GetCommentRequest) returns (comment_def.v1.GetCommentResponse) {}
+  /**
+   * Creates a new draft
+   */
+  rpc CreateDraft(story_def.v1.CreateDraftRequest) returns (story_def.v1.CreateDraftResponse) {}
 }
 
-// This is necessary to generate an output file for tonic.
+// This is necessary to generate an output file using tonic.
 message Placeholder {}

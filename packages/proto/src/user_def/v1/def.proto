@@ -77,7 +77,7 @@ message GetUserIdResponse {
 // Get user relations info
 
 message GetUserRelationsInfoRequest {
-  string id = 1;
+  string user_id = 1;
 }
 
 message GetUserRelationsInfoResponse {
@@ -90,7 +90,7 @@ message GetUserRelationsInfoResponse {
 // Get user blocks count
 
 message GetUserBlockCountRequest {
-  string id = 1;
+  string user_id = 1;
 }
 
 message GetUserBlockCountResponse {
@@ -100,7 +100,7 @@ message GetUserBlockCountResponse {
 // Get user mutes count
 
 message GetUserMuteCountRequest {
-  string id = 1;
+  string user_id = 1;
 }
 
 message GetUserMuteCountResponse {

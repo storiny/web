@@ -19,9 +19,9 @@ pub async fn get_user_relations_info(
 ) -> Result<Response<GetUserRelationsInfoResponse>, Status> {
     let user_id = request
         .into_inner()
-        .id
+        .user_id
         .parse::<i64>()
-        .map_err(|_| Status::invalid_argument("`id` is invalid"))?;
+        .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
     let result = sqlx::query(
         r#"
@@ -127,7 +127,7 @@ mod tests {
 
                 let response = client
                     .get_user_relations_info(Request::new(GetUserRelationsInfoRequest {
-                        id: user_id.unwrap().to_string(),
+                        user_id: user_id.unwrap().to_string(),
                     }))
                     .await
                     .unwrap()
@@ -182,7 +182,7 @@ mod tests {
                 // Should return all the relations initially
                 let response = client
                     .get_user_relations_info(Request::new(GetUserRelationsInfoRequest {
-                        id: user_id.unwrap().to_string(),
+                        user_id: user_id.unwrap().to_string(),
                     }))
                     .await
                     .unwrap()
@@ -225,7 +225,7 @@ mod tests {
 
                 let response = client
                     .get_user_relations_info(Request::new(GetUserRelationsInfoRequest {
-                        id: user_id.unwrap().to_string(),
+                        user_id: user_id.unwrap().to_string(),
                     }))
                     .await
                     .unwrap()

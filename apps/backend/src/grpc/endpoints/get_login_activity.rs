@@ -81,9 +81,9 @@ pub async fn get_login_activity(
     let request = request.into_inner();
     let token = request.token;
     let user_id = request
-        .id
+        .user_id
         .parse::<i64>()
-        .map_err(|_| Status::invalid_argument("`id` is invalid"))?;
+        .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
     let user_sessions = get_user_sessions(&client.redis_pool, user_id).await;
 
@@ -197,7 +197,7 @@ mod tests {
 
                     let response = client
                         .get_login_activity(Request::new(GetLoginActivityRequest {
-                            id: user_id.unwrap().to_string(),
+                            user_id: user_id.unwrap().to_string(),
                             token: cookie.value().to_string(),
                         }))
                         .await

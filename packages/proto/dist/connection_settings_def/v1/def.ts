@@ -5,7 +5,7 @@ import { ConnectionSetting } from "../../connection_def/v1/def";
 export const protobufPackage = "connection_settings_def.v1";
 
 export interface GetConnectionSettingsRequest {
-  id: string;
+  user_id: string;
 }
 
 export interface GetConnectionSettingsResponse {
@@ -13,13 +13,13 @@ export interface GetConnectionSettingsResponse {
 }
 
 function createBaseGetConnectionSettingsRequest(): GetConnectionSettingsRequest {
-  return { id: "" };
+  return { user_id: "" };
 }
 
 export const GetConnectionSettingsRequest = {
   encode(message: GetConnectionSettingsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
+    if (message.user_id !== "") {
+      writer.uint32(10).string(message.user_id);
     }
     return writer;
   },
@@ -36,7 +36,7 @@ export const GetConnectionSettingsRequest = {
             break;
           }
 
-          message.id = reader.string();
+          message.user_id = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -48,13 +48,13 @@ export const GetConnectionSettingsRequest = {
   },
 
   fromJSON(object: any): GetConnectionSettingsRequest {
-    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+    return { user_id: isSet(object.user_id) ? globalThis.String(object.user_id) : "" };
   },
 
   toJSON(message: GetConnectionSettingsRequest): unknown {
     const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
+    if (message.user_id !== "") {
+      obj.user_id = message.user_id;
     }
     return obj;
   },
@@ -64,7 +64,7 @@ export const GetConnectionSettingsRequest = {
   },
   fromPartial<I extends Exact<DeepPartial<GetConnectionSettingsRequest>, I>>(object: I): GetConnectionSettingsRequest {
     const message = createBaseGetConnectionSettingsRequest();
-    message.id = object.id ?? "";
+    message.user_id = object.user_id ?? "";
     return message;
   },
 };

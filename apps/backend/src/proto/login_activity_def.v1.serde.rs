@@ -203,15 +203,15 @@ impl serde::Serialize for GetLoginActivityRequest {
         if !self.token.is_empty() {
             len += 1;
         }
-        if !self.id.is_empty() {
+        if !self.user_id.is_empty() {
             len += 1;
         }
         let mut struct_ser = serializer.serialize_struct("login_activity_def.v1.GetLoginActivityRequest", len)?;
         if !self.token.is_empty() {
             struct_ser.serialize_field("token", &self.token)?;
         }
-        if !self.id.is_empty() {
-            struct_ser.serialize_field("id", &self.id)?;
+        if !self.user_id.is_empty() {
+            struct_ser.serialize_field("userId", &self.user_id)?;
         }
         struct_ser.end()
     }
@@ -224,13 +224,14 @@ impl<'de> serde::Deserialize<'de> for GetLoginActivityRequest {
     {
         const FIELDS: &[&str] = &[
             "token",
-            "id",
+            "user_id",
+            "userId",
         ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
             Token,
-            Id,
+            UserId,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
@@ -253,7 +254,7 @@ impl<'de> serde::Deserialize<'de> for GetLoginActivityRequest {
                     {
                         match value {
                             "token" => Ok(GeneratedField::Token),
-                            "id" => Ok(GeneratedField::Id),
+                            "userId" | "user_id" => Ok(GeneratedField::UserId),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -274,7 +275,7 @@ impl<'de> serde::Deserialize<'de> for GetLoginActivityRequest {
                     V: serde::de::MapAccess<'de>,
             {
                 let mut token__ = None;
-                let mut id__ = None;
+                let mut user_id__ = None;
                 while let Some(k) = map.next_key()? {
                     match k {
                         GeneratedField::Token => {
@@ -283,17 +284,17 @@ impl<'de> serde::Deserialize<'de> for GetLoginActivityRequest {
                             }
                             token__ = Some(map.next_value()?);
                         }
-                        GeneratedField::Id => {
-                            if id__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("id"));
+                        GeneratedField::UserId => {
+                            if user_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("userId"));
                             }
-                            id__ = Some(map.next_value()?);
+                            user_id__ = Some(map.next_value()?);
                         }
                     }
                 }
                 Ok(GetLoginActivityRequest {
                     token: token__.unwrap_or_default(),
-                    id: id__.unwrap_or_default(),
+                    user_id: user_id__.unwrap_or_default(),
                 })
             }
         }

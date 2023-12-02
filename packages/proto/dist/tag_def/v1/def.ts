@@ -25,7 +25,7 @@ export interface GetTagResponse {
 }
 
 export interface GetFollowedTagCountRequest {
-  id: string;
+  user_id: string;
 }
 
 export interface GetFollowedTagCountResponse {
@@ -315,13 +315,13 @@ export const GetTagResponse = {
 };
 
 function createBaseGetFollowedTagCountRequest(): GetFollowedTagCountRequest {
-  return { id: "" };
+  return { user_id: "" };
 }
 
 export const GetFollowedTagCountRequest = {
   encode(message: GetFollowedTagCountRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
+    if (message.user_id !== "") {
+      writer.uint32(10).string(message.user_id);
     }
     return writer;
   },
@@ -338,7 +338,7 @@ export const GetFollowedTagCountRequest = {
             break;
           }
 
-          message.id = reader.string();
+          message.user_id = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -350,13 +350,13 @@ export const GetFollowedTagCountRequest = {
   },
 
   fromJSON(object: any): GetFollowedTagCountRequest {
-    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+    return { user_id: isSet(object.user_id) ? globalThis.String(object.user_id) : "" };
   },
 
   toJSON(message: GetFollowedTagCountRequest): unknown {
     const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
+    if (message.user_id !== "") {
+      obj.user_id = message.user_id;
     }
     return obj;
   },
@@ -366,7 +366,7 @@ export const GetFollowedTagCountRequest = {
   },
   fromPartial<I extends Exact<DeepPartial<GetFollowedTagCountRequest>, I>>(object: I): GetFollowedTagCountRequest {
     const message = createBaseGetFollowedTagCountRequest();
-    message.id = object.id ?? "";
+    message.user_id = object.user_id ?? "";
     return message;
   },
 };

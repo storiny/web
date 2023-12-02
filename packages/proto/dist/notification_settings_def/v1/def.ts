@@ -4,7 +4,7 @@ import _m0 from "protobufjs/minimal";
 export const protobufPackage = "notification_settings_def.v1";
 
 export interface GetNotificationSettingsRequest {
-  id: string;
+  user_id: string;
 }
 
 export interface GetNotificationSettingsResponse {
@@ -25,13 +25,13 @@ export interface GetNotificationSettingsResponse {
 }
 
 function createBaseGetNotificationSettingsRequest(): GetNotificationSettingsRequest {
-  return { id: "" };
+  return { user_id: "" };
 }
 
 export const GetNotificationSettingsRequest = {
   encode(message: GetNotificationSettingsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
+    if (message.user_id !== "") {
+      writer.uint32(10).string(message.user_id);
     }
     return writer;
   },
@@ -48,7 +48,7 @@ export const GetNotificationSettingsRequest = {
             break;
           }
 
-          message.id = reader.string();
+          message.user_id = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -60,13 +60,13 @@ export const GetNotificationSettingsRequest = {
   },
 
   fromJSON(object: any): GetNotificationSettingsRequest {
-    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+    return { user_id: isSet(object.user_id) ? globalThis.String(object.user_id) : "" };
   },
 
   toJSON(message: GetNotificationSettingsRequest): unknown {
     const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
+    if (message.user_id !== "") {
+      obj.user_id = message.user_id;
     }
     return obj;
   },
@@ -78,7 +78,7 @@ export const GetNotificationSettingsRequest = {
     object: I,
   ): GetNotificationSettingsRequest {
     const message = createBaseGetNotificationSettingsRequest();
-    message.id = object.id ?? "";
+    message.user_id = object.user_id ?? "";
     return message;
   },
 };

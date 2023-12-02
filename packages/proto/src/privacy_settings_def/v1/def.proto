@@ -18,7 +18,7 @@ enum RelationVisibility {
 }
 
 message GetPrivacySettingsRequest {
-  string id = 1;
+  string user_id = 1;
 }
 
 message GetPrivacySettingsResponse {

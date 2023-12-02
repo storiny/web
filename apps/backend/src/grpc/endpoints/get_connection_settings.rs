@@ -32,9 +32,9 @@ pub async fn get_connection_settings(
 ) -> Result<Response<GetConnectionSettingsResponse>, Status> {
     let user_id = request
         .into_inner()
-        .id
+        .user_id
         .parse::<i64>()
-        .map_err(|_| Status::invalid_argument("`id` is invalid"))?;
+        .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
     let connections = sqlx::query(
         r#"
@@ -132,7 +132,7 @@ mod tests {
 
                 let response = client
                     .get_connection_settings(Request::new(GetConnectionSettingsRequest {
-                        id: user_id.unwrap().to_string(),
+                        user_id: user_id.unwrap().to_string(),
                     }))
                     .await
                     .unwrap()

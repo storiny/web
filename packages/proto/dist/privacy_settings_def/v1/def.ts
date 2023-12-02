@@ -98,7 +98,7 @@ export function relationVisibilityToJSON(object: RelationVisibility): string {
 }
 
 export interface GetPrivacySettingsRequest {
-  id: string;
+  user_id: string;
 }
 
 export interface GetPrivacySettingsResponse {
@@ -111,13 +111,13 @@ export interface GetPrivacySettingsResponse {
 }
 
 function createBaseGetPrivacySettingsRequest(): GetPrivacySettingsRequest {
-  return { id: "" };
+  return { user_id: "" };
 }
 
 export const GetPrivacySettingsRequest = {
   encode(message: GetPrivacySettingsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
+    if (message.user_id !== "") {
+      writer.uint32(10).string(message.user_id);
     }
     return writer;
   },
@@ -134,7 +134,7 @@ export const GetPrivacySettingsRequest = {
             break;
           }
 
-          message.id = reader.string();
+          message.user_id = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -146,13 +146,13 @@ export const GetPrivacySettingsRequest = {
   },
 
   fromJSON(object: any): GetPrivacySettingsRequest {
-    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+    return { user_id: isSet(object.user_id) ? globalThis.String(object.user_id) : "" };
   },
 
   toJSON(message: GetPrivacySettingsRequest): unknown {
     const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
+    if (message.user_id !== "") {
+      obj.user_id = message.user_id;
     }
     return obj;
   },
@@ -162,7 +162,7 @@ export const GetPrivacySettingsRequest = {
   },
   fromPartial<I extends Exact<DeepPartial<GetPrivacySettingsRequest>, I>>(object: I): GetPrivacySettingsRequest {
     const message = createBaseGetPrivacySettingsRequest();
-    message.id = object.id ?? "";
+    message.user_id = object.user_id ?? "";
     return message;
   },
 };

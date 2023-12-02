@@ -3,7 +3,7 @@ syntax = "proto3";
 package notification_settings_def.v1;
 
 message GetNotificationSettingsRequest {
-  string id = 1;
+  string user_id = 1;
 }
 
 message GetNotificationSettingsResponse {

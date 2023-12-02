@@ -159,7 +159,7 @@ export interface GetUserIdResponse {
 }
 
 export interface GetUserRelationsInfoRequest {
-  id: string;
+  user_id: string;
 }
 
 export interface GetUserRelationsInfoResponse {
@@ -170,7 +170,7 @@ export interface GetUserRelationsInfoResponse {
 }
 
 export interface GetUserBlockCountRequest {
-  id: string;
+  user_id: string;
 }
 
 export interface GetUserBlockCountResponse {
@@ -178,7 +178,7 @@ export interface GetUserBlockCountResponse {
 }
 
 export interface GetUserMuteCountRequest {
-  id: string;
+  user_id: string;
 }
 
 export interface GetUserMuteCountResponse {
@@ -961,13 +961,13 @@ export const GetUserIdResponse = {
 };
 
 function createBaseGetUserRelationsInfoRequest(): GetUserRelationsInfoRequest {
-  return { id: "" };
+  return { user_id: "" };
 }
 
 export const GetUserRelationsInfoRequest = {
   encode(message: GetUserRelationsInfoRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
+    if (message.user_id !== "") {
+      writer.uint32(10).string(message.user_id);
     }
     return writer;
   },
@@ -984,7 +984,7 @@ export const GetUserRelationsInfoRequest = {
             break;
           }
 
-          message.id = reader.string();
+          message.user_id = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -996,13 +996,13 @@ export const GetUserRelationsInfoRequest = {
   },
 
   fromJSON(object: any): GetUserRelationsInfoRequest {
-    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+    return { user_id: isSet(object.user_id) ? globalThis.String(object.user_id) : "" };
   },
 
   toJSON(message: GetUserRelationsInfoRequest): unknown {
     const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
+    if (message.user_id !== "") {
+      obj.user_id = message.user_id;
     }
     return obj;
   },
@@ -1012,7 +1012,7 @@ export const GetUserRelationsInfoRequest = {
   },
   fromPartial<I extends Exact<DeepPartial<GetUserRelationsInfoRequest>, I>>(object: I): GetUserRelationsInfoRequest {
     const message = createBaseGetUserRelationsInfoRequest();
-    message.id = object.id ?? "";
+    message.user_id = object.user_id ?? "";
     return message;
   },
 };
@@ -1124,13 +1124,13 @@ export const GetUserRelationsInfoResponse = {
 };
 
 function createBaseGetUserBlockCountRequest(): GetUserBlockCountRequest {
-  return { id: "" };
+  return { user_id: "" };
 }
 
 export const GetUserBlockCountRequest = {
   encode(message: GetUserBlockCountRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
+    if (message.user_id !== "") {
+      writer.uint32(10).string(message.user_id);
     }
     return writer;
   },
@@ -1147,7 +1147,7 @@ export const GetUserBlockCountRequest = {
             break;
           }
 
-          message.id = reader.string();
+          message.user_id = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -1159,13 +1159,13 @@ export const GetUserBlockCountRequest = {
   },
 
   fromJSON(object: any): GetUserBlockCountRequest {
-    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+    return { user_id: isSet(object.user_id) ? globalThis.String(object.user_id) : "" };
   },
 
   toJSON(message: GetUserBlockCountRequest): unknown {
     const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
+    if (message.user_id !== "") {
+      obj.user_id = message.user_id;
     }
     return obj;
   },
@@ -1175,7 +1175,7 @@ export const GetUserBlockCountRequest = {
   },
   fromPartial<I extends Exact<DeepPartial<GetUserBlockCountRequest>, I>>(object: I): GetUserBlockCountRequest {
     const message = createBaseGetUserBlockCountRequest();
-    message.id = object.id ?? "";
+    message.user_id = object.user_id ?? "";
     return message;
   },
 };
@@ -1238,13 +1238,13 @@ export const GetUserBlockCountResponse = {
 };
 
 function createBaseGetUserMuteCountRequest(): GetUserMuteCountRequest {
-  return { id: "" };
+  return { user_id: "" };
 }
 
 export const GetUserMuteCountRequest = {
   encode(message: GetUserMuteCountRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
+    if (message.user_id !== "") {
+      writer.uint32(10).string(message.user_id);
     }
     return writer;
   },
@@ -1261,7 +1261,7 @@ export const GetUserMuteCountRequest = {
             break;
           }
 
-          message.id = reader.string();
+          message.user_id = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -1273,13 +1273,13 @@ export const GetUserMuteCountRequest = {
   },
 
   fromJSON(object: any): GetUserMuteCountRequest {
-    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+    return { user_id: isSet(object.user_id) ? globalThis.String(object.user_id) : "" };
   },
 
   toJSON(message: GetUserMuteCountRequest): unknown {
     const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
+    if (message.user_id !== "") {
+      obj.user_id = message.user_id;
     }
     return obj;
   },
@@ -1289,7 +1289,7 @@ export const GetUserMuteCountRequest = {
   },
   fromPartial<I extends Exact<DeepPartial<GetUserMuteCountRequest>, I>>(object: I): GetUserMuteCountRequest {
     const message = createBaseGetUserMuteCountRequest();
-    message.id = object.id ?? "";
+    message.user_id = object.user_id ?? "";
     return message;
   },
 };

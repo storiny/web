@@ -18,7 +18,7 @@ const Page = async (): Promise<React.ReactElement | undefined> => {
     }
 
     const drafts_info_response = await get_drafts_info({
-      id: user_id
+      user_id
     });
 
     return <ContentDraftsClient {...drafts_info_response} />;

@@ -19,9 +19,9 @@ pub async fn get_privacy_settings(
 ) -> Result<Response<GetPrivacySettingsResponse>, Status> {
     let user_id = request
         .into_inner()
-        .id
+        .user_id
         .parse::<i64>()
-        .map_err(|_| Status::invalid_argument("`id` is invalid"))?;
+        .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
     match sqlx::query(
         r#"
@@ -116,7 +116,7 @@ mod tests {
 
                 let response = client
                     .get_privacy_settings(Request::new(GetPrivacySettingsRequest {
-                        id: user_id.to_string(),
+                        user_id: user_id.to_string(),
                     }))
                     .await
                     .unwrap()

@@ -18,7 +18,7 @@ const Page = async (): Promise<React.ReactElement | undefined> => {
     }
 
     const notification_settings_response = await get_notification_settings({
-      id: user_id
+      user_id
     });
 
     return <NotificationSettingsClient {...notification_settings_response} />;

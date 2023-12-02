@@ -1,3 +1,4 @@
+pub mod create_draft;
 pub mod get_comment;
 pub mod get_connection_settings;
 pub mod get_credential_settings;

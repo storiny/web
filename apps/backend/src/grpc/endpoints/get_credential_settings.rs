@@ -19,9 +19,9 @@ pub async fn get_credential_settings(
 ) -> Result<Response<GetCredentialSettingsResponse>, Status> {
     let user_id = request
         .into_inner()
-        .id
+        .user_id
         .parse::<i64>()
-        .map_err(|_| Status::invalid_argument("`id` is invalid"))?;
+        .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
     match sqlx::query(
         r#"
@@ -109,7 +109,7 @@ mod tests {
 
                 let response = client
                     .get_credential_settings(Request::new(GetCredentialSettingsRequest {
-                        id: user_id.to_string(),
+                        user_id: user_id.to_string(),
                     }))
                     .await
                     .unwrap()

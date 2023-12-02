@@ -537,14 +537,30 @@ impl Drop for Realm {
 mod tests {
     use super::*;
     use crate::{
+        realms::server::tests::{
+            init_realms_server_for_test,
+            peer,
+        },
         test_utils::{
             get_s3_client,
             TestContext,
         },
         utils::delete_s3_objects::delete_s3_objects,
     };
+    use futures_util::{
+        SinkExt,
+        StreamExt,
+    };
+    use sqlx::PgPool;
     use storiny_macros::test_context;
-    use yrs::Doc;
+    use yrs::{
+        encoding::read::{
+            Cursor,
+            Read,
+        },
+        updates::decoder::DecoderV2,
+        Doc,
+    };
 
     /// Initializes and returns a tuple consisting of a realm map and a realm instance.
     ///
@@ -597,22 +613,6 @@ mod tests {
 
     mod serial {
         use super::*;
-        use crate::realms::server::tests::{
-            init_realms_server_for_test,
-            peer,
-        };
-        use futures_util::{
-            SinkExt,
-            StreamExt,
-        };
-        use sqlx::PgPool;
-        use yrs::{
-            encoding::read::{
-                Cursor,
-                Read,
-            },
-            updates::decoder::DecoderV2,
-        };
 
         #[test_context(LocalTestContext)]
         #[tokio::test]

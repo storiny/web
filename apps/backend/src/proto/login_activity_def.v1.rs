@@ -39,7 +39,7 @@ pub struct GetLoginActivityRequest {
     pub token: ::prost::alloc::string::String,
     /// User ID
     #[prost(string, tag="2")]
-    pub id: ::prost::alloc::string::String,
+    pub user_id: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]

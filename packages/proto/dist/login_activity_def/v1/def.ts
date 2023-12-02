@@ -72,7 +72,7 @@ export interface GetLoginActivityRequest {
   /** Token from the session cookie (used to determine if the current device is active) */
   token: string;
   /** User ID */
-  id: string;
+  user_id: string;
 }
 
 export interface GetLoginActivityResponse {
@@ -367,7 +367,7 @@ export const Login = {
 };
 
 function createBaseGetLoginActivityRequest(): GetLoginActivityRequest {
-  return { token: "", id: "" };
+  return { token: "", user_id: "" };
 }
 
 export const GetLoginActivityRequest = {
@@ -375,8 +375,8 @@ export const GetLoginActivityRequest = {
     if (message.token !== "") {
       writer.uint32(10).string(message.token);
     }
-    if (message.id !== "") {
-      writer.uint32(18).string(message.id);
+    if (message.user_id !== "") {
+      writer.uint32(18).string(message.user_id);
     }
     return writer;
   },
@@ -400,7 +400,7 @@ export const GetLoginActivityRequest = {
             break;
           }
 
-          message.id = reader.string();
+          message.user_id = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -414,7 +414,7 @@ export const GetLoginActivityRequest = {
   fromJSON(object: any): GetLoginActivityRequest {
     return {
       token: isSet(object.token) ? globalThis.String(object.token) : "",
-      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      user_id: isSet(object.user_id) ? globalThis.String(object.user_id) : "",
     };
   },
 
@@ -423,8 +423,8 @@ export const GetLoginActivityRequest = {
     if (message.token !== "") {
       obj.token = message.token;
     }
-    if (message.id !== "") {
-      obj.id = message.id;
+    if (message.user_id !== "") {
+      obj.user_id = message.user_id;
     }
     return obj;
   },
@@ -435,7 +435,7 @@ export const GetLoginActivityRequest = {
   fromPartial<I extends Exact<DeepPartial<GetLoginActivityRequest>, I>>(object: I): GetLoginActivityRequest {
     const message = createBaseGetLoginActivityRequest();
     message.token = object.token ?? "";
-    message.id = object.id ?? "";
+    message.user_id = object.user_id ?? "";
     return message;
   },
 };

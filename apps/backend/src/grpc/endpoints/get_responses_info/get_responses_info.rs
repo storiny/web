@@ -19,9 +19,9 @@ pub async fn get_responses_info(
 ) -> Result<Response<GetResponsesInfoResponse>, Status> {
     let user_id = request
         .into_inner()
-        .id
+        .user_id
         .parse::<i64>()
-        .map_err(|_| Status::invalid_argument("`id` is invalid"))?;
+        .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
     let result = sqlx::query(
         r#"
@@ -72,7 +72,7 @@ mod tests {
             Box::new(|mut client, _, _, _| async move {
                 let response = client
                     .get_responses_info(Request::new(GetResponsesInfoRequest {
-                        id: 1_i64.to_string(),
+                        user_id: 1_i64.to_string(),
                     }))
                     .await
                     .unwrap()
@@ -94,7 +94,7 @@ mod tests {
                 // Should count all the comments initially
                 let response = client
                     .get_responses_info(Request::new(GetResponsesInfoRequest {
-                        id: 1_i64.to_string(),
+                        user_id: 1_i64.to_string(),
                     }))
                     .await
                     .unwrap()
@@ -120,7 +120,7 @@ mod tests {
                 // Should count only one comment
                 let response = client
                     .get_responses_info(Request::new(GetResponsesInfoRequest {
-                        id: 1_i64.to_string(),
+                        user_id: 1_i64.to_string(),
                     }))
                     .await
                     .unwrap()
@@ -141,7 +141,7 @@ mod tests {
                 // Should count all the replies initially
                 let response = client
                     .get_responses_info(Request::new(GetResponsesInfoRequest {
-                        id: 1_i64.to_string(),
+                        user_id: 1_i64.to_string(),
                     }))
                     .await
                     .unwrap()
@@ -167,7 +167,7 @@ mod tests {
                 // Should count only one reply
                 let response = client
                     .get_responses_info(Request::new(GetResponsesInfoRequest {
-                        id: 1_i64.to_string(),
+                        user_id: 1_i64.to_string(),
                     }))
                     .await
                     .unwrap()

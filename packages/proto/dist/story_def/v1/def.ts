@@ -164,8 +164,16 @@ export interface Draft {
   edited_at?: string | undefined;
 }
 
+export interface CreateDraftRequest {
+  user_id: string;
+}
+
+export interface CreateDraftResponse {
+  draft_id: string;
+}
+
 export interface GetDraftsInfoRequest {
-  id: string;
+  user_id: string;
 }
 
 export interface GetDraftsInfoResponse {
@@ -175,7 +183,7 @@ export interface GetDraftsInfoResponse {
 }
 
 export interface GetStoriesInfoRequest {
-  id: string;
+  user_id: string;
 }
 
 export interface GetStoriesInfoResponse {
@@ -386,14 +394,128 @@ export const Draft = {
   },
 };
 
+function createBaseCreateDraftRequest(): CreateDraftRequest {
+  return { user_id: "" };
+}
+
+export const CreateDraftRequest = {
+  encode(message: CreateDraftRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.user_id !== "") {
+      writer.uint32(10).string(message.user_id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreateDraftRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateDraftRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.user_id = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateDraftRequest {
+    return { user_id: isSet(object.user_id) ? globalThis.String(object.user_id) : "" };
+  },
+
+  toJSON(message: CreateDraftRequest): unknown {
+    const obj: any = {};
+    if (message.user_id !== "") {
+      obj.user_id = message.user_id;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CreateDraftRequest>, I>>(base?: I): CreateDraftRequest {
+    return CreateDraftRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<CreateDraftRequest>, I>>(object: I): CreateDraftRequest {
+    const message = createBaseCreateDraftRequest();
+    message.user_id = object.user_id ?? "";
+    return message;
+  },
+};
+
+function createBaseCreateDraftResponse(): CreateDraftResponse {
+  return { draft_id: "" };
+}
+
+export const CreateDraftResponse = {
+  encode(message: CreateDraftResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.draft_id !== "") {
+      writer.uint32(10).string(message.draft_id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreateDraftResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateDraftResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.draft_id = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateDraftResponse {
+    return { draft_id: isSet(object.draft_id) ? globalThis.String(object.draft_id) : "" };
+  },
+
+  toJSON(message: CreateDraftResponse): unknown {
+    const obj: any = {};
+    if (message.draft_id !== "") {
+      obj.draft_id = message.draft_id;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CreateDraftResponse>, I>>(base?: I): CreateDraftResponse {
+    return CreateDraftResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<CreateDraftResponse>, I>>(object: I): CreateDraftResponse {
+    const message = createBaseCreateDraftResponse();
+    message.draft_id = object.draft_id ?? "";
+    return message;
+  },
+};
+
 function createBaseGetDraftsInfoRequest(): GetDraftsInfoRequest {
-  return { id: "" };
+  return { user_id: "" };
 }
 
 export const GetDraftsInfoRequest = {
   encode(message: GetDraftsInfoRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
+    if (message.user_id !== "") {
+      writer.uint32(10).string(message.user_id);
     }
     return writer;
   },
@@ -410,7 +532,7 @@ export const GetDraftsInfoRequest = {
             break;
           }
 
-          message.id = reader.string();
+          message.user_id = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -422,13 +544,13 @@ export const GetDraftsInfoRequest = {
   },
 
   fromJSON(object: any): GetDraftsInfoRequest {
-    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+    return { user_id: isSet(object.user_id) ? globalThis.String(object.user_id) : "" };
   },
 
   toJSON(message: GetDraftsInfoRequest): unknown {
     const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
+    if (message.user_id !== "") {
+      obj.user_id = message.user_id;
     }
     return obj;
   },
@@ -438,7 +560,7 @@ export const GetDraftsInfoRequest = {
   },
   fromPartial<I extends Exact<DeepPartial<GetDraftsInfoRequest>, I>>(object: I): GetDraftsInfoRequest {
     const message = createBaseGetDraftsInfoRequest();
-    message.id = object.id ?? "";
+    message.user_id = object.user_id ?? "";
     return message;
   },
 };
@@ -535,13 +657,13 @@ export const GetDraftsInfoResponse = {
 };
 
 function createBaseGetStoriesInfoRequest(): GetStoriesInfoRequest {
-  return { id: "" };
+  return { user_id: "" };
 }
 
 export const GetStoriesInfoRequest = {
   encode(message: GetStoriesInfoRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
+    if (message.user_id !== "") {
+      writer.uint32(10).string(message.user_id);
     }
     return writer;
   },
@@ -558,7 +680,7 @@ export const GetStoriesInfoRequest = {
             break;
           }
 
-          message.id = reader.string();
+          message.user_id = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -570,13 +692,13 @@ export const GetStoriesInfoRequest = {
   },
 
   fromJSON(object: any): GetStoriesInfoRequest {
-    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+    return { user_id: isSet(object.user_id) ? globalThis.String(object.user_id) : "" };
   },
 
   toJSON(message: GetStoriesInfoRequest): unknown {
     const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
+    if (message.user_id !== "") {
+      obj.user_id = message.user_id;
     }
     return obj;
   },
@@ -586,7 +708,7 @@ export const GetStoriesInfoRequest = {
   },
   fromPartial<I extends Exact<DeepPartial<GetStoriesInfoRequest>, I>>(object: I): GetStoriesInfoRequest {
     const message = createBaseGetStoriesInfoRequest();
-    message.id = object.id ?? "";
+    message.user_id = object.user_id ?? "";
     return message;
   },
 };

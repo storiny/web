@@ -18,7 +18,7 @@ const Page = async (): Promise<React.ReactElement | undefined> => {
     }
 
     const mute_count_response = await get_user_mute_count({
-      id: user_id
+      user_id
     });
 
     return <ModerationMutesClient {...mute_count_response} />;

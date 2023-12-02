@@ -3,7 +3,7 @@ syntax = "proto3";
 package credential_settings_def.v1;
 
 message GetCredentialSettingsRequest {
-  string id = 1; // User ID
+  string user_id = 1;
 }
 
 message GetCredentialSettingsResponse {

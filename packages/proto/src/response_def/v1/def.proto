@@ -5,7 +5,7 @@ package response_def.v1;
 // Self responses
 
 message GetResponsesInfoRequest {
-  string id = 1;
+  string user_id = 1;
 }
 
 message GetResponsesInfoResponse {
