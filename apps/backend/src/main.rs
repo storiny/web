@@ -133,7 +133,16 @@ async fn main() -> io::Result<()> {
 
             log::info!(
                 "{}",
-                format!("Starting API HTTP server at http://{}:{}", &host, &port)
+                format!(
+                    "Starting API HTTP server in {} mode at {}:{}",
+                    if config.is_dev {
+                        "development"
+                    } else {
+                        "production"
+                    },
+                    &host,
+                    &port
+                )
             );
 
             // Rate-limit

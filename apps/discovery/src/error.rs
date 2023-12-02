@@ -7,7 +7,7 @@ use std::{
     io,
 };
 
-/// Custom IO error type.
+/// The custom IO error type.
 #[derive(Debug)]
 #[non_exhaustive]
 pub struct CustomIoError(pub io::Error);
@@ -20,7 +20,7 @@ impl Display for CustomIoError {
     }
 }
 
-/// Custom error type.
+/// The custom error type.
 #[derive(Debug)]
 pub enum Error {
     /// Serde JSON error.

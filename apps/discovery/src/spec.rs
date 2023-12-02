@@ -7,6 +7,128 @@ use serde::{
 };
 use serde_json::Value;
 
+/// The embed provider.
+#[derive(Debug, Deserialize)]
+pub struct Provider {
+    /// The name of the provider.
+    pub name: &'static str,
+    /// The provider oembed enpoint URL.
+    #[serde(default)]
+    pub endpoint: &'static str,
+    /// The provider raw embed enpoint (providers that supports embedding using a dedicated
+    /// endpoint).
+    #[serde(default)]
+    pub embed_endpoint: Option<&'static str>,
+    /// The optional aspect ratio padding for the embed node (desktop viewport).
+    #[serde(default)]
+    pub desktop_padding: Option<f64>,
+    /// The optional aspect ratio padding for the embed node (mobile viewport).
+    #[serde(default)]
+    pub mobile_padding: Option<f64>,
+    /// The schema patterns for constructing the regex matchers.
+    pub schemas: Vec<String>,
+    /// The schema matchers for matching client-provided URLs.
+    #[serde(skip_deserializing)]
+    pub matchers: Vec<Regex>,
+    /// The boolean flag indicating whether the provider supports
+    /// both `light` and `dark` modes.
+    #[serde(default)]
+    pub supports_binary_theme: bool,
+    /// The boolean flag indicating whether the provider supports
+    /// the oembed spec.
+    #[serde(default = "true_value")]
+    pub supports_oembed: bool,
+    /// The DOM attributes for the embed iframe element.
+    #[serde(default)]
+    pub iframe_attrs: Option<HashMap<&'static str, &'static str>>,
+    /// The iframe source query parameters for the embed iframe element.
+    #[serde(default)]
+    pub iframe_params: Option<HashMap<&'static str, &'static str>>,
+    /// The optional key-value pairs to append to the provider endpoint URL.
+    #[serde(default)]
+    pub origin_params: Option<HashMap<&'static str, &'static str>>,
+}
+
+/// The oEmbed data type.
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(tag = "type")]
+pub enum EmbedType {
+    /// The photo type.
+    ///
+    /// See section 2.3.4.1. of the [oembed spec](https://oembed.com)
+    #[serde(rename = "photo")]
+    Photo(Photo),
+    /// The video type.
+    ///
+    /// See section 2.3.4.2. of the [oembed spec](https://oembed.com)
+    #[serde(rename = "video")]
+    Video(Video),
+    /// The link type.
+    ///
+    /// See section 2.3.4.3. of the [oembed spec](https://oembed.com)
+    #[serde(rename = "link")]
+    Link,
+    /// The rich type.
+    ///
+    /// See section 2.3.4.4. of the [oembed spec](https://oembed.com)
+    #[serde(rename = "rich")]
+    Rich(Rich),
+}
+
+/// The video type.
+///
+/// See section 2.3.4.2. of the [oembed spec](https://oembed.com)
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct Video {
+    pub html: String,
+    #[serde(default)]
+    #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
+    pub width: Option<u16>,
+    #[serde(default)]
+    #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
+    pub height: Option<u16>,
+}
+
+/// The photo type.
+///
+/// See section 2.3.4.1. of the [oembed spec](https://oembed.com)
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct Photo {
+    pub url: String,
+    #[serde(default)]
+    #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
+    pub width: Option<u16>,
+    #[serde(default)]
+    #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
+    pub height: Option<u16>,
+}
+
+/// The rich type.
+///
+/// See section 2.3.4.4. of the [oembed spec](https://oembed.com)
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct Rich {
+    pub html: String,
+    #[serde(default)]
+    #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
+    pub width: Option<u16>,
+    #[serde(default)]
+    #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
+    pub height: Option<u16>,
+}
+
+/// The oEmbed response.
+///
+/// See the [oembed spec](https://oembed.com/#section2.3)
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
+pub struct EmbedResponse {
+    #[serde(flatten)]
+    pub oembed_type: EmbedType,
+    pub title: Option<String>,
+    #[serde(flatten)]
+    pub extra: HashMap<String, Value>,
+}
+
 /// Deserializes u16 from a number or a string, since some providers could return numbers as
 /// string in the JSON response.
 ///
@@ -43,127 +165,6 @@ where
 /// Returns `true`
 fn true_value() -> bool {
     true
-}
-
-/// Embed provider
-#[derive(Debug, Deserialize)]
-pub struct Provider {
-    /// Name of the provider
-    pub name: &'static str,
-    /// Provider oembed enpoint
-    #[serde(default)]
-    pub endpoint: &'static str,
-    /// Provider raw embed enpoint (providers that supports embedding using a dedicated endpoint)
-    #[serde(default)]
-    pub embed_endpoint: Option<&'static str>,
-    /// Optional aspect ratio padding for the embed node (desktop viewport)
-    #[serde(default)]
-    pub desktop_padding: Option<f64>,
-    /// Optional aspect ratio padding for the embed node (mobile viewport)
-    #[serde(default)]
-    pub mobile_padding: Option<f64>,
-    /// Schema patterns
-    pub schemas: Vec<String>,
-    /// Schema matchers
-    #[serde(skip_deserializing)]
-    pub matchers: Vec<Regex>,
-    /// Boolean flag indicating whether the provider supports
-    /// both `light` and `dark` modes
-    #[serde(default)]
-    pub supports_binary_theme: bool,
-    /// Boolean flag indicating whether the provider supports
-    /// the oembed spec
-    #[serde(default = "true_value")]
-    pub supports_oembed: bool,
-    /// DOM attributes for the embed iframe element
-    #[serde(default)]
-    pub iframe_attrs: Option<HashMap<&'static str, &'static str>>,
-    /// Iframe source query params for the embed iframe element
-    #[serde(default)]
-    pub iframe_params: Option<HashMap<&'static str, &'static str>>,
-    /// Optional key-value pairs to append to the provider endpoint URL
-    #[serde(default)]
-    pub origin_params: Option<HashMap<&'static str, &'static str>>,
-}
-
-/// Represents one of the oEmbed data types
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(tag = "type")]
-pub enum EmbedType {
-    /// Photo type
-    ///
-    /// See section 2.3.4.1. of the [oembed spec](https://oembed.com)
-    #[serde(rename = "photo")]
-    Photo(Photo),
-    /// Video type
-    ///
-    /// See section 2.3.4.2. of the [oembed spec](https://oembed.com)
-    #[serde(rename = "video")]
-    Video(Video),
-    /// Link type
-    ///
-    /// See section 2.3.4.3. of the [oembed spec](https://oembed.com)
-    #[serde(rename = "link")]
-    Link,
-    /// Rich type
-    ///
-    /// See section 2.3.4.4. of the [oembed spec](https://oembed.com)
-    #[serde(rename = "rich")]
-    Rich(Rich),
-}
-
-/// Video type
-///
-/// See section 2.3.4.2. of the [oembed spec](https://oembed.com)
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
-pub struct Video {
-    pub html: String,
-    #[serde(default)]
-    #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
-    pub width: Option<u16>,
-    #[serde(default)]
-    #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
-    pub height: Option<u16>,
-}
-
-/// Photo type
-///
-/// See section 2.3.4.1. of the [oembed spec](https://oembed.com)
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
-pub struct Photo {
-    pub url: String,
-    #[serde(default)]
-    #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
-    pub width: Option<u16>,
-    #[serde(default)]
-    #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
-    pub height: Option<u16>,
-}
-
-/// Rich type
-///
-/// See section 2.3.4.4. of the [oembed spec](https://oembed.com)
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
-pub struct Rich {
-    pub html: String,
-    #[serde(default)]
-    #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
-    pub width: Option<u16>,
-    #[serde(default)]
-    #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
-    pub height: Option<u16>,
-}
-
-/// oEmbed response
-///
-/// See the [oembed spec](https://oembed.com/#section2.3)
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
-pub struct EmbedResponse {
-    #[serde(flatten)]
-    pub oembed_type: EmbedType,
-    pub title: Option<String>,
-    #[serde(flatten)]
-    pub extra: HashMap<String, Value>,
 }
 
 #[cfg(test)]

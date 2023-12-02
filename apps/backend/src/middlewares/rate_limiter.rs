@@ -211,7 +211,7 @@ mod tests {
         RedisBackend::builder(manager)
     }
 
-    #[actix_web::test]
+    #[tokio::test]
     async fn can_allow_deny() {
         let backend = make_backend("test_allow_deny").await.build();
         let input = SimpleInput {
@@ -229,7 +229,7 @@ mod tests {
         assert!(!allow);
     }
 
-    #[actix_web::test]
+    #[tokio::test]
     async fn can_reset() {
         let backend = make_backend("test_reset").await.build();
         let input = SimpleInput {
@@ -249,7 +249,7 @@ mod tests {
         assert!(allow);
     }
 
-    #[actix_web::test]
+    #[tokio::test]
     async fn can_produce_output() {
         let backend = make_backend("test_output").await.build();
         let input = SimpleInput {
@@ -277,7 +277,7 @@ mod tests {
         assert!(output.seconds_until_reset() > 0 && output.seconds_until_reset() <= 60);
     }
 
-    #[actix_web::test]
+    #[tokio::test]
     async fn can_rollback() {
         let backend = make_backend("test_rollback").await.build();
         let input = SimpleInput {
@@ -295,7 +295,7 @@ mod tests {
         assert!(output.seconds_until_reset() > 0 && output.seconds_until_reset() <= 60);
     }
 
-    #[actix_web::test]
+    #[tokio::test]
     async fn can_rollback_key_gone() {
         let backend = make_backend("test_rollback_key_gone").await.build();
         let mut con = backend.connection.clone();
@@ -312,7 +312,7 @@ mod tests {
         );
     }
 
-    #[actix_web::test]
+    #[tokio::test]
     async fn can_remove_key() {
         let backend = make_backend("test_remove_key").await.build();
         let input = SimpleInput {
@@ -330,7 +330,7 @@ mod tests {
         assert!(allow);
     }
 
-    #[actix_web::test]
+    #[tokio::test]
     async fn can_add_key_prefix() {
         let backend = make_backend("prefix:test_key_prefix")
             .await

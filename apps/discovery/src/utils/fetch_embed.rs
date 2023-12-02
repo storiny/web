@@ -1,4 +1,5 @@
 use crate::{
+    config::Config,
     error::Error,
     request::{
         REQUEST_CLIENT,
@@ -6,51 +7,49 @@ use crate::{
     },
     spec::EmbedResponse,
 };
-use dotenv;
 use hashbrown::HashMap;
-use lazy_static::lazy_static;
 use reqwest::header;
 use url::Url;
 
-lazy_static! {
-    static ref FB_GRAPH_TOKEN: String = format!(
-        "{}|{}",
-        dotenv::var("OAUTH_FACEBOOK_CLIENT_ID").expect("Facebook client ID is not set"),
-        dotenv::var("OAUTH_FACEBOOK_CLIENT_SECRET",).expect("Facebook client secret is not set")
-    );
-}
-
-/// Request for fetching the oembed data.
+/// The request for fetching the oembed data.
+///
 /// See the [oembed specification](https://oembed.com/#section2.2)
 #[derive(Default)]
 pub struct ConsumerRequest<'a> {
-    /// URL provided by the client
+    /// The URL provided by the client.
     pub url: &'a str,
-    /// Additional params for the request
+    /// The additional parameters for the request.
     pub params: Option<HashMap<&'a str, &'a str>>,
 }
 
-/// oEmbed client
+/// The oEmbed client.
 #[derive(Clone)]
 pub struct Client(reqwest::Client);
 
 /// Predicate function for determining endpoints that depend on the Facebook graph API, thus
 /// requiring a Facebook graph token to work.
 ///
-/// * `endpoint` - Embed endpoint
+/// * `endpoint` - The embed endpoint.
 fn is_facebook_graph_dependent(endpoint: &str) -> bool {
     endpoint.starts_with("https://graph.facebook.com")
 }
 
 impl Client {
-    /// Create a new request client
+    /// Creates a new request client.
+    ///
+    /// * `client` - The [reqwest::Client] client instance.
     pub fn new(client: reqwest::Client) -> Self {
         Self(client)
     }
 
-    /// Fetches oembed data from the endpoint of a provider
+    /// Fetches the oembed data from the endpoint of the provider.
+    ///
+    /// * `config` - The environment configuration.
+    /// * `endpoint` - The provider endpoint.
+    /// * `request` - The consumer request data.
     pub async fn fetch(
         &self,
+        config: &Config,
         endpoint: &str,
         request: ConsumerRequest<'_>,
     ) -> Result<EmbedResponse, Error> {
@@ -62,16 +61,21 @@ impl Client {
             query_map.insert("url".to_string(), request.url.to_string());
             query_map.insert("format".to_string(), "json".to_string());
 
-            // Append Facebook access token
+            // Append Facebook client ID and access token
             if is_facebook_graph_dependent(&endpoint.to_string()) {
-                query_map.insert("access_token".to_string(), FB_GRAPH_TOKEN.to_string());
+                query_map.insert(
+                    "access_token".to_string(),
+                    format!(
+                        "{}|{}",
+                        config.oauth_facebook_client_id, config.oauth_facebook_client_secret
+                    ),
+                );
             }
 
-            // Append custom params
+            // Custom parameters
             if let Some(params) = request.params {
                 let primitive_keys = vec!["url", "format", "access_token"];
 
-                // Filter request params
                 let params_not_in_request = url
                     .query_pairs()
                     .clone()
@@ -115,27 +119,31 @@ impl Client {
     }
 }
 
-/// Fetches oembed data from the endpoint of a provider
+/// Fetches oembed data from the endpoint of the provider.
 ///
-/// * `endpoint` - Provider oEmbed endpoint
-/// * `request` - Client request data
+/// * `config` - The environment configuration.
+/// * `endpoint` - The provider oEmbed endpoint.
+/// * `request` - The consumer request data.
 pub async fn fetch_embed(
+    config: &Config,
     endpoint: &str,
     request: ConsumerRequest<'_>,
 ) -> Result<EmbedResponse, Error> {
     Client::new(REQUEST_CLIENT.clone())
-        .fetch(endpoint, request)
+        .fetch(config, endpoint, request)
         .await
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::config::get_app_config;
     use mockito::Server;
 
-    #[actix_web::test]
+    #[tokio::test]
     async fn can_fetch_embed() {
         let mut server = Server::new_async().await;
+        let config = get_app_config().unwrap();
 
         let mock = server
             .mock("GET", "/?url=https%3A%2F%2Fexample.com&format=json")
@@ -146,7 +154,8 @@ mod tests {
             .await;
 
         let result = fetch_embed(
-            &server.url().as_str(),
+            &config,
+            &server.url(),
             ConsumerRequest {
                 url: "https://example.com",
                 ..ConsumerRequest::default()
@@ -166,9 +175,10 @@ mod tests {
         mock.assert_async().await;
     }
 
-    #[actix_web::test]
+    #[tokio::test]
     async fn can_throw_fetch_error() {
         let mut server = Server::new_async().await;
+        let config = get_app_config().unwrap();
 
         let mock = server
             .mock("GET", "/?url=https%3A%2F%2Fexample.com&format=json")
@@ -177,7 +187,8 @@ mod tests {
             .await;
 
         let result = fetch_embed(
-            &server.url().as_str(),
+            &config,
+            &server.url(),
             ConsumerRequest {
                 url: "https://example.com",
                 ..ConsumerRequest::default()

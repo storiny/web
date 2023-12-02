@@ -1,145 +1,172 @@
 use crate::{
+    config::Config,
     error::Error,
-    request::{REQUEST_CLIENT, USER_AGENT},
+    request::{
+        REQUEST_CLIENT,
+        USER_AGENT,
+    },
     utils::encode_cdn_url::encode_cdn_url,
 };
 use html5ever::{
     driver::ParseOpts,
     parse_document,
-    tendril::{fmt::UTF8, Tendril, TendrilSink},
+    tendril::{
+        fmt::UTF8,
+        Tendril,
+        TendrilSink,
+    },
     Attribute,
 };
-use markup5ever_rcdom::{Handle, NodeData, RcDom};
+use markup5ever_rcdom::{
+    Handle,
+    NodeData,
+    RcDom,
+};
 use reqwest::header;
 use serde::Serialize;
-use std::{default::Default, io};
-use url::{ParseError, Url};
+use std::{
+    default::Default,
+    io,
+};
+use url::{
+    ParseError,
+    Url,
+};
 
-/// Minimum width for a large image.
-static LARGE_IMAGE_WIDTH_LOWER_BOUND: u16 = 600;
-/// Minimum height for a large image.
-static LARGE_IMAGE_HEIGHT_LOWER_BOUND: u16 = 300;
+/// The minimum width for an image to be classified as a large image.
+const LARGE_IMAGE_WIDTH_LOWER_BOUND: u16 = 600;
 
-/// Metadata client
+/// The minimum height for an image to be classified as a large image.
+const LARGE_IMAGE_HEIGHT_LOWER_BOUND: u16 = 300;
+
+/// The metadata client.
 #[derive(Clone)]
 pub struct Client(reqwest::Client);
 
-/// Metadata image object
+/// The metadata image object.
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct MetadataImage {
-    /// Image source
+    /// The image source URL.
     src: String,
-    /// Width of the image (in px)
+    /// The width of the image (in px).
     width: Option<u16>,
-    /// Height of the image (in px)
+    /// The Height of the image (in px).
     height: Option<u16>,
-    /// Alt text for the image
+    /// The alt text for the image.
     alt: Option<String>,
-    /// Boolean flag indicating whether the image is large enough to be displayed as the main
+    /// The boolean flag indicating whether the image is large enough to be displayed as the main
     /// entity of the web embed.
     is_large: bool,
 }
 
-/// Metadata result object.
+/// The metadata result object.
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct MetadataResult {
-    /// Title of the object
+    /// The title of the object.
     title: String,
-    /// Host of the object
+    /// The host URL of the object.
     host: String,
-    /// Request URL
+    /// The request URL.
     url: String,
-    /// Description of the object
+    /// The description of the object.
     description: String,
-    /// Image object relevant to this object
+    /// The image object relevant to this object.
     image: Option<MetadataImage>,
-    /// Favicon object relevant to this object
+    /// The favicon object relevant to this object.
     favicon: Option<String>,
-    /// Type of the embed result
+    /// The type of the embed result.
     embed_type: String,
 }
 
-/// Opengraph image object.
+/// The Opengraph image object.
 #[derive(Debug, Clone, PartialEq)]
 pub struct OpengraphImage {
-    /// Source of the image
+    /// The source of the image.
     pub url: String,
-    /// Height of the image object (in px)
+    /// The height of the image object (in px).
     pub height: Option<u16>,
-    /// Width of the image object (in px)
+    /// The width of the image object (in px).
     pub width: Option<u16>,
-    /// Description of the image object
+    /// The description of the image object.
     pub alt: Option<String>,
 }
 
-/// Twitter card image object
+/// The twitter card image object.
 #[derive(Debug, Clone, PartialEq)]
 pub struct TwitterImage {
-    /// Source of the image
+    /// The source of the image.
     pub url: String,
-    /// Boolean flag indicating whether the image is a large image (inferred from
+    /// The boolean flag indicating whether the image is a large image (inferred from
     /// `summary_large_card` type).
     pub is_large: bool,
-    /// Description of the image object
+    /// The description of the image object.
     pub alt: Option<String>,
 }
 
-/// Opengraph metadata. See [opengraph specs](http://ogp.me/)
+/// The Opengraph metadata.
+///
+/// See [opengraph specs](http://ogp.me/)
 #[derive(Debug, Clone, PartialEq)]
 pub struct Opengraph {
-    /// Name of the site
+    /// The bame of the site.
     pub site_name: Option<String>,
-    /// Title of the object
+    /// The title of the object.
     pub title: Option<String>,
-    /// Description of the object
+    /// The description of the object.
     pub description: Option<String>,
-    /// Image relevant to this object
+    /// The image relevant to this object.
     pub image: Option<OpengraphImage>,
 }
 
-/// Twitter card metadata. See [Twitter card docs](https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards)
+/// The twitter card metadata.
+///
+/// See [Twitter card docs](https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards)
 #[derive(Debug, Clone, PartialEq)]
 pub struct TwitterCard {
-    /// Title of the object
+    /// The title of the object.
     pub title: Option<String>,
-    /// Description of the object
+    /// The description of the object.
     pub description: Option<String>,
-    /// Image relevant to this object
+    /// The image relevant to this object.
     pub image: Option<TwitterImage>,
 }
 
-/// Struct for parsing the DOM tree
+/// The struct for parsing the DOM tree.
 pub struct DomParser {
-    /// Node handle
+    /// The node handle.
     handle: Handle,
-    /// Boolean flag indicating whether the traversal is happening inside the head element
+    /// The boolean flag indicating whether the traversal is happening inside the head element.
     inside_head: bool,
 }
 
-/// Document metadata
+/// The document metadata.
 #[derive(Debug, Clone)]
 pub struct DocMetadata {
-    /// Title of the document (from <title>)
+    /// The title of the document (from <title>).
     pub title: Option<String>,
-    /// Meta description of the document (from <head>)
+    /// The meta description of the document (from <head>).
     pub description: Option<String>,
-    /// Canonical URL of the resource
+    /// The canonical URL of the resource.
     pub canonical_url: Option<String>,
-    /// Favicon image of the site
+    /// The favicon image URL of the site.
     pub favicon: Option<String>,
-    /// Opengraph tags
+    /// The Opengraph tags.
     pub opengraph: Opengraph,
-    /// Twitter card tags
+    /// The Twitter card tags.
     pub twitter_card: TwitterCard,
 }
 
 impl Client {
-    /// Creates a new request client
+    /// Creates a new request client,
+    ///
+    /// * `client` - The [reqwest::Client] instance.
     pub fn new(client: reqwest::Client) -> Self {
         Self(client)
     }
 
-    /// Fetches metadata from the URL
+    /// Fetches metadata from the provided URL.
+    ///
+    /// * `url` - The target URL.
     pub async fn fetch(&self, url: Url) -> Result<String, Error> {
         Ok(self
             .0
@@ -154,7 +181,9 @@ impl Client {
 }
 
 impl OpengraphImage {
-    /// Creates a new `OpengraphImage` with the given URL
+    /// Creates a new [OpengraphImage] with the given URL.
+    ///
+    /// * `url` - The target URL.
     pub fn new(url: String) -> Self {
         Self {
             url,
@@ -166,7 +195,9 @@ impl OpengraphImage {
 }
 
 impl TwitterImage {
-    /// Creates a new `TwitterImage` with the given URL
+    /// Creates a new [TwitterImage] with the given URL.
+    ///
+    /// * `url` - The target URL.
     pub fn new(url: String) -> Self {
         Self {
             url,
@@ -177,7 +208,7 @@ impl TwitterImage {
 }
 
 impl Opengraph {
-    /// Creates an empty `Opengraph` instance with default values
+    /// Creates an empty [Opengraph] instance with default values.
     pub fn empty() -> Self {
         Self {
             site_name: None,
@@ -187,9 +218,9 @@ impl Opengraph {
         }
     }
 
-    /// Gets a mutable reference to the `OpengraphImage` associated with the current instance.
-    /// If the `OpengraphImage` is not already set, it gets initialized
-    /// with a default value and returns a mutable reference to the newly created `OpengraphImage`.
+    /// Gets a mutable reference to the [OpengraphImage] associated with the current instance. If
+    /// the [OpengraphImage] is not already set, it gets initialized with the default value and a
+    /// mutable reference to the newly created image is returned.
     fn get_or_set_image(&mut self) -> &mut OpengraphImage {
         if self.image.is_none() {
             self.image = Some(OpengraphImage::new("".to_string()));
@@ -200,8 +231,8 @@ impl Opengraph {
 
     /// Extends the instance with the provided properties.
     ///
-    /// * `property` - Property to extend
-    /// * `content` - Content for the property
+    /// * `property` - The property to extend.
+    /// * `content` - The content for the property.
     pub fn extend(&mut self, property: &str, content: String) {
         match property {
             "site_name" => self.site_name = Some(content),
@@ -221,7 +252,7 @@ impl Opengraph {
 }
 
 impl TwitterCard {
-    /// Creates an empty `TwitterCard` instance with default values.
+    /// Creates an empty [TwitterCard] instance with default values.
     pub fn empty() -> Self {
         Self {
             title: None,
@@ -230,9 +261,9 @@ impl TwitterCard {
         }
     }
 
-    /// Gets a mutable reference to the `TwitterImage` associated with the current instance.
-    /// If the `TwitterImage` is not already set, it gets initialized
-    /// with a default value and returns a mutable reference to the newly created `TwitterImage`.
+    /// Gets a mutable reference to the [TwitterImage] associated with the current instance. If the
+    /// [TwitterImage] is not already set, it gets initialized with the default value and a mutable
+    /// reference to the newly created image is returned.
     fn get_or_set_image(&mut self) -> &mut TwitterImage {
         if self.image.is_none() {
             self.image = Some(TwitterImage::new("".to_string()));
@@ -243,8 +274,8 @@ impl TwitterCard {
 
     /// Extends the instance with the provided properties.
     ///
-    /// * `property` - Property to extend
-    /// * `content` - Content for the property
+    /// * `property` - The property to extend.
+    /// * `content` - The content for the property.
     pub fn extend(&mut self, property: &str, content: String) {
         match property {
             "title" => self.title = Some(content),
@@ -258,7 +289,7 @@ impl TwitterCard {
 }
 
 impl DomParser {
-    /// Creates a new `DomParser` with the provided handle.
+    /// Creates a new [DomParser] with the provided handle.
     ///
     /// * `handle` - The handle to the root node of the DOM tree.
     pub fn start(handle: Handle) -> Self {
@@ -310,7 +341,7 @@ impl DomParser {
 }
 
 impl DocMetadata {
-    /// Creates an empty `DocMetadata` instance with default values.
+    /// Creates an empty [DocMetadata] instance with default values.
     fn empty() -> Self {
         Self {
             title: None,
@@ -322,9 +353,9 @@ impl DocMetadata {
         }
     }
 
-    /// Constructs `DocMetadata` from a DOM tree.
+    /// Constructs [DocMetadata] from a DOM tree.
     ///
-    /// * `dom` - The DOM tree
+    /// * `dom` - The DOM tree.
     pub fn from_dom(dom: RcDom) -> Self {
         let mut html = Self::empty();
         let parser = DomParser::start(dom.document);
@@ -333,7 +364,7 @@ impl DocMetadata {
         html
     }
 
-    /// Constructs `DocMetadata` from an HTML string.
+    /// Constructs [DocMetadata] from a HTML string.
     ///
     /// * `html` - The HTML string.
     pub fn from_string(html: &str) -> Result<Self, io::Error> {
@@ -349,8 +380,8 @@ impl DocMetadata {
 ///
 /// * `tag_name` - The name of the node's tag.
 /// * `handle` - A handle to the node.
-/// * `attrs` - Attributes associated with the node.
-/// * `metadata` - Metadata object to be updated.
+/// * `attrs` - The attributes associated with the node.
+/// * `metadata` - The metadata object to be updated.
 fn process_head(tag_name: &str, handle: &Handle, attrs: &[Attribute], metadata: &mut DocMetadata) {
     // If the node is a <title>, update the metadata title
     if tag_name == "title" {
@@ -471,10 +502,12 @@ fn process_image_src(src: &str, base: &mut Url) -> Option<String> {
 
 /// Returns the metadata for a given URL.
 ///
+/// * `config` - The environment configuration.
 /// * `url` - The URL of the target site.
-/// * `skip_encoding_image` - Boolean flag indicating whether to skip encoding image URLs for CDN
-///   usage (used during testing)
+/// * `skip_encoding_image` - The boolean flag indicating whether to skip encoding image URLs for
+///   CDN usage (used during testing)
 pub async fn get_metadata(
+    config: &Config,
     url_prop: &str,
     skip_encoding_image: bool,
 ) -> Result<MetadataResult, Error> {
@@ -520,27 +553,24 @@ pub async fn get_metadata(
 
             Some(MetadataImage {
                 src: {
-                    let src;
-
-                    if has_opengraph_image {
-                        src = process_image_src(&og_image.clone().unwrap().url, &mut url.clone())
-                            .unwrap_or_default();
-                    } else {
-                        src = process_image_src(&tc_image.clone().unwrap().url, &mut url.clone())
-                            .unwrap_or_default()
+                    let src = {
+                        if has_opengraph_image {
+                            process_image_src(&og_image.clone().unwrap().url, &mut url.clone())
+                                .unwrap_or_default()
+                        } else {
+                            process_image_src(&tc_image.clone().unwrap().url, &mut url.clone())
+                                .unwrap_or_default()
+                        }
                     };
 
                     if skip_encoding_image {
                         src
                     } else {
                         encode_cdn_url(
+                            &config.cdn_server_url,
                             &src,
-                            None,
-                            if is_large {
-                                "w@640".to_string()
-                            } else {
-                                "w@128".to_string()
-                            },
+                            &config.proxy_key_secret,
+                            if is_large { "w@640" } else { "w@128" },
                         )
                     }
                 },
@@ -569,7 +599,12 @@ pub async fn get_metadata(
                 if skip_encoding_image {
                     Some(src)
                 } else {
-                    Some(encode_cdn_url(&src, None, "w@32".to_string()))
+                    Some(encode_cdn_url(
+                        &config.cdn_server_url,
+                        &src,
+                        &config.proxy_key_secret,
+                        "w@32",
+                    ))
                 }
             } else {
                 None
@@ -583,6 +618,7 @@ pub async fn get_metadata(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::config::get_app_config;
     use mockito::Server;
 
     #[test]
@@ -752,9 +788,10 @@ mod tests {
         );
     }
 
-    #[actix_web::test]
+    #[tokio::test]
     async fn can_fetch_metadata_from_url() {
         let mut server = Server::new_async().await;
+        let config = get_app_config().unwrap();
 
         let mock = server
             .mock("GET", "/")
@@ -783,7 +820,7 @@ mod tests {
             .create_async()
             .await;
 
-        let result = get_metadata(&server.url().as_str(), true).await;
+        let result = get_metadata(&config, &server.url().as_str(), true).await;
 
         assert_eq!(
             result.ok(),
@@ -807,9 +844,10 @@ mod tests {
         mock.assert_async().await;
     }
 
-    #[actix_web::test]
+    #[tokio::test]
     async fn can_fallback_to_twitter_cards() {
         let mut server = Server::new_async().await;
+        let config = get_app_config().unwrap();
 
         let mock = server
             .mock("GET", "/")
@@ -832,7 +870,7 @@ mod tests {
             .create_async()
             .await;
 
-        let result = get_metadata(&server.url().as_str(), true).await;
+        let result = get_metadata(&config, &server.url().as_str(), true).await;
 
         assert_eq!(
             result.ok(),
