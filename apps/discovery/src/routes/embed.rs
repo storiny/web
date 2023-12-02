@@ -1,4 +1,5 @@
 use crate::{
+    config::Config,
     error::Error,
     spec::EmbedType,
     utils::{
@@ -31,45 +32,46 @@ use serde::{
 };
 use url::Url;
 
-/// Embed endpoint query params
+/// The embed endpoint query parameters.
 #[derive(Deserialize)]
 struct EmbedQueryParams {
     theme: Option<String>,
 }
 
-/// Rich embed data
+/// The rich embed data,
 #[derive(Serialize)]
 struct RichEmbedData {
-    /// Script sources
+    /// The script sources.
     sources: Vec<String>,
-    /// Embed provider
+    /// The embed provider.
     provider: String,
-    /// Embed styles
+    /// The embed CSS styles.
     styles: String,
-    /// Type of the embed
+    /// The type of the embed.
     embed_type: String,
-    /// Boolean flag indicating whether the provider supports both `light` and `dark` themes.
+    /// The boolean flag indicating whether the provider supports both `light` and `dark` themes.
     supports_binary_theme: bool,
 }
 
-/// Photo embed data
+/// The photo embed data
 #[derive(Serialize)]
 struct PhotoEmbedData {
-    /// Embed height (in px)
+    /// The embed height (in px).
     height: Option<u16>,
-    /// Embed width (in px)
+    /// The embed width (in px).
     width: Option<u16>,
-    /// Type of the embed
+    /// The type of the embed.
     embed_type: String,
-    /// Embed provider
+    /// The embed provider.
     provider: String,
 }
 
 /// Sends a webpage metadata object for the provided URL.
 ///
+/// * `config` - The environment configuration.
 /// * `url` - The URL to fetch the metadata for.
-async fn respond_with_metadata(url: &str) -> HttpResponse {
-    let metadata = get_metadata(url, false).await;
+async fn respond_with_metadata(config: &Config, url: &str) -> HttpResponse {
+    let metadata = get_metadata(config, url, false).await;
 
     if let Ok(metadata) = metadata {
         HttpResponse::Ok().json(metadata)
@@ -84,6 +86,7 @@ async fn respond_with_metadata(url: &str) -> HttpResponse {
 async fn get(
     compressed_url: web::Path<String>,
     query: web::Query<EmbedQueryParams>,
+    config: web::Data<Config>,
 ) -> impl Responder {
     // Decompress and parse the URL
     let mut decompressed_url = Url::parse(
@@ -122,6 +125,7 @@ async fn get(
                     });
 
                     fetch_embed(
+                        &config,
                         &provider.endpoint,
                         ConsumerRequest {
                             url: &url.to_string(),
@@ -131,6 +135,7 @@ async fn get(
                     .await
                 } else {
                     fetch_embed(
+                        &config,
                         &provider.endpoint,
                         ConsumerRequest {
                             url: &url.to_string(),
@@ -174,7 +179,7 @@ async fn get(
                             }
                             EmbedType::Link => {
                                 // Handle link response
-                                respond_with_metadata(&url.to_string()).await
+                                respond_with_metadata(&config, &url.to_string()).await
                             }
                             EmbedType::Video(_) | EmbedType::Rich(_) => {
                                 let theme_str = theme.clone().to_string();
@@ -358,7 +363,7 @@ async fn get(
             }
         } else {
             // Handle web embeds
-            respond_with_metadata(&url.to_string()).await
+            respond_with_metadata(&config, &url.to_string()).await
         }
     } else {
         HttpResponse::BadRequest()

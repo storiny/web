@@ -4,5 +4,11 @@ dev:
 fmt:
     cargo +nightly fmt
 
+test:
+    cargo nextest run
+
+test_ci:
+    cargo nextest run --no-fail-fast
+
 udeps:
     cargo +nightly udeps --all-targets

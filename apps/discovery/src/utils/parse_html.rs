@@ -10,8 +10,11 @@ use visdom::{
     Vis,
 };
 
-static DEFAULT_HEIGHT: u16 = 360;
-static DEFAULT_WIDTH: u16 = 640;
+/// The default height in pixels.
+const DEFAULT_HEIGHT: u16 = 360;
+
+/// The default width in pixels.
+const DEFAULT_WIDTH: u16 = 640;
 
 /// Converts an element attribute to a string.
 ///
@@ -21,7 +24,7 @@ fn attr_to_string(attr: Option<IAttrValue>) -> String {
         .to_string()
 }
 
-/// Represents the result of parsing an response having an iframe.
+/// The result of parsing an response having an iframe.
 #[derive(Debug, Serialize, PartialEq)]
 pub struct IframeResult {
     /// The HTML content of the iframe.
@@ -32,20 +35,20 @@ pub struct IframeResult {
     pub wrapper_styles: String,
 }
 
-/// Represents the result of parsing a response not having an iframe.
+/// The result of parsing a response not having an iframe.
 #[derive(Debug, Serialize, PartialEq)]
 pub struct ScriptResult {
     /// The HTML content of the response (without scripts).
     pub html: String,
     /// A list of script sources.
     pub sources: Vec<String>,
-    /// Type of the embed
+    /// The type of the embed.
     pub embed_type: String,
-    /// Binary theme flag
+    /// The binary theme flag.
     pub supports_binary_theme: bool,
 }
 
-/// Represents the result of parsing the response.
+/// The result of parsing the response.
 #[derive(Debug, Serialize, PartialEq)]
 pub enum ParseResult {
     /// The result of parsing a response with an iframe element.
@@ -56,13 +59,13 @@ pub enum ParseResult {
 
 /// Parses a provider response.
 ///
-/// * `html` - HTML from the response
-/// * `width_prop` - Width value
-/// * `height_prop` - Height value
-/// * `title_prop` - Embed title value
-/// * `iframe_params` - Optional extra iframe params (appended to the iframe src)
-/// * `iframe_attrs` - Optional iframe attributes
-/// * `supports_binary_theme` - Binary theme flag
+/// * `html` - The HTML string from the response.
+/// * `width_prop` - The width value (in px).
+/// * `height_prop` - The height value (in px).
+/// * `title_prop` - The embed title value.
+/// * `iframe_params` - Optional extra iframe params (appended to the iframe src).
+/// * `iframe_attrs` - Optional iframe attributes.
+/// * `supports_binary_theme` - The binary theme flag.
 fn parse_response_impl(
     html: &str,
     width_prop: &Option<u16>,
@@ -180,10 +183,11 @@ fn parse_response_impl(
 
 /// Parses HTML from the provider.
 ///
-/// * `response` - Provider response
-/// * `iframe_params` - Optional extra iframe params
-/// * `iframe_attrs` - Optional iframe attributes
-/// * `supports_binary_theme` - Boolean flag indicating whether the provider supports binary theme
+/// * `response` - The provider response.
+/// * `iframe_params` - Optional extra iframe parameters.
+/// * `iframe_attrs` - Optional iframe attributes.
+/// * `supports_binary_theme` - The boolean flag indicating whether the provider supports binary
+///   theme.
 pub fn parse_html(
     response: &EmbedResponse,
     iframe_params: &Option<HashMap<&str, &str>>,

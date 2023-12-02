@@ -19,15 +19,18 @@ use actix_web::{
 use dotenv::dotenv;
 use redis::aio::ConnectionManager;
 use std::{
-    env,
     io,
     time::Duration,
 };
-use storiny_discovery::routes;
+use storiny_discovery::{
+    config::get_app_config,
+    constants::redis_namespaces::RedisNamespace,
+    routes,
+};
 
-mod middleware;
+mod middlewares;
 
-/// 404 response
+/// The 404 response handler.
 async fn not_found() -> impl Responder {
     HttpResponse::NotFound()
         .content_type(ContentType::plaintext())
@@ -37,56 +40,78 @@ async fn not_found() -> impl Responder {
 #[actix_web::main]
 async fn main() -> io::Result<()> {
     dotenv().ok();
-    env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
 
-    let host = env::var("HOST").expect("Host not set");
-    let port = (env::var("PORT").expect("Port not set"))
-        .parse::<u16>()
-        .unwrap();
+    match get_app_config() {
+        Ok(config) => {
+            env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
 
-    log::info!(
-        "{}",
-        format!("Starting discovery HTTP server at http://{host}:{port}")
-    );
+            let host = config.host.to_string();
+            let port = config.port.clone().parse::<u16>().unwrap();
+            let redis_connection_string =
+                format!("redis://{}:{}", &config.redis_host, &config.redis_port);
 
-    let allowed_origin = env::var("ALLOWED_ORIGIN").expect("Allowed origin not set");
-    let redis_host = env::var("REDIS_HOST").unwrap_or("localhost".to_string());
-    let redis_port = env::var("REDIS_PORT").unwrap_or("7001".to_string());
-    let redis_client = redis::Client::open(format!("redis://{redis_host}:{redis_port}"))
-        .expect("Cannot build Redis client");
-    let redis_connection_manager = ConnectionManager::new(redis_client)
-        .await
-        .expect("Cannot build Redis connection manager");
-    let backend = middleware::rate_limiter::RedisBackend::builder(redis_connection_manager)
-        .key_prefix(Some("d:l:")) // Add prefix to avoid collisions with other servicse
-        .build();
+            log::info!(
+                "{}",
+                format!(
+                    "Starting discovery HTTP server in {} mode at {}:{}",
+                    if config.is_dev {
+                        "development"
+                    } else {
+                        "production"
+                    },
+                    &host,
+                    &port
+                )
+            );
 
-    HttpServer::new(move || {
-        let input = SimpleInputFunctionBuilder::new(Duration::from_secs(5), 25) // 25 requests / 5s
-            .real_ip_key()
-            .build();
+            // Rate-limit
+            let redis_client = redis::Client::open(redis_connection_string.clone())
+                .expect("Cannot build Redis client");
+            let redis_connection_manager = ConnectionManager::new(redis_client)
+                .await
+                .expect("Cannot build Redis connection manager");
+            let rate_limit_backend =
+                middlewares::rate_limiter::RedisBackend::builder(redis_connection_manager)
+                    .key_prefix(Some(&format!("{}:", RedisNamespace::RateLimit.to_string()))) // Add prefix to avoid collisions with other servicse
+                    .build();
 
-        App::new()
-            .wrap(
-                RateLimiter::builder(backend.clone(), input)
-                    .add_headers()
-                    .build(),
-            )
-            .wrap(
-                Cors::default()
-                    .allowed_origin(&allowed_origin)
-                    .allowed_methods(vec!["HEAD", "GET"])
-                    .allowed_headers(vec![header::CONTENT_TYPE, header::ACCEPT])
-                    .max_age(3600),
-            )
-            .wrap(Logger::new(
-                "%a %t \"%r\" %s %b \"%{Referer}i\" \"%{User-Agent}i\" %T",
-            ))
-            .configure(routes::init_routes)
-            .service(fs::Files::new("/", "./static"))
-            .default_service(web::route().to(not_found))
-    })
-    .bind((host, port))?
-    .run()
-    .await
+            let web_config = web::Data::new(config.clone());
+
+            HttpServer::new(move || {
+                let input = SimpleInputFunctionBuilder::new(Duration::from_secs(5), 25) // 25 requests / 5s
+                    .real_ip_key()
+                    .build();
+
+                App::new()
+                    .wrap(
+                        RateLimiter::builder(rate_limit_backend.clone(), input)
+                            .add_headers()
+                            .build(),
+                    )
+                    .wrap(if config.is_dev {
+                        Cors::permissive()
+                    } else {
+                        Cors::default()
+                            .allowed_origin(&(&config).web_server_url)
+                            .allowed_methods(vec!["HEAD", "GET"])
+                            .allowed_headers(vec![header::CONTENT_TYPE, header::ACCEPT])
+                            .max_age(3600)
+                    })
+                    .wrap(Logger::new(
+                        "%a %t \"%r\" %s %b \"%{Referer}i\" \"%{User-Agent}i\" %T",
+                    ))
+                    .app_data(web_config.clone())
+                    .configure(routes::init_routes)
+                    .service(fs::Files::new("/", "./static"))
+                    .default_service(web::route().to(not_found))
+            })
+            .bind((host, port))?
+            .run()
+            .await
+        }
+        Err(error) => {
+            eprintln!("Environment configuration error: {:#?}", error);
+            Ok(())
+        }
+    }
 }

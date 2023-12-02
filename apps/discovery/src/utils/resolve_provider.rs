@@ -7,7 +7,7 @@ use url::Url;
 /// Resolves the provider based on the provided URL, matching it against
 /// every schema that the provider provides.
 ///
-/// * `input_url` - Input URL
+/// * `input_url` - The input URL.
 pub fn resolve_provider(input_url: &str) -> Option<&'static Provider> {
     // Url sanity check
     return match Url::parse(input_url) {
