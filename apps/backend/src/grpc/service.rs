@@ -84,14 +84,14 @@ use tonic::{
     Status,
 };
 
-/// A GRPC service.
+/// The GRPC service.
 #[derive(Clone)]
 pub struct GrpcService {
-    /// Environment configuration
+    /// The environment configuration.
     pub config: config::Config,
-    /// Postgres connection pool
+    /// The Postgres connection pool.
     pub db_pool: Pool<Postgres>,
-    /// Redis connection instance
+    /// The Redis connection instance.
     pub redis_pool: RedisPool,
 }
 
