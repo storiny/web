@@ -5,7 +5,7 @@ package connection_settings_def.v1;
 import "connection_def/v1/def.proto";
 
 message GetConnectionSettingsRequest {
-  string id = 1;
+  string user_id = 1;
 }
 
 message GetConnectionSettingsResponse {

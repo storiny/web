@@ -19,9 +19,9 @@ pub async fn get_notification_settings(
 ) -> Result<Response<GetNotificationSettingsResponse>, Status> {
     let user_id = request
         .into_inner()
-        .id
+        .user_id
         .parse::<i64>()
-        .map_err(|_| Status::invalid_argument("`id` is invalid"))?;
+        .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
     match sqlx::query(
         r#"
@@ -124,7 +124,7 @@ mod tests {
 
                 let response = client
                     .get_notification_settings(Request::new(GetNotificationSettingsRequest {
-                        id: user_id.unwrap().to_string(),
+                        user_id: user_id.unwrap().to_string(),
                     }))
                     .await
                     .unwrap()

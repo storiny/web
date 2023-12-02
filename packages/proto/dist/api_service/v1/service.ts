@@ -26,6 +26,8 @@ import {
   GetStoryResponsesInfoResponse,
 } from "../../response_def/v1/def";
 import {
+  CreateDraftRequest,
+  CreateDraftResponse,
   GetDraftsInfoRequest,
   GetDraftsInfoResponse,
   GetStoriesInfoRequest,
@@ -53,7 +55,7 @@ import {
 
 export const protobufPackage = "api_service.v1";
 
-/** This is necessary to generate an output file for tonic. */
+/** This is necessary to generate an output file using tonic. */
 export interface Placeholder {
 }
 
@@ -321,6 +323,16 @@ export const ApiServiceService = {
     responseSerialize: (value: GetCommentResponse) => Buffer.from(GetCommentResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetCommentResponse.decode(value),
   },
+  /** Creates a new draft */
+  createDraft: {
+    path: "/api_service.v1.ApiService/CreateDraft",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: CreateDraftRequest) => Buffer.from(CreateDraftRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => CreateDraftRequest.decode(value),
+    responseSerialize: (value: CreateDraftResponse) => Buffer.from(CreateDraftResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => CreateDraftResponse.decode(value),
+  },
 } as const;
 
 export interface ApiServiceServer extends UntypedServiceImplementation {
@@ -364,6 +376,8 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getStory: handleUnaryCall<GetStoryRequest, GetStoryResponse>;
   /** Returns the comment's data */
   getComment: handleUnaryCall<GetCommentRequest, GetCommentResponse>;
+  /** Creates a new draft */
+  createDraft: handleUnaryCall<CreateDraftRequest, CreateDraftResponse>;
 }
 
 export interface ApiServiceClient extends Client {
@@ -686,6 +700,22 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetCommentResponse) => void,
+  ): ClientUnaryCall;
+  /** Creates a new draft */
+  createDraft(
+    request: CreateDraftRequest,
+    callback: (error: ServiceError | null, response: CreateDraftResponse) => void,
+  ): ClientUnaryCall;
+  createDraft(
+    request: CreateDraftRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: CreateDraftResponse) => void,
+  ): ClientUnaryCall;
+  createDraft(
+    request: CreateDraftRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: CreateDraftResponse) => void,
   ): ClientUnaryCall;
 }
 

@@ -30,8 +30,8 @@ message Login {
 }
 
 message GetLoginActivityRequest {
-  string token /**/ = 1; // Token from the session cookie (used to determine if the current device is active)
-  string id /*   */ = 2; // User ID
+  string token /*  */ = 1; // Token from the session cookie (used to determine if the current device is active)
+  string user_id /**/ = 2; // User ID
 }
 
 message GetLoginActivityResponse {

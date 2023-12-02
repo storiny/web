@@ -19,9 +19,9 @@ pub async fn get_stories_info(
 ) -> Result<Response<GetStoriesInfoResponse>, Status> {
     let user_id = request
         .into_inner()
-        .id
+        .user_id
         .parse::<i64>()
-        .map_err(|_| Status::invalid_argument("`id` is invalid"))?;
+        .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
     let result = sqlx::query(
         r#"
@@ -74,7 +74,7 @@ mod tests {
             Box::new(|mut client, _, _, _| async move {
                 let response = client
                     .get_stories_info(Request::new(GetStoriesInfoRequest {
-                        id: 1_i64.to_string(),
+                        user_id: 1_i64.to_string(),
                     }))
                     .await
                     .unwrap()

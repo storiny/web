@@ -38,6 +38,8 @@ use crate::{
                 GetStoryResponsesInfoResponse,
             },
             story_def::v1::{
+                CreateDraftRequest,
+                CreateDraftResponse,
                 GetDraftsInfoRequest,
                 GetDraftsInfoResponse,
                 GetStoriesInfoRequest,
@@ -233,5 +235,12 @@ impl ApiService for GrpcService {
         request: Request<GetCommentRequest>,
     ) -> Result<Response<GetCommentResponse>, Status> {
         endpoints::get_comment::get_comment(self, request).await
+    }
+
+    async fn create_draft(
+        &self,
+        request: Request<CreateDraftRequest>,
+    ) -> Result<Response<CreateDraftResponse>, Status> {
+        endpoints::create_draft::create_draft(self, request).await
     }
 }

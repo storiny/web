@@ -39,10 +39,20 @@ message Draft {
   optional string edited_at /*   */ = 7;
 }
 
+// Create draft request
+
+message CreateDraftRequest {
+  string user_id = 1;
+}
+
+message CreateDraftResponse {
+  string draft_id = 1;
+}
+
 // Drafts information request
 
 message GetDraftsInfoRequest {
-  string id = 1;
+  string user_id = 1;
 }
 
 message GetDraftsInfoResponse {
@@ -54,7 +64,7 @@ message GetDraftsInfoResponse {
 // Stories information request
 
 message GetStoriesInfoRequest {
-  string id = 1;
+  string user_id = 1;
 }
 
 message GetStoriesInfoResponse {

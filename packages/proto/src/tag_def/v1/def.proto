@@ -30,7 +30,7 @@ message GetTagResponse {
 // Followed tag count
 
 message GetFollowedTagCountRequest {
-  string id = 1;
+  string user_id = 1;
 }
 
 message GetFollowedTagCountResponse {

@@ -542,7 +542,10 @@ pub mod tests {
             session_cookie::SESSION_COOKIE_NAME,
         },
         realms::{
-            realm::RealmMap,
+            realm::{
+                RealmMap,
+                MAX_PEERS_PER_REALM,
+            },
             server::{
                 start_realms_server,
                 EnterRealmError,
@@ -751,7 +754,6 @@ pub mod tests {
 
     mod serial {
         use super::*;
-        use crate::realms::realm::MAX_PEERS_PER_REALM;
 
         #[sqlx::test]
         async fn can_reject_unauthorized_peers(pool: PgPool) {

@@ -36,9 +36,9 @@ pub async fn get_drafts_info(
 ) -> Result<Response<GetDraftsInfoResponse>, Status> {
     let user_id = request
         .into_inner()
-        .id
+        .user_id
         .parse::<i64>()
-        .map_err(|_| Status::invalid_argument("`id` is invalid"))?;
+        .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
     let pg_pool = &client.db_pool;
     let mut txn = pg_pool
@@ -145,7 +145,7 @@ mod tests {
             Box::new(|mut client, _, _, _| async move {
                 let response = client
                     .get_drafts_info(Request::new(GetDraftsInfoRequest {
-                        id: 1_i64.to_string(),
+                        user_id: 1_i64.to_string(),
                     }))
                     .await
                     .unwrap()

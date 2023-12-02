@@ -18,7 +18,7 @@ const Page = async (): Promise<React.ReactElement | undefined> => {
     }
 
     const connection_settings_response = await get_connection_settings({
-      id: user_id
+      user_id
     });
 
     return <ConnectionSettingsClient {...connection_settings_response} />;

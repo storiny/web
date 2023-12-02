@@ -4,8 +4,7 @@ import _m0 from "protobufjs/minimal";
 export const protobufPackage = "credential_settings_def.v1";
 
 export interface GetCredentialSettingsRequest {
-  /** User ID */
-  id: string;
+  user_id: string;
 }
 
 export interface GetCredentialSettingsResponse {
@@ -16,13 +15,13 @@ export interface GetCredentialSettingsResponse {
 }
 
 function createBaseGetCredentialSettingsRequest(): GetCredentialSettingsRequest {
-  return { id: "" };
+  return { user_id: "" };
 }
 
 export const GetCredentialSettingsRequest = {
   encode(message: GetCredentialSettingsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
+    if (message.user_id !== "") {
+      writer.uint32(10).string(message.user_id);
     }
     return writer;
   },
@@ -39,7 +38,7 @@ export const GetCredentialSettingsRequest = {
             break;
           }
 
-          message.id = reader.string();
+          message.user_id = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -51,13 +50,13 @@ export const GetCredentialSettingsRequest = {
   },
 
   fromJSON(object: any): GetCredentialSettingsRequest {
-    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+    return { user_id: isSet(object.user_id) ? globalThis.String(object.user_id) : "" };
   },
 
   toJSON(message: GetCredentialSettingsRequest): unknown {
     const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
+    if (message.user_id !== "") {
+      obj.user_id = message.user_id;
     }
     return obj;
   },
@@ -67,7 +66,7 @@ export const GetCredentialSettingsRequest = {
   },
   fromPartial<I extends Exact<DeepPartial<GetCredentialSettingsRequest>, I>>(object: I): GetCredentialSettingsRequest {
     const message = createBaseGetCredentialSettingsRequest();
-    message.id = object.id ?? "";
+    message.user_id = object.user_id ?? "";
     return message;
   },
 };

@@ -18,7 +18,7 @@ const Page = async (): Promise<React.ReactElement | undefined> => {
     }
 
     const responses_info_response = await get_responses_info({
-      id: user_id
+      user_id
     });
 
     return <ContentResponsesClient {...responses_info_response} />;

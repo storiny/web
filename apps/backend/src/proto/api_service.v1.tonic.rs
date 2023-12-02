@@ -731,6 +731,36 @@ pub mod api_service_client {
                 .insert(GrpcMethod::new("api_service.v1.ApiService", "GetComment"));
             self.inner.unary(req, path, codec).await
         }
+        /** *
+ Creates a new draft
+*/
+        pub async fn create_draft(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::super::story_def::v1::CreateDraftRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::super::story_def::v1::CreateDraftResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/api_service.v1.ApiService/CreateDraft",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("api_service.v1.ApiService", "CreateDraft"));
+            self.inner.unary(req, path, codec).await
+        }
     }
 }
 /// Generated server implementations.
@@ -990,6 +1020,18 @@ pub mod api_service_server {
             >,
         ) -> std::result::Result<
             tonic::Response<super::super::super::comment_def::v1::GetCommentResponse>,
+            tonic::Status,
+        >;
+        /** *
+ Creates a new draft
+*/
+        async fn create_draft(
+            &self,
+            request: tonic::Request<
+                super::super::super::story_def::v1::CreateDraftRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::super::story_def::v1::CreateDraftResponse>,
             tonic::Status,
         >;
     }
@@ -2027,6 +2069,55 @@ pub mod api_service_server {
                     let fut = async move {
                         let inner = inner.0;
                         let method = GetCommentSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/api_service.v1.ApiService/CreateDraft" => {
+                    #[allow(non_camel_case_types)]
+                    struct CreateDraftSvc<T: ApiService>(pub Arc<T>);
+                    impl<
+                        T: ApiService,
+                    > tonic::server::UnaryService<
+                        super::super::super::story_def::v1::CreateDraftRequest,
+                    > for CreateDraftSvc<T> {
+                        type Response = super::super::super::story_def::v1::CreateDraftResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<
+                                super::super::super::story_def::v1::CreateDraftRequest,
+                            >,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                (*inner).create_draft(request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = CreateDraftSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

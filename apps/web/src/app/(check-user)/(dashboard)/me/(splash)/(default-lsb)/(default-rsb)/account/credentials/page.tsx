@@ -18,7 +18,7 @@ const Page = async (): Promise<React.ReactElement | undefined> => {
     }
 
     const credential_settings_response = await get_credential_settings({
-      id: user_id
+      user_id
     });
 
     return <CredentialsClient {...credential_settings_response} />;

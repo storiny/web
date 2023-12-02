@@ -18,7 +18,7 @@ const Page = async (): Promise<React.ReactElement | undefined> => {
     }
 
     const followed_tag_count_response = await get_followed_tag_count({
-      id: user_id
+      user_id
     });
 
     return <ContentTagsClient {...followed_tag_count_response} />;

@@ -18,7 +18,7 @@ const Page = async (): Promise<React.ReactElement | undefined> => {
     }
 
     const privacy_settings_response = await get_privacy_settings({
-      id: user_id
+      user_id
     });
 
     return <PrivacySettingsClient {...privacy_settings_response} />;

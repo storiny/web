@@ -17,13 +17,27 @@ pub struct Draft {
     #[prost(string, optional, tag="7")]
     pub edited_at: ::core::option::Option<::prost::alloc::string::String>,
 }
+// Create draft request
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CreateDraftRequest {
+    #[prost(string, tag="1")]
+    pub user_id: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CreateDraftResponse {
+    #[prost(string, tag="1")]
+    pub draft_id: ::prost::alloc::string::String,
+}
 // Drafts information request
 
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetDraftsInfoRequest {
     #[prost(string, tag="1")]
-    pub id: ::prost::alloc::string::String,
+    pub user_id: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -41,7 +55,7 @@ pub struct GetDraftsInfoResponse {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetStoriesInfoRequest {
     #[prost(string, tag="1")]
-    pub id: ::prost::alloc::string::String,
+    pub user_id: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
