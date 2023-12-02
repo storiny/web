@@ -1,6 +1,7 @@
 "use client";
 
 import { clsx } from "clsx";
+import * as process from "process";
 import React from "react";
 
 import Button from "~/components/button";
@@ -8,6 +9,7 @@ import Divider from "~/components/divider";
 import Grow from "~/components/grow";
 import Link from "~/components/link";
 import Spacer from "~/components/spacer";
+import Tooltip from "~/components/tooltip";
 import Typography from "~/components/typography";
 import css from "~/theme/main.module.scss";
 
@@ -24,7 +26,8 @@ const AppleIcon = (): React.ReactElement => (
   >
     <path
       d="M16.59 13.82a9.97 9.97 0 0 1-2.13 3.11c-.47.44-.98.66-1.53.68-.4 0-.87-.12-1.42-.34a4.07 4.07 0 0 0-1.53-.34 4.2 4.2 0 0 0-1.57.34c-.56.22-1 .34-1.35.35-.53.03-1.05-.2-1.57-.7a10.34 10.34 0 0 1-3.13-7.25c0-1.14.25-2.14.75-2.98a4.4 4.4 0 0 1 3.7-2.19 5 5 0 0 1 1.64.39c.68.25 1.11.38 1.3.38.14 0 .63-.15 1.45-.45.77-.28 1.42-.4 1.96-.35a4.2 4.2 0 0 1 3.27 1.72 3.63 3.63 0 0 0-1.93 3.3 3.6 3.6 0 0 0 1.2 2.74c.35.34.75.6 1.19.79l-.3.8ZM13.26.72c0 .86-.32 1.67-.95 2.41-.75.89-1.67 1.4-2.67 1.32l-.02-.33c0-.82.36-1.71 1-2.43.32-.37.73-.68 1.22-.92.5-.24.96-.37 1.4-.4l.02.35Z"
-      fill="#fff"
+      // TODO: Replace the fill with `#fff` once the users are allowed to continue with Apple
+      fill="#8c8c8c"
     />
   </svg>
 );
@@ -93,16 +96,23 @@ const Page = (): React.ReactElement => {
         <div className={css["flex-center"]} style={{ paddingInline: "18px" }}>
           <Divider style={{ width: "100%" }} />
         </div>
+        <Tooltip content={"Available soon"}>
+          <div>
+            <Button
+              className={clsx(css["full-w"], styles.x, styles["apple-button"])}
+              decorator={<AppleIcon />}
+              disabled
+              size={"lg"}
+            >
+              Continue with Apple
+            </Button>
+          </div>
+        </Tooltip>
         <Button
-          className={clsx(styles.x, styles["apple-button"])}
-          decorator={<AppleIcon />}
-          size={"lg"}
-        >
-          Continue with Apple
-        </Button>
-        <Button
+          as={"a"}
           className={clsx(styles.x, styles["google-button"])}
           decorator={<GoogleIcon />}
+          href={`${process.env.NEXT_PUBLIC_API_URL}/v1/auth/external/google`}
           size={"lg"}
         >
           Continue with Google
