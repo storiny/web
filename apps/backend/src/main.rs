@@ -33,30 +33,20 @@ use dotenv::dotenv;
 use futures::future;
 use lockable::LockableHashMap;
 use redis::aio::ConnectionManager;
-use sqlx::{
-    postgres::PgPoolOptions,
-    Pool,
-    Postgres,
-};
+use sqlx::postgres::PgPoolOptions;
 use std::{
     io,
     sync::Arc,
     time::Duration,
 };
 use storiny::{
-    config::{
-        get_app_config,
-        Config,
-    },
+    config::get_app_config,
     constants::{
         redis_namespaces::RedisNamespace,
         session_cookie::SESSION_COOKIE_NAME,
     },
     error::FormErrorResponse,
-    grpc::{
-        defs::grpc_service::v1::api_service_server::ApiServiceServer,
-        service::GrpcService,
-    },
+    grpc::server::start_grpc_server,
     jobs::{
         email::templated_email::TemplatedEmailJob,
         init::start_jobs,
@@ -77,7 +67,6 @@ use storiny::{
     },
     *,
 };
-use tonic::codegen::CompressionEncoding;
 use user_agent_parser::UserAgentParser;
 
 /// 404 response
@@ -85,37 +74,6 @@ async fn not_found() -> impl Responder {
     HttpResponse::NotFound()
         .content_type(ContentType::plaintext())
         .body("Not found")
-}
-
-/// Initializes and starts the GRPC service.
-///
-/// * `config` - The environment configuration.
-/// * `db_pool` - The Postgres connection pool.
-/// * `redis_pool` - The Redis connection pool.
-async fn start_grpc_server(
-    config: Config,
-    db_pool: Pool<Postgres>,
-    redis_pool: RedisPool,
-) -> io::Result<()> {
-    let endpoint = config.grpc_endpoint.clone();
-
-    tokio::spawn(async move {
-        tonic::transport::Server::builder()
-            .add_service(
-                ApiServiceServer::new(GrpcService {
-                    redis_pool,
-                    config,
-                    db_pool,
-                })
-                .send_compressed(CompressionEncoding::Gzip)
-                .accept_compressed(CompressionEncoding::Gzip),
-            )
-            .serve(endpoint.parse().unwrap())
-            .await
-            .unwrap();
-    });
-
-    Ok(())
 }
 
 #[actix_web::main]
