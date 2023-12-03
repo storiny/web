@@ -201,8 +201,8 @@ pub async fn get_story(
     if let Ok(ref mut redis_conn) = redis_pool.get().await {
         let cache_key = format!(
             "{}:{}:{reading_session_token}",
-            story.id,
             RedisNamespace::ReadingSession.to_string(),
+            story.id,
         );
         let result = redis_conn
             .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)

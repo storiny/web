@@ -125,7 +125,7 @@ async fn post(
                                 WITH target_story AS (
                                     SELECT id FROM stories
                                     WHERE
-                                        id = $1
+                                        id = $6
                                         AND published_at IS NOT NULL
                                         AND deleted_at IS NULL
                                 )
@@ -137,9 +137,10 @@ async fn post(
                                     user_id,
                                     story_id
                                 )
-                                VALUES (
-                                    $1, $2, $3, $4, $5,
+                                SELECT $1, $2, $3, $4, $5,
                                     (SELECT id FROM target_story)
+                                WHERE EXISTS (
+                                    SELECT 1 FROM target_story
                                 )
                                "#,
                             )
@@ -150,19 +151,11 @@ async fn post(
                             .bind(user.and_then(|user| user.id().ok()))
                             .bind(story_id)
                             .execute(&data.db_pool)
-                            .await
+                            .await?
+                            .rows_affected()
                             {
-                                Ok(_) => Ok(HttpResponse::NoContent().finish()),
-                                Err(error) => {
-                                    if matches!(
-                                        error.into_database_error().map(|db_error| db_error.kind()),
-                                        Some(sqlx::error::ErrorKind::ForeignKeyViolation)
-                                    ) {
-                                        Ok(HttpResponse::BadRequest().body("Story not found"))
-                                    } else {
-                                        Ok(HttpResponse::InternalServerError().finish())
-                                    }
-                                }
+                                0 => Ok(HttpResponse::BadRequest().body("Story not found")),
+                                _ => Ok(HttpResponse::NoContent().finish()),
                             }
                         }
                         Err(_) => Ok(HttpResponse::InternalServerError().finish()),
@@ -284,7 +277,7 @@ mod tests {
             let redis_pool = &ctx.redis_pool;
             let mut redis_conn = redis_pool.get().await.unwrap();
             let mut conn = pool.acquire().await?;
-            let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
+            let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
             let story_id = 3_i64;
             let session_token = Uuid::new_v4();
@@ -300,6 +293,7 @@ mod tests {
                 .unwrap();
 
             let req = test::TestRequest::post()
+                .cookie(cookie.unwrap())
                 .uri(&format!("/v1/public/stories/{story_id}/read"))
                 .set_json(Request {
                     referrer: None,
@@ -400,10 +394,10 @@ mod tests {
                 result.get::<Option<String>, _>("hostname"),
                 Some("example.com".to_string())
             );
-            assert!(result.try_get::<i32, _>("device").is_ok());
+            assert!(result.try_get::<i16, _>("device").is_ok());
             assert_eq!(
                 result.get::<Option<String>, _>("country_code"),
-                Some("a".to_string())
+                Some("US".to_string())
             );
 
             Ok(())
@@ -456,6 +450,7 @@ mod tests {
         ) -> sqlx::Result<()> {
             let redis_pool = &ctx.redis_pool;
             let mut redis_conn = redis_pool.get().await.unwrap();
+            let mut conn = pool.acquire().await?;
             let (app, _, _) = init_app_for_test(post, pool, false, false, None).await;
 
             let story_id = 3_i64;
@@ -480,7 +475,7 @@ mod tests {
                 "#,
             )
             .bind(story_id)
-            .execute(&pool)
+            .execute(&mut *conn)
             .await?;
 
             assert_eq!(result.rows_affected(), 1);
@@ -508,6 +503,7 @@ mod tests {
         ) -> sqlx::Result<()> {
             let redis_pool = &ctx.redis_pool;
             let mut redis_conn = redis_pool.get().await.unwrap();
+            let mut conn = pool.acquire().await?;
             let (app, _, _) = init_app_for_test(post, pool, false, false, None).await;
 
             let story_id = 3_i64;
@@ -532,7 +528,7 @@ mod tests {
                 "#,
             )
             .bind(story_id)
-            .execute(&pool)
+            .execute(&mut *conn)
             .await?;
 
             assert_eq!(result.rows_affected(), 1);
