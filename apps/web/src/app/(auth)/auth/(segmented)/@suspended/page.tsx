@@ -16,9 +16,9 @@ const Page = (): React.ReactElement => (
     </Typography>
     <Spacer orientation={"vertical"} size={0.5} />
     <Typography className={css["t-minor"]} level={"body2"}>
-      We regret to inform you that your account has been permanently suspended
-      for violating our community guidelines. However, if you believe there has
-      been an error in our decision, you may{" "}
+      We have permanently suspended your account for violating our community
+      guidelines. If you believe there has been an error in our decision, you
+      may{" "}
       <Link href={"/report"} underline={"always"}>
         submit an appeal
       </Link>

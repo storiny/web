@@ -8,6 +8,7 @@ mod tests {
         Postgres,
         Row,
     };
+    use storiny::constants::sql_states::SqlState;
     use time::OffsetDateTime;
     use uuid::Uuid;
 
@@ -93,7 +94,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with `52001` SQLSTATE
+        // Should reject with the correct SQLSTATE
         assert_eq!(
             result
                 .unwrap_err()
@@ -101,7 +102,7 @@ mod tests {
                 .unwrap()
                 .code()
                 .unwrap(),
-            "52001"
+            SqlState::EntityUnavailable.to_string()
         );
 
         Ok(())
@@ -133,7 +134,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with `52001` SQLSTATE
+        // Should reject with the correct SQLSTATE
         assert_eq!(
             result
                 .unwrap_err()
@@ -141,7 +142,7 @@ mod tests {
                 .unwrap()
                 .code()
                 .unwrap(),
-            "52001"
+            SqlState::EntityUnavailable.to_string()
         );
 
         Ok(())
@@ -499,6 +500,112 @@ mod tests {
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
                 .is_none()
         );
+
+        Ok(())
+    }
+
+    // Story reads
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_delete_story_reads_when_the_story_is_soft_deleted(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
+
+        // Read the story
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO story_reads (country_code, story_id)
+            VALUES ($1, $2)
+            RETURNING id
+            "#,
+        )
+        .bind("XX")
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(insert_result.try_get::<i64, _>("id").is_ok());
+
+        // Soft-delete the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Story read should be deleted
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS (
+                SELECT 1 FROM story_reads
+                WHERE id = $1
+            )
+            "#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_delete_story_reads_when_the_story_is_unpublished(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
+
+        // Read the story
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO story_reads (country_code, story_id)
+            VALUES ($1, $2)
+            RETURNING id
+            "#,
+        )
+        .bind("XX")
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(insert_result.try_get::<i64, _>("id").is_ok());
+
+        // Unpublish the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Story read should be deleted
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS (
+                SELECT 1 FROM story_reads
+                WHERE id = $1
+            )
+            "#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -1990,23 +2097,30 @@ mod tests {
     // Misc
 
     #[sqlx::test(fixtures("user"))]
-    async fn can_reset_read_count_when_soft_deleting_the_story(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reset_view_count_and_read_count_when_soft_deleting_the_story(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
 
-        // Set initial `read_count`
+        // Set initial `view_count` and `read_count`
         let update_result = sqlx::query(
             r#"
             UPDATE stories
-            SET read_count = 10
+            SET 
+                view_count = 10,
+                read_count = 10
             WHERE id = $1
-            RETURNING read_count
+            RETURNING
+                view_count,
+                read_count
             "#,
         )
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
 
+        assert_eq!(update_result.get::<i64, _>("view_count"), 10);
         assert_eq!(update_result.get::<i32, _>("read_count"), 10);
 
         // Soft-delete the story
@@ -2021,10 +2135,13 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        // Should reset the `read_count`
+        // Should reset the `view_count` and the `read_count`
         let result = sqlx::query(
             r#"
-            SELECT read_count FROM stories
+            SELECT
+                view_count,
+                read_count
+            FROM stories
             WHERE id = $1
             "#,
         )
@@ -2032,29 +2149,37 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
+        assert_eq!(result.get::<i64, _>("view_count"), 0);
         assert_eq!(result.get::<i32, _>("read_count"), 0);
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("user"))]
-    async fn can_reset_read_count_when_unpublishing_the_story(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reset_view_count_and_read_count_when_unpublishing_the_story(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
 
-        // Set initial `read_count`
+        // Set initial `view_count` and `read_count`
         let update_result = sqlx::query(
             r#"
             UPDATE stories
-            SET read_count = 10
+            SET 
+                view_count = 10,
+                read_count = 10
             WHERE id = $1
-            RETURNING read_count
+            RETURNING
+                view_count,
+                read_count
             "#,
         )
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
 
+        assert_eq!(update_result.get::<i64, _>("view_count"), 10);
         assert_eq!(update_result.get::<i32, _>("read_count"), 10);
 
         // Unpublish the story
@@ -2069,10 +2194,13 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        // Should reset the `read_count`
+        // Should reset the `view_count` and the `read_count`
         let result = sqlx::query(
             r#"
-            SELECT read_count FROM stories
+            SELECT
+                view_count,
+                read_count
+            FROM stories
             WHERE id = $1
             "#,
         )
@@ -2080,6 +2208,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
+        assert_eq!(result.get::<i64, _>("view_count"), 0);
         assert_eq!(result.get::<i32, _>("read_count"), 0);
 
         Ok(())

@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod tests {
     use sqlx::PgPool;
+    use storiny::constants::sql_states::SqlState;
 
     #[sqlx::test(fixtures("user"))]
     async fn can_insert_a_notification(pool: PgPool) -> sqlx::Result<()> {
@@ -54,7 +55,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with `52001` SQLSTATE
+        // Should reject with the correct SQLSTATE
         assert_eq!(
             result
                 .unwrap_err()
@@ -62,7 +63,7 @@ mod tests {
                 .unwrap()
                 .code()
                 .unwrap(),
-            "52001"
+            SqlState::EntityUnavailable.to_string()
         );
 
         Ok(())
@@ -98,7 +99,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with `52001` SQLSTATE
+        // Should reject with the correct SQLSTATE
         assert_eq!(
             result
                 .unwrap_err()
@@ -106,7 +107,7 @@ mod tests {
                 .unwrap()
                 .code()
                 .unwrap(),
-            "52001"
+            SqlState::EntityUnavailable.to_string()
         );
 
         Ok(())

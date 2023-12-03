@@ -15,7 +15,7 @@ pub struct ClientLocation {
     pub lng: Option<f64>,
 }
 
-/// Parses and return client's location information from IP.
+/// Parses and return the client's location information from the client's IP address.
 ///
 /// * `ip` - The IP address of the client.
 /// * `reader` - The geo-ip database reader instance.

@@ -38,31 +38,37 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
   });
   const [mutate_login, { isLoading: is_loading }] = use_login_mutation();
 
-  const handle_submit: SubmitHandler<LoginSchema> = (values) => {
-    if (on_submit) {
-      on_submit(values);
-    } else {
-      mutate_login(values)
-        .unwrap()
-        .then((res) => {
-          if (res.result === "success") {
-            router.replace("/"); // Home page
-          } else {
-            actions.switch_segment(
-              res.result === "suspended"
-                ? "suspended"
-                : res.result === "held_for_deletion"
-                ? "deletion"
-                : // TODO: Implement deactivated page (+ add bypass=true to deleted and deactivated pages)
-                res.result === "deactivated"
-                ? "deactivated"
-                : "email_confirmation"
-            );
-          }
-        })
-        .catch((e) => toast(e?.data?.error || "Could not log you in", "error"));
-    }
-  };
+  const handle_submit: SubmitHandler<LoginSchema> = React.useCallback(
+    (values) => {
+      actions.set_login_data(values);
+
+      if (on_submit) {
+        on_submit(values);
+      } else {
+        mutate_login(values)
+          .unwrap()
+          .then((res) => {
+            if (res.result === "success") {
+              router.replace("/"); // Home page
+            } else {
+              actions.switch_segment(
+                res.result === "suspended"
+                  ? "suspended"
+                  : res.result === "held_for_deletion"
+                  ? "deletion"
+                  : res.result === "deactivated"
+                  ? "deactivated"
+                  : "email_confirmation"
+              );
+            }
+          })
+          .catch((e) =>
+            toast(e?.data?.error || "Could not log you in", "error")
+          );
+      }
+    },
+    [actions, mutate_login, on_submit, router, toast]
+  );
 
   return (
     <Form<LoginSchema>

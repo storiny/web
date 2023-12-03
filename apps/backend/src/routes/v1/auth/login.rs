@@ -102,7 +102,7 @@ async fn post(
 
     let pg_pool = &data.db_pool;
     let mut txn = pg_pool.begin().await?;
-    let should_bypass = query.bypass.is_some();
+    let should_bypass = query.bypass == Some("true".to_string());
     let query_result = sqlx::query(
         r#"
         SELECT

@@ -18,6 +18,7 @@ pub mod reply_likes;
 pub mod reports;
 pub mod stories;
 pub mod story_likes;
+pub mod story_reads;
 pub mod story_tags;
 pub mod tag_followers;
 pub mod tags;

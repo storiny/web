@@ -232,6 +232,12 @@ async fn enter_realm(
             .user_id
     };
 
+    let mut realm_guard = realm_map
+        .async_lock(story_id.clone(), AsyncLimit::no_limit())
+        .await
+        // This should never throw
+        .map_err(|_| EnterRealmError::Internal)?;
+
     let mut txn = db_pool
         .begin()
         .await
@@ -257,12 +263,6 @@ async fn enter_realm(
             EnterRealmError::Internal
         }
     })?;
-
-    let mut realm_guard = realm_map
-        .async_lock(story_id.clone(), AsyncLimit::no_limit())
-        .await
-        // This should never throw
-        .map_err(|_| EnterRealmError::Internal)?;
 
     if let Some(realm) = realm_guard.value() {
         txn.commit().await.map_err(|_| EnterRealmError::Internal)?;
@@ -519,6 +519,14 @@ pub async fn start_realms_server(
                     }))
                 },
             ))
+        .with(if config.is_dev {
+            warp::cors().allow_any_origin()
+        } else {
+            warp::cors()
+                .allow_origin(&config.web_server_url)
+                .allow_methods(vec!["OPTIONS", "GET"])
+        })
+        .with(warp::compression::gzip())
         .recover(handle_rejection);
 
     let mut stream = signal(SignalKind::terminate()).unwrap();

@@ -281,7 +281,7 @@ mod tests {
         test_grpc_service(
             pool,
             false,
-            Box::new(|mut client, _, _, _| async move {
+            Box::new(|mut client, pool, _, _| async move {
                 let response = client
                     .get_story(Request::new(GetStoryRequest {
                         id_or_slug: 3_i64.to_string(),
@@ -290,6 +290,21 @@ mod tests {
                     .await;
 
                 assert!(response.is_ok());
+
+                // Should increment the `view_count`
+                let result = sqlx::query(
+                    r#"
+                    SELECT view_count
+                    FROM stories
+                    WHERE id = $1
+                    "#,
+                )
+                .bind(3_i64)
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.get::<i64, _>("view_count"), 1_i64);
             }),
         )
         .await;
@@ -324,6 +339,21 @@ mod tests {
                     .await;
 
                 assert!(response.is_ok());
+
+                // Should not increment the `view_count`
+                let result = sqlx::query(
+                    r#"
+                    SELECT view_count
+                    FROM stories
+                    WHERE id = $1
+                    "#,
+                )
+                .bind(3_i64)
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.get::<i64, _>("view_count"), 0);
             }),
         )
         .await;
@@ -358,6 +388,21 @@ mod tests {
                     .await;
 
                 assert!(response.is_ok());
+
+                // Should not increment the `view_count`
+                let result = sqlx::query(
+                    r#"
+                    SELECT view_count
+                    FROM stories
+                    WHERE id = $1
+                    "#,
+                )
+                .bind(3_i64)
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.get::<i64, _>("view_count"), 0);
             }),
         )
         .await;
@@ -368,7 +413,7 @@ mod tests {
         test_grpc_service(
             pool,
             false,
-            Box::new(|mut client, _, _, _| async move {
+            Box::new(|mut client, pool, _, _| async move {
                 let response = client
                     .get_story(Request::new(GetStoryRequest {
                         id_or_slug: "some-story".to_string(),
@@ -377,6 +422,21 @@ mod tests {
                     .await;
 
                 assert!(response.is_ok());
+
+                // Should increment the `view_count`
+                let result = sqlx::query(
+                    r#"
+                    SELECT view_count
+                    FROM stories
+                    WHERE slug = $1
+                    "#,
+                )
+                .bind("some-story")
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.get::<i64, _>("view_count"), 1_i64);
             }),
         )
         .await;
@@ -411,6 +471,21 @@ mod tests {
                     .await;
 
                 assert!(response.is_ok());
+
+                // Should not increment the `view_count`
+                let result = sqlx::query(
+                    r#"
+                    SELECT view_count
+                    FROM stories
+                    WHERE slug = $1
+                    "#,
+                )
+                .bind("some-story")
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.get::<i64, _>("view_count"), 0);
             }),
         )
         .await;
@@ -445,6 +520,21 @@ mod tests {
                     .await;
 
                 assert!(response.is_ok());
+
+                // Should increment the `view_count`
+                let result = sqlx::query(
+                    r#"
+                    SELECT view_count
+                    FROM stories
+                    WHERE slug = $1
+                    "#,
+                )
+                .bind("some-story")
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.get::<i64, _>("view_count"), 0);
             }),
         )
         .await;
@@ -457,7 +547,7 @@ mod tests {
         test_grpc_service(
             pool,
             true,
-            Box::new(|mut client, db_pool, _, user_id| async move {
+            Box::new(|mut client, pool, _, user_id| async move {
                 let response = client
                     .get_story(Request::new(GetStoryRequest {
                         id_or_slug: 3_i64.to_string(),
@@ -477,11 +567,26 @@ mod tests {
                     "#,
                 )
                 .bind(user_id.unwrap())
-                .fetch_one(&db_pool)
+                .fetch_one(&pool)
                 .await
                 .unwrap();
 
                 assert!(result.get::<bool, _>("exists"));
+
+                // Should increment the `view_count`
+                let result = sqlx::query(
+                    r#"
+                    SELECT view_count
+                    FROM stories
+                    WHERE id = $1
+                    "#,
+                )
+                .bind(3_i64)
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.get::<i64, _>("view_count"), 1_i64);
             }),
         )
         .await;
@@ -516,6 +621,21 @@ mod tests {
                     .await;
 
                 assert!(response.is_ok());
+
+                // Should not increment the `view_count`
+                let result = sqlx::query(
+                    r#"
+                    SELECT view_count
+                    FROM stories
+                    WHERE id = $1
+                    "#,
+                )
+                .bind(3_i64)
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.get::<i64, _>("view_count"), 0);
             }),
         )
         .await;
@@ -550,6 +670,21 @@ mod tests {
                     .await;
 
                 assert!(response.is_ok());
+
+                // Should not increment the `view_count`
+                let result = sqlx::query(
+                    r#"
+                    SELECT view_count
+                    FROM stories
+                    WHERE id = $1
+                    "#,
+                )
+                .bind(3_i64)
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.get::<i64, _>("view_count"), 0);
             }),
         )
         .await;
@@ -560,7 +695,7 @@ mod tests {
         test_grpc_service(
             pool,
             true,
-            Box::new(|mut client, _, _, user_id| async move {
+            Box::new(|mut client, pool, _, user_id| async move {
                 let response = client
                     .get_story(Request::new(GetStoryRequest {
                         id_or_slug: "some-story".to_string(),
@@ -569,6 +704,21 @@ mod tests {
                     .await;
 
                 assert!(response.is_ok());
+
+                // Should increment the `view_count`
+                let result = sqlx::query(
+                    r#"
+                    SELECT view_count
+                    FROM stories
+                    WHERE slug = $1
+                    "#,
+                )
+                .bind("some-story")
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.get::<i64, _>("view_count"), 1_i64);
             }),
         )
         .await;
@@ -603,6 +753,21 @@ mod tests {
                     .await;
 
                 assert!(response.is_ok());
+
+                // Should not increment the `view_count`
+                let result = sqlx::query(
+                    r#"
+                    SELECT view_count
+                    FROM stories
+                    WHERE slug = $1
+                    "#,
+                )
+                .bind("some-story")
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.get::<i64, _>("view_count"), 0);
             }),
         )
         .await;
@@ -637,6 +802,21 @@ mod tests {
                     .await;
 
                 assert!(response.is_ok());
+
+                // Should not increment the `view_count`
+                let result = sqlx::query(
+                    r#"
+                    SELECT view_count
+                    FROM stories
+                    WHERE slug = $1
+                    "#,
+                )
+                .bind("some-story")
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.get::<i64, _>("view_count"), 0);
             }),
         )
         .await;

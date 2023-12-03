@@ -10,19 +10,20 @@ export interface LoginResponse {
     | "success" // Login success
     | "suspended" // Account suspended
     | "held_for_deletion" // User requested deletion
+    | "deactivated" // User has deactivated their account
     | "verification_pending"; // Pending email verification
 }
 
-export type LoginPayload = LoginSchema;
+export type LoginPayload = LoginSchema & { bypass?: boolean };
 
 export const { useLoginMutation: use_login_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
       login: builder.mutation<LoginResponse, LoginPayload>({
-        query: (body) => ({
-          url: `/${SEGMENT}`,
+        query: ({ bypass, ...rest }) => ({
+          url: `/${SEGMENT}?bypass=${Boolean(bypass)}`,
           method: "POST",
-          body,
+          body: rest,
           headers: {
             "Content-type": ContentType.JSON
           }
