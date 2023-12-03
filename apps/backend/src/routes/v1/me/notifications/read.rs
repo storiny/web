@@ -103,7 +103,7 @@ mod tests {
         assert!(res.status().is_success());
 
         // `read_at` should get updated in the database
-        let asset = sqlx::query(
+        let result = sqlx::query(
             r#"
             SELECT read_at FROM notification_outs
             WHERE notified_id = $1 AND notification_id = $2
@@ -114,7 +114,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(asset.get::<Option<OffsetDateTime>, _>("read_at").is_some());
+        assert!(result.get::<Option<OffsetDateTime>, _>("read_at").is_some());
 
         Ok(())
     }

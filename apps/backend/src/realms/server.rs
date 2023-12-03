@@ -523,7 +523,7 @@ pub async fn start_realms_server(
             warp::cors().allow_any_origin()
         } else {
             warp::cors()
-                .allow_origin(&config.web_server_url)
+                .allow_origin(config.web_server_url.to_string())
                 .allow_methods(vec!["OPTIONS", "GET"])
         })
         .with(warp::compression::gzip())
