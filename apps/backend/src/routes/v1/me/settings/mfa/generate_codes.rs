@@ -64,7 +64,7 @@ async fn post(data: web::Data<AppState>, user: Identity) -> Result<HttpResponse,
                         INTO
                             mfa_recovery_codes (code, user_id)
                         SELECT
-                            UNNEST($2::CHAR(8)[]),
+                            UNNEST($2::CHAR(12)[]),
                             $1
                         "#,
                     )
@@ -196,7 +196,7 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind("0".repeat(8))
+        .bind("0".repeat(12))
         .bind(user_id.unwrap())
         .execute(&mut *conn)
         .await?;
@@ -226,7 +226,7 @@ mod tests {
             )
             "#,
         )
-        .bind("0".repeat(8))
+        .bind("0".repeat(12))
         .fetch_one(&mut *conn)
         .await?;
 

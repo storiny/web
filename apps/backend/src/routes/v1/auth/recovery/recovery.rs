@@ -12,6 +12,7 @@ use crate::{
     AppState,
 };
 use actix_web::{
+    http::StatusCode,
     post,
     web,
     HttpResponse,
@@ -58,19 +59,27 @@ async fn post(
     templated_email_job_storage: web::Data<JobStorage<TemplatedEmailJob>>,
 ) -> Result<HttpResponse, AppError> {
     if !EmailAddress::is_valid(&payload.email) {
-        return Ok(HttpResponse::Conflict()
-            .json(FormErrorResponse::new(vec![("email", "Invalid e-mail")])));
+        return Err(FormErrorResponse::new(
+            Some(StatusCode::CONFLICT),
+            vec![("email", "Invalid e-mail")],
+        )
+        .into());
     }
+
+    let pg_pool = &data.db_pool;
+    let mut txn = pg_pool.begin().await?;
 
     match sqlx::query(
         r#"
-        SELECT id FROM users
-        WHERE email = $1
-            AND deleted_at IS NULL AND deactivated_at IS NULL
-        "#,
+SELECT id FROM users
+WHERE email = $1
+    AND
+        deleted_at IS NULL
+        AND deactivated_at IS NULL
+"#,
     )
     .bind(&payload.email)
-    .fetch_one(&data.db_pool)
+    .fetch_one(&mut *txn)
     .await
     {
         Ok(user) => {
@@ -81,27 +90,16 @@ async fn post(
                 .hash_password(&token_id.as_bytes(), &SaltString::generate(&mut OsRng))
             {
                 Ok(hashed_token) => {
-                    let pg_pool = &data.db_pool;
-                    let mut txn = pg_pool.begin().await?;
-
-                    // Delete previous password reset tokens for the user
+                    // Delete previous password reset tokens for the user insert a new one
                     sqlx::query(
                         r#"
-                        DELETE FROM tokens
-                        WHERE type = $1 AND user_id = $2
-                        "#,
-                    )
-                    .bind(TokenType::PasswordReset as i16)
-                    .bind(user.get::<i64, _>("id"))
-                    .execute(&mut *txn)
-                    .await?;
-
-                    // Insert a new password-reset token
-                    sqlx::query(
-                        r#"
-                        INSERT INTO tokens(id, type, user_id, expires_at)
-                        VALUES ($1, $2, $3, $4)
-                        "#,
+WITH deleted_tokens AS (
+    DELETE FROM tokens
+    WHERE type = $2 AND user_id = $3
+)
+INSERT INTO tokens (id, type, user_id, expires_at)
+VALUES ($1, $2, $3, $4)
+"#,
                     )
                     .bind(hashed_token.to_string())
                     .bind(TokenType::PasswordReset as i16)
@@ -112,38 +110,42 @@ async fn post(
 
                     txn.commit().await?;
 
-                    match serde_json::to_string(&ResetPasswordEmailTemplateData {
+                    let template_data = serde_json::to_string(&ResetPasswordEmailTemplateData {
                         link: format!("https://storiny.com/auth/reset-password/{}", token_id),
-                    }) {
-                        Ok(template_data) => {
-                            let mut templated_email_job =
-                                (&*templated_email_job_storage.into_inner()).clone();
+                    })
+                    .map_err(|_| AppError::InternalError)?;
 
-                            let _ = templated_email_job
-                                .push(TemplatedEmailJob {
-                                    destination: (&payload.email).to_string(),
-                                    template: EmailTemplate::PasswordReset,
-                                    template_data,
-                                })
-                                .await;
+                    let mut templated_email_job =
+                        (&*templated_email_job_storage.into_inner()).clone();
 
-                            Ok(HttpResponse::Created().finish())
-                        }
-                        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-                    }
+                    templated_email_job
+                        .push(TemplatedEmailJob {
+                            destination: (&payload.email).to_string(),
+                            template: EmailTemplate::PasswordReset,
+                            template_data,
+                        })
+                        .await
+                        .map_err(|_| AppError::InternalError)?;
+
+                    Ok(HttpResponse::Created().finish())
                 }
                 Err(_) => Ok(HttpResponse::InternalServerError().finish()),
             }
         }
-        Err(kind) => match kind {
-            sqlx::Error::RowNotFound => {
-                Ok(HttpResponse::Conflict().json(FormErrorResponse::new(vec![(
-                    "email",
-                    "Could not find any account associated with this e-mail",
-                )])))
+        Err(error) => {
+            if matches!(error, sqlx::Error::RowNotFound) {
+                Err(FormErrorResponse::new(
+                    Some(StatusCode::CONFLICT),
+                    vec![(
+                        "email",
+                        "Could not find any account associated with this e-mail",
+                    )],
+                )
+                .into())
+            } else {
+                Err(AppError::InternalError)
             }
-            _ => Ok(HttpResponse::InternalServerError().finish()),
-        },
+        }
     }
 }
 

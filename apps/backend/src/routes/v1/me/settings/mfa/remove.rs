@@ -166,7 +166,7 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind("0".repeat(8))
+        .bind("0".repeat(12))
         .bind(user_id.unwrap())
         .execute(&mut *conn)
         .await?;

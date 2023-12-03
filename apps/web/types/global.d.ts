@@ -9,6 +9,7 @@ declare module "little-state-machine" {
       segment: AuthSegment;
     };
     login_data: LoginSchema | null;
+    mfa_code: string | null;
     recovery: {
       email: string;
     };

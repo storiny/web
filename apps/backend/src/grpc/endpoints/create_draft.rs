@@ -32,12 +32,18 @@ pub async fn create_draft(
 
     if !check_resource_limit(&client.redis_pool, ResourceLimit::CreateStory, user_id)
         .await
-        .unwrap_or_default()
+        .map_err(|_| Status::internal("Cache error"))?
     {
         return Err(Status::resource_exhausted(
             "Daily limit exceeded for creating drafts. Try again tomorrow.",
         ));
     }
+
+    let pg_pool = &client.db_pool;
+    let mut txn = pg_pool
+        .begin()
+        .await
+        .map_err(|_| Status::internal("Database error"))?;
 
     match sqlx::query(
         r#"
@@ -47,12 +53,17 @@ pub async fn create_draft(
         "#,
     )
     .bind(&user_id)
-    .fetch_one(&client.db_pool)
+    .fetch_one(&mut *txn)
     .await
     {
         Ok(draft) => {
-            let _ =
-                incr_resource_limit(&client.redis_pool, ResourceLimit::CreateStory, user_id).await;
+            incr_resource_limit(&client.redis_pool, ResourceLimit::CreateStory, user_id)
+                .await
+                .map_err(|_| Status::internal("Cache error"))?;
+
+            txn.commit()
+                .await
+                .map_err(|_| Status::internal("Database error"))?;
 
             Ok(Response::new(CreateDraftResponse {
                 draft_id: draft.get::<i64, _>("id").to_string(),

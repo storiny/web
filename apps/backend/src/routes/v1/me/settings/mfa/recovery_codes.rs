@@ -81,8 +81,8 @@ mod tests {
             "#,
         )
         .bind(user_id.unwrap())
-        .bind("0".repeat(8))
-        .bind("1".repeat(8))
+        .bind("0".repeat(12))
+        .bind("1".repeat(12))
         .execute(&mut *conn)
         .await?;
 
