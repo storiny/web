@@ -24,7 +24,8 @@ export type AuthSegment =
   | `recovery_${RecoverySegment}`
   | `reset_${ResetSegment}`
   | "suspended"
-  | "deletion";
+  | "deletion"
+  | "deactivated";
 
 create_store(
   {
@@ -32,6 +33,7 @@ create_store(
       segment: "base"
     },
     reset_password: { token: null },
+    login_data: null,
     recovery: {
       email: ""
     },

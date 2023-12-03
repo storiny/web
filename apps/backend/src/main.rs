@@ -309,6 +309,10 @@ async fn main() -> io::Result<()> {
                     })
                     .wrap(RequestIdentifier::with_uuid())
                     .wrap(
+                        actix_web::middleware::DefaultHeaders::new()
+                            .add(("x-storiny-api-version", "1")),
+                    )
+                    .wrap(
                         actix_web::middleware::Logger::new(
                             "%{x-request-id}o %a %t \"%r\" %s %b \"%{Referer}i\" %T",
                         )

@@ -7,6 +7,8 @@ use strum::Display;
 pub enum RedisNamespace {
     #[strum(serialize = "s")]
     Session,
+    #[strum(serialize = "r")]
+    ReadingSession,
     #[strum(serialize = "a:l")]
     RateLimit,
     #[strum(serialize = "j")]

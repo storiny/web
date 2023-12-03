@@ -5,6 +5,7 @@ pub mod email_template;
 pub mod image_size;
 pub mod notification_entity_type;
 pub mod pexels;
+pub mod reading_session;
 pub mod redis_namespaces;
 pub mod report_type;
 pub mod reserved_usernames;

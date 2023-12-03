@@ -112,9 +112,16 @@ BEGIN
 	-- Story soft-deleted or unpublished
 	IF ((OLD.deleted_at IS NULL AND NEW.deleted_at IS NOT NULL) OR
 		(OLD.published_at IS NOT NULL AND NEW.published_at IS NULL)) THEN
-		-- Reset `read_count` as a penalty
+		-- Reset `view_count` and `read_count` as a penalty
+		NEW.view_count := 0;
 		NEW.read_count := 0;
 		NEW.edited_at := NULL;
+		-- Also delete all the read analytics data
+		DELETE
+		FROM
+			story_reads
+		WHERE
+			story_id = NEW.id;
 		--
 		-- Decrement `story_count` on user if the story was previously published
 		IF (OLD.published_at IS NOT NULL) THEN

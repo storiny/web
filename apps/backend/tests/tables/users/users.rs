@@ -9,6 +9,7 @@ mod tests {
         Postgres,
         Row,
     };
+    use storiny::constants::sql_states::SqlState;
     use time::OffsetDateTime;
     use uuid::Uuid;
 
@@ -168,7 +169,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with `52002` SQLSTATE
+        // Should reject with the correct SQLSTATE
         assert_eq!(
             result
                 .unwrap_err()
@@ -176,7 +177,7 @@ mod tests {
                 .unwrap()
                 .code()
                 .unwrap(),
-            "52002"
+            SqlState::UsernameCooldown.to_string()
         );
 
         Ok(())

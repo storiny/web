@@ -1,5 +1,6 @@
 .spinner {
   --thickness: 1.75px;
+  --radius: calc(var(--size) / 2 - var(--thickness) / 2);
 
   display: inline-flex;
   align-items: center;
@@ -19,16 +20,16 @@
 }
 
 .track {
-  r: calc(50% - var(--thickness));
+  r: var(--radius);
   fill: transparent;
   stroke-width: var(--thickness);
   stroke: var(--track-bg);
 }
 
 .progress {
-  --length: calc(2 * 3.1416 * calc(50% - var(--thickness)));
+  --length: calc(2 * 3.1416 * var(--radius));
 
-  r: calc(50% - var(--thickness));
+  r: var(--radius);
   fill: transparent;
   stroke-width: var(--thickness);
   stroke: var(--progress-bg);

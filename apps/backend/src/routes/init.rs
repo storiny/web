@@ -190,6 +190,7 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     // Public - Reports
     v1::public::reports::init_routes(cfg);
     // Public - Stories
+    v1::public::stories::read::init_routes(cfg);
     v1::public::stories::comments::init_routes(cfg);
     v1::public::stories::recommendations::init_routes(cfg);
     // Public - Tags

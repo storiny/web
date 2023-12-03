@@ -41,23 +41,23 @@ async fn post(
                 Ok(reply_id) => {
                     match sqlx::query(
                         r#"
-                    WITH
-                        comment AS (SELECT
-                                      id
-                                  FROM
-                                      comments
-                                  WHERE
-                                        user_id = $1
-                                    AND deleted_at IS NULL
-                        )
-                    UPDATE replies
-                    SET
-                        hidden = $3
-                    WHERE
-                          id = $2
-                      AND comment_id = (SELECT id FROM comment)
-                      AND deleted_at IS NULL
-                    "#,
+                        WITH
+                            comment AS (SELECT
+                                          id
+                                      FROM
+                                          comments
+                                      WHERE
+                                            user_id = $1
+                                        AND deleted_at IS NULL
+                            )
+                        UPDATE replies
+                        SET
+                            hidden = $3
+                        WHERE
+                              id = $2
+                          AND comment_id = (SELECT id FROM comment)
+                          AND deleted_at IS NULL
+                        "#,
                     )
                     .bind(user_id)
                     .bind(reply_id)

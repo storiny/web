@@ -4,7 +4,10 @@ mod tests {
         PgPool,
         Row,
     };
-    use storiny::grpc::defs::privacy_settings_def::v1::IncomingFriendRequest;
+    use storiny::{
+        constants::sql_states::SqlState,
+        grpc::defs::privacy_settings_def::v1::IncomingFriendRequest,
+    };
 
     #[sqlx::test(fixtures("user"))]
     async fn can_send_a_friend_request(pool: PgPool) -> sqlx::Result<()> {
@@ -43,7 +46,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with `52000` SQLSTATE
+        // Should reject with the correct SQLSTATE
         assert_eq!(
             result
                 .unwrap_err()
@@ -51,7 +54,7 @@ mod tests {
                 .unwrap()
                 .code()
                 .unwrap(),
-            "52000"
+            SqlState::RelationOverlap.to_string()
         );
 
         Ok(())
@@ -86,7 +89,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with `52001` SQLSTATE
+        // Should reject with the correct SQLSTATE
         assert_eq!(
             result
                 .unwrap_err()
@@ -94,7 +97,7 @@ mod tests {
                 .unwrap()
                 .code()
                 .unwrap(),
-            "52001"
+            SqlState::EntityUnavailable.to_string()
         );
 
         Ok(())
@@ -127,7 +130,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with `52001` SQLSTATE
+        // Should reject with the correct SQLSTATE
         assert_eq!(
             result
                 .unwrap_err()
@@ -135,7 +138,7 @@ mod tests {
                 .unwrap()
                 .code()
                 .unwrap(),
-            "52001"
+            SqlState::EntityUnavailable.to_string()
         );
 
         Ok(())
@@ -168,7 +171,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with `52001` SQLSTATE
+        // Should reject with the correct SQLSTATE
         assert_eq!(
             result
                 .unwrap_err()
@@ -176,7 +179,7 @@ mod tests {
                 .unwrap()
                 .code()
                 .unwrap(),
-            "52001"
+            SqlState::EntityUnavailable.to_string()
         );
 
         Ok(())
@@ -209,7 +212,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with `52001` SQLSTATE
+        // Should reject with the correct SQLSTATE
         assert_eq!(
             result
                 .unwrap_err()
@@ -217,7 +220,7 @@ mod tests {
                 .unwrap()
                 .code()
                 .unwrap(),
-            "52001"
+            SqlState::EntityUnavailable.to_string()
         );
 
         Ok(())
@@ -1030,7 +1033,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with `51000` SQLSTATE
+        // Should reject with the correct SQLSTATE
         assert_eq!(
             result
                 .unwrap_err()
@@ -1038,7 +1041,7 @@ mod tests {
                 .unwrap()
                 .code()
                 .unwrap(),
-            "51000"
+            SqlState::ReceiverNotAcceptingFriendRequest.to_string()
         );
 
         Ok(())
@@ -1074,7 +1077,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with `51000` SQLSTATE
+        // Should reject with the correct SQLSTATE
         assert_eq!(
             result
                 .unwrap_err()
@@ -1082,7 +1085,7 @@ mod tests {
                 .unwrap()
                 .code()
                 .unwrap(),
-            "51000"
+            SqlState::ReceiverNotAcceptingFriendRequest.to_string()
         );
 
         Ok(())
@@ -1118,7 +1121,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with `51000` SQLSTATE
+        // Should reject with the correct SQLSTATE
         assert_eq!(
             result
                 .unwrap_err()
@@ -1126,7 +1129,7 @@ mod tests {
                 .unwrap()
                 .code()
                 .unwrap(),
-            "51000"
+            SqlState::ReceiverNotAcceptingFriendRequest.to_string()
         );
 
         Ok(())
@@ -1164,7 +1167,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with `51000` SQLSTATE
+        // Should reject with the correct SQLSTATE
         assert_eq!(
             result
                 .unwrap_err()
@@ -1172,7 +1175,7 @@ mod tests {
                 .unwrap()
                 .code()
                 .unwrap(),
-            "51000"
+            SqlState::ReceiverNotAcceptingFriendRequest.to_string()
         );
 
         Ok(())
@@ -1243,7 +1246,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with `51000` SQLSTATE
+        // Should reject with the correct SQLSTATE
         assert_eq!(
             result
                 .unwrap_err()
@@ -1251,7 +1254,7 @@ mod tests {
                 .unwrap()
                 .code()
                 .unwrap(),
-            "51000"
+            SqlState::ReceiverNotAcceptingFriendRequest.to_string()
         );
 
         Ok(())
@@ -1289,7 +1292,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with `51000` SQLSTATE
+        // Should reject with the correct SQLSTATE
         assert_eq!(
             result
                 .unwrap_err()
@@ -1297,7 +1300,7 @@ mod tests {
                 .unwrap()
                 .code()
                 .unwrap(),
-            "51000"
+            SqlState::ReceiverNotAcceptingFriendRequest.to_string()
         );
 
         Ok(())
@@ -1333,7 +1336,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with `51000` SQLSTATE
+        // Should reject with the correct SQLSTATE
         assert_eq!(
             result
                 .unwrap_err()
@@ -1341,7 +1344,7 @@ mod tests {
                 .unwrap()
                 .code()
                 .unwrap(),
-            "51000"
+            SqlState::ReceiverNotAcceptingFriendRequest.to_string()
         );
 
         Ok(())
