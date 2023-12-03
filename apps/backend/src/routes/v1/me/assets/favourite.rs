@@ -33,7 +33,7 @@ async fn post(
                     match sqlx::query(
                         r#"
                     UPDATE assets
-                    SET favourited_at = now()
+                    SET favourited_at = NOW()
                     WHERE id = $1 AND user_id = $2
                     "#,
                     )

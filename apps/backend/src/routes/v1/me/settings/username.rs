@@ -82,7 +82,7 @@ async fn patch(
                                         UPDATE users
                                         SET
                                             username = $2,
-                                            username_modified_at = now()
+                                            username_modified_at = NOW()
                                         WHERE id = $1
                                     )
                                 INSERT
@@ -200,7 +200,7 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password)
+            INSERT INTO users (id, name, username, email, password)
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -300,7 +300,7 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password)
+            INSERT INTO users (id, name, username, email, password)
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -339,7 +339,7 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password)
+            INSERT INTO users (id, name, username, email, password)
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -356,7 +356,7 @@ mod tests {
         // Insert another user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email)
+            INSERT INTO users (id, name, username, email)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -389,7 +389,7 @@ mod tests {
         // Should not insert an account activity
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM account_activities
                 WHERE user_id = $1 AND type = $2
             )
@@ -414,8 +414,8 @@ mod tests {
         // Insert the user with recent `username_modified_at`
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password, username_modified_at)
-            VALUES ($1, $2, $3, $4, $5, now())
+            INSERT INTO users (id, name, username, email, password, username_modified_at)
+            VALUES ($1, $2, $3, $4, $5, NOW())
             "#,
         )
         .bind(user_id.unwrap())

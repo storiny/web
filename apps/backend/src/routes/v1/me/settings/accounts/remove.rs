@@ -175,7 +175,7 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password, login_apple_id, login_google_id)
+            INSERT INTO users (id, name, username, email, password, login_apple_id, login_google_id)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
             "#,
         )
@@ -323,7 +323,7 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password, login_apple_id, login_google_id)
+            INSERT INTO users (id, name, username, email, password, login_apple_id, login_google_id)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
             "#,
         )

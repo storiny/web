@@ -79,7 +79,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(user_id.unwrap())
@@ -100,7 +100,7 @@ mod tests {
         // Friend should not be present in the database
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM friends
                 WHERE transmitter_id = $1 AND receiver_id = $2
             )
@@ -167,7 +167,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE friends
-            SET accepted_at = now()
+            SET accepted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )

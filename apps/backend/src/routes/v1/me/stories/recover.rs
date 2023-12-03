@@ -86,8 +86,8 @@ mod tests {
         // Insert a soft-deleted story
         let result = sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, deleted_at, published_at)
-            VALUES ($1, $2, now(), now())
+            INSERT INTO stories (id, user_id, deleted_at, published_at)
+            VALUES ($1, $2, NOW(), NOW())
             "#,
         )
         .bind(2_i64)
@@ -133,8 +133,8 @@ mod tests {
         // Insert a draft
         let result = sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, deleted_at)
-            VALUES ($1, $2, now())
+            INSERT INTO stories (id, user_id, deleted_at)
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(2_i64)
@@ -164,7 +164,7 @@ mod tests {
         // Insert a non-deleted story
         let result = sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id)
+            INSERT INTO stories (id, user_id)
             VALUES ($1, $2)
             "#,
         )

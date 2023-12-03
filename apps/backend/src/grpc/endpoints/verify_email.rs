@@ -108,7 +108,7 @@ mod tests {
                 // Insert token
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO tokens(id, type, user_id, expires_at)
+                    INSERT INTO tokens (id, type, user_id, expires_at)
                     VALUES ($1, $2, $3, $4)
                     "#,
                 )
@@ -157,7 +157,7 @@ mod tests {
                 // Insert an expired token
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO tokens(id, type, user_id, expires_at)
+                    INSERT INTO tokens (id, type, user_id, expires_at)
                     VALUES ($1, $2, $3, $4)
                     "#,
                 )

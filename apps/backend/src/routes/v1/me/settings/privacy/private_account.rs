@@ -228,7 +228,7 @@ mod tests {
         // Should not insert an account activity
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM account_activities
                 WHERE user_id = $1 AND type = $2
             )
@@ -267,7 +267,7 @@ mod tests {
         // Should not insert an account activity
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM account_activities
                 WHERE user_id = $1 AND type = $2
             )

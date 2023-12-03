@@ -32,6 +32,7 @@ pub mod models;
 pub mod oauth;
 pub mod realms;
 pub mod routes;
+pub mod telemetry;
 pub mod utils;
 
 #[cfg(test)]

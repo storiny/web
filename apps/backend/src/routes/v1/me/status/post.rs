@@ -153,7 +153,7 @@ mod tests {
         // Status should be present in the database
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM user_statuses
                 WHERE user_id = $1
             )

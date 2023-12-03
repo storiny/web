@@ -151,7 +151,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email, password, email_verified, mfa_enabled)
+            INSERT INTO users (name, username, email, password, email_verified, mfa_enabled)
             VALUES ($1, $2, $3, $4, TRUE, TRUE)
             "#,
         )
@@ -192,7 +192,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email, password, email_verified, mfa_enabled)
+            INSERT INTO users (name, username, email, password, email_verified, mfa_enabled)
             VALUES ($1, $2, $3, $4, TRUE, FALSE)
             "#,
         )
@@ -231,7 +231,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email, password)
+            INSERT INTO users (name, username, email, password)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -268,7 +268,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email)
+            INSERT INTO users (name, username, email)
             VALUES ($1, $2, $3)
             "#,
         )
@@ -304,7 +304,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email, password)
+            INSERT INTO users (name, username, email, password)
             VALUES ($1, $2, $3, $4)
             "#,
         )

@@ -855,7 +855,7 @@ pub mod tests {
                     VALUES ($1, $2, $3, $4)
                 )
                 INSERT INTO stories (id, user_id, deleted_at)
-                VALUES ($5, $1, now())
+                VALUES ($5, $1, NOW())
                 "#,
             )
             .bind(1_i64)
@@ -920,7 +920,7 @@ pub mod tests {
                     VALUES ($1, $2, $3, $4)
                 )
                 INSERT INTO stories (id, user_id, published_at)
-                VALUES ($5, $1, now())
+                VALUES ($5, $1, NOW())
                 "#,
             )
             .bind(1_i64)

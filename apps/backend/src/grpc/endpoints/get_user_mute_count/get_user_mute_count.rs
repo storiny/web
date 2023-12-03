@@ -128,7 +128,7 @@ mod tests {
                 let result = sqlx::query(
                     r#"
                     UPDATE mutes
-                    SET deleted_at = now()
+                    SET deleted_at = NOW()
                     WHERE muted_id = $1
                     "#,
                 )

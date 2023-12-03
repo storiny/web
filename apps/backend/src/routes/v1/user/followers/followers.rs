@@ -528,7 +528,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE relations
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE follower_id = $1 AND followed_id = $2
             "#,
         )
@@ -835,7 +835,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE relations
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE follower_id = $1 AND followed_id = $2
             "#,
         )

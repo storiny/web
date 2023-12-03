@@ -440,7 +440,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE friends
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )
@@ -535,7 +535,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE friends
-            SET accepted_at = now()
+            SET accepted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )

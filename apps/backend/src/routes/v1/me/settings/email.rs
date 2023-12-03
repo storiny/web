@@ -195,7 +195,7 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password)
+            INSERT INTO users (id, name, username, email, password)
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -290,7 +290,7 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password)
+            INSERT INTO users (id, name, username, email, password)
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -329,7 +329,7 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password)
+            INSERT INTO users (id, name, username, email, password)
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -346,7 +346,7 @@ mod tests {
         // Insert another user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email)
+            INSERT INTO users (id, name, username, email)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -375,7 +375,7 @@ mod tests {
         // Should not insert an account activity
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM account_activities
                 WHERE user_id = $1 AND type = $2
             )

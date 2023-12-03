@@ -28,7 +28,7 @@ async fn post(
                 match sqlx::query(
                     r#"
                     UPDATE notification_outs
-                    SET read_at = now()
+                    SET read_at = NOW()
                     WHERE
                         notified_id = $1
                         AND notification_id = $2

@@ -54,7 +54,7 @@ async fn patch(
                     match sqlx::query(
                         r#"
                     UPDATE replies
-                    SET content = $1, rendered_content = $2, edited_at = now()
+                    SET content = $1, rendered_content = $2, edited_at = NOW()
                     WHERE user_id = $3 AND id = $4 AND deleted_at IS NULL
                     "#,
                     )
@@ -173,7 +173,7 @@ mod tests {
         let update_result = sqlx::query(
             r#"
             UPDATE replies
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )

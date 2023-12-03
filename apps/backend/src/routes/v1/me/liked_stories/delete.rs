@@ -94,7 +94,7 @@ mod tests {
         // Story like should not be present in the database
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM story_likes
                 WHERE user_id = $1 AND story_id = $2
             )

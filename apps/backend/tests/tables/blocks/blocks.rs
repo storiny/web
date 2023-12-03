@@ -35,7 +35,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -76,7 +76,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deactivated_at = now()
+            SET deactivated_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -117,7 +117,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -158,7 +158,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deactivated_at = now()
+            SET deactivated_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -226,7 +226,7 @@ mod tests {
         // Should delete the followed relation
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM relations
                 WHERE follower_id = $1 AND followed_id = $2
             )
@@ -277,7 +277,7 @@ mod tests {
         // Should delete the followed relation
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM relations
                 WHERE follower_id = $1 AND followed_id = $2
             )
@@ -326,7 +326,7 @@ mod tests {
         // Should delete the follower relation
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM relations
                 WHERE follower_id = $1 AND followed_id = $2
             )
@@ -377,7 +377,7 @@ mod tests {
         // Should delete the follower relation
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM relations
                 WHERE follower_id = $1 AND followed_id = $2
             )
@@ -428,7 +428,7 @@ mod tests {
         // Should delete the friend relation
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM friends
                 WHERE transmitter_id = $1 AND receiver_id = $2
             )
@@ -479,7 +479,7 @@ mod tests {
         // Should delete the friend relation
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM friends
                 WHERE transmitter_id = $1 AND receiver_id = $2
             )
@@ -528,7 +528,7 @@ mod tests {
         // Should delete the friend relation
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM friends
                 WHERE transmitter_id = $1 AND receiver_id = $2
             )
@@ -579,7 +579,7 @@ mod tests {
         // Should delete the friend relation
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM friends
                 WHERE transmitter_id = $1 AND receiver_id = $2
             )

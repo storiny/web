@@ -13,7 +13,6 @@ actix-extensible-rate-limit = { version = "0.2.1", features = ["redis"] }
 actix-files = "0.6.2"
 actix-http = "3.4.0"
 actix-multipart = "0.6.1"
-actix-request-identifier = "4.1.0"
 actix-service = "2.0.2"
 actix-utils = "3.0.1"
 actix-web = { version = "4.4.0", features = ["cookies", "secure-cookies", "__compress"] }
@@ -34,8 +33,6 @@ deadpool-redis = "0.13.0"
 derive_more = "0.99.17"
 dominant_color = "0.4.0"
 dotenv = "0.15.0"
-email_address = "0.2.4"
-env_logger = "0.10.0"
 envy = "0.4.2"
 futures = "0.3.29"
 futures-core = "0.3.28"
@@ -45,7 +42,6 @@ image = { version = "0.24.7", default-features = false, features = ["gif", "png"
 itertools = "0.12.0"
 lazy_static = "1.4.0"
 lockable = { version = "0.0.6", default-features = false }
-log = "0.4.20"
 lz-str = "0.2.1"
 markdown = "1.0.0-alpha.14"
 maxminddb = "0.23.0"
@@ -82,6 +78,10 @@ warp = { version = "0.3.6", default-features = false, features = ["async-compres
 y-sync = { version = "0.4.0", features = ["net"] }
 yrs = "0.17.1"
 yrs-warp = "0.7.0"
+tracing = { version = "0.1.40", features = ["attributes"] }
+tracing-bunyan-formatter = "0.3.9"
+tracing-log = "0.2.0"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 
 [dev-dependencies]
 storiny_macros = { version = "0.1.0", path = "macros" }

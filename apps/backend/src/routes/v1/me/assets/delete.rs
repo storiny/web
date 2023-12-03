@@ -135,7 +135,7 @@ mod tests {
         // Should be deleted from the database
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM assets
                 WHERE id = $1
             )

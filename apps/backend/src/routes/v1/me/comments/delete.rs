@@ -100,7 +100,7 @@ mod tests {
         // Comment should not be present in the database
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM comments
                 WHERE id = $1
             )

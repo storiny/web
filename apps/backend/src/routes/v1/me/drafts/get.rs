@@ -241,7 +241,7 @@ mod tests {
         // Insert some drafts
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories(user_id)
+            INSERT INTO stories (user_id)
             VALUES ($1), ($1)
             "#,
         )
@@ -275,7 +275,7 @@ mod tests {
         // Insert some pending drafts
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories(user_id)
+            INSERT INTO stories (user_id)
             VALUES ($1), ($1)
             "#,
         )
@@ -309,8 +309,8 @@ mod tests {
         // Insert some deleted drafts
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories(user_id, deleted_at)
-            VALUES ($1, now()), ($1, now())
+            INSERT INTO stories (user_id, deleted_at)
+            VALUES ($1, NOW()), ($1, NOW())
             "#,
         )
         .bind(user_id.unwrap())
@@ -343,7 +343,7 @@ mod tests {
         // Insert some pending drafts
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id)
+            INSERT INTO stories (id, user_id)
             VALUES ($1, $2)
             "#,
         )
@@ -354,7 +354,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id)
+            INSERT INTO stories (id, user_id)
             VALUES ($1, $2)
             "#,
         )
@@ -387,7 +387,7 @@ mod tests {
         // Insert some pending drafts
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id)
+            INSERT INTO stories (id, user_id)
             VALUES ($1, $2)
             "#,
         )
@@ -398,7 +398,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id)
+            INSERT INTO stories (id, user_id)
             VALUES ($1, $2)
             "#,
         )
@@ -431,8 +431,8 @@ mod tests {
         // Insert some deleted drafts
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, deleted_at)
-            VALUES ($1, $2, now())
+            INSERT INTO stories (id, user_id, deleted_at)
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(2_i64)
@@ -442,8 +442,8 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, deleted_at)
-            VALUES ($1, $2, now())
+            INSERT INTO stories (id, user_id, deleted_at)
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(3_i64)
@@ -475,8 +475,8 @@ mod tests {
         // Insert some deleted drafts
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, deleted_at)
-            VALUES ($1, $2, now())
+            INSERT INTO stories (id, user_id, deleted_at)
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(2_i64)
@@ -486,8 +486,8 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, deleted_at)
-            VALUES ($1, $2, now())
+            INSERT INTO stories (id, user_id, deleted_at)
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(3_i64)
@@ -519,7 +519,7 @@ mod tests {
         // Insert some pending drafts
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories(title, user_id)
+            INSERT INTO stories (title, user_id)
             VALUES ($1, $3), ($2, $3)
             "#,
         )
@@ -558,8 +558,8 @@ mod tests {
         // Insert some deleted drafts
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories(title, user_id, deleted_at)
-            VALUES ($1, $3, now()), ($2, $3, now())
+            INSERT INTO stories (title, user_id, deleted_at)
+            VALUES ($1, $3, NOW()), ($2, $3, NOW())
             "#,
         )
         .bind("one")
@@ -597,7 +597,7 @@ mod tests {
         // Insert some pending drafts
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id)
+            INSERT INTO stories (id, user_id)
             VALUES ($1, $3), ($2, $3)
             "#,
         )
@@ -627,7 +627,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -690,8 +690,8 @@ mod tests {
         // Insert some deleted drafts
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, deleted_at)
-            VALUES ($1, $3, now()), ($2, $3, now())
+            INSERT INTO stories (id, user_id, deleted_at)
+            VALUES ($1, $3, NOW()), ($2, $3, NOW())
             "#,
         )
         .bind(2_i64)
@@ -748,7 +748,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )

@@ -131,7 +131,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE users
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -163,7 +163,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE users
-            SET deactivated_at = now()
+            SET deactivated_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -222,7 +222,7 @@ mod tests {
             // Mute should be present in the database
             let result = sqlx::query(
                 r#"
-                SELECT EXISTS(
+                SELECT EXISTS (
                     SELECT 1 FROM mutes
                     WHERE muter_id = $1 AND muted_id = $2
                 )

@@ -155,7 +155,7 @@ async fn post(
                                     r#"
                                     UPDATE stories
                                     SET
-                                        published_at = now(),
+                                        published_at = NOW(),
                                         slug = $3
                                     WHERE
                                         user_id = $1
@@ -254,7 +254,7 @@ async fn put(
                                     WHERE story_id = $2
                                 )
                                 UPDATE stories
-                                SET edited_at = now()
+                                SET edited_at = NOW()
                                 WHERE
                                     user_id = $1
                                     AND id = $2
@@ -348,7 +348,7 @@ mod tests {
         // Insert a draft
         let result = sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id)
+            INSERT INTO stories (id, user_id)
             VALUES ($1, $2)
             "#,
         )
@@ -438,8 +438,8 @@ mod tests {
         // Insert a published story
         let result = sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, published_at)
-            VALUES ($1, $2, now())
+            INSERT INTO stories (id, user_id, published_at)
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(2_i64)
@@ -470,8 +470,8 @@ mod tests {
         // Insert a soft-deleted draft
         let result = sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, deleted_at)
-            VALUES ($1, $2, now())
+            INSERT INTO stories (id, user_id, deleted_at)
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(2_i64)
@@ -522,8 +522,8 @@ mod tests {
         let result = sqlx::query(
             r#"
             WITH inserted_story AS (
-                INSERT INTO stories(id, user_id, published_at)
-                VALUES ($1, $2, now())
+                INSERT INTO stories (id, user_id, published_at)
+                VALUES ($1, $2, NOW())
                 RETURNING id
             )
             INSERT INTO documents (story_id, is_editable)
@@ -576,8 +576,8 @@ mod tests {
         // Insert a published story
         let result = sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, published_at)
-            VALUES ($1, $2, now())
+            INSERT INTO stories (id, user_id, published_at)
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(2_i64)
@@ -608,7 +608,7 @@ mod tests {
         // Insert an unpublished story
         let result = sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id)
+            INSERT INTO stories (id, user_id)
             VALUES ($1, $2)
             "#,
         )
@@ -640,8 +640,8 @@ mod tests {
         // Insert a soft-deleted story
         let result = sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, deleted_at, published_at)
-            VALUES ($1, $2, now(), now())
+            INSERT INTO stories (id, user_id, deleted_at, published_at)
+            VALUES ($1, $2, NOW(), NOW())
             "#,
         )
         .bind(2_i64)

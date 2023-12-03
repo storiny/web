@@ -127,7 +127,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE users
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -159,7 +159,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE users
-            SET deactivated_at = now()
+            SET deactivated_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -218,7 +218,7 @@ mod tests {
             // Block should be present in the database
             let result = sqlx::query(
                 r#"
-                SELECT EXISTS(
+                SELECT EXISTS (
                     SELECT 1 FROM blocks
                     WHERE blocker_id = $1 AND blocked_id = $2
                 )

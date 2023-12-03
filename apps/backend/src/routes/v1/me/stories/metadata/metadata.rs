@@ -123,7 +123,7 @@ async fn patch(
                     if payload.preview_image.is_some() {
                         let result = sqlx::query(
                             r#"
-                            SELECT EXISTS(
+                            SELECT EXISTS (
                                 SELECT 1 FROM assets
                                 WHERE
                                     user_id = $1
@@ -579,7 +579,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )

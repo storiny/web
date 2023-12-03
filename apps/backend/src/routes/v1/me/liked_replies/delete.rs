@@ -94,7 +94,7 @@ mod tests {
         // Reply like should not be present in the database
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM reply_likes
                 WHERE user_id = $1 AND reply_id = $2
             )

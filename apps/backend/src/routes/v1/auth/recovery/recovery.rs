@@ -18,6 +18,7 @@ use actix_web::{
     HttpResponse,
 };
 use actix_web_validator::Json;
+use anyhow::Context;
 use apalis::prelude::Storage;
 use argon2::{
     password_hash::{
@@ -27,7 +28,6 @@ use argon2::{
     Argon2,
     PasswordHasher,
 };
-use email_address::EmailAddress;
 use nanoid::nanoid;
 use serde::{
     Deserialize,
@@ -53,23 +53,23 @@ struct ResetPasswordEmailTemplateData {
 }
 
 #[post("/v1/auth/recovery")]
+#[tracing::instrument(
+    name = "POST /v1/auth/recovery",
+    skip_all,
+    fields(
+        email = %payload.email,
+    ),
+    err
+)]
 async fn post(
     payload: Json<Request>,
     data: web::Data<AppState>,
     templated_email_job_storage: web::Data<JobStorage<TemplatedEmailJob>>,
 ) -> Result<HttpResponse, AppError> {
-    if !EmailAddress::is_valid(&payload.email) {
-        return Err(FormErrorResponse::new(
-            Some(StatusCode::CONFLICT),
-            vec![("email", "Invalid e-mail")],
-        )
-        .into());
-    }
-
     let pg_pool = &data.db_pool;
     let mut txn = pg_pool.begin().await?;
 
-    match sqlx::query(
+    let user = sqlx::query(
         r#"
 SELECT id FROM users
 WHERE email = $1
@@ -81,72 +81,65 @@ WHERE email = $1
     .bind(&payload.email)
     .fetch_one(&mut *txn)
     .await
-    {
-        Ok(user) => {
-            let token_id = nanoid!(48);
+    .map_err(|error| {
+        if matches!(error, sqlx::Error::RowNotFound) {
+            AppError::FormError(FormErrorResponse::new(
+                Some(StatusCode::CONFLICT),
+                vec![(
+                    "email",
+                    "Could not find an account associated with this e-mail",
+                )],
+            ))
+        } else {
+            AppError::SqlxError(error)
+        }
+    })?;
 
-            // Generate hash from the token_id
-            match Argon2::default()
-                .hash_password(&token_id.as_bytes(), &SaltString::generate(&mut OsRng))
-            {
-                Ok(hashed_token) => {
-                    // Delete previous password reset tokens for the user insert a new one
-                    sqlx::query(
-                        r#"
-WITH deleted_tokens AS (
+    // Generate a new password reset token.
+
+    let token_id = nanoid!(48);
+    let hashed_token = Argon2::default()
+        .hash_password(&token_id.as_bytes(), &SaltString::generate(&mut OsRng))
+        .map_err(|error| AppError::InternalError(error.to_string()))?;
+
+    sqlx::query(
+        r#"
+WITH deleted_old_tokens AS (
     DELETE FROM tokens
     WHERE type = $2 AND user_id = $3
 )
 INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
-                    )
-                    .bind(hashed_token.to_string())
-                    .bind(TokenType::PasswordReset as i16)
-                    .bind(user.get::<i64, _>("id"))
-                    .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
-                    .execute(&mut *txn)
-                    .await?;
+    )
+    .bind(hashed_token.to_string())
+    .bind(TokenType::PasswordReset as i16)
+    .bind(user.get::<i64, _>("id"))
+    .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
+    .execute(&mut *txn)
+    .await?;
 
-                    txn.commit().await?;
+    txn.commit().await?;
 
-                    let template_data = serde_json::to_string(&ResetPasswordEmailTemplateData {
-                        link: format!("https://storiny.com/auth/reset-password/{}", token_id),
-                    })
-                    .map_err(|_| AppError::InternalError)?;
+    let template_data = serde_json::to_string(&ResetPasswordEmailTemplateData {
+        link: format!("https://storiny.com/auth/reset-password/{}", token_id),
+    })
+    .map_err(|error| {
+        AppError::InternalError(format!("unable to serialize the template data: {error:?}"))
+    })?;
 
-                    let mut templated_email_job =
-                        (&*templated_email_job_storage.into_inner()).clone();
+    let mut templated_email_job = (&*templated_email_job_storage.into_inner()).clone();
 
-                    templated_email_job
-                        .push(TemplatedEmailJob {
-                            destination: (&payload.email).to_string(),
-                            template: EmailTemplate::PasswordReset,
-                            template_data,
-                        })
-                        .await
-                        .map_err(|_| AppError::InternalError)?;
+    templated_email_job
+        .push(TemplatedEmailJob {
+            destination: (&payload.email).to_string(),
+            template: EmailTemplate::PasswordReset,
+            template_data,
+        })
+        .await
+        .map_err(|error| AppError::InternalError(format!("unable to push the job: {error:?}")))?;
 
-                    Ok(HttpResponse::Created().finish())
-                }
-                Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-            }
-        }
-        Err(error) => {
-            if matches!(error, sqlx::Error::RowNotFound) {
-                Err(FormErrorResponse::new(
-                    Some(StatusCode::CONFLICT),
-                    vec![(
-                        "email",
-                        "Could not find any account associated with this e-mail",
-                    )],
-                )
-                .into())
-            } else {
-                Err(AppError::InternalError)
-            }
-        }
-    }
+    Ok(HttpResponse::Created().finish())
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -178,14 +171,14 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Should insert a password reset token into the database
+        // Should insert a password reset token into the database.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
-                SELECT 1 FROM tokens
-                WHERE type = $1    
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM tokens
+    WHERE type = $1    
+)
+"#,
         )
         .bind(TokenType::PasswordReset as i16)
         .fetch_one(&mut *conn)
@@ -197,7 +190,9 @@ mod tests {
     }
 
     #[sqlx::test(fixtures("user"))]
-    async fn can_reject_recovery_request_for_an_invalid_email(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_an_account_recovery_request_for_an_invalid_email(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let app = init_app_for_test(post, pool, false, false, None).await.0;
 
         let req = test::TestRequest::post()
@@ -213,7 +208,7 @@ mod tests {
             res,
             vec![(
                 "email",
-                "Could not find any account associated with this e-mail",
+                "Could not find an account associated with this e-mail",
             )],
         )
         .await;
@@ -228,12 +223,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
 
-        // Insert a password reset token
+        // Insert a password reset token.
         let prev_result = sqlx::query(
             r#"
-            INSERT INTO tokens(id, type, user_id, expires_at)
-            VALUES ($1, $2, $3, $4)
-            "#,
+INSERT INTO tokens (id, type, user_id, expires_at)
+VALUES ($1, $2, $3, $4)
+"#,
         )
         .bind("sample")
         .bind(TokenType::PasswordReset as i16)
@@ -254,14 +249,14 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Should delete the previous token
+        // Should delete the previous token.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
-                SELECT 1 FROM tokens
-                WHERE id = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM tokens
+    WHERE id = $1
+)
+"#,
         )
         .bind("sample")
         .fetch_one(&mut *conn)

@@ -144,7 +144,7 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password, mfa_enabled, mfa_secret)
+            INSERT INTO users (id, name, username, email, password, mfa_enabled, mfa_secret)
             VALUES ($1, $2, $3, $4, $5, TRUE, $6)
             "#,
         )
@@ -205,7 +205,7 @@ mod tests {
         // Should also remove recovery codes
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM mfa_recovery_codes
                 WHERE user_id = $1
             )
@@ -230,7 +230,7 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password)
+            INSERT INTO users (id, name, username, email, password)
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -274,7 +274,7 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password, mfa_enabled, mfa_secret)
+            INSERT INTO users (id, name, username, email, password, mfa_enabled, mfa_secret)
             VALUES ($1, $2, $3, $4, $5, TRUE, $6)
             "#,
         )

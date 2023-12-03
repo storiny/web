@@ -33,8 +33,8 @@ mod tests {
             r#"
             UPDATE stories
             SET
-                first_published_at = now(),
-                deleted_at = now()
+                first_published_at = NOW(),
+                deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -67,7 +67,7 @@ mod tests {
             r#"
             UPDATE stories
             SET
-                first_published_at = now()
+                first_published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -99,7 +99,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )

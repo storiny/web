@@ -475,7 +475,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE tag_followers
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE tag_id = $1 AND user_id = $2
             "#,
         )

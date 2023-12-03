@@ -94,7 +94,7 @@ mod tests {
         // Comment like should not be present in the database
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM comment_likes
                 WHERE user_id = $1 AND comment_id = $2
             )

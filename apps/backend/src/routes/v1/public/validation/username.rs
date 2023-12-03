@@ -39,7 +39,7 @@ async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpR
     // Check for duplicate username
     let username_check = sqlx::query(
         r#"
-        SELECT EXISTS(
+        SELECT EXISTS (
             SELECT 1 FROM users
             WHERE username = $1
         )
@@ -113,7 +113,7 @@ mod tests {
         // Insert a user with a specific username
         let result = sqlx::query(
             r#"
-            INSERT INTO users(name, username, email)
+            INSERT INTO users (name, username, email)
             VALUES ($1, $2, $3)
             "#,
         )

@@ -7,7 +7,7 @@ INSERT INTO friends(transmitter_id, receiver_id)
 UPDATE
     friends
 SET
-    accepted_at = now()
+    accepted_at = NOW()
 WHERE
     transmitter_id = 1
     AND receiver_id = 3

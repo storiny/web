@@ -128,7 +128,7 @@ mod tests {
                 let result = sqlx::query(
                     r#"
                     UPDATE blocks
-                    SET deleted_at = now()
+                    SET deleted_at = NOW()
                     WHERE blocked_id = $1
                     "#,
                 )

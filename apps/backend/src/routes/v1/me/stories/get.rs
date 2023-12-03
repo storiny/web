@@ -309,8 +309,8 @@ mod tests {
         // Insert some stories
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories(user_id, slug, published_at)
-            VALUES ($1, 'sample-story-1', now()), ($1, 'sample-story-2', now())
+            INSERT INTO stories (user_id, slug, published_at)
+            VALUES ($1, 'sample-story-1', NOW()), ($1, 'sample-story-2', NOW())
             "#,
         )
         .bind(user_id.unwrap())
@@ -343,8 +343,8 @@ mod tests {
         // Insert some published stories
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories(user_id, slug, published_at)
-            VALUES ($1, 'sample-story-1', now()), ($1, 'sample-story-2', now())
+            INSERT INTO stories (user_id, slug, published_at)
+            VALUES ($1, 'sample-story-1', NOW()), ($1, 'sample-story-2', NOW())
             "#,
         )
         .bind(user_id.unwrap())
@@ -377,8 +377,8 @@ mod tests {
         // Insert some deleted stories
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories(user_id, first_published_at, deleted_at)
-            VALUES ($1, now(), now()), ($1, now(), now())
+            INSERT INTO stories (user_id, first_published_at, deleted_at)
+            VALUES ($1, NOW(), NOW()), ($1, NOW(), NOW())
             "#,
         )
         .bind(user_id.unwrap())
@@ -411,8 +411,8 @@ mod tests {
         // Insert some published stories
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, slug, published_at)
-            VALUES ($1, $2, 'sample-story-1', now())
+            INSERT INTO stories (id, user_id, slug, published_at)
+            VALUES ($1, $2, 'sample-story-1', NOW())
             "#,
         )
         .bind(2_i64)
@@ -422,8 +422,8 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, slug, published_at)
-            VALUES ($1, $2, 'sample-story-2', now())
+            INSERT INTO stories (id, user_id, slug, published_at)
+            VALUES ($1, $2, 'sample-story-2', NOW())
             "#,
         )
         .bind(3_i64)
@@ -455,8 +455,8 @@ mod tests {
         // Insert some published stories
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, slug, published_at)
-            VALUES ($1, $2, 'sample-story-1', now())
+            INSERT INTO stories (id, user_id, slug, published_at)
+            VALUES ($1, $2, 'sample-story-1', NOW())
             "#,
         )
         .bind(2_i64)
@@ -466,8 +466,8 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, slug, published_at)
-            VALUES ($1, $2, 'sample-story-2', now())
+            INSERT INTO stories (id, user_id, slug, published_at)
+            VALUES ($1, $2, 'sample-story-2', NOW())
             "#,
         )
         .bind(3_i64)
@@ -499,8 +499,8 @@ mod tests {
         // Insert some published stories
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, slug, published_at)
-            VALUES ($1, $2, 'sample-story-1', now())
+            INSERT INTO stories (id, user_id, slug, published_at)
+            VALUES ($1, $2, 'sample-story-1', NOW())
             "#,
         )
         .bind(2_i64)
@@ -510,8 +510,8 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, slug, published_at, read_count)
-            VALUES ($1, $2, 'sample-story-2', now(), 1)
+            INSERT INTO stories (id, user_id, slug, published_at, read_count)
+            VALUES ($1, $2, 'sample-story-2', NOW(), 1)
             "#,
         )
         .bind(3_i64)
@@ -543,8 +543,8 @@ mod tests {
         // Insert some published stories
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, slug, published_at, read_count)
-            VALUES ($1, $2, 'sample-story-1', now(), 1)
+            INSERT INTO stories (id, user_id, slug, published_at, read_count)
+            VALUES ($1, $2, 'sample-story-1', NOW(), 1)
             "#,
         )
         .bind(2_i64)
@@ -554,8 +554,8 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, slug, published_at)
-            VALUES ($1, $2, 'sample-story-2', now())
+            INSERT INTO stories (id, user_id, slug, published_at)
+            VALUES ($1, $2, 'sample-story-2', NOW())
             "#,
         )
         .bind(3_i64)
@@ -587,8 +587,8 @@ mod tests {
         // Insert some published stories
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, slug, published_at)
-            VALUES ($1, $2, 'sample-story-1', now())
+            INSERT INTO stories (id, user_id, slug, published_at)
+            VALUES ($1, $2, 'sample-story-1', NOW())
             "#,
         )
         .bind(2_i64)
@@ -598,8 +598,8 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, slug, published_at, like_count)
-            VALUES ($1, $2, 'sample-story-2', now(), 1)
+            INSERT INTO stories (id, user_id, slug, published_at, like_count)
+            VALUES ($1, $2, 'sample-story-2', NOW(), 1)
             "#,
         )
         .bind(3_i64)
@@ -631,8 +631,8 @@ mod tests {
         // Insert some published stories
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, slug, published_at, like_count)
-            VALUES ($1, $2, 'sample-story-1', now(), 1)
+            INSERT INTO stories (id, user_id, slug, published_at, like_count)
+            VALUES ($1, $2, 'sample-story-1', NOW(), 1)
             "#,
         )
         .bind(2_i64)
@@ -642,8 +642,8 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, slug, published_at)
-            VALUES ($1, $2, 'sample-story-2', now())
+            INSERT INTO stories (id, user_id, slug, published_at)
+            VALUES ($1, $2, 'sample-story-2', NOW())
             "#,
         )
         .bind(3_i64)
@@ -675,8 +675,8 @@ mod tests {
         // Insert some deleted stories
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, first_published_at, deleted_at)
-            VALUES ($1, $2, now(), now())
+            INSERT INTO stories (id, user_id, first_published_at, deleted_at)
+            VALUES ($1, $2, NOW(), NOW())
             "#,
         )
         .bind(2_i64)
@@ -686,8 +686,8 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, first_published_at, deleted_at)
-            VALUES ($1, $2, now(), now())
+            INSERT INTO stories (id, user_id, first_published_at, deleted_at)
+            VALUES ($1, $2, NOW(), NOW())
             "#,
         )
         .bind(3_i64)
@@ -719,8 +719,8 @@ mod tests {
         // Insert some deleted stories
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, first_published_at, deleted_at)
-            VALUES ($1, $2, now(), now())
+            INSERT INTO stories (id, user_id, first_published_at, deleted_at)
+            VALUES ($1, $2, NOW(), NOW())
             "#,
         )
         .bind(2_i64)
@@ -730,8 +730,8 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, first_published_at, deleted_at)
-            VALUES ($1, $2, now(), now())
+            INSERT INTO stories (id, user_id, first_published_at, deleted_at)
+            VALUES ($1, $2, NOW(), NOW())
             "#,
         )
         .bind(3_i64)
@@ -763,8 +763,8 @@ mod tests {
         // Insert some published stories
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories(title, user_id, slug, published_at)
-            VALUES ($1, $3, 'sample-story-1', now()), ($2, $3, 'sample-story-2', now())
+            INSERT INTO stories (title, user_id, slug, published_at)
+            VALUES ($1, $3, 'sample-story-1', NOW()), ($2, $3, 'sample-story-2', NOW())
             "#,
         )
         .bind("one")
@@ -804,8 +804,8 @@ mod tests {
         // Insert some published stories
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, slug, published_at)
-            VALUES ($1, $3, 'sample-story-1', now()), ($2, $3, 'sample-story-2', now())
+            INSERT INTO stories (id, user_id, slug, published_at)
+            VALUES ($1, $3, 'sample-story-1', NOW()), ($2, $3, 'sample-story-2', NOW())
             "#,
         )
         .bind(2_i64)
@@ -834,7 +834,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -871,8 +871,8 @@ mod tests {
         // Insert some deleted stories
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, first_published_at, deleted_at)
-            VALUES ($1, $3, now(), now()), ($2, $3, now(), now())
+            INSERT INTO stories (id, user_id, first_published_at, deleted_at)
+            VALUES ($1, $3, NOW(), NOW()), ($2, $3, NOW(), NOW())
             "#,
         )
         .bind(2_i64)
@@ -929,7 +929,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )

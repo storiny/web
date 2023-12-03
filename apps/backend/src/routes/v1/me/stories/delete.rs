@@ -40,7 +40,7 @@ async fn delete(
                         r#"
                         UPDATE stories
                         SET
-                            deleted_at = now(),
+                            deleted_at = NOW(),
                             published_at = NULL
                         WHERE
                             user_id = $1
@@ -104,8 +104,8 @@ mod tests {
         // Insert a published story
         let result = sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id, published_at)
-            VALUES ($1, $2, now())
+            INSERT INTO stories (id, user_id, published_at)
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(2_i64)
@@ -156,7 +156,7 @@ mod tests {
         // Insert a draft
         let result = sqlx::query(
             r#"
-            INSERT INTO stories(id, user_id)
+            INSERT INTO stories (id, user_id)
             VALUES ($1, $2)
             "#,
         )

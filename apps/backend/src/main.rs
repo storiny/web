@@ -8,7 +8,6 @@ use actix_extensible_rate_limit::{
     RateLimiter,
 };
 use actix_files as fs;
-use actix_request_identifier::RequestIdentifier;
 use actix_web::{
     cookie::{
         Key,
@@ -67,6 +66,7 @@ use storiny::{
     },
     *,
 };
+use tracing_actix_web::TracingLogger;
 use user_agent_parser::UserAgentParser;
 
 /// 404 response
@@ -307,17 +307,17 @@ async fn main() -> io::Result<()> {
                             .supports_credentials()
                             .max_age(3600)
                     })
-                    .wrap(RequestIdentifier::with_uuid())
                     .wrap(
                         actix_web::middleware::DefaultHeaders::new()
                             .add(("x-storiny-api-version", "1")),
                     )
-                    .wrap(
-                        actix_web::middleware::Logger::new(
-                            "%{x-request-id}o %a %t \"%r\" %s %b \"%{Referer}i\" %T",
-                        )
-                        .log_target("api"),
-                    )
+                    // .wrap(
+                    //     actix_web::middleware::Logger::new(
+                    //         "%{x-request-id}o %a %t \"%r\" %s %b \"%{Referer}i\" %T",
+                    //     )
+                    //     .log_target("api"),
+                    // )
+                    .wrap(TracingLogger::default())
                     .wrap(actix_web::middleware::Compress::default())
                     .wrap(actix_web::middleware::NormalizePath::trim())
                     // Realms

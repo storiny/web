@@ -34,7 +34,7 @@ async fn post(
                     WITH
                         updated_friend AS (
                             UPDATE friends
-                            SET accepted_at = now()
+                            SET accepted_at = NOW()
                             WHERE
                                 receiver_id = $1
                                 AND transmitter_id = $2
@@ -167,7 +167,7 @@ mod tests {
         let insert_result = sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, deleted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(2_i64)

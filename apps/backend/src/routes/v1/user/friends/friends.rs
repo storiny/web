@@ -356,7 +356,7 @@ mod tests {
         let insert_result = sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now()), ($1, $3, now())
+            VALUES ($1, $2, NOW()), ($1, $3, NOW())
             "#,
         )
         .bind(1_i64)
@@ -391,7 +391,7 @@ mod tests {
         sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(1_i64)
@@ -402,7 +402,7 @@ mod tests {
         sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(1_i64)
@@ -434,7 +434,7 @@ mod tests {
         sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(1_i64)
@@ -445,7 +445,7 @@ mod tests {
         sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(1_i64)
@@ -477,7 +477,7 @@ mod tests {
         sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(1_i64)
@@ -488,7 +488,7 @@ mod tests {
         sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(1_i64)
@@ -520,7 +520,7 @@ mod tests {
         let insert_result = sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now()), ($1, $3, now())
+            VALUES ($1, $2, NOW()), ($1, $3, NOW())
             "#,
         )
         .bind(1_i64)
@@ -555,7 +555,7 @@ mod tests {
         let insert_result = sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now()), ($1, $3, now())
+            VALUES ($1, $2, NOW()), ($1, $3, NOW())
             "#,
         )
         .bind(1_i64)
@@ -614,7 +614,7 @@ mod tests {
         let insert_result = sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now()), ($1, $3, now())
+            VALUES ($1, $2, NOW()), ($1, $3, NOW())
             "#,
         )
         .bind(1_i64)
@@ -642,7 +642,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE friends
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )
@@ -706,7 +706,7 @@ mod tests {
         let insert_result = sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now()), ($1, $3, now())
+            VALUES ($1, $2, NOW()), ($1, $3, NOW())
             "#,
         )
         .bind(1_i64)
@@ -762,7 +762,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE friends
-            SET accepted_at = now()
+            SET accepted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )
@@ -800,7 +800,7 @@ mod tests {
         let insert_result = sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now()), ($1, $3, now())
+            VALUES ($1, $2, NOW()), ($1, $3, NOW())
             "#,
         )
         .bind(1_i64)
@@ -836,7 +836,7 @@ mod tests {
         sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(1_i64)
@@ -847,7 +847,7 @@ mod tests {
         sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(1_i64)
@@ -882,7 +882,7 @@ mod tests {
         sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(1_i64)
@@ -893,7 +893,7 @@ mod tests {
         sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(1_i64)
@@ -928,7 +928,7 @@ mod tests {
         sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(1_i64)
@@ -939,7 +939,7 @@ mod tests {
         sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(1_i64)
@@ -972,7 +972,7 @@ mod tests {
         let insert_result = sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now()), ($1, $3, now())
+            VALUES ($1, $2, NOW()), ($1, $3, NOW())
             "#,
         )
         .bind(1_i64)
@@ -1010,7 +1010,7 @@ mod tests {
         let insert_result = sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(2_i64)
@@ -1062,7 +1062,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(user_id.unwrap())
@@ -1098,7 +1098,7 @@ mod tests {
         let insert_result = sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(2_i64)
@@ -1151,7 +1151,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(user_id.unwrap())
@@ -1187,7 +1187,7 @@ mod tests {
         let insert_result = sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(2_i64)
@@ -1250,7 +1250,7 @@ mod tests {
         let insert_result = sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now()), ($1, $3, now())
+            VALUES ($1, $2, NOW()), ($1, $3, NOW())
             "#,
         )
         .bind(1_i64)
@@ -1279,7 +1279,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE friends
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )
@@ -1347,7 +1347,7 @@ mod tests {
         let insert_result = sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now()), ($1, $3, now())
+            VALUES ($1, $2, NOW()), ($1, $3, NOW())
             "#,
         )
         .bind(1_i64)
@@ -1405,7 +1405,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE friends
-            SET accepted_at = now()
+            SET accepted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )

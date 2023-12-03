@@ -22,7 +22,7 @@ mod tests {
     ) -> Result<PgRow, Error> {
         sqlx::query(
             r#"
-            INSERT INTO stories(user_id, published_at, first_published_at)
+            INSERT INTO stories (user_id, published_at, first_published_at)
             VALUES ($1, $2, $2)
             RETURNING id
             "#,
@@ -53,7 +53,7 @@ mod tests {
         // Should insert a document for the new story
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM documents
                 WHERE story_id = $1
             )
@@ -76,7 +76,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -86,7 +86,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO stories(user_id)
+            INSERT INTO stories (user_id)
             VALUES ($1)
             "#,
         )
@@ -116,7 +116,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deactivated_at = now()
+            SET deactivated_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -126,7 +126,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO stories(user_id)
+            INSERT INTO stories (user_id)
             VALUES ($1)
             "#,
         )
@@ -180,7 +180,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -298,7 +298,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -356,7 +356,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -475,7 +475,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -532,7 +532,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -638,7 +638,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -665,7 +665,7 @@ mod tests {
         // Story tag should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM story_tags
                 WHERE tag_id IN ($1, $2) AND story_id = $2
             )
@@ -682,7 +682,7 @@ mod tests {
         // Tag with 0 story count should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM tags
                 WHERE name = $1
             )
@@ -750,7 +750,7 @@ mod tests {
         // Story tag should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM story_tags
                 WHERE tag_id IN ($1, $2) AND story_id = $2
             )
@@ -767,7 +767,7 @@ mod tests {
         // Tag with 0 story count should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM tags
                 WHERE name = $1
             )
@@ -793,7 +793,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -877,7 +877,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -938,7 +938,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -1057,7 +1057,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -1116,7 +1116,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -1235,7 +1235,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -1293,7 +1293,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -1304,7 +1304,7 @@ mod tests {
         // Notification should be deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
               SELECT 1 FROM notifications
               WHERE entity_id = $1
             )
@@ -1357,7 +1357,7 @@ mod tests {
         // Notification should be deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
               SELECT 1 FROM notifications
               WHERE entity_id = $1
             )
@@ -1403,7 +1403,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -1491,7 +1491,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -1502,7 +1502,7 @@ mod tests {
         // Document should not be deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
               SELECT 1 FROM documents
               WHERE story_id = $1
             )
@@ -1539,7 +1539,7 @@ mod tests {
         // Document should not be deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
               SELECT 1 FROM documents
               WHERE story_id = $1
             )
@@ -1585,7 +1585,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -1640,7 +1640,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -1690,7 +1690,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -1738,7 +1738,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -1763,7 +1763,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now(), published_at = NULL
+            SET deleted_at = NOW(), published_at = NULL
             WHERE id = $1
             "#,
         )
@@ -1813,7 +1813,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -1861,7 +1861,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -1933,7 +1933,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -1996,7 +1996,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -2021,7 +2021,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -2046,7 +2046,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -2127,7 +2127,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -2223,7 +2223,7 @@ mod tests {
         let update_result = sqlx::query(
             r#"
             UPDATE stories
-            SET edited_at = now()
+            SET edited_at = NOW()
             WHERE id = $1
             RETURNING edited_at
             "#,
@@ -2242,7 +2242,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -2279,7 +2279,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -2291,7 +2291,7 @@ mod tests {
         let update_result = sqlx::query(
             r#"
             UPDATE stories
-            SET edited_at = now()
+            SET edited_at = NOW()
             WHERE id = $1
             RETURNING edited_at
             "#,
@@ -2372,7 +2372,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -2384,7 +2384,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -2502,7 +2502,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -2514,7 +2514,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deactivated_at = now()
+            SET deactivated_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -2644,7 +2644,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -2673,7 +2673,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -2774,7 +2774,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deactivated_at = now()
+            SET deactivated_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -2803,7 +2803,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -2892,7 +2892,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -2904,7 +2904,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -3023,7 +3023,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -3035,7 +3035,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deactivated_at = now()
+            SET deactivated_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -3166,7 +3166,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -3196,7 +3196,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -3297,7 +3297,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deactivated_at = now()
+            SET deactivated_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -3327,7 +3327,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -3418,7 +3418,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -3430,7 +3430,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -3549,7 +3549,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -3561,7 +3561,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deactivated_at = now()
+            SET deactivated_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -3692,7 +3692,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -3722,7 +3722,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -3823,7 +3823,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deactivated_at = now()
+            SET deactivated_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -3853,7 +3853,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -3944,7 +3944,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -3956,7 +3956,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -4075,7 +4075,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -4087,7 +4087,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deactivated_at = now()
+            SET deactivated_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -4218,7 +4218,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -4248,7 +4248,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -4349,7 +4349,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deactivated_at = now()
+            SET deactivated_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -4379,7 +4379,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -4692,7 +4692,7 @@ mod tests {
         // Comment should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM comments
                 WHERE id = $1
             )
@@ -4740,7 +4740,7 @@ mod tests {
         // Story like should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM story_likes
                 WHERE user_id = $1 AND story_id = $2
             )
@@ -4789,7 +4789,7 @@ mod tests {
         // Story tag should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM story_tags
                 WHERE tag_id = $1 AND story_id = $2
             )
@@ -4838,7 +4838,7 @@ mod tests {
         // Draft tag should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM draft_tags
                 WHERE name = $1
             )
@@ -4888,7 +4888,7 @@ mod tests {
         // Notification should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM notifications
                 WHERE id = $1
             )
@@ -4936,7 +4936,7 @@ mod tests {
         // Bookmark should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM bookmarks
                 WHERE user_id = $1 AND story_id = $2
             )
@@ -4985,7 +4985,7 @@ mod tests {
         // History should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM histories
                 WHERE user_id = $1 AND story_id = $2
             )
