@@ -2,10 +2,6 @@ use maxminddb::{
     geoip2,
     Reader,
 };
-use serde::{
-    Deserialize,
-    Serialize,
-};
 use std::net::IpAddr;
 
 /// Parses and return the client's country code in ISO 3166-1 alpha-2 format using the information

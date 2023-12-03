@@ -235,6 +235,8 @@ export interface GetStoryResponse {
   /** User specific props */
   is_bookmarked: boolean;
   is_liked: boolean;
+  /** Reading session token */
+  reading_session_token: string;
 }
 
 function createBaseDraft(): Draft {
@@ -895,6 +897,7 @@ function createBaseGetStoryResponse(): GetStoryResponse {
     tags: [],
     is_bookmarked: false,
     is_liked: false,
+    reading_session_token: "",
   };
 }
 
@@ -995,6 +998,9 @@ export const GetStoryResponse = {
     }
     if (message.is_liked === true) {
       writer.uint32(256).bool(message.is_liked);
+    }
+    if (message.reading_session_token !== "") {
+      writer.uint32(266).string(message.reading_session_token);
     }
     return writer;
   },
@@ -1230,6 +1236,13 @@ export const GetStoryResponse = {
 
           message.is_liked = reader.bool();
           continue;
+        case 33:
+          if (tag !== 266) {
+            break;
+          }
+
+          message.reading_session_token = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1275,6 +1288,7 @@ export const GetStoryResponse = {
       tags: globalThis.Array.isArray(object?.tags) ? object.tags.map((e: any) => Tag.fromJSON(e)) : [],
       is_bookmarked: isSet(object.is_bookmarked) ? globalThis.Boolean(object.is_bookmarked) : false,
       is_liked: isSet(object.is_liked) ? globalThis.Boolean(object.is_liked) : false,
+      reading_session_token: isSet(object.reading_session_token) ? globalThis.String(object.reading_session_token) : "",
     };
   },
 
@@ -1376,6 +1390,9 @@ export const GetStoryResponse = {
     if (message.is_liked === true) {
       obj.is_liked = message.is_liked;
     }
+    if (message.reading_session_token !== "") {
+      obj.reading_session_token = message.reading_session_token;
+    }
     return obj;
   },
 
@@ -1418,6 +1435,7 @@ export const GetStoryResponse = {
     message.tags = object.tags?.map((e) => Tag.fromPartial(e)) || [];
     message.is_bookmarked = object.is_bookmarked ?? false;
     message.is_liked = object.is_liked ?? false;
+    message.reading_session_token = object.reading_session_token ?? "";
     return message;
   },
 };

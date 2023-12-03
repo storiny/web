@@ -9,7 +9,6 @@ use crate::{
     utils::{
         get_client_country::get_client_country,
         get_client_device::get_client_device,
-        get_client_location::get_client_location,
     },
     AppState,
 };
@@ -28,10 +27,6 @@ use serde::{
     Deserialize,
     Serialize,
 };
-use sqlx::{
-    postgres::PgQueryResult,
-    Error,
-};
 use std::net::IpAddr;
 use validator::Validate;
 
@@ -44,7 +39,8 @@ struct Fragments {
 struct Request {
     #[validate(length(min = 12, max = 64, message = "Invalid reading session"))]
     token: String,
-    //  TODO   referrer
+    #[validate(length(max = 256, message = "Invalid referrer length"))]
+    referrer: Option<String>,
 }
 
 #[post("/v1/public/stories/{story_id}/read")]
@@ -105,6 +101,25 @@ async fn post(
                                 }
                             }
 
+                            let hostname = {
+                                if let Some(referrer) = &payload.referrer {
+                                    let referrer_url = url::Url::parse(referrer).ok();
+                                    referrer_url.and_then(|ref_url| {
+                                        ref_url.host_str().map(|host| host.to_string())
+                                    })
+                                } else {
+                                    None
+                                }
+                            }
+                            // Ignore internal referrals
+                            .and_then(|host| {
+                                if host.contains("storiny.com") {
+                                    None
+                                } else {
+                                    Some(host)
+                                }
+                            });
+
                             match sqlx::query(
                                 r#"
                                 WITH target_story AS (
@@ -128,6 +143,7 @@ async fn post(
                                 )
                                "#,
                             )
+                            .bind(hostname)
                             .bind(device)
                             .bind(country_code)
                             .bind(elapsed_reading_duration)
@@ -136,11 +152,18 @@ async fn post(
                             .execute(&data.db_pool)
                             .await
                             {
-                                Ok(_) => {}
-                                Err(_) => {}
-                            };
-
-                            Ok(HttpResponse::NoContent().finish())
+                                Ok(_) => Ok(HttpResponse::NoContent().finish()),
+                                Err(error) => {
+                                    if matches!(
+                                        error.into_database_error().map(|db_error| db_error.kind()),
+                                        Some(sqlx::error::ErrorKind::ForeignKeyViolation)
+                                    ) {
+                                        Ok(HttpResponse::BadRequest().body("Story not found"))
+                                    } else {
+                                        Ok(HttpResponse::InternalServerError().finish())
+                                    }
+                                }
+                            }
                         }
                         Err(_) => Ok(HttpResponse::InternalServerError().finish()),
                     }
@@ -160,156 +183,373 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::test_utils::{
-        assert_toast_error_response,
+        assert_response_body_text,
         init_app_for_test,
+        RedisTestContext,
     };
     use actix_web::test;
     use sqlx::{
         PgPool,
         Row,
     };
-
-    #[sqlx::test(fixtures("visibility"))]
-    async fn can_hide_and_unhide_a_reply(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
-
-        // Hide the reply
-        let req = test::TestRequest::post()
-            .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/public/replies/{}/visibility", 2))
-            .set_json(Request { hidden: true })
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // `hidden` should get updated in the database
-        let asset = sqlx::query(
-            r#"
-            SELECT hidden FROM replies
-            WHERE id = $1
-            "#,
-        )
-        .bind(2_i64)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(asset.get::<bool, _>("hidden"));
-
-        // Unhide the reply
-        let req = test::TestRequest::post()
-            .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/public/replies/{}/visibility", 2))
-            .set_json(Request { hidden: false })
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // `hidden` should get updated in the database
-        let asset = sqlx::query(
-            r#"
-            SELECT hidden FROM replies
-            WHERE id = $1
-            "#,
-        )
-        .bind(2_i64)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(!asset.get::<bool, _>("hidden"));
-
-        Ok(())
-    }
+    use std::net::{
+        Ipv4Addr,
+        SocketAddr,
+        SocketAddrV4,
+    };
+    use storiny_macros::test_context;
+    use uuid::Uuid;
 
     #[sqlx::test]
-    async fn can_handle_a_missing_reply(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
+    async fn can_handle_a_missing_reading_session(pool: PgPool) -> sqlx::Result<()> {
+        let (app, _, _) = init_app_for_test(post, pool, false, false, None).await;
 
         let req = test::TestRequest::post()
-            .cookie(cookie.clone().unwrap())
-            .uri("/v1/public/replies/12345/visibility")
-            .set_json(Request { hidden: false })
+            .uri(&format!("/v1/public/stories/{}/read", 12345))
+            .set_json(Request {
+                referrer: None,
+                token: "invalid_token".to_string(),
+            })
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Reply not found").await;
+        assert_response_body_text(res, "Invalid reading session").await;
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("visibility"))]
-    async fn should_not_hide_reply_on_a_comment_posted_by_a_different_user(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+    mod serial {
+        use super::*;
 
-        // Change the writer of the comment
-        let result = sqlx::query(
-            r#"
-            WITH new_user AS (
-                INSERT INTO users(name, username, email)
-                VALUES ('New user', 'new_user', 'new@example.com')
-                RETURNING id
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("read"))]
+        async fn can_read_a_story(ctx: &mut RedisTestContext, pool: PgPool) -> sqlx::Result<()> {
+            let redis_pool = &ctx.redis_pool;
+            let mut redis_conn = redis_pool.get().await.unwrap();
+            let mut conn = pool.acquire().await?;
+            let (app, _, _) = init_app_for_test(post, pool, false, false, None).await;
+
+            let story_id = 3_i64;
+            let session_token = Uuid::new_v4();
+            let cache_key = format!(
+                "{}:{story_id}:{session_token}",
+                RedisNamespace::ReadingSession.to_string(),
+            );
+
+            // Start a reading session
+            redis_conn
+                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
+                .await
+                .unwrap();
+
+            let req = test::TestRequest::post()
+                .uri(&format!("/v1/public/stories/{story_id}/read"))
+                .set_json(Request {
+                    referrer: None,
+                    token: session_token.to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_success());
+
+            // Story read row should get inserted into the database
+            let result = sqlx::query(
+                r#"
+                SELECT 1 FROM story_reads
+                WHERE story_id = $1
+                "#,
             )
-            UPDATE comments
-            SET user_id = (SELECT id FROM new_user)
-            WHERE user_id = $1
-            "#,
-        )
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
+            .bind(story_id)
+            .fetch_all(&mut *conn)
+            .await?;
 
-        assert_eq!(result.rows_affected(), 1);
+            assert_eq!(result.len(), 1);
 
-        // Try hiding the reply
-        let req = test::TestRequest::post()
-            .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/public/replies/{}/visibility", 2))
-            .set_json(Request { hidden: true })
-            .to_request();
-        let res = test::call_service(&app, req).await;
+            // Reading session should not be present in the cache
+            let result = redis_conn.ttl::<_, i32>(&cache_key).await.unwrap();
 
-        assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Reply not found").await;
+            assert_eq!(result, -2_i32);
 
-        Ok(())
-    }
+            Ok(())
+        }
 
-    #[sqlx::test(fixtures("visibility"))]
-    async fn should_not_hide_a_soft_deleted_reply(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("read"))]
+        async fn can_read_a_story_when_logged_in(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let redis_pool = &ctx.redis_pool;
+            let mut redis_conn = redis_pool.get().await.unwrap();
+            let mut conn = pool.acquire().await?;
+            let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Soft-delete the reply
-        let result = sqlx::query(
-            r#"
-            UPDATE replies
-            SET deleted_at = now()
-            WHERE id = $1
-            "#,
-        )
-        .bind(2_i64)
-        .execute(&mut *conn)
-        .await?;
+            let story_id = 3_i64;
+            let session_token = Uuid::new_v4();
+            let cache_key = format!(
+                "{}:{story_id}:{session_token}",
+                RedisNamespace::ReadingSession.to_string(),
+            );
 
-        assert_eq!(result.rows_affected(), 1);
+            // Start a reading session
+            redis_conn
+                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
+                .await
+                .unwrap();
 
-        // Try hiding the reply
-        let req = test::TestRequest::post()
-            .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/public/replies/{}/visibility", 2))
-            .set_json(Request { hidden: true })
-            .to_request();
-        let res = test::call_service(&app, req).await;
+            let req = test::TestRequest::post()
+                .uri(&format!("/v1/public/stories/{story_id}/read"))
+                .set_json(Request {
+                    referrer: None,
+                    token: session_token.to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
 
-        assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Reply not found").await;
+            assert!(res.status().is_success());
 
-        Ok(())
+            // Story read row should get inserted into the database
+            let result = sqlx::query(
+                r#"
+                SELECT user_id FROM story_reads
+                WHERE story_id = $1
+                "#,
+            )
+            .bind(story_id)
+            .fetch_all(&mut *conn)
+            .await?;
+
+            assert_eq!(result.len(), 1);
+            assert_eq!(
+                result.get(0).unwrap().get::<i64, _>("user_id"),
+                user_id.unwrap()
+            );
+
+            // Reading session should not be present in the cache
+            let result = redis_conn.ttl::<_, i32>(&cache_key).await.unwrap();
+
+            assert_eq!(result, -2_i32);
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("read"))]
+        async fn can_read_a_story_with_additional_client_data(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let redis_pool = &ctx.redis_pool;
+            let mut redis_conn = redis_pool.get().await.unwrap();
+            let mut conn = pool.acquire().await?;
+            let (app, _, _) = init_app_for_test(post, pool, false, false, None).await;
+
+            let story_id = 3_i64;
+            let session_token = Uuid::new_v4();
+            let cache_key = format!(
+                "{}:{story_id}:{session_token}",
+                RedisNamespace::ReadingSession.to_string(),
+            );
+
+            // Start a reading session
+            redis_conn
+                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
+                .await
+                .unwrap();
+
+            // Hold the reading session for 5 seconds
+            tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+
+            let req = test::TestRequest::post()
+                .peer_addr(SocketAddr::from(SocketAddrV4::new(
+                    Ipv4Addr::new(8, 8, 8, 8),
+                    8080,
+                )))
+                .append_header(("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:40.0) Gecko/20100101 Firefox/40.0"))
+                .uri(&format!("/v1/public/stories/{story_id}/read"))
+                .set_json(Request {
+                    referrer: Some("https://example.com/some_path".to_string()),
+                   token: session_token.to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_success());
+
+            // Story read row should get inserted into the database
+            let result = sqlx::query(
+                r#"
+                SELECT
+                    duration,
+                    hostname,
+                    device,
+                    country_code
+                FROM story_reads
+                WHERE story_id = $1
+                "#,
+            )
+            .bind(story_id)
+            .fetch_one(&mut *conn)
+            .await?;
+
+            // Duration should in the expected range
+            assert!(result.get::<i16, _>("duration") > 4 && result.get::<i16, _>("duration") < 10);
+            assert_eq!(
+                result.get::<Option<String>, _>("hostname"),
+                Some("example.com".to_string())
+            );
+            assert!(result.try_get::<i32, _>("device").is_ok());
+            assert_eq!(
+                result.get::<Option<String>, _>("country_code"),
+                Some("a".to_string())
+            );
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_handle_an_invalid_reading_session(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let redis_pool = &ctx.redis_pool;
+            let mut redis_conn = redis_pool.get().await.unwrap();
+            let (app, _, _) = init_app_for_test(post, pool, false, false, None).await;
+
+            let story_id = 3_i64;
+            let session_token = Uuid::new_v4();
+            let cache_key = format!(
+                "{}:{story_id}:{session_token}",
+                RedisNamespace::ReadingSession.to_string(),
+            );
+
+            // Start a reading session
+            redis_conn
+                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
+                .await
+                .unwrap();
+
+            let req = test::TestRequest::post()
+                // Use an invalid story ID with a valid token value
+                .uri(&format!("/v1/public/stories/{}/read", 4))
+                .set_json(Request {
+                    referrer: None,
+                    token: session_token.to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_client_error());
+            assert_response_body_text(res, "Invalid reading session").await;
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("read"))]
+        async fn should_not_read_a_soft_deleted_story(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let redis_pool = &ctx.redis_pool;
+            let mut redis_conn = redis_pool.get().await.unwrap();
+            let (app, _, _) = init_app_for_test(post, pool, false, false, None).await;
+
+            let story_id = 3_i64;
+            let session_token = Uuid::new_v4();
+            let cache_key = format!(
+                "{}:{story_id}:{session_token}",
+                RedisNamespace::ReadingSession.to_string(),
+            );
+
+            // Start a reading session
+            redis_conn
+                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
+                .await
+                .unwrap();
+
+            // Soft-delete the story
+            let result = sqlx::query(
+                r#"
+                UPDATE stories
+                SET deleted_at = now()
+                WHERE id = $1
+                "#,
+            )
+            .bind(story_id)
+            .execute(&pool)
+            .await?;
+
+            assert_eq!(result.rows_affected(), 1);
+
+            let req = test::TestRequest::post()
+                .uri(&format!("/v1/public/stories/{story_id}/read",))
+                .set_json(Request {
+                    referrer: None,
+                    token: session_token.to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_client_error());
+            assert_response_body_text(res, "Story not found").await;
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("read"))]
+        async fn should_not_read_an_unpublished_story(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let redis_pool = &ctx.redis_pool;
+            let mut redis_conn = redis_pool.get().await.unwrap();
+            let (app, _, _) = init_app_for_test(post, pool, false, false, None).await;
+
+            let story_id = 3_i64;
+            let session_token = Uuid::new_v4();
+            let cache_key = format!(
+                "{}:{story_id}:{session_token}",
+                RedisNamespace::ReadingSession.to_string(),
+            );
+
+            // Start a reading session
+            redis_conn
+                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
+                .await
+                .unwrap();
+
+            // Unpublish the story
+            let result = sqlx::query(
+                r#"
+                UPDATE stories
+                SET published_at = NULL
+                WHERE id = $1
+                "#,
+            )
+            .bind(story_id)
+            .execute(&pool)
+            .await?;
+
+            assert_eq!(result.rows_affected(), 1);
+
+            let req = test::TestRequest::post()
+                .uri(&format!("/v1/public/stories/{story_id}/read",))
+                .set_json(Request {
+                    referrer: None,
+                    token: session_token.to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_client_error());
+            assert_response_body_text(res, "Story not found").await;
+
+            Ok(())
+        }
     }
 }

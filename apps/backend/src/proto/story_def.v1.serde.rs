@@ -1027,6 +1027,9 @@ impl serde::Serialize for GetStoryResponse {
         if self.is_liked {
             len += 1;
         }
+        if !self.reading_session_token.is_empty() {
+            len += 1;
+        }
         let mut struct_ser = serializer.serialize_struct("story_def.v1.GetStoryResponse", len)?;
         if !self.id.is_empty() {
             struct_ser.serialize_field("id", &self.id)?;
@@ -1130,6 +1133,9 @@ impl serde::Serialize for GetStoryResponse {
         if self.is_liked {
             struct_ser.serialize_field("isLiked", &self.is_liked)?;
         }
+        if !self.reading_session_token.is_empty() {
+            struct_ser.serialize_field("readingSessionToken", &self.reading_session_token)?;
+        }
         struct_ser.end()
     }
 }
@@ -1195,6 +1201,8 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
             "isBookmarked",
             "is_liked",
             "isLiked",
+            "reading_session_token",
+            "readingSessionToken",
         ];
 
         #[allow(clippy::enum_variant_names)]
@@ -1231,6 +1239,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
             Tags,
             IsBookmarked,
             IsLiked,
+            ReadingSessionToken,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
@@ -1284,6 +1293,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                             "tags" => Ok(GeneratedField::Tags),
                             "isBookmarked" | "is_bookmarked" => Ok(GeneratedField::IsBookmarked),
                             "isLiked" | "is_liked" => Ok(GeneratedField::IsLiked),
+                            "readingSessionToken" | "reading_session_token" => Ok(GeneratedField::ReadingSessionToken),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -1335,6 +1345,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                 let mut tags__ = None;
                 let mut is_bookmarked__ = None;
                 let mut is_liked__ = None;
+                let mut reading_session_token__ = None;
                 while let Some(k) = map.next_key()? {
                     match k {
                         GeneratedField::Id => {
@@ -1537,6 +1548,12 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                             }
                             is_liked__ = Some(map.next_value()?);
                         }
+                        GeneratedField::ReadingSessionToken => {
+                            if reading_session_token__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("readingSessionToken"));
+                            }
+                            reading_session_token__ = Some(map.next_value()?);
+                        }
                     }
                 }
                 Ok(GetStoryResponse {
@@ -1572,6 +1589,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                     tags: tags__.unwrap_or_default(),
                     is_bookmarked: is_bookmarked__.unwrap_or_default(),
                     is_liked: is_liked__.unwrap_or_default(),
+                    reading_session_token: reading_session_token__.unwrap_or_default(),
                 })
             }
         }

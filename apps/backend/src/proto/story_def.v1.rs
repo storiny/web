@@ -146,6 +146,9 @@ pub struct GetStoryResponse {
     pub is_bookmarked: bool,
     #[prost(bool, tag="32")]
     pub is_liked: bool,
+    /// Reading session token
+    #[prost(string, tag="33")]
+    pub reading_session_token: ::prost::alloc::string::String,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]

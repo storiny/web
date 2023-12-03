@@ -1,17 +1,24 @@
-use crate::grpc::{
-    defs::{
-        story_def::v1::{
-            GetStoryRequest,
-            GetStoryResponse,
-        },
-        tag_def::v1::Tag as StoryTag,
-        user_def::v1::{
-            BareStatus,
-            ExtendedUser,
-        },
+use crate::{
+    constants::{
+        reading_session::MAXIMUM_READING_SESSION_DURATION,
+        redis_namespaces::RedisNamespace,
     },
-    service::GrpcService,
+    grpc::{
+        defs::{
+            story_def::v1::{
+                GetStoryRequest,
+                GetStoryResponse,
+            },
+            tag_def::v1::Tag as StoryTag,
+            user_def::v1::{
+                BareStatus,
+                ExtendedUser,
+            },
+        },
+        service::GrpcService,
+    },
 };
+use redis::AsyncCommands;
 use sqlx::FromRow;
 use time::OffsetDateTime;
 use tonic::{
@@ -185,6 +192,31 @@ pub async fn get_story(
         .await
         .map_err(|_| Status::internal("Database error"))?;
 
+    let reading_session_token = Uuid::new_v4();
+
+    // Start a reading session. We place this block after the database transaction and mute any
+    // possible errors raised from Redis as we don't want to block access to the story due to
+    // cache errors.
+    let redis_pool = &client.redis_pool;
+    if let Ok(ref mut redis_conn) = redis_pool.get().await {
+        let cache_key = format!(
+            "{}:{}:{reading_session_token}",
+            story.id,
+            RedisNamespace::ReadingSession.to_string(),
+        );
+        let result = redis_conn
+            .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
+            .await;
+
+        if result.is_err() {
+            log::error!(
+                "unable to create a reading session for {}: {:?}",
+                story.id,
+                result.unwrap_err()
+            );
+        }
+    };
+
     Ok(Response::new(GetStoryResponse {
         id: story.id.to_string(),
         title: story.title,
@@ -259,566 +291,632 @@ pub async fn get_story(
             .collect::<Vec<_>>(),
         is_bookmarked: story.is_bookmarked,
         is_liked: story.is_liked,
+        reading_session_token: reading_session_token.to_string(),
     }))
 }
 
 #[cfg(test)]
 mod tests {
     use crate::{
+        constants::redis_namespaces::RedisNamespace,
         grpc::defs::story_def::v1::GetStoryRequest,
-        test_utils::test_grpc_service,
+        test_utils::{
+            test_grpc_service,
+            RedisTestContext,
+        },
     };
+    use redis::AsyncCommands;
     use sqlx::{
         PgPool,
         Row,
     };
+    use storiny_macros::test_context;
     use tonic::Request;
 
-    // Logged-out
+    mod serial {
+        use super::*;
 
-    #[sqlx::test(fixtures("get_story"))]
-    async fn can_return_story_by_id(pool: PgPool) {
-        test_grpc_service(
-            pool,
-            false,
-            Box::new(|mut client, pool, _, _| async move {
-                let response = client
-                    .get_story(Request::new(GetStoryRequest {
-                        id_or_slug: 3_i64.to_string(),
-                        current_user_id: None,
-                    }))
-                    .await;
+        // Logged-out
 
-                assert!(response.is_ok());
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_story_by_id(_ctx: &mut RedisTestContext, pool: PgPool) {
+            test_grpc_service(
+                pool,
+                false,
+                Box::new(|mut client, pool, redis_pool, _| async move {
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: None,
+                        }))
+                        .await;
 
-                // Should increment the `view_count`
-                let result = sqlx::query(
-                    r#"
-                    SELECT view_count
-                    FROM stories
-                    WHERE id = $1
-                    "#,
-                )
-                .bind(3_i64)
-                .fetch_one(&pool)
-                .await
-                .unwrap();
+                    assert!(response.is_ok());
 
-                assert_eq!(result.get::<i64, _>("view_count"), 1_i64);
-            }),
-        )
-        .await;
-    }
-
-    #[sqlx::test(fixtures("get_story"))]
-    async fn can_return_unpublished_story_by_id(pool: PgPool) {
-        test_grpc_service(
-            pool,
-            false,
-            Box::new(|mut client, pool, _, _| async move {
-                // Unpublish the story
-                let result = sqlx::query(
-                    r#"
-                    UPDATE stories
-                    SET published_at = NULL
-                    WHERE id = $1
-                    "#,
-                )
-                .bind(3_i64)
-                .execute(&pool)
-                .await
-                .unwrap();
-
-                assert_eq!(result.rows_affected(), 1);
-
-                let response = client
-                    .get_story(Request::new(GetStoryRequest {
-                        id_or_slug: 3_i64.to_string(),
-                        current_user_id: None,
-                    }))
-                    .await;
-
-                assert!(response.is_ok());
-
-                // Should not increment the `view_count`
-                let result = sqlx::query(
-                    r#"
-                    SELECT view_count
-                    FROM stories
-                    WHERE id = $1
-                    "#,
-                )
-                .bind(3_i64)
-                .fetch_one(&pool)
-                .await
-                .unwrap();
-
-                assert_eq!(result.get::<i64, _>("view_count"), 0);
-            }),
-        )
-        .await;
-    }
-
-    #[sqlx::test(fixtures("get_story"))]
-    async fn can_return_soft_deleted_story_by_id(pool: PgPool) {
-        test_grpc_service(
-            pool,
-            false,
-            Box::new(|mut client, pool, _, _| async move {
-                // Soft-delete the story
-                let result = sqlx::query(
-                    r#"
-                    UPDATE stories
-                    SET deleted_at = now()
-                    WHERE id = $1
-                    "#,
-                )
-                .bind(3_i64)
-                .execute(&pool)
-                .await
-                .unwrap();
-
-                assert_eq!(result.rows_affected(), 1);
-
-                let response = client
-                    .get_story(Request::new(GetStoryRequest {
-                        id_or_slug: 3_i64.to_string(),
-                        current_user_id: None,
-                    }))
-                    .await;
-
-                assert!(response.is_ok());
-
-                // Should not increment the `view_count`
-                let result = sqlx::query(
-                    r#"
-                    SELECT view_count
-                    FROM stories
-                    WHERE id = $1
-                    "#,
-                )
-                .bind(3_i64)
-                .fetch_one(&pool)
-                .await
-                .unwrap();
-
-                assert_eq!(result.get::<i64, _>("view_count"), 0);
-            }),
-        )
-        .await;
-    }
-
-    #[sqlx::test(fixtures("get_story"))]
-    async fn can_return_story_by_slug(pool: PgPool) {
-        test_grpc_service(
-            pool,
-            false,
-            Box::new(|mut client, pool, _, _| async move {
-                let response = client
-                    .get_story(Request::new(GetStoryRequest {
-                        id_or_slug: "some-story".to_string(),
-                        current_user_id: None,
-                    }))
-                    .await;
-
-                assert!(response.is_ok());
-
-                // Should increment the `view_count`
-                let result = sqlx::query(
-                    r#"
-                    SELECT view_count
-                    FROM stories
-                    WHERE slug = $1
-                    "#,
-                )
-                .bind("some-story")
-                .fetch_one(&pool)
-                .await
-                .unwrap();
-
-                assert_eq!(result.get::<i64, _>("view_count"), 1_i64);
-            }),
-        )
-        .await;
-    }
-
-    #[sqlx::test(fixtures("get_story"))]
-    async fn can_return_unpublished_story_by_slug(pool: PgPool) {
-        test_grpc_service(
-            pool,
-            false,
-            Box::new(|mut client, pool, _, _| async move {
-                // Unpublish the story
-                let result = sqlx::query(
-                    r#"
-                    UPDATE stories
-                    SET published_at = NULL
-                    WHERE id = $1
-                    "#,
-                )
-                .bind(3_i64)
-                .execute(&pool)
-                .await
-                .unwrap();
-
-                assert_eq!(result.rows_affected(), 1);
-
-                let response = client
-                    .get_story(Request::new(GetStoryRequest {
-                        id_or_slug: "some-story".to_string(),
-                        current_user_id: None,
-                    }))
-                    .await;
-
-                assert!(response.is_ok());
-
-                // Should not increment the `view_count`
-                let result = sqlx::query(
-                    r#"
-                    SELECT view_count
-                    FROM stories
-                    WHERE slug = $1
-                    "#,
-                )
-                .bind("some-story")
-                .fetch_one(&pool)
-                .await
-                .unwrap();
-
-                assert_eq!(result.get::<i64, _>("view_count"), 0);
-            }),
-        )
-        .await;
-    }
-
-    #[sqlx::test(fixtures("get_story"))]
-    async fn can_return_soft_deleted_story_by_slug(pool: PgPool) {
-        test_grpc_service(
-            pool,
-            false,
-            Box::new(|mut client, pool, _, _| async move {
-                // Soft-delete the story
-                let result = sqlx::query(
-                    r#"
-                    UPDATE stories
-                    SET deleted_at = now()
-                    WHERE id = $1
-                    "#,
-                )
-                .bind(3_i64)
-                .execute(&pool)
-                .await
-                .unwrap();
-
-                assert_eq!(result.rows_affected(), 1);
-
-                let response = client
-                    .get_story(Request::new(GetStoryRequest {
-                        id_or_slug: "some-story".to_string(),
-                        current_user_id: None,
-                    }))
-                    .await;
-
-                assert!(response.is_ok());
-
-                // Should increment the `view_count`
-                let result = sqlx::query(
-                    r#"
-                    SELECT view_count
-                    FROM stories
-                    WHERE slug = $1
-                    "#,
-                )
-                .bind("some-story")
-                .fetch_one(&pool)
-                .await
-                .unwrap();
-
-                assert_eq!(result.get::<i64, _>("view_count"), 0);
-            }),
-        )
-        .await;
-    }
-
-    // Logged-in
-
-    #[sqlx::test(fixtures("get_story"))]
-    async fn can_return_story_by_id_when_logged_in(pool: PgPool) {
-        test_grpc_service(
-            pool,
-            true,
-            Box::new(|mut client, pool, _, user_id| async move {
-                let response = client
-                    .get_story(Request::new(GetStoryRequest {
-                        id_or_slug: 3_i64.to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
-                    }))
-                    .await;
-
-                assert!(response.is_ok());
-
-                // Should also insert a history record
-                let result = sqlx::query(
-                    r#"
-                    SELECT EXISTS(
-                        SELECT 1 FROM histories
-                        WHERE user_id = $1
+                    // Should increment the `view_count`
+                    let result = sqlx::query(
+                        r#"
+                        SELECT view_count
+                        FROM stories
+                        WHERE id = $1
+                        "#,
                     )
-                    "#,
-                )
-                .bind(user_id.unwrap())
-                .fetch_one(&pool)
-                .await
-                .unwrap();
+                    .bind(3_i64)
+                    .fetch_one(&pool)
+                    .await
+                    .unwrap();
 
-                assert!(result.get::<bool, _>("exists"));
+                    assert_eq!(result.get::<i64, _>("view_count"), 1_i64);
 
-                // Should increment the `view_count`
-                let result = sqlx::query(
-                    r#"
-                    SELECT view_count
-                    FROM stories
-                    WHERE id = $1
-                    "#,
-                )
-                .bind(3_i64)
-                .fetch_one(&pool)
-                .await
-                .unwrap();
+                    let response = response.unwrap().into_inner();
 
-                assert_eq!(result.get::<i64, _>("view_count"), 1_i64);
-            }),
-        )
-        .await;
-    }
+                    // Reading session should be present in the cache
+                    let mut redis_conn = redis_pool.get().await.unwrap();
+                    let cache_key = format!(
+                        "{}:{}:{}",
+                        RedisNamespace::ReadingSession.to_string(),
+                        response.id,
+                        response.reading_session_token
+                    );
+                    let result = redis_conn.ttl::<_, i32>(&cache_key).await.unwrap();
 
-    #[sqlx::test(fixtures("get_story"))]
-    async fn can_return_unpublished_story_by_id_when_logged_in(pool: PgPool) {
-        test_grpc_service(
-            pool,
-            true,
-            Box::new(|mut client, pool, _, user_id| async move {
-                // Unpublish the story
-                let result = sqlx::query(
-                    r#"
-                    UPDATE stories
-                    SET published_at = NULL
-                    WHERE id = $1
-                    "#,
-                )
-                .bind(3_i64)
-                .execute(&pool)
-                .await
-                .unwrap();
+                    assert!(result > 0);
+                }),
+            )
+            .await;
+        }
 
-                assert_eq!(result.rows_affected(), 1);
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_unpublished_story_by_id(_ctx: &mut RedisTestContext, pool: PgPool) {
+            test_grpc_service(
+                pool,
+                false,
+                Box::new(|mut client, pool, _, _| async move {
+                    // Unpublish the story
+                    let result = sqlx::query(
+                        r#"
+                        UPDATE stories
+                        SET published_at = NULL
+                        WHERE id = $1
+                        "#,
+                    )
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
 
-                let response = client
-                    .get_story(Request::new(GetStoryRequest {
-                        id_or_slug: 3_i64.to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
-                    }))
-                    .await;
+                    assert_eq!(result.rows_affected(), 1);
 
-                assert!(response.is_ok());
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: None,
+                        }))
+                        .await;
 
-                // Should not increment the `view_count`
-                let result = sqlx::query(
-                    r#"
-                    SELECT view_count
-                    FROM stories
-                    WHERE id = $1
-                    "#,
-                )
-                .bind(3_i64)
-                .fetch_one(&pool)
-                .await
-                .unwrap();
+                    assert!(response.is_ok());
 
-                assert_eq!(result.get::<i64, _>("view_count"), 0);
-            }),
-        )
-        .await;
-    }
+                    // Should not increment the `view_count`
+                    let result = sqlx::query(
+                        r#"
+                        SELECT view_count
+                        FROM stories
+                        WHERE id = $1
+                        "#,
+                    )
+                    .bind(3_i64)
+                    .fetch_one(&pool)
+                    .await
+                    .unwrap();
 
-    #[sqlx::test(fixtures("get_story"))]
-    async fn can_return_soft_deleted_story_by_id_when_logged_in(pool: PgPool) {
-        test_grpc_service(
-            pool,
-            true,
-            Box::new(|mut client, pool, _, user_id| async move {
-                // Soft-delete the story
-                let result = sqlx::query(
-                    r#"
-                    UPDATE stories
-                    SET deleted_at = now()
-                    WHERE id = $1
-                    "#,
-                )
-                .bind(3_i64)
-                .execute(&pool)
-                .await
-                .unwrap();
+                    assert_eq!(result.get::<i64, _>("view_count"), 0);
+                }),
+            )
+            .await;
+        }
 
-                assert_eq!(result.rows_affected(), 1);
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_soft_deleted_story_by_id(_ctx: &mut RedisTestContext, pool: PgPool) {
+            test_grpc_service(
+                pool,
+                false,
+                Box::new(|mut client, pool, _, _| async move {
+                    // Soft-delete the story
+                    let result = sqlx::query(
+                        r#"
+                        UPDATE stories
+                        SET deleted_at = now()
+                        WHERE id = $1
+                        "#,
+                    )
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
 
-                let response = client
-                    .get_story(Request::new(GetStoryRequest {
-                        id_or_slug: 3_i64.to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
-                    }))
-                    .await;
+                    assert_eq!(result.rows_affected(), 1);
 
-                assert!(response.is_ok());
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: None,
+                        }))
+                        .await;
 
-                // Should not increment the `view_count`
-                let result = sqlx::query(
-                    r#"
-                    SELECT view_count
-                    FROM stories
-                    WHERE id = $1
-                    "#,
-                )
-                .bind(3_i64)
-                .fetch_one(&pool)
-                .await
-                .unwrap();
+                    assert!(response.is_ok());
 
-                assert_eq!(result.get::<i64, _>("view_count"), 0);
-            }),
-        )
-        .await;
-    }
+                    // Should not increment the `view_count`
+                    let result = sqlx::query(
+                        r#"
+                        SELECT view_count
+                        FROM stories
+                        WHERE id = $1
+                        "#,
+                    )
+                    .bind(3_i64)
+                    .fetch_one(&pool)
+                    .await
+                    .unwrap();
 
-    #[sqlx::test(fixtures("get_story"))]
-    async fn can_return_story_by_slug_when_logged_in(pool: PgPool) {
-        test_grpc_service(
-            pool,
-            true,
-            Box::new(|mut client, pool, _, user_id| async move {
-                let response = client
-                    .get_story(Request::new(GetStoryRequest {
-                        id_or_slug: "some-story".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
-                    }))
-                    .await;
+                    assert_eq!(result.get::<i64, _>("view_count"), 0);
+                }),
+            )
+            .await;
+        }
 
-                assert!(response.is_ok());
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_story_by_slug(_ctx: &mut RedisTestContext, pool: PgPool) {
+            test_grpc_service(
+                pool,
+                false,
+                Box::new(|mut client, pool, _, _| async move {
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: None,
+                        }))
+                        .await;
 
-                // Should increment the `view_count`
-                let result = sqlx::query(
-                    r#"
-                    SELECT view_count
-                    FROM stories
-                    WHERE slug = $1
-                    "#,
-                )
-                .bind("some-story")
-                .fetch_one(&pool)
-                .await
-                .unwrap();
+                    assert!(response.is_ok());
 
-                assert_eq!(result.get::<i64, _>("view_count"), 1_i64);
-            }),
-        )
-        .await;
-    }
+                    // Should increment the `view_count`
+                    let result = sqlx::query(
+                        r#"
+                        SELECT view_count
+                        FROM stories
+                        WHERE slug = $1
+                        "#,
+                    )
+                    .bind("some-story")
+                    .fetch_one(&pool)
+                    .await
+                    .unwrap();
 
-    #[sqlx::test(fixtures("get_story"))]
-    async fn can_return_unpublished_story_by_slug_when_logged_in(pool: PgPool) {
-        test_grpc_service(
-            pool,
-            true,
-            Box::new(|mut client, pool, _, user_id| async move {
-                // Unpublish the story
-                let result = sqlx::query(
-                    r#"
-                    UPDATE stories
-                    SET published_at = NULL
-                    WHERE id = $1
-                    "#,
-                )
-                .bind(3_i64)
-                .execute(&pool)
-                .await
-                .unwrap();
+                    assert_eq!(result.get::<i64, _>("view_count"), 1_i64);
+                }),
+            )
+            .await;
+        }
 
-                assert_eq!(result.rows_affected(), 1);
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_unpublished_story_by_slug(_ctx: &mut RedisTestContext, pool: PgPool) {
+            test_grpc_service(
+                pool,
+                false,
+                Box::new(|mut client, pool, _, _| async move {
+                    // Unpublish the story
+                    let result = sqlx::query(
+                        r#"
+                        UPDATE stories
+                        SET published_at = NULL
+                        WHERE id = $1
+                        "#,
+                    )
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
 
-                let response = client
-                    .get_story(Request::new(GetStoryRequest {
-                        id_or_slug: "some-story".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
-                    }))
-                    .await;
+                    assert_eq!(result.rows_affected(), 1);
 
-                assert!(response.is_ok());
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: None,
+                        }))
+                        .await;
 
-                // Should not increment the `view_count`
-                let result = sqlx::query(
-                    r#"
-                    SELECT view_count
-                    FROM stories
-                    WHERE slug = $1
-                    "#,
-                )
-                .bind("some-story")
-                .fetch_one(&pool)
-                .await
-                .unwrap();
+                    assert!(response.is_ok());
 
-                assert_eq!(result.get::<i64, _>("view_count"), 0);
-            }),
-        )
-        .await;
-    }
+                    // Should not increment the `view_count`
+                    let result = sqlx::query(
+                        r#"
+                        SELECT view_count
+                        FROM stories
+                        WHERE slug = $1
+                        "#,
+                    )
+                    .bind("some-story")
+                    .fetch_one(&pool)
+                    .await
+                    .unwrap();
 
-    #[sqlx::test(fixtures("get_story"))]
-    async fn can_return_soft_deleted_story_by_slug_when_logged_in(pool: PgPool) {
-        test_grpc_service(
-            pool,
-            true,
-            Box::new(|mut client, pool, _, user_id| async move {
-                // Soft-delete the story
-                let result = sqlx::query(
-                    r#"
-                    UPDATE stories
-                    SET deleted_at = now()
-                    WHERE id = $1
-                    "#,
-                )
-                .bind(3_i64)
-                .execute(&pool)
-                .await
-                .unwrap();
+                    assert_eq!(result.get::<i64, _>("view_count"), 0);
+                }),
+            )
+            .await;
+        }
 
-                assert_eq!(result.rows_affected(), 1);
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_soft_deleted_story_by_slug(_ctx: &mut RedisTestContext, pool: PgPool) {
+            test_grpc_service(
+                pool,
+                false,
+                Box::new(|mut client, pool, _, _| async move {
+                    // Soft-delete the story
+                    let result = sqlx::query(
+                        r#"
+                        UPDATE stories
+                        SET deleted_at = now()
+                        WHERE id = $1
+                        "#,
+                    )
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
 
-                let response = client
-                    .get_story(Request::new(GetStoryRequest {
-                        id_or_slug: "some-story".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
-                    }))
-                    .await;
+                    assert_eq!(result.rows_affected(), 1);
 
-                assert!(response.is_ok());
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: None,
+                        }))
+                        .await;
 
-                // Should not increment the `view_count`
-                let result = sqlx::query(
-                    r#"
-                    SELECT view_count
-                    FROM stories
-                    WHERE slug = $1
-                    "#,
-                )
-                .bind("some-story")
-                .fetch_one(&pool)
-                .await
-                .unwrap();
+                    assert!(response.is_ok());
 
-                assert_eq!(result.get::<i64, _>("view_count"), 0);
-            }),
-        )
-        .await;
+                    // Should increment the `view_count`
+                    let result = sqlx::query(
+                        r#"
+                        SELECT view_count
+                        FROM stories
+                        WHERE slug = $1
+                        "#,
+                    )
+                    .bind("some-story")
+                    .fetch_one(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.get::<i64, _>("view_count"), 0);
+                }),
+            )
+            .await;
+        }
+
+        // Logged-in
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_story_by_id_when_logged_in(_ctx: &mut RedisTestContext, pool: PgPool) {
+            test_grpc_service(
+                pool,
+                true,
+                Box::new(|mut client, pool, redis_pool, user_id| async move {
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        }))
+                        .await;
+
+                    assert!(response.is_ok());
+
+                    // Should also insert a history record
+                    let result = sqlx::query(
+                        r#"
+                        SELECT EXISTS(
+                            SELECT 1 FROM histories
+                            WHERE user_id = $1
+                        )
+                        "#,
+                    )
+                    .bind(user_id.unwrap())
+                    .fetch_one(&pool)
+                    .await
+                    .unwrap();
+
+                    assert!(result.get::<bool, _>("exists"));
+
+                    // Should increment the `view_count`
+                    let result = sqlx::query(
+                        r#"
+                        SELECT view_count
+                        FROM stories
+                        WHERE id = $1
+                        "#,
+                    )
+                    .bind(3_i64)
+                    .fetch_one(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.get::<i64, _>("view_count"), 1_i64);
+
+                    let response = response.unwrap().into_inner();
+
+                    // Reading session should be present in the cache
+                    let mut redis_conn = redis_pool.get().await.unwrap();
+                    let cache_key = format!(
+                        "{}:{}:{}",
+                        RedisNamespace::ReadingSession.to_string(),
+                        response.id,
+                        response.reading_session_token
+                    );
+                    let result = redis_conn.ttl::<_, i32>(&cache_key).await.unwrap();
+
+                    assert!(result > 0);
+                }),
+            )
+            .await;
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_unpublished_story_by_id_when_logged_in(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                true,
+                Box::new(|mut client, pool, _, user_id| async move {
+                    // Unpublish the story
+                    let result = sqlx::query(
+                        r#"
+                        UPDATE stories
+                        SET published_at = NULL
+                        WHERE id = $1
+                        "#,
+                    )
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        }))
+                        .await;
+
+                    assert!(response.is_ok());
+
+                    // Should not increment the `view_count`
+                    let result = sqlx::query(
+                        r#"
+                        SELECT view_count
+                        FROM stories
+                        WHERE id = $1
+                        "#,
+                    )
+                    .bind(3_i64)
+                    .fetch_one(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.get::<i64, _>("view_count"), 0);
+                }),
+            )
+            .await;
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_soft_deleted_story_by_id_when_logged_in(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                true,
+                Box::new(|mut client, pool, _, user_id| async move {
+                    // Soft-delete the story
+                    let result = sqlx::query(
+                        r#"
+                        UPDATE stories
+                        SET deleted_at = now()
+                        WHERE id = $1
+                        "#,
+                    )
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        }))
+                        .await;
+
+                    assert!(response.is_ok());
+
+                    // Should not increment the `view_count`
+                    let result = sqlx::query(
+                        r#"
+                        SELECT view_count
+                        FROM stories
+                        WHERE id = $1
+                        "#,
+                    )
+                    .bind(3_i64)
+                    .fetch_one(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.get::<i64, _>("view_count"), 0);
+                }),
+            )
+            .await;
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_story_by_slug_when_logged_in(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                true,
+                Box::new(|mut client, pool, _, user_id| async move {
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        }))
+                        .await;
+
+                    assert!(response.is_ok());
+
+                    // Should increment the `view_count`
+                    let result = sqlx::query(
+                        r#"
+                        SELECT view_count
+                        FROM stories
+                        WHERE slug = $1
+                        "#,
+                    )
+                    .bind("some-story")
+                    .fetch_one(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.get::<i64, _>("view_count"), 1_i64);
+                }),
+            )
+            .await;
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_unpublished_story_by_slug_when_logged_in(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                true,
+                Box::new(|mut client, pool, _, user_id| async move {
+                    // Unpublish the story
+                    let result = sqlx::query(
+                        r#"
+                        UPDATE stories
+                        SET published_at = NULL
+                        WHERE id = $1
+                        "#,
+                    )
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        }))
+                        .await;
+
+                    assert!(response.is_ok());
+
+                    // Should not increment the `view_count`
+                    let result = sqlx::query(
+                        r#"
+                        SELECT view_count
+                        FROM stories
+                        WHERE slug = $1
+                        "#,
+                    )
+                    .bind("some-story")
+                    .fetch_one(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.get::<i64, _>("view_count"), 0);
+                }),
+            )
+            .await;
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_soft_deleted_story_by_slug_when_logged_in(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                true,
+                Box::new(|mut client, pool, _, user_id| async move {
+                    // Soft-delete the story
+                    let result = sqlx::query(
+                        r#"
+                        UPDATE stories
+                        SET deleted_at = now()
+                        WHERE id = $1
+                        "#,
+                    )
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        }))
+                        .await;
+
+                    assert!(response.is_ok());
+
+                    // Should not increment the `view_count`
+                    let result = sqlx::query(
+                        r#"
+                        SELECT view_count
+                        FROM stories
+                        WHERE slug = $1
+                        "#,
+                    )
+                    .bind("some-story")
+                    .fetch_one(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.get::<i64, _>("view_count"), 0);
+                }),
+            )
+            .await;
+        }
     }
 }

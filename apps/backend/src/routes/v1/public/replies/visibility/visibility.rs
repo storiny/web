@@ -111,7 +111,7 @@ mod tests {
         assert!(res.status().is_success());
 
         // `hidden` should get updated in the database
-        let asset = sqlx::query(
+        let result = sqlx::query(
             r#"
             SELECT hidden FROM replies
             WHERE id = $1
@@ -121,7 +121,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(asset.get::<bool, _>("hidden"));
+        assert!(result.get::<bool, _>("hidden"));
 
         // Unhide the reply
         let req = test::TestRequest::post()
@@ -134,7 +134,7 @@ mod tests {
         assert!(res.status().is_success());
 
         // `hidden` should get updated in the database
-        let asset = sqlx::query(
+        let result = sqlx::query(
             r#"
             SELECT hidden FROM replies
             WHERE id = $1
@@ -144,7 +144,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(!asset.get::<bool, _>("hidden"));
+        assert!(!result.get::<bool, _>("hidden"));
 
         Ok(())
     }
