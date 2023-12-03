@@ -123,7 +123,7 @@ async fn post(
                                 INTO
                                     mfa_recovery_codes (code, user_id)
                                 SELECT
-                                    UNNEST($2::CHAR(8)[]),
+                                    UNNEST($2::CHAR(12)[]),
                                     $1
                                 "#,
                             )

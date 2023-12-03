@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS mfa_recovery_codes
 (
-	code       CHAR(8)     NOT NULL,
+	code       CHAR(12)    NOT NULL,
 	user_id    BIGINT      NOT NULL
 		REFERENCES users (id)
 			ON DELETE CASCADE,

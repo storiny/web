@@ -34,6 +34,7 @@ create_store(
     },
     reset_password: { token: null },
     login_data: null,
+    mfa_code: null,
     recovery: {
       email: ""
     },

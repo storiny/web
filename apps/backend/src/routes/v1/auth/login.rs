@@ -64,7 +64,7 @@ struct Request {
     #[validate(length(min = 6, max = 64, message = "Invalid password length"))]
     password: String,
     remember_me: bool,
-    #[validate(length(min = 6, max = 8, message = "Invalid verification code"))]
+    #[validate(length(min = 6, max = 12, message = "Invalid verification code"))]
     code: Option<String>,
 }
 
@@ -138,7 +138,7 @@ async fn post(
 
                 match verification_code.chars().count() {
                     // Recovery code
-                    8 => {
+                    12 => {
                         let result = sqlx::query(
                             r#"
                             SELECT EXISTS(
@@ -602,7 +602,7 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind("0".repeat(8))
+        .bind("0".repeat(12))
         .bind(1_i64)
         .execute(&mut *conn)
         .await?;
@@ -613,7 +613,7 @@ mod tests {
                 email: email.to_string(),
                 password: password.to_string(),
                 remember_me: true,
-                code: Some("0".repeat(8)),
+                code: Some("0".repeat(12)),
             })
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -635,7 +635,7 @@ mod tests {
             WHERE code = $1 AND user_id = $2
             "#,
         )
-        .bind("0".repeat(8))
+        .bind("0".repeat(12))
         .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
@@ -1165,7 +1165,7 @@ mod tests {
                 email: email.to_string(),
                 password: password.to_string(),
                 remember_me: true,
-                code: Some("0".repeat(8)),
+                code: Some("0".repeat(12)),
             })
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -1242,7 +1242,7 @@ mod tests {
             VALUES ($1, $2, now())
             "#,
         )
-        .bind("0".repeat(8))
+        .bind("0".repeat(12))
         .bind(1_i64)
         .execute(&mut *conn)
         .await?;
@@ -1253,7 +1253,7 @@ mod tests {
                 email: email.to_string(),
                 password: password.to_string(),
                 remember_me: true,
-                code: Some("0".repeat(8)),
+                code: Some("0".repeat(12)),
             })
             .to_request();
         let res = test::call_service(&app, req).await;
