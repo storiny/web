@@ -27,7 +27,7 @@ mod tests {
     #[test]
     fn can_return_valid_client_country_code() {
         let result = get_client_country(IpAddr::V4(Ipv4Addr::new(8, 8, 8, 8)), &get_geo_db());
-        assert_eq!(result.unwrap(), "United States".to_string());
+        assert_eq!(result.unwrap(), "US".to_string());
     }
 
     #[test]

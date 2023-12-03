@@ -519,12 +519,17 @@ pub async fn start_realms_server(
                     }))
                 },
             ))
-        .with(if config.is_dev {
-            warp::cors().allow_any_origin()
-        } else {
-            warp::cors()
-                .allow_origin(config.web_server_url.to_string())
-                .allow_methods(vec!["OPTIONS", "GET"])
+        .with({
+            let config = get_app_config().unwrap();
+
+            if config.is_dev {
+                warp::cors().allow_any_origin()
+            } else {
+                let allowed_origin = config.web_server_url.to_string();
+                warp::cors()
+                    .allow_origin(&*allowed_origin)
+                    .allow_methods(vec!["OPTIONS", "GET"])
+            }
         })
         .with(warp::compression::gzip())
         .recover(handle_rejection);
