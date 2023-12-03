@@ -50,7 +50,7 @@ pub async fn test_grpc_service<B>(
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(name, username, email)
+            INSERT INTO users (name, username, email)
             VALUES ($1, $2, $3)
             RETURNING id
             "#,

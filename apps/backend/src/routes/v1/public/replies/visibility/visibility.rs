@@ -177,7 +177,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             WITH new_user AS (
-                INSERT INTO users(name, username, email)
+                INSERT INTO users (name, username, email)
                 VALUES ('New user', 'new_user', 'new@example.com')
                 RETURNING id
             )
@@ -215,7 +215,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE replies
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )

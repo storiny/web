@@ -91,7 +91,7 @@ async fn post(
         // Check for duplicate e-mail
         let email_check = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM users
                 WHERE email = $1
             )
@@ -115,7 +115,7 @@ async fn post(
         // Check for duplicate username
         let username_check = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM users
                 WHERE username = $1
             )
@@ -154,7 +154,7 @@ async fn post(
                     // Insert the user
                     let user_insert_result = sqlx::query(
                         r#"
-                        INSERT INTO users(email, name, username, password, wpm)
+                        INSERT INTO users (email, name, username, password, wpm)
                         VALUES ($1, $2, $3, $4, $5)
                         RETURNING id
                         "#,
@@ -172,7 +172,7 @@ async fn post(
                     // Insert email verification token
                     sqlx::query(
                         r#"
-                        INSERT INTO tokens(id, type, user_id, expires_at)
+                        INSERT INTO tokens (id, type, user_id, expires_at)
                         VALUES ($1, $2, $3, $4)
                         "#,
                     )
@@ -283,7 +283,7 @@ mod tests {
         // Should also insert an e-mail verification token
         let token = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM tokens
                 WHERE type = $1
             )
@@ -306,7 +306,7 @@ mod tests {
         // Insert user into the database
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email)
+            INSERT INTO users (name, username, email)
             VALUES ($1, $2, $3)
             "#,
         )
@@ -342,7 +342,7 @@ mod tests {
         // Insert user into the database
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email)
+            INSERT INTO users (name, username, email)
             VALUES ($1, $2, $3)
             "#,
         )

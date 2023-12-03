@@ -353,7 +353,7 @@ mod tests {
             // Asset should be present in the database
             let result = sqlx::query(
                 r#"
-                SELECT EXISTS(
+                SELECT EXISTS (
                     SELECT 1 FROM assets
                     WHERE user_id = $1 AND id = $2
                 )

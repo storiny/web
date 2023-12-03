@@ -101,7 +101,7 @@ mod tests {
         // Friend request should not be present in the database
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM friends
                 WHERE receiver_id = $1 AND transmitter_id = $2
             )

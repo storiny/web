@@ -128,7 +128,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE replies
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -187,7 +187,7 @@ mod tests {
             // Reply like should be present in the database
             let result = sqlx::query(
                 r#"
-                SELECT EXISTS(
+                SELECT EXISTS (
                     SELECT 1 FROM reply_likes
                     WHERE user_id = $1 AND reply_id = $2
                 )

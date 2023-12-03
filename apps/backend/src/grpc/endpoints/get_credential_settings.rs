@@ -82,7 +82,7 @@ mod tests {
                 // Insert the user
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO users(
+                    INSERT INTO users (
                         name,
                         username,
                         email,

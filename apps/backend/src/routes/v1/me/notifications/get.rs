@@ -294,7 +294,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE notification_outs
-            SET read_at = now()
+            SET read_at = NOW()
             WHERE notification_id = $1
             "#,
         )
@@ -424,7 +424,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(user_id.unwrap())
@@ -505,7 +505,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE relations
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE follower_id = $1 AND followed_id = $2
             "#,
         )
@@ -558,7 +558,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(user_id.unwrap())
@@ -586,7 +586,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE friends
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )
@@ -666,7 +666,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE friends
-            SET accepted_at = now()
+            SET accepted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )

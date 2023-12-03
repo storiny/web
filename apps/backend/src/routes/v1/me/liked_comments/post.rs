@@ -133,7 +133,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE comments
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -192,7 +192,7 @@ mod tests {
             // Comment like should be present in the database
             let result = sqlx::query(
                 r#"
-                SELECT EXISTS(
+                SELECT EXISTS (
                     SELECT 1 FROM comment_likes
                     WHERE user_id = $1 AND comment_id = $2
                 )

@@ -70,7 +70,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -111,7 +111,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deactivated_at = now()
+            SET deactivated_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -152,7 +152,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -193,7 +193,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deactivated_at = now()
+            SET deactivated_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -266,7 +266,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE friends
-            SET accepted_at = now()
+            SET accepted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )
@@ -316,7 +316,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE friends
-            SET accepted_at = now()
+            SET accepted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )
@@ -345,7 +345,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE friends
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )
@@ -424,7 +424,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE friends
-            SET accepted_at = now()
+            SET accepted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )
@@ -502,7 +502,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE friends
-            SET accepted_at = now()
+            SET accepted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )
@@ -528,7 +528,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE friends
-            SET accepted_at = now()
+            SET accepted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )
@@ -553,7 +553,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE friends
-            SET accepted_at = now()
+            SET accepted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )
@@ -582,7 +582,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE friends
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )
@@ -699,7 +699,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE friends
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )
@@ -775,7 +775,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE friends
-            SET accepted_at = now()
+            SET accepted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )
@@ -800,7 +800,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE friends
-            SET accepted_at = now()
+            SET accepted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )
@@ -891,7 +891,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE friends
-            SET accepted_at = now()
+            SET accepted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )
@@ -916,7 +916,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE friends
-            SET accepted_at = now()
+            SET accepted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )
@@ -945,7 +945,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE friends
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )
@@ -1425,7 +1425,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE friends
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE transmitter_id = $1 AND receiver_id = $2
             "#,
         )
@@ -1437,7 +1437,7 @@ mod tests {
         // Notification should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM notifications
                 WHERE id = $1
             )
@@ -1501,7 +1501,7 @@ mod tests {
         // Notification should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM notifications
                 WHERE id = $1
             )

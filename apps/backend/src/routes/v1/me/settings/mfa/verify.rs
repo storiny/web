@@ -180,7 +180,7 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password, mfa_secret)
+            INSERT INTO users (id, name, username, email, password, mfa_secret)
             VALUES ($1, $2, $3, $4, $5, $6)
             "#,
         )
@@ -274,7 +274,7 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password, mfa_enabled, mfa_secret)
+            INSERT INTO users (id, name, username, email, password, mfa_enabled, mfa_secret)
             VALUES ($1, $2, $3, $4, $5, TRUE, 'some_secret')
             "#,
         )
@@ -317,7 +317,7 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password)
+            INSERT INTO users (id, name, username, email, password)
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -361,7 +361,7 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password, mfa_secret)
+            INSERT INTO users (id, name, username, email, password, mfa_secret)
             VALUES ($1, $2, $3, $4, $5, $6)
             "#,
         )

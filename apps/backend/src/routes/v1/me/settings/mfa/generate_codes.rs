@@ -123,7 +123,7 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password, mfa_enabled)
+            INSERT INTO users (id, name, username, email, password, mfa_enabled)
             VALUES ($1, $2, $3, $4, $5, TRUE)
             "#,
         )
@@ -175,7 +175,7 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password, mfa_enabled)
+            INSERT INTO users (id, name, username, email, password, mfa_enabled)
             VALUES ($1, $2, $3, $4, $5, TRUE)
             "#,
         )
@@ -220,7 +220,7 @@ mod tests {
         // Old recovery code should not be present in the database.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM mfa_recovery_codes
                 WHERE code = $1
             )
@@ -264,7 +264,7 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password, mfa_enabled)
+            INSERT INTO users (id, name, username, email, password, mfa_enabled)
             VALUES ($1, $2, $3, $4, $5, FALSE)
             "#,
         )

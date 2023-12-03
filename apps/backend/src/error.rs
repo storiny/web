@@ -4,6 +4,7 @@ use actix_web::{
     ResponseError,
 };
 use serde::Serialize;
+use sqlx::Error;
 use std::fmt::{
     Display,
     Formatter,
@@ -123,7 +124,7 @@ pub enum AppError {
     /// The error raised by [deadpool_redis] when trying to acquire a connection from the pool.
     RedisPoolError(deadpool_redis::PoolError),
     /// Internal server error.
-    InternalError,
+    InternalError(String),
     /// The error raised due to bad data sent by the client.
     ClientError(String),
     /// The [ToastErrorResponse] variant.
@@ -142,7 +143,7 @@ impl ResponseError for AppError {
     /// Returns the HTTP [StatusCode] for the error.
     fn status_code(&self) -> StatusCode {
         match &*self {
-            AppError::InternalError | AppError::SqlxError(_) | AppError::RedisPoolError(_) => {
+            AppError::InternalError(_) | AppError::SqlxError(_) | AppError::RedisPoolError(_) => {
                 StatusCode::INTERNAL_SERVER_ERROR
             }
             AppError::ClientError(_) => StatusCode::BAD_REQUEST,
@@ -156,7 +157,7 @@ impl ResponseError for AppError {
         let mut response_builder = HttpResponse::build(self.status_code());
 
         match &*self {
-            AppError::InternalError | AppError::SqlxError(_) | AppError::RedisPoolError(_) => {
+            AppError::InternalError(_) | AppError::SqlxError(_) | AppError::RedisPoolError(_) => {
                 response_builder.body("Internal server error")
             }
             AppError::ClientError(message) => response_builder.body(message.to_string()),
@@ -166,7 +167,7 @@ impl ResponseError for AppError {
     }
 }
 
-impl Into<AppError> for std::str {
+impl Into<AppError> for &str {
     fn into(self) -> AppError {
         AppError::ClientError(self.to_string())
     }
@@ -227,4 +228,10 @@ pub enum ExternalAuthError {
     InvalidAccessToken,
     /// Other connection error.
     Other(String),
+}
+
+impl From<sqlx::Error> for ExternalAuthError {
+    fn from(value: sqlx::Error) -> Self {
+        ExternalAuthError::Other(value.to_string())
+    }
 }

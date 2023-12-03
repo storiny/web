@@ -198,7 +198,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE comments
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )

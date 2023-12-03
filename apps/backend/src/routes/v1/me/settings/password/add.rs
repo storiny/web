@@ -217,7 +217,7 @@ mod tests {
         // Insert password-add verification token
         sqlx::query(
             r#"
-            INSERT INTO tokens(id, type, user_id, expires_at)
+            INSERT INTO tokens (id, type, user_id, expires_at)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -263,7 +263,7 @@ mod tests {
         // Token should get removed from the database
         let token = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM tokens
                 WHERE id = $1
             )
@@ -305,7 +305,7 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password)
+            INSERT INTO users (id, name, username, email, password)
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -351,7 +351,7 @@ mod tests {
         // Insert password-add verification token
         let token_result = sqlx::query(
             r#"
-            INSERT INTO tokens(id, type, user_id, expires_at)
+            INSERT INTO tokens (id, type, user_id, expires_at)
             VALUES ($1, $2, $3, $4)
             "#,
         )

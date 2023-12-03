@@ -53,6 +53,10 @@ use serde::Deserialize;
 use sqlx::Row;
 use std::net::IpAddr;
 use time::OffsetDateTime;
+use tracing::{
+    debug,
+    error,
+};
 use validator::Validate;
 
 /// A [Google OAuth V2 API](https://www.googleapis.com/oauth2/v2/userinfo) endpoint response.
@@ -70,6 +74,7 @@ struct Response {
     id: String,
 }
 
+#[tracing::instrument(skip_all, err)]
 async fn handle_oauth_request(
     req: HttpRequest,
     data: &web::Data<AppState>,
@@ -84,17 +89,16 @@ async fn handle_oauth_request(
     if let Some(params) = params {
         let oauth_token = session
             .get::<String>("oauth_token")
-            .map_err(|err| ExternalAuthError::Other(err.to_string()))?
+            .map_err(|error| ExternalAuthError::Other(error.to_string()))?
             .ok_or(ExternalAuthError::Other(
                 "unable to extract the oauth token from the session".to_string(),
             ))?;
 
-        // Check whether the CSRF token has been tampered
+        // Check whether the CSRF token has been tampered.
         if oauth_token != params.state {
             return Err(ExternalAuthError::StateMismatch);
         }
 
-        // Remove the CSRF token from the session.
         session.remove("oauth_token");
 
         let code = AuthorizationCode::new(params.code.clone());
@@ -102,7 +106,7 @@ async fn handle_oauth_request(
             .exchange_code(code)
             .request_async(async_http_client)
             .await
-            .map_err(|err| ExternalAuthError::Other(err.to_string()))?;
+            .map_err(|error| ExternalAuthError::Other(error.to_string()))?;
 
         // Check if the `userinfo.email` and `userinfo.profile` scopes were granted, required for
         // obtaining the account details.
@@ -112,6 +116,8 @@ async fn handle_oauth_request(
             .iter()
             .map(|scope| scope.as_str())
             .collect::<Vec<_>>();
+
+        debug!(?received_scopes, "scopes received from Google");
 
         if !vec![
             "https://www.googleapis.com/auth/userinfo.email",
@@ -126,25 +132,25 @@ async fn handle_oauth_request(
         access_token = token_res.access_token().secret().to_string();
     }
 
-    // Fetch the account details
+    // Fetch the account details.
     let google_data = reqwest_client
         .get("https://www.googleapis.com/oauth2/v2/userinfo?alt=json")
         .header("Content-type", ContentType::json().to_string())
         .header(header::AUTHORIZATION, format!("Bearer {access_token}"))
         .send()
         .await
-        .map_err(|err| {
+        .map_err(|error| {
             if access_token_param.is_some() {
                 ExternalAuthError::InvalidAccessToken
             } else {
-                ExternalAuthError::Other(err.to_string())
+                ExternalAuthError::Other(error.to_string())
             }
         })?
         .json::<Response>()
         .await
         .map_err(|err| ExternalAuthError::Other(err.to_string()))?;
 
-    // Check if Google returned an invalid response.
+    // Sanity check.
     google_data
         .validate()
         .map_err(|err| ExternalAuthError::Other(err.to_string()))?;
@@ -178,17 +184,17 @@ async fn handle_google_profile_data(
         // Verify the password sent by the user.
         match sqlx::query(
             r#"
-            SELECT password FROM users
-            WHERE
-                email = $1
-                AND password IS NOT NULL
-            "#,
+SELECT password FROM users
+WHERE
+    email = $1
+    AND password IS NOT NULL
+"#,
         )
         .bind(&google_data.email)
         .fetch_one(&data.db_pool)
         .await
         {
-            Ok(result) => match PasswordHash::new(&result.get::<String, _>("password")) {
+            Ok(user) => match PasswordHash::new(&user.get::<String, _>("password")) {
                 Ok(hash) => {
                     match Argon2::default().verify_password(&provided_password.as_bytes(), &hash) {
                         Ok(_) => {}
@@ -197,34 +203,31 @@ async fn handle_google_profile_data(
                 }
                 Err(err) => return Err(ExternalAuthError::Other(err.to_string())),
             },
-            Err(error) => match error {
-                // Skip password verification if the user with the provided email does not exist or
-                // has not set a password.
-                sqlx::Error::RowNotFound => {}
-                _ => return Err(ExternalAuthError::Other(error.to_string())),
-            },
+            Err(error) => {
+                // Skip the password verification process if the user with the provided email does
+                // not exist or has not set a password.
+                if !matches!(error, sqlx::Error::RowNotFound) {
+                    return Err(ExternalAuthError::Other(error.to_string()));
+                }
+            }
         }
     } else {
         // Request to verify the user's password if the user already exist with the email address
         // received from Google.
         match sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM users
-                WHERE
-                    email = $1
-                    AND password IS NOT NULL
-            )
-            "#,
+SELECT 1 FROM users
+WHERE
+    email = $1
+    AND password IS NOT NULL
+"#,
         )
         .bind(&google_data.email)
         .fetch_one(&data.db_pool)
         .await
         {
-            Ok(result) => {
-                if result.get::<bool, _>("exists") {
-                    return Err(ExternalAuthError::VerifyPassword(access_token));
-                }
+            Ok(_) => {
+                return Err(ExternalAuthError::VerifyPassword(access_token));
             }
             Err(error) => {
                 if !matches!(error, sqlx::Error::RowNotFound) {
@@ -239,19 +242,19 @@ async fn handle_google_profile_data(
         .begin()
         .await
         .map_err(|err| ExternalAuthError::Other(err.to_string()))?;
-    // `insert` or `update`
+    // The upsert type (`insert` or `update`)
     let mut upsert_type: Option<&str> = None;
 
     let user_data = match sqlx::query(
         r#"
-        SELECT
-            id,
-            public_flags,
-            deleted_at,
-            deactivated_at
-        FROM users
-        WHERE login_google_id = $1
-        "#,
+SELECT
+    id,
+    public_flags,
+    deleted_at,
+    deactivated_at
+FROM users
+WHERE login_google_id = $1
+"#,
     )
     .bind(&google_data.id)
     .fetch_one(&mut *txn)
@@ -268,68 +271,68 @@ async fn handle_google_profile_data(
             if matches!(err, sqlx::Error::RowNotFound) {
                 let upsert_result = sqlx::query(
                     r#"
-                    WITH inserted_user AS (
-                        INSERT INTO users (name, username, email, login_google_id)
-                        VALUES ($1, $2, $3, $4)
-                        ON CONFLICT (email) DO NOTHING
-                        RETURNING
-                            id,
-                            public_flags,
-                            deleted_at,
-                            deactivated_at
-                    ),
-                    updated_user AS (
-                        UPDATE users
-                        SET login_google_id = $4
-                        WHERE
-                            email = $3
-                            AND NOT EXISTS (SELECT 1 FROM inserted_user)
-                        RETURNING 
-                            id,
-                            public_flags,
-                            deleted_at,
-                            deactivated_at
-                    )
-                    SELECT 
-                        COALESCE (
-                            (SELECT id FROM updated_user),
-                            (SELECT id FROM inserted_user)
-                        ) AS "id",
-                        COALESCE (
-                            (SELECT public_flags FROM updated_user),
-                            (SELECT public_flags FROM inserted_user)
-                        ) AS "public_flags",
-                        COALESCE (
-                            (SELECT deleted_at FROM updated_user),
-                            (SELECT deleted_at FROM inserted_user)
-                        ) AS "deleted_at",
-                        COALESCE (
-                            (SELECT deactivated_at FROM updated_user),
-                            (SELECT deactivated_at FROM inserted_user)
-                        ) AS "deactivated_at",
-                        CASE WHEN
-                            EXISTS (
-                                SELECT 1 FROM updated_user
-                            )
-                        THEN TRUE ELSE FALSE
-                        END AS "has_updated"
-                    "#,
+WITH inserted_user AS (
+    INSERT INTO users (name, username, email, login_google_id)
+    VALUES ($1, $2, $3, $4)
+    ON CONFLICT (email) DO NOTHING
+    RETURNING
+        id,
+        public_flags,
+        deleted_at,
+        deactivated_at
+),
+updated_user AS (
+    UPDATE users
+    SET login_google_id = $4
+    WHERE
+        email = $3
+        AND NOT EXISTS (SELECT 1 FROM inserted_user)
+    RETURNING 
+        id,
+        public_flags,
+        deleted_at,
+        deactivated_at
+)
+SELECT 
+    COALESCE (
+        (SELECT id FROM updated_user),
+        (SELECT id FROM inserted_user)
+    ) AS "id",
+    COALESCE (
+        (SELECT public_flags FROM updated_user),
+        (SELECT public_flags FROM inserted_user)
+    ) AS "public_flags",
+    COALESCE (
+        (SELECT deleted_at FROM updated_user),
+        (SELECT deleted_at FROM inserted_user)
+    ) AS "deleted_at",
+    COALESCE (
+        (SELECT deactivated_at FROM updated_user),
+        (SELECT deactivated_at FROM inserted_user)
+    ) AS "deactivated_at",
+    CASE WHEN
+        EXISTS (
+            SELECT 1 FROM updated_user
+        )
+    THEN TRUE ELSE FALSE
+    END AS "has_updated"
+"#,
                 )
                 .bind(truncate_str(&google_data.name, 32))
                 .bind(
                     generate_random_username(&google_data.name, &mut txn)
                         .await
-                        .map_err(|_| {
-                            ExternalAuthError::Other(
-                                "unable to generate a random username".to_string(),
-                            )
+                        .map_err(|error| {
+                            ExternalAuthError::Other(format!(
+                                "unable to generate a random username: {:?}",
+                                error
+                            ))
                         })?,
                 )
                 .bind(&google_data.email)
                 .bind(&google_data.id)
                 .fetch_one(&mut *txn)
-                .await
-                .map_err(|err| ExternalAuthError::Other(err.to_string()))?;
+                .await?;
 
                 if upsert_result.get::<bool, _>("has_updated") {
                     upsert_type = Some("update");
@@ -351,7 +354,7 @@ async fn handle_google_profile_data(
 
     let user_id = user_data.0;
 
-    // Check if the user is valid
+    // Check whether the user can currently log in.
     {
         let (_, public_flags, deactivated_at, deleted_at) = user_data;
 
@@ -375,7 +378,7 @@ async fn handle_google_profile_data(
     let mut client_device_value = "Unknown device".to_string();
     let mut client_location_value: Option<String> = None;
 
-    // Insert additional data to the session
+    // Insert additional data to the session.
     {
         if let Some(ip) = req.connection_info().realip_remote_addr() {
             if let Ok(parsed_ip) = ip.parse::<IpAddr>() {
@@ -401,58 +404,51 @@ async fn handle_google_profile_data(
     }
 
     if upsert_type == Some("update") {
-        // Insert an account activity
+        // Insert an account activity for the user.
         sqlx::query(
             r#"
-            INSERT INTO account_activities (type, description, user_id)
-            VALUES (
-                $2,
-                'You added <m>Google</m> as a third-party login method.',
-                $1
-            )
-            "#,
+INSERT INTO account_activities (type, description, user_id)
+VALUES ($2, 'You added <m>Google</m> as a third-party login method.', $1)
+"#,
         )
-        .bind(user_id)
+        .bind(&user_id)
         .bind(AccountActivityType::ThirdPartyLogin as i16)
         .execute(&mut *txn)
-        .await
-        .map_err(|err| ExternalAuthError::Other(err.to_string()))?;
+        .await?;
+    }
     // Do not insert a login notification when a new user is created
-    } else if upsert_type.is_none() {
-        // Insert a login notification
+    else if upsert_type.is_none() {
+        // Insert a login notification for the user.
         sqlx::query(
             r#"
-            WITH inserted_notification AS (
-                INSERT INTO notifications (entity_type)
-                VALUES ($1)
-                RETURNING id
-            )
-            INSERT
-            INTO
-                notification_outs (
-                    notified_id,
-                    notification_id,
-                    rendered_content
-                )
-            SELECT
-                $2, (SELECT id FROM inserted_notification), $3
-            "#,
+WITH inserted_notification AS (
+    INSERT INTO notifications (entity_type)
+    VALUES ($1)
+    RETURNING id
+)
+INSERT
+INTO
+    notification_outs (
+        notified_id,
+        notification_id,
+        rendered_content
+    )
+SELECT
+    $2, (SELECT id FROM inserted_notification), $3
+"#,
         )
         .bind(NotificationEntityType::LoginAttempt as i16)
-        .bind(user_id)
+        .bind(&user_id)
         .bind(if let Some(location) = client_location_value {
             format!("{client_device_value}:{location}")
         } else {
             client_device_value
         })
         .execute(&mut *txn)
-        .await
-        .map_err(|err| ExternalAuthError::Other(err.to_string()))?;
+        .await?;
     }
 
-    txn.commit()
-        .await
-        .map_err(|err| ExternalAuthError::Other(err.to_string()))?;
+    txn.commit().await?;
 
     // Check if the user maintains more than or equal to 10 sessions, and
     // delete all the previous sessions if the current number of active
@@ -462,7 +458,9 @@ async fn handle_google_profile_data(
             if sessions.len() >= 10 {
                 match clear_user_sessions(&data.redis, user_id).await {
                     Ok(_) => {}
-                    Err(_) => {
+                    Err(error) => {
+                        error!(?error, "unable to clear user sessions");
+
                         return Err(ExternalAuthError::Other(
                             "unable to clear user sessions".to_string(),
                         ));
@@ -470,7 +468,9 @@ async fn handle_google_profile_data(
                 };
             }
         }
-        Err(_) => {
+        Err(error) => {
+            error!(?error, "unable to fetch user sessions");
+
             return Err(ExternalAuthError::Other(
                 "unable to fetch user sessions".to_string(),
             ));
@@ -482,7 +482,7 @@ async fn handle_google_profile_data(
         .map_err(|err| ExternalAuthError::Other(err.to_string()))
 }
 
-// Without password verification
+#[tracing::instrument(name = "GET /v1/auth/external/google/callback", skip_all, err)]
 #[get("/v1/auth/external/google/callback")]
 async fn get(
     req: HttpRequest,
@@ -491,7 +491,7 @@ async fn get(
     session: Session,
     user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    // Redirect to the web server if already logged-in
+    // Redirect to the web server if already logged-in.
     if user.is_some() {
         return Ok(HttpResponse::Found()
             .append_header((header::LOCATION, data.config.web_server_url.to_string()))
@@ -530,7 +530,7 @@ struct VerificationRequest {
     password: String,
 }
 
-// With password verification
+#[tracing::instrument(name = "GET /v1/auth/external/google/verification", skip_all, err)]
 #[get("/v1/auth/external/google/verification")]
 async fn verify(
     req: HttpRequest,
@@ -539,7 +539,7 @@ async fn verify(
     user: Option<Identity>,
     params: QsQuery<VerificationRequest>,
 ) -> Result<HttpResponse, AppError> {
-    // Redirect to the web server if already logged-in
+    // Redirect to the web server if already logged-in..
     if user.is_some() {
         return Ok(HttpResponse::Found()
             .append_header((header::LOCATION, data.config.web_server_url.to_string()))
@@ -689,14 +689,14 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // New user should be present in the database
+        // New user should be present in the database.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM users
-                WHERE login_google_id = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM users
+    WHERE login_google_id = $1
+)
+"#,
         )
         .bind("1")
         .fetch_one(&mut *conn)
@@ -704,22 +704,21 @@ mod tests {
 
         assert!(result.get::<bool, _>("exists"));
 
-        // Should not insert a notification for new user
+        // Should not insert a notification for new user.
         let result = sqlx::query(
             r#"
-            SELECT
-                EXISTS (
-                    SELECT
-                        1
-                    FROM
-                        notification_outs
-                    WHERE
-                        notification_id = (
-                            SELECT id FROM notifications
-                            WHERE entity_type = $1
-                        )
-                   )
-            "#,
+SELECT EXISTS (
+    SELECT
+        1
+    FROM
+        notification_outs
+    WHERE
+        notification_id = (
+            SELECT id FROM notifications
+            WHERE entity_type = $1
+        )
+    )
+"#,
         )
         .bind(NotificationEntityType::LoginAttempt as i16)
         .fetch_one(&mut *conn)
@@ -735,13 +734,13 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Update `login_google_id` for the current user
+        // Update `login_google_id` for the current user.
         let result = sqlx::query(
             r#"
-            UPDATE users
-            SET login_google_id = $1
-            WHERE id = $2
-            "#,
+UPDATE users
+SET login_google_id = $1
+WHERE id = $2
+"#,
         )
         .bind("1")
         .bind(user_id.unwrap())
@@ -755,7 +754,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // New user should not be inserted in the database
+        // New user should not be inserted in the database.
         let result = sqlx::query(r#"SELECT 1 FROM users"#)
             .fetch_all(&mut *conn)
             .await?;
@@ -765,19 +764,19 @@ mod tests {
         // Should insert a notification
         let result = sqlx::query(
             r#"
-            SELECT
-                EXISTS (
-                    SELECT
-                        1
-                    FROM
-                        notification_outs
-                    WHERE
-                        notification_id = (
-                            SELECT id FROM notifications
-                            WHERE entity_type = $1
-                        )
-                   )
-            "#,
+SELECT
+EXISTS (
+    SELECT
+        1
+    FROM
+        notification_outs
+    WHERE
+        notification_id = (
+            SELECT id FROM notifications
+            WHERE entity_type = $1
+    )
+)
+"#,
         )
         .bind(NotificationEntityType::LoginAttempt as i16)
         .fetch_one(&mut *conn)
@@ -800,13 +799,13 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // User should get updated in the database
+        // User should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT login_google_id
-            FROM users
-            WHERE id = $1
-            "#,
+SELECT login_google_id
+FROM users
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
@@ -814,15 +813,15 @@ mod tests {
 
         assert!(result.get::<Option<String>, _>("login_google_id").is_some());
 
-        // Should insert an account activity
+        // Should insert an account activity.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1
-                FROM account_activities
-                WHERE type = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1
+    FROM account_activities
+    WHERE type = $1
+)
+"#,
         )
         .bind(AccountActivityType::ThirdPartyLogin as i16)
         .fetch_one(&mut *conn)
@@ -834,19 +833,19 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_a_new_google_login_for_an_existing_user_with_no_password_provided(
+    async fn can_reject_a_new_google_login_for_an_existing_user_with_no_provided_password(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Add a password for the user
+        // Add a password for the user.
         let result = sqlx::query(
             r#"
-            UPDATE users
-            SET password = $1
-            WHERE id = $2
-            "#,
+UPDATE users
+SET password = $1
+WHERE id = $2
+"#,
         )
         .bind("some_bad_password")
         .bind(user_id.unwrap())
@@ -878,13 +877,13 @@ mod tests {
             .unwrap()
             .to_string();
 
-        // Add a different password for the user
+        // Add a different password for the user.
         let result = sqlx::query(
             r#"
-            UPDATE users
-            SET password = $1
-            WHERE id = $2
-            "#,
+UPDATE users
+SET password = $1
+WHERE id = $2
+"#,
         )
         .bind(password_hash)
         .bind(user_id.unwrap())
@@ -918,13 +917,13 @@ mod tests {
             .unwrap()
             .to_string();
 
-        // Add a valid password for the user
+        // Add a valid password for the user.
         let result = sqlx::query(
             r#"
-            UPDATE users
-            SET password = $1
-            WHERE id = $2
-            "#,
+UPDATE users
+SET password = $1
+WHERE id = $2
+"#,
         )
         .bind(password_hash)
         .bind(user_id.unwrap())
@@ -940,12 +939,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // User should get updated in the database
+        // User should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT login_google_id
-            FROM users WHERE id = $1
-            "#,
+SELECT login_google_id
+FROM users WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
@@ -953,15 +952,15 @@ mod tests {
 
         assert!(result.get::<Option<String>, _>("login_google_id").is_some());
 
-        // Should insert an account activity
+        // Should insert an account activity.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1
-                FROM account_activities
-                WHERE type = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1
+    FROM account_activities
+    WHERE type = $1
+)
+"#,
         )
         .bind(AccountActivityType::ThirdPartyLogin as i16)
         .fetch_one(&mut *conn)
@@ -980,18 +979,19 @@ mod tests {
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
         let mut flags = Flag::new(0);
         flags.add_flag(UserFlag::TemporarilySuspended);
 
-        // Update flags and login ID for the current user
+        // Update the current user.
         let result = sqlx::query(
             r#"
-            UPDATE users
-            SET
-                public_flags = $1,
-                login_google_id = $2
-            WHERE id = $3
-            "#,
+UPDATE users
+SET
+    public_flags = $1,
+    login_google_id = $2
+WHERE id = $3
+"#,
         )
         .bind(flags.get_flags() as i32)
         .bind("1")
@@ -1016,18 +1016,19 @@ mod tests {
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
         let mut flags = Flag::new(0);
         flags.add_flag(UserFlag::PermanentlySuspended);
 
-        // Update flags and login ID for the current user
+        // Update the current user.
         let result = sqlx::query(
             r#"
-            UPDATE users
-            SET
-                public_flags = $1,
-                login_google_id = $2
-            WHERE id = $3
-            "#,
+UPDATE users
+SET
+    public_flags = $1,
+    login_google_id = $2
+WHERE id = $3
+"#,
         )
         .bind(flags.get_flags() as i32)
         .bind("1")
@@ -1051,15 +1052,15 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Update `login_google_id` and soft-delete the current user
+        // Update `login_google_id` and soft-delete the current user.
         let result = sqlx::query(
             r#"
-            UPDATE users
-            SET
-                deleted_at = now(),
-                login_google_id = $1
-            WHERE id = $2
-            "#,
+UPDATE users
+SET
+    deleted_at = NOW(),
+    login_google_id = $1
+WHERE id = $2
+"#,
         )
         .bind("1")
         .bind(user_id.unwrap())
@@ -1082,15 +1083,15 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Update `login_google_id` and deactivate the current user
+        // Update `login_google_id` and deactivate the current user.
         let result = sqlx::query(
             r#"
-            UPDATE users
-            SET
-                deactivated_at = now(),
-                login_google_id = $1
-            WHERE id = $2
-            "#,
+UPDATE users
+SET
+    deactivated_at = NOW(),
+    login_google_id = $1
+WHERE id = $2
+"#,
         )
         .bind("1")
         .bind(user_id.unwrap())
@@ -1116,16 +1117,17 @@ mod tests {
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
         let mut flags = Flag::new(0);
         flags.add_flag(UserFlag::TemporarilySuspended);
 
-        // Update flags for the current user
+        // Update the current user.
         let result = sqlx::query(
             r#"
-            UPDATE users
-            SET public_flags = $1
-            WHERE id = $2
-            "#,
+UPDATE users
+SET public_flags = $1
+WHERE id = $2
+"#,
         )
         .bind(flags.get_flags() as i32)
         .bind(user_id.unwrap())
@@ -1149,16 +1151,17 @@ mod tests {
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
         let mut flags = Flag::new(0);
         flags.add_flag(UserFlag::PermanentlySuspended);
 
-        // Update flags for the current user
+        // Update the current user.
         let result = sqlx::query(
             r#"
-            UPDATE users
-            SET public_flags = $1
-            WHERE id = $2
-            "#,
+UPDATE users
+SET public_flags = $1
+WHERE id = $2
+"#,
         )
         .bind(flags.get_flags() as i32)
         .bind(user_id.unwrap())
@@ -1183,13 +1186,13 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Soft-delete the current user
+        // Soft-delete the current user.
         let result = sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = now()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .execute(&mut *conn)
@@ -1213,13 +1216,13 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Deactivate the current user
+        // Deactivate the current user.
         let result = sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = now()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .execute(&mut *conn)

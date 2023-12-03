@@ -109,7 +109,7 @@ mod tests {
         // Tag should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM tags
                 WHERE id = $1
             )
@@ -168,7 +168,7 @@ mod tests {
         // Story tag should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM story_tags
                 WHERE tag_id = $1 AND story_id = $2
             )
@@ -228,7 +228,7 @@ mod tests {
         // Tag follower should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM tag_followers
                 WHERE tag_id = $1 AND user_id = $2
             )

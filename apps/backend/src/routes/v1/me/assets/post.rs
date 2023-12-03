@@ -386,7 +386,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email)
+            INSERT INTO users (id, name, username, email)
             VALUES ($1, $2, $3, $4)
             "#,
         )

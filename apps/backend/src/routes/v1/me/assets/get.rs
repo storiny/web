@@ -112,7 +112,7 @@ mod tests {
             r#"
             INSERT INTO assets(key, hex, height, width, user_id, favourited_at) 
             VALUES
-                ($1, $2, $3, $4, $5, now()),
+                ($1, $2, $3, $4, $5, NOW()),
                 ($6, $2, $3, $4, $5, NULL)
             "#,
         )

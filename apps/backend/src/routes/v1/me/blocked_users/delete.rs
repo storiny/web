@@ -94,7 +94,7 @@ mod tests {
         // Block should not be present in the database
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM blocks
                 WHERE blocker_id = $1 AND blocked_id = $2
             )

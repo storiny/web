@@ -94,7 +94,7 @@ mod tests {
         // Mute should not be present in the database
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM mutes
                 WHERE muter_id = $1 AND muted_id = $2
             )

@@ -94,7 +94,7 @@ mod tests {
         // Follower relation should not be present in the database
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
+            SELECT EXISTS (
                 SELECT 1 FROM relations
                 WHERE follower_id = $1 AND followed_id = $2
             )

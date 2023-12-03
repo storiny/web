@@ -103,12 +103,11 @@ async fn handle_oauth_request(
         .map_err(|_| ConnectionError::Other)?
         .ok_or(ConnectionError::Other)?;
 
-    // Check whether the CSRF token has been tampered
+    // Check whether the CSRF token has been tampered.
     if oauth_token != params.state {
         return Err(ConnectionError::StateMismatch);
     }
 
-    // Remove the CSRF token from the session.
     session.remove("oauth_token");
 
     let reqwest_client = &data.reqwest_client;

@@ -22,7 +22,7 @@ async fn get(
     session: Session,
     user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    // Redirect to the web server if already logged-in
+    // Redirect to the web server if already logged-in.
     if user.is_some() {
         return Ok(HttpResponse::Found()
             .append_header((header::LOCATION, data.config.web_server_url.to_string()))

@@ -270,7 +270,7 @@ mod tests {
                 LIMIT 1
             )
             UPDATE users
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = (SELECT id FROM selected_user)
             "#,
         )
@@ -380,7 +380,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE users
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -420,7 +420,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE users
-            SET deactivated_at = now()
+            SET deactivated_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -466,7 +466,7 @@ mod tests {
                 LIMIT 1
             )
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = (SELECT id FROM selected_story)
             "#,
         )
@@ -537,7 +537,7 @@ mod tests {
                 LIMIT 1
             )
             UPDATE tokens
-            SET expires_at = now() + INTERVAL '7 days'
+            SET expires_at = NOW() + INTERVAL '7 days'
             WHERE id = (SELECT id FROM selected_token)
             "#,
         )
@@ -608,7 +608,7 @@ mod tests {
                 LIMIT 1
             )
             UPDATE user_statuses
-            SET expires_at = now() + INTERVAL '7 days'
+            SET expires_at = NOW() + INTERVAL '7 days'
             WHERE user_id = (SELECT user_id FROM selected_user_status)
             "#,
         )

@@ -22,7 +22,7 @@ const SUFFIX_LENGTH: usize = 4;
 pub async fn generate_random_username<'a>(
     prefix: &str,
     txn: &mut Transaction<'a, Postgres>,
-) -> Result<String, ()> {
+) -> Result<String, sqlx::Error> {
     let character_set: [char; 36] = [
         '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
         'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
@@ -42,18 +42,18 @@ pub async fn generate_random_username<'a>(
 
     while match sqlx::query(
         r#"
-        SELECT 1 FROM users
-        WHERE username = $1
-        "#,
+SELECT 1 FROM users
+WHERE username = $1
+"#,
     )
     .bind(&username)
     .fetch_one(&mut **txn)
     .await
     {
         Ok(_) => true,
-        Err(kind) => match kind {
+        Err(error) => match error {
             sqlx::Error::RowNotFound => false,
-            _ => return Err(()),
+            _ => return Err(error),
         },
     } {
         if username_retries < MAX_USERNAME_GENERATE_ATTEMPTS {

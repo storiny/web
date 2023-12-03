@@ -141,7 +141,7 @@ async fn post(
                     12 => {
                         let result = sqlx::query(
                             r#"
-                            SELECT EXISTS(
+                            SELECT EXISTS (
                                 SELECT 1 FROM mfa_recovery_codes
                                 WHERE
                                     code = $1
@@ -165,7 +165,7 @@ async fn post(
                         sqlx::query(
                             r#"
                             UPDATE mfa_recovery_codes
-                            SET used_at = now()
+                            SET used_at = NOW()
                             WHERE code = $1 AND user_id = $2
                             "#,
                         )
@@ -516,7 +516,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email, password, email_verified)
+            INSERT INTO users (name, username, email, password, email_verified)
             VALUES ($1, $2, $3, $4, TRUE)
             "#,
         )
@@ -583,7 +583,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password, email_verified, mfa_enabled)
+            INSERT INTO users (id, name, username, email, password, email_verified, mfa_enabled)
             VALUES ($1, $2, $3, $4, $5, TRUE, TRUE)
             "#,
         )
@@ -655,7 +655,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(
+            INSERT INTO users (
                 name,
                 username,
                 email,
@@ -711,7 +711,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email, password)
+            INSERT INTO users (name, username, email, password)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -748,7 +748,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email)
+            INSERT INTO users (name, username, email)
             VALUES ($1, $2, $3)
             "#,
         )
@@ -784,7 +784,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email, password)
+            INSERT INTO users (name, username, email, password)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -825,7 +825,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email, password, public_flags)
+            INSERT INTO users (name, username, email, password, public_flags)
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -874,7 +874,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email, password, public_flags)
+            INSERT INTO users (name, username, email, password, public_flags)
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -919,7 +919,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email, password)
+            INSERT INTO users (name, username, email, password)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -934,7 +934,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deactivated_at = now()
+            SET deactivated_at = NOW()
             WHERE email = $1
             "#,
         )
@@ -975,7 +975,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email, password)
+            INSERT INTO users (name, username, email, password)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -990,7 +990,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE email = $1
             "#,
         )
@@ -1031,7 +1031,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email, password)
+            INSERT INTO users (name, username, email, password)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -1075,7 +1075,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email, mfa_enabled)
+            INSERT INTO users (name, username, email, mfa_enabled)
             VALUES ($1, $2, $3, TRUE)
             "#,
         )
@@ -1113,7 +1113,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email, mfa_enabled)
+            INSERT INTO users (name, username, email, mfa_enabled)
             VALUES ($1, $2, $3, TRUE)
             "#,
         )
@@ -1149,7 +1149,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email, mfa_enabled)
+            INSERT INTO users (name, username, email, mfa_enabled)
             VALUES ($1, $2, $3, TRUE)
             "#,
         )
@@ -1186,7 +1186,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email, mfa_enabled, mfa_secret)
+            INSERT INTO users (name, username, email, mfa_enabled, mfa_secret)
             VALUES ($1, $2, $3, TRUE, $4)
             "#,
         )
@@ -1223,7 +1223,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(id, name, username, email, password, email_verified, mfa_enabled)
+            INSERT INTO users (id, name, username, email, password, email_verified, mfa_enabled)
             VALUES ($1, $2, $3, $4, $5, TRUE, TRUE)
             "#,
         )
@@ -1239,7 +1239,7 @@ mod tests {
         sqlx::query(
             r#"
             INSERT INTO mfa_recovery_codes(code, user_id, used_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind("0".repeat(12))
@@ -1277,7 +1277,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email, password, email_verified)
+            INSERT INTO users (name, username, email, password, email_verified)
             VALUES ($1, $2, $3, $4, TRUE)
             "#,
         )
@@ -1324,7 +1324,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email, password, email_verified)
+            INSERT INTO users (name, username, email, password, email_verified)
             VALUES ($1, $2, $3, $4, TRUE)
             "#,
         )
@@ -1369,7 +1369,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email, password, email_verified)
+            INSERT INTO users (name, username, email, password, email_verified)
             VALUES ($1, $2, $3, $4, TRUE)
             "#,
         )
@@ -1384,7 +1384,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE email = $1
             "#,
         )
@@ -1446,7 +1446,7 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users(name, username, email, password, email_verified)
+            INSERT INTO users (name, username, email, password, email_verified)
             VALUES ($1, $2, $3, $4, TRUE)
             "#,
         )
@@ -1461,7 +1461,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deactivated_at = now()
+            SET deactivated_at = NOW()
             WHERE email = $1
             "#,
         )
@@ -1554,7 +1554,7 @@ mod tests {
             // Insert the user
             sqlx::query(
                 r#"
-                INSERT INTO users(id, name, username, email, password, email_verified)
+                INSERT INTO users (id, name, username, email, password, email_verified)
                 VALUES ($1, $2, $3, $4, $5, TRUE)
                 "#,
             )
@@ -1612,7 +1612,7 @@ mod tests {
             // Insert the user
             sqlx::query(
                 r#"
-                INSERT INTO users(name, username, email, password, email_verified)
+                INSERT INTO users (name, username, email, password, email_verified)
                 VALUES ($1, $2, $3, $4, TRUE)
                 "#,
             )

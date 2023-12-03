@@ -35,7 +35,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -76,7 +76,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE users
-            SET deactivated_at = now()
+            SET deactivated_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -184,7 +184,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE tag_followers
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE user_id = $1 AND tag_id = $2
             "#,
         )
@@ -345,7 +345,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE tag_followers
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE user_id = $1 AND tag_id = $2
             "#,
         )

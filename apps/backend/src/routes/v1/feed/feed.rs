@@ -231,12 +231,12 @@ mod tests {
         let story_result = sqlx::query(
             r#"
             WITH inserted_user AS (
-                INSERT INTO users(name, username, email)
+                INSERT INTO users (name, username, email)
                 VALUES ('Sample user', 'sample_user', 'sample@example.com')
                 RETURNING id
             )
-                INSERT INTO stories(user_id, slug, published_at)
-                VALUES ((SELECT id FROM inserted_user), 'some-story', now())
+                INSERT INTO stories (user_id, slug, published_at)
+                VALUES ((SELECT id FROM inserted_user), 'some-story', NOW())
                 RETURNING user_id
             "#,
         )
@@ -284,12 +284,12 @@ mod tests {
         let story_result = sqlx::query(
             r#"
             WITH inserted_user AS (
-                INSERT INTO users(name, username, email)
+                INSERT INTO users (name, username, email)
                 VALUES ('Sample user', 'sample_user', 'sample@example.com')
                 RETURNING id
             )
-                INSERT INTO stories(user_id, slug, published_at)
-                VALUES ((SELECT id FROM inserted_user), 'some-story', now())
+                INSERT INTO stories (user_id, slug, published_at)
+                VALUES ((SELECT id FROM inserted_user), 'some-story', NOW())
                 RETURNING id
             "#,
         )
@@ -307,7 +307,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -337,12 +337,12 @@ mod tests {
         let story_result = sqlx::query(
             r#"
             WITH inserted_user AS (
-                INSERT INTO users(name, username, email)
+                INSERT INTO users (name, username, email)
                 VALUES ('Sample user', 'sample_user', 'sample@example.com')
                 RETURNING id
             )
-                INSERT INTO stories(user_id, slug, published_at)
-                VALUES ((SELECT id FROM inserted_user), 'some-story', now())
+                INSERT INTO stories (user_id, slug, published_at)
+                VALUES ((SELECT id FROM inserted_user), 'some-story', NOW())
                 RETURNING id
             "#,
         )
@@ -414,12 +414,12 @@ mod tests {
         let story_result = sqlx::query(
             r#"
             WITH inserted_user AS (
-                INSERT INTO users(name, username, email)
+                INSERT INTO users (name, username, email)
                 VALUES ('Sample user', 'sample_user', 'sample@example.com')
                 RETURNING id
             )
-                INSERT INTO stories(user_id, slug, published_at)
-                VALUES ((SELECT id FROM inserted_user), 'some-story', now())
+                INSERT INTO stories (user_id, slug, published_at)
+                VALUES ((SELECT id FROM inserted_user), 'some-story', NOW())
                 RETURNING user_id
             "#,
         )
@@ -473,12 +473,12 @@ mod tests {
         let story_result = sqlx::query(
             r#"
             WITH inserted_user AS (
-                INSERT INTO users(name, username, email)
+                INSERT INTO users (name, username, email)
                 VALUES ('Sample user', 'sample_user', 'sample@example.com')
                 RETURNING id
             )
-                INSERT INTO stories(user_id, slug, published_at)
-                VALUES ((SELECT id FROM inserted_user), 'some-story', now())
+                INSERT INTO stories (user_id, slug, published_at)
+                VALUES ((SELECT id FROM inserted_user), 'some-story', NOW())
                 RETURNING user_id
             "#,
         )
@@ -532,12 +532,12 @@ mod tests {
         let story_result = sqlx::query(
             r#"
             WITH inserted_user AS (
-                INSERT INTO users(name, username, email)
+                INSERT INTO users (name, username, email)
                 VALUES ('Sample user', 'sample_user', 'sample@example.com')
                 RETURNING id
             )
-                INSERT INTO stories(user_id, slug, published_at)
-                VALUES ((SELECT id FROM inserted_user), 'some-story', now())
+                INSERT INTO stories (user_id, slug, published_at)
+                VALUES ((SELECT id FROM inserted_user), 'some-story', NOW())
                 RETURNING user_id
             "#,
         )
@@ -581,7 +581,7 @@ mod tests {
         sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(user_id.unwrap())
@@ -614,12 +614,12 @@ mod tests {
         let story_result = sqlx::query(
             r#"
             WITH inserted_user AS (
-                INSERT INTO users(name, username, email)
+                INSERT INTO users (name, username, email)
                 VALUES ('Sample user', 'sample_user', 'sample@example.com')
                 RETURNING id
             )
-                INSERT INTO stories(user_id, slug, published_at)
-                VALUES ((SELECT id FROM inserted_user), 'some-story', now())
+                INSERT INTO stories (user_id, slug, published_at)
+                VALUES ((SELECT id FROM inserted_user), 'some-story', NOW())
                 RETURNING id
             "#,
         )
@@ -640,7 +640,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -673,12 +673,12 @@ mod tests {
         let story_result = sqlx::query(
             r#"
             WITH inserted_user AS (
-                INSERT INTO users(name, username, email)
+                INSERT INTO users (name, username, email)
                 VALUES ('Sample user', 'sample_user', 'sample@example.com')
                 RETURNING id
             )
-                INSERT INTO stories(user_id, slug, published_at)
-                VALUES ((SELECT id FROM inserted_user), 'some-story', now())
+                INSERT INTO stories (user_id, slug, published_at)
+                VALUES ((SELECT id FROM inserted_user), 'some-story', NOW())
                 RETURNING id
             "#,
         )
@@ -756,13 +756,13 @@ mod tests {
         let story_result = sqlx::query(
             r#"
             WITH inserted_user AS (
-                INSERT INTO users(name, username, email)
+                INSERT INTO users (name, username, email)
                 VALUES ('Sample user', 'sample_user', 'sample@example.com')
                 RETURNING id
             ),
             inserted_story AS (
-                INSERT INTO stories(user_id, slug, published_at)
-                VALUES ((SELECT id FROM inserted_user), 'some-story', now())
+                INSERT INTO stories (user_id, slug, published_at)
+                VALUES ((SELECT id FROM inserted_user), 'some-story', NOW())
             )
                 INSERT INTO relations(follower_id, followed_id)
                 VALUES ($1, (SELECT id FROM inserted_user))
@@ -820,13 +820,13 @@ mod tests {
         let story_result = sqlx::query(
             r#"
             WITH inserted_user AS (
-                INSERT INTO users(name, username, email)
+                INSERT INTO users (name, username, email)
                 VALUES ('Sample user', 'sample_user', 'sample@example.com')
                 RETURNING id
             ),
             inserted_story AS (
-                INSERT INTO stories(user_id, slug, published_at)
-                VALUES ((SELECT id FROM inserted_user), 'some-story', now())
+                INSERT INTO stories (user_id, slug, published_at)
+                VALUES ((SELECT id FROM inserted_user), 'some-story', NOW())
             )
                 INSERT INTO relations(follower_id, followed_id)
                 VALUES ($1, (SELECT id FROM inserted_user))
@@ -884,13 +884,13 @@ mod tests {
         let story_result = sqlx::query(
             r#"
             WITH inserted_user AS (
-                INSERT INTO users(name, username, email)
+                INSERT INTO users (name, username, email)
                 VALUES ('Sample user', 'sample_user', 'sample@example.com')
                 RETURNING id
             ),
             inserted_story AS (
-                INSERT INTO stories(user_id, slug, published_at)
-                VALUES ((SELECT id FROM inserted_user), 'some-story', now())
+                INSERT INTO stories (user_id, slug, published_at)
+                VALUES ((SELECT id FROM inserted_user), 'some-story', NOW())
             )
                 INSERT INTO relations(follower_id, followed_id)
                 VALUES ($1, (SELECT id FROM inserted_user))
@@ -938,7 +938,7 @@ mod tests {
         sqlx::query(
             r#"
             INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, now())
+            VALUES ($1, $2, NOW())
             "#,
         )
         .bind(user_id.unwrap())
@@ -971,13 +971,13 @@ mod tests {
         let story_result = sqlx::query(
             r#"
             WITH inserted_user AS (
-                INSERT INTO users(name, username, email)
+                INSERT INTO users (name, username, email)
                 VALUES ('Sample user', 'sample_user', 'sample@example.com')
                 RETURNING id
             ),
             inserted_story AS (
-                INSERT INTO stories(user_id, slug, published_at)
-                VALUES ((SELECT id FROM inserted_user), 'some-story', now())
+                INSERT INTO stories (user_id, slug, published_at)
+                VALUES ((SELECT id FROM inserted_user), 'some-story', NOW())
                 RETURNING id
             )
                 INSERT INTO relations(follower_id, followed_id)
@@ -1003,7 +1003,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -1036,13 +1036,13 @@ mod tests {
         let story_result = sqlx::query(
             r#"
             WITH inserted_user AS (
-                INSERT INTO users(name, username, email)
+                INSERT INTO users (name, username, email)
                 VALUES ('Sample user', 'sample_user', 'sample@example.com')
                 RETURNING id
             ),
             inserted_story AS (
-                INSERT INTO stories(user_id, slug, published_at)
-                VALUES ((SELECT id FROM inserted_user), 'some-story', now())
+                INSERT INTO stories (user_id, slug, published_at)
+                VALUES ((SELECT id FROM inserted_user), 'some-story', NOW())
                 RETURNING id
             )
                 INSERT INTO relations(follower_id, followed_id)

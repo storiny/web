@@ -211,7 +211,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -274,7 +274,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -314,7 +314,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = NOW()
             WHERE id = $1
             "#,
         )
@@ -379,7 +379,7 @@ mod tests {
         let result = sqlx::query(
             r#"
             UPDATE stories
-            SET published_at = now()
+            SET published_at = NOW()
             WHERE id = $1
             "#,
         )
