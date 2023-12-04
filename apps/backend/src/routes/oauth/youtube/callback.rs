@@ -122,7 +122,7 @@ async fn handle_oauth_request(
     // Save the connection
     match sqlx::query(
         r#"
-        INSERT INTO connections(provider, provider_identifier, display_name, user_id)
+        INSERT INTO connections (provider, provider_identifier, display_name, user_id)
         VALUES ($1, $2, $3, $4)
         "#,
     )

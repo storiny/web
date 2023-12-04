@@ -5,6 +5,7 @@ use crate::{
     },
     RedisPool,
 };
+use anyhow::anyhow;
 use redis::AsyncCommands;
 
 /// Determines whether a resource operation can be performed by checking the daily resource limit
@@ -18,21 +19,23 @@ pub async fn check_resource_limit(
     redis_pool: &RedisPool,
     resource_limit: ResourceLimit,
     user_id: i64,
-) -> Result<bool, ()> {
-    let mut conn = redis_pool.get().await.map_err(|_| ())?;
+) -> anyhow::Result<bool> {
+    let mut conn = redis_pool
+        .get()
+        .await
+        .map_err(|error| anyhow!("unable to acquire a connection from the Redis pool: {error:?}"));
 
-    match conn
-        .get::<_, u32>(&format!(
+    let limit = conn
+        .get::<_, Option<u32>>(&format!(
             "{}:{}:{user_id}",
             RedisNamespace::ResourceLimit.to_string(),
             resource_limit as i32
         ))
         .await
-    {
-        Ok(limit) => Ok(limit < resource_limit.get_limit()),
-        // Errors when the key is missing
-        Err(_) => Ok(true),
-    }
+        .map_err(|error| anyhow!("unable to fetch the resource limit from Redis: {error:?}"))?;
+
+    // Result might be `None` if the key is not present in the cache.
+    Ok(limit.is_none() || limit.is_some_and(|value| value < resource_limit.get_limit()))
 }
 
 #[cfg(test)]

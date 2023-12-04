@@ -10,7 +10,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO tags(name)
+            INSERT INTO tags (name)
             VALUES ($1)
             "#,
         )
@@ -30,7 +30,7 @@ mod tests {
         for case in cases {
             let result = sqlx::query(
                 r#"
-            INSERT INTO tags(name)
+            INSERT INTO tags (name)
             VALUES ($1)
             "#,
             )
@@ -52,7 +52,7 @@ mod tests {
         for case in cases {
             let result = sqlx::query(
                 r#"
-            INSERT INTO tags(name)
+            INSERT INTO tags (name)
             VALUES ($1)
             "#,
             )
@@ -71,7 +71,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO tags(name)
+            INSERT INTO tags (name)
             VALUES ($1)
             RETURNING id
             "#,
@@ -85,7 +85,7 @@ mod tests {
         // Insert a story tag
         sqlx::query(
             r#"
-            INSERT INTO story_tags(tag_id, story_id)
+            INSERT INTO story_tags (tag_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -129,7 +129,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO tags(name)
+            INSERT INTO tags (name)
             VALUES ($1)
             RETURNING id
             "#,
@@ -143,7 +143,7 @@ mod tests {
         // Insert a story tag
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_tags(tag_id, story_id)
+            INSERT INTO story_tags (tag_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -189,7 +189,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO tags(name)
+            INSERT INTO tags (name)
             VALUES ($1)
             RETURNING id
             "#,
@@ -203,7 +203,7 @@ mod tests {
         // Insert a tag follower
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO tag_followers(tag_id, user_id)
+            INSERT INTO tag_followers (tag_id, user_id)
             VALUES ($1, $2)
             "#,
         )

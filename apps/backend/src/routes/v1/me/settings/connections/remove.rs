@@ -20,34 +20,42 @@ struct Fragments {
 }
 
 #[delete("/v1/me/settings/connections/{connection_id}")]
+#[tracing::instrument(
+    name = "DELETE /v1/me/settings/connections/{connection_id}",
+    skip_all,
+    fields(
+        user = user.id().ok(),
+        connection_id = %path.connection_id
+    ),
+    err
+)]
 async fn delete(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => match path.connection_id.parse::<i64>() {
-            Ok(connection_id) => {
-                match sqlx::query(
-                    r#"
-                    DELETE FROM connections
-                    WHERE id = $1 AND user_id = $2
-                    "#,
-                )
-                .bind(connection_id)
-                .bind(user_id)
-                .execute(&data.db_pool)
-                .await?
-                .rows_affected()
-                {
-                    0 => Ok(HttpResponse::BadRequest()
-                        .json(ToastErrorResponse::new("Connection not found"))),
-                    _ => Ok(HttpResponse::NoContent().finish()),
-                }
-            }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid connection ID")),
-        },
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let user_id = user.id()?;
+    let connection_id = path
+        .connection_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid connection ID"))?;
+
+    match sqlx::query(
+        r#"
+DELETE FROM connections
+WHERE
+    id = $1
+    AND user_id = $2
+"#,
+    )
+    .bind(&connection_id)
+    .bind(&user_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(ToastErrorResponse::new(None, "Connection not found").into()),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -73,13 +81,13 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
-        // Insert a connection
+        // Insert a connection.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO connections(provider, provider_identifier, display_name, user_id)
-            VALUES ($1, $2, $3, $4)
-            RETURNING id
-            "#,
+INSERT INTO connections (provider, provider_identifier, display_name, user_id)
+VALUES ($1, $2, $3, $4)
+RETURNING id
+"#,
         )
         .bind(0)
         .bind("some-id")
@@ -101,14 +109,14 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Should be deleted from the database
+        // Should be deleted from the database.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM connections
-                WHERE id = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM connections
+    WHERE id = $1
+)
+"#,
         )
         .bind(insert_result.get::<i64, _>("id"))
         .fetch_one(&mut *conn)

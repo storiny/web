@@ -16,6 +16,7 @@ use serde::{
 };
 
 use sqlx::FromRow;
+use tracing::warn;
 use uuid::Uuid;
 use validator::Validate;
 
@@ -37,26 +38,38 @@ struct Writer {
 }
 
 #[get("/v1/me/flow/onboarding/writers")]
+#[tracing::instrument(
+    name = "GET /v1/me/flow/onboarding/writers",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        encoded_categories = %query.encoded_categories
+    ),
+    err
+)]
 async fn get(
     query: QsQuery<QueryParams>,
     data: web::Data<AppState>,
-    _user: Identity,
+    user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match decode_uri_encoded_story_categories(&query.encoded_categories) {
-        Ok(categories) => {
-            let result = sqlx::query_file_as!(
-                Writer,
-                "queries/me/onboarding/writers.sql",
-                // https://github.com/launchbadge/sqlx/blob/main/FAQ.md#how-can-i-do-a-select--where-foo-in--query
-                &categories[..] as _
-            )
-            .fetch_all(&data.db_pool)
-            .await?;
+    user.id()?;
 
-            Ok(HttpResponse::Ok().json(result))
-        }
-        Err(_) => Ok(HttpResponse::BadRequest().body("Invalid encoded categories data")),
-    }
+    let categories =
+        decode_uri_encoded_story_categories(&query.encoded_categories).map_err(|error| {
+            warn!("unable to decode maybe invalid story categories: {error:?}");
+            AppError::from("Invalid encoded categories")
+        })?;
+
+    let result = sqlx::query_file_as!(
+        Writer,
+        "queries/me/onboarding/writers.sql",
+        // See https://github.com/launchbadge/sqlx/blob/main/FAQ.md#how-can-i-do-a-select--where-foo-in--query
+        &categories[..] as _
+    )
+    .fetch_all(&data.db_pool)
+    .await?;
+
+    Ok(HttpResponse::Ok().json(result))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {

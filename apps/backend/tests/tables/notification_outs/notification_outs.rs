@@ -124,7 +124,7 @@ mod tests {
         // Mute the notifier user
         sqlx::query(
             r#"
-            INSERT INTO mutes(muter_id, muted_id)
+            INSERT INTO mutes (muter_id, muted_id)
             VALUES ($1, $2)
             "#,
         )
@@ -159,7 +159,7 @@ mod tests {
         // Block the notifier user
         sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             "#,
         )

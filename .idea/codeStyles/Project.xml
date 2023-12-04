@@ -8,7 +8,10 @@
       <option name="QUERY_EL_COMMA" value="2" />
       <option name="SUBQUERY_CLOSING" value="4" />
       <option name="INSERT_INTO_NL" value="2" />
+      <option name="WITH_EL_LINE" value="1" />
       <option name="WITH_ALIGN_AS" value="true" />
+      <option name="SELECT_EL_LINE" value="1" />
+      <option name="SELECT_USE_AS_WORD" value="1" />
       <option name="FROM_WRAP_ON" value="true" />
       <option name="ORDER_ALIGN_ASC_DESC" value="true" />
       <option name="CONSTRAINT_WRAP_3" value="true" />

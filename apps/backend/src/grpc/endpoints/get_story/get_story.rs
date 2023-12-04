@@ -176,7 +176,7 @@ pub async fn get_story(
         if story.published_at.is_some() && story.deleted_at.is_none() {
             sqlx::query(
                 r#"
-                INSERT INTO histories(user_id, story_id) 
+                INSERT INTO histories (user_id, story_id) 
                 VALUES ($1, $2)
                 "#,
             )

@@ -14,7 +14,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -37,7 +37,7 @@ mod tests {
         // Insert friend with overlapping IDs
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -80,7 +80,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -121,7 +121,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -162,7 +162,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -203,7 +203,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -237,7 +237,7 @@ mod tests {
         // Send a friend request
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -303,7 +303,7 @@ mod tests {
         // Send a friend request
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -411,7 +411,7 @@ mod tests {
         // Send a friend request
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -489,7 +489,7 @@ mod tests {
         // Send a friend request
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -516,7 +516,7 @@ mod tests {
         // on the user when decrementing the `friend_count`.
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -541,7 +541,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -649,7 +649,7 @@ mod tests {
         // Send a friend request
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -686,7 +686,7 @@ mod tests {
         // Send a friend request
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -749,7 +749,7 @@ mod tests {
         // Send a friend request
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -763,7 +763,7 @@ mod tests {
         // on the user when decrementing the `friend_count`.
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -788,7 +788,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -865,7 +865,7 @@ mod tests {
         // Send a friend request
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -879,7 +879,7 @@ mod tests {
         // on the user when decrementing the `friend_count`.
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -904,7 +904,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -1024,7 +1024,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -1068,7 +1068,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -1112,7 +1112,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -1158,7 +1158,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -1202,7 +1202,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -1237,7 +1237,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -1283,7 +1283,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -1327,7 +1327,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -1371,7 +1371,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -1396,7 +1396,7 @@ mod tests {
         // Send a friend request
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -1461,7 +1461,7 @@ mod tests {
         // Send a friend request
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )

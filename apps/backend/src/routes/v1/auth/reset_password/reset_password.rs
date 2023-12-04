@@ -391,6 +391,7 @@ VALUES ($1, $2, $3, $4)
 
     mod serial {
         use super::*;
+        use redis::AsyncCommands;
 
         #[test_context(RedisTestContext)]
         #[sqlx::test(fixtures("user"))]
@@ -398,8 +399,9 @@ VALUES ($1, $2, $3, $4)
             ctx: &mut RedisTestContext,
             pool: PgPool,
         ) -> sqlx::Result<()> {
+            let redis_pool = &ctx.redis_pool;
             let mut conn = pool.acquire().await?;
-            let (app, _, redis_pool, _) = init_app_for_test(post, pool, false, false, None).await.0;
+            let (app, _, _, _) = init_app_for_test(post, pool, false, false, None).await.0;
 
             let token_id = nanoid!(48);
             let salt = SaltString::generate(&mut OsRng);
@@ -426,7 +428,7 @@ VALUES ($1, $2, $3, $4)
             let mut redis_conn = redis_pool.get().await.unwrap();
             let user_id = 1_i64;
 
-            // Create some sessions
+            // Create some sessions for the user.
             for _ in 0..5 {
                 redis_conn
                     .set::<_, _, ()>(
@@ -445,7 +447,7 @@ VALUES ($1, $2, $3, $4)
                     .unwrap();
             }
 
-            // Cache should have all the created sessions initially
+            // Cache should have all the created sessions initially.
             let sessions = get_user_sessions(redis_pool, user_id).await.unwrap();
             assert_eq!(sessions.len(), 5);
 
@@ -462,40 +464,9 @@ VALUES ($1, $2, $3, $4)
 
             assert!(res.status().is_success());
 
-            // Password should get updated in the database.
-            let user = sqlx::query(
-                r#"
-SELECT password FROM users
-WHERE email = $1
-"#,
-            )
-            .bind("someone@example.com")
-            .fetch_one(&mut *conn)
-            .await?;
-
-            assert!(
-                Argon2::default()
-                    .verify_password(
-                        "new_password".as_bytes(),
-                        &PasswordHash::new(&user.get::<String, _>("password")).unwrap(),
-                    )
-                    .is_ok()
-            );
-
-            // Token should get deleted from the database.
-            let token = sqlx::query(
-                r#"
-SELECT EXISTS (
-    SELECT 1 FROM tokens
-    WHERE id = $1
-)
-"#,
-            )
-            .bind(hashed_token.to_string())
-            .fetch_one(&mut *conn)
-            .await?;
-
-            assert!(!token.get::<bool, _>("exists"));
+            // Cache should not have any sessions.
+            let sessions = get_user_sessions(redis_pool, user_id).await.unwrap();
+            assert!(sessions.is_empty());
 
             Ok(())
         }

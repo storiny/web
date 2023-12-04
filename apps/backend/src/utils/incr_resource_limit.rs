@@ -5,6 +5,7 @@ use crate::{
     },
     RedisPool,
 };
+use anyhow::anyhow;
 
 const HOURS_24_AS_SECONDS: i32 = 86400;
 
@@ -18,8 +19,11 @@ pub async fn incr_resource_limit(
     redis_pool: &RedisPool,
     resource_limit: ResourceLimit,
     user_id: i64,
-) -> Result<(), ()> {
-    let mut conn = redis_pool.get().await.map_err(|_| ())?;
+) -> anyhow::Result<()> {
+    let mut conn = redis_pool
+        .get()
+        .await
+        .map_err(|error| anyhow!("unable to acquire a connection from the Redis pool: {error:?}"));
     let increx = redis::Script::new(include_str!("../../lua/increx.lua"));
     let cache_key = format!(
         "{}:{}:{user_id}",
@@ -32,7 +36,7 @@ pub async fn incr_resource_limit(
         .arg(HOURS_24_AS_SECONDS)
         .invoke_async(&mut conn)
         .await
-        .map_err(|_| ())
+        .map_err(|error| anyhow!("unable to increment the resource limit: {error:?}"))
 }
 
 #[cfg(test)]

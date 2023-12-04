@@ -13,12 +13,9 @@ BEGIN
 	END IF;
 	--
 	-- Check whether the follower/followed user is soft-deleted or deactivated
-	IF (EXISTS(SELECT
-				   1
-			   FROM
-				   users
-			   WHERE
-					 id IN (NEW.follower_id, NEW.followed_id)
+	IF (EXISTS(SELECT 1
+			   FROM users
+			   WHERE id IN (NEW.follower_id, NEW.followed_id)
 				 AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL)
 			  )) THEN
 		RAISE 'Follower/followed user is either soft-deleted or deactivated'
@@ -26,12 +23,9 @@ BEGIN
 	END IF;
 	--
 	-- Check if the follower user is blocked by the followed user
-	IF (EXISTS(SELECT
-				   1
-			   FROM
-				   blocks
-			   WHERE
-					 blocker_id = NEW.followed_id
+	IF (EXISTS(SELECT 1
+			   FROM blocks
+			   WHERE blocker_id = NEW.followed_id
 				 AND blocked_id = NEW.follower_id
 				 AND deleted_at IS NULL
 			  )) THEN
@@ -60,18 +54,14 @@ BEGIN
 	-- Increment `following_count` on follower user
 	UPDATE
 		users
-	SET
-		following_count = following_count + 1
-	WHERE
-		id = NEW.follower_id;
+	SET following_count = following_count + 1
+	WHERE id = NEW.follower_id;
 	--
 	-- Increment `follower_count` on followed user
 	UPDATE
 		users
-	SET
-		follower_count = follower_count + 1
-	WHERE
-		id = NEW.followed_id;
+	SET follower_count = follower_count + 1
+	WHERE id = NEW.followed_id;
 	--
 	RETURN NEW;
 END;
@@ -97,27 +87,21 @@ BEGIN
 		-- Decrement `following_count` on follower user
 		UPDATE
 			users
-		SET
-			following_count = following_count - 1
-		WHERE
-			  id = NEW.follower_id
+		SET following_count = following_count - 1
+		WHERE id = NEW.follower_id
 		  AND following_count > 0;
 		--
 		-- Decrement `follower_count` on followed user
 		UPDATE
 			users
-		SET
-			follower_count = follower_count - 1
-		WHERE
-			  id = NEW.followed_id
+		SET follower_count = follower_count - 1
+		WHERE id = NEW.followed_id
 		  AND follower_count > 0;
 		--
 		-- Delete notifications
 		DELETE
-		FROM
-			notifications
-		WHERE
-			entity_id = OLD.follower_id;
+		FROM notifications
+		WHERE entity_id = OLD.follower_id;
 		--
 		RETURN NEW;
 	END IF;
@@ -127,18 +111,14 @@ BEGIN
 		-- Increment `following_count` on follower user
 		UPDATE
 			users
-		SET
-			following_count = following_count + 1
-		WHERE
-			id = NEW.follower_id;
+		SET following_count = following_count + 1
+		WHERE id = NEW.follower_id;
 		--
 		-- Increment `follower_count` on followed user
 		UPDATE
 			users
-		SET
-			follower_count = follower_count + 1
-		WHERE
-			id = NEW.followed_id;
+		SET follower_count = follower_count + 1
+		WHERE id = NEW.followed_id;
 		--
 	END IF;
 	--
@@ -164,27 +144,21 @@ $$
 BEGIN
 	-- Delete notifications
 	DELETE
-	FROM
-		notifications
-	WHERE
-		entity_id = OLD.follower_id;
+	FROM notifications
+	WHERE entity_id = OLD.follower_id;
 	--
 	-- Decrement `following_count` on follower user
 	UPDATE
 		users
-	SET
-		following_count = following_count - 1
-	WHERE
-		  id = OLD.follower_id
+	SET following_count = following_count - 1
+	WHERE id = OLD.follower_id
 	  AND following_count > 0;
 	--
 	-- Decrement `follower_count` on followed user
 	UPDATE
 		users
-	SET
-		follower_count = follower_count - 1
-	WHERE
-		  id = OLD.followed_id
+	SET follower_count = follower_count - 1
+	WHERE id = OLD.followed_id
 	  AND follower_count > 0;
 	--
 	RETURN OLD;

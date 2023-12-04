@@ -22,51 +22,53 @@ struct Request {
 }
 
 #[patch("/v1/me/settings/privacy/private-account")]
+#[tracing::instrument(
+    name = "PATCH /v1/me/settings/privacy/private-account",
+    skip_all,
+    fields(
+        user = user.id().ok(),
+        payload
+    ),
+    err
+)]
 async fn patch(
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            sqlx::query(
-                r#"
-                WITH
-                    updated_user AS (
-                        UPDATE users
-                            SET
-                                is_private = $2
-                            WHERE id = $1
-                                AND is_private != $2
-                            RETURNING id
-                    )
-                INSERT
-                INTO
-                    account_activities (type, description, user_id)
-                    SELECT
-                         $3,
-                         'You made your account <m>'
-                                 || CASE
-                                        WHEN $2 IS TRUE
-                                            THEN 'private'
-                                        ELSE 'public'
-                                    END
-                                 || '</m>.',
-                         id
-                     FROM
-                         updated_user
-                "#,
-            )
-            .bind(user_id)
-            .bind(&payload.private_account)
-            .bind(AccountActivityType::Privacy as i16)
-            .execute(&data.db_pool)
-            .await?;
+    let user_id = user.id()?;
 
-            Ok(HttpResponse::NoContent().finish())
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-    }
+    sqlx::query(
+        r#"
+WITH updated_user AS (
+    UPDATE users
+    SET is_private = $2
+    WHERE id = $1
+        -- This check prevents inserting a redundant account activity
+        AND is_private <> $2
+    RETURNING id
+)
+INSERT INTO account_activities (type, description, user_id)
+SELECT
+    $3,
+    'You made your account <m>'
+         || CASE WHEN $2 IS TRUE
+                THEN 'private'
+                ELSE 'public'
+            END
+         || '</m>.',
+    id
+FROM
+    updated_user
+"#,
+    )
+    .bind(user_id)
+    .bind(&payload.private_account)
+    .bind(AccountActivityType::Privacy as i16)
+    .execute(&data.db_pool)
+    .await?;
+
+    Ok(HttpResponse::NoContent().finish())
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -99,12 +101,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // User should get updated in the database
+        // User should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT is_private FROM users
-            WHERE id = $1
-            "#,
+SELECT is_private FROM users
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
@@ -112,12 +114,12 @@ mod tests {
 
         assert!(result.get::<bool, _>("is_private"));
 
-        // Should also insert an account activity
+        // Should also insert an account activity.
         let result = sqlx::query(
             r#"
-            SELECT description FROM account_activities
-            WHERE user_id = $1 AND type = $2
-            "#,
+SELECT description FROM account_activities
+WHERE user_id = $1 AND type = $2
+"#,
         )
         .bind(user_id.unwrap())
         .bind(AccountActivityType::Privacy as i16)
@@ -137,13 +139,13 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
-        // Make the account private
+        // Make the account private.
         sqlx::query(
             r#"
-            UPDATE users
-            SET is_private = TRUE
-            WHERE id = $1
-            "#,
+UPDATE users
+SET is_private = TRUE
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .execute(&mut *conn)
@@ -160,12 +162,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // User should get updated in the database
+        // User should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT is_private FROM users
-            WHERE id = $1
-            "#,
+SELECT is_private FROM users
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
@@ -173,12 +175,12 @@ mod tests {
 
         assert!(!result.get::<bool, _>("is_private"));
 
-        // Should also insert an account activity
+        // Should also insert an account activity.
         let result = sqlx::query(
             r#"
-            SELECT description FROM account_activities
-            WHERE user_id = $1 AND type = $2
-            "#,
+SELECT description FROM account_activities
+WHERE user_id = $1 AND type = $2
+"#,
         )
         .bind(user_id.unwrap())
         .bind(AccountActivityType::Privacy as i16)
@@ -200,19 +202,18 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
-        // Make the account private
+        // Make the account private.
         sqlx::query(
             r#"
-            UPDATE users
-            SET is_private = TRUE
-            WHERE id = $1
-            "#,
+UPDATE users
+SET is_private = TRUE
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .execute(&mut *conn)
         .await?;
 
-        // Try making the account private
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
             .uri("/v1/me/settings/privacy/private-account")
@@ -222,17 +223,17 @@ mod tests {
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should not throw
+        // Should not throw.
         assert!(res.status().is_success());
 
-        // Should not insert an account activity
+        // Should not insert an account activity.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM account_activities
-                WHERE user_id = $1 AND type = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM account_activities
+    WHERE user_id = $1 AND type = $2
+)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(AccountActivityType::Privacy as i16)
@@ -251,7 +252,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
-        // Try making the account public
+        // Try making the account public.
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
             .uri("/v1/me/settings/privacy/private-account")
@@ -261,17 +262,17 @@ mod tests {
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should not throw
+        // Should not throw.
         assert!(res.status().is_success());
 
-        // Should not insert an account activity
+        // Should not insert an account activity.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM account_activities
-                WHERE user_id = $1 AND type = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM account_activities
+    WHERE user_id = $1 AND type = $2
+)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(AccountActivityType::Privacy as i16)

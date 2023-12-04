@@ -26,18 +26,31 @@ struct QueryParams {
 }
 
 #[get("/v1/me/gallery")]
+#[tracing::instrument(
+    name = "GET /v1/me/gallery",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        page = query.page,
+        query = query.query
+    ),
+    err
+)]
 async fn get(
     query: QsQuery<QueryParams>,
     data: web::Data<AppState>,
-    _user: Identity,
+    user: Identity,
 ) -> Result<HttpResponse, AppError> {
+    user.ok()?;
+
     let reqwest_client = &data.reqwest_client;
-    let api_key = &data.config.pexels_api_key.to_string();
+    let pexels_api_key = &data.config.pexels_api_key.to_string();
+
     let page = query.page.clone().unwrap_or(1);
     let search_query = query.query.clone().unwrap_or_default();
     let has_search_query = !search_query.trim().is_empty();
 
-    match reqwest_client
+    let response = reqwest_client
         .get(format!(
             "{}/{}",
             PEXELS_API_URL,
@@ -49,22 +62,27 @@ async fn get(
         ))
         .query(&[("per_page", 15), ("page", page)])
         .query(&[("query", search_query)])
-        .header(reqwest::header::AUTHORIZATION, api_key)
+        .header(reqwest::header::AUTHORIZATION, pexels_api_key)
         .send()
         .await
-    {
-        Ok(result) => {
-            if !result.status().is_success() {
-                return Ok(HttpResponse::InternalServerError().finish());
-            };
+        .map_err(|error| {
+            AppError::InternalError(format!("unable to fetch photos from Pexels: {error:?}"))
+        })?;
 
-            match serde_json::from_str::<PexelsResponse>(&result.text().await.unwrap_or_default()) {
-                Ok(body) => Ok(HttpResponse::Ok().json(body.photos)),
-                Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-            }
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-    }
+    if !response.status().is_success() {
+        return Err(AppError::InternalError(format!(
+            "unable to fetch photos from Pexels: {result:?}"
+        )));
+    };
+
+    let body = serde_json::from_str::<PexelsResponse>(&response.text().await.unwrap_or_default())
+        .map_err(|error| {
+        AppError::InternalError(format!(
+            "unable to deserialize the Pexels response: {error:?}"
+        ))
+    })?;
+
+    Ok(HttpResponse::Ok().json(body.photos))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {

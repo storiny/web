@@ -7,19 +7,13 @@ AS
 $$
 BEGIN
 	-- Check whether the story is soft-deleted/unpublished or the user is soft-deleted/deactivated
-	IF (EXISTS(SELECT
-				   1
-			   FROM
-				   stories
-			   WHERE
-					id = NEW.story_id AND deleted_at IS NOT NULL
-				 OR published_at IS NULL
-			  ) OR EXISTS(SELECT
-							  1
-						  FROM
-							  users
-						  WHERE
-								id = NEW.user_id
+	IF (EXISTS(SELECT 1
+			   FROM stories
+			   WHERE id = NEW.story_id AND deleted_at IS NOT NULL
+				  OR published_at IS NULL
+			  ) OR EXISTS(SELECT 1
+						  FROM users
+						  WHERE id = NEW.user_id
 							AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL)
 						 )) THEN
 		RAISE 'Story is soft-deleted/unpublished or user is soft-deleted/deactivated'
@@ -47,10 +41,8 @@ BEGIN
 	-- Increment `like_count` on story
 	UPDATE
 		stories
-	SET
-		like_count = like_count + 1
-	WHERE
-		id = NEW.story_id;
+	SET like_count = like_count + 1
+	WHERE id = NEW.story_id;
 	--
 	RETURN NEW;
 END;
@@ -76,10 +68,8 @@ BEGIN
 		-- Decrement `like_count` on story
 		UPDATE
 			stories
-		SET
-			like_count = like_count - 1
-		WHERE
-			  id = NEW.story_id
+		SET like_count = like_count - 1
+		WHERE id = NEW.story_id
 		  AND like_count > 0;
 		--
 		RETURN NEW;
@@ -91,10 +81,8 @@ BEGIN
 		-- Increment `like_count` on story
 		UPDATE
 			stories
-		SET
-			like_count = like_count + 1
-		WHERE
-			id = NEW.story_id;
+		SET like_count = like_count + 1
+		WHERE id = NEW.story_id;
 		--
 	END IF;
 	--
@@ -121,10 +109,8 @@ BEGIN
 	-- Decrement `like_count` on story
 	UPDATE
 		stories
-	SET
-		like_count = like_count - 1
-	WHERE
-		  id = OLD.story_id
+	SET like_count = like_count - 1
+	WHERE id = OLD.story_id
 	  AND like_count > 0;
 	--
 	RETURN OLD;

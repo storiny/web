@@ -8,7 +8,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO connections(provider, provider_identifier, display_name, user_id)
+            INSERT INTO connections (provider, provider_identifier, display_name, user_id)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -44,7 +44,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO connections(provider, provider_identifier, display_name, user_id)
+            INSERT INTO connections (provider, provider_identifier, display_name, user_id)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -87,7 +87,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO connections(provider, provider_identifier, display_name, user_id)
+            INSERT INTO connections (provider, provider_identifier, display_name, user_id)
             VALUES ($1, $2, $3, $4)
             "#,
         )

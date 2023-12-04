@@ -162,7 +162,6 @@ mod tests {
                 pool,
                 true,
                 Box::new(|mut client, _, redis_pool, user_id| async move {
-                    // Exceed the resource limit
                     exceed_resource_limit(
                         &redis_pool,
                         ResourceLimit::CreateStory,

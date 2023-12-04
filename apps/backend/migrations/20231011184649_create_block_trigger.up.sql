@@ -7,12 +7,9 @@ AS
 $$
 BEGIN
 	-- Check whether the blocker/blocked user is soft-deleted/deactivated
-	IF (EXISTS(SELECT
-				   1
-			   FROM
-				   users
-			   WHERE
-					 id IN (NEW.blocker_id, NEW.blocked_id)
+	IF (EXISTS(SELECT 1
+			   FROM users
+			   WHERE id IN (NEW.blocker_id, NEW.blocked_id)
 				 AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL)
 			  )) THEN
 		RAISE 'Blocker/blocked user is soft-deleted/deactivated'
@@ -39,22 +36,18 @@ $$
 BEGIN
 	-- Delete relations
 	DELETE
-	FROM
-		relations
-	WHERE
-				follower_id = NEW.blocker_id
-			AND followed_id = NEW.blocked_id
-	  OR        follower_id = NEW.blocked_id
-					AND followed_id = NEW.blocker_id;
+	FROM relations
+	WHERE follower_id = NEW.blocker_id
+		AND followed_id = NEW.blocked_id
+	   OR follower_id = NEW.blocked_id
+		AND followed_id = NEW.blocker_id;
 	-- Delete friends
 	DELETE
-	FROM
-		friends
-	WHERE
-				transmitter_id = NEW.blocker_id
-			AND receiver_id = NEW.blocked_id
-	  OR        transmitter_id = NEW.blocked_id
-					AND receiver_id = NEW.blocker_id;
+	FROM friends
+	WHERE transmitter_id = NEW.blocker_id
+		AND receiver_id = NEW.blocked_id
+	   OR transmitter_id = NEW.blocked_id
+		AND receiver_id = NEW.blocker_id;
 	--
 	RETURN NEW;
 END;
@@ -82,22 +75,18 @@ BEGIN
 	IF (OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL) THEN
 		-- Delete relations
 		DELETE
-		FROM
-			relations
-		WHERE
-					follower_id = NEW.blocker_id
-				AND followed_id = NEW.blocked_id
-		  OR        follower_id = NEW.blocked_id
-						AND followed_id = NEW.blocker_id;
+		FROM relations
+		WHERE follower_id = NEW.blocker_id
+			AND followed_id = NEW.blocked_id
+		   OR follower_id = NEW.blocked_id
+			AND followed_id = NEW.blocker_id;
 		-- Delete friends
 		DELETE
-		FROM
-			friends
-		WHERE
-					transmitter_id = NEW.blocker_id
-				AND receiver_id = NEW.blocked_id
-		  OR        transmitter_id = NEW.blocked_id
-						AND receiver_id = NEW.blocker_id;
+		FROM friends
+		WHERE transmitter_id = NEW.blocker_id
+			AND receiver_id = NEW.blocked_id
+		   OR transmitter_id = NEW.blocked_id
+			AND receiver_id = NEW.blocker_id;
 	END IF;
 	--
 	RETURN NEW;

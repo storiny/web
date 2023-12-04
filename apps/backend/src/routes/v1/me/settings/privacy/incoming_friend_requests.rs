@@ -29,37 +29,46 @@ struct Request {
 }
 
 #[patch("/v1/me/settings/privacy/incoming-friend-requests")]
+#[tracing::instrument(
+    name = "PATCH /v1/me/settings/privacy/incoming-friend-requests",
+    skip_all,
+    fields(
+        user = user.id().ok(),
+        payload
+    ),
+    err
+)]
 async fn patch(
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => match payload.friend_requests.parse::<i32>() {
-            Ok(friend_requests) => match IncomingFriendRequest::try_from(friend_requests) {
-                Ok(incoming_friend_requests) => {
-                    match sqlx::query(
-                        r#"
-                        UPDATE users
-                        SET incoming_friend_requests = $1
-                        WHERE id = $2
-                        "#,
-                    )
-                    .bind(incoming_friend_requests as i16)
-                    .bind(user_id)
-                    .execute(&data.db_pool)
-                    .await?
-                    .rows_affected()
-                    {
-                        0 => Ok(HttpResponse::InternalServerError().finish()),
-                        _ => Ok(HttpResponse::NoContent().finish()),
-                    }
-                }
-                Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-            },
-            Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-        },
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let user_id = user.id()?;
+    let incoming_friend_requests = IncomingFriendRequest::try_from(
+        payload
+            .friend_requests
+            .parse::<i32>()
+            .map_err(|_| AppError::from("Invalid incoming friend requests type"))?,
+    )
+    .map_err(|_| AppError::from("Invalid incoming friend requests type"))?;
+
+    match sqlx::query(
+        r#"
+UPDATE users
+SET incoming_friend_requests = $1
+WHERE id = $2
+"#,
+    )
+    .bind(incoming_friend_requests as i16)
+    .bind(&user_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(AppError::InternalError(
+            "user not found in database".to_string(),
+        )),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -82,7 +91,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
-        // Set to `following`
+        // Set to `following`.
         let req = test::TestRequest::patch()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/settings/privacy/incoming-friend-requests")
@@ -94,12 +103,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Incoming friend requests should get updated in the database
+        // Incoming friend requests should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT incoming_friend_requests FROM users
-            WHERE id = $1
-            "#,
+SELECT incoming_friend_requests FROM users
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
@@ -110,7 +119,7 @@ mod tests {
             IncomingFriendRequest::Following as i16
         );
 
-        // Set to `none`
+        // Set to `none`.
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
             .uri("/v1/me/settings/privacy/incoming-friend-requests")
@@ -122,12 +131,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Incoming friend requests should get updated in the database
+        // Incoming friend requests should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT incoming_friend_requests FROM users
-            WHERE id = $1
-            "#,
+SELECT incoming_friend_requests FROM users
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)

@@ -19,69 +19,83 @@ use validator::Validate;
 
 #[derive(Deserialize, Validate)]
 struct Fragments {
-    id: String,
+    asset_id: String,
 }
 
-#[delete("/v1/me/assets/{id}")]
+#[delete("/v1/me/assets/{asset_id}")]
+#[tracing::instrument(
+    name = "DELETE /v1/me/assets/{asset_id}",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        asset_id = %path.asset_id
+    ),
+    err
+)]
 async fn delete(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => match path.id.parse::<i64>() {
-            Ok(asset_id) => {
-                match sqlx::query(
-                    r#"
-                    SELECT key FROM assets
-                    WHERE id = $1 AND user_id = $2
-                    "#,
-                )
-                .bind(asset_id)
-                .bind(user_id)
-                .fetch_one(&data.db_pool)
-                .await
-                {
-                    Ok(result) => {
-                        let s3_client = &data.s3_client;
-                        let asset_key = result.get::<Uuid, _>("key");
+    let user_id = user.id()?;
+    let asset_id = path
+        .asset_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid asset ID"))?;
 
-                        // Delete the object from S3
-                        let delete_result = s3_client
-                            .delete_object()
-                            .bucket(S3_UPLOADS_BUCKET)
-                            .key(asset_key.to_string())
-                            .send()
-                            .await;
+    let pg_pool = &data.db_pool;
+    let mut txn = pg_pool.begin().await?;
 
-                        if delete_result.is_ok() {
-                            // Remove asset metadata
-                            sqlx::query(
-                                r#"
-                               DELETE FROM assets
-                               WHERE id = $1 
-                               "#,
-                            )
-                            .bind(asset_id)
-                            .execute(&data.db_pool)
-                            .await?;
+    let asset = sqlx::query(
+        r#"
+SELECT key FROM assets
+WHERE
+    id = $1
+    AND user_id = $2
+"#,
+    )
+    .bind(&asset_id)
+    .bind(&user_id)
+    .fetch_one(&mut *txn)
+    .await
+    .map_err(|error| {
+        if matches!(error, sqlx::Error::RowNotFound) {
+            AppError::ToastError(ToastErrorResponse::new(None, "Asset not found"))
+        } else {
+            AppError::SqlxError(error)
+        }
+    })?;
 
-                            Ok(HttpResponse::Ok().finish())
-                        } else {
-                            Ok(HttpResponse::InternalServerError().finish())
-                        }
-                    }
-                    Err(kind) => match kind {
-                        sqlx::Error::RowNotFound => Ok(HttpResponse::BadRequest()
-                            .json(ToastErrorResponse::new("Asset not found"))),
-                        _ => Ok(HttpResponse::InternalServerError().finish()),
-                    },
-                }
-            }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid asset ID")),
-        },
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-    }
+    let s3_client = &data.s3_client;
+    let asset_key = asset.get::<Uuid, _>("key");
+
+    // Delete the object from S3.
+    s3_client
+        .delete_object()
+        .bucket(S3_UPLOADS_BUCKET)
+        .key(asset_key.to_string())
+        .send()
+        .await
+        .map_err(|error| {
+            AppError::InternalError(format!(
+                "unable to delete the asset from s3: {:?}",
+                error.into_service_error()
+            ))
+        })?;
+
+    sqlx::query(
+        r#"
+DELETE FROM assets
+WHERE id = $1 
+"#,
+    )
+    .bind(asset_id)
+    .execute(&mut *txn)
+    .await?;
+
+    txn.commit().await?;
+
+    Ok(HttpResponse::Ok().finish())
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -103,13 +117,13 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
-        // Insert an asset
+        // Insert an asset.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO assets(key, hex, height, width, user_id)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING id
-            "#,
+INSERT INTO assets (key, hex, height, width, user_id)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id
+"#,
         )
         .bind(Uuid::new_v4())
         .bind("000000".to_string())
@@ -132,14 +146,14 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Should be deleted from the database
+        // Should be deleted from the database.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM assets
-                WHERE id = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM assets
+    WHERE id = $1
+)
+"#,
         )
         .bind(insert_result.get::<i64, _>("id"))
         .fetch_one(&mut *conn)

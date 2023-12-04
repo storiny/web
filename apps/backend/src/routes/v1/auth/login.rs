@@ -28,6 +28,7 @@ use actix_extended_session::{
 };
 use actix_http::HttpMessage;
 use actix_web::{
+    http::StatusCode,
     post,
     web,
     HttpRequest,
@@ -42,18 +43,19 @@ use argon2::{
     PasswordHash,
     PasswordVerifier,
 };
-use email_address::EmailAddress;
 use serde::{
     Deserialize,
     Serialize,
 };
-use sqlx::{
-    Error,
-    Row,
-};
+use sqlx::Row;
 use std::net::IpAddr;
 use time::OffsetDateTime;
 use totp_rs::Secret;
+use tracing::{
+    debug,
+    error,
+    trace,
+};
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
@@ -64,7 +66,7 @@ struct Request {
     #[validate(length(min = 6, max = 64, message = "Invalid password length"))]
     password: String,
     remember_me: bool,
-    #[validate(length(min = 6, max = 12, message = "Invalid verification code"))]
+    #[validate(length(min = 6, max = 12, message = "Invalid authentication code"))]
     code: Option<String>,
 }
 
@@ -79,6 +81,15 @@ struct QueryParams {
 }
 
 #[post("/v1/auth/login")]
+#[tracing::instrument(
+    name = "POST /v1/auth/login",
+    skip_all,
+    fields(
+        email = %payload.email,
+        remember_me = %payload.remember_me,
+        bypass = query.bypass
+    )
+)]
 async fn post(
     payload: Json<Request>,
     req: HttpRequest,
@@ -87,349 +98,364 @@ async fn post(
     user: Option<Identity>,
     session: Session,
 ) -> Result<HttpResponse, AppError> {
-    // Return if the user is already logged-in
+    // Return early if the user is already logged-in.
     if user.is_some() {
-        return Ok(
-            HttpResponse::BadRequest().json(ToastErrorResponse::new("You are already logged-in"))
-        );
-    }
-
-    // Check for valid e-mail
-    if !EmailAddress::is_valid(&payload.email) {
-        return Ok(HttpResponse::BadRequest()
-            .json(FormErrorResponse::new(vec![("email", "Invalid e-mail")])));
+        return Err(ToastErrorResponse::new(None, "You are already logged in").into());
     }
 
     let pg_pool = &data.db_pool;
     let mut txn = pg_pool.begin().await?;
     let should_bypass = query.bypass == Some("true".to_string());
-    let query_result = sqlx::query(
+
+    let user = sqlx::query(
         r#"
-        SELECT
-            id,
-            username,
-            password,
-            email_verified,
-            public_flags,
-            deactivated_at,
-            deleted_at,
-            mfa_enabled,
-            mfa_secret
-        FROM users
-        WHERE email = $1
-        "#,
+SELECT
+    id,
+    username,
+    password,
+    email_verified,
+    public_flags,
+    deactivated_at,
+    deleted_at,
+    mfa_enabled,
+    mfa_secret
+FROM users
+WHERE email = $1
+"#,
     )
     .bind(&payload.email)
     .fetch_one(&mut *txn)
-    .await;
+    .await
+    .map_err(|error| {
+        if matches!(error, sqlx::Error::RowNotFound) {
+            AppError::ToastError(ToastErrorResponse::new(
+                Some(StatusCode::UNAUTHORIZED),
+                "Invalid e-mail or password",
+            ))
+        } else {
+            AppError::SqlxError(error)
+        }
+    })?;
 
-    match query_result {
-        Ok(user) => {
-            let user_id = user.get::<i64, _>("id");
+    let user_id = user.get::<i64, _>("id");
 
-            // MFA check
-            if user.get::<bool, _>("mfa_enabled") {
-                if payload.code.is_none() {
-                    return Ok(HttpResponse::Unauthorized()
-                        .json(ToastErrorResponse::new("Missing verification code")));
+    // MFA check
+    if user.get::<bool, _>("mfa_enabled") {
+        debug!("checking mfa for the user");
+
+        if payload.code.is_none() {
+            return Err(ToastErrorResponse::new(
+                Some(StatusCode::UNAUTHORIZED),
+                "Missing authentication code",
+            )
+            .into());
+        }
+
+        let authentication_code = payload.code.clone().unwrap_or_default();
+
+        match authentication_code.chars().count() {
+            // Recovery code
+            12 => {
+                debug!("user provided a recovery/backup code");
+
+                let result = sqlx::query(
+                    r#"
+SELECT EXISTS (
+    SELECT 1 FROM mfa_recovery_codes
+    WHERE
+        code = $1
+        AND user_id = $2
+        AND used_at IS NULL
+)
+"#,
+                )
+                .bind(&authentication_code)
+                .bind(&user_id)
+                .fetch_one(&mut *txn)
+                .await?;
+
+                if !result.get::<bool, _>("exists") {
+                    return Err(FormErrorResponse::new(
+                        None,
+                        vec![("code", "Invalid authentication code")],
+                    )
+                    .into());
                 }
 
-                let verification_code = payload.code.clone().unwrap_or_default();
+                // Mark the code as used.
+                sqlx::query(
+                    r#"
+UPDATE mfa_recovery_codes
+SET used_at = NOW()
+WHERE code = $1 AND user_id = $2
+"#,
+                )
+                .bind(&authentication_code)
+                .bind(&user_id)
+                .execute(&mut *txn)
+                .await?;
+            }
+            // TOTP code
+            6 => {
+                debug!("user provided a TOTP authentication code");
 
-                match verification_code.chars().count() {
-                    // Recovery code
-                    12 => {
-                        let result = sqlx::query(
-                            r#"
-                            SELECT EXISTS (
-                                SELECT 1 FROM mfa_recovery_codes
-                                WHERE
-                                    code = $1
-                                    AND user_id = $2
-                                    AND used_at IS NULL
-                            )
-                            "#,
-                        )
-                        .bind(&verification_code)
-                        .bind(&user_id)
-                        .fetch_one(&mut *txn)
-                        .await?;
+                let mfa_secret = user
+                    .get::<Option<String>, _>("mfa_secret")
+                    .unwrap_or_default();
+                let secret_as_bytes = Secret::Encoded(mfa_secret)
+                    .to_bytes()
+                    .map_err(|error| AppError::InternalError(error.to_string()))?;
+                let totp = generate_totp(secret_as_bytes, &user.get::<String, _>("username"))
+                    .map_err(|error| AppError::InternalError(error.to_string()))?;
 
-                        if !result.get::<bool, _>("exists") {
-                            return Ok(HttpResponse::BadRequest().json(FormErrorResponse::new(
-                                vec![("code", "Invalid verification code")],
-                            )));
-                        }
+                let is_valid = totp.check_current(&authentication_code).map_err(|error| {
+                    error!(?error, "unable to validate the TOTP code");
 
-                        // Mark the code as used
-                        sqlx::query(
-                            r#"
-                            UPDATE mfa_recovery_codes
-                            SET used_at = NOW()
-                            WHERE code = $1 AND user_id = $2
-                            "#,
-                        )
-                        .bind(&verification_code)
-                        .bind(&user_id)
-                        .execute(&mut *txn)
-                        .await?;
+                    AppError::ToastError(ToastErrorResponse::new(
+                        Some(StatusCode::INTERNAL_SERVER_ERROR),
+                        "Unable to validate the authentication code",
+                    ))
+                })?;
+
+                if !is_valid {
+                    return Err(FormErrorResponse::new(
+                        None,
+                        vec![("code", "Invalid authentication code")],
+                    )
+                    .into());
+                }
+            }
+            // Other invalid cases
+            _ => {
+                return Err(FormErrorResponse::new(
+                    None,
+                    vec![("code", "Invalid authentication code")],
+                )
+                .into());
+            }
+        };
+    }
+
+    // Validate the password.
+    {
+        let user_password = user.get::<Option<String>, _>("password");
+
+        // The password can be NULL if the user has created the account using a third-party service,
+        // such as Apple or Google.
+        if user_password.is_none() {
+            return Err(ToastErrorResponse::new(
+                Some(StatusCode::UNAUTHORIZED),
+                "Invalid credentials",
+            )
+            .into());
+        }
+
+        let password_hash = PasswordHash::new(&user_password.unwrap())
+            .map_err(|error| AppError::InternalError(error.to_string()))?;
+
+        Argon2::default()
+            .verify_password(&payload.password.as_bytes(), &password_hash)
+            .map_err(|error| {
+                AppError::ToastError(ToastErrorResponse::new(
+                    Some(StatusCode::UNAUTHORIZED),
+                    "Invalid credentials",
+                ))
+            })?;
+    }
+
+    // Check whether the user is suspended.
+    {
+        let public_flags = user.get::<i32, _>("public_flags");
+        let user_flags = Flag::new(public_flags as u32);
+
+        if user_flags.has_any_of(Mask::Multiple(vec![
+            UserFlag::TemporarilySuspended,
+            UserFlag::PermanentlySuspended,
+        ])) {
+            debug!("user has been suspended");
+
+            return Ok(HttpResponse::Ok().json(Response {
+                result: "suspended".to_string(),
+            }));
+        }
+    }
+
+    // Check whether the user is soft-deleted.
+    {
+        let deleted_at = user.get::<Option<OffsetDateTime>, _>("deleted_at");
+
+        if deleted_at.is_some() {
+            debug!("user has been soft-deleted");
+
+            if should_bypass {
+                trace!("bypassing the soft-delete by restoring the user");
+
+                sqlx::query(
+                    r#"
+UPDATE users
+SET deleted_at = NULL
+WHERE id = $1
+"#,
+                )
+                .bind(&user_id)
+                .execute(&mut *txn)
+                .await?;
+            } else {
+                return Ok(HttpResponse::Ok().json(Response {
+                    result: "held_for_deletion".to_string(),
+                }));
+            }
+        }
+    }
+
+    // Check whether the user is deactivated.
+    {
+        let deactivated_at = user.get::<Option<OffsetDateTime>, _>("deactivated_at");
+
+        if deactivated_at.is_some() {
+            debug!("user has been deactivated");
+
+            if should_bypass {
+                trace!("bypassing the deactivation by reactivating the user");
+
+                sqlx::query(
+                    r#"
+UPDATE users
+SET deactivated_at = NULL
+WHERE id = $1
+"#,
+                )
+                .bind(&user_id)
+                .execute(&mut *txn)
+                .await?;
+            } else {
+                return Ok(HttpResponse::Ok().json(Response {
+                    result: "deactivated".to_string(),
+                }));
+            }
+        }
+    }
+
+    // Check whether the user's email address has been verified.
+    {
+        let email_verified = user.get::<bool, _>("email_verified");
+
+        if !email_verified {
+            debug!("user's email has not been verified yet");
+
+            return Ok(HttpResponse::Ok().json(Response {
+                result: "email_confirmation".to_string(),
+            }));
+        }
+    }
+
+    let mut client_device_value = "Unknown device".to_string();
+    let mut client_location_value: Option<String> = None;
+
+    // Insert additional data to the session.
+    {
+        if let Some(ip) = req.connection_info().realip_remote_addr() {
+            if let Ok(parsed_ip) = ip.parse::<IpAddr>() {
+                let client_location_result = get_client_location(parsed_ip, &data.geo_db);
+                client_location_value = Some(client_location_result.display_name.to_string());
+
+                if let Ok(client_location) = serde_json::to_value(client_location_result) {
+                    session.insert("location", client_location);
+                }
+            }
+        }
+
+        if let Some(ua_header) = (&req.headers()).get("user-agent") {
+            if let Ok(ua) = ua_header.to_str() {
+                let client_device_result = get_client_device(ua, &data.ua_parser);
+                client_device_value = client_device_result.display_name.to_string();
+
+                if let Ok(client_device) = serde_json::to_value(client_device_result) {
+                    session.insert("device", client_device);
+                }
+            }
+        }
+    }
+
+    // Insert a login notification for the user.
+    sqlx::query(
+        r#"
+WITH inserted_notification AS (
+    INSERT INTO notifications (entity_type)
+    VALUES ($1)
+    RETURNING id
+)
+INSERT
+INTO
+    notification_outs (
+        notified_id,
+        notification_id,
+        rendered_content
+    )
+SELECT $2, (SELECT id FROM inserted_notification), $3
+"#,
+    )
+    .bind(NotificationEntityType::LoginAttempt as i16)
+    .bind(&user_id)
+    .bind(if let Some(location) = client_location_value {
+        format!("{client_device_value}:{location}")
+    } else {
+        client_device_value
+    })
+    .execute(&mut *txn)
+    .await?;
+
+    // Session lifecycle depends on the `remember_me` value.
+    session.set_lifecycle(if payload.remember_me {
+        SessionLifecycle::PersistentSession
+    } else {
+        SessionLifecycle::BrowserSession
+    });
+
+    // Check if the user maintains more than or equal to 10 sessions, and
+    // delete all the previous sessions if the current number of active
+    // sessions for the user exceeds the per user session limit (10).
+    match get_user_sessions(&data.redis, user_id.clone()).await {
+        Ok(sessions) => {
+            if sessions.len() >= 10 {
+                match clear_user_sessions(&data.redis, user_id.clone()).await {
+                    Ok(_) => {
+                        debug!(
+                            "cleared {} ovreflowing sessions for the user",
+                            sessions.len()
+                        );
                     }
-                    // TOTP code
-                    6 => {
-                        let mfa_secret = user
-                            .get::<Option<String>, _>("mfa_secret")
-                            .unwrap_or_default();
-                        let secret_as_bytes = Secret::Encoded(mfa_secret).to_bytes();
-
-                        if secret_as_bytes.is_err() {
-                            return Ok(HttpResponse::InternalServerError().finish());
-                        }
-
-                        match generate_totp(
-                            secret_as_bytes.unwrap(),
-                            &user.get::<String, _>("username"),
-                        ) {
-                            Ok(totp) => {
-                                let is_valid = totp.check_current(&verification_code);
-
-                                if is_valid.is_err() {
-                                    return Ok(HttpResponse::InternalServerError().json(
-                                        ToastErrorResponse::new(
-                                            "Unable to validate the verification code",
-                                        ),
-                                    ));
-                                }
-
-                                if !is_valid.unwrap() {
-                                    return Ok(HttpResponse::BadRequest().json(
-                                        FormErrorResponse::new(vec![(
-                                            "code",
-                                            "Invalid verification code",
-                                        )]),
-                                    ));
-                                }
-                            }
-                            Err(_) => return Ok(HttpResponse::InternalServerError().finish()),
-                        }
-                    }
-                    _ => {
-                        return Ok(HttpResponse::BadRequest().json(FormErrorResponse::new(vec![
-                            ("code", "Invalid verification code"),
-                        ])));
+                    Err(error) => {
+                        return Err(AppError::InternalError(format!(
+                            "unable to clear the overflowing sessions for the user: {:?}",
+                            error
+                        )));
                     }
                 };
             }
-
-            let user_password = user.get::<Option<String>, _>("password");
-            // User has created account using a third-party service, such as Apple or Google
-            if user_password.is_none() {
-                return Ok(HttpResponse::Unauthorized()
-                    .json(ToastErrorResponse::new("Invalid credentials")));
-            }
-
-            match PasswordHash::new(&user_password.unwrap()) {
-                Ok(hash) => {
-                    match Argon2::default().verify_password(&payload.password.as_bytes(), &hash) {
-                        Ok(_) => {
-                            // Check if the user is suspended
-                            {
-                                let public_flags = user.get::<i32, _>("public_flags");
-                                let user_flags = Flag::new(public_flags as u32);
-
-                                // User suspended
-                                if user_flags.has_any_of(Mask::Multiple(vec![
-                                    UserFlag::TemporarilySuspended,
-                                    UserFlag::PermanentlySuspended,
-                                ])) {
-                                    return Ok(HttpResponse::Ok().json(Response {
-                                        result: "suspended".to_string(),
-                                    }));
-                                }
-                            }
-
-                            // Check if the user is soft-deleted
-                            {
-                                let deleted_at =
-                                    user.get::<Option<OffsetDateTime>, _>("deleted_at");
-
-                                if deleted_at.is_some() {
-                                    if should_bypass {
-                                        // Restore the user
-                                        sqlx::query(
-                                            r#"
-                                            UPDATE users
-                                            SET deleted_at = NULL
-                                            WHERE id = $1
-                                            "#,
-                                        )
-                                        .bind(&user_id)
-                                        .execute(&mut *txn)
-                                        .await?;
-                                    } else {
-                                        return Ok(HttpResponse::Ok().json(Response {
-                                            result: "held_for_deletion".to_string(),
-                                        }));
-                                    }
-                                }
-                            }
-
-                            // Check if the user is deactivated
-                            {
-                                let deactivated_at =
-                                    user.get::<Option<OffsetDateTime>, _>("deactivated_at");
-
-                                if deactivated_at.is_some() {
-                                    if should_bypass {
-                                        // Reactivate the user
-                                        sqlx::query(
-                                            r#"
-                                            UPDATE users
-                                            SET deactivated_at = NULL
-                                            WHERE id = $1
-                                            "#,
-                                        )
-                                        .bind(&user_id)
-                                        .execute(&mut *txn)
-                                        .await?;
-                                    } else {
-                                        return Ok(HttpResponse::Ok().json(Response {
-                                            result: "deactivated".to_string(),
-                                        }));
-                                    }
-                                }
-                            }
-
-                            // Check if the email is verified
-                            {
-                                let email_verified = user.get::<bool, _>("email_verified");
-
-                                if !email_verified {
-                                    return Ok(HttpResponse::Ok().json(Response {
-                                        result: "email_confirmation".to_string(),
-                                    }));
-                                }
-                            }
-
-                            let mut client_device_value = "Unknown device".to_string();
-                            let mut client_location_value: Option<String> = None;
-
-                            // Insert additional data to the session
-                            {
-                                if let Some(ip) = req.connection_info().realip_remote_addr() {
-                                    if let Ok(parsed_ip) = ip.parse::<IpAddr>() {
-                                        let client_location_result =
-                                            get_client_location(parsed_ip, &data.geo_db);
-                                        client_location_value =
-                                            Some(client_location_result.display_name.to_string());
-
-                                        if let Ok(client_location) =
-                                            serde_json::to_value(client_location_result)
-                                        {
-                                            session.insert("location", client_location);
-                                        }
-                                    }
-                                }
-
-                                if let Some(ua_header) = (&req.headers()).get("user-agent") {
-                                    if let Ok(ua) = ua_header.to_str() {
-                                        let client_device_result =
-                                            get_client_device(ua, &data.ua_parser);
-                                        client_device_value =
-                                            client_device_result.display_name.to_string();
-
-                                        if let Ok(client_device) =
-                                            serde_json::to_value(client_device_result)
-                                        {
-                                            session.insert("device", client_device);
-                                        }
-                                    }
-                                }
-                            }
-
-                            // Insert a login notification
-                            sqlx::query(
-                                r#"
-                                WITH inserted_notification AS (
-                                    INSERT INTO notifications (entity_type)
-                                    VALUES ($1)
-                                    RETURNING id
-                                )
-                                INSERT
-                                INTO
-                                    notification_outs (
-                                        notified_id,
-                                        notification_id,
-                                        rendered_content
-                                    )
-                                SELECT
-                                    $2, (SELECT id FROM inserted_notification), $3
-                                "#,
-                            )
-                            .bind(NotificationEntityType::LoginAttempt as i16)
-                            .bind(user.get::<i64, _>("id"))
-                            .bind(if let Some(location) = client_location_value {
-                                format!("{client_device_value}:{location}")
-                            } else {
-                                client_device_value
-                            })
-                            .execute(&mut *txn)
-                            .await?;
-
-                            // Set the session lifecycle
-                            session.set_lifecycle(if payload.remember_me {
-                                SessionLifecycle::PersistentSession
-                            } else {
-                                SessionLifecycle::BrowserSession
-                            });
-
-                            // Check if the user maintains more than or equal to 10 sessions, and
-                            // delete all the previous sessions if the current number of active
-                            // sessions for the user exceeds the per user session limit (10).
-                            match get_user_sessions(&data.redis, user.get::<i64, _>("id")).await {
-                                Ok(sessions) => {
-                                    if sessions.len() >= 10 {
-                                        match clear_user_sessions(
-                                            &data.redis,
-                                            user.get::<i64, _>("id"),
-                                        )
-                                        .await
-                                        {
-                                            Ok(_) => {}
-                                            Err(_) => {
-                                                return Ok(
-                                                    HttpResponse::InternalServerError().finish()
-                                                );
-                                            }
-                                        };
-                                    }
-                                }
-                                Err(_) => return Ok(HttpResponse::InternalServerError().finish()),
-                            };
-
-                            match Identity::login(&req.extensions(), user.get::<i64, _>("id")) {
-                                Ok(_) => {
-                                    // Commit database changes
-                                    txn.commit().await?;
-
-                                    Ok(HttpResponse::Ok().json(Response {
-                                        result: "success".to_string(),
-                                    }))
-                                }
-                                Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-                            }
-                        }
-                        Err(_) => Ok(HttpResponse::Unauthorized()
-                            .json(ToastErrorResponse::new("Invalid credentials"))),
-                    }
-                }
-                Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-            }
         }
-        Err(kind) => match kind {
-            Error::RowNotFound => Ok(HttpResponse::Unauthorized()
-                .json(ToastErrorResponse::new("Invalid e-mail or password"))),
-            _ => Ok(HttpResponse::InternalServerError().finish()),
-        },
+        Err(error) => {
+            return Err(AppError::InternalError(format!(
+                "unable to fetch the sessions for the user: {:?}",
+                error
+            )));
+        }
+    };
+
+    match Identity::login(&req.extensions(), user.get::<i64, _>("id")) {
+        Ok(_) => {
+            txn.commit().await?;
+
+            debug!("user logged in");
+
+            Ok(HttpResponse::Ok().json(Response {
+                result: "success".to_string(),
+            }))
+        }
+        Err(error) => Err(AppError::InternalError(format!(
+            "identity error: {:?}",
+            error
+        ))),
     }
 }
 
@@ -483,7 +509,7 @@ mod tests {
     use storiny_macros::test_context;
     use uuid::Uuid;
 
-    /// Returns the device and session data present in the session for testing
+    /// Returns the device and session data present in the session for testing.
     #[get("/get-device-and-location")]
     async fn get(session: Session) -> impl Responder {
         let location = session.get::<ClientLocation>("location").unwrap();
@@ -494,7 +520,7 @@ mod tests {
         }))
     }
 
-    /// Returns sample email and hashed password
+    /// Returns a sample email and hashed password.
     fn get_sample_email_and_password() -> (String, String, String) {
         let password = "sample";
         let email = "someone@example.com";
@@ -513,12 +539,12 @@ mod tests {
         let app = init_app_for_test(post, pool, false, false, None).await.0;
         let (email, password_hash, password) = get_sample_email_and_password();
 
-        // Insert the user
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email, password, email_verified)
-            VALUES ($1, $2, $3, $4, TRUE)
-            "#,
+INSERT INTO users (name, username, email, password, email_verified)
+VALUES ($1, $2, $3, $4, TRUE)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -548,22 +574,21 @@ mod tests {
         )
         .await;
 
-        // Should also insert a notification
+        // Should also insert a notification.
         let result = sqlx::query(
             r#"
-            SELECT
-                EXISTS (
-                    SELECT
-                        1
-                    FROM
-                        notification_outs
-                    WHERE
-                        notification_id = (
-                            SELECT id FROM notifications
-                            WHERE entity_type = $1
-                        )
-                   )
-            "#,
+SELECT EXISTS (
+    SELECT
+        1
+    FROM
+        notification_outs
+    WHERE
+        notification_id = (
+            SELECT id FROM notifications
+            WHERE entity_type = $1
+        )
+   )
+"#,
         )
         .bind(NotificationEntityType::LoginAttempt as i16)
         .fetch_one(&mut *conn)
@@ -575,17 +600,18 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_login_using_recovery_code(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_login_using_a_recovery_code(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
+
         let (email, password_hash, password) = get_sample_email_and_password();
 
-        // Insert the user
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (id, name, username, email, password, email_verified, mfa_enabled)
-            VALUES ($1, $2, $3, $4, $5, TRUE, TRUE)
-            "#,
+INSERT INTO users (id, name, username, email, password, email_verified, mfa_enabled)
+VALUES ($1, $2, $3, $4, $5, TRUE, TRUE)
+"#,
         )
         .bind(1_i64)
         .bind("Sample user".to_string())
@@ -595,12 +621,12 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        // Insert recovery code
+        // Insert a recovery code.
         sqlx::query(
             r#"
-            INSERT INTO mfa_recovery_codes(code, user_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO mfa_recovery_codes(code, user_id)
+VALUES ($1, $2)
+"#,
         )
         .bind("0".repeat(12))
         .bind(1_i64)
@@ -628,12 +654,12 @@ mod tests {
         )
         .await;
 
-        // Should mark the recovery code as used
+        // Should mark the recovery code as used.
         let result = sqlx::query(
             r#"
-            SELECT used_at FROM mfa_recovery_codes
-            WHERE code = $1 AND user_id = $2
-            "#,
+SELECT used_at FROM mfa_recovery_codes
+WHERE code = $1 AND user_id = $2
+"#,
         )
         .bind("0".repeat(12))
         .bind(1_i64)
@@ -646,26 +672,27 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_login_using_authentication_code(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_login_using_an_authentication_code(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
         let (email, password_hash, password) = get_sample_email_and_password();
+
         let mfa_secret = Secret::generate_secret();
 
-        // Insert the user
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (
-                name,
-                username,
-                email,
-                password,
-                email_verified,
-                mfa_enabled,
-                mfa_secret
-            )
-            VALUES ($1, $2, $3, $4, TRUE, TRUE, $5)
-            "#,
+INSERT INTO users (
+    name,
+    username,
+    email,
+    password,
+    email_verified,
+    mfa_enabled,
+    mfa_secret
+)
+VALUES ($1, $2, $3, $4, TRUE, TRUE, $5)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -675,7 +702,7 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        // Generate a TOTP instance for verification code
+        // Generate an authentication code.
         let totp = generate_totp(mfa_secret.to_bytes().unwrap(), "sample_user").unwrap();
 
         let req = test::TestRequest::post()
@@ -703,17 +730,18 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_login_with_invalid_email(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_a_login_with_invalid_email(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
+
         let (email, password_hash, password) = get_sample_email_and_password();
 
-        // Insert the user
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email, password)
-            VALUES ($1, $2, $3, $4)
-            "#,
+INSERT INTO users (name, username, email, password)
+VALUES ($1, $2, $3, $4)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -740,17 +768,17 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_login_with_missing_password(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_a_login_with_missing_password(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
         let (email, _, password) = get_sample_email_and_password();
 
-        // Insert the user
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email)
-            VALUES ($1, $2, $3)
-            "#,
+INSERT INTO users (name, username, email)
+VALUES ($1, $2, $3)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -776,17 +804,18 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_login_using_invalid_password(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_a_login_with_invalid_password(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
+
         let (email, password_hash, _) = get_sample_email_and_password();
 
-        // Insert the user
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email, password)
-            VALUES ($1, $2, $3, $4)
-            "#,
+INSERT INTO users (name, username, email, password)
+VALUES ($1, $2, $3, $4)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -813,11 +842,12 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_login_when_the_user_is_temporarily_suspended(
+    async fn can_reject_a_login_when_the_user_is_temporarily_suspended(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
+
         let (email, password_hash, password) = get_sample_email_and_password();
         let mut flags = Flag::new(0);
         flags.add_flag(UserFlag::TemporarilySuspended);
@@ -825,9 +855,9 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email, password, public_flags)
-            VALUES ($1, $2, $3, $4, $5)
-            "#,
+INSERT INTO users (name, username, email, password, public_flags)
+VALUES ($1, $2, $3, $4, $5)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -862,11 +892,12 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_login_when_the_user_is_permanently_suspended(
+    async fn can_reject_a_login_when_the_user_is_permanently_suspended(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
+
         let (email, password_hash, password) = get_sample_email_and_password();
         let mut flags = Flag::new(0);
         flags.add_flag(UserFlag::PermanentlySuspended);
@@ -874,9 +905,9 @@ mod tests {
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email, password, public_flags)
-            VALUES ($1, $2, $3, $4, $5)
-            "#,
+INSERT INTO users (name, username, email, password, public_flags)
+VALUES ($1, $2, $3, $4, $5)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -911,17 +942,18 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_login_when_the_user_is_deactivated(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_a_login_when_the_user_is_deactivated(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
+
         let (email, password_hash, password) = get_sample_email_and_password();
 
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email, password)
-            VALUES ($1, $2, $3, $4)
-            "#,
+INSERT INTO users (name, username, email, password)
+VALUES ($1, $2, $3, $4)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -930,13 +962,13 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        // Deactivate the user
+        // Deactivate the user.
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE email = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE email = $1
+"#,
         )
         .bind((&email).to_string())
         .execute(&mut *conn)
@@ -967,17 +999,18 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_login_when_the_user_is_soft_deleted(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_a_login_when_the_user_is_soft_deleted(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
+
         let (email, password_hash, password) = get_sample_email_and_password();
 
-        // Insert the user
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email, password)
-            VALUES ($1, $2, $3, $4)
-            "#,
+INSERT INTO users (name, username, email, password)
+VALUES ($1, $2, $3, $4)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -989,10 +1022,10 @@ mod tests {
         // Soft-delete the user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE email = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE email = $1
+"#,
         )
         .bind((&email).to_string())
         .execute(&mut *conn)
@@ -1023,17 +1056,18 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_login_if_the_email_is_not_verified(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_a_login_if_the_email_is_not_verified(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
+
         let (email, password_hash, password) = get_sample_email_and_password();
 
-        // Insert the user
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email, password)
-            VALUES ($1, $2, $3, $4)
-            "#,
+INSERT INTO users (name, username, email, password)
+VALUES ($1, $2, $3, $4)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -1067,17 +1101,20 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_login_for_missing_verification_code(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_a_login_for_a_missing_authentication_code(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
+
         let (email, _, password) = get_sample_email_and_password();
 
-        // Insert the user
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email, mfa_enabled)
-            VALUES ($1, $2, $3, TRUE)
-            "#,
+INSERT INTO users (name, username, email, mfa_enabled)
+VALUES ($1, $2, $3, TRUE)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -1097,25 +1134,26 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Missing verification code").await;
+        assert_toast_error_response(res, "Missing authentication code").await;
 
         Ok(())
     }
 
     #[sqlx::test]
-    async fn can_reject_login_for_invalid_verification_code_length(
+    async fn can_reject_a_login_for_an_authentication_code_with_invalid_length(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
+
         let (email, _, password) = get_sample_email_and_password();
 
-        // Insert the user
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email, mfa_enabled)
-            VALUES ($1, $2, $3, TRUE)
-            "#,
+INSERT INTO users (name, username, email, mfa_enabled)
+VALUES ($1, $2, $3, TRUE)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -1135,23 +1173,23 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_form_error_response(res, vec![("code", "Invalid verification code")]).await;
+        assert_form_error_response(res, vec![("code", "Invalid authentication code")]).await;
 
         Ok(())
     }
 
     #[sqlx::test]
-    async fn can_reject_login_for_invalid_recovery_code(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_a_login_for_an_invalid_recovery_code(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
         let (email, _, password) = get_sample_email_and_password();
 
-        // Insert the user
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email, mfa_enabled)
-            VALUES ($1, $2, $3, TRUE)
-            "#,
+INSERT INTO users (name, username, email, mfa_enabled)
+VALUES ($1, $2, $3, TRUE)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -1171,24 +1209,27 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_form_error_response(res, vec![("code", "Invalid verification code")]).await;
+        assert_form_error_response(res, vec![("code", "Invalid authentication code")]).await;
 
         Ok(())
     }
 
     #[sqlx::test]
-    async fn can_reject_login_for_invalid_authentication_code(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_a_login_for_an_invalid_authentication_code(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
+
         let (email, _, password) = get_sample_email_and_password();
         let mfa_secret = Secret::generate_secret();
 
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email, mfa_enabled, mfa_secret)
-            VALUES ($1, $2, $3, TRUE, $4)
-            "#,
+INSERT INTO users (name, username, email, mfa_enabled, mfa_secret)
+VALUES ($1, $2, $3, TRUE, $4)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -1209,23 +1250,24 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_form_error_response(res, vec![("code", "Invalid verification code")]).await;
+        assert_form_error_response(res, vec![("code", "Invalid authentication code")]).await;
 
         Ok(())
     }
 
     #[sqlx::test]
-    async fn can_reject_login_for_used_recovery_code(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_a_login_for_a_used_recovery_code(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
+
         let (email, password_hash, password) = get_sample_email_and_password();
 
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users (id, name, username, email, password, email_verified, mfa_enabled)
-            VALUES ($1, $2, $3, $4, $5, TRUE, TRUE)
-            "#,
+INSERT INTO users (id, name, username, email, password, email_verified, mfa_enabled)
+VALUES ($1, $2, $3, $4, $5, TRUE, TRUE)
+"#,
         )
         .bind(1_i64)
         .bind("Sample user".to_string())
@@ -1235,12 +1277,12 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        // Insert a used recovery code
+        // Insert a used recovery code.
         sqlx::query(
             r#"
-            INSERT INTO mfa_recovery_codes(code, user_id, used_at)
-            VALUES ($1, $2, NOW())
-            "#,
+INSERT INTO mfa_recovery_codes(code, user_id, used_at)
+VALUES ($1, $2, NOW())
+"#,
         )
         .bind("0".repeat(12))
         .bind(1_i64)
@@ -1259,27 +1301,28 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_form_error_response(res, vec![("code", "Invalid verification code")]).await;
+        assert_form_error_response(res, vec![("code", "Invalid authentication code")]).await;
 
         Ok(())
     }
 
     #[sqlx::test]
-    async fn can_send_non_persistent_cookie_if_remember_me_is_set_to_false(
+    async fn can_send_a_non_persistent_cookie_if_remember_me_is_set_to_false(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(services![get, post], pool, false, false, None)
             .await
             .0;
+
         let (email, password_hash, password) = get_sample_email_and_password();
 
-        // Insert the user
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email, password, email_verified)
-            VALUES ($1, $2, $3, $4, TRUE)
-            "#,
+INSERT INTO users (name, username, email, password, email_verified)
+VALUES ($1, $2, $3, $4, TRUE)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -1288,7 +1331,7 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        let post_req = test::TestRequest::post()
+        let req = test::TestRequest::post()
             .uri("/v1/auth/login")
             .set_json(Request {
                 email: email.to_string(),
@@ -1297,36 +1340,38 @@ mod tests {
                 code: None,
             })
             .to_request();
-        let post_res = test::call_service(&app, post_req).await;
-        let cookie_value = post_res
+        let res = test::call_service(&app, req).await;
+
+        let cookie_value = res
             .response()
             .cookies()
             .find(|cookie| cookie.name() == SESSION_COOKIE_NAME)
             .unwrap();
-        assert!(post_res.status().is_success());
 
-        // Should be non-persistent
+        assert!(res.status().is_success());
+        // Should be non-persistent.
         assert!(cookie_value.max_age().is_none());
 
         Ok(())
     }
 
     #[sqlx::test]
-    async fn can_send_persistent_cookie_if_remember_me_is_set_to_true(
+    async fn can_send_a_persistent_cookie_if_remember_me_is_set_to_true(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(services![get, post], pool, false, false, None)
             .await
             .0;
+
         let (email, password_hash, password) = get_sample_email_and_password();
 
-        // Insert the user
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email, password, email_verified)
-            VALUES ($1, $2, $3, $4, TRUE)
-            "#,
+INSERT INTO users (name, username, email, password, email_verified)
+VALUES ($1, $2, $3, $4, TRUE)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -1335,7 +1380,7 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        let post_req = test::TestRequest::post()
+        let req = test::TestRequest::post()
             .uri("/v1/auth/login")
             .set_json(Request {
                 email: email.to_string(),
@@ -1344,15 +1389,16 @@ mod tests {
                 code: None,
             })
             .to_request();
-        let post_res = test::call_service(&app, post_req).await;
-        let cookie_value = post_res
+        let res = test::call_service(&app, req).await;
+
+        let cookie_value = res
             .response()
             .cookies()
             .find(|cookie| cookie.name() == SESSION_COOKIE_NAME)
             .unwrap();
-        assert!(post_res.status().is_success());
 
-        // Should be persistent
+        assert!(res.status().is_success());
+        // Should be persistent.
         assert!(cookie_value.max_age().is_some());
 
         Ok(())
@@ -1364,14 +1410,15 @@ mod tests {
         let app = init_app_for_test(services![get, post], pool, false, false, None)
             .await
             .0;
+
         let (email, password_hash, password) = get_sample_email_and_password();
 
         // Insert the user
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email, password, email_verified)
-            VALUES ($1, $2, $3, $4, TRUE)
-            "#,
+INSERT INTO users (name, username, email, password, email_verified)
+VALUES ($1, $2, $3, $4, TRUE)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -1380,13 +1427,13 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        // Soft-delete the user
+        // Soft-delete the user.
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE email = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE email = $1
+"#,
         )
         .bind((&email).to_string())
         .execute(&mut *conn)
@@ -1413,12 +1460,12 @@ mod tests {
         )
         .await;
 
-        // User should be restored
+        // User should be restored.
         let user_result = sqlx::query(
             r#"
-            SELECT deleted_at FROM users
-            WHERE email = $1
-            "#,
+SELECT deleted_at FROM users
+WHERE email = $1
+"#,
         )
         .bind((&email).to_string())
         .fetch_one(&mut *conn)
@@ -1441,14 +1488,15 @@ mod tests {
         let app = init_app_for_test(services![get, post], pool, false, false, None)
             .await
             .0;
+
         let (email, password_hash, password) = get_sample_email_and_password();
 
-        // Insert the user
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email, password, email_verified)
-            VALUES ($1, $2, $3, $4, TRUE)
-            "#,
+INSERT INTO users (name, username, email, password, email_verified)
+VALUES ($1, $2, $3, $4, TRUE)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -1457,13 +1505,13 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        // Deactivate the user
+        // Deactivate the user.
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE email = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE email = $1
+"#,
         )
         .bind((&email).to_string())
         .execute(&mut *conn)
@@ -1490,12 +1538,12 @@ mod tests {
         )
         .await;
 
-        // User should be reactivated
+        // User should be reactivated.
         let user_result = sqlx::query(
             r#"
-            SELECT deactivated_at FROM users
-            WHERE email = $1
-            "#,
+SELECT deactivated_at FROM users
+WHERE email = $1
+"#,
         )
         .bind((&email).to_string())
         .fetch_one(&mut *conn)
@@ -1515,7 +1563,7 @@ mod tests {
 
         #[test_context(RedisTestContext)]
         #[sqlx::test]
-        async fn can_clear_overflowing_sessions(
+        async fn can_clear_overflowing_sessions_on_login(
             ctx: &mut RedisTestContext,
             pool: PgPool,
         ) -> sqlx::Result<()> {
@@ -1523,9 +1571,10 @@ mod tests {
             let mut redis_conn = redis_pool.get().await.unwrap();
             let mut conn = pool.acquire().await?;
             let (app, _, user_id) = init_app_for_test(post, pool, true, true, None).await;
+
             let (email, password_hash, password) = get_sample_email_and_password();
 
-            // Create 10 sessions (one is already created from `init_app_for_test`)
+            // Create 10 sessions (one is already created from `init_app_for_test`).
             for _ in 0..9 {
                 let _: () = redis_conn
                     .set(
@@ -1551,12 +1600,12 @@ mod tests {
 
             assert_eq!(sessions.len(), 10);
 
-            // Insert the user
+            // Insert the user.
             sqlx::query(
                 r#"
-                INSERT INTO users (id, name, username, email, password, email_verified)
-                VALUES ($1, $2, $3, $4, $5, TRUE)
-                "#,
+INSERT INTO users (id, name, username, email, password, email_verified)
+VALUES ($1, $2, $3, $4, $5, TRUE)
+"#,
             )
             .bind(user_id.unwrap())
             .bind("Sample user".to_string())
@@ -1587,7 +1636,7 @@ mod tests {
             )
             .await;
 
-            // Should remove previous sessions
+            // Should remove previous sessions.
             let sessions = get_user_sessions(redis_pool, user_id.unwrap())
                 .await
                 .unwrap();
@@ -1607,14 +1656,15 @@ mod tests {
             let app = init_app_for_test(services![get, post], pool, false, false, None)
                 .await
                 .0;
+
             let (email, password_hash, password) = get_sample_email_and_password();
 
             // Insert the user
             sqlx::query(
                 r#"
-                INSERT INTO users (name, username, email, password, email_verified)
-                VALUES ($1, $2, $3, $4, TRUE)
-                "#,
+INSERT INTO users (name, username, email, password, email_verified)
+VALUES ($1, $2, $3, $4, TRUE)
+"#,
             )
             .bind("Sample user".to_string())
             .bind("sample_user".to_string())
@@ -1638,6 +1688,7 @@ mod tests {
                 })
                 .to_request();
             let res = test::call_service(&app, req).await;
+
             let cookie_value = res
                 .response()
                 .cookies()

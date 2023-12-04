@@ -1,7 +1,7 @@
-INSERT INTO friends(transmitter_id, receiver_id)
+INSERT INTO friends (transmitter_id, receiver_id)
     VALUES (1, 3);
 
-INSERT INTO friends(transmitter_id, receiver_id)
+INSERT INTO friends (transmitter_id, receiver_id)
     VALUES (2, 3);
 
 UPDATE

@@ -1,12 +1,11 @@
-SELECT
-	"t->story_tag->story".category::TEXT AS "category!",
-	COALESCE(
-					ARRAY_AGG(DISTINCT
-					(t.id, t.name)
-							 ) FILTER (
-						WHERE t.id IS NOT NULL
-						), '{}'
-	)                                    AS "tags!: Vec<Tag>"
+SELECT "t->story_tag->story".category::TEXT AS "category!",
+	   COALESCE(
+					   ARRAY_AGG(DISTINCT
+					   (t.id, t.name)
+								) FILTER (
+						   WHERE t.id IS NOT NULL
+						   ), '{}'
+	   )                                    AS "tags!: Vec<Tag>"
 FROM
 	tags t
 		-- Join story tags

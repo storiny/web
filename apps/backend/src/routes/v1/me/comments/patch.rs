@@ -34,45 +34,58 @@ struct Fragments {
 }
 
 #[patch("/v1/me/comments/{comment_id}")]
+#[tracing::instrument(
+    name = "PATCH /v1/me/comments/{comment_id}",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        comment_id = %path.comment_id
+        content = %payload.content
+    ),
+    err
+)]
 async fn patch(
     payload: Json<Request>,
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => match path.comment_id.parse::<i64>() {
-            Ok(comment_id) => {
-                let content = payload.content.trim();
-                let rendered_content = if content.is_empty() {
-                    "".to_string()
-                } else {
-                    md_to_html(MarkdownSource::Response(content))
-                };
+    let user_id = user.id()?;
+    let comment_id = path
+        .comment_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid comment ID"))?;
 
-                match sqlx::query(
-                    r#"
-                    UPDATE comments
-                    SET content = $1, rendered_content = $2, edited_at = NOW()
-                    WHERE user_id = $3 AND id = $4 AND deleted_at IS NULL
-                    "#,
-                )
-                .bind(content)
-                .bind(rendered_content)
-                .bind(user_id)
-                .bind(comment_id)
-                .execute(&data.db_pool)
-                .await?
-                .rows_affected()
-                {
-                    0 => Ok(HttpResponse::BadRequest()
-                        .json(ToastErrorResponse::new("Comment not found"))),
-                    _ => Ok(HttpResponse::NoContent().finish()),
-                }
-            }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid comment ID")),
-        },
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let content = payload.content.trim();
+    let rendered_content = if content.is_empty() {
+        "".to_string()
+    } else {
+        md_to_html(MarkdownSource::Response(content))
+    };
+
+    match sqlx::query(
+        r#"
+UPDATE comments
+SET
+    content = $1,
+    rendered_content = $2,
+    edited_at = NOW()
+WHERE
+    user_id = $3
+    AND id = $4
+    AND deleted_at IS NULL
+"#,
+    )
+    .bind(&content)
+    .bind(&rendered_content)
+    .bind(&user_id)
+    .bind(&comment_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(ToastErrorResponse::new(None, "Comment not found").into()),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -99,12 +112,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
-        // Insert a comment
+        // Insert a comment.
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
-            VALUES ($1, $2, $3, $4)
-            "#,
+INSERT INTO comments (id, content, user_id, story_id)
+VALUES ($1, $2, $3, $4)
+"#,
         )
         .bind(4_i64)
         .bind("Sample content")
@@ -124,12 +137,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Comment should get updated in the database
+        // Comment should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT rendered_content, edited_at FROM comments
-            WHERE id = $1
-            "#,
+SELECT rendered_content, edited_at FROM comments
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -153,12 +166,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
-        // Insert a comment
+        // Insert a comment.
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
-            VALUES ($1, $2, $3, $4)
-            "#,
+INSERT INTO comments (id, content, user_id, story_id)
+VALUES ($1, $2, $3, $4)
+"#,
         )
         .bind(4_i64)
         .bind("Sample content")
@@ -167,13 +180,13 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        // Soft-delete the comment
+        // Soft-delete the comment.
         let update_result = sqlx::query(
             r#"
-            UPDATE comments
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE comments
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .execute(&mut *conn)

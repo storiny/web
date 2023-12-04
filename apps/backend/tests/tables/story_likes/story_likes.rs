@@ -11,7 +11,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -43,7 +43,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -84,7 +84,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -125,7 +125,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -166,7 +166,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -198,7 +198,7 @@ mod tests {
         // Like the story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -234,7 +234,7 @@ mod tests {
         // Like the story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -322,7 +322,7 @@ mod tests {
         // Like the story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -383,7 +383,7 @@ mod tests {
         // Like the story
         sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -397,7 +397,7 @@ mod tests {
         // on the story when decrementing the `like_count`.
         sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             "#,
         )

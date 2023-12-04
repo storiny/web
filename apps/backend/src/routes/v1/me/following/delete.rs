@@ -13,37 +13,46 @@ use validator::Validate;
 
 #[derive(Deserialize, Validate)]
 struct Fragments {
-    user_id: String,
+    followed_id: String,
 }
 
-#[delete("/v1/me/following/{user_id}")]
+#[delete("/v1/me/following/{followed_id}")]
+#[tracing::instrument(
+    name = "DELETE /v1/me/following/{followed_id}",
+    skip_all,
+    fields(
+        follower_id = user.id().ok(),
+        followed_id = %path.followed_id
+    ),
+    err
+)]
 async fn delete(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => match path.user_id.parse::<i64>() {
-            Ok(followed_id) => {
-                match sqlx::query(
-                    r#"
-                    DELETE FROM relations
-                    WHERE follower_id = $1 AND followed_id = $2
-                    "#,
-                )
-                .bind(user_id)
-                .bind(followed_id)
-                .execute(&data.db_pool)
-                .await?
-                .rows_affected()
-                {
-                    0 => Ok(HttpResponse::BadRequest().body("Followed user not found")),
-                    _ => Ok(HttpResponse::NoContent().finish()),
-                }
-            }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid user ID")),
-        },
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let follower_id = user.id()?;
+    let followed_id = path
+        .followed_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid user ID"))?;
+
+    match sqlx::query(
+        r#"
+DELETE FROM relations
+WHERE
+    follower_id = $1
+    AND followed_id = $2
+"#,
+    )
+    .bind(&follower_id)
+    .bind(&followed_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(AppError::from("Followed user not found")),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -69,12 +78,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
-        // Follow a user
+        // Follow a user.
         let result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(user_id)
         .bind(2_i64)
@@ -91,14 +100,14 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Following relation should not be present in the database
+        // Following relation should not be present in the database.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM relations
-                WHERE follower_id = $1 AND followed_id = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM relations
+    WHERE follower_id = $1 AND followed_id = $2
+)
+"#,
         )
         .bind(user_id)
         .bind(2_i64)

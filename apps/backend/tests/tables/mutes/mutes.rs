@@ -8,7 +8,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO mutes(muter_id, muted_id)
+            INSERT INTO mutes (muter_id, muted_id)
             VALUES ($1, $2)
             "#,
         )
@@ -42,7 +42,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO mutes(muter_id, muted_id)
+            INSERT INTO mutes (muter_id, muted_id)
             VALUES ($1, $2)
             "#,
         )
@@ -83,7 +83,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO mutes(muter_id, muted_id)
+            INSERT INTO mutes (muter_id, muted_id)
             VALUES ($1, $2)
             "#,
         )
@@ -124,7 +124,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO mutes(muter_id, muted_id)
+            INSERT INTO mutes (muter_id, muted_id)
             VALUES ($1, $2)
             "#,
         )
@@ -165,7 +165,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO mutes(muter_id, muted_id)
+            INSERT INTO mutes (muter_id, muted_id)
             VALUES ($1, $2)
             "#,
         )

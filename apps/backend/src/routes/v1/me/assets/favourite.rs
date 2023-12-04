@@ -17,76 +17,88 @@ use validator::Validate;
 
 #[derive(Deserialize, Validate)]
 struct Fragments {
-    id: String,
+    asset_id: String,
 }
 
-#[post("/v1/me/assets/{id}/favourite")]
+#[post("/v1/me/assets/{asset_id}/favourite")]
+#[tracing::instrument(
+    name = "POST /v1/me/assets/{asset_id}/favourite",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        asset_id = %path.asset_id
+    ),
+    err
+)]
 async fn post(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            match path.id.parse::<i64>() {
-                Ok(asset_id) => {
-                    match sqlx::query(
-                        r#"
-                    UPDATE assets
-                    SET favourited_at = NOW()
-                    WHERE id = $1 AND user_id = $2
-                    "#,
-                    )
-                    .bind(asset_id)
-                    .bind(user_id)
-                    .execute(&data.db_pool)
-                    .await?
-                    .rows_affected()
-                    {
-                        0 => Ok(HttpResponse::BadRequest()
-                            .json(ToastErrorResponse::new("Asset not found"))),
-                        _ => Ok(HttpResponse::NoContent().finish()),
-                    }
-                }
-                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid asset ID")),
-            }
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let user_id = user.id()?;
+    let asset_id = path
+        .asset_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid asset ID"))?;
+
+    match sqlx::query(
+        r#"
+UPDATE assets
+SET favourited_at = NOW()
+WHERE
+    id = $1
+    AND user_id = $2
+"#,
+    )
+    .bind(&asset_id)
+    .bind(&user_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(ToastErrorResponse::new(None, "Asset not found").into()),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
-#[delete("/v1/me/assets/{id}/favourite")]
+#[delete("/v1/me/assets/{asset_id}/favourite")]
+#[tracing::instrument(
+    name = "DELETE /v1/me/assets/{asset_id}/favourite",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        asset_id = %path.asset_id
+    ),
+    err
+)]
 async fn delete(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            match path.id.parse::<i64>() {
-                Ok(asset_id) => {
-                    match sqlx::query(
-                        r#"
-                    UPDATE assets
-                    SET favourited_at = NULL
-                    WHERE id = $1 AND user_id = $2
-                    "#,
-                    )
-                    .bind(asset_id)
-                    .bind(user_id)
-                    .execute(&data.db_pool)
-                    .await?
-                    .rows_affected()
-                    {
-                        0 => Ok(HttpResponse::BadRequest()
-                            .json(ToastErrorResponse::new("Asset not found"))),
-                        _ => Ok(HttpResponse::NoContent().finish()),
-                    }
-                }
-                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid asset ID")),
-            }
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let user_id = user.id()?;
+    let asset_id = path
+        .asset_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid asset ID"))?;
+
+    match sqlx::query(
+        r#"
+UPDATE assets
+SET favourited_at = NULL
+WHERE
+    id = $1
+    AND user_id = $2
+"#,
+    )
+    .bind(&asset_id)
+    .bind(&user_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(ToastErrorResponse::new(None, "Asset not found").into()),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -119,13 +131,13 @@ mod tests {
         let (app, cookie, user_id) =
             init_app_for_test(services![post, delete], pool, true, false, None).await;
 
-        // Insert an asset
+        // Insert an asset.
         let result = sqlx::query(
             r#"
-            INSERT INTO assets(key, hex, height, width, user_id) 
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING id, favourited_at
-            "#,
+INSERT INTO assets (key, hex, height, width, user_id) 
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, favourited_at
+"#,
         )
         .bind(Uuid::new_v4())
         .bind("000000".to_string())
@@ -136,7 +148,7 @@ mod tests {
         .await?;
 
         assert!(result.try_get::<i64, _>("id").is_ok());
-        // `favourited_at` should be NULL initially
+        // `favourited_at` should be NULL initially.
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("favourited_at")
@@ -145,7 +157,7 @@ mod tests {
 
         let asset_id = result.get::<i64, _>("id");
 
-        // Add the asset to favourites
+        // Add the asset to favourites.
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/me/assets/{}/favourite", asset_id))
@@ -154,12 +166,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // `favourited_at` should get updated in the database
+        // `favourited_at` should get updated in the database.
         let asset = sqlx::query(
             r#"
-            SELECT favourited_at FROM assets
-            WHERE id = $1
-            "#,
+SELECT favourited_at FROM assets
+WHERE id = $1
+"#,
         )
         .bind(asset_id)
         .fetch_one(&mut *conn)
@@ -171,7 +183,7 @@ mod tests {
                 .is_some()
         );
 
-        // Remove the asset from favourites
+        // Remove the asset from favourites.
         let req = test::TestRequest::delete()
             .cookie(cookie.unwrap())
             .uri(&format!("/v1/me/assets/{}/favourite", asset_id))
@@ -180,12 +192,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // `favourited_at` should get updated in the database
+        // `favourited_at` should get updated in the database.
         let asset = sqlx::query(
             r#"
-            SELECT favourited_at FROM assets
-            WHERE id = $1
-            "#,
+SELECT favourited_at FROM assets
+WHERE id = $1
+"#,
         )
         .bind(asset_id)
         .fetch_one(&mut *conn)
@@ -236,13 +248,13 @@ mod tests {
         let (app, cookie, user_id) =
             init_app_for_test(services![post, delete], pool, true, false, None).await;
 
-        // Insert an asset
+        // Insert an asset.
         let result = sqlx::query(
             r#"
-            INSERT INTO assets(key, hex, height, width, user_id) 
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING id, favourited_at
-            "#,
+INSERT INTO assets (key, hex, height, width, user_id) 
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, favourited_at
+"#,
         )
         .bind(Uuid::new_v4())
         .bind("000000".to_string())
@@ -253,7 +265,7 @@ mod tests {
         .await?;
 
         assert!(result.try_get::<i64, _>("id").is_ok());
-        // `favourited_at` should be NULL initially
+        // `favourited_at` should be NULL initially.
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("favourited_at")
@@ -262,7 +274,7 @@ mod tests {
 
         let asset_id = result.get::<i64, _>("id");
 
-        // Add the asset to favourites
+        // Add the asset to favourites.
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/me/assets/{}/favourite", asset_id))
@@ -271,17 +283,17 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Try adding the asset to favourites again
+        // Try adding the asset to favourites again.
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/me/assets/{}/favourite", asset_id))
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should not throw
+        // Should not throw.
         assert!(res.status().is_success());
 
-        // Remove the asset from favourites
+        // Remove the asset from favourites.
         let req = test::TestRequest::delete()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/me/assets/{}/favourite", asset_id))
@@ -290,14 +302,14 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Try removing the asset from favourites again
+        // Try removing the asset from favourites again.
         let req = test::TestRequest::delete()
             .cookie(cookie.unwrap())
             .uri(&format!("/v1/me/assets/{}/favourite", asset_id))
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should not throw
+        // Should not throw.
         assert!(res.status().is_success());
 
         Ok(())

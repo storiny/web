@@ -17,33 +17,42 @@ struct Fragments {
 }
 
 #[delete("/v1/me/liked-stories/{story_id}")]
+#[tracing::instrument(
+    name = "DELETE /v1/me/liked-stories/{story_id}",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        story_id = %path.story_id
+    ),
+    err
+)]
 async fn delete(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => match path.story_id.parse::<i64>() {
-            Ok(story_id) => {
-                match sqlx::query(
-                    r#"
-                    DELETE FROM story_likes
-                    WHERE user_id = $1 AND story_id = $2
-                    "#,
-                )
-                .bind(user_id)
-                .bind(story_id)
-                .execute(&data.db_pool)
-                .await?
-                .rows_affected()
-                {
-                    0 => Ok(HttpResponse::BadRequest().body("Story like not found")),
-                    _ => Ok(HttpResponse::NoContent().finish()),
-                }
-            }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid story ID")),
-        },
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let user_id = user.id()?;
+    let story_id = path
+        .story_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid story ID"))?;
+
+    match sqlx::query(
+        r#"
+DELETE FROM story_likes
+WHERE
+    user_id = $1
+    AND story_id = $2
+"#,
+    )
+    .bind(&user_id)
+    .bind(&story_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(AppError::from("Story like not found")),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -69,12 +78,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
-        // Like a story
+        // Like a story.
         let result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_likes (user_id, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(user_id)
         .bind(3_i64)
@@ -91,14 +100,14 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Story like should not be present in the database
+        // Story like should not be present in the database.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM story_likes
-                WHERE user_id = $1 AND story_id = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM story_likes
+    WHERE user_id = $1 AND story_id = $2
+)
+"#,
         )
         .bind(user_id)
         .bind(3_i64)

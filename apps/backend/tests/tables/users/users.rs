@@ -367,7 +367,7 @@ mod tests {
         // Insert a comment
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -456,7 +456,7 @@ mod tests {
         // Insert a comment
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -545,7 +545,7 @@ mod tests {
         // Insert a reply
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO replies(content, user_id, comment_id)
+            INSERT INTO replies (content, user_id, comment_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -634,7 +634,7 @@ mod tests {
         // Insert a reply
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO replies(content, user_id, comment_id)
+            INSERT INTO replies (content, user_id, comment_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -723,7 +723,7 @@ mod tests {
         // Follow a tag
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO tag_followers(tag_id, user_id)
+            INSERT INTO tag_followers (tag_id, user_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -812,7 +812,7 @@ mod tests {
         // Follow a tag
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO tag_followers(tag_id, user_id)
+            INSERT INTO tag_followers (tag_id, user_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -901,7 +901,7 @@ mod tests {
         // Follow a user
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -990,7 +990,7 @@ mod tests {
         // Follow a user
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -1077,7 +1077,7 @@ mod tests {
         // Add a follower
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -1166,7 +1166,7 @@ mod tests {
         // Add a follower
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -1255,7 +1255,7 @@ mod tests {
         // Send a friend request
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -1344,7 +1344,7 @@ mod tests {
         // Send a friend request
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -1431,7 +1431,7 @@ mod tests {
         // Receive a friend request
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -1520,7 +1520,7 @@ mod tests {
         // Receive a friend request
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -1609,7 +1609,7 @@ mod tests {
         // Like a story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -1698,7 +1698,7 @@ mod tests {
         // Like a story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -1787,7 +1787,7 @@ mod tests {
         // Like a comment
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comment_likes(user_id, comment_id)
+            INSERT INTO comment_likes (user_id, comment_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -1876,7 +1876,7 @@ mod tests {
         // Like a comment
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comment_likes(user_id, comment_id)
+            INSERT INTO comment_likes (user_id, comment_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -1965,7 +1965,7 @@ mod tests {
         // Like a reply
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
+            INSERT INTO reply_likes (user_id, reply_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -2054,7 +2054,7 @@ mod tests {
         // Like a reply
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
+            INSERT INTO reply_likes (user_id, reply_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -2143,7 +2143,7 @@ mod tests {
         // Insert a bookmark
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
+            INSERT INTO bookmarks (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -2232,7 +2232,7 @@ mod tests {
         // Insert a bookmark
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
+            INSERT INTO bookmarks (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -2321,7 +2321,7 @@ mod tests {
         // Insert a history
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO histories(user_id, story_id)
+            INSERT INTO histories (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -2410,7 +2410,7 @@ mod tests {
         // Insert a history
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO histories(user_id, story_id)
+            INSERT INTO histories (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -2499,7 +2499,7 @@ mod tests {
         // Get blocked by a user
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -2588,7 +2588,7 @@ mod tests {
         // Get blocked by a user
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -2675,7 +2675,7 @@ mod tests {
         // Block a user
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -2764,7 +2764,7 @@ mod tests {
         // Block a user
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -2853,7 +2853,7 @@ mod tests {
         // Get muted by a user
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO mutes(muter_id, muted_id)
+            INSERT INTO mutes (muter_id, muted_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -2942,7 +2942,7 @@ mod tests {
         // Get muted by a user
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO mutes(muter_id, muted_id)
+            INSERT INTO mutes (muter_id, muted_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -3029,7 +3029,7 @@ mod tests {
         // Mute a user
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO mutes(muter_id, muted_id)
+            INSERT INTO mutes (muter_id, muted_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -3118,7 +3118,7 @@ mod tests {
         // Mute a user
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO mutes(muter_id, muted_id)
+            INSERT INTO mutes (muter_id, muted_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -3576,7 +3576,7 @@ mod tests {
         // Insert an asset
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO assets(key, hex, height, width, user_id)
+            INSERT INTO assets (key, hex, height, width, user_id)
             VALUES ($1, $2, $3, $4, $5)
             RETURNING id
             "#,
@@ -3627,7 +3627,7 @@ mod tests {
         // Insert an asset
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO assets(key, hex, height, width, user_id)
+            INSERT INTO assets (key, hex, height, width, user_id)
             VALUES ($1, $2, $3, $4, $5)
             RETURNING id
             "#,
@@ -3682,7 +3682,7 @@ mod tests {
         // Insert a comment
         let result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -3813,7 +3813,7 @@ mod tests {
         // Insert a comment
         let result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -3946,7 +3946,7 @@ mod tests {
         // Insert a reply
         let result = sqlx::query(
             r#"
-            INSERT INTO replies(content, user_id, comment_id)
+            INSERT INTO replies (content, user_id, comment_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -4077,7 +4077,7 @@ mod tests {
         // Insert a reply
         let result = sqlx::query(
             r#"
-            INSERT INTO replies(content, user_id, comment_id)
+            INSERT INTO replies (content, user_id, comment_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -4210,7 +4210,7 @@ mod tests {
         // Follow a user
         let result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -4331,7 +4331,7 @@ mod tests {
         // Follow a user
         let result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -4463,7 +4463,7 @@ mod tests {
         // Follow a user
         let result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -4595,7 +4595,7 @@ mod tests {
         // Follow a user
         let result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -4718,7 +4718,7 @@ mod tests {
         // Add a follower
         let result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -4839,7 +4839,7 @@ mod tests {
         // Add a follower
         let result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -4971,7 +4971,7 @@ mod tests {
         // Add a follower
         let result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -5103,7 +5103,7 @@ mod tests {
         // Add a follower
         let result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -5226,7 +5226,7 @@ mod tests {
         // Receive a friend request
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -5347,7 +5347,7 @@ mod tests {
         // Receive a friend request
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -5479,7 +5479,7 @@ mod tests {
         // Receive a friend request
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -5611,7 +5611,7 @@ mod tests {
         // Receive a friend request
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -5734,7 +5734,7 @@ mod tests {
         // Send a friend request
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -5855,7 +5855,7 @@ mod tests {
         // Send a friend request
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -5987,7 +5987,7 @@ mod tests {
         // Send a friend request
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -6119,7 +6119,7 @@ mod tests {
         // Send a friend request
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -6242,7 +6242,7 @@ mod tests {
         // Like a story
         let result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -6374,7 +6374,7 @@ mod tests {
         // Like a story
         let result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -6508,7 +6508,7 @@ mod tests {
         // Like a comment
         let result = sqlx::query(
             r#"
-            INSERT INTO comment_likes(user_id, comment_id)
+            INSERT INTO comment_likes (user_id, comment_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -6640,7 +6640,7 @@ mod tests {
         // Like a comment
         let result = sqlx::query(
             r#"
-            INSERT INTO comment_likes(user_id, comment_id)
+            INSERT INTO comment_likes (user_id, comment_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -6774,7 +6774,7 @@ mod tests {
         // Like a reply
         let result = sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
+            INSERT INTO reply_likes (user_id, reply_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -6906,7 +6906,7 @@ mod tests {
         // Like a reply
         let result = sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
+            INSERT INTO reply_likes (user_id, reply_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -7040,7 +7040,7 @@ mod tests {
         // Insert a bookmark
         let result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
+            INSERT INTO bookmarks (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -7172,7 +7172,7 @@ mod tests {
         // Insert a bookmark
         let result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
+            INSERT INTO bookmarks (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -7306,7 +7306,7 @@ mod tests {
         // Insert a history
         let result = sqlx::query(
             r#"
-            INSERT INTO histories(user_id, story_id)
+            INSERT INTO histories (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -7438,7 +7438,7 @@ mod tests {
         // Insert a history
         let result = sqlx::query(
             r#"
-            INSERT INTO histories(user_id, story_id)
+            INSERT INTO histories (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -7584,7 +7584,7 @@ mod tests {
         // Insert a comment
         let comment_result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -7685,7 +7685,7 @@ mod tests {
         // Insert a comment
         let comment_result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -7776,7 +7776,7 @@ mod tests {
         // Insert a comment
         let comment_result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -7790,7 +7790,7 @@ mod tests {
         // Insert a reply
         let reply_result = sqlx::query(
             r#"
-            INSERT INTO replies(content, user_id, comment_id)
+            INSERT INTO replies (content, user_id, comment_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -7879,7 +7879,7 @@ mod tests {
         // Insert a comment
         let comment_result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -7893,7 +7893,7 @@ mod tests {
         // Insert a reply
         let reply_result = sqlx::query(
             r#"
-            INSERT INTO replies(content, user_id, comment_id)
+            INSERT INTO replies (content, user_id, comment_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -7996,7 +7996,7 @@ mod tests {
         // Like the story
         let story_like_result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -8098,7 +8098,7 @@ mod tests {
         // Like the story
         let story_like_result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -8190,7 +8190,7 @@ mod tests {
         // Insert a comment
         let comment_result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -8204,7 +8204,7 @@ mod tests {
         // Like the comment
         let comment_like_result = sqlx::query(
             r#"
-            INSERT INTO comment_likes(user_id, comment_id)
+            INSERT INTO comment_likes (user_id, comment_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -8294,7 +8294,7 @@ mod tests {
         // Insert a comment
         let comment_result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -8308,7 +8308,7 @@ mod tests {
         // Like the comment
         let comment_like_result = sqlx::query(
             r#"
-            INSERT INTO comment_likes(user_id, comment_id)
+            INSERT INTO comment_likes (user_id, comment_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -8400,7 +8400,7 @@ mod tests {
         // Insert a reply
         let reply_result = sqlx::query(
             r#"
-            INSERT INTO replies(content, user_id, comment_id)
+            INSERT INTO replies (content, user_id, comment_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -8414,7 +8414,7 @@ mod tests {
         // Like the reply
         let reply_like_result = sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
+            INSERT INTO reply_likes (user_id, reply_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -8504,7 +8504,7 @@ mod tests {
         // Insert a reply
         let reply_result = sqlx::query(
             r#"
-            INSERT INTO replies(content, user_id, comment_id)
+            INSERT INTO replies (content, user_id, comment_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -8518,7 +8518,7 @@ mod tests {
         // Like the reply
         let reply_like_result = sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
+            INSERT INTO reply_likes (user_id, reply_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -8656,7 +8656,7 @@ mod tests {
         // Insert a comment
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $2, $3)
             RETURNING id
             "#,
@@ -8706,7 +8706,7 @@ mod tests {
         // Insert a reply
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO replies(content, user_id, comment_id)
+            INSERT INTO replies (content, user_id, comment_id)
             VALUES ($1, $2, $3)
             RETURNING id
             "#,
@@ -8756,7 +8756,7 @@ mod tests {
         // Follow a user
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations(followed_id, follower_id)
+            INSERT INTO relations (followed_id, follower_id)
             VALUES ($1, $2)
             "#,
         )
@@ -8805,7 +8805,7 @@ mod tests {
         // Add a follower
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations(followed_id, follower_id)
+            INSERT INTO relations (followed_id, follower_id)
             VALUES ($1, $2)
             "#,
         )
@@ -8854,7 +8854,7 @@ mod tests {
         // Send a friend request
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -8903,7 +8903,7 @@ mod tests {
         // Receive a friend request
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -8952,7 +8952,7 @@ mod tests {
         // Insert an asset
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO assets(key, hex, height, width, user_id)
+            INSERT INTO assets (key, hex, height, width, user_id)
             VALUES ($1, $2, $3, $4, $5)
             RETURNING id
             "#,
@@ -9002,7 +9002,7 @@ mod tests {
         // Insert an asset
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO assets(key, hex, height, width, user_id)
+            INSERT INTO assets (key, hex, height, width, user_id)
             VALUES ($1, $2, $3, $4, $5)
             RETURNING id
             "#,
@@ -9087,7 +9087,7 @@ mod tests {
         // Insert an asset
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO assets(key, hex, height, width, user_id)
+            INSERT INTO assets (key, hex, height, width, user_id)
             VALUES ($1, $2, $3, $4, $5)
             RETURNING id
             "#,
@@ -9172,7 +9172,7 @@ mod tests {
         // Like a story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -9221,7 +9221,7 @@ mod tests {
         // Like a comment
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comment_likes(user_id, comment_id)
+            INSERT INTO comment_likes (user_id, comment_id)
             VALUES ($1, $2)
             "#,
         )
@@ -9270,7 +9270,7 @@ mod tests {
         // Like a reply
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
+            INSERT INTO reply_likes (user_id, reply_id)
             VALUES ($1, $2)
             "#,
         )
@@ -9319,7 +9319,7 @@ mod tests {
         // Insert a bookmark
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
+            INSERT INTO bookmarks (user_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -9368,7 +9368,7 @@ mod tests {
         // Insert a history
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO histories(user_id, story_id)
+            INSERT INTO histories (user_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -9419,7 +9419,7 @@ mod tests {
         // Follow a tag
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO tag_followers(tag_id, user_id)
+            INSERT INTO tag_followers (tag_id, user_id)
             VALUES ($1, $2)
             "#,
         )
@@ -9468,7 +9468,7 @@ mod tests {
         // Get blocked by a user
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             "#,
         )
@@ -9517,7 +9517,7 @@ mod tests {
         // Block a user
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             "#,
         )
@@ -9566,7 +9566,7 @@ mod tests {
         // Get muted by a user
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO mutes(muter_id, muted_id)
+            INSERT INTO mutes (muter_id, muted_id)
             VALUES ($1, $2)
             "#,
         )
@@ -9615,7 +9615,7 @@ mod tests {
         // Mute a user
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO mutes(muter_id, muted_id)
+            INSERT INTO mutes (muter_id, muted_id)
             VALUES ($1, $2)
             "#,
         )
@@ -9904,7 +9904,7 @@ mod tests {
         // Insert a connection
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO connections(provider, provider_identifier, display_name, user_id)
+            INSERT INTO connections (provider, provider_identifier, display_name, user_id)
             VALUES (0, 'sample', 'sample', $1)
             RETURNING id
             "#,

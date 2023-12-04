@@ -1,13 +1,13 @@
 use crate::{
     error::{
         AppError,
-        FormErrorResponse,
         ToastErrorResponse,
     },
     middlewares::identity::identity::Identity,
     AppState,
 };
 use actix_web::{
+    http::StatusCode,
     post,
     web,
     HttpResponse,
@@ -18,15 +18,11 @@ use argon2::{
     PasswordHash,
     PasswordVerifier,
 };
-use email_address::EmailAddress;
 use serde::{
     Deserialize,
     Serialize,
 };
-use sqlx::{
-    Error,
-    Row,
-};
+use sqlx::Row;
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
@@ -44,65 +40,73 @@ struct Response {
 }
 
 #[post("/v1/auth/mfa-preflight")]
+#[tracing::instrument(
+    name = "POST /v1/auth/mfa-preflight",
+    skip_all,
+    fields(
+        email = %payload.email
+    ),
+    err
+)]
 async fn post(
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    // Return if the user is already logged-in
+    // Return early if the user is already logged-in.
     if user.is_some() {
-        return Ok(
-            HttpResponse::BadRequest().json(ToastErrorResponse::new("You are already logged-in"))
-        );
+        return Err(ToastErrorResponse::new(None, "You are already logged in").into());
     }
 
-    // Check for valid e-mail
-    if !EmailAddress::is_valid(&payload.email) {
-        return Ok(HttpResponse::BadRequest()
-            .json(FormErrorResponse::new(vec![("email", "Invalid e-mail")])));
-    }
-
-    let query_result = sqlx::query(
+    let user = sqlx::query(
         r#"
-        SELECT
-            password,
-            mfa_enabled
-        FROM users
-        WHERE email = $1
-        "#,
+SELECT
+    password,
+    mfa_enabled
+FROM users
+WHERE email = $1
+"#,
     )
     .bind(&payload.email)
     .fetch_one(&data.db_pool)
-    .await;
-
-    match query_result {
-        Ok(user) => {
-            let user_password = user.get::<Option<String>, _>("password");
-            // User has created account using a third-party service, such as Apple or Google
-            if user_password.is_none() {
-                return Ok(HttpResponse::Unauthorized()
-                    .json(ToastErrorResponse::new("Invalid credentials")));
-            }
-
-            match PasswordHash::new(&user_password.unwrap()) {
-                Ok(hash) => {
-                    match Argon2::default().verify_password(&payload.password.as_bytes(), &hash) {
-                        Ok(_) => Ok(HttpResponse::Ok().json(Response {
-                            mfa_enabled: user.get::<bool, _>("mfa_enabled"),
-                        })),
-                        Err(_) => Ok(HttpResponse::Unauthorized()
-                            .json(ToastErrorResponse::new("Invalid credentials"))),
-                    }
-                }
-                Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-            }
+    .await
+    .map_err(|error| {
+        if matches!(error, sqlx::Error::RowNotFound) {
+            AppError::ToastError(ToastErrorResponse::new(
+                Some(StatusCode::UNAUTHORIZED),
+                "Invalid e-mail or password",
+            ))
+        } else {
+            AppError::SqlxError(error)
         }
-        Err(kind) => match kind {
-            Error::RowNotFound => Ok(HttpResponse::Unauthorized()
-                .json(ToastErrorResponse::new("Invalid e-mail or password"))),
-            _ => Ok(HttpResponse::InternalServerError().finish()),
-        },
+    })?;
+
+    let user_password = user.get::<Option<String>, _>("password");
+
+    // The password can be NULL if the user has created the account using a third-party service,
+    // such as Apple or Google.
+    if user_password.is_none() {
+        return Err(
+            ToastErrorResponse::new(Some(StatusCode::UNAUTHORIZED), "Invalid credentials").into(),
+        );
     }
+
+    let password_hash = PasswordHash::new(&user_password.unwrap())
+        .map_err(|error| AppError::InternalError(error.to_string()))?;
+
+    // Validate the password.
+    Argon2::default()
+        .verify_password(&payload.password.as_bytes(), &password_hash)
+        .map_err(|error| {
+            AppError::ToastError(ToastErrorResponse::new(
+                Some(StatusCode::UNAUTHORIZED),
+                "Invalid credentials",
+            ))
+        })?;
+
+    Ok(HttpResponse::Ok().json(Response {
+        mfa_enabled: user.get::<bool, _>("mfa_enabled"),
+    }))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -127,7 +131,7 @@ mod tests {
     };
     use sqlx::PgPool;
 
-    /// Returns sample email and hashed password
+    /// Returns a sample email and hashed password.
     fn get_sample_email_and_password() -> (String, String, String) {
         let password = "sample";
         let email = "someone@example.com";
@@ -141,19 +145,20 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_handle_mfa_preflight_request_when_mfa_is_enabled(
+    async fn can_handle_a_mfa_preflight_request_when_mfa_is_enabled_for_the_user(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
+
         let (email, password_hash, password) = get_sample_email_and_password();
 
-        // Insert the user
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email, password, email_verified, mfa_enabled)
-            VALUES ($1, $2, $3, $4, TRUE, TRUE)
-            "#,
+INSERT INTO users (name, username, email, password, email_verified, mfa_enabled)
+VALUES ($1, $2, $3, $4, TRUE, TRUE)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -182,19 +187,20 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_handle_mfa_preflight_request_when_mfa_is_disabled(
+    async fn can_handle_a_mfa_preflight_request_when_mfa_is_disabled_for_the_user(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
+
         let (email, password_hash, password) = get_sample_email_and_password();
 
-        // Insert the user
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email, password, email_verified, mfa_enabled)
-            VALUES ($1, $2, $3, $4, TRUE, FALSE)
-            "#,
+INSERT INTO users (name, username, email, password, email_verified, mfa_enabled)
+VALUES ($1, $2, $3, $4, TRUE, FALSE)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -223,17 +229,20 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_mfa_preflight_request_with_invalid_email(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_a_mfa_preflight_request_with_an_invalid_email(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
+
         let (email, password_hash, password) = get_sample_email_and_password();
 
-        // Insert the user
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email, password)
-            VALUES ($1, $2, $3, $4)
-            "#,
+INSERT INTO users (name, username, email, password)
+VALUES ($1, $2, $3, $4)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -258,19 +267,20 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_mfa_preflight_request_with_missing_password(
+    async fn can_reject_a_mfa_preflight_request_with_a_missing_password(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
+
         let (email, _, password) = get_sample_email_and_password();
 
-        // Insert the user
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email)
-            VALUES ($1, $2, $3)
-            "#,
+INSERT INTO users (name, username, email)
+VALUES ($1, $2, $3)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
@@ -294,19 +304,20 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_mfa_preflight_request_for_invalid_password(
+    async fn can_reject_a_mfa_preflight_request_for_an_invalid_password(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
+
         let (email, password_hash, _) = get_sample_email_and_password();
 
-        // Insert the user
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email, password)
-            VALUES ($1, $2, $3, $4)
-            "#,
+INSERT INTO users (name, username, email, password)
+VALUES ($1, $2, $3, $4)
+"#,
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())

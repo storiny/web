@@ -17,33 +17,42 @@ struct Fragments {
 }
 
 #[delete("/v1/me/liked-comments/{comment_id}")]
+#[tracing::instrument(
+    name = "DELETE /v1/me/liked-comments/{comment_id}",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        comment_id = %path.comment_id
+    ),
+    err
+)]
 async fn delete(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => match path.comment_id.parse::<i64>() {
-            Ok(comment_id) => {
-                match sqlx::query(
-                    r#"
-                    DELETE FROM comment_likes
-                    WHERE user_id = $1 AND comment_id = $2
-                    "#,
-                )
-                .bind(user_id)
-                .bind(comment_id)
-                .execute(&data.db_pool)
-                .await?
-                .rows_affected()
-                {
-                    0 => Ok(HttpResponse::BadRequest().body("Comment like not found")),
-                    _ => Ok(HttpResponse::NoContent().finish()),
-                }
-            }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid comment ID")),
-        },
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let user_id = user.id()?;
+    let comment_id = path
+        .comment_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid comment ID"))?;
+
+    match sqlx::query(
+        r#"
+DELETE FROM comment_likes
+WHERE
+    user_id = $1
+    AND comment_id = $2
+"#,
+    )
+    .bind(&user_id)
+    .bind(&comment_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(AppError::from("Comment like not found")),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -69,12 +78,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
-        // Like a comment
+        // Like a comment.
         let result = sqlx::query(
             r#"
-            INSERT INTO comment_likes(user_id, comment_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO comment_likes (user_id, comment_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(user_id)
         .bind(3_i64)
@@ -91,14 +100,14 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Comment like should not be present in the database
+        // Comment like should not be present in the database.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM comment_likes
-                WHERE user_id = $1 AND comment_id = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM comment_likes
+    WHERE user_id = $1 AND comment_id = $2
+)
+"#,
         )
         .bind(user_id)
         .bind(3_i64)

@@ -89,58 +89,66 @@ struct Bookmark {
 }
 
 #[get("/v1/me/bookmarks")]
+#[tracing::instrument(
+    name = "GET /v1/me/bookmarks",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        page = query.page,
+        sort = query.sort,
+        query = query.query
+    ),
+    err
+)]
 async fn get(
     query: QsQuery<QueryParams>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            let page = query.page.clone().unwrap_or(1) - 1;
-            let sort = query.sort.clone().unwrap_or("recent".to_string());
-            let search_query = query.query.clone().unwrap_or_default();
-            let has_search_query = !search_query.trim().is_empty();
+    let user_id = user.id()?;
 
-            if has_search_query {
-                let result = sqlx::query_file_as!(
-                    Bookmark,
-                    "queries/me/bookmarks/with_query.sql",
-                    search_query,
-                    user_id,
-                    10 as i16,
-                    (page * 10) as i16
-                )
-                .fetch_all(&data.db_pool)
-                .await?;
+    let page = query.page.clone().unwrap_or(1) - 1;
+    let sort = query.sort.clone().unwrap_or("recent".to_string());
+    let search_query = query.query.clone().unwrap_or_default();
+    let has_search_query = !search_query.trim().is_empty();
 
-                Ok(HttpResponse::Ok().json(result))
-            } else if sort == "old" {
-                let result = sqlx::query_file_as!(
-                    Bookmark,
-                    "queries/me/bookmarks/default_asc.sql",
-                    user_id,
-                    10 as i16,
-                    (page * 10) as i16
-                )
-                .fetch_all(&data.db_pool)
-                .await?;
+    if has_search_query {
+        let result = sqlx::query_file_as!(
+            Bookmark,
+            "queries/me/bookmarks/with_query.sql",
+            search_query,
+            user_id,
+            10 as i16,
+            (page * 10) as i16
+        )
+        .fetch_all(&data.db_pool)
+        .await?;
 
-                Ok(HttpResponse::Ok().json(result))
-            } else {
-                let result = sqlx::query_file_as!(
-                    Bookmark,
-                    "queries/me/bookmarks/default_desc.sql",
-                    user_id,
-                    10 as i16,
-                    (page * 10) as i16
-                )
-                .fetch_all(&data.db_pool)
-                .await?;
+        Ok(HttpResponse::Ok().json(result))
+    } else if sort == "old" {
+        let result = sqlx::query_file_as!(
+            Bookmark,
+            "queries/me/bookmarks/default_asc.sql",
+            user_id,
+            10 as i16,
+            (page * 10) as i16
+        )
+        .fetch_all(&data.db_pool)
+        .await?;
 
-                Ok(HttpResponse::Ok().json(result))
-            }
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+        Ok(HttpResponse::Ok().json(result))
+    } else {
+        let result = sqlx::query_file_as!(
+            Bookmark,
+            "queries/me/bookmarks/default_desc.sql",
+            user_id,
+            10 as i16,
+            (page * 10) as i16
+        )
+        .fetch_all(&data.db_pool)
+        .await?;
+
+        Ok(HttpResponse::Ok().json(result))
     }
 }
 
@@ -206,12 +214,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some bookmarks
+        // Insert some bookmarks.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
-            VALUES ($1, $2), ($1, $3)
-            "#,
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2), ($1, $3)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(3_i64)
@@ -232,95 +240,11 @@ mod tests {
         let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
 
-        Ok(())
-    }
+        let bookmarks = json.unwrap();
 
-    #[sqlx::test(fixtures("bookmark"))]
-    async fn can_return_bookmarks_in_desc_order(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Insert some bookmarks
-        sqlx::query(
-            r#"
-            INSERT INTO bookmarks(user_id, story_id)
-            VALUES ($1, $2)
-            "#,
-        )
-        .bind(user_id.unwrap())
-        .bind(3_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        sqlx::query(
-            r#"
-            INSERT INTO bookmarks(user_id, story_id)
-            VALUES ($1, $2)
-            "#,
-        )
-        .bind(user_id.unwrap())
-        .bind(4_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/bookmarks?sort=recent")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
-
-        assert_eq!(json[0].id, 4_i64);
-        assert_eq!(json[1].id, 3_i64);
-
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("bookmark"))]
-    async fn can_return_bookmarks_in_asc_order(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Insert some bookmarks
-        sqlx::query(
-            r#"
-            INSERT INTO bookmarks(user_id, story_id)
-            VALUES ($1, $2)
-            "#,
-        )
-        .bind(user_id.unwrap())
-        .bind(3_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        sqlx::query(
-            r#"
-            INSERT INTO bookmarks(user_id, story_id)
-            VALUES ($1, $2)
-            "#,
-        )
-        .bind(user_id.unwrap())
-        .bind(4_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/bookmarks?sort=old")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
-
-        assert_eq!(json[0].id, 3_i64);
-        assert_eq!(json[1].id, 4_i64);
+        assert_eq!(bookmarks.len(), 2);
+        assert!(bookmarks.iter().all(|&bookmark| bookmark.is_bookmarked));
 
         Ok(())
     }
@@ -330,12 +254,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some bookmarks
+        // Insert some bookmarks.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
-            VALUES ($1, $2), ($1, $3)
-            "#,
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2), ($1, $3)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(3_i64)
@@ -361,6 +285,248 @@ mod tests {
         Ok(())
     }
 
+    //
+
+    #[sqlx::test(fixtures("bookmark"))]
+    async fn can_return_is_liked_flag_in_bookmarks_in_desc_order(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Insert a bookmark.
+        sqlx::query(
+            r#"
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/bookmarks?sort=recent")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be false initially.
+        let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
+        let story = &json[0];
+        assert!(!story.is_liked);
+
+        // Like the story.
+        let result = sqlx::query(
+            r#"
+INSERT INTO story_likes (story_id, user_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(3_i64)
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/bookmarks?sort=recent")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be true.
+        let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
+        let story = &json[0];
+        assert!(!story.is_liked);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("bookmark"))]
+    async fn can_return_is_liked_flag_in_bookmarks_in_asc_order(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Insert a bookmark.
+        sqlx::query(
+            r#"
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/bookmarks?sort=old")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be false initially.
+        let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
+        let story = &json[0];
+        assert!(!story.is_liked);
+
+        // Like the story.
+        let result = sqlx::query(
+            r#"
+INSERT INTO story_likes (story_id, user_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(3_i64)
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/bookmarks?sort=old")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be true.
+        let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
+        let story = &json[0];
+        assert!(!story.is_liked);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("bookmark"))]
+    async fn can_return_is_liked_flag_in_bookmarks_when_searching(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Insert a bookmark.
+        sqlx::query(
+            r#"
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/bookmarks?query={}", encode("ancient")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be false initially.
+        let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
+        let story = &json[0];
+        assert!(!story.is_liked);
+
+        // Like the story.
+        let result = sqlx::query(
+            r#"
+INSERT INTO story_likes (story_id, user_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(3_i64)
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/bookmarks?query={}", encode("ancient")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be true.
+        let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
+        let story = &json[0];
+        assert!(!story.is_liked);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("bookmark"))]
+    async fn can_return_bookmarks_in_desc_order(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Insert some bookmarks.
+        sqlx::query(
+            r#"
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2), ($1, $3)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3_i64)
+        .bind(4_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/bookmarks?sort=recent")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
+
+        assert_eq!(json[0].id, 4_i64);
+        assert_eq!(json[1].id, 3_i64);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("bookmark"))]
+    async fn can_return_bookmarks_in_asc_order(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Insert some bookmarks.
+        sqlx::query(
+            r#"
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2), ($1, $3)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3_i64)
+        .bind(4_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/bookmarks?sort=old")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
+
+        assert_eq!(json[0].id, 3_i64);
+        assert_eq!(json[1].id, 4_i64);
+
+        Ok(())
+    }
+
+    //
+
     #[sqlx::test(fixtures("bookmark"))]
     async fn should_not_include_soft_deleted_stories_in_bookmarks(
         pool: PgPool,
@@ -368,12 +534,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some bookmarks
+        // Insert some bookmarks.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
-            VALUES ($1, $2), ($1, $3)
-            "#,
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2), ($1, $3)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(3_i64)
@@ -383,7 +549,7 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 2);
 
-        // Should return all the stories initially
+        // Should return all the stories initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/bookmarks")
@@ -397,13 +563,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
 
-        // Soft-delete one of the stories
+        // Soft-delete one of the stories.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -411,7 +577,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only one story
+        // Should return only one story.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/bookmarks")
@@ -425,13 +591,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 1);
 
-        // Recover the soft-deleted story
+        // Recover the soft-deleted story.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -439,7 +605,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the stories again
+        // Should return all the stories again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
             .uri("/v1/me/bookmarks")
@@ -461,12 +627,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some bookmarks
+        // Insert some bookmarks.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
-            VALUES ($1, $2), ($1, $3)
-            "#,
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2), ($1, $3)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(3_i64)
@@ -476,7 +642,7 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 2);
 
-        // Should return all the stories initially
+        // Should return all the stories initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/bookmarks")
@@ -490,13 +656,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
 
-        // Unpublish one of the stories
+        // Unpublish one of the stories.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET published_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -504,7 +670,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only one story
+        // Should return only one story.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/bookmarks")
@@ -518,13 +684,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 1);
 
-        // Republish the unpublished story
+        // Republish the unpublished story.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET published_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -532,7 +698,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the stories again
+        // Should return all the stories again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
             .uri("/v1/me/bookmarks")
@@ -556,12 +722,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some bookmarks
+        // Insert some bookmarks.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
-            VALUES ($1, $2), ($1, $3)
-            "#,
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2), ($1, $3)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(3_i64)
@@ -571,7 +737,7 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 2);
 
-        // Should return all the stories initially
+        // Should return all the stories initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/bookmarks?sort=old")
@@ -585,13 +751,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
 
-        // Soft-delete one of the stories
+        // Soft-delete one of the stories.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -599,7 +765,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only one story
+        // Should return only one story.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/bookmarks?sort=old")
@@ -613,13 +779,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 1);
 
-        // Recover the soft-deleted story
+        // Recover the soft-deleted story.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -627,7 +793,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the stories again
+        // Should return all the stories again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
             .uri("/v1/me/bookmarks?sort=old")
@@ -651,12 +817,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some bookmarks
+        // Insert some bookmarks.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
-            VALUES ($1, $2), ($1, $3)
-            "#,
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2), ($1, $3)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(3_i64)
@@ -666,7 +832,7 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 2);
 
-        // Should return all the stories initially
+        // Should return all the stories initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/bookmarks?sort=old")
@@ -680,13 +846,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
 
-        // Unpublish one of the stories
+        // Unpublish one of the stories.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET published_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -694,7 +860,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only one story
+        // Should return only one story.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/bookmarks?sort=old")
@@ -708,7 +874,7 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 1);
 
-        // Republish the unpublished story
+        // Republish the unpublished story.
         let result = sqlx::query(
             r#"
             UPDATE stories
@@ -722,7 +888,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the stories again
+        // Should return all the stories again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
             .uri("/v1/me/bookmarks?sort=old")
@@ -746,12 +912,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some bookmarks
+        // Insert some bookmarks.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
-            VALUES ($1, $2), ($1, $3)
-            "#,
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2), ($1, $3)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(3_i64)
@@ -761,7 +927,7 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 2);
 
-        // Should return all the stories initially
+        // Should return all the stories initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/bookmarks?sort=recent")
@@ -775,13 +941,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
 
-        // Soft-delete one of the stories
+        // Soft-delete one of the stories.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -789,7 +955,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only one story
+        // Should return only one story.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/bookmarks?sort=recent")
@@ -803,13 +969,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 1);
 
-        // Recover the soft-deleted story
+        // Recover the soft-deleted story.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -817,7 +983,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the stories again
+        // Should return all the stories again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
             .uri("/v1/me/bookmarks?sort=recent")
@@ -841,12 +1007,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some bookmarks
+        // Insert some bookmarks.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
-            VALUES ($1, $2), ($1, $3)
-            "#,
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2), ($1, $3)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(3_i64)
@@ -856,7 +1022,7 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 2);
 
-        // Should return all the stories initially
+        // Should return all the stories initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/bookmarks?sort=recent")
@@ -870,13 +1036,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
 
-        // Unpublish one of the stories
+        // Unpublish one of the stories.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET published_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -898,13 +1064,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 1);
 
-        // Republish the unpublished story
+        // Republish the unpublished story.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET published_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -912,7 +1078,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the stories again
+        // Should return all the stories again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
             .uri("/v1/me/bookmarks?sort=recent")
@@ -936,12 +1102,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some bookmarks
+        // Insert some bookmarks.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
-            VALUES ($1, $2), ($1, $3)
-            "#,
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2), ($1, $3)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(3_i64)
@@ -951,7 +1117,7 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 2);
 
-        // Should return all the stories initially
+        // Should return all the stories initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/me/bookmarks?query={}", encode("ancient")))
@@ -965,13 +1131,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 1);
 
-        // Soft-delete one of the stories
+        // Soft-delete one of the stories.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -979,7 +1145,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only one story
+        // Should return only one story.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/me/bookmarks?query={}", encode("ancient")))
@@ -993,13 +1159,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 0);
 
-        // Recover the soft-deleted story
+        // Recover the soft-deleted story.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -1007,7 +1173,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the stories again
+        // Should return all the stories again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
             .uri(&format!("/v1/me/bookmarks?query={}", encode("ancient")))
@@ -1031,12 +1197,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some bookmarks
+        // Insert some bookmarks.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
-            VALUES ($1, $2), ($1, $3)
-            "#,
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2), ($1, $3)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(3_i64)
@@ -1046,7 +1212,7 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 2);
 
-        // Should return all the stories initially
+        // Should return all the stories initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/me/bookmarks?query={}", encode("ancient")))
@@ -1060,13 +1226,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 1);
 
-        // Unpublish one of the stories
+        // Unpublish one of the stories.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET published_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -1074,7 +1240,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only one story
+        // Should return only one story.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/me/bookmarks?query={}", encode("ancient")))
@@ -1088,13 +1254,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 0);
 
-        // Republish the unpublished story
+        // Republish the unpublished story.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET published_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -1102,7 +1268,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the stories again
+        // Should return all the stories again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
             .uri(&format!("/v1/me/bookmarks?query={}", encode("ancient")))

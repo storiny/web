@@ -11,7 +11,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO tag_followers(tag_id, user_id)
+            INSERT INTO tag_followers (tag_id, user_id)
             VALUES ($1, $2)
             "#,
         )
@@ -45,7 +45,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO tag_followers(tag_id, user_id)
+            INSERT INTO tag_followers (tag_id, user_id)
             VALUES ($1, $2)
             "#,
         )
@@ -86,7 +86,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO tag_followers(tag_id, user_id)
+            INSERT INTO tag_followers (tag_id, user_id)
             VALUES ($1, $2)
             "#,
         )
@@ -120,7 +120,7 @@ mod tests {
         // Follow the tag
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO tag_followers(user_id, tag_id)
+            INSERT INTO tag_followers (user_id, tag_id)
             VALUES ($1, $2)
             "#,
         )
@@ -156,7 +156,7 @@ mod tests {
         // Follow the tag
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO tag_followers(user_id, tag_id)
+            INSERT INTO tag_followers (user_id, tag_id)
             VALUES ($1, $2)
             "#,
         )
@@ -244,7 +244,7 @@ mod tests {
         // Follow the tag
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO tag_followers(user_id, tag_id)
+            INSERT INTO tag_followers (user_id, tag_id)
             VALUES ($1, $2)
             "#,
         )
@@ -305,7 +305,7 @@ mod tests {
         // Follow the tag
         sqlx::query(
             r#"
-            INSERT INTO tag_followers(user_id, tag_id)
+            INSERT INTO tag_followers (user_id, tag_id)
             VALUES ($1, $2)
             "#,
         )
@@ -319,7 +319,7 @@ mod tests {
         // on the tag when decrementing the `follower_count`.
         sqlx::query(
             r#"
-            INSERT INTO tag_followers(user_id, tag_id)
+            INSERT INTO tag_followers (user_id, tag_id)
             VALUES ($1, $2)
             "#,
         )

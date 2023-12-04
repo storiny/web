@@ -1,110 +1,77 @@
-SELECT
-	u.id,
-	u.name,
-	u.username,
-	u.bio,
-	u.rendered_bio                                                AS "rendered_bio!",
-	u.avatar_id,
-	u.avatar_hex,
-	u.banner_id,
-	u.banner_hex,
-	u.location,
-	u.public_flags,
-	u.is_private,
-	-- Stats
-	u.story_count,
-	u.follower_count,
-	-- Handle `following_list_visibility`
-	CASE
-		WHEN (
-			-- Everyone
-					u.following_list_visibility = 1
-				-- Friends
-				OR (
-								u.following_list_visibility = 2
-							AND COUNT("u->is_friend") = 1
-						)
-			)
-			THEN u.following_count
-	END                                                           AS "following_count",
-	-- Handle `friend_list_visibility`
-	CASE
-		WHEN (
-			-- Everyone
-					u.friend_list_visibility = 1
-				-- Friends
-				OR (
-								u.friend_list_visibility = 2
-							AND COUNT("u->is_friend") = 1
-						)
-			)
-			THEN u.friend_count
-	END                                                           AS "friend_count",
-	-- Timestamps
-	u.created_at,
-	-- Connections
-	COALESCE(ARRAY_AGG(("u->connection".provider, "u->connection".provider_identifier, "u->connection".display_name))
-			 FILTER (WHERE "u->connection".id IS NOT NULL), '{}') AS "connections!: Vec<ProfileConnection>",
-	-- Status
-	-- Use a discrete column to deserialize it into `OffsetDateTime`.
-	"u->status".expires_at                                        AS "status_expires_at?",
-	"u->status".duration                                          AS "status_duration?",
-	"u->status".emoji                                             AS "status_emoji?",
-	"u->status".text                                              AS "status_text?",
-	"u->status".visibility                                        AS "status_visibility?",
-	CASE
-		WHEN "u->status".user_id IS NOT NULL AND (
-			-- Global
-					"u->status".visibility = 1
-				-- Followers
-				OR ("u->status".visibility = 2 AND COUNT("u->is_following") = 1)
-				-- Friends
-				OR ("u->status".visibility = 3 AND COUNT("u->is_friend") = 1)
-			)
-			THEN TRUE
-		ELSE FALSE
-	END                                                           AS "has_status!",
-	-- Boolean flags
-	CASE
-		WHEN COUNT("u->is_following") = 1
-			THEN TRUE
-		ELSE FALSE
-	END                                                           AS "is_following!",
-	CASE
-		WHEN COUNT("u->is_follower") = 1
-			THEN TRUE
-		ELSE FALSE
-	END                                                           AS "is_follower!",
-	CASE
-		WHEN COUNT("u->is_friend") = 1
-			THEN TRUE
-		ELSE FALSE
-	END                                                           AS "is_friend!",
-	CASE
-		WHEN COUNT("u->is_subscribed") = 1
-			THEN TRUE
-		ELSE FALSE
-	END                                                           AS "is_subscribed!",
-	CASE
-		WHEN COUNT("u->is_friend_request_sent") = 1
-			THEN TRUE
-		ELSE FALSE
-	END                                                           AS "is_friend_request_sent!",
-	CASE
-		WHEN COUNT("u->is_blocked_by_user") = 1
-			THEN TRUE
-		ELSE FALSE
-	END                                                           AS "is_blocked_by_user!",
-	CASE
-		WHEN COUNT("u->is_blocking") = 1
-			THEN TRUE
-		ELSE FALSE
-	END                                                           AS "is_blocking!",
-	CASE
-		WHEN COUNT("u->is_muted") = 1
-			THEN TRUE
-		ELSE FALSE
-	END                                                           AS "is_muted!"
+SELECT u.id,
+	   u.name,
+	   u.username,
+	   u.bio,
+	   u.rendered_bio                                                AS "rendered_bio!",
+	   u.avatar_id,
+	   u.avatar_hex,
+	   u.banner_id,
+	   u.banner_hex,
+	   u.location,
+	   u.public_flags,
+	   u.is_private,
+	   -- Stats
+	   u.story_count,
+	   u.follower_count,
+	   -- Handle `following_list_visibility`
+	   CASE
+		   WHEN (
+			   -- Everyone
+					   u.following_list_visibility = 1
+				   -- Friends
+				   OR (
+								   u.following_list_visibility = 2
+							   AND "u->is_friend" IS NOT NULL
+						   )
+			   )
+			   THEN u.following_count
+	   END                                                           AS "following_count",
+	   -- Handle `friend_list_visibility`
+	   CASE
+		   WHEN (
+			   -- Everyone
+					   u.friend_list_visibility = 1
+				   -- Friends
+				   OR (
+								   u.friend_list_visibility = 2
+							   AND "u->is_friend" IS NOT NULL
+						   )
+			   )
+			   THEN u.friend_count
+	   END                                                           AS "friend_count",
+	   -- Timestamps
+	   u.created_at,
+	   -- Connections
+	   COALESCE(ARRAY_AGG(("u->connection".provider, "u->connection".provider_identifier, "u->connection".display_name))
+				FILTER (WHERE "u->connection".id IS NOT NULL), '{}') AS "connections!: Vec<ProfileConnection>",
+	   -- Status
+	   -- Use a discrete column to deserialize it into `OffsetDateTime`.
+	   "u->status".expires_at                                        AS "status_expires_at?",
+	   "u->status".duration                                          AS "status_duration?",
+	   "u->status".emoji                                             AS "status_emoji?",
+	   "u->status".text                                              AS "status_text?",
+	   "u->status".visibility                                        AS "status_visibility?",
+	   CASE
+		   WHEN "u->status".user_id IS NOT NULL AND (
+			   -- Global
+					   "u->status".visibility = 1
+				   -- Followers
+				   OR ("u->status".visibility = 2 AND "u->is_following" IS NOT NULL)
+				   -- Friends
+				   OR ("u->status".visibility = 3 AND "u->is_friend" IS NOT NULL)
+			   )
+			   THEN TRUE
+		   ELSE FALSE
+	   END                                                           AS "has_status!",
+	   -- Boolean flags
+	   "u->is_following" IS NOT NULL                                 AS "is_following!",
+	   "u->is_follower" IS NOT NULL                                  AS "is_follower!",
+	   "u->is_friend" IS NOT NULL                                    AS "is_friend!",
+	   "u->is_subscribed" IS NOT NULL                                AS "is_subscribed!",
+	   "u->is_friend_request_sent" IS NOT NULL                       AS "is_friend_request_sent!",
+	   "u->is_blocked_by_user" IS NOT NULL                           AS "is_blocked_by_user!",
+	   "u->is_blocking" IS NOT NULL                                  AS "is_blocking!",
+	   "u->is_muted" IS NOT NULL                                     AS "is_muted!"
 FROM
 	users u
 		-- Join status
@@ -173,5 +140,13 @@ GROUP BY
 	"u->status".emoji,
 	"u->status".text,
 	"u->status".visibility,
-	"u->status".user_id
+	"u->status".user_id,
+	"u->is_following",
+	"u->is_follower",
+	"u->is_friend",
+	"u->is_subscribed",
+	"u->is_friend_request_sent",
+	"u->is_blocked_by_user",
+	"u->is_blocking",
+	"u->is_muted"
 LIMIT 1

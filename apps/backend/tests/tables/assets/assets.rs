@@ -9,7 +9,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO assets(key, hex, height, width, user_id) 
+            INSERT INTO assets (key, hex, height, width, user_id) 
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -46,7 +46,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO assets(key, hex, height, width, user_id) 
+            INSERT INTO assets (key, hex, height, width, user_id) 
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -90,7 +90,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO assets(key, hex, height, width, user_id) 
+            INSERT INTO assets (key, hex, height, width, user_id) 
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )

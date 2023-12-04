@@ -6,6 +6,7 @@ use crate::{
     },
     RedisPool,
 };
+use anyhow::anyhow;
 use futures::stream::StreamExt;
 use redis::{
     AsyncCommands,
@@ -32,15 +33,19 @@ pub struct UserSession {
 pub async fn get_user_sessions(
     redis_pool: &RedisPool,
     user_id: i64,
-) -> Result<Vec<(String, UserSession)>, ()> {
-    let mut conn = redis_pool.get().await.map_err(|_| ())?;
+) -> anyhow::Result<Vec<(String, UserSession)>> {
+    let mut conn = redis_pool
+        .get()
+        .await
+        .map_err(|error| anyhow!("unable to acquire a connection from the Redis pool: {error:?}"));
+
     let iter: AsyncIter<String> = conn
         .scan_match(format!(
             "{}:{user_id}:*",
             RedisNamespace::Session.to_string()
         ))
         .await
-        .map_err(|_| ())?;
+        .map_err(|error| anyhow!("unable to scan for session keys: {error:?}"))?;
 
     let keys: Vec<String> = iter.collect().await;
 
@@ -48,29 +53,22 @@ pub async fn get_user_sessions(
         return Ok(vec![]);
     }
 
-    let values: Vec<Option<String>> = conn.mget(&keys).await.map_err(|_| ())?;
+    let values: Vec<Option<String>> = conn
+        .mget(&keys)
+        .await
+        .map_err(|error| anyhow!("unable to fetch value for the session keys: {error:?}"))?;
 
-    // Build and return key-value pairs
+    // Build and return key-value pairs.
     Ok(keys
         .iter()
         .enumerate()
-        .map(|(index, &ref key)| {
-            (
+        .filter_map(|(index, &ref key)| {
+            Some((
                 key.to_string(),
-                if let Some(value) = values.get(index) {
-                    serde_json::from_str::<UserSession>(value.clone().unwrap_or_default().as_str())
-                        .ok()
-                } else {
-                    None
-                },
-            )
-        })
-        .filter_map(|(key, value)| {
-            if value.is_some() {
-                Some((key, value.unwrap()))
-            } else {
-                None
-            }
+                values
+                    .get(index)?
+                    .map(|value| serde_json::from_str::<UserSession>(&value).ok())??,
+            ))
         })
         .collect::<Vec<_>>())
 }

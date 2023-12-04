@@ -114,13 +114,7 @@ async fn get(
     query_builder.push(if user_id.is_some() {
         r#"
         -- Boolean flags
-        CASE
-            WHEN COUNT("st->is_followed") = 1
-                THEN
-                TRUE
-            ELSE
-                FALSE
-        END AS "is_followed"
+        "st->is_followed" IS NOT NULL AS "is_followed"
         "#
     } else {
         r#"FALSE as "is_followed""#

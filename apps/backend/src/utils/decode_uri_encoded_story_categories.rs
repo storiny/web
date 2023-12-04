@@ -9,13 +9,13 @@ pub fn decode_uri_encoded_story_categories(
     encoded_categories: &str,
 ) -> anyhow::Result<Vec<String>> {
     match lz_str::decompress_from_encoded_uri_component(encoded_categories) {
-        None => Err(anyhow!("Failed to decode the encoded categories")),
+        None => Err(anyhow!("failed to decode the encoded categories")),
         Some(decoded_categories) => {
             let categories_str = String::from_utf16(&decoded_categories)?;
             let categories_vec: Vec<&str> = categories_str.split("|").collect();
 
             if categories_vec.len() > STORY_CATEGORY_VEC.len() {
-                return Err(anyhow!("Too many categories"));
+                return Err(anyhow!("too many categories"));
             }
 
             let valid_categories: Vec<String> = categories_vec
@@ -26,7 +26,7 @@ pub fn decode_uri_encoded_story_categories(
                 .collect::<Vec<_>>();
 
             if valid_categories.is_empty() {
-                Err(anyhow!("No valid categories found in the decoded data"))
+                Err(anyhow!("no valid categories found in the decoded data"))
             } else {
                 Ok(valid_categories)
             }

@@ -119,7 +119,7 @@ mod tests {
         // Set initial tags for the story
         let result = sqlx::query(
             r#"
-            INSERT INTO story_tags(tag_id, story_id)
+            INSERT INTO story_tags (tag_id, story_id)
             VALUES ($1, $3), ($2, $3)
             "#,
         )
@@ -185,7 +185,7 @@ mod tests {
         // Set initial tags for the story
         let result = sqlx::query(
             r#"
-            INSERT INTO story_tags(tag_id, story_id)
+            INSERT INTO story_tags (tag_id, story_id)
             VALUES ($1, $3), ($2, $3)
             "#,
         )
