@@ -158,7 +158,7 @@ mod tests {
         // Insert a comment
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -247,7 +247,7 @@ mod tests {
         // Insert a comment
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -336,7 +336,7 @@ mod tests {
         // Like the story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -425,7 +425,7 @@ mod tests {
         // Like the story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -622,7 +622,7 @@ mod tests {
         // Insert some story tags
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_tags(tag_id, story_id)
+            INSERT INTO story_tags (tag_id, story_id)
             VALUES ($2, $1), ($3, $1)
             "#,
         )
@@ -707,7 +707,7 @@ mod tests {
         // Insert some story tags
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_tags(tag_id, story_id)
+            INSERT INTO story_tags (tag_id, story_id)
             VALUES ($2, $1), ($3, $1)
             "#,
         )
@@ -918,7 +918,7 @@ mod tests {
         // Insert a bookmark
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
+            INSERT INTO bookmarks (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -1007,7 +1007,7 @@ mod tests {
         // Insert a bookmark
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
+            INSERT INTO bookmarks (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -1096,7 +1096,7 @@ mod tests {
         // Insert a history
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO histories(user_id, story_id)
+            INSERT INTO histories (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -1185,7 +1185,7 @@ mod tests {
         // Insert a history
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO histories(user_id, story_id)
+            INSERT INTO histories (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -2350,7 +2350,7 @@ mod tests {
         // Insert a comment
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -2480,7 +2480,7 @@ mod tests {
         // Insert a comment
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -2610,7 +2610,7 @@ mod tests {
         // Insert a comment
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -2740,7 +2740,7 @@ mod tests {
         // Insert a comment
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $2, $3)
             RETURNING id, deleted_at
             "#,
@@ -2872,7 +2872,7 @@ mod tests {
         // Like the story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -3003,7 +3003,7 @@ mod tests {
         // Like the story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -3134,7 +3134,7 @@ mod tests {
         // Like the story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -3265,7 +3265,7 @@ mod tests {
         // Like the story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -3398,7 +3398,7 @@ mod tests {
         // Insert a bookmark
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
+            INSERT INTO bookmarks (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -3529,7 +3529,7 @@ mod tests {
         // Insert a bookmark
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
+            INSERT INTO bookmarks (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -3660,7 +3660,7 @@ mod tests {
         // Insert a bookmark
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
+            INSERT INTO bookmarks (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -3791,7 +3791,7 @@ mod tests {
         // Insert a bookmark
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
+            INSERT INTO bookmarks (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -3924,7 +3924,7 @@ mod tests {
         // Insert a history
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO histories(user_id, story_id)
+            INSERT INTO histories (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -4055,7 +4055,7 @@ mod tests {
         // Insert a history
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO histories(user_id, story_id)
+            INSERT INTO histories (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -4186,7 +4186,7 @@ mod tests {
         // Insert a history
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO histories(user_id, story_id)
+            INSERT INTO histories (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -4317,7 +4317,7 @@ mod tests {
         // Insert a history
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO histories(user_id, story_id)
+            INSERT INTO histories (user_id, story_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -4500,7 +4500,7 @@ mod tests {
         // Insert an asset
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO assets(key, hex, height, width, user_id)
+            INSERT INTO assets (key, hex, height, width, user_id)
             VALUES ($1, $2, $3, $4, $5)
             RETURNING id
             "#,
@@ -4585,7 +4585,7 @@ mod tests {
         // Insert an asset
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO assets(key, hex, height, width, user_id)
+            INSERT INTO assets (key, hex, height, width, user_id)
             VALUES ($1, $2, $3, $4, $5)
             RETURNING id
             "#,
@@ -4665,7 +4665,7 @@ mod tests {
         // Insert a comment
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $2, $3)
             RETURNING id
             "#,
@@ -4715,7 +4715,7 @@ mod tests {
         // Like the story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_likes(user_id, story_id)
+            INSERT INTO story_likes (user_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -4764,7 +4764,7 @@ mod tests {
         // Insert a story tag
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_tags(tag_id, story_id)
+            INSERT INTO story_tags (tag_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -4911,7 +4911,7 @@ mod tests {
         // Insert a bookmark
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id)
+            INSERT INTO bookmarks (user_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -4960,7 +4960,7 @@ mod tests {
         // Insert a history
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO histories(user_id, story_id)
+            INSERT INTO histories (user_id, story_id)
             VALUES ($1, $2)
             "#,
         )

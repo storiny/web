@@ -105,7 +105,7 @@ mod tests {
                 // Insert a connection
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO connections(
+                    INSERT INTO connections (
                         id,
                         provider,
                         provider_identifier,

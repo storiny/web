@@ -13,43 +13,50 @@ use validator::Validate;
 
 #[derive(Deserialize, Validate)]
 struct Fragments {
-    user_id: String,
+    transmitter_or_receiver_id: String,
 }
 
-#[delete("/v1/me/friends/{user_id}")]
+#[delete("/v1/me/friends/{transmitter_or_receiver_id}")]
+#[tracing::instrument(
+    name = "DELETE /v1/me/friends/{transmitter_or_receiver_id}",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        transmitter_or_receiver_id = %path.transmitter_or_receiver_id
+    ),
+    err
+)]
 async fn delete(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => match path.user_id.parse::<i64>() {
-            Ok(friend_id) => {
-                match sqlx::query(
-                    r#"
-                    DELETE FROM friends
-                    WHERE
-                        (
-                            (transmitter_id = $1 AND receiver_id = $2)
-                            OR
-                            (transmitter_id = $2 AND receiver_id = $1)
-                        )
-                        AND accepted_at IS NOT NULL
-                    "#,
-                )
-                .bind(user_id)
-                .bind(friend_id)
-                .execute(&data.db_pool)
-                .await?
-                .rows_affected()
-                {
-                    0 => Ok(HttpResponse::BadRequest().body("Friend not found")),
-                    _ => Ok(HttpResponse::NoContent().finish()),
-                }
-            }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid reply ID")),
-        },
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let user_id = user.id()?;
+    let transmitter_or_receiver_id = path
+        .transmitter_or_receiver_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid user ID"))?;
+
+    match sqlx::query(
+        r#"
+DELETE FROM friends
+WHERE
+    (
+        (transmitter_id = $1 AND receiver_id = $2)
+        OR
+        (transmitter_id = $2 AND receiver_id = $1)
+    )
+    AND accepted_at IS NOT NULL
+"#,
+    )
+    .bind(&user_id)
+    .bind(&transmitter_or_receiver_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(AppError::from("Friend not found")),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -75,12 +82,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
-        // Add a friend
+        // Add a friend.
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($1, $2, NOW())
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
         )
         .bind(user_id.unwrap())
         .bind(2_i64)
@@ -97,14 +104,14 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Friend should not be present in the database
+        // Friend should not be present in the database.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM friends
-                WHERE transmitter_id = $1 AND receiver_id = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM friends
+    WHERE transmitter_id = $1 AND receiver_id = $2
+)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(2_i64)
@@ -139,12 +146,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
-        // Add a pending friend
+        // Add a pending friend.
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(2_i64)
@@ -153,7 +160,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should not remove the friend request
+        // Should not remove the friend request.
         let req = test::TestRequest::delete()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/me/friends/{}", 2))
@@ -163,13 +170,13 @@ mod tests {
         assert!(res.status().is_client_error());
         assert_response_body_text(res, "Friend not found").await;
 
-        // Accept the friend request
+        // Accept the friend request.
         let result = sqlx::query(
             r#"
-            UPDATE friends
-            SET accepted_at = NOW()
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET accepted_at = NOW()
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(user_id.unwrap())
         .bind(2_i64)
@@ -178,7 +185,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should remove the accepted friend now
+        // Should remove the accepted friend now.
         let req = test::TestRequest::delete()
             .cookie(cookie.unwrap())
             .uri(&format!("/v1/me/friends/{}", 2))

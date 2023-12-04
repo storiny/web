@@ -42,50 +42,52 @@ struct Asset {
 }
 
 #[get("/v1/me/assets")]
+#[tracing::instrument(
+    name = "GET /v1/me/assets",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        page = query.page
+    ),
+    err
+)]
 async fn get(
     query: QsQuery<QueryParams>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            let page = query.page.unwrap_or(1) - 1;
-            let result = sqlx::query_as::<_, Asset>(
-                r#"
-                SELECT
-                    id,
-                    key,
-                    hex,
-                    alt,
-                    rating,
-                    height,
-                    width,
-                    created_at,
-                    CASE WHEN favourited_at IS NULL THEN
-                        FALSE
-                    ELSE
-                        TRUE
-                    END AS "favourite"
-                FROM
-                    assets
-                WHERE
-                    user_id = $1
-                ORDER BY
-                    favourited_at DESC NULLS LAST,
-                    created_at DESC
-                LIMIT $2 OFFSET $3
-                "#,
-            )
-            .bind(user_id)
-            .bind(10_i16)
-            .bind((page * 10) as i16)
-            .fetch_all(&data.db_pool)
-            .await?;
+    let user_id = user.id()?;
+    let page = query.page.unwrap_or(1) - 1;
 
-            Ok(HttpResponse::Ok().json(result))
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-    }
+    let result = sqlx::query_as::<_, Asset>(
+        r#"
+SELECT
+    id,
+    key,
+    hex,
+    alt,
+    rating,
+    height,
+    width,
+    created_at,
+    favourited_at IS NOT NULL AS "favourite"
+FROM
+    assets
+WHERE
+    user_id = $1
+ORDER BY
+    favourited_at DESC NULLS LAST,
+    created_at DESC
+LIMIT $2 OFFSET $3
+"#,
+    )
+    .bind(&user_id)
+    .bind(10_i16)
+    .bind((page * 10) as i16)
+    .fetch_all(&data.db_pool)
+    .await?;
+
+    Ok(HttpResponse::Ok().json(result))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -100,21 +102,24 @@ mod tests {
         res_to_string,
     };
     use actix_web::test;
-    use sqlx::PgPool;
+    use sqlx::{
+        PgPool,
+        Row,
+    };
 
     #[sqlx::test]
     async fn can_return_assets(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some assets
+        // Insert some assets.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO assets(key, hex, height, width, user_id, favourited_at) 
-            VALUES
-                ($1, $2, $3, $4, $5, NOW()),
-                ($6, $2, $3, $4, $5, NULL)
-            "#,
+INSERT INTO assets (key, hex, height, width, user_id, favourited_at) 
+VALUES
+    ($1, $2, $3, $4, $5, NOW()),
+    ($6, $2, $3, $4, $5, NULL)
+"#,
         )
         .bind(Uuid::new_v4())
         .bind("000000".to_string())
@@ -146,6 +151,57 @@ mod tests {
         assert!(results[0].favourite);
         // The second asset should have `favourite` set to `false`, casted from the `NULL` value.
         assert!(!results[1].favourite);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_return_favourite_flag_in_assets(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Insert an asset.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO assets (key, hex, height, width, user_id, favourited_at) 
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id
+"#,
+        )
+        .bind(Uuid::new_v4())
+        .bind("000000".to_string())
+        .bind(0)
+        .bind(0)
+        .bind(user_id)
+        .bind(Uuid::new_v4())
+        .fetch_one(&mut *conn)
+        .await?;
+
+        let asset_id = insert_result.get::<i64, _>("id");
+
+        // Add the asset to favourites.
+        let result = sqlx::query(
+            r#"
+UPDATE assets
+SET favourited_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(asset_id)
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/assets")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        let json = serde_json::from_str::<Vec<Asset>>(&res_to_string(res).await).unwrap();
+        let asset = &json[0];
+
+        // Should be set to `true`.
+        assert!(asset.favourite);
 
         Ok(())
     }

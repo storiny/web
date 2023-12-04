@@ -330,7 +330,7 @@ mod tests {
         let asset_key = Uuid::new_v4();
         let result = sqlx::query(
             r#"
-            INSERT INTO assets(key, hex, height, width, user_id)
+            INSERT INTO assets (key, hex, height, width, user_id)
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )

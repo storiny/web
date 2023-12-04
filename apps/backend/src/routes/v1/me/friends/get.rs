@@ -54,159 +54,157 @@ struct Friend {
 }
 
 #[get("/v1/me/friends")]
+#[tracing::instrument(
+    name = "GET /v1/me/friends",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        page = query.page,
+        sort = query.sort,
+        query = query.query
+    ),
+    err
+)]
 async fn get(
     query: QsQuery<QueryParams>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
+    let user_id = user.id()?;
+
     let page = query.page.clone().unwrap_or(1) - 1;
     let sort = query.sort.clone().unwrap_or("popular".to_string());
     let search_query = query.query.clone().unwrap_or_default();
     let has_search_query = !search_query.trim().is_empty();
 
-    match user.id() {
-        Ok(user_id) => {
-            let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
-                r#"
-                WITH friends_result AS (
-                "#,
-            );
+    let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
+        r#"
+WITH friends_result AS (
+"#,
+    );
 
-            if has_search_query {
-                query_builder.push(
-                    r#"
-                    WITH search_query AS (
-                        SELECT PLAINTO_TSQUERY('english', $4) AS tsq
-                    )
-                    "#,
-                );
-            }
-
-            query_builder.push(
-                r#"
-                SELECT
-                    -- Friend
-                    fu.id,
-                    fu.name,
-                    fu.username,
-                    fu.avatar_id,
-                    fu.avatar_hex,
-                    fu.public_flags,
-                    -- Boolean flags
-                    CASE
-                        WHEN COUNT("fu->is_follower") = 1
-                            THEN
-                                TRUE
-                            ELSE
-                                FALSE
-                    END AS "is_follower",
-                    CASE
-                        WHEN COUNT("fu->is_following") = 1
-                            THEN
-                                TRUE
-                            ELSE
-                                FALSE
-                    END AS "is_following"
-                "#,
-            );
-
-            if has_search_query {
-                query_builder.push(",");
-                query_builder.push(
-                    r#"
-                      -- Query score
-                      TS_RANK_CD(fu.search_vec, (SELECT tsq FROM search_query)) AS "query_score"
-                    "#,
-                );
-            }
-
-            query_builder.push(
-                r#"
-                FROM
-                    friends f
-                        -- Join friend user
-                        INNER JOIN users AS fu
-                            ON (
-                              (f.transmitter_id = fu.id AND f.receiver_id = $1)
-                                OR
-                              (f.receiver_id = fu.id AND f.transmitter_id = $1)          
-                            )
-                        -- Boolean follower flag
-                        LEFT OUTER JOIN relations AS "fu->is_follower"
-                            ON "fu->is_follower".follower_id = fu.id
-                                AND "fu->is_follower".followed_id = $1
-                                AND "fu->is_follower".deleted_at IS NULL
-                        -- Boolean following flag
-                        LEFT OUTER JOIN relations AS "fu->is_following"
-                            ON "fu->is_following".followed_id = fu.id
-                                AND "fu->is_following".follower_id = $1
-                                AND "fu->is_following".deleted_at IS NULL
-                WHERE
-                    f.accepted_at IS NOT NULL
-                    AND f.deleted_at IS NULL
-                "#,
-            );
-
-            if has_search_query {
-                query_builder.push(r#"AND fu.search_vec @@ (SELECT tsq FROM search_query)"#);
-            }
-
-            query_builder.push(
-                r#"
-                GROUP BY
-                    fu.id,
-                    f.created_at
-                ORDER BY 
-                "#,
-            );
-
-            if has_search_query {
-                query_builder.push("query_score DESC");
-                query_builder.push(",");
-            }
-
-            query_builder.push(match sort.as_str() {
-                "old" => "f.created_at",
-                "popular" => "fu.follower_count DESC",
-                _ => "f.created_at DESC",
-            });
-
-            query_builder.push(
-                r#"
-                    LIMIT $2 OFFSET $3
-                )
-                SELECT
-                    -- Friend
-                    id,
-                    name,
-                    username,
-                    avatar_id,
-                    avatar_hex,
-                    public_flags,
-                    -- Boolean flags
-                    is_follower,
-                    is_following,
-                    TRUE AS "is_friend"
-                FROM friends_result
-                "#,
-            );
-
-            let mut db_query = query_builder
-                .build_query_as::<Friend>()
-                .bind(user_id)
-                .bind(10_i16)
-                .bind((page * 10) as i16);
-
-            if has_search_query {
-                db_query = db_query.bind(search_query);
-            }
-
-            let result = db_query.fetch_all(&data.db_pool).await?;
-
-            Ok(HttpResponse::Ok().json(result))
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    if has_search_query {
+        query_builder.push(
+            r#"
+WITH search_query AS (
+    SELECT PLAINTO_TSQUERY('english', $4) AS tsq
+)
+"#,
+        );
     }
+
+    query_builder.push(
+        r#"
+SELECT
+    -- Friend
+    fu.id,
+    fu.name,
+    fu.username,
+    fu.avatar_id,
+    fu.avatar_hex,
+    fu.public_flags,
+    -- Boolean flags
+    "fu->is_follower" IS NOT NULL AS "is_follower",
+    "fu->is_following" IS NOT NULL AS "is_following"
+"#,
+    );
+
+    if has_search_query {
+        query_builder.push(",");
+        query_builder.push(
+            r#"
+-- Query score
+TS_RANK_CD(fu.search_vec, (SELECT tsq FROM search_query)) AS "query_score"
+"#,
+        );
+    }
+
+    query_builder.push(
+        r#"
+FROM
+    friends f
+        -- Join friend user
+        INNER JOIN users AS fu
+            ON (
+              (f.transmitter_id = fu.id AND f.receiver_id = $1)
+                OR
+              (f.receiver_id = fu.id AND f.transmitter_id = $1)          
+            )
+        -- Boolean follower flag
+        LEFT OUTER JOIN relations AS "fu->is_follower"
+            ON "fu->is_follower".follower_id = fu.id
+            AND "fu->is_follower".followed_id = $1
+            AND "fu->is_follower".deleted_at IS NULL
+        -- Boolean following flag
+        LEFT OUTER JOIN relations AS "fu->is_following"
+            ON "fu->is_following".followed_id = fu.id
+            AND "fu->is_following".follower_id = $1
+            AND "fu->is_following".deleted_at IS NULL
+WHERE
+    f.accepted_at IS NOT NULL
+    AND f.deleted_at IS NULL
+"#,
+    );
+
+    if has_search_query {
+        query_builder.push(r#"AND fu.search_vec @@ (SELECT tsq FROM search_query)"#);
+    }
+
+    query_builder.push(
+        r#"
+GROUP BY
+    fu.id,
+    "fu->is_follower",
+    "fu->is_following",
+    f.created_at
+ORDER BY 
+"#,
+    );
+
+    if has_search_query {
+        query_builder.push("query_score DESC");
+        query_builder.push(",");
+    }
+
+    query_builder.push(match sort.as_str() {
+        "old" => "f.created_at",
+        "popular" => "fu.follower_count DESC",
+        _ => "f.created_at DESC",
+    });
+
+    query_builder.push(
+        r#"
+    LIMIT $2 OFFSET $3
+)
+SELECT
+    -- Friend
+    id,
+    name,
+    username,
+    avatar_id,
+    avatar_hex,
+    public_flags,
+    -- Boolean flags
+    is_follower,
+    is_following,
+    TRUE AS "is_friend"
+FROM friends_result
+"#,
+    );
+
+    let mut db_query = query_builder
+        .build_query_as::<Friend>()
+        .bind(user_id)
+        .bind(10_i16)
+        .bind((page * 10) as i16);
+
+    if has_search_query {
+        db_query = db_query.bind(search_query);
+    }
+
+    let result = db_query.fetch_all(&data.db_pool).await?;
+
+    Ok(HttpResponse::Ok().json(result))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -229,12 +227,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Add some friends
+        // Add some friends.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($2, $1, NOW()), ($3, $1, NOW())
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($2, $1, NOW()), ($3, $1, NOW())
+"#,
         )
         .bind(user_id.unwrap())
         .bind(2_i64)
@@ -255,7 +253,127 @@ mod tests {
         let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
+
+        let friends = json.unwrap();
+
+        assert_eq!(friends.len(), 2);
+        assert!(friends.iter().all(|&friend| friend.is_friend));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("friend"))]
+    async fn can_return_is_follower_flag_for_friends(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Add a friend.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/friends")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be false initially.
+        let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
+        let friend = &json[0];
+        assert!(!friend.is_follower);
+
+        // Add the user as follower.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($2, $1)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/friends")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be true.
+        let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
+        let friend = &json[0];
+        assert!(friend.is_follower);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("friend"))]
+    async fn can_return_is_following_flag_for_friends(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Add a friend.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/friends")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be false initially.
+        let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
+        let friend = &json[0];
+        assert!(!friend.is_following);
+
+        // Follow the user.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/friends")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be true.
+        let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
+        let friend = &json[0];
+        assert!(friend.is_following);
 
         Ok(())
     }
@@ -265,12 +383,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Add some friends
+        // Add some friends.
         sqlx::query(
             r#"
-           INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-           VALUES ($1, $2, NOW())
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
         )
         .bind(2_i64)
         .bind(user_id.unwrap())
@@ -279,9 +397,9 @@ mod tests {
 
         sqlx::query(
             r#"
-           INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-           VALUES ($1, $2, NOW())
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
         )
         .bind(3_i64)
         .bind(user_id.unwrap())
@@ -309,12 +427,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Add some friends
+        // Add some friends.
         sqlx::query(
             r#"
-           INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-           VALUES ($1, $2, NOW())
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
         )
         .bind(2_i64)
         .bind(user_id.unwrap())
@@ -323,9 +441,9 @@ mod tests {
 
         sqlx::query(
             r#"
-           INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-           VALUES ($1, $2, NOW())
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
         )
         .bind(3_i64)
         .bind(user_id.unwrap())
@@ -353,12 +471,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Add some friends
+        // Add some friends.
         sqlx::query(
             r#"
-           INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-           VALUES ($1, $2, NOW())
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
         )
         .bind(2_i64)
         .bind(user_id.unwrap())
@@ -367,9 +485,9 @@ mod tests {
 
         sqlx::query(
             r#"
-           INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-           VALUES ($1, $2, NOW())
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
         )
         .bind(3_i64)
         .bind(user_id.unwrap())
@@ -397,12 +515,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Add some friends
+        // Add some friends.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($2, $1, NOW()), ($3, $1, NOW())
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($2, $1, NOW()), ($3, $1, NOW())
+"#,
         )
         .bind(user_id.unwrap())
         .bind(2_i64)
@@ -433,12 +551,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Add some friends
+        // Add some friends.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($2, $1, NOW()), ($3, $1, NOW())
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($2, $1, NOW()), ($3, $1, NOW())
+"#,
         )
         .bind(user_id.unwrap())
         .bind(2_i64)
@@ -448,7 +566,7 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 2);
 
-        // Should return all the friends initially
+        // Should return all the friends initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/friends")
@@ -462,13 +580,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
 
-        // Soft-delete one of the friends
+        // Soft-delete one of the friends.
         let result = sqlx::query(
             r#"
-            UPDATE friends
-            SET deleted_at = NOW()
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET deleted_at = NOW()
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(user_id.unwrap())
@@ -477,7 +595,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only one friend
+        // Should return only one friend.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/friends")
@@ -491,13 +609,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 1);
 
-        // Recover the friend
+        // Recover the friend.
         let result = sqlx::query(
             r#"
-            UPDATE friends
-            SET deleted_at = NULL
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET deleted_at = NULL
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(user_id.unwrap())
@@ -506,7 +624,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the friends again
+        // Should return all the friends again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
             .uri("/v1/me/friends")
@@ -528,12 +646,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Add some friends
+        // Add some friends.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
-            VALUES ($2, $1, NOW()), ($3, $1, NOW())
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($2, $1, NOW()), ($3, $1, NOW())
+"#,
         )
         .bind(user_id.unwrap())
         .bind(2_i64)
@@ -543,7 +661,7 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 2);
 
-        // Should return all the friends initially
+        // Should return all the friends initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/friends")
@@ -557,13 +675,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
 
-        // Update one of the friends as pending
+        // Update one of the friends as pending.
         let result = sqlx::query(
             r#"
-            UPDATE friends
-            SET accepted_at = NULL
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET accepted_at = NULL
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(user_id.unwrap())
@@ -572,7 +690,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only one friend
+        // Should return only one friend.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/friends")

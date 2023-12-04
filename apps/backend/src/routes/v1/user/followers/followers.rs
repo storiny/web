@@ -124,27 +124,9 @@ async fn get(
             query_builder.push(if current_user_id.is_some() {
                 r#"
                 -- Boolean flags
-                CASE
-                    WHEN COUNT("ru->is_follower") = 1
-                        THEN
-                            TRUE
-                        ELSE
-                            FALSE
-                END AS "is_follower",
-                CASE
-                    WHEN COUNT("ru->is_following") = 1
-                        THEN
-                            TRUE
-                        ELSE
-                            FALSE
-                END AS "is_following",
-                CASE
-                    WHEN COUNT("ru->is_friend") = 1
-                        THEN
-                            TRUE
-                        ELSE
-                            FALSE
-                END AS "is_friend"
+                "ru->is_follower" IS NOT NULL AS "is_follower",
+                "ru->is_following" IS NOT NULL AS "is_following",
+                "ru->is_friend" IS NOT NULL AS "is_friend"
                 "#
             } else {
                 r#"
@@ -300,7 +282,7 @@ mod tests {
         // Add some followers
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($2, $1), ($3, $1)
             "#,
         )
@@ -335,7 +317,7 @@ mod tests {
         // Add some followers
         sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             "#,
         )
@@ -346,7 +328,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             "#,
         )
@@ -378,7 +360,7 @@ mod tests {
         // Add some followers
         sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             "#,
         )
@@ -389,7 +371,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             "#,
         )
@@ -421,7 +403,7 @@ mod tests {
         // Add some followers
         sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             "#,
         )
@@ -432,7 +414,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             "#,
         )
@@ -464,7 +446,7 @@ mod tests {
         // Add some followers
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($2, $1), ($3, $1)
             "#,
         )
@@ -499,7 +481,7 @@ mod tests {
         // Add some followers
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($2, $1), ($3, $1)
             "#,
         )
@@ -593,7 +575,7 @@ mod tests {
         // Add some followers
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($2, $1), ($3, $1)
             "#,
         )
@@ -631,7 +613,7 @@ mod tests {
         // Add some followers
         sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             "#,
         )
@@ -642,7 +624,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             "#,
         )
@@ -677,7 +659,7 @@ mod tests {
         // Add some followers
         sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             "#,
         )
@@ -688,7 +670,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             "#,
         )
@@ -723,7 +705,7 @@ mod tests {
         // Add some followers
         sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             "#,
         )
@@ -734,7 +716,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             "#,
         )
@@ -767,7 +749,7 @@ mod tests {
         // Add some followers
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($2, $1), ($3, $1)
             "#,
         )
@@ -805,7 +787,7 @@ mod tests {
         // Add some followers
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($2, $1), ($3, $1)
             "#,
         )

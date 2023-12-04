@@ -124,27 +124,9 @@ async fn get(
             query_builder.push(if current_user_id.is_some() {
                 r#"
                 -- Boolean flags
-                CASE
-                    WHEN COUNT("fu->is_follower") = 1
-                        THEN
-                            TRUE
-                        ELSE
-                            FALSE
-                END AS "is_follower",
-                CASE
-                    WHEN COUNT("fu->is_following") = 1
-                        THEN
-                            TRUE
-                        ELSE
-                            FALSE
-                END AS "is_following",
-                CASE
-                    WHEN COUNT("fu->is_friend") = 1
-                        THEN
-                            TRUE
-                        ELSE
-                            FALSE
-                END AS "is_friend"
+                "fu->is_follower" IS NOT NULL AS "is_follower",
+                "fu->is_following" IS NOT NULL AS "is_following",
+                "fu->is_friend" IS NOT NULL AS "is_friend"
                 "#
             } else {
                 r#"
@@ -355,7 +337,7 @@ mod tests {
         // Add some friends
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW()), ($1, $3, NOW())
             "#,
         )
@@ -390,7 +372,7 @@ mod tests {
         // Add some friends
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW())
             "#,
         )
@@ -401,7 +383,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW())
             "#,
         )
@@ -433,7 +415,7 @@ mod tests {
         // Add some friends
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW())
             "#,
         )
@@ -444,7 +426,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW())
             "#,
         )
@@ -476,7 +458,7 @@ mod tests {
         // Add some friends
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW())
             "#,
         )
@@ -487,7 +469,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW())
             "#,
         )
@@ -519,7 +501,7 @@ mod tests {
         // Add some friends
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW()), ($1, $3, NOW())
             "#,
         )
@@ -554,7 +536,7 @@ mod tests {
         // Add some friends
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW()), ($1, $3, NOW())
             "#,
         )
@@ -613,7 +595,7 @@ mod tests {
         // Add some friends
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW()), ($1, $3, NOW())
             "#,
         )
@@ -705,7 +687,7 @@ mod tests {
         // Add some friends
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW()), ($1, $3, NOW())
             "#,
         )
@@ -799,7 +781,7 @@ mod tests {
         // Add some friends
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW()), ($1, $3, NOW())
             "#,
         )
@@ -835,7 +817,7 @@ mod tests {
         // Add some friends
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW())
             "#,
         )
@@ -846,7 +828,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW())
             "#,
         )
@@ -881,7 +863,7 @@ mod tests {
         // Add some friends
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW())
             "#,
         )
@@ -892,7 +874,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW())
             "#,
         )
@@ -927,7 +909,7 @@ mod tests {
         // Add some friends
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW())
             "#,
         )
@@ -938,7 +920,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW())
             "#,
         )
@@ -971,7 +953,7 @@ mod tests {
         // Add some friends
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW()), ($1, $3, NOW())
             "#,
         )
@@ -1009,7 +991,7 @@ mod tests {
         // Add some friends
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW())
             "#,
         )
@@ -1061,7 +1043,7 @@ mod tests {
         // Add the user as friend
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW())
             "#,
         )
@@ -1097,7 +1079,7 @@ mod tests {
         // Add some friends
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW())
             "#,
         )
@@ -1150,7 +1132,7 @@ mod tests {
         // Add the user as friend
         let result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW())
             "#,
         )
@@ -1186,7 +1168,7 @@ mod tests {
         // Add some friends
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW())
             "#,
         )
@@ -1249,7 +1231,7 @@ mod tests {
         // Add some friends
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW()), ($1, $3, NOW())
             "#,
         )
@@ -1346,7 +1328,7 @@ mod tests {
         // Add some friends
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+            INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
             VALUES ($1, $2, NOW()), ($1, $3, NOW())
             "#,
         )

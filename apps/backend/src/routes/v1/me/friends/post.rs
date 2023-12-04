@@ -15,6 +15,7 @@ use crate::{
     },
     AppState,
 };
+use actix_http::StatusCode;
 use actix_web::{
     post,
     web,
@@ -25,131 +26,138 @@ use validator::Validate;
 
 #[derive(Deserialize, Validate)]
 struct Fragments {
-    user_id: String,
+    receiver_id: String,
 }
 
-#[post("/v1/me/friends/{user_id}")]
+#[post("/v1/me/friends/{receiver_id}")]
+#[tracing::instrument(
+    name = "POST /v1/me/friends/{receiver_id}",
+    skip_all,
+    fields(
+        transmitter_id = user.id().ok(),
+        receiver_id = %path.receiver_id
+    ),
+    err
+)]
 async fn post(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            match path.user_id.parse::<i64>() {
-                Ok(receiver_id) => {
-                    if !check_resource_limit(&data.redis, ResourceLimit::SendFriendRequest, user_id)
-                        .await
-                        .unwrap_or_default()
-                    {
-                        return Ok(HttpResponse::TooManyRequests().body(
-                            "Daily limit exceeded for sending friend requests. Try again tomorrow.",
-                        ));
-                    }
+    let transmitter_id = user.id()?;
+    let receiver_id = path
+        .receiver_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid user ID"))?;
 
-                    match sqlx::query(
-                        r#"
-                        WITH
-                            inserted_friend AS (
-                                INSERT INTO friends (transmitter_id, receiver_id)
-                                VALUES ($1, $2)
-                                RETURNING TRUE AS "inserted"
-                            ),
-                            inserted_notification AS (
-                                INSERT INTO notifications (entity_type, entity_id, notifier_id)
-                                SELECT $3, $1, $1
-                                WHERE EXISTS (SELECT 1 FROM inserted_friend)
-                                RETURNING id
-                            )
-                        INSERT
-                        INTO
-                            notification_outs (notified_id, notification_id)
-                        SELECT
-                            $2, (SELECT id FROM inserted_notification)
-                        WHERE EXISTS (SELECT 1 FROM inserted_friend)
-                        "#,
-                    )
-                    .bind(user_id)
-                    .bind(receiver_id)
-                    .bind(NotificationEntityType::FriendReqReceived as i16)
-                    .execute(&data.db_pool)
-                    .await
-                    {
-                        Ok(_) => {
-                            let _ = incr_resource_limit(
-                                &data.redis,
-                                ResourceLimit::SendFriendRequest,
-                                user_id,
-                            )
-                            .await;
+    if !check_resource_limit(
+        &data.redis,
+        ResourceLimit::SendFriendRequest,
+        transmitter_id,
+    )
+    .await?
+    {
+        return Err(ToastErrorResponse::new(
+            Some(StatusCode::TOO_MANY_REQUESTS),
+            "Daily limit exceeded for sending friend requests. Try again tomorrow.",
+        )
+        .into());
+    }
 
-                            Ok(HttpResponse::Created().finish())
-                        }
-                        Err(err) => {
-                            if let Some(db_err) = err.into_database_error() {
-                                match db_err.kind() {
-                                    // Do not throw if friend already exists
-                                    sqlx::error::ErrorKind::UniqueViolation => {
-                                        Ok(HttpResponse::NoContent().finish())
-                                    }
-                                    // Target user is not present in the table
-                                    sqlx::error::ErrorKind::ForeignKeyViolation => {
-                                        Ok(HttpResponse::BadRequest()
-                                            .json(ToastErrorResponse::new("User does not exist")))
-                                    }
-                                    _ => {
-                                        let err_code = db_err.code().unwrap_or_default();
+    let pg_pool = &data.db_pool;
+    let mut txn = pg_pool.begin().await?;
 
-                                        // Check if the receiver is soft-deleted or deactivated
-                                        if err_code == SqlState::EntityUnavailable.to_string() {
-                                            Ok(HttpResponse::BadRequest().json(
-                                                ToastErrorResponse::new(
-                                                    "User is either deleted or deactivated",
-                                                ),
-                                            ))
-                                        // Check if `transmitter_id` is same as `receiver_id`
-                                        } else if err_code == SqlState::RelationOverlap.to_string()
-                                        {
-                                            Ok(HttpResponse::BadRequest().json(
-                                                ToastErrorResponse::new(
-                                                    "You cannot send a friend request to yourself",
-                                                ),
-                                            ))
-                                        // Check if the user is being blocked by the followed user
-                                        } else if err_code
-                                            == SqlState::TransmitterBlockedByReceiverUser
-                                                .to_string()
-                                        {
-                                            Ok(HttpResponse::Forbidden().json(
-                                                ToastErrorResponse::new(
-                                                    "You are being blocked by the user",
-                                                ),
-                                            ))
-                                        // Check whether the receiver is accepting friend requests
-                                        // from the transmitter
-                                        } else if err_code
-                                            == SqlState::ReceiverNotAcceptingFriendRequest
-                                                .to_string()
-                                        {
-                                            Ok(HttpResponse::Forbidden()
-                                                .json(ToastErrorResponse::new(
-                                                "User is not accepting friend requests from you",
-                                            )))
-                                        } else {
-                                            Ok(HttpResponse::InternalServerError().finish())
-                                        }
-                                    }
-                                }
-                            } else {
-                                Ok(HttpResponse::InternalServerError().finish())
-                            }
-                        }
-                    }
-                }
-                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid user ID")),
-            }
+    match sqlx::query(
+        r#"
+WITH inserted_friend AS (
+        INSERT INTO friends (transmitter_id, receiver_id)
+        VALUES ($1, $2)
+        RETURNING TRUE AS "inserted"
+    ),
+    inserted_notification AS (
+        INSERT INTO notifications (entity_type, entity_id, notifier_id)
+        SELECT $3, $1, $1
+        WHERE EXISTS (SELECT 1 FROM inserted_friend)
+        RETURNING id
+    )
+INSERT INTO
+    notification_outs (notified_id, notification_id)
+SELECT $2, (SELECT id FROM inserted_notification)
+WHERE EXISTS (SELECT 1 FROM inserted_friend)
+"#,
+    )
+    .bind(&transmitter_id)
+    .bind(&receiver_id)
+    .bind(NotificationEntityType::FriendReqReceived as i16)
+    .execute(&mut *txn)
+    .await
+    {
+        Ok(_) => {
+            incr_resource_limit(
+                &data.redis,
+                ResourceLimit::SendFriendRequest,
+                transmitter_id,
+            )
+            .await?;
+
+            txn.commit().await?;
+
+            Ok(HttpResponse::Created().finish())
         }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+        Err(error) => {
+            if let Some(db_err) = error.as_database_error() {
+                let error_kind = db_err.kind();
+
+                // Do not throw if the user is already a friend.
+                if matches!(error_kind, sqlx::error::ErrorKind::UniqueViolation) {
+                    return Ok(HttpResponse::NoContent().finish());
+                }
+
+                // Target user is not present in the table.
+                if matches!(error_kind, sqlx::error::ErrorKind::ForeignKeyViolation) {
+                    return Err(AppError::ToastError(ToastErrorResponse::new(
+                        None,
+                        "User does not exist",
+                    )));
+                }
+
+                let error_code = db_err.code().unwrap_or_default();
+
+                // Check if the receiver is soft-deleted or deactivated.
+                if error_code == SqlState::EntityUnavailable.to_string() {
+                    return Err(AppError::ToastError(ToastErrorResponse::new(
+                        None,
+                        "User is either deleted or deactivated",
+                    )));
+                }
+
+                // Check if the `transmitter_id` is same as `receiver_id`.
+                if error_code == SqlState::RelationOverlap.to_string() {
+                    return Err(AppError::ToastError(ToastErrorResponse::new(
+                        None,
+                        "You cannot send a friend request to yourself",
+                    )));
+                }
+
+                // Check if the transmitter is blocked by the receiver user.
+                if error_code == SqlState::TransmitterBlockedByReceiverUser.to_string() {
+                    return Err(AppError::ToastError(ToastErrorResponse::new(
+                        Some(StatusCode::FORBIDDEN),
+                        "You are being blocked by the user",
+                    )));
+                }
+
+                // Check if the receiver is accepting requests from the transmitter.
+                if error_code == SqlState::ReceiverNotAcceptingFriendRequest.to_string() {
+                    return Err(AppError::ToastError(ToastErrorResponse::new(
+                        Some(StatusCode::FORBIDDEN),
+                        "User is not accepting friend requests from you",
+                    )));
+                }
+            }
+
+            Err(AppError::SqlxError(error))
+        }
     }
 }
 
@@ -181,19 +189,19 @@ mod tests {
     use storiny_macros::test_context;
 
     #[sqlx::test(fixtures("friend"))]
-    async fn should_not_send_friend_request_to_a_soft_deleted_user(
+    async fn should_not_send_a_friend_request_to_a_soft_deleted_user(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Soft-delete the receiver
+        // Soft-delete the receiver.
         let result = sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -201,7 +209,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Try sending a friend request to the user
+        // Try sending a friend request to the user.
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/me/friends/{}", 2))
@@ -215,19 +223,19 @@ mod tests {
     }
 
     #[sqlx::test(fixtures("friend"))]
-    async fn should_not_send_friend_request_to_a_deactivated_user(
+    async fn should_not_send_a_friend_request_to_a_deactivated_user(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Deactivate the receiver
+        // Deactivate the receiver.
         let result = sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -235,7 +243,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Try sending a friend request to the user
+        // Try sending a friend request to the user.
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/me/friends/{}", 2))
@@ -267,18 +275,18 @@ mod tests {
     }
 
     #[sqlx::test(fixtures("friend"))]
-    async fn can_reject_friend_request_when_the_receiver_has_blocked_the_transmitter(
+    async fn can_reject_a_friend_request_when_the_receiver_has_blocked_the_transmitter(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Get blocked by the receiver
+        // Get blocked by the receiver.
         sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(user_id.unwrap())
@@ -298,19 +306,19 @@ mod tests {
     }
 
     #[sqlx::test(fixtures("friend"))]
-    async fn can_reject_friend_request_when_the_receiver_is_not_accepting_friend_requests_from_the_transmitter(
+    async fn can_reject_a_friend_request_when_the_receiver_is_not_accepting_friend_requests_from_the_transmitter(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Set `incoming_friend_requests` to none for the receiver
+        // Set `incoming_friend_requests` to `None` for the receiver.
         sqlx::query(
             r#"
-            UPDATE users
-            SET incoming_friend_requests = $1
-            WHERE id = $2
-            "#,
+UPDATE users
+SET incoming_friend_requests = $1
+WHERE id = $2
+"#,
         )
         .bind(IncomingFriendRequest::None as i64)
         .bind(2_i64)
@@ -330,7 +338,7 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_friend_request_for_a_missing_user(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_a_friend_request_for_a_missing_user(pool: PgPool) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
@@ -365,14 +373,17 @@ mod tests {
 
             assert!(res.status().is_success());
 
-            // Friend request should be present in the database
+            // Friend request should be present in the database.
             let result = sqlx::query(
                 r#"
-                SELECT EXISTS (
-                    SELECT 1 FROM friends
-                    WHERE transmitter_id = $1 AND receiver_id = $2 AND accepted_at IS NULL
-                )
-                "#,
+SELECT EXISTS (
+    SELECT 1 FROM friends
+    WHERE
+        transmitter_id = $1
+        AND receiver_id = $2
+        AND accepted_at IS NULL
+)
+"#,
             )
             .bind(user_id.unwrap())
             .bind(2_i64)
@@ -381,14 +392,14 @@ mod tests {
 
             assert!(result.get::<bool, _>("exists"));
 
-            // Should also insert a notification
+            // Should also insert a notification.
             let result = sqlx::query(
                 r#"
-                SELECT EXISTS (
-                    SELECT 1 FROM notifications
-                    WHERE entity_id = $1
-                )
-                "#,
+SELECT EXISTS (
+    SELECT 1 FROM notifications
+    WHERE entity_id = $1
+)
+"#,
             )
             .bind(user_id.unwrap())
             .fetch_one(&mut *conn)
@@ -396,7 +407,7 @@ mod tests {
 
             assert!(result.get::<bool, _>("exists"));
 
-            // Should also increment the resource limit
+            // Should also increment the resource limit.
             let result = get_resource_limit(
                 &ctx.redis_pool,
                 ResourceLimit::SendFriendRequest,
@@ -411,13 +422,12 @@ mod tests {
 
         #[test_context(RedisTestContext)]
         #[sqlx::test]
-        async fn can_reject_friend_request_on_exceeding_the_resource_limit(
+        async fn can_reject_a_friend_request_on_exceeding_the_resource_limit(
             ctx: &mut RedisTestContext,
             pool: PgPool,
         ) -> sqlx::Result<()> {
             let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-            // Exceed the resource limit
             exceed_resource_limit(
                 &ctx.redis_pool,
                 ResourceLimit::SendFriendRequest,
@@ -445,7 +455,7 @@ mod tests {
             let mut conn = pool.acquire().await?;
             let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-            // Send the friend request for the first time
+            // Send the friend request for the first time.
             let req = test::TestRequest::post()
                 .cookie(cookie.clone().unwrap())
                 .uri(&format!("/v1/me/friends/{}", 2))
@@ -454,29 +464,27 @@ mod tests {
 
             assert!(res.status().is_success());
 
-            // Try sending the friend request again
+            // Try sending the friend request again.
             let req = test::TestRequest::post()
                 .cookie(cookie.unwrap())
                 .uri(&format!("/v1/me/friends/{}", 2))
                 .to_request();
             let res = test::call_service(&app, req).await;
 
-            // Should not throw
+            // Should not throw.
             assert!(res.status().is_success());
 
-            // Should not insert another notification
+            // Should not insert another notification.
             let result = sqlx::query(
                 r#"
-                SELECT
-                    1
-                FROM
-                    notification_outs
-                WHERE
-                    notification_id = (
-                        SELECT id FROM notifications
-                        WHERE entity_id = $1
-                    )
-                "#,
+SELECT 1
+FROM notification_outs
+WHERE
+    notification_id = (
+        SELECT id FROM notifications
+        WHERE entity_id = $1
+    )
+"#,
             )
             .bind(user_id.unwrap())
             .fetch_all(&mut *conn)

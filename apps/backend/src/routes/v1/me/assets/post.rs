@@ -13,6 +13,7 @@ use crate::{
         incr_resource_limit::incr_resource_limit,
     },
     AppState,
+    S3Client,
 };
 use actix_multipart::form::{
     tempfile::TempFile,
@@ -42,11 +43,16 @@ use serde::{
     Serialize,
 };
 
+use actix_web::http::StatusCode;
 use sqlx::Row;
 use std::io::{
     BufReader,
     Cursor,
     Read,
+};
+use tracing::{
+    debug,
+    trace,
 };
 use uuid::Uuid;
 
@@ -71,46 +77,81 @@ struct Response {
 }
 
 #[post("/v1/me/assets")]
+#[tracing::instrument(
+    name = "POST /v1/me/assets",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        file_name = tracing::field::Empty,
+        mime_type = tracing::field::Empty,
+        target_mime = tracing::field::Empty,
+        raw_file_size = tracing::field::Empty,
+        buffer_size = tracing::field::Empty,
+        original_width = tracing::field::Empty,
+        original_height = tracing::field::Empty,
+        scaled_width = tracing::field::Empty,
+        scaled_height = tracing::field::Empty,
+        computed_color = tracing::field::Empty,
+        object_key = tracing::field::Empty
+    ),
+    err
+)]
 async fn secure_post(
     form: MultipartForm<UploadAsset>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => handle_upload(form, data, user_id).await,
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-    }
+    let user_id = user.id()?;
+    handle_upload(form, data, user_id).await
 }
 
-/// Asset upload handler
+/// Deletes an orphaned object from S3 if the database operation fails for some reason.
+///
+/// * `s3_client` - The S3 client instance.
+/// * `key` - The key of the orphaned object.
+async fn delete_orphaned_object(s3_client: &S3Client, key: &str) -> Result<(), AppError> {
+    s3_client
+        .delete_object()
+        .bucket(S3_UPLOADS_BUCKET)
+        .key(key)
+        .send()
+        .await
+        .map(|_| ())
+        .map_err(|error| {
+            AppError::InternalError(format!(
+                "removing orphaned object due to database error failed: {:?}",
+                error.into_service_error()
+            ))
+        })
+}
+
+/// Handles the uploading of an image.
+///
+/// * `form` - The multipart form data.
+/// * `data` - The shared application state.
+/// * `user_id` - The ID of the user.
 async fn handle_upload(
     form: MultipartForm<UploadAsset>,
     data: web::Data<AppState>,
     user_id: i64,
 ) -> Result<HttpResponse, AppError> {
-    if !check_resource_limit(&data.redis, ResourceLimit::CreateAsset, user_id)
-        .await
-        .unwrap_or_default()
-    {
-        return Ok(
-            HttpResponse::TooManyRequests().json(ToastErrorResponse::new(
-                "Daily limit exceeded for uploading media. Try again tomorrow.",
-            )),
-        );
+    if !check_resource_limit(&data.redis, ResourceLimit::CreateAsset, user_id).await? {
+        return Err(ToastErrorResponse::new(
+            Some(StatusCode::TOO_MANY_REQUESTS),
+            "Daily limit exceeded for uploading media. Try again tomorrow.",
+        )
+        .into());
     }
 
     let img_alt = &form.alt.0;
 
-    // Validate alt length
     if img_alt.chars().count() > 128 {
-        return Ok(
-            HttpResponse::BadRequest().json(ToastErrorResponse::new("Invalid alt text length"))
-        );
+        return Err(ToastErrorResponse::new(None, "Invalid alt text length").into());
     }
 
     let img_file = &form.file;
     let file_name = &img_file.file_name.clone().unwrap_or_default();
-    let mime_type = &img_file.content_type;
+    let image_mime_type = &img_file.content_type;
     let supported_image_mimes: Vec<String> = vec![
         IMAGE_PNG.to_string(),
         IMAGE_GIF.to_string(),
@@ -119,162 +160,220 @@ async fn handle_upload(
         "image/webp".to_string(),
     ];
 
-    if mime_type.is_none()
-        || !supported_image_mimes.contains(&mime_type.clone().unwrap().to_string())
-    {
-        return Ok(HttpResponse::BadRequest().body("Unsupported image type"));
+    tracing::Span::current().record("file_name", &file_name);
+
+    if let Some(mime) = image_mime_type {
+        tracing::Span::current().record("mime_type", mime.to_string());
     }
 
-    match img_file.size {
-        0 => Ok(HttpResponse::BadRequest().finish()),
-        length if length > MAX_FILE_SIZE => Ok(HttpResponse::BadRequest().body("Image is too big")),
-        _ => {
-            let mut buf_reader = BufReader::new(&img_file.file);
-            let mut img_bytes: Vec<u8> = Vec::new();
+    if image_mime_type.is_none()
+        || !supported_image_mimes.contains(&image_mime_type.clone().unwrap().to_string())
+    {
+        debug!(
+            "received an image with unknown format: {}",
+            image_mime_type
+                .and_then(|mime| Some(mime.to_string()))
+                .unwrap_or("unknown".to_string())
+        );
 
-            match buf_reader.read_to_end(&mut img_bytes) {
+        return Err(ToastErrorResponse::new(None, "Unsupported image type").into());
+    }
+
+    debug!(
+        "received an image with name: {file_name} and size (before reading): {} bytes",
+        img_file.size
+    );
+
+    tracing::Span::current().record("raw_file_size", img_file.size);
+
+    if img_file.size <= 0 || img_file.size > MAX_FILE_SIZE {
+        // TODO: We simply return `Image is too big` for an image with size = 0, which can be
+        // improved.
+        return Err(ToastErrorResponse::new(None, "Image is too big").into());
+    }
+
+    let mut img_bytes: Vec<u8> = Vec::new();
+
+    {
+        let mut img_reader = BufReader::new(&img_file.file);
+
+        img_reader.read_to_end(&mut img_bytes).map_err(|error| {
+            AppError::InternalError(format!("unable to read the image file: {error:?}"))
+        })?;
+    }
+
+    debug!("image buffer size: {} bytes", img_bytes.len());
+    tracing::Span::current().record("buffer_size", img_bytes.len());
+
+    let mut loaded_img = image::load_from_memory(&img_bytes).map_err(|error| {
+        AppError::InternalError(format!("unable to load the image from memory: {error:?}"))
+    })?;
+
+    let (mut img_width, mut img_height) = loaded_img.dimensions();
+
+    debug!("image dimensions: {img_width}px width, {img_height}px height");
+    tracing::Span::current().record("original_width", img_width);
+    tracing::Span::current().record("original_height", img_height);
+
+    let is_gif = image_mime_type.clone().unwrap() == IMAGE_GIF
+        || file_name.split(".").last().unwrap_or_default() == "gif";
+
+    // Scale down to 2k.
+    if img_width > 2048 || img_height > 2048 {
+        if is_gif {
+            debug!("skipped to scale down a GIF image");
+
+            // TODO: We currently do not support resizing GIF images.
+            return Err(ToastErrorResponse::new(None, "Image is too big").into());
+        }
+
+        loaded_img = loaded_img.resize(2048, 2048, FilterType::CatmullRom);
+        // Refresh dimensions
+        let (next_img_width, next_img_height) = loaded_img.dimensions();
+        img_width = next_img_width;
+        img_height = next_img_height;
+
+        debug!("image scaled down to new dimensions: {img_width}px width, {img_height}px height");
+        tracing::Span::current().record("scaled_width", img_width);
+        tracing::Span::current().record("scaled_height", img_height);
+    }
+
+    // Compute the dominant HEX color from the image.
+    let dom_color = get_colors(loaded_img.to_rgb8().as_bytes(), false);
+    let mut hex_color = Rgb::from(
+        dom_color[0].into(),
+        dom_color[1].into(),
+        dom_color[2].into(),
+    )
+    .to_css_hex_string();
+    // Remove the `#` prefix from the hex color.
+    hex_color.remove(0);
+
+    debug!("computed the dominant color for the image: #{hex_color}");
+    tracing::Span::current().record("computed_color", format!("#{hex_color}"));
+
+    // We device the output format based on the file extension.
+    let (output_format, output_mime) = match file_name.split(".").last() {
+        None => (ImageOutputFormat::WebP, "image/webp".to_string()),
+        Some(ext) => match ext {
+            "jpeg" | "jpg" => (ImageOutputFormat::Jpeg(80), IMAGE_JPEG.to_string()),
+            "png" => (ImageOutputFormat::Png, IMAGE_PNG.to_string()),
+            _ => (ImageOutputFormat::WebP, "image/webp".to_string()),
+        },
+    };
+
+    let s3_client = &data.s3_client;
+    let object_key = Uuid::new_v4();
+
+    debug!(
+        "chose output mime for the image: {output_mime} with key: {}",
+        object_key.to_string()
+    );
+    tracing::Span::current().record("target_mime", &output_mime);
+    tracing::Span::current().record("object_key", object_key.to_string());
+
+    // TODO: Handle GIFs using the `image` crate instead (requires implementing the encoder and the
+    // decoder)
+    if is_gif {
+        debug!("uploading a GIF image to S3 with size: {}", img_bytes.len());
+
+        s3_client
+            .put_object()
+            .bucket(S3_UPLOADS_BUCKET)
+            .key(object_key.to_string())
+            .content_type(IMAGE_GIF.to_string())
+            .body(img_bytes.into())
+            .send()
+            .await
+            .map_err(|error| {
+                AppError::InternalError(format!(
+                    "unable to upload the GIF image to s3: {:?}",
+                    error.into_service_error()
+                ))
+            })?;
+
+        debug!(
+            "uploaded GIF image to s3 with key: {}",
+            object_key.to_string()
+        );
+    } else {
+        debug!("uploading an image to S3 with size: {}", img_bytes.len());
+
+        let mut bytes: Vec<u8> = Vec::new();
+        loaded_img
+            .write_to(&mut Cursor::new(&mut bytes), output_format)
+            .map_err(|error| {
+                AppError::InternalError(format!(
+                    "unable to write the image into the desired format: {error:?}"
+                ))
+            })?;
+
+        s3_client
+            .put_object()
+            .bucket(S3_UPLOADS_BUCKET)
+            .key(object_key.to_string())
+            .content_type(output_mime)
+            .body(bytes.into())
+            .send()
+            .await
+            .map_err(|error| {
+                AppError::InternalError(format!(
+                    "unable to upload the image to s3: {:?}",
+                    error.into_service_error()
+                ))
+            })?;
+
+        debug!("uploaded image to s3 with key: {}", object_key.to_string());
+    }
+
+    trace!("inserting an asset for the image into the database");
+
+    let pg_pool = &data.db_pool;
+    let mut txn = pg_pool.begin().await?;
+
+    // Insert an asset.
+    match sqlx::query(
+        r#"
+INSERT INTO assets (key, hex, height, width, alt, user_id) 
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id, rating
+"#,
+    )
+    .bind(&object_key)
+    .bind(&hex_color)
+    .bind(img_height as i16)
+    .bind(img_width as i16)
+    .bind(img_alt)
+    .bind(user_id)
+    .fetch_one(&mut *txn)
+    .await
+    {
+        Ok(asset) => {
+            incr_resource_limit(&data.redis, ResourceLimit::CreateAsset, user_id).await?;
+
+            match txn.commit().await {
                 Ok(_) => {
-                    match image::load_from_memory(&img_bytes) {
-                        Ok(mut img) => {
-                            let (mut img_w, mut img_h) = img.dimensions();
-                            let is_gif = mime_type.clone().unwrap() == IMAGE_GIF
-                                || file_name.split(".").last().unwrap_or_default() == "gif";
+                    trace!("asset upload completed");
 
-                            // Scale down to 2k
-                            if img_w > 2048 || img_h > 2048 {
-                                if is_gif {
-                                    // TODO: Handle resizing GIF images
-                                    return Ok(HttpResponse::BadRequest().body("Image is too big"));
-                                }
-
-                                img = img.resize(2048, 2048, FilterType::CatmullRom);
-                                let (next_img_w, next_img_h) = img.dimensions(); // Update dimensions
-                                img_w = next_img_w;
-                                img_h = next_img_h;
-                            }
-
-                            // Compute the dominant color from the image
-                            let dom_color = get_colors(img.to_rgb8().as_bytes(), false);
-                            let mut hex_color = Rgb::from(
-                                dom_color[0].into(),
-                                dom_color[1].into(),
-                                dom_color[2].into(),
-                            )
-                            .to_css_hex_string();
-                            // Remove the `#` prefix from the hex color
-                            hex_color.remove(0);
-
-                            // Decide output parameter based on the file extension
-                            let (output_format, output_mime) = match file_name.split(".").last() {
-                                None => (ImageOutputFormat::WebP, "image/webp".to_string()),
-                                Some(ext) => match ext {
-                                    "jpeg" | "jpg" => {
-                                        (ImageOutputFormat::Jpeg(80), IMAGE_JPEG.to_string())
-                                    }
-                                    "png" => (ImageOutputFormat::Png, IMAGE_PNG.to_string()),
-                                    _ => (ImageOutputFormat::WebP, "image/webp".to_string()),
-                                },
-                            };
-
-                            let s3_client = &data.s3_client;
-                            let object_key = Uuid::new_v4();
-
-                            // TODO: Handle GIFs using `image` crate (requires
-                            // encoder/decoder)
-                            if is_gif {
-                                match s3_client
-                                    .put_object()
-                                    .bucket(S3_UPLOADS_BUCKET)
-                                    .key(object_key.to_string())
-                                    .content_type(IMAGE_GIF.to_string())
-                                    .body(img_bytes.into())
-                                    .send()
-                                    .await
-                                {
-                                    Ok(_) => {}
-                                    Err(_) => {
-                                        return Ok(HttpResponse::InternalServerError().json(
-                                            ToastErrorResponse::new("Could not upload the image"),
-                                        ));
-                                    }
-                                };
-                            } else {
-                                let mut bytes: Vec<u8> = Vec::new();
-                                img.write_to(&mut Cursor::new(&mut bytes), output_format)
-                                    .unwrap();
-
-                                match s3_client
-                                    .put_object()
-                                    .bucket(S3_UPLOADS_BUCKET)
-                                    .key(object_key.to_string())
-                                    .content_type(output_mime)
-                                    .body(bytes.into())
-                                    .send()
-                                    .await
-                                {
-                                    Ok(_) => {}
-                                    Err(_) => {
-                                        return Ok(HttpResponse::InternalServerError().json(
-                                            ToastErrorResponse::new("Could not upload the image"),
-                                        ));
-                                    }
-                                };
-                            }
-
-                            // Insert asset
-                            match sqlx::query(
-                                r#"
-                                INSERT INTO assets(key, hex, height, width, alt, user_id) 
-                                VALUES ($1, $2, $3, $4, $5, $6)
-                                RETURNING id, rating
-                                "#,
-                            )
-                            .bind(&object_key)
-                            .bind(&hex_color)
-                            .bind(img_h as i16)
-                            .bind(img_w as i16)
-                            .bind(img_alt)
-                            .bind(user_id)
-                            .fetch_one(&data.db_pool)
-                            .await
-                            {
-                                Ok(asset) => {
-                                    let _ = incr_resource_limit(
-                                        &data.redis,
-                                        ResourceLimit::CreateAsset,
-                                        user_id,
-                                    )
-                                    .await;
-
-                                    Ok(HttpResponse::Created().json(Response {
-                                        id: asset.get::<i64, _>("id"),
-                                        key: object_key.to_string(),
-                                        alt: img_alt.to_string(),
-                                        hex: hex_color,
-                                        width: img_w as i16,
-                                        height: img_h as i16,
-                                        rating: asset.get::<i16, _>("rating"),
-                                    }))
-                                }
-                                Err(_) => {
-                                    // Delete the object from S3 if the database operation fails for
-                                    // some reason.
-                                    let _ = s3_client
-                                        .delete_object()
-                                        .bucket(S3_UPLOADS_BUCKET)
-                                        .key(object_key.to_string())
-                                        .send()
-                                        .await;
-
-                                    Ok(HttpResponse::InternalServerError().finish())
-                                }
-                            }
-                        }
-                        Err(_) => Ok(HttpResponse::BadRequest().body("Unable to decode the image")),
-                    }
+                    Ok(HttpResponse::Created().json(Response {
+                        id: asset.get::<i64, _>("id"),
+                        key: object_key.to_string(),
+                        alt: img_alt.to_string(),
+                        hex: hex_color,
+                        width: img_width as i16,
+                        height: img_height as i16,
+                        rating: asset.get::<i16, _>("rating"),
+                    }))
                 }
-                Err(_) => Ok(HttpResponse::BadRequest().body("Could not read the image file")),
+                Err(error) => {
+                    delete_orphaned_object(s3_client, &object_key.to_string()).await?;
+                    Err(AppError::SqlxError(error))
+                }
             }
+        }
+        Err(error) => {
+            delete_orphaned_object(s3_client, &object_key.to_string()).await?;
+            Err(AppError::SqlxError(error))
         }
     }
 }
@@ -324,7 +423,7 @@ mod tests {
     use tokio_util::codec::BytesCodec;
     use user_agent_parser::UserAgentParser;
 
-    // Post handler without identity
+    // Post handler without the identity middleware.
     #[post("/v1/me/assets")]
     async fn unsecure_post(
         form: MultipartForm<UploadAsset>,
@@ -333,7 +432,7 @@ mod tests {
         handle_upload(form, data, 1_i64).await
     }
 
-    /// Initializes and spawns an HTTP server for tests using `reqwest`
+    /// Initializes and spawns an HTTP server for tests using [reqwest::Client].
     ///
     /// * `db_pool` - The Postgres connection pool.
     /// * `s3_client` - The S3 client instance.
@@ -379,16 +478,16 @@ mod tests {
 
         let client = reqwest::Client::builder().build().unwrap();
 
-        // URL generator for the server
+        // URL generator for the server.
         let generate_url =
             Box::new(move |path: &str| -> String { format!("http://localhost:{}{}", port, path) });
 
-        // Insert the user
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (id, name, username, email)
-            VALUES ($1, $2, $3, $4)
-            "#,
+INSERT INTO users (id, name, username, email)
+VALUES ($1, $2, $3, $4)
+"#,
         )
         .bind(1_i64)
         .bind("Some user".to_string())
@@ -403,15 +502,16 @@ mod tests {
 
     /// Reads and returns an image part from a local image on the disk for multipart form response.
     ///
-    /// * `path` - Pub-path to the image file.
-    /// * `file_name` - Name for the image file.
-    /// * `mime` - Mime type for the image file.
+    /// * `path` - The sub-path to the image file.
+    /// * `file_name` - The name for the image file.
+    /// * `mime` - The mime type for the image file.
     async fn get_image_part(path: &str, file_name: &str, mime: &str) -> Part {
         let file =
             tokio::fs::File::open(format!("src/routes/v1/me/assets/fixtures/images/{}", path))
                 .await
                 .unwrap();
         let stream = tokio_util::codec::FramedRead::new(file, BytesCodec::new());
+
         Part::stream(Body::wrap_stream(stream))
             .file_name(file_name.to_string())
             .mime_str(mime)
@@ -455,6 +555,7 @@ mod tests {
     #[sqlx::test]
     async fn can_reject_an_image_with_bad_mime_type(pool: PgPool) -> sqlx::Result<()> {
         let (client, generate_url) = init_web_server_for_test(pool, None).await;
+
         let part = get_image_part("normal.jpg", "image.jpg", "text/plain").await;
         let form = Form::new().text("alt", "").part("file", part);
 
@@ -474,6 +575,7 @@ mod tests {
     #[sqlx::test]
     async fn can_reject_a_non_image_file(pool: PgPool) -> sqlx::Result<()> {
         let (client, generate_url) = init_web_server_for_test(pool, None).await;
+
         let part = get_image_part("sample.txt", "invalid.jpg", &IMAGE_JPEG.to_string()).await;
         let form = Form::new().text("alt", "").part("file", part);
 
@@ -492,6 +594,7 @@ mod tests {
     #[sqlx::test]
     async fn can_reject_an_image_with_large_file_size(pool: PgPool) -> sqlx::Result<()> {
         let (client, generate_url) = init_web_server_for_test(pool, None).await;
+
         let part = get_image_part("large_size.png", "image.png", &IMAGE_PNG.to_string()).await;
         let form = Form::new().text("alt", "").part("file", part);
 
@@ -503,15 +606,19 @@ mod tests {
             .unwrap();
 
         assert!(res.status().is_client_error());
-        assert_eq!(res.text().await.unwrap(), "Image is too big".to_string());
+        assert_eq!(
+            res.json::<ToastErrorResponse>().await.unwrap().error,
+            "Image is too big".to_string()
+        );
 
         Ok(())
     }
 
-    // TODO: Remove this test when GIFs can be resized
+    // TODO: Remove this test when we start to support resizing GIF images.
     #[sqlx::test]
     async fn can_reject_an_oversized_gif(pool: PgPool) -> sqlx::Result<()> {
         let (client, generate_url) = init_web_server_for_test(pool, None).await;
+
         let part = get_image_part("large_dims.gif", "image.gif", &IMAGE_GIF.to_string()).await;
         let form = Form::new().text("alt", "").part("file", part);
 
@@ -523,15 +630,19 @@ mod tests {
             .unwrap();
 
         assert!(res.status().is_client_error());
-        assert_eq!(res.text().await.unwrap(), "Image is too big".to_string());
+        assert_eq!(
+            res.json::<ToastErrorResponse>().await.unwrap().error,
+            "Image is too big".to_string()
+        );
 
         Ok(())
     }
 
     // See https://www.bamsoftware.com/hacks/deflate.html
     #[sqlx::test]
-    async fn can_reject_png_bomb(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_a_png_bomb(pool: PgPool) -> sqlx::Result<()> {
         let (client, generate_url) = init_web_server_for_test(pool, None).await;
+
         let part = get_image_part("img_bomb.png", "image.png", &IMAGE_PNG.to_string()).await;
         let form = Form::new().text("alt", "").part("file", part);
 
@@ -557,6 +668,7 @@ mod tests {
             let mut conn = pool.acquire().await?;
             let (client, generate_url) =
                 init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
+
             let part = get_image_part("normal.jpg", "image.jpg", &IMAGE_JPEG.to_string()).await;
             let form = Form::new().text("alt", "Some alt").part("file", part);
 
@@ -571,12 +683,12 @@ mod tests {
             let json = res.json::<Response>().await;
             assert!(json.is_ok());
 
-            // Should insert metadata into the database
+            // Should insert metadata into the database.
             let result = sqlx::query(
                 r#"
-                SELECT alt FROM assets
-                WHERE id = $1
-                "#,
+SELECT alt FROM assets
+WHERE id = $1
+"#,
             )
             .bind(json.unwrap().id)
             .fetch_one(&mut *conn)
@@ -584,7 +696,7 @@ mod tests {
 
             assert_eq!(result.get::<String, _>("alt"), "Some alt".to_string());
 
-            // Should also increment the resource limit
+            // Should also increment the resource limit.
             let result =
                 get_resource_limit(&ctx.redis_pool, ResourceLimit::CreateAsset, 1_i64).await;
 
@@ -600,10 +712,10 @@ mod tests {
             pool: PgPool,
         ) -> sqlx::Result<()> {
             let (client, generate_url) = init_web_server_for_test(pool, None).await;
+
             let part = get_image_part("normal.jpg", "image.jpg", &IMAGE_JPEG.to_string()).await;
             let form = Form::new().text("alt", "Some alt").part("file", part);
 
-            // Exceed the resource limit
             exceed_resource_limit(&ctx.redis_pool, ResourceLimit::CreateAsset, 1_i64).await;
 
             let res = client
@@ -620,12 +732,13 @@ mod tests {
 
         #[test_context(LocalTestContext)]
         #[sqlx::test]
-        async fn can_insert_an_asset_without_file_extension(
+        async fn can_insert_an_asset_without_a_file_extension(
             ctx: &mut LocalTestContext,
             pool: PgPool,
         ) -> sqlx::Result<()> {
             let (client, generate_url) =
                 init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
+
             let part = get_image_part("normal.jpg", "image", &IMAGE_JPEG.to_string()).await;
             let form = Form::new().text("alt", "").part("file", part);
 
@@ -649,6 +762,7 @@ mod tests {
         ) -> sqlx::Result<()> {
             let (client, generate_url) =
                 init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
+
             let part = get_image_part("large_dims.jpg", "image.jpg", &IMAGE_JPEG.to_string()).await;
             let form = Form::new().text("alt", "").part("file", part);
 
@@ -674,6 +788,7 @@ mod tests {
         ) -> sqlx::Result<()> {
             let (client, generate_url) =
                 init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
+
             let part = get_image_part("image.png", "image.png", &IMAGE_PNG.to_string()).await;
             let form = Form::new().text("alt", "").part("file", part);
 
@@ -697,6 +812,7 @@ mod tests {
         ) -> sqlx::Result<()> {
             let (client, generate_url) =
                 init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
+
             let part = get_image_part("image.gif", "image.gif", &IMAGE_GIF.to_string()).await;
             let form = Form::new().text("alt", "").part("file", part);
 
@@ -720,6 +836,7 @@ mod tests {
         ) -> sqlx::Result<()> {
             let (client, generate_url) =
                 init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
+
             let part = get_image_part("image.webp", "image.webp", "image/webp").await;
             let form = Form::new().text("alt", "").part("file", part);
 
@@ -743,6 +860,7 @@ mod tests {
         ) -> sqlx::Result<()> {
             let (client, generate_url) =
                 init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
+
             let part = get_image_part("animated_image.webp", "image.webp", "image/webp").await;
             let form = Form::new().text("alt", "").part("file", part);
 

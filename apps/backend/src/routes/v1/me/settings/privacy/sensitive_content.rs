@@ -21,32 +21,39 @@ struct Request {
 }
 
 #[patch("/v1/me/settings/privacy/sensitive-content")]
+#[tracing::instrument(
+    name = "PATCH /v1/me/settings/privacy/sensitive-content",
+    skip_all,
+    fields(
+        user = user.id().ok(),
+        payload
+    ),
+    err
+)]
 async fn patch(
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            match sqlx::query(
-                r#"
-                UPDATE users
-                SET
-                  allow_sensitive_content = $2
-                WHERE id = $1
-                "#,
-            )
-            .bind(user_id)
-            .bind(&payload.sensitive_content)
-            .execute(&data.db_pool)
-            .await?
-            .rows_affected()
-            {
-                0 => Ok(HttpResponse::InternalServerError().finish()),
-                _ => Ok(HttpResponse::NoContent().finish()),
-            }
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let user_id = user.id()?;
+
+    match sqlx::query(
+        r#"
+UPDATE users
+SET allow_sensitive_content = $2
+WHERE id = $1
+"#,
+    )
+    .bind(&user_id)
+    .bind(&payload.sensitive_content)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(AppError::InternalError(
+            "user not found in database".to_string(),
+        )),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -80,12 +87,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // User should get updated in the database
+        // User should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT allow_sensitive_content FROM users
-            WHERE id = $1
-            "#,
+SELECT allow_sensitive_content FROM users
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
@@ -101,13 +108,13 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
-        // Enable sensitive content for the user
+        // Enable sensitive content for the user.
         sqlx::query(
             r#"
-            UPDATE users
-            SET allow_sensitive_content = TRUE
-            WHERE id = $1
-            "#,
+UPDATE users
+SET allow_sensitive_content = TRUE
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .execute(&mut *conn)
@@ -124,12 +131,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // User should get updated in the database
+        // User should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT allow_sensitive_content FROM users
-            WHERE id = $1
-            "#,
+SELECT allow_sensitive_content FROM users
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)

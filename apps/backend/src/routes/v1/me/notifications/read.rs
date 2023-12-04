@@ -17,36 +17,43 @@ struct Fragments {
 }
 
 #[post("/v1/me/notifications/{notification_id}/read")]
+#[tracing::instrument(
+    name = "POST /v1/me/notifications/{notification_id}/read",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        notification_id = %path.notification_id
+    ),
+    err
+)]
 async fn post(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => match path.notification_id.parse::<i64>() {
-            Ok(notification_id) => {
-                match sqlx::query(
-                    r#"
-                    UPDATE notification_outs
-                    SET read_at = NOW()
-                    WHERE
-                        notified_id = $1
-                        AND notification_id = $2
-                    "#,
-                )
-                .bind(user_id)
-                .bind(notification_id)
-                .execute(&data.db_pool)
-                .await?
-                .rows_affected()
-                {
-                    0 => Ok(HttpResponse::BadRequest().body("Notification not found")),
-                    _ => Ok(HttpResponse::NoContent().finish()),
-                }
-            }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid notification ID")),
-        },
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let user_id = user.id()?;
+    let notification_id = path
+        .notification_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid notification ID"))?;
+
+    match sqlx::query(
+        r#"
+UPDATE notification_outs
+SET read_at = NOW()
+WHERE
+    notified_id = $1
+    AND notification_id = $2
+"#,
+    )
+    .bind(&user_id)
+    .bind(&notification_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(AppError::from("Notification not found")),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -73,13 +80,13 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Receive a notification
+        // Receive a notification.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO notification_outs(notified_id, notification_id)
-            VALUES ($1, $2)
-            RETURNING read_at
-            "#,
+INSERT INTO notification_outs(notified_id, notification_id)
+VALUES ($1, $2)
+RETURNING read_at
+"#,
         )
         .bind(user_id.unwrap())
         .bind(4_i64)
@@ -93,7 +100,7 @@ mod tests {
                 .is_none()
         );
 
-        // Mark the notification as read
+        // Mark the notification as read.
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .uri(&format!("/v1/me/notifications/{}/read", 4))
@@ -102,12 +109,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // `read_at` should get updated in the database
+        // `read_at` should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT read_at FROM notification_outs
-            WHERE notified_id = $1 AND notification_id = $2
-            "#,
+SELECT read_at FROM notification_outs
+WHERE notified_id = $1 AND notification_id = $2
+"#,
         )
         .bind(user_id.unwrap())
         .bind(4_i64)
@@ -142,13 +149,13 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Receive a notification
+        // Receive a notification.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO notification_outs(notified_id, notification_id)
-            VALUES ($1, $2)
-            RETURNING read_at
-            "#,
+INSERT INTO notification_outs(notified_id, notification_id)
+VALUES ($1, $2)
+RETURNING read_at
+"#,
         )
         .bind(user_id.unwrap())
         .bind(4_i64)
@@ -162,7 +169,7 @@ mod tests {
                 .is_none()
         );
 
-        // Mark the notification as read
+        // Mark the notification as read.
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/me/notifications/{}/read", 4))
@@ -171,14 +178,14 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Try marking the notification as read again
+        // Try marking the notification as read again.
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .uri(&format!("/v1/me/notifications/{}/read", 4))
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should not throw
+        // Should not throw.
         assert!(res.status().is_success());
 
         Ok(())

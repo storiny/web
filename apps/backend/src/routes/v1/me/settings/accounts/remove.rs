@@ -8,6 +8,7 @@ use crate::{
     AppState,
 };
 use actix_web::{
+    http::StatusCode,
     post,
     web,
     HttpResponse,
@@ -28,7 +29,9 @@ use sqlx::Row;
 use validator::Validate;
 
 lazy_static! {
-    static ref VENDOR_REGEX: Regex = Regex::new(r"^(apple|google)$").unwrap();
+    // TODO: Uncomment once we support Apple as an identity provider.
+    // static ref VENDOR_REGEX: Regex = Regex::new(r"^(apple|google)$").unwrap();
+    static ref VENDOR_REGEX: Regex = Regex::new(r"^(google)$").unwrap();
 }
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
@@ -40,94 +43,89 @@ struct Request {
 }
 
 #[post("/v1/me/settings/accounts/remove")]
+#[tracing::instrument(
+    name = "POST /v1/me/settings/accounts/remove",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        vendor = %payload.vendor
+    ),
+    err
+)]
 async fn post(
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            let user = sqlx::query(
-                r#"
-                SELECT password FROM users
-                WHERE id = $1
-                "#,
-            )
-            .bind(user_id)
-            .fetch_one(&data.db_pool)
-            .await?;
+    let user_id = user.id()?;
 
-            let user_password = user.get::<Option<String>, _>("password");
+    let user = sqlx::query(
+        r#"
+SELECT password FROM users
+WHERE id = $1
+"#,
+    )
+    .bind(&user_id)
+    .fetch_one(&data.db_pool)
+    .await?;
 
-            if user_password.is_none() {
-                return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                    "You need to set a password to remove your login accounts",
-                )));
-            }
+    let user_password = user.get::<Option<String>, _>("password");
 
-            match PasswordHash::new(&user_password.unwrap()) {
-                Ok(hash) => {
-                    match Argon2::default()
-                        .verify_password(&payload.current_password.as_bytes(), &hash)
-                    {
-                        Ok(_) => {
-                            if payload.vendor == "apple" {
-                                sqlx::query(
-                                    r#"
-                                    WITH
-                                        updated_user AS (
-                                            UPDATE users
-                                                SET login_apple_id = NULL
-                                                WHERE id = $1
-                                        )
-                                    INSERT
-                                    INTO
-                                        account_activities (type, description, user_id)
-                                    VALUES
-                                        ($2,
-                                         'You removed <m>Apple</m> as a third-party login method.',
-                                         $1)
-                                    "#,
-                                )
-                                .bind(user_id)
-                                .bind(AccountActivityType::ThirdPartyLogin as i16)
-                                .execute(&data.db_pool)
-                                .await?;
-                            } else {
-                                sqlx::query(
-                                    r#"
-                                    WITH
-                                        updated_user AS (
-                                            UPDATE users
-                                                SET login_google_id = NULL
-                                                WHERE id = $1
-                                        )
-                                    INSERT
-                                    INTO
-                                        account_activities (type, description, user_id)
-                                    VALUES
-                                        ($2,
-                                         'You removed <m>Google</m> as a third-party login method.',
-                                         $1)
-                                    "#,
-                                )
-                                .bind(user_id)
-                                .bind(AccountActivityType::ThirdPartyLogin as i16)
-                                .execute(&data.db_pool)
-                                .await?;
-                            }
-
-                            Ok(HttpResponse::NoContent().finish())
-                        }
-                        Err(_) => Ok(HttpResponse::Forbidden()
-                            .json(ToastErrorResponse::new("Invalid password"))),
-                    }
-                }
-                Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-            }
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    if user_password.is_none() {
+        return Err(ToastErrorResponse::new(
+            None,
+            "You need to set a password to remove your login accounts",
+        )
+        .into());
     }
+
+    let password_hash = PasswordHash::new(&user_password.unwrap())
+        .map_err(|error| AppError::InternalError(error.to_string()))?;
+
+    Argon2::default()
+        .verify_password(&payload.current_password.as_bytes(), &password_hash)
+        .map_err(|_| {
+            AppError::ToastError(ToastErrorResponse::new(
+                Some(StatusCode::FORBIDDEN),
+                "Invalid password",
+            ))
+        })?;
+
+    if payload.vendor == "apple" {
+        sqlx::query(
+            r#"
+WITH updated_user AS (
+    UPDATE users
+    SET login_apple_id = NULL
+    WHERE id = $1
+)
+INSERT INTO account_activities (type, description, user_id)
+VALUES ($2, 'You removed <m>Apple</m> as a third-party login method.', $1)
+"#,
+        )
+        .bind(&user_id)
+        .bind(AccountActivityType::ThirdPartyLogin as i16)
+        .execute(&data.db_pool)
+        .await?;
+    } else {
+        sqlx::query(
+            r#"
+WITH updated_user AS (
+    UPDATE users
+    SET login_google_id = NULL
+    WHERE id = $1
+)
+INSERT INTO account_activities (type, description, user_id)
+VALUES ($2, 'You removed <m>Google</m> as a third-party login method.', $1)
+"#,
+        )
+        .bind(&user_id)
+        .bind(AccountActivityType::ThirdPartyLogin as i16)
+        .execute(&data.db_pool)
+        .await?;
+    }
+
+    Ok(HttpResponse::NoContent().finish())
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -154,7 +152,7 @@ mod tests {
         Row,
     };
 
-    /// Returns sample hashed password
+    /// Returns a sample hashed password.
     fn get_sample_password() -> (String, String) {
         let password = "sample";
         let salt = SaltString::generate(&mut OsRng);
@@ -172,12 +170,14 @@ mod tests {
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
         let (password_hash, password) = get_sample_password();
 
-        // Insert the user
+        // Insert the user.
         let result = sqlx::query(
             r#"
-            INSERT INTO users (id, name, username, email, password, login_apple_id, login_google_id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
-            "#,
+INSERT INTO users
+    (id, name, username, email, password, login_apple_id, login_google_id)
+VALUES
+    ($1, $2, $3, $4, $5, $6, $7)
+"#,
         )
         .bind(user_id.unwrap())
         .bind("Sample user")
@@ -191,51 +191,51 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Remove Apple login account
-        let req = test::TestRequest::post()
-            .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/settings/accounts/remove")
-            .set_json(Request {
-                vendor: "apple".to_string(),
-                current_password: password.to_string(),
-            })
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // Login account should not be present in the database
-        let result = sqlx::query(
-            r#"
-            SELECT login_apple_id FROM users
-            WHERE id = $1
-            "#,
-        )
-        .bind(user_id.unwrap())
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(result.get::<Option<String>, _>("login_apple_id").is_none());
-
-        // Should also insert an account activity (for Apple)
-        let result = sqlx::query(
-            r#"
-            SELECT description FROM account_activities
-            WHERE user_id = $1 AND type = $2
-            ORDER BY
-                created_at DESC
-            LIMIT 1
-            "#,
-        )
-        .bind(user_id.unwrap())
-        .bind(AccountActivityType::ThirdPartyLogin as i16)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert_eq!(
-            result.get::<String, _>("description"),
-            "You removed <m>Apple</m> as a third-party login method.".to_string()
-        );
+        // TODO: Uncomment when we support Apple as an identity provider.
+        // // Remove Apple login account
+        // let req = test::TestRequest::post()
+        //     .cookie(cookie.clone().unwrap())
+        //     .uri("/v1/me/settings/accounts/remove")
+        //     .set_json(Request {
+        //         vendor: "apple".to_string(),
+        //         current_password: password.to_string(),
+        //     })
+        //     .to_request();
+        // let res = test::call_service(&app, req).await;
+        //
+        // assert!(res.status().is_success());
+        //
+        // // Login account should not be present in the database
+        // let result = sqlx::query(
+        //     r#"
+        //     SELECT login_apple_id FROM users
+        //     WHERE id = $1
+        //     "#,
+        // )
+        // .bind(user_id.unwrap())
+        // .fetch_one(&mut *conn)
+        // .await?;
+        //
+        // assert!(result.get::<Option<String>, _>("login_apple_id").is_none());
+        //
+        // // Should also insert an account activity (for Apple)
+        // let result = sqlx::query(
+        //     r#"
+        //     SELECT description FROM account_activities
+        //     WHERE user_id = $1 AND type = $2
+        //     ORDER BY created_at DESC
+        //     LIMIT 1
+        //     "#,
+        // )
+        // .bind(user_id.unwrap())
+        // .bind(AccountActivityType::ThirdPartyLogin as i16)
+        // .fetch_one(&mut *conn)
+        // .await?;
+        //
+        // assert_eq!(
+        //     result.get::<String, _>("description"),
+        //     "You removed <m>Apple</m> as a third-party login method.".to_string()
+        // );
 
         // Remove Google login account
         let req = test::TestRequest::post()
@@ -250,12 +250,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Login account should not be present in the database
+        // Login account should not be present in the database.
         let result = sqlx::query(
             r#"
-            SELECT login_google_id FROM users
-            WHERE id = $1
-            "#,
+SELECT login_google_id FROM users
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
@@ -263,15 +263,14 @@ mod tests {
 
         assert!(result.get::<Option<String>, _>("login_google_id").is_none());
 
-        // Should also insert an account activity (for Google)
+        // Should also insert an account activity (for Google).
         let result = sqlx::query(
             r#"
-            SELECT description FROM account_activities
-            WHERE user_id = $1 AND type = $2
-            ORDER BY
-                created_at DESC
-            LIMIT 1
-            "#,
+SELECT description FROM account_activities
+WHERE user_id = $1 AND type = $2
+ORDER BY created_at DESC
+LIMIT 1
+"#,
         )
         .bind(user_id.unwrap())
         .bind(AccountActivityType::ThirdPartyLogin as i16)
@@ -287,7 +286,7 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_removing_login_account_for_a_user_without_password(
+    async fn can_reject_removing_a_login_account_for_a_user_without_password(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
@@ -313,19 +312,21 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_removing_login_account_for_invalid_password(
+    async fn can_reject_removing_a_login_account_for_an_invalid_password(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
         let (password_hash, _) = get_sample_password();
 
-        // Insert the user
+        // Insert the user.
         let result = sqlx::query(
             r#"
-            INSERT INTO users (id, name, username, email, password, login_apple_id, login_google_id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
-            "#,
+INSERT INTO users
+    (id, name, username, email, password, login_apple_id, login_google_id)
+VALUES
+    ($1, $2, $3, $4, $5, $6, $7)
+"#,
         )
         .bind(user_id.unwrap())
         .bind("Sample user")
@@ -339,12 +340,12 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Remove Apple login account
+        // Remove Google login account
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/settings/accounts/remove")
             .set_json(Request {
-                vendor: "apple".to_string(),
+                vendor: "google".to_string(),
                 current_password: "invalid".to_string(),
             })
             .to_request();

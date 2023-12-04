@@ -12,6 +12,7 @@ use crate::{
     AppState,
 };
 use actix_web::{
+    http::StatusCode,
     post,
     web,
     HttpResponse,
@@ -32,125 +33,124 @@ struct Request {
 }
 
 #[post("/v1/me/settings/mfa/verify")]
+#[tracing::instrument(
+    name = "POST /v1/me/settings/mfa/verify",
+    skip_all,
+    fields(user = user.id().ok()),
+    err
+)]
 async fn post(
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            let pg_pool = &data.db_pool;
-            let mut txn = pg_pool.begin().await?;
+    let user_id = user.id()?;
 
-            let db_user = sqlx::query(
-                r#"
-                SELECT
-                    username,
-                    mfa_enabled,
-                    mfa_secret,
-                    password
-                FROM users
-                WHERE id = $1
-                "#,
-            )
-            .bind(user_id)
-            .fetch_one(&mut *txn)
-            .await?;
+    let pg_pool = &data.db_pool;
+    let mut txn = pg_pool.begin().await?;
 
-            if db_user.get::<Option<String>, _>("password").is_none() {
-                return Ok(HttpResponse::BadRequest()
-                    .body("You need to set a password to enable 2-factor authentication"));
-            }
+    let user = sqlx::query(
+        r#"
+SELECT
+    username,
+    mfa_enabled,
+    mfa_secret,
+    password
+FROM users
+WHERE id = $1
+"#,
+    )
+    .bind(&user_id)
+    .fetch_one(&mut *txn)
+    .await?;
 
-            if db_user.get::<bool, _>("mfa_enabled") {
-                return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                    "2-factor authentication is already enabled for your account",
-                )));
-            }
+    if user.get::<Option<String>, _>("password").is_none() {
+        return Err(ToastErrorResponse::new(
+            None,
+            "You need to set a password to enable 2-factor authentication",
+        )
+        .into());
+    }
 
-            if db_user.get::<Option<String>, _>("mfa_secret").is_none() {
-                return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                    "2-factor authentication has not been requested for your account",
-                )));
-            }
+    if user.get::<bool, _>("mfa_enabled") {
+        return Err(ToastErrorResponse::new(
+            Some(StatusCode::CONFLICT),
+            "2-factor authentication is already enabled for your account",
+        )
+        .into());
+    }
 
-            let mfa_secret = db_user.get::<Option<String>, _>("mfa_secret").unwrap();
-            let secret_as_bytes = Secret::Encoded(mfa_secret).to_bytes();
+    let mfa_secret = user.get::<Option<String>, _>("mfa_secret");
 
-            if secret_as_bytes.is_err() {
-                return Ok(HttpResponse::InternalServerError().finish());
-            }
+    if mfa_secret.is_none() {
+        return Err(ToastErrorResponse::new(
+            None,
+            "2-factor authentication has not been requested for your account",
+        )
+        .into());
+    }
 
-            match generate_totp(
-                secret_as_bytes.unwrap(),
-                &db_user.get::<String, _>("username"),
-            ) {
-                Ok(totp) => {
-                    let is_valid = totp.check_current(&payload.code);
+    let mfa_secret = mfa_secret.unwrap();
+    let secret_as_bytes = Secret::Encoded(mfa_secret).to_bytes().map_err(|error| {
+        AppError::InternalError(format!("unable to parse totp secret: {error:?}"))
+    })?;
 
-                    if is_valid.is_err() {
-                        return Ok(HttpResponse::InternalServerError().finish());
-                    }
+    let totp =
+        generate_totp(secret_as_bytes, &user.get::<String, _>("username")).map_err(|error| {
+            AppError::InternalError(format!("unable to generate a totp instance: {error:?}"))
+        })?;
 
-                    if !is_valid.unwrap() {
-                        return Ok(HttpResponse::BadRequest().json(FormErrorResponse::new(vec![
-                            ("code", "Invalid verification code"),
-                        ])));
-                    }
+    let is_valid = totp.check_current(&payload.code).map_err(|error| {
+        AppError::InternalError(format!("unable to check totp code: {error:?}"))
+    })?;
 
-                    // Enable MFA for the user
-                    sqlx::query(
-                        r#"
-                        UPDATE users
-                        SET mfa_enabled = TRUE
-                        WHERE id = $1
-                        "#,
-                    )
-                    .bind(user_id)
-                    .execute(&mut *txn)
-                    .await?;
+    if !is_valid {
+        return Err(
+            FormErrorResponse::new(None, vec![("code", "Invalid verification code")]).into(),
+        );
+    }
 
-                    // Generate recovery codes for the user
-                    match generate_recovery_codes() {
-                        Ok(new_recovery_codes) => {
-                            match sqlx::query(
-                                r#"
-                                WITH
-                                    removed_recovery_codes AS (
-                                        DELETE FROM mfa_recovery_codes WHERE user_id = $1
-                                    )
-                                INSERT
-                                INTO
-                                    mfa_recovery_codes (code, user_id)
-                                SELECT
-                                    UNNEST($2::CHAR(12)[]),
-                                    $1
-                                "#,
-                            )
-                            .bind(user_id)
-                            .bind(&new_recovery_codes[..])
-                            .execute(&mut *txn)
-                            .await?
-                            .rows_affected()
-                            {
-                                0 => Ok(HttpResponse::InternalServerError().json(
-                                    ToastErrorResponse::new("Unable to generate recovery codes"),
-                                )),
-                                _ => {
-                                    txn.commit().await?;
+    // Enable MFA for the user.
+    sqlx::query(
+        r#"
+UPDATE users
+SET mfa_enabled = TRUE
+WHERE id = $1
+"#,
+    )
+    .bind(user_id)
+    .execute(&mut *txn)
+    .await?;
 
-                                    Ok(HttpResponse::Ok().finish())
-                                }
-                            }
-                        }
-                        Err(_) => Ok(HttpResponse::InternalServerError()
-                            .json(ToastErrorResponse::new("Unable to generate recovery codes"))),
-                    }
-                }
-                Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-            }
+    // Also generate recovery codes for the user
+    let recovery_codes = generate_recovery_codes()?;
+
+    match sqlx::query(
+        r#"
+WITH removed_recovery_codes AS (
+    DELETE FROM mfa_recovery_codes
+    WHERE user_id = $1
+)
+INSERT INTO
+    mfa_recovery_codes (code, user_id)
+SELECT
+    UNNEST($2::CHAR(12)[]), $1
+"#,
+    )
+    .bind(&user_id)
+    .bind(&recovery_codes[..])
+    .execute(&mut *txn)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(AppError::InternalError(
+            "unable to generate recovery codes".to_string(),
+        )),
+        _ => {
+            txn.commit().await?;
+
+            Ok(HttpResponse::Ok().finish())
         }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
     }
 }
 
@@ -163,7 +163,6 @@ mod tests {
     use super::*;
     use crate::test_utils::{
         assert_form_error_response,
-        assert_response_body_text,
         assert_toast_error_response,
         init_app_for_test,
     };
@@ -177,12 +176,14 @@ mod tests {
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
         let mfa_secret = Secret::generate_secret();
 
-        // Insert the user
+        // Insert the user.
         let result = sqlx::query(
             r#"
-            INSERT INTO users (id, name, username, email, password, mfa_secret)
-            VALUES ($1, $2, $3, $4, $5, $6)
-            "#,
+INSERT INTO users
+    (id, name, username, email, password, mfa_secret)
+VALUES
+    ($1, $2, $3, $4, $5, $6)
+"#,
         )
         .bind(user_id.unwrap())
         .bind("Sample user")
@@ -195,10 +196,9 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Generate a TOTP instance for verification code
+        // Generate a TOTP instance for verification code.
         let totp = generate_totp(mfa_secret.to_bytes().unwrap(), "sample_user").unwrap();
 
-        // Send the request
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .uri("/v1/me/settings/mfa/verify")
@@ -210,12 +210,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Should update `mfa_enabled` in the database
+        // Should update `mfa_enabled` in the database.
         let result = sqlx::query(
             r#"
-            SELECT mfa_enabled FROM users
-            WHERE id = $1
-            "#,
+SELECT mfa_enabled FROM users
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
@@ -223,12 +223,12 @@ mod tests {
 
         assert!(result.get::<bool, _>("mfa_enabled"));
 
-        // Should also generate and insert recovery codes into the database
+        // Should also generate and insert recovery codes into the database.
         let result = sqlx::query(
             r#"
-            SELECT * FROM mfa_recovery_codes
-            WHERE user_id = $1
-            "#,
+SELECT 1 FROM mfa_recovery_codes
+WHERE user_id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_all(&mut *conn)
@@ -240,7 +240,7 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_verify_mfa_request_for_a_user_without_password(
+    async fn can_reject_a_verify_mfa_request_for_a_user_without_password(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
@@ -255,7 +255,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(
+        assert_toast_error_response(
             res,
             "You need to set a password to enable 2-factor authentication",
         )
@@ -265,18 +265,20 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_mfa_request_for_a_user_with_mfa_already_enabled(
+    async fn can_reject_a_verify_mfa_request_for_a_user_with_mfa_already_enabled(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
-        // Insert the user
+        // Insert the user.
         let result = sqlx::query(
             r#"
-            INSERT INTO users (id, name, username, email, password, mfa_enabled, mfa_secret)
-            VALUES ($1, $2, $3, $4, $5, TRUE, 'some_secret')
-            "#,
+INSERT INTO users
+    (id, name, username, email, password, mfa_enabled, mfa_secret)
+VALUES
+    ($1, $2, $3, $4, $5, TRUE, 'some_secret')
+"#,
         )
         .bind(user_id.unwrap())
         .bind("Sample user")
@@ -308,18 +310,18 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_mfa_request_for_a_user_without_mfa_secret(
+    async fn can_reject_a_verify_mfa_request_for_a_user_without_mfa_secret(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
-        // Insert the user
+        // Insert the user.
         let result = sqlx::query(
             r#"
-            INSERT INTO users (id, name, username, email, password)
-            VALUES ($1, $2, $3, $4, $5)
-            "#,
+INSERT INTO users (id, name, username, email, password)
+VALUES ($1, $2, $3, $4, $5)
+"#,
         )
         .bind(user_id.unwrap())
         .bind("Sample user")
@@ -351,7 +353,7 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_mfa_request_for_an_invalid_verification_code(
+    async fn can_reject_a_verify_mfa_request_for_an_invalid_verification_code(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -361,9 +363,11 @@ mod tests {
         // Insert the user
         let result = sqlx::query(
             r#"
-            INSERT INTO users (id, name, username, email, password, mfa_secret)
-            VALUES ($1, $2, $3, $4, $5, $6)
-            "#,
+INSERT INTO users
+    (id, name, username, email, password, mfa_secret)
+VALUES
+    ($1, $2, $3, $4, $5, $6)
+"#,
         )
         .bind(user_id.unwrap())
         .bind("Sample user")
@@ -376,7 +380,6 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Send the request
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .uri("/v1/me/settings/mfa/verify")

@@ -29,37 +29,46 @@ struct Request {
 }
 
 #[patch("/v1/me/settings/privacy/following-list")]
+#[tracing::instrument(
+    name = "PATCH /v1/me/settings/privacy/following-list",
+    skip_all,
+    fields(
+        user = user.id().ok(),
+        payload
+    ),
+    err
+)]
 async fn patch(
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => match payload.following_list.parse::<i32>() {
-            Ok(following_list) => match RelationVisibility::try_from(following_list) {
-                Ok(visibility) => {
-                    match sqlx::query(
-                        r#"
-                        UPDATE users
-                        SET following_list_visibility = $1
-                        WHERE id = $2
-                        "#,
-                    )
-                    .bind(visibility as i16)
-                    .bind(user_id)
-                    .execute(&data.db_pool)
-                    .await?
-                    .rows_affected()
-                    {
-                        0 => Ok(HttpResponse::InternalServerError().finish()),
-                        _ => Ok(HttpResponse::NoContent().finish()),
-                    }
-                }
-                Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-            },
-            Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-        },
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let user_id = user.id()?;
+    let following_list_visibility = RelationVisibility::try_from(
+        payload
+            .following_list
+            .parse::<i32>()
+            .map_err(|_| AppError::from("Invalid following list visibility type"))?,
+    )
+    .map_err(|_| AppError::from("Invalid following list visibility type"))?;
+
+    match sqlx::query(
+        r#"
+UPDATE users
+SET following_list_visibility = $1
+WHERE id = $2
+"#,
+    )
+    .bind(following_list_visibility as i16)
+    .bind(&user_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(AppError::InternalError(
+            "user not found in database".to_string(),
+        )),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -82,7 +91,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
-        // Set to `friends`
+        // Set to `friends`.
         let req = test::TestRequest::patch()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/settings/privacy/following-list")
@@ -94,12 +103,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Following list visibility should get updated in the database
+        // Following list visibility should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT following_list_visibility FROM users
-            WHERE id = $1
-            "#,
+SELECT following_list_visibility FROM users
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
@@ -110,7 +119,7 @@ mod tests {
             RelationVisibility::Friends as i16
         );
 
-        // Set to `none`
+        // Set to `none`.
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
             .uri("/v1/me/settings/privacy/following-list")
@@ -125,9 +134,9 @@ mod tests {
         // Following list visibility should get updated in the database
         let result = sqlx::query(
             r#"
-            SELECT following_list_visibility FROM users
-            WHERE id = $1
-            "#,
+SELECT following_list_visibility FROM users
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)

@@ -119,8 +119,6 @@ VALUES ($1, $2, $3, $4)
     .execute(&mut *txn)
     .await?;
 
-    txn.commit().await?;
-
     let template_data = serde_json::to_string(&ResetPasswordEmailTemplateData {
         link: format!("https://storiny.com/auth/reset-password/{}", token_id),
     })
@@ -138,6 +136,8 @@ VALUES ($1, $2, $3, $4)
         })
         .await
         .map_err(|error| AppError::InternalError(format!("unable to push the job: {error:?}")))?;
+
+    txn.commit().await?;
 
     Ok(HttpResponse::Created().finish())
 }

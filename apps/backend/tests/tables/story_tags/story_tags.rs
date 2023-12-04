@@ -11,7 +11,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO story_tags(tag_id, story_id)
+            INSERT INTO story_tags (tag_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -43,7 +43,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO story_tags(tag_id, story_id)
+            INSERT INTO story_tags (tag_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -75,7 +75,7 @@ mod tests {
         // Insert a story tag
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_tags(tag_id, story_id)
+            INSERT INTO story_tags (tag_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -111,7 +111,7 @@ mod tests {
         // Insert a story tag
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_tags(tag_id, story_id)
+            INSERT INTO story_tags (tag_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -126,7 +126,7 @@ mod tests {
         // when the `story_count` reaches 0
         sqlx::query(
             r#"
-            INSERT INTO story_tags(tag_id, story_id)
+            INSERT INTO story_tags (tag_id, story_id)
             VALUES ($1, $2)
             "#,
         )
@@ -183,7 +183,7 @@ mod tests {
         // Insert a story tag
         let story_tag_result = sqlx::query(
             r#"
-            INSERT INTO story_tags(tag_id, story_id)
+            INSERT INTO story_tags (tag_id, story_id)
             VALUES ($1, $2)
             RETURNING id
             "#,

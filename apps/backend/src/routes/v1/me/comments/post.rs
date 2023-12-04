@@ -20,6 +20,7 @@ use crate::{
     AppState,
 };
 use actix_web::{
+    http::StatusCode,
     post,
     web,
     HttpResponse,
@@ -40,125 +41,118 @@ struct Request {
 }
 
 #[post("/v1/me/comments")]
+#[tracing::instrument(
+    name = "POST /v1/me/comments",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        story_id = %payload.story_id
+        content = %payload.content
+    ),
+    err
+)]
 async fn post(
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            match payload.story_id.parse::<i64>() {
-                Ok(story_id) => {
-                    if !check_resource_limit(&data.redis, ResourceLimit::CreateComment, user_id)
-                        .await
-                        .unwrap_or_default()
-                    {
-                        return Ok(
-                            HttpResponse::TooManyRequests().json(ToastErrorResponse::new(
-                                "Daily limit exceeded for posting comments. Try again tomorrow.",
-                            )),
-                        );
-                    }
+    let user_id = user.id()?;
+    let story_id = payload
+        .story_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid story ID"))?;
 
-                    let content = payload.content.trim();
-                    let rendered_content = if content.is_empty() {
-                        "".to_string()
-                    } else {
-                        md_to_html(MarkdownSource::Response(content))
-                    };
+    if !check_resource_limit(&data.redis, ResourceLimit::CreateComment, user_id).await? {
+        return Err(ToastErrorResponse::new(
+            Some(StatusCode::TOO_MANY_REQUESTS),
+            "Daily limit exceeded for posting comments. Try again tomorrow.",
+        )
+        .into());
+    }
 
-                    match sqlx::query(
-                        r#"
-                        WITH
-                            inserted_comment AS (
-                                INSERT INTO comments (content, rendered_content, user_id, story_id)
-                                    VALUES ($1, $2, $3, $4)
-                                    RETURNING id
-                            ),
-                            comment_story AS (
-                                SELECT user_id FROM stories
-                                WHERE id = $4
-                            ),
-                            inserted_notification AS (
-                                INSERT INTO notifications (entity_type, entity_id, notifier_id)
-                                SELECT $5, (SELECT id FROM inserted_comment), $3
-                                WHERE EXISTS (
-                                    SELECT 1 FROM comment_story
-                                )
-                                RETURNING id
-                            )
-                        INSERT
-                        INTO
-                            notification_outs (notified_id, notification_id)
-                        SELECT
-                            (SELECT user_id FROM comment_story),
-                            (SELECT id FROM inserted_notification)
-                        WHERE EXISTS (
-                            SELECT 1 FROM comment_story
-                        )
-                        "#,
-                    )
-                    .bind(content)
-                    .bind(rendered_content)
-                    .bind(user_id)
-                    .bind(story_id)
-                    .bind(NotificationEntityType::CommentAdd as i16)
-                    .execute(&data.db_pool)
-                    .await
-                    {
-                        Ok(_) => {
-                            let _ = incr_resource_limit(
-                                &data.redis,
-                                ResourceLimit::CreateComment,
-                                user_id,
-                            )
-                            .await;
+    let content = payload.content.trim();
+    let rendered_content = if content.is_empty() {
+        "".to_string()
+    } else {
+        md_to_html(MarkdownSource::Response(content))
+    };
 
-                            Ok(HttpResponse::Created().finish())
-                        }
-                        Err(err) => {
-                            if let Some(db_err) = err.into_database_error() {
-                                match db_err.kind() {
-                                    sqlx::error::ErrorKind::ForeignKeyViolation => {
-                                        Ok(HttpResponse::BadRequest()
-                                            .json(ToastErrorResponse::new("Story does not exist")))
-                                    }
-                                    _ => {
-                                        let err_code = db_err.code().unwrap_or_default();
+    let pg_pool = &data.db_pool;
+    let mut txn = pg_pool.begin().await?;
 
-                                        // Check if the story is soft-deleted or unpublished
-                                        if err_code == SqlState::EntityUnavailable.to_string() {
-                                            Ok(HttpResponse::BadRequest().json(
-                                                ToastErrorResponse::new(
-                                                    "Story is either deleted or unpublished",
-                                                ),
-                                            ))
-                                        // Check if the comment writer is blocked by the story
-                                        // writer
-                                        } else if err_code
-                                            == SqlState::CommentWriterBlockedByStoryWriter
-                                                .to_string()
-                                        {
-                                            Ok(HttpResponse::Forbidden().json(
-                                                ToastErrorResponse::new(
-                                                    "You are being blocked by the story writer",
-                                                ),
-                                            ))
-                                        } else {
-                                            Ok(HttpResponse::InternalServerError().finish())
-                                        }
-                                    }
-                                }
-                            } else {
-                                Ok(HttpResponse::InternalServerError().finish())
-                            }
-                        }
-                    }
-                }
-                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid story ID")),
-            }
+    match sqlx::query(
+        r#"
+WITH inserted_comment AS (
+        INSERT INTO comments (content, rendered_content, user_id, story_id)
+            VALUES ($1, $2, $3, $4)
+            RETURNING id
+    ),
+    comment_story AS (
+        SELECT user_id FROM stories
+        WHERE id = $4
+    ),
+    inserted_notification AS (
+        INSERT INTO notifications (entity_type, entity_id, notifier_id)
+        SELECT $5, (SELECT id FROM inserted_comment), $3
+        WHERE EXISTS (SELECT 1 FROM comment_story)
+        RETURNING id
+    )
+INSERT INTO
+    notification_outs (notified_id, notification_id)
+SELECT
+    (SELECT user_id FROM comment_story),
+    (SELECT id FROM inserted_notification)
+WHERE EXISTS (SELECT 1 FROM comment_story)
+"#,
+    )
+    .bind(&content)
+    .bind(&rendered_content)
+    .bind(&user_id)
+    .bind(&story_id)
+    .bind(NotificationEntityType::CommentAdd as i16)
+    .execute(&mut *txn)
+    .await
+    {
+        Ok(_) => {
+            incr_resource_limit(&data.redis, ResourceLimit::CreateComment, user_id).await?;
+
+            txn.commit().await?;
+
+            Ok(HttpResponse::Created().finish())
         }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+        Err(error) => {
+            if let Some(db_err) = error.as_database_error() {
+                let error_kind = db_err.kind();
+
+                // Target story is not present in the table.
+                if matches!(error_kind, sqlx::error::ErrorKind::ForeignKeyViolation) {
+                    return Err(AppError::ToastError(ToastErrorResponse::new(
+                        None,
+                        "Story does not exist",
+                    )));
+                }
+
+                let error_code = db_err.code().unwrap_or_default();
+
+                // Check if the story is soft-deleted or unpublished.
+                if error_code == SqlState::EntityUnavailable.to_string() {
+                    return Err(AppError::ToastError(ToastErrorResponse::new(
+                        None,
+                        "Story is either deleted or unpublished",
+                    )));
+                }
+
+                // Check if the comment writer is blocked by the story writer.
+                if error_code == SqlState::CommentWriterBlockedByStoryWriter.to_string() {
+                    return Err(AppError::ToastError(ToastErrorResponse::new(
+                        Some(StatusCode::FORBIDDEN),
+                        "You are being blocked by the story writer",
+                    )));
+                }
+            }
+
+            Err(AppError::SqlxError(error))
+        }
     }
 }
 
@@ -186,17 +180,17 @@ mod tests {
     use storiny_macros::test_context;
 
     #[sqlx::test(fixtures("comment"))]
-    async fn can_reject_comment_for_a_soft_deleted_story(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_a_comment_for_a_soft_deleted_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Soft-delete the story
+        // Soft-delete the story.
         sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -219,17 +213,17 @@ mod tests {
     }
 
     #[sqlx::test(fixtures("comment"))]
-    async fn can_reject_comment_for_an_unpublished_story(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_a_comment_for_an_unpublished_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Unpublish the story
+        // Unpublish the story.
         sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET published_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -252,18 +246,18 @@ mod tests {
     }
 
     #[sqlx::test(fixtures("comment"))]
-    async fn can_reject_comment_when_story_writer_has_blocked_the_comment_writer(
+    async fn can_reject_a_comment_when_the_story_writer_has_blocked_the_comment_writer(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Get blocked by the story writer
+        // Get blocked by the story writer.
         sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(user_id.unwrap())
@@ -287,7 +281,7 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_comment_for_a_missing_story(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_a_comment_for_a_missing_story(pool: PgPool) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
@@ -327,12 +321,12 @@ mod tests {
 
             assert!(res.status().is_success());
 
-            // Comment should be present in the database, with rendered markdown
+            // Comment should be present in the database, with rendered markdown.
             let result = sqlx::query(
                 r#"
-                SELECT id, rendered_content FROM comments
-                WHERE user_id = $1 AND story_id = $2
-                "#,
+SELECT id, rendered_content FROM comments
+WHERE user_id = $1 AND story_id = $2
+"#,
             )
             .bind(user_id.unwrap())
             .bind(3_i64)
@@ -344,14 +338,14 @@ mod tests {
                 md_to_html(MarkdownSource::Response("Sample **comment** content!"))
             );
 
-            // Should also insert a notification
+            // Should also insert a notification.
             let notification_result = sqlx::query(
                 r#"
-                SELECT EXISTS (
-                    SELECT 1 FROM notifications
-                    WHERE entity_id = $1
-                )
-                "#,
+SELECT EXISTS (
+    SELECT 1 FROM notifications
+    WHERE entity_id = $1
+)
+"#,
             )
             .bind(result.get::<i64, _>("id"))
             .fetch_one(&mut *conn)
@@ -359,7 +353,7 @@ mod tests {
 
             assert!(notification_result.get::<bool, _>("exists"));
 
-            // Should also increment the resource limit
+            // Should also increment the resource limit.
             let result = get_resource_limit(
                 &ctx.redis_pool,
                 ResourceLimit::CreateComment,
@@ -374,13 +368,12 @@ mod tests {
 
         #[test_context(RedisTestContext)]
         #[sqlx::test]
-        async fn can_reject_comment_on_exceeding_the_resource_limit(
+        async fn can_reject_a_comment_on_exceeding_the_resource_limit(
             ctx: &mut RedisTestContext,
             pool: PgPool,
         ) -> sqlx::Result<()> {
             let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-            // Exceed the resource limit
             exceed_resource_limit(
                 &ctx.redis_pool,
                 ResourceLimit::CreateComment,

@@ -1,10 +1,10 @@
+use crate::middlewares::identity::error::GetIdentityError;
 use actix_web::{
     http::StatusCode,
     HttpResponse,
     ResponseError,
 };
 use serde::Serialize;
-use sqlx::Error;
 use std::fmt::{
     Display,
     Formatter,
@@ -123,14 +123,39 @@ pub enum AppError {
     SqlxError(sqlx::Error),
     /// The error raised by [deadpool_redis] when trying to acquire a connection from the pool.
     RedisPoolError(deadpool_redis::PoolError),
-    /// Internal server error.
+    /// Internal server error. The string value of this variant is not sent to the client.
     InternalError(String),
-    /// The error raised due to bad data sent by the client.
-    ClientError(String),
+    /// The error raised due to bad data sent by the client. The first element of the tuple is the
+    /// HTTP [StatusCode] (defaults to [StatusCode::BAD_REQUEST]) and the second element is the
+    /// string message that is sent to the client.
+    ///
+    /// # Caution
+    ///
+    /// The string value of this variant is sent to the client. It must not contain any sensitive
+    /// details.
+    ClientError(StatusCode, String),
     /// The [ToastErrorResponse] variant.
     ToastError(ToastErrorResponse),
     /// The [FormErrorResponse] variant.
     FormError(FormErrorResponse),
+}
+
+impl AppError {
+    /// Constructs a new [AppError::ClientError] variant with the default [StatusCode::BAD_REQUEST]
+    /// status code using the provided message.
+    ///
+    /// * `message` - The message string for the error.
+    pub fn new_client_error(message: &str) -> Self {
+        AppError::ClientError(StatusCode::BAD_REQUEST, message.to_string())
+    }
+
+    /// Constructs a new [AppError::ClientError] variant with the provided status code and message.
+    ///
+    /// * `status_code` - The HTTP [StatusCode] for the error.
+    /// * `message` - The message string for the error.
+    pub fn new_client_error_with_status(status_code: StatusCode, message: &str) -> Self {
+        AppError::ClientError(status_code, message.to_string())
+    }
 }
 
 impl Display for AppError {
@@ -146,7 +171,7 @@ impl ResponseError for AppError {
             AppError::InternalError(_) | AppError::SqlxError(_) | AppError::RedisPoolError(_) => {
                 StatusCode::INTERNAL_SERVER_ERROR
             }
-            AppError::ClientError(_) => StatusCode::BAD_REQUEST,
+            AppError::ClientError(status_code, _) => status_code,
             AppError::ToastError(error) => error.status_code.clone(),
             AppError::FormError(error) => error.status_code.clone(),
         }
@@ -160,22 +185,38 @@ impl ResponseError for AppError {
             AppError::InternalError(_) | AppError::SqlxError(_) | AppError::RedisPoolError(_) => {
                 response_builder.body("Internal server error")
             }
-            AppError::ClientError(message) => response_builder.body(message.to_string()),
+            AppError::ClientError(_, message) => response_builder.body(message.to_string()),
             AppError::ToastError(error) => response_builder.json(error),
             AppError::FormError(error) => response_builder.json(error),
         }
     }
 }
 
-impl Into<AppError> for &str {
-    fn into(self) -> AppError {
-        AppError::ClientError(self.to_string())
+// Allows creating simple client errors from a string slice.
+impl From<&str> for AppError {
+    fn from(value: &str) -> Self {
+        AppError::new_client_error(value)
     }
 }
 
-impl Into<AppError> for String {
-    fn into(self) -> AppError {
-        AppError::ClientError(self)
+// Allows creating simple client errors from a string value.
+impl From<String> for AppError {
+    fn from(value: String) -> Self {
+        AppError::new_client_error(&value)
+    }
+}
+
+// This can be raised when the identity cannot be fetched from the Redis cache. We simply return an
+// internal server error response to the client.
+impl From<GetIdentityError> for AppError {
+    fn from(error: GetIdentityError) -> Self {
+        AppError::InternalError(error.to_string())
+    }
+}
+
+impl From<anyhow::Error> for AppError {
+    fn from(error: anyhow::Error) -> Self {
+        AppError::InternalError(error.to_string())
     }
 }
 

@@ -67,155 +67,164 @@ struct Draft {
 }
 
 #[get("/v1/me/drafts")]
+#[tracing::instrument(
+    name = "GET /v1/me/drafts",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        page = query.page,
+        sort = query.sort,
+        r#type = query.r#type,
+        query = query.query
+    ),
+    err
+)]
 async fn get(
     query: QsQuery<QueryParams>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
+    let user_id = user.id()?;
+
     let page = query.page.clone().unwrap_or(1) - 1;
     let sort = query.sort.clone().unwrap_or("recent".to_string());
     let r#type = query.r#type.clone().unwrap_or("pending".to_string());
     let search_query = query.query.clone().unwrap_or_default();
     let has_search_query = !search_query.trim().is_empty();
 
-    match user.id() {
-        Ok(user_id) => {
-            let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
-                r#"
-                WITH drafts AS (
-                "#,
-            );
+    let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
+        r#"
+WITH drafts AS (
+"#,
+    );
 
-            if has_search_query {
-                query_builder.push(
-                    r#"
-                    WITH search_query AS (
-                        SELECT PLAINTO_TSQUERY('english', $4) AS tsq
-                    )
-                    "#,
-                );
-            }
-
-            query_builder.push(
-                r#"
-                SELECT
-                    -- Draft
-                    d.id,
-                    d.title,
-                    d.description,
-                    d.splash_id,
-                    d.splash_hex,
-                    d.category::TEXT,
-                    d.age_restriction,
-                    d.license,
-                    d.user_id,
-                    -- Stats
-                    d.word_count,
-                    -- Timestamps
-                    d.created_at,
-                    d.edited_at,
-                    d.deleted_at
-                "#,
-            );
-
-            if has_search_query {
-                query_builder.push(",");
-                query_builder.push(
-                    r#"
-                      -- Query score
-                      TS_RANK_CD(d.search_vec, (SELECT tsq FROM search_query)) AS "query_score"
-                    "#,
-                );
-            }
-
-            query_builder.push(
-                r#"
-                FROM
-                    stories d
-                WHERE
-                    d.user_id = $1
-                    -- Use `first_published_at` instead of `published_at` to ensure
-                    -- that soft-deleted published stories are excluded from results
-                    AND d.first_published_at IS NULL
-                "#,
-            );
-
-            if has_search_query {
-                query_builder.push(r#"AND d.search_vec @@ (SELECT tsq FROM search_query)"#);
-            }
-
-            query_builder.push(match r#type.as_str() {
-                "deleted" => "AND d.deleted_at IS NOT NULL",
-                _ => "AND d.deleted_at IS NULL",
-            });
-
-            query_builder.push(" ORDER BY ");
-
-            if has_search_query {
-                query_builder.push("query_score DESC");
-                query_builder.push(",");
-            }
-
-            if r#type == "deleted" {
-                // Deleted
-                query_builder.push(match sort.as_str() {
-                    "old" => "d.deleted_at",
-                    _ => "d.deleted_at DESC",
-                });
-            } else {
-                // Pending
-                query_builder.push(match sort.as_str() {
-                    "old" => "d.created_at",
-                    _ => {
-                        r#"
-                        d.edited_at DESC NULLS LAST,
-                        d.created_at DESC
-                        "#
-                    }
-                });
-            }
-
-            query_builder.push(
-                r#"
-                    LIMIT $2 OFFSET $3
-                )
-                SELECT
-                    -- Draft
-                    id,
-                    title,
-                    description,
-                    splash_id,
-                    splash_hex,
-                    category,
-                    age_restriction,
-                    license,
-                    user_id,
-                    -- Stats
-                    word_count,
-                    -- Timestamps
-                    created_at,
-                    edited_at,
-                    deleted_at
-                FROM drafts
-                "#,
-            );
-
-            let mut db_query = query_builder
-                .build_query_as::<Draft>()
-                .bind(user_id)
-                .bind(10_i16)
-                .bind((page * 10) as i16);
-
-            if has_search_query {
-                db_query = db_query.bind(search_query);
-            }
-
-            let result = db_query.fetch_all(&data.db_pool).await?;
-
-            Ok(HttpResponse::Ok().json(result))
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    if has_search_query {
+        query_builder.push(
+            r#"
+WITH search_query AS (
+    SELECT PLAINTO_TSQUERY('english', $4) AS tsq
+)
+"#,
+        );
     }
+
+    query_builder.push(
+        r#"
+SELECT
+    -- Draft
+    d.id,
+    d.title,
+    d.description,
+    d.splash_id,
+    d.splash_hex,
+    d.category::TEXT,
+    d.age_restriction,
+    d.license,
+    d.user_id,
+    -- Stats
+    d.word_count,
+    -- Timestamps
+    d.created_at,
+    d.edited_at,
+    d.deleted_at
+"#,
+    );
+
+    if has_search_query {
+        query_builder.push(",");
+        query_builder.push(
+            r#"
+-- Query score
+TS_RANK_CD(d.search_vec, (SELECT tsq FROM search_query)) AS "query_score"
+"#,
+        );
+    }
+
+    query_builder.push(
+        r#"
+FROM
+    stories d
+WHERE
+    d.user_id = $1
+    -- Use `first_published_at` instead of `published_at` to ensure
+    -- that soft-deleted published stories are excluded from results
+    AND d.first_published_at IS NULL
+"#,
+    );
+
+    if has_search_query {
+        query_builder.push(r#"AND d.search_vec @@ (SELECT tsq FROM search_query)"#);
+    }
+
+    query_builder.push(match r#type.as_str() {
+        "deleted" => "AND d.deleted_at IS NOT NULL",
+        _ => "AND d.deleted_at IS NULL",
+    });
+
+    query_builder.push(" ORDER BY ");
+
+    if has_search_query {
+        query_builder.push("query_score DESC");
+        query_builder.push(",");
+    }
+
+    if r#type == "deleted" {
+        // Deleted
+        query_builder.push(match sort.as_str() {
+            "old" => "d.deleted_at",
+            _ => "d.deleted_at DESC",
+        });
+    } else {
+        // Pending
+        query_builder.push(match sort.as_str() {
+            "old" => "d.created_at",
+            _ => {
+                r#"
+d.edited_at DESC NULLS LAST,
+d.created_at DESC
+"#
+            }
+        });
+    }
+
+    query_builder.push(
+        r#"
+    LIMIT $2 OFFSET $3
+)
+SELECT
+    -- Draft
+    id,
+    title,
+    description,
+    splash_id,
+    splash_hex,
+    category,
+    age_restriction,
+    license,
+    user_id,
+    -- Stats
+    word_count,
+    -- Timestamps
+    created_at,
+    edited_at,
+    deleted_at
+FROM drafts
+"#,
+    );
+
+    let mut db_query = query_builder
+        .build_query_as::<Draft>()
+        .bind(user_id)
+        .bind(10_i16)
+        .bind((page * 10) as i16);
+
+    if has_search_query {
+        db_query = db_query.bind(search_query);
+    }
+
+    let result = db_query.fetch_all(&data.db_pool).await?;
+
+    Ok(HttpResponse::Ok().json(result))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -238,12 +247,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some drafts
+        // Insert some drafts.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories (user_id)
-            VALUES ($1), ($1)
-            "#,
+INSERT INTO stories (user_id)
+VALUES ($1), ($1)
+"#,
         )
         .bind(user_id.unwrap())
         .execute(&mut *conn)
@@ -272,12 +281,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some pending drafts
+        // Insert some pending drafts.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories (user_id)
-            VALUES ($1), ($1)
-            "#,
+INSERT INTO stories (user_id)
+VALUES ($1), ($1)
+"#,
         )
         .bind(user_id.unwrap())
         .execute(&mut *conn)
@@ -306,12 +315,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some deleted drafts
+        // Insert some deleted drafts.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories (user_id, deleted_at)
-            VALUES ($1, NOW()), ($1, NOW())
-            "#,
+INSERT INTO stories (user_id, deleted_at)
+VALUES ($1, NOW()), ($1, NOW())
+"#,
         )
         .bind(user_id.unwrap())
         .execute(&mut *conn)
@@ -340,24 +349,14 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some pending drafts
+        // Insert some pending drafts.
         sqlx::query(
             r#"
-            INSERT INTO stories (id, user_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO stories (id, user_id)
+VALUES ($1, $3), ($2, $3)
+"#,
         )
         .bind(2_i64)
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        sqlx::query(
-            r#"
-            INSERT INTO stories (id, user_id)
-            VALUES ($1, $2)
-            "#,
-        )
         .bind(3_i64)
         .bind(user_id.unwrap())
         .execute(&mut *conn)
@@ -384,24 +383,14 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some pending drafts
+        // Insert some pending drafts.
         sqlx::query(
             r#"
-            INSERT INTO stories (id, user_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO stories (id, user_id)
+VALUES ($1, $3), ($2, $3)
+"#,
         )
         .bind(2_i64)
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        sqlx::query(
-            r#"
-            INSERT INTO stories (id, user_id)
-            VALUES ($1, $2)
-            "#,
-        )
         .bind(3_i64)
         .bind(user_id.unwrap())
         .execute(&mut *conn)
@@ -428,24 +417,14 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some deleted drafts
+        // Insert some deleted drafts.
         sqlx::query(
             r#"
-            INSERT INTO stories (id, user_id, deleted_at)
-            VALUES ($1, $2, NOW())
-            "#,
+INSERT INTO stories (id, user_id, deleted_at)
+VALUES ($1, $3, NOW()), ($2, $3, NOW())
+"#,
         )
         .bind(2_i64)
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        sqlx::query(
-            r#"
-            INSERT INTO stories (id, user_id, deleted_at)
-            VALUES ($1, $2, NOW())
-            "#,
-        )
         .bind(3_i64)
         .bind(user_id.unwrap())
         .execute(&mut *conn)
@@ -472,24 +451,14 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some deleted drafts
+        // Insert some deleted drafts.
         sqlx::query(
             r#"
-            INSERT INTO stories (id, user_id, deleted_at)
-            VALUES ($1, $2, NOW())
-            "#,
+INSERT INTO stories (id, user_id, deleted_at)
+VALUES ($1, $3, NOW()), ($2, $3, NOW())
+"#,
         )
         .bind(2_i64)
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        sqlx::query(
-            r#"
-            INSERT INTO stories (id, user_id, deleted_at)
-            VALUES ($1, $2, NOW())
-            "#,
-        )
         .bind(3_i64)
         .bind(user_id.unwrap())
         .execute(&mut *conn)
@@ -519,9 +488,9 @@ mod tests {
         // Insert some pending drafts
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories (title, user_id)
-            VALUES ($1, $3), ($2, $3)
-            "#,
+INSERT INTO stories (title, user_id)
+VALUES ($1, $3), ($2, $3)
+"#,
         )
         .bind("one")
         .bind("two")
@@ -555,12 +524,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some deleted drafts
+        // Insert some deleted drafts.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories (title, user_id, deleted_at)
-            VALUES ($1, $3, NOW()), ($2, $3, NOW())
-            "#,
+INSERT INTO stories (title, user_id, deleted_at)
+VALUES ($1, $3, NOW()), ($2, $3, NOW())
+"#,
         )
         .bind("one")
         .bind("two")
@@ -594,12 +563,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some pending drafts
+        // Insert some pending drafts.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories (id, user_id)
-            VALUES ($1, $3), ($2, $3)
-            "#,
+INSERT INTO stories (id, user_id)
+VALUES ($1, $3), ($2, $3)
+"#,
         )
         .bind(2_i64)
         .bind(3_i64)
@@ -609,7 +578,7 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 2);
 
-        // Should return all the pending drafts initially
+        // Should return all the pending drafts initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/drafts?type=pending")
@@ -623,13 +592,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
 
-        // Soft-delete one of the drafts
+        // Soft-delete one of the drafts.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -637,7 +606,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only one draft
+        // Should return only one draft.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/drafts?type=pending")
@@ -651,13 +620,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 1);
 
-        // Recover the draft
+        // Recover the draft.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -665,7 +634,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the pending drafts again
+        // Should return all the pending drafts again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
             .uri("/v1/me/drafts?type=pending")
@@ -687,12 +656,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some deleted drafts
+        // Insert some deleted drafts.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories (id, user_id, deleted_at)
-            VALUES ($1, $3, NOW()), ($2, $3, NOW())
-            "#,
+INSERT INTO stories (id, user_id, deleted_at)
+VALUES ($1, $3, NOW()), ($2, $3, NOW())
+"#,
         )
         .bind(2_i64)
         .bind(3_i64)
@@ -702,7 +671,7 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 2);
 
-        // Should return all the deleted drafts initially
+        // Should return all the deleted drafts initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/drafts?type=deleted")
@@ -716,13 +685,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
 
-        // Recover one of the drafts
+        // Recover one of the drafts.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -730,7 +699,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only one draft
+        // Should return only one draft.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/drafts?type=deleted")
@@ -744,13 +713,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 1);
 
-        // Soft-delete the draft
+        // Soft-delete the draft.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -758,7 +727,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the deleted drafts again
+        // Should return all the deleted drafts again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
             .uri("/v1/me/drafts?type=deleted")

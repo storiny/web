@@ -53,125 +53,133 @@ struct Tag {
 }
 
 #[get("/v1/me/followed-tags")]
+#[tracing::instrument(
+    name = "GET /v1/me/followed-tags",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        page = query.page,
+        sort = query.sort,
+        query = query.query
+    ),
+    err
+)]
 async fn get(
     query: QsQuery<QueryParams>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
+    let user_id = user.id()?;
+
     let page = query.page.clone().unwrap_or(1) - 1;
     let sort = query.sort.clone().unwrap_or("recent".to_string());
     let search_query = query.query.clone().unwrap_or_default();
     let has_search_query = !search_query.trim().is_empty();
 
-    match user.id() {
-        Ok(user_id) => {
-            let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
-                r#"
-                WITH followed_tags AS (
-                "#,
-            );
+    let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
+        r#"
+WITH followed_tags AS (
+"#,
+    );
 
-            if has_search_query {
-                query_builder.push(
-                    r#"
-                    WITH search_query AS (
-                        SELECT PLAINTO_TSQUERY('english', $4) AS tsq
-                    )
-                    "#,
-                );
-            }
-
-            query_builder.push(
-                r#"
-                SELECT
-                    -- Tag
-                    "tf->tag".id AS "id",
-                    "tf->tag".name AS "name",
-                    "tf->tag".story_count as "story_count",
-                    "tf->tag".follower_count as "follower_count",
-                    "tf->tag".created_at as "created_at",
-                    -- Boolean flags
-                    TRUE as "is_followed"
-                "#,
-            );
-
-            if has_search_query {
-                query_builder.push(",");
-                query_builder.push(
-                    r#"
-                      -- Query score
-                      TS_RANK_CD("tf->tag".search_vec, (SELECT tsq FROM search_query)) AS "query_score"
-                    "#,
-                );
-            }
-
-            query_builder.push(
-                r#"
-                FROM
-                    tag_followers AS tf
-                        INNER JOIN tags AS "tf->tag"
-                            ON tf.tag_id = "tf->tag".id
-                WHERE
-                    tf.user_id = $1
-                "#,
-            );
-
-            if has_search_query {
-                query_builder.push(r#"AND "tf->tag".search_vec @@ (SELECT tsq FROM search_query)"#);
-            }
-
-            query_builder.push(
-                r#"
-                AND tf.deleted_at IS NULL
-                ORDER BY
-                "#,
-            );
-
-            if has_search_query {
-                query_builder.push("query_score DESC");
-                query_builder.push(",");
-            }
-
-            query_builder.push(match sort.as_str() {
-                "old" => "tf.created_at",
-                "least-popular" => r#""tf->tag".follower_count"#,
-                "most-popular" => r#""tf->tag".follower_count DESC"#,
-                _ => "tf.created_at DESC",
-            });
-
-            query_builder.push(
-                r#"
-                    LIMIT $2 OFFSET $3
-                )
-                SELECT
-                    -- Tag
-                    id,
-                    name,
-                    story_count,
-                    follower_count,
-                    created_at,
-                    -- Boolean flags
-                    is_followed
-                FROM followed_tags
-                "#,
-            );
-
-            let mut db_query = query_builder
-                .build_query_as::<Tag>()
-                .bind(user_id)
-                .bind(10_i16)
-                .bind((page * 10) as i16);
-
-            if has_search_query {
-                db_query = db_query.bind(search_query);
-            }
-
-            let result = db_query.fetch_all(&data.db_pool).await?;
-
-            Ok(HttpResponse::Ok().json(result))
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    if has_search_query {
+        query_builder.push(
+            r#"
+WITH search_query AS (
+    SELECT PLAINTO_TSQUERY('english', $4) AS tsq
+)
+"#,
+        );
     }
+
+    query_builder.push(
+        r#"
+SELECT
+    -- Tag
+    "tf->tag".id AS "id",
+    "tf->tag".name AS "name",
+    "tf->tag".story_count as "story_count",
+    "tf->tag".follower_count as "follower_count",
+    "tf->tag".created_at as "created_at",
+    -- Boolean flags
+    TRUE as "is_followed"
+"#,
+    );
+
+    if has_search_query {
+        query_builder.push(",");
+        query_builder.push(
+            r#"
+-- Query score
+TS_RANK_CD("tf->tag".search_vec, (SELECT tsq FROM search_query)) AS "query_score"
+"#,
+        );
+    }
+
+    query_builder.push(
+        r#"
+FROM
+    tag_followers AS tf
+        INNER JOIN tags AS "tf->tag"
+            ON tf.tag_id = "tf->tag".id
+WHERE
+    tf.user_id = $1
+"#,
+    );
+
+    if has_search_query {
+        query_builder.push(r#"AND "tf->tag".search_vec @@ (SELECT tsq FROM search_query)"#);
+    }
+
+    query_builder.push(
+        r#"
+AND tf.deleted_at IS NULL
+ORDER BY
+"#,
+    );
+
+    if has_search_query {
+        query_builder.push("query_score DESC");
+        query_builder.push(",");
+    }
+
+    query_builder.push(match sort.as_str() {
+        "old" => "tf.created_at",
+        "least-popular" => r#""tf->tag".follower_count"#,
+        "most-popular" => r#""tf->tag".follower_count DESC"#,
+        _ => "tf.created_at DESC",
+    });
+
+    query_builder.push(
+        r#"
+    LIMIT $2 OFFSET $3
+)
+SELECT
+    -- Tag
+    id,
+    name,
+    story_count,
+    follower_count,
+    created_at,
+    -- Boolean flags
+    is_followed
+FROM followed_tags
+"#,
+    );
+
+    let mut db_query = query_builder
+        .build_query_as::<Tag>()
+        .bind(user_id)
+        .bind(10_i16)
+        .bind((page * 10) as i16);
+
+    if has_search_query {
+        db_query = db_query.bind(search_query);
+    }
+
+    let result = db_query.fetch_all(&data.db_pool).await?;
+
+    Ok(HttpResponse::Ok().json(result))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -194,12 +202,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Follow some tags
+        // Follow some tags.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO tag_followers(user_id, tag_id)
-            VALUES ($1, $2), ($1, $3)
-            "#,
+INSERT INTO tag_followers (user_id, tag_id)
+VALUES ($1, $2), ($1, $3)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(2_i64)
@@ -220,7 +228,11 @@ mod tests {
         let json = serde_json::from_str::<Vec<Tag>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
+
+        let followed_tags = json.unwrap();
+
+        assert_eq!(followed_tags.len(), 2);
+        assert!(followed_tags.iter().all(|&tag| tag.is_followed));
 
         Ok(())
     }
@@ -230,12 +242,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Follow some tags
+        // Follow some tags.
         sqlx::query(
             r#"
-            INSERT INTO tag_followers(user_id, tag_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO tag_followers (user_id, tag_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(2_i64)
@@ -244,9 +256,9 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO tag_followers(user_id, tag_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO tag_followers (user_id, tag_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(3_i64)
@@ -274,12 +286,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Follow some tags
+        // Follow some tags.
         sqlx::query(
             r#"
-            INSERT INTO tag_followers(user_id, tag_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO tag_followers (user_id, tag_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(2_i64)
@@ -288,9 +300,9 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO tag_followers(user_id, tag_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO tag_followers (user_id, tag_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(3_i64)
@@ -318,12 +330,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Follow some tags
+        // Follow some tags.
         sqlx::query(
             r#"
-            INSERT INTO tag_followers(user_id, tag_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO tag_followers (user_id, tag_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(2_i64)
@@ -332,9 +344,9 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO tag_followers(user_id, tag_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO tag_followers (user_id, tag_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(3_i64)
@@ -362,12 +374,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Follow some tags
+        // Follow some tags.
         sqlx::query(
             r#"
-            INSERT INTO tag_followers(user_id, tag_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO tag_followers (user_id, tag_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(3_i64)
@@ -376,9 +388,9 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO tag_followers(user_id, tag_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO tag_followers (user_id, tag_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(2_i64)
@@ -406,12 +418,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Follow some tags
+        // Follow some tags.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO tag_followers(user_id, tag_id)
-            VALUES ($1, $2), ($1, $3)
-            "#,
+INSERT INTO tag_followers (user_id, tag_id)
+VALUES ($1, $2), ($1, $3)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(2_i64)
@@ -442,12 +454,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Follow some tags
+        // Follow some tags.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO tag_followers(user_id, tag_id)
-            VALUES ($1, $2), ($1, $3)
-            "#,
+INSERT INTO tag_followers (user_id, tag_id)
+VALUES ($1, $2), ($1, $3)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(2_i64)
@@ -457,7 +469,7 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 2);
 
-        // Should return all the followed tags initially
+        // Should return all the followed tags initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/followed-tags")
@@ -471,13 +483,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
 
-        // Soft-delete one of the followed tag
+        // Soft-delete one of the followed tag.
         let result = sqlx::query(
             r#"
-            UPDATE tag_followers
-            SET deleted_at = NOW()
-            WHERE tag_id = $1 AND user_id = $2
-            "#,
+UPDATE tag_followers
+SET deleted_at = NOW()
+WHERE tag_id = $1 AND user_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(user_id.unwrap())
@@ -486,7 +498,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only one followed tag
+        // Should return only one followed tag.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/followed-tags")
@@ -500,13 +512,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 1);
 
-        // Recover the followed tag
+        // Recover the followed tag.
         let result = sqlx::query(
             r#"
-            UPDATE tag_followers
-            SET deleted_at = NULL
-            WHERE tag_id = $1 AND user_id = $2
-            "#,
+UPDATE tag_followers
+SET deleted_at = NULL
+WHERE tag_id = $1 AND user_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(user_id.unwrap())
@@ -515,7 +527,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the followed tags again
+        // Should return all the followed tags again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
             .uri("/v1/me/followed-tags")

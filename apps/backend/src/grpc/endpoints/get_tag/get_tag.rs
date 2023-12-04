@@ -61,13 +61,7 @@ pub async fn get_tag(
     query_builder.push(if current_user_id.is_some() {
         r#"
         -- Boolean flags
-        CASE
-            WHEN COUNT("t->is_following") = 1
-                THEN
-                    TRUE
-                ELSE
-                    FALSE
-        END AS "is_following"
+        "t->is_following" IS NOT NULL AS "is_following"
         "#
     } else {
         r#"

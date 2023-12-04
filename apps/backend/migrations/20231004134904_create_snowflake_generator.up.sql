@@ -12,11 +12,9 @@ DECLARE
 	now_millis    BIGINT;
 	shard_id      INT    := 1;
 BEGIN
-	SELECT
-		NEXTVAL('public.snowflake_sequence') % 1024
+	SELECT NEXTVAL('public.snowflake_sequence') % 1024
 	INTO seq_id;
-	SELECT
-		FLOOR(EXTRACT(EPOCH FROM CLOCK_TIMESTAMP()) * 1000)
+	SELECT FLOOR(EXTRACT(EPOCH FROM CLOCK_TIMESTAMP()) * 1000)
 	INTO now_millis;
 	result := (now_millis - storiny_epoch) << 23;
 	result := result | (shard_id << 10);

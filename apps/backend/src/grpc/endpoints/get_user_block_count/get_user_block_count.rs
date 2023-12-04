@@ -64,7 +64,7 @@ mod tests {
                 // Block some users
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO blocks(blocked_id, blocker_id)
+                    INSERT INTO blocks (blocked_id, blocker_id)
                     VALUES ($2, $1), ($3, $1)
                     "#,
                 )
@@ -100,7 +100,7 @@ mod tests {
                 // Block some users
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO blocks(blocked_id, blocker_id)
+                    INSERT INTO blocks (blocked_id, blocker_id)
                     VALUES ($2, $1), ($3, $1)
                     "#,
                 )

@@ -5,19 +5,16 @@ AS
 $$
 BEGIN
 	-- Check whether the story is non-deleted/published
-	IF (NOT EXISTS(SELECT
-					   1
-				   FROM
-					   stories
-				   WHERE
-							   id = NEW.story_id AND
-						   -- Draft
-							   (published_at IS NULL AND first_published_at IS NULL AND deleted_at IS NULL)
-							   -- Soft-delete (`published_at` depends on the source of the
-							   -- action: cascade (column not changed) or user (column is set to NULL))
-					 OR        (first_published_at IS NOT NULL AND deleted_at IS NOT NULL)
-							   -- Unpublish
-					 OR        (published_at IS NULL AND first_published_at IS NOT NULL AND deleted_at IS NULL)
+	IF (NOT EXISTS(SELECT 1
+				   FROM stories
+				   WHERE id = NEW.story_id AND
+					   -- Draft
+						 (published_at IS NULL AND first_published_at IS NULL AND deleted_at IS NULL)
+					  -- Soft-delete (`published_at` depends on the source of the
+					  -- action: cascade (column not changed) or user (column is set to NULL))
+					  OR (first_published_at IS NOT NULL AND deleted_at IS NOT NULL)
+					  -- Unpublish
+					  OR (published_at IS NULL AND first_published_at IS NOT NULL AND deleted_at IS NULL)
 				  )) THEN
 		RAISE 'Story is non-deleted/published'
 			USING ERRCODE = '52001';

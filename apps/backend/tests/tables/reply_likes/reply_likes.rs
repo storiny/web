@@ -11,7 +11,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
+            INSERT INTO reply_likes (user_id, reply_id)
             VALUES ($1, $2)
             "#,
         )
@@ -43,7 +43,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
+            INSERT INTO reply_likes (user_id, reply_id)
             VALUES ($1, $2)
             "#,
         )
@@ -84,7 +84,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
+            INSERT INTO reply_likes (user_id, reply_id)
             VALUES ($1, $2)
             "#,
         )
@@ -125,7 +125,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
+            INSERT INTO reply_likes (user_id, reply_id)
             VALUES ($1, $2)
             "#,
         )
@@ -157,7 +157,7 @@ mod tests {
         // Like the reply
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
+            INSERT INTO reply_likes (user_id, reply_id)
             VALUES ($1, $2)
             "#,
         )
@@ -193,7 +193,7 @@ mod tests {
         // Like the reply
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
+            INSERT INTO reply_likes (user_id, reply_id)
             VALUES ($1, $2)
             "#,
         )
@@ -281,7 +281,7 @@ mod tests {
         // Like the reply
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
+            INSERT INTO reply_likes (user_id, reply_id)
             VALUES ($1, $2)
             "#,
         )
@@ -342,7 +342,7 @@ mod tests {
         // Like the reply
         sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
+            INSERT INTO reply_likes (user_id, reply_id)
             VALUES ($1, $2)
             "#,
         )
@@ -356,7 +356,7 @@ mod tests {
         // on the reply when decrementing the `like_count`.
         sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
+            INSERT INTO reply_likes (user_id, reply_id)
             VALUES ($1, $2)
             "#,
         )

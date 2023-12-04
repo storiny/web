@@ -97,7 +97,7 @@ mod tests {
                 // Add some relations
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO relations(follower_id, followed_id)
+                    INSERT INTO relations (follower_id, followed_id)
                     VALUES ($1, $2), ($2, $1)
                     "#,
                 )
@@ -112,7 +112,7 @@ mod tests {
                 // Add some friends
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+                    INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
                     VALUES ($1, $2, NOW()), ($3, $1, DEFAULT)
                     "#,
                 )
@@ -151,7 +151,7 @@ mod tests {
                 // Add some relations
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO relations(follower_id, followed_id)
+                    INSERT INTO relations (follower_id, followed_id)
                     VALUES ($1, $2), ($2, $1)
                     "#,
                 )
@@ -166,7 +166,7 @@ mod tests {
                 // Add some friends
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO friends(transmitter_id, receiver_id, accepted_at)
+                    INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
                     VALUES ($1, $2, NOW()), ($3, $1, DEFAULT)
                     "#,
                 )

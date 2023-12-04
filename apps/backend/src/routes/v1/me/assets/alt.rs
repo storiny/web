@@ -26,43 +26,50 @@ struct Request {
 
 #[derive(Deserialize, Validate)]
 struct Fragments {
-    id: String,
+    asset_id: String,
 }
 
-#[patch("/v1/me/assets/{id}/alt")]
+#[patch("/v1/me/assets/{asset_id}/alt")]
+#[tracing::instrument(
+    name = "PATCH /v1/me/assets/{asset_id}/alt",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        asset_id = %path.asset_id,
+        alt = %payload.alt
+    ),
+    err
+)]
 async fn patch(
     payload: Json<Request>,
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            match path.id.parse::<i64>() {
-                Ok(asset_id) => {
-                    match sqlx::query(
-                        r#"
-                    UPDATE assets
-                    SET alt = $1
-                    WHERE id = $2 AND user_id = $3
-                    "#,
-                    )
-                    .bind(&payload.alt)
-                    .bind(asset_id)
-                    .bind(user_id)
-                    .execute(&data.db_pool)
-                    .await?
-                    .rows_affected()
-                    {
-                        0 => Ok(HttpResponse::BadRequest()
-                            .json(ToastErrorResponse::new("Asset not found"))),
-                        _ => Ok(HttpResponse::NoContent().finish()),
-                    }
-                }
-                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid asset ID")),
-            }
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let user_id = user.id()?;
+    let asset_id = path
+        .asset_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid asset ID"))?;
+
+    match sqlx::query(
+        r#"
+UPDATE assets
+SET alt = $1
+WHERE
+    id = $2
+    AND user_id = $3
+"#,
+    )
+    .bind(&payload.alt)
+    .bind(&asset_id)
+    .bind(&user_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(ToastErrorResponse::new(None, "Asset not found").into()),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -89,13 +96,13 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
-        // Insert an asset
+        // Insert an asset.
         let result = sqlx::query(
             r#"
-            INSERT INTO assets(key, hex, height, width, user_id) 
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING id, alt
-            "#,
+INSERT INTO assets (key, hex, height, width, user_id) 
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, alt
+"#,
         )
         .bind(Uuid::new_v4())
         .bind("000000".to_string())
@@ -120,12 +127,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Asset alt text should get updated in the database
+        // Asset alt text should get updated in the database.
         let asset = sqlx::query(
             r#"
-            SELECT alt FROM assets
-            WHERE id = $1
-            "#,
+SELECT alt FROM assets
+WHERE id = $1
+"#,
         )
         .bind(asset_id)
         .fetch_one(&mut *conn)

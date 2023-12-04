@@ -54,159 +54,157 @@ struct Follower {
 }
 
 #[get("/v1/me/followers")]
+#[tracing::instrument(
+    name = "GET /v1/me/followers",
+    skip_all,
+    fields(
+        followed_id = user.id().ok(),
+        page = query.page,
+        sort = query.sort,
+        query = query.query
+    ),
+    err
+)]
 async fn get(
     query: QsQuery<QueryParams>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
+    let followed_id = user.id()?;
+
     let page = query.page.clone().unwrap_or(1) - 1;
     let sort = query.sort.clone().unwrap_or("popular".to_string());
     let search_query = query.query.clone().unwrap_or_default();
     let has_search_query = !search_query.trim().is_empty();
 
-    match user.id() {
-        Ok(user_id) => {
-            let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
-                r#"
-                WITH followers_result AS (
-                "#,
-            );
+    let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
+        r#"
+WITH followers_result AS (
+"#,
+    );
 
-            if has_search_query {
-                query_builder.push(
-                    r#"
-                    WITH search_query AS (
-                        SELECT PLAINTO_TSQUERY('english', $4) AS tsq
-                    )
-                    "#,
-                );
-            }
-
-            query_builder.push(
-                r#"
-                SELECT
-                    -- Follower user
-                    ru.id,
-                    ru.name,
-                    ru.username,
-                    ru.avatar_id,
-                    ru.avatar_hex,
-                    ru.public_flags,
-                    -- Boolean flags
-                    CASE
-                        WHEN COUNT("ru->is_following") = 1
-                            THEN
-                                TRUE
-                            ELSE
-                                FALSE
-                    END AS "is_following",
-                    CASE
-                        WHEN COUNT("ru->is_friend") = 1
-                            THEN
-                                TRUE
-                            ELSE
-                                FALSE
-                    END AS "is_friend"
-                "#,
-            );
-
-            if has_search_query {
-                query_builder.push(",");
-                query_builder.push(
-                    r#"
-                      -- Query score
-                      TS_RANK_CD(ru.search_vec, (SELECT tsq FROM search_query)) AS "query_score"
-                    "#,
-                );
-            }
-
-            query_builder.push(
-                r#"
-                FROM
-                    relations r
-                        -- Join follower user
-                        INNER JOIN users AS ru
-                            ON r.follower_id = ru.id
-                        -- Boolean follower flag
-                        LEFT OUTER JOIN relations AS "ru->is_following"
-                            ON "ru->is_following".followed_id = ru.id
-                                AND "ru->is_following".follower_id = $1
-                                AND "ru->is_following".deleted_at IS NULL
-                        -- Boolean friend flag
-                        LEFT OUTER JOIN friends AS "ru->is_friend"
-                            ON (
-                              ("ru->is_friend".transmitter_id = ru.id AND "ru->is_friend".receiver_id = $1)
-                                OR
-                              ("ru->is_friend".receiver_id = ru.id AND "ru->is_friend".transmitter_id = $1)
-                            )
-                                AND "ru->is_friend".accepted_at IS NOT NULL
-                                AND "ru->is_friend".deleted_at IS NULL
-                WHERE
-                    r.followed_id = $1
-                    AND r.deleted_at IS NULL
-                "#,
-            );
-
-            if has_search_query {
-                query_builder.push(r#"AND ru.search_vec @@ (SELECT tsq FROM search_query)"#);
-            }
-
-            query_builder.push(
-                r#"
-                GROUP BY
-                    ru.id,
-                    r.created_at
-                ORDER BY 
-                "#,
-            );
-
-            if has_search_query {
-                query_builder.push("query_score DESC");
-                query_builder.push(",");
-            }
-
-            query_builder.push(match sort.as_str() {
-                "old" => "r.created_at",
-                "popular" => "ru.follower_count DESC",
-                _ => "r.created_at DESC",
-            });
-
-            query_builder.push(
-                r#"
-                    LIMIT $2 OFFSET $3
-                )
-                SELECT
-                    -- Follower user
-                    id,
-                    name,
-                    username,
-                    avatar_id,
-                    avatar_hex,
-                    public_flags,
-                    -- Boolean flags
-                    TRUE AS "is_follower",
-                    is_following,
-                    is_friend
-                FROM followers_result
-                "#,
-            );
-
-            let mut db_query = query_builder
-                .build_query_as::<Follower>()
-                .bind(user_id)
-                .bind(10_i16)
-                .bind((page * 10) as i16);
-
-            if has_search_query {
-                db_query = db_query.bind(search_query);
-            }
-
-            let result = db_query.fetch_all(&data.db_pool).await?;
-
-            Ok(HttpResponse::Ok().json(result))
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    if has_search_query {
+        query_builder.push(
+            r#"
+WITH search_query AS (
+    SELECT PLAINTO_TSQUERY('english', $4) AS tsq
+)
+"#,
+        );
     }
+
+    query_builder.push(
+        r#"
+SELECT
+    -- Follower user
+    ru.id,
+    ru.name,
+    ru.username,
+    ru.avatar_id,
+    ru.avatar_hex,
+    ru.public_flags,
+    -- Boolean flags
+    "ru->is_following" IS NOT NULL AS "is_following",
+    "ru->is_friend" IS NOT NULL AS "is_friend"
+"#,
+    );
+
+    if has_search_query {
+        query_builder.push(",");
+        query_builder.push(
+            r#"
+-- Query score
+TS_RANK_CD(ru.search_vec, (SELECT tsq FROM search_query)) AS "query_score"
+"#,
+        );
+    }
+
+    query_builder.push(
+        r#"
+FROM
+    relations r
+        -- Join follower user
+        INNER JOIN users AS ru
+            ON r.follower_id = ru.id
+        -- Boolean following flag
+        LEFT OUTER JOIN relations AS "ru->is_following"
+            ON "ru->is_following".followed_id = ru.id
+            AND "ru->is_following".follower_id = $1
+            AND "ru->is_following".deleted_at IS NULL
+        -- Boolean friend flag
+        LEFT OUTER JOIN friends AS "ru->is_friend"
+            ON (
+              ("ru->is_friend".transmitter_id = ru.id AND "ru->is_friend".receiver_id = $1)
+                OR
+              ("ru->is_friend".receiver_id = ru.id AND "ru->is_friend".transmitter_id = $1)
+            )
+            AND "ru->is_friend".accepted_at IS NOT NULL
+            AND "ru->is_friend".deleted_at IS NULL
+WHERE
+    r.followed_id = $1
+    AND r.deleted_at IS NULL
+"#,
+    );
+
+    if has_search_query {
+        query_builder.push(r#"AND ru.search_vec @@ (SELECT tsq FROM search_query)"#);
+    }
+
+    query_builder.push(
+        r#"
+GROUP BY
+    ru.id,
+    "ru->is_following",
+    "ru->is_friend",
+    r.created_at
+ORDER BY 
+"#,
+    );
+
+    if has_search_query {
+        query_builder.push("query_score DESC");
+        query_builder.push(",");
+    }
+
+    query_builder.push(match sort.as_str() {
+        "old" => "r.created_at",
+        "popular" => "ru.follower_count DESC",
+        _ => "r.created_at DESC",
+    });
+
+    query_builder.push(
+        r#"
+    LIMIT $2 OFFSET $3
+)
+SELECT
+    -- Follower user
+    id,
+    name,
+    username,
+    avatar_id,
+    avatar_hex,
+    public_flags,
+    -- Boolean flags
+    TRUE AS "is_follower",
+    is_following,
+    is_friend
+FROM followers_result
+"#,
+    );
+
+    let mut db_query = query_builder
+        .build_query_as::<Follower>()
+        .bind(&followed_id)
+        .bind(10_i16)
+        .bind((page * 10) as i16);
+
+    if has_search_query {
+        db_query = db_query.bind(search_query);
+    }
+
+    let result = db_query.fetch_all(&data.db_pool).await?;
+
+    Ok(HttpResponse::Ok().json(result))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -229,12 +227,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Add some followers
+        // Add some followers.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
-            VALUES ($2, $1), ($3, $1)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($2, $1), ($3, $1)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(2_i64)
@@ -255,7 +253,152 @@ mod tests {
         let json = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
+
+        let followers = json.unwrap();
+
+        assert_eq!(followers.len(), 2);
+        assert!(followers.iter().all(|&follower| follower.is_follower));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("follower"))]
+    async fn can_return_is_following_flag_for_followers(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Add a follower.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($2, $1)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/followers")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be false initially.
+        let json = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await).unwrap();
+        let follower = &json[0];
+        assert!(!follower.is_following);
+
+        // Follow the user.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/followers")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be true.
+        let json = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await).unwrap();
+        let follower = &json[0];
+        assert!(follower.is_following);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("follower"))]
+    async fn can_return_is_friend_flag_for_followers(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Add a follower.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($2, $1)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/followers")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be false initially.
+        let json = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await).unwrap();
+        let follower = &json[0];
+        assert!(!follower.is_friend);
+
+        // Send a friend request to the follower.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/followers")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should still be false, as the request has not been accepted yet.
+        let json = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await).unwrap();
+        let follower = &json[0];
+        assert!(!follower.is_friend);
+
+        // Accept the friend request.
+        let update_result = sqlx::query(
+            r#"
+UPDATE friends
+SET accepted_at = NOW()
+WHERE transmitter_id = $1
+"#,
+        )
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(update_result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/followers")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be true.
+        let json = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await).unwrap();
+        let follower = &json[0];
+        assert!(follower.is_friend);
 
         Ok(())
     }
@@ -265,12 +408,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Add some followers
+        // Add some followers.
         sqlx::query(
             r#"
-           INSERT INTO relations(follower_id, followed_id)
-           VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(user_id.unwrap())
@@ -279,9 +422,9 @@ mod tests {
 
         sqlx::query(
             r#"
-           INSERT INTO relations(follower_id, followed_id)
-           VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(3_i64)
         .bind(user_id.unwrap())
@@ -309,12 +452,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Add some followers
+        // Add some followers.
         sqlx::query(
             r#"
-           INSERT INTO relations(follower_id, followed_id)
-           VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(user_id.unwrap())
@@ -323,9 +466,9 @@ mod tests {
 
         sqlx::query(
             r#"
-           INSERT INTO relations(follower_id, followed_id)
-           VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(3_i64)
         .bind(user_id.unwrap())
@@ -353,12 +496,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Add some followers
+        // Add some followers.
         sqlx::query(
             r#"
-           INSERT INTO relations(follower_id, followed_id)
-           VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(user_id.unwrap())
@@ -367,9 +510,9 @@ mod tests {
 
         sqlx::query(
             r#"
-           INSERT INTO relations(follower_id, followed_id)
-           VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(3_i64)
         .bind(user_id.unwrap())
@@ -397,12 +540,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Add some followers
+        // Add some followers.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
-            VALUES ($2, $1), ($3, $1)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($2, $1), ($3, $1)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(2_i64)
@@ -433,12 +576,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Add some followers
+        // Add some followers.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
-            VALUES ($2, $1), ($3, $1)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($2, $1), ($3, $1)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(2_i64)
@@ -448,7 +591,7 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 2);
 
-        // Should return all the followers initially
+        // Should return all the followers initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/followers")
@@ -462,13 +605,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
 
-        // Soft-delete one of the follower relation
+        // Soft-delete one of the follower relation.
         let result = sqlx::query(
             r#"
-            UPDATE relations
-            SET deleted_at = NOW()
-            WHERE follower_id = $1 AND followed_id = $2
-            "#,
+UPDATE relations
+SET deleted_at = NOW()
+WHERE follower_id = $1 AND followed_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(user_id.unwrap())
@@ -477,7 +620,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only one follower
+        // Should return only one follower.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/followers")
@@ -491,13 +634,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 1);
 
-        // Recover the follower relation
+        // Recover the follower relation.
         let result = sqlx::query(
             r#"
-            UPDATE relations
-            SET deleted_at = NULL
-            WHERE follower_id = $1 AND followed_id = $2
-            "#,
+UPDATE relations
+SET deleted_at = NULL
+WHERE follower_id = $1 AND followed_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(user_id.unwrap())
@@ -506,7 +649,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the followers again
+        // Should return all the followers again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
             .uri("/v1/me/followers")

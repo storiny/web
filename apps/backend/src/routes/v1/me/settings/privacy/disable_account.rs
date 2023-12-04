@@ -7,7 +7,7 @@ use crate::{
     utils::clear_user_sessions::clear_user_sessions,
     AppState,
 };
-use actix_extended_session::Session;
+use actix_http::StatusCode;
 use actix_web::{
     post,
     web,
@@ -33,68 +33,78 @@ struct Request {
 }
 
 #[post("/v1/me/settings/privacy/disable-account")]
+#[tracing::instrument(
+    name = "POST /v1/me/settings/privacy/disable-account",
+    skip_all,
+    fields(user = user.id().ok()),
+    err
+)]
 async fn post(
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Identity,
-    _session: Session,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            let db_user = sqlx::query(
-                r#"
-                SELECT password FROM users
-                WHERE id = $1
-                "#,
-            )
-            .bind(user_id)
-            .fetch_one(&data.db_pool)
-            .await?;
+    let user_id = user.id()?;
 
-            let user_password = db_user.get::<Option<String>, _>("password");
+    let pg_pool = &data.db_pool;
+    let mut txn = pg_pool.begin().await?;
 
-            if user_password.is_none() {
-                return Ok(HttpResponse::BadRequest()
-                    .json(ToastErrorResponse::new("You have not set a password yet")));
-            }
+    let user = sqlx::query(
+        r#"
+SELECT password FROM users
+WHERE id = $1
+"#,
+    )
+    .bind(&user_id)
+    .fetch_one(&mut *txn)
+    .await?;
 
-            match PasswordHash::new(&user_password.unwrap()) {
-                Ok(hash) => {
-                    match Argon2::default()
-                        .verify_password(&payload.current_password.as_bytes(), &hash)
-                    {
-                        Ok(_) => {
-                            // Deactivate the user
-                            match sqlx::query(
-                                r#"
-                                UPDATE users
-                                SET deactivated_at = NOW()
-                                WHERE id = $1
-                                "#,
-                            )
-                            .bind(user_id)
-                            .execute(&data.db_pool)
-                            .await?
-                            .rows_affected()
-                            {
-                                0 => Ok(HttpResponse::InternalServerError().finish()),
-                                _ => {
-                                    // Log the user out and destroy all the sessions
-                                    let _ = clear_user_sessions(&data.redis, user_id).await;
-                                    user.logout();
+    let user_password = user.get::<Option<String>, _>("password");
 
-                                    Ok(HttpResponse::NoContent().finish())
-                                }
-                            }
-                        }
-                        Err(_) => Ok(HttpResponse::Forbidden()
-                            .json(ToastErrorResponse::new("Invalid password"))),
-                    }
-                }
-                Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-            }
+    if user_password.is_none() {
+        return Err(ToastErrorResponse::new(None, "You have not set a password yet").into());
+    }
+
+    // Validate the current password.
+    {
+        let password_hash = PasswordHash::new(&user_password.unwrap())
+            .map_err(|error| AppError::InternalError(error.to_string()))?;
+
+        Argon2::default()
+            .verify_password(&payload.current_password.as_bytes(), &password_hash)
+            .map_err(|_| {
+                AppError::ToastError(ToastErrorResponse::new(
+                    Some(StatusCode::FORBIDDEN),
+                    "Invalid password",
+                ))
+            })?;
+    }
+
+    // Deactivate the user.
+    match sqlx::query(
+        r#"
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
+    )
+    .bind(&user_id)
+    .execute(&mut *txn)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(AppError::InternalError(
+            "user not found in database".to_string(),
+        )),
+        _ => {
+            // Log the user out and destroy all the sessions.
+            clear_user_sessions(&data.redis, user_id).await?;
+            user.logout();
+
+            txn.commit().await?;
+
+            Ok(HttpResponse::NoContent().finish())
         }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
     }
 }
 
@@ -123,7 +133,7 @@ mod tests {
     };
     use time::OffsetDateTime;
 
-    /// Returns sample hashed password
+    /// Returns a sample hashed password.
     fn get_sample_password() -> (String, String) {
         let password = "sample";
         let salt = SaltString::generate(&mut OsRng);
@@ -141,12 +151,12 @@ mod tests {
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
         let (password_hash, password) = get_sample_password();
 
-        // Insert the user
+        // Insert the user.
         let result = sqlx::query(
             r#"
-            INSERT INTO users (id, name, username, email, password)
-            VALUES ($1, $2, $3, $4, $5)
-            "#,
+INSERT INTO users (id, name, username, email, password)
+VALUES ($1, $2, $3, $4, $5)
+"#,
         )
         .bind(user_id.unwrap())
         .bind("Sample user")
@@ -158,7 +168,6 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Delete the user
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .uri("/v1/me/settings/privacy/disable-account")
@@ -170,12 +179,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // User should get deactivated
+        // User should get deactivated.
         let user = sqlx::query(
             r#"
-            SELECT deactivated_at FROM users
-            WHERE id = $1
-            "#,
+SELECT deactivated_at FROM users
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
@@ -209,19 +218,20 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_deactivating_account_for_invalid_password(
+    async fn can_reject_deactivating_an_account_for_an_invalid_password(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+
         let (password_hash, _) = get_sample_password();
 
-        // Insert the user
+        // Insert the user.
         let result = sqlx::query(
             r#"
-            INSERT INTO users (id, name, username, email, password)
-            VALUES ($1, $2, $3, $4, $5)
-            "#,
+INSERT INTO users (id, name, username, email, password)
+VALUES ($1, $2, $3, $4, $5)
+"#,
         )
         .bind(user_id.unwrap())
         .bind("Sample user")

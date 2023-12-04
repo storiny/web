@@ -32,69 +32,76 @@ struct Response {
 }
 
 #[patch("/v1/me/settings/avatar")]
+#[tracing::instrument(
+    name = "PATCH /v1/me/settings/avatar",
+    skip_all,
+    fields(
+        user = user.id().ok(),
+        payload
+    ),
+    err
+)]
 async fn patch(
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            if payload.avatar_id.is_none() {
-                sqlx::query(
-                    r#"
-                    UPDATE users
-                    SET
-                        avatar_id = NULL,
-                        avatar_hex = NULL
-                    WHERE id = $1
-                    "#,
-                )
-                .bind(user_id)
-                .execute(&data.db_pool)
-                .await?;
+    let user_id = user.id()?;
 
-                Ok(HttpResponse::NoContent().json(Response {
-                    avatar_id: None,
-                    avatar_hex: None,
-                }))
+    if payload.avatar_id.is_none() {
+        sqlx::query(
+            r#"
+UPDATE users
+SET
+    avatar_id = NULL,
+    avatar_hex = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&data.db_pool)
+        .await?;
+
+        Ok(HttpResponse::NoContent().json(Response {
+            avatar_id: None,
+            avatar_hex: None,
+        }))
+    } else {
+        let result = sqlx::query(
+            r#"
+WITH selected_asset AS (
+    SELECT key, hex
+    FROM assets
+    WHERE key = $2
+        AND user_id = $1
+    LIMIT 1
+)
+UPDATE users
+SET
+    avatar_id  = (SELECT key FROM selected_asset),
+    avatar_hex = (SELECT hex FROM selected_asset)
+WHERE
+    id = $1
+    AND (SELECT key FROM selected_asset) IS NOT NULL
+RETURNING avatar_id, avatar_hex
+"#,
+        )
+        .bind(&user_id)
+        .bind(&payload.avatar_id)
+        .fetch_one(&data.db_pool)
+        .await
+        .map_err(|error| {
+            if matches!(error, sqlx::Error::RowNotFound) {
+                AppError::ToastError(ToastErrorResponse::new(None, "Invalid avatar ID"))
             } else {
-                match sqlx::query(
-                    r#"
-                    WITH
-                        asset AS (SELECT key, hex
-                                  FROM assets
-                                  WHERE key = $2
-                                    AND user_id = $1
-                                  LIMIT 1
-                        )
-                    UPDATE users
-                    SET
-                        avatar_id  = (SELECT key FROM asset),
-                        avatar_hex = (SELECT hex FROM asset)
-                    WHERE
-                        id = $1
-                        AND (SELECT key FROM asset) IS NOT NULL
-                    RETURNING avatar_id, avatar_hex
-                    "#,
-                )
-                .bind(user_id)
-                .bind(&payload.avatar_id)
-                .fetch_one(&data.db_pool)
-                .await
-                {
-                    Ok(row) => Ok(HttpResponse::NoContent().json(Response {
-                        avatar_id: row.get::<Option<Uuid>, _>("avatar_id"),
-                        avatar_hex: row.get::<Option<String>, _>("avatar_hex"),
-                    })),
-                    Err(kind) => match kind {
-                        sqlx::Error::RowNotFound => Ok(HttpResponse::BadRequest()
-                            .json(ToastErrorResponse::new("Invalid avatar ID"))),
-                        _ => Ok(HttpResponse::InternalServerError().finish()),
-                    },
-                }
+                AppError::SqlxError(error)
             }
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+        })?;
+
+        Ok(HttpResponse::NoContent().json(Response {
+            avatar_id: result.get::<Option<Uuid>, _>("avatar_id"),
+            avatar_hex: result.get::<Option<String>, _>("avatar_hex"),
+        }))
     }
 }
 
@@ -122,13 +129,13 @@ mod tests {
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
         let avatar_id = Uuid::new_v4();
 
-        // Insert an asset
+        // Insert an asset.
         let result = sqlx::query(
             r#"
-            INSERT INTO assets(key, hex, height, width, user_id) 
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING id
-            "#,
+INSERT INTO assets (key, hex, height, width, user_id) 
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id
+"#,
         )
         .bind(&avatar_id)
         .bind("000000".to_string())
@@ -156,12 +163,12 @@ mod tests {
         assert_eq!(json.avatar_id, Some(avatar_id));
         assert_eq!(json.avatar_hex, Some("000000".to_string()));
 
-        // Avatar should get updated in the database
+        // Avatar should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT avatar_id, avatar_hex FROM users
-            WHERE id = $1
-            "#,
+SELECT avatar_id, avatar_hex FROM users
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
@@ -185,12 +192,12 @@ mod tests {
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
         let avatar_id = Uuid::new_v4();
 
-        // Insert an asset
+        // Insert an asset.
         let result = sqlx::query(
             r#"
-            INSERT INTO assets(key, hex, height, width, user_id) 
-            VALUES ($1, $2, $3, $4, $5)
-            "#,
+INSERT INTO assets (key, hex, height, width, user_id) 
+VALUES ($1, $2, $3, $4, $5)
+"#,
         )
         .bind(&avatar_id)
         .bind("000000".to_string())
@@ -202,15 +209,15 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Set avatar for the user
+        // Set avatar for the user.
         let result = sqlx::query(
             r#"
-            UPDATE users
-            SET avatar_id = $1,
-                avatar_hex = $2
-            WHERE id = $3
-            RETURNING avatar_id, avatar_hex
-            "#,
+UPDATE users
+SET avatar_id = $1,
+    avatar_hex = $2
+WHERE id = $3
+RETURNING avatar_id, avatar_hex
+"#,
         )
         .bind(&avatar_id)
         .bind("000000".to_string())
@@ -227,7 +234,7 @@ mod tests {
             "000000".to_string()
         );
 
-        // Reset the avatar
+        // Reset the avatar.
         let req = test::TestRequest::patch()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/settings/avatar")
@@ -242,12 +249,12 @@ mod tests {
         assert!(json.avatar_id.is_none());
         assert!(json.avatar_hex.is_none());
 
-        // Avatar should get updated in the database
+        // Avatar should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT avatar_id, avatar_hex FROM users
-            WHERE id = $1
-            "#,
+SELECT avatar_id, avatar_hex FROM users
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)

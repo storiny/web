@@ -44,13 +44,7 @@ pub async fn get_rsb_content_users(
     query_builder.push(if user_id.is_some() {
         r#"
         -- Boolean flags
-        CASE
-          WHEN COUNT("u->is_following") = 1
-              THEN
-              TRUE
-          ELSE
-              FALSE
-        END AS "is_following",
+        "u->is_following" IS NOT NULL AS "is_following",
         -- Weights
         COUNT("u->follower_relations") AS "relation_weight"
         "#

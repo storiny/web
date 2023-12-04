@@ -21,37 +21,34 @@ struct Response {
 }
 
 #[get("/v1/me/settings/mfa/recovery-codes")]
+#[tracing::instrument(
+    name = "GET /v1/me/settings/mfa/recovery-codes",
+    skip_all,
+    fields(user = user.id().ok()),
+    err
+)]
 async fn get(data: web::Data<AppState>, user: Identity) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            let result = sqlx::query_as::<_, Response>(
-                r#"
-                SELECT
-                    code AS "value",
-                    CASE
-                        WHEN used_at IS NULL
-                            THEN
-                            FALSE
-                        ELSE
-                            TRUE
-                    END AS "used"
-                FROM
-                    mfa_recovery_codes
-                WHERE
-                    user_id = $1
-                ORDER BY
-                    created_at DESC
-                LIMIT 10
-                "#,
-            )
-            .bind(user_id)
-            .fetch_all(&data.db_pool)
-            .await?;
+    let user_id = user.id()?;
 
-            Ok(HttpResponse::Ok().json(result))
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-    }
+    let result = sqlx::query_as::<_, Response>(
+        r#"
+SELECT
+    code AS "value",
+    used_at IS NOT NULL AS "used"
+FROM
+    mfa_recovery_codes
+WHERE
+    user_id = $1
+ORDER BY
+    created_at DESC
+LIMIT 10
+"#,
+    )
+    .bind(&user_id)
+    .fetch_all(&data.db_pool)
+    .await?;
+
+    Ok(HttpResponse::Ok().json(result))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -73,12 +70,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert some recovery codes
+        // Insert some recovery codes.
         let result = sqlx::query(
             r#"
-            INSERT INTO mfa_recovery_codes(code, user_id)
-            VALUES ($2, $1), ($3, $1)
-            "#,
+INSERT INTO mfa_recovery_codes(code, user_id)
+VALUES ($2, $1), ($3, $1)
+"#,
         )
         .bind(user_id.unwrap())
         .bind("0".repeat(12))
@@ -88,7 +85,6 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 2);
 
-        // Send the request
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
             .uri("/v1/me/settings/mfa/recovery-codes")

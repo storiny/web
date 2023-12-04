@@ -12,6 +12,7 @@ use crate::{
         incr_resource_limit::incr_resource_limit,
     },
     AppState,
+    S3Client,
 };
 use actix_web::{
     post,
@@ -33,10 +34,17 @@ use serde::{
     Serialize,
 };
 
+use crate::error::ToastErrorResponse;
+use actix_web::http::StatusCode;
 use sqlx::Row;
 use std::{
     io::Cursor,
     time::Duration,
+};
+use tracing::{
+    debug,
+    trace,
+    warn,
 };
 use uuid::Uuid;
 use validator::Validate;
@@ -61,7 +69,11 @@ struct Response {
     height: i16,
 }
 
-/// Return the URL of the photo image, with custom width and height query parameters.
+/// Returns the URL of the photo image, with custom width and height query parameters.
+///
+/// # Caution
+///
+/// This URL format is not documented by Pexels, but their public API follows this format.
 ///
 /// * `photo_id` - The ID of the photo resource.
 fn get_photo_image_url(photo_id: &str) -> String {
@@ -70,215 +82,284 @@ fn get_photo_image_url(photo_id: &str) -> String {
     )
 }
 
+/// Deletes an orphaned object from S3 if the database operation fails for some reason.
+///
+/// * `s3_client` - The S3 client instance.
+/// * `key` - The key of the orphaned object.
+async fn delete_orphaned_object(s3_client: &S3Client, key: &str) -> Result<(), AppError> {
+    s3_client
+        .delete_object()
+        .bucket(S3_UPLOADS_BUCKET)
+        .key(key)
+        .send()
+        .await
+        .map(|_| ())
+        .map_err(|error| {
+            AppError::InternalError(format!(
+                "removing orphaned object due to database error failed: {:?}",
+                error.into_service_error()
+            ))
+        })
+}
+
 #[post("/v1/me/gallery")]
+#[tracing::instrument(
+    name = "POST /v1/me/gallery",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        photo_id = %payload.id,
+        content_length = tracing::field::Empty,
+        buffer_size = tracing::field::Empty,
+        original_width = tracing::field::Empty,
+        original_height = tracing::field::Empty,
+        scaled_width = tracing::field::Empty,
+        scaled_height = tracing::field::Empty,
+        computed_color = tracing::field::Empty,
+        object_key = tracing::field::Empty
+    ),
+    err
+)]
 async fn post(
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => match payload.id.parse::<i64>() {
-            Ok(photo_id) => {
-                if !check_resource_limit(&data.redis, ResourceLimit::CreateAsset, user_id)
-                    .await
-                    .unwrap_or_default()
-                {
-                    return Ok(HttpResponse::TooManyRequests()
-                        .body("Daily limit exceeded for uploading media. Try again tomorrow."));
+    let user_id = user.id()?;
+    let photo_id = payload
+        .id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid photo ID"))?;
+
+    if !check_resource_limit(&data.redis, ResourceLimit::CreateAsset, user_id).await? {
+        return Err(ToastErrorResponse::new(
+            Some(StatusCode::TOO_MANY_REQUESTS),
+            "Daily limit exceeded for uploading media. Try again tomorrow.",
+        )
+        .into());
+    }
+
+    let reqwest_client = &data.reqwest_client;
+    let pexels_api_key = &data.config.pexels_api_key.to_string();
+
+    let response = reqwest_client
+        .get(format!("{}/{}/{}", PEXELS_API_URL, "v1/photos", photo_id))
+        .header(reqwest::header::AUTHORIZATION, pexels_api_key)
+        .send()
+        .await
+        .map_err(|error| {
+            AppError::InternalError(format!("unable to fetch the Pexels photo: {error:?}"))
+        })?;
+
+    if !response.status().is_success() {
+        return Err(AppError::InternalError(format!(
+            "unable to fetch the Pexels photo: {response:?}"
+        )));
+    };
+
+    let photo = serde_json::from_str::<Photo>(&response.text().await.unwrap_or_default()).map_err(
+        |error| {
+            AppError::InternalError(format!(
+                "unable to deserialize the Pexels response: {error:?}"
+            ))
+        },
+    )?;
+
+    let image_response = reqwest_client
+        .get(get_photo_image_url(&photo_id.to_string()))
+        .timeout(Duration::from_secs(30)) // 30 seconds download timeout
+        .send()
+        .await
+        .map_err(|error| {
+            AppError::InternalError(format!("unable to download the Pexels photo: {error:?}"))
+        })?;
+
+    let image_size = image_response.content_length().unwrap_or_default();
+
+    debug!("photo response `content-length` value: {image_size}");
+    tracing::Span::current().record("content_length", &image_size);
+
+    if image_size == 0 {
+        warn!("unexpected image size (0 bytes) from response: {image_response:?}");
+
+        return Err(ToastErrorResponse::new(
+            Some(StatusCode::UNPROCESSABLE_ENTITY),
+            "There was an issue while processing this image",
+        )
+        .into());
+    }
+
+    if image_size > MAX_FILE_SIZE {
+        return Err(ToastErrorResponse::new(
+            Some(StatusCode::UNPROCESSABLE_ENTITY),
+            "Photo is too large",
+        )
+        .into());
+    }
+
+    // Download the image into the memory.
+    let image_bytes = image_response.bytes().await.map_err(|error| {
+        AppError::InternalError(format!("unable to download the image: {error:?}"))
+    })?;
+
+    debug!("downloaded image buffer size: {} bytes", image_bytes.len());
+    tracing::Span::current().record("buffer_size", image_bytes.len());
+
+    let mut loaded_image = image::load_from_memory(&image_bytes).map_err(|error| {
+        AppError::InternalError(format!("unable to load the image from memory: {error:?}"))
+    })?;
+
+    let (mut img_width, mut img_height) = loaded_image.dimensions();
+
+    debug!("image dimensions: {img_width}px width, {img_height}px height");
+    tracing::Span::current().record("original_width", img_width);
+    tracing::Span::current().record("original_height", img_height);
+
+    // Scale down to 2k
+    if img_width > 2048 || img_height > 2048 {
+        loaded_image = loaded_image.resize(2048, 2048, FilterType::CatmullRom);
+        // Refresh dimensions
+        let (next_img_width, next_img_height) = loaded_image.dimensions();
+        img_width = next_img_width;
+        img_height = next_img_height;
+
+        debug!("image scaled down to new dimensions: {img_width}px width, {img_height}px height");
+        tracing::Span::current().record("scaled_width", img_width);
+        tracing::Span::current().record("scaled_height", img_height);
+    }
+
+    let img_alt = if let Some(photo_alt) = photo.alt {
+        debug!("alt text from the image response: {photo_alt}");
+
+        if photo_alt.chars().count() > 128 {
+            "".to_string()
+        } else {
+            photo_alt
+        }
+    } else {
+        "".to_string()
+    };
+
+    let hex_color = {
+        if let Some(avg_color) = photo.avg_color {
+            debug!("average color from the image response: {avg_color}");
+
+            let mut color = avg_color;
+
+            // Remove the `#` prefix from the hex color.
+            color.remove(0);
+            color
+        } else {
+            trace!(
+                "`avg_color` not received from Pexels, manually computing the dominant color for the image"
+            );
+
+            // Compute the dominant HEX color from the image.
+            let dom_color = get_colors(loaded_image.to_rgb8().as_bytes(), false);
+            let mut color = Rgb::from(
+                dom_color[0].into(),
+                dom_color[1].into(),
+                dom_color[2].into(),
+            )
+            .to_css_hex_string();
+            // Remove the `#` prefix from the hex color
+            color.remove(0);
+
+            color
+        }
+    };
+
+    debug!("computed the dominant color for the image: #{hex_color}");
+    tracing::Span::current().record("computed_color", format!("#{hex_color}"));
+
+    let s3_client = &data.s3_client;
+    let object_key = Uuid::new_v4();
+
+    tracing::Span::current().record("object_key", object_key.to_string());
+
+    debug!("uploading an image to S3 with size: {}", image_bytes.len());
+
+    let mut bytes: Vec<u8> = Vec::new();
+    loaded_image
+        // Write to a JPEG image with 80% quality.
+        .write_to(&mut Cursor::new(&mut bytes), ImageOutputFormat::Jpeg(80))
+        .map_err(|error| {
+            AppError::InternalError(format!(
+                "unable to write the image into the desired format: {error:?}"
+            ))
+        })?;
+
+    s3_client
+        .put_object()
+        .bucket(S3_UPLOADS_BUCKET)
+        .key(object_key.to_string())
+        .content_type(IMAGE_JPEG.to_string())
+        .body(bytes.into())
+        .send()
+        .await
+        .map_err(|error| {
+            AppError::InternalError(format!(
+                "unable to upload the image to s3: {:?}",
+                error.into_service_error()
+            ))
+        })?;
+
+    let pg_pool = &data.db_pool;
+    let mut txn = pg_pool.begin().await?;
+
+    // Insert an asset.
+    match sqlx::query(
+        r#"
+INSERT INTO assets (
+    key,
+    hex,
+    height,
+    width,
+    alt,
+    user_id
+)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id, rating
+"#,
+    )
+    .bind(&object_key)
+    .bind(&hex_color)
+    .bind(img_height as i16)
+    .bind(img_width as i16)
+    .bind(img_alt.clone())
+    .bind(user_id)
+    .fetch_one(&mut *txn)
+    .await
+    {
+        Ok(asset) => {
+            incr_resource_limit(&data.redis, ResourceLimit::CreateAsset, user_id).await?;
+
+            txn.commit().await?;
+
+            match txn.commit().await {
+                Ok(_) => {
+                    trace!("photo upload completed");
+
+                    Ok(HttpResponse::Created().json(Response {
+                        id: asset.get::<i64, _>("id"),
+                        key: object_key.to_string(),
+                        alt: img_alt.to_string(),
+                        hex: hex_color,
+                        width: img_width as i16,
+                        height: img_height as i16,
+                        rating: asset.get::<i16, _>("rating"),
+                    }))
                 }
-
-                let reqwest_client = &data.reqwest_client;
-                let api_key = &data.config.pexels_api_key.to_string();
-
-                match reqwest_client
-                    .get(format!("{}/{}/{}", PEXELS_API_URL, "v1/photos", photo_id))
-                    .header(reqwest::header::AUTHORIZATION, api_key)
-                    .send()
-                    .await
-                {
-                    Ok(result) => {
-                        if !result.status().is_success() {
-                            return Ok(HttpResponse::BadRequest().body("Photo not found"));
-                        };
-
-                        match serde_json::from_str::<Photo>(
-                            &result.text().await.unwrap_or_default(),
-                        ) {
-                            Ok(photo) => {
-                                match reqwest_client
-                                    .get(get_photo_image_url(&photo_id.to_string()))
-                                    .timeout(Duration::from_secs(30)) // 30 seconds download timeout
-                                    .send()
-                                    .await
-                                {
-                                    Ok(image) => {
-                                        let image_size = image.content_length().unwrap_or_default();
-
-                                        if image_size == 0 {
-                                            return Ok(HttpResponse::UnprocessableEntity().finish());
-                                        }
-
-                                        if image_size > MAX_FILE_SIZE {
-                                            return Ok(HttpResponse::UnprocessableEntity()
-                                                .body("Photo is too big"));
-                                        }
-
-                                        // Download the image
-                                        let image_bytes = image.bytes().await;
-
-                                        if image_bytes.is_err() {
-                                            return Ok(HttpResponse::UnprocessableEntity().finish());
-                                        }
-
-                                        match image::load_from_memory(&image_bytes.unwrap()) {
-                                            Ok(mut img) => {
-                                                let (mut img_w, mut img_h) = img.dimensions();
-
-                                                // Scale down to 2k
-                                                if img_w > 2048 || img_h > 2048 {
-                                                    img = img.resize(
-                                                        2048,
-                                                        2048,
-                                                        FilterType::CatmullRom,
-                                                    );
-                                                    let (next_img_w, next_img_h) = img.dimensions(); // Update dimensions
-                                                    img_w = next_img_w;
-                                                    img_h = next_img_h;
-                                                }
-
-                                                let img_alt = if let Some(photo_alt) = photo.alt {
-                                                    if photo_alt.chars().count() > 128 {
-                                                        "".to_string()
-                                                    } else {
-                                                        photo_alt
-                                                    }
-                                                } else {
-                                                    "".to_string()
-                                                };
-
-                                                let hex_color = if photo.avg_color.is_some() {
-                                                    let mut color =
-                                                        photo.avg_color.unwrap().clone();
-                                                    // Remove the `#` prefix from the hex color
-                                                    color.remove(0);
-                                                    color
-                                                } else {
-                                                    // Compute the dominant color from the image
-                                                    let dom_color =
-                                                        get_colors(img.to_rgb8().as_bytes(), false);
-                                                    let mut color = Rgb::from(
-                                                        dom_color[0].into(),
-                                                        dom_color[1].into(),
-                                                        dom_color[2].into(),
-                                                    )
-                                                    .to_css_hex_string();
-                                                    // Remove the `#` prefix from the hex color
-                                                    color.remove(0);
-                                                    color
-                                                };
-
-                                                let s3_client = &data.s3_client;
-                                                let object_key = Uuid::new_v4();
-
-                                                let mut bytes: Vec<u8> = Vec::new();
-                                                img.write_to(
-                                                    &mut Cursor::new(&mut bytes),
-                                                    ImageOutputFormat::Jpeg(80),
-                                                )
-                                                .unwrap();
-
-                                                match s3_client
-                                                    .put_object()
-                                                    .bucket(S3_UPLOADS_BUCKET)
-                                                    .key(object_key.to_string())
-                                                    .content_type(IMAGE_JPEG.to_string())
-                                                    .body(bytes.into())
-                                                    .send()
-                                                    .await
-                                                {
-                                                    Ok(_) => {}
-                                                    Err(_) => {
-                                                        return Ok(
-                                                            HttpResponse::UnprocessableEntity()
-                                                                .body("Could not upload the photo"),
-                                                        );
-                                                    }
-                                                };
-
-                                                // Insert asset
-                                                match sqlx::query(
-                                                    r#"
-                                                    INSERT INTO assets(
-                                                        key,
-                                                        hex,
-                                                        height,
-                                                        width,
-                                                        alt,
-                                                        user_id
-                                                    )
-                                                    VALUES ($1, $2, $3, $4, $5, $6)
-                                                    RETURNING id, rating
-                                                    "#,
-                                                )
-                                                .bind(&object_key)
-                                                .bind(&hex_color)
-                                                .bind(img_h as i16)
-                                                .bind(img_w as i16)
-                                                .bind(img_alt.clone())
-                                                .bind(user_id)
-                                                .fetch_one(&data.db_pool)
-                                                .await
-                                                {
-                                                    Ok(asset) => {
-                                                        let _ = incr_resource_limit(
-                                                            &data.redis,
-                                                            ResourceLimit::CreateAsset,
-                                                            user_id,
-                                                        )
-                                                        .await;
-
-                                                        Ok(HttpResponse::Created().json(Response {
-                                                            id: asset.get::<i64, _>("id"),
-                                                            key: object_key.to_string(),
-                                                            alt: img_alt.to_string(),
-                                                            hex: hex_color,
-                                                            width: img_w as i16,
-                                                            height: img_h as i16,
-                                                            rating: asset.get::<i16, _>("rating"),
-                                                        }))
-                                                    }
-                                                    Err(_) => {
-                                                        // Delete the object from S3 if the database
-                                                        // operation fails for
-                                                        // some reason.
-                                                        let _ = s3_client
-                                                            .delete_object()
-                                                            .bucket(S3_UPLOADS_BUCKET)
-                                                            .key(object_key.to_string())
-                                                            .send()
-                                                            .await;
-
-                                                        Ok(HttpResponse::InternalServerError()
-                                                            .finish())
-                                                    }
-                                                }
-                                            }
-                                            Err(_) => Ok(HttpResponse::UnprocessableEntity()
-                                                .body("Unable to decode the photo")),
-                                        }
-                                    }
-                                    Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-                                }
-                            }
-                            Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-                        }
-                    }
-                    Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+                Err(error) => {
+                    delete_orphaned_object(s3_client, &object_key.to_string()).await?;
+                    Err(AppError::SqlxError(error))
                 }
             }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid photo ID")),
-        },
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+        }
+        Err(error) => {
+            delete_orphaned_object(s3_client, &object_key.to_string()).await?;
+            Err(AppError::SqlxError(error))
+        }
     }
 }
 
@@ -350,14 +431,14 @@ mod tests {
 
             let json = serde_json::from_str::<Response>(&res_to_string(res).await).unwrap();
 
-            // Asset should be present in the database
+            // Asset should be present in the database.
             let result = sqlx::query(
                 r#"
-                SELECT EXISTS (
-                    SELECT 1 FROM assets
-                    WHERE user_id = $1 AND id = $2
-                )
-                "#,
+SELECT EXISTS (
+    SELECT 1 FROM assets
+    WHERE user_id = $1 AND id = $2
+)
+"#,
             )
             .bind(user_id.unwrap())
             .bind(json.id)
@@ -366,7 +447,7 @@ mod tests {
 
             assert!(result.get::<bool, _>("exists"));
 
-            // Should also increment the resource limit
+            // Should also increment the resource limit.
             let result = get_resource_limit(
                 &ctx.redis_pool,
                 ResourceLimit::CreateAsset,
@@ -381,13 +462,12 @@ mod tests {
 
         #[test_context(RedisTestContext)]
         #[sqlx::test]
-        async fn can_reject_photo_on_exceeding_the_resource_limit(
+        async fn can_reject_a_photo_upload_request_on_exceeding_the_resource_limit(
             ctx: &mut RedisTestContext,
             pool: PgPool,
         ) -> sqlx::Result<()> {
             let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-            // Exceed the resource limit
             exceed_resource_limit(
                 &ctx.redis_pool,
                 ResourceLimit::CreateAsset,

@@ -20,36 +20,42 @@ struct Fragments {
 }
 
 #[delete("/v1/me/replies/{reply_id}")]
+#[tracing::instrument(
+    name = "DELETE /v1/me/replies/{reply_id}",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        reply_id = %path.reply_id
+    ),
+    err
+)]
 async fn delete(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            match path.reply_id.parse::<i64>() {
-                Ok(reply_id) => {
-                    match sqlx::query(
-                        r#"
-                    DELETE FROM replies
-                    WHERE user_id = $1 AND id = $2
-                    "#,
-                    )
-                    .bind(user_id)
-                    .bind(reply_id)
-                    .execute(&data.db_pool)
-                    .await?
-                    .rows_affected()
-                    {
-                        0 => Ok(HttpResponse::BadRequest()
-                            .json(ToastErrorResponse::new("Reply not found"))),
-                        _ => Ok(HttpResponse::NoContent().finish()),
-                    }
-                }
-                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid reply ID")),
-            }
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let user_id = user.id()?;
+    let reply_id = path
+        .reply_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid reply ID"))?;
+
+    match sqlx::query(
+        r#"
+DELETE FROM replies
+WHERE
+    user_id = $1
+    AND id = $2
+"#,
+    )
+    .bind(&user_id)
+    .bind(&reply_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(ToastErrorResponse::new(None, "Reply not found").into()),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -71,16 +77,16 @@ mod tests {
     };
 
     #[sqlx::test(fixtures("reply"))]
-    async fn can_remove_a_reply(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_delete_a_reply(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
-        // Insert a reply
+        // Insert a reply.
         let result = sqlx::query(
             r#"
-            INSERT INTO replies(id, content, user_id, comment_id)
-            VALUES ($1, $2, $3, $4)
-            "#,
+INSERT INTO replies (id, content, user_id, comment_id)
+VALUES ($1, $2, $3, $4)
+"#,
         )
         .bind(4_i64)
         .bind("Sample content")
@@ -99,14 +105,14 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Reply should not be present in the database
+        // Reply should not be present in the database.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM replies
-                WHERE id = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM replies
+    WHERE id = $1
+)
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)

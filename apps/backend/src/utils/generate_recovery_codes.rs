@@ -1,9 +1,10 @@
+use anyhow::anyhow;
 use nanoid::nanoid;
 
-static RECOVERY_CODE_LENGTH: usize = 12;
+pub const RECOVERY_CODE_LENGTH: usize = 12;
 
 /// Generates a unique set of 10 random 12-character recovery codes.
-pub fn generate_recovery_codes() -> Result<[String; 12], ()> {
+pub fn generate_recovery_codes() -> anyhow::Result<[String; 12]> {
     let character_set: [char; 36] = [
         '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
         'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
@@ -19,7 +20,7 @@ pub fn generate_recovery_codes() -> Result<[String; 12], ()> {
         while recovery_codes.contains(&next_recovery_code) {
             // This case should be rare.
             if generate_attempts >= 100 {
-                return Err(());
+                return Err(anyhow!("exceeded max generation attempts"));
             }
 
             generate_attempts += 1;
@@ -29,7 +30,9 @@ pub fn generate_recovery_codes() -> Result<[String; 12], ()> {
         recovery_codes.push(next_recovery_code);
     }
 
-    recovery_codes.try_into().map_err(|_| ())
+    recovery_codes
+        .try_into()
+        .map_err(|error| anyhow!("unable to perform the conversion: {error:?}"))
 }
 
 #[cfg(test)]

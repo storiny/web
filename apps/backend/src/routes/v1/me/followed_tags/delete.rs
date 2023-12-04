@@ -17,33 +17,42 @@ struct Fragments {
 }
 
 #[delete("/v1/me/followed-tags/{tag_id}")]
+#[tracing::instrument(
+    name = "DELETE /v1/me/followed-tags/{tag_id}",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        tag_id = %path.tag_id
+    ),
+    err
+)]
 async fn delete(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => match path.tag_id.parse::<i64>() {
-            Ok(tag_id) => {
-                match sqlx::query(
-                    r#"
-                    DELETE FROM tag_followers
-                    WHERE user_id = $1 AND tag_id = $2
-                    "#,
-                )
-                .bind(user_id)
-                .bind(tag_id)
-                .execute(&data.db_pool)
-                .await?
-                .rows_affected()
-                {
-                    0 => Ok(HttpResponse::BadRequest().body("Tag or relation not found")),
-                    _ => Ok(HttpResponse::NoContent().finish()),
-                }
-            }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid tag ID")),
-        },
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let user_id = user.id()?;
+    let tag_id = path
+        .tag_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid tag ID"))?;
+
+    match sqlx::query(
+        r#"
+DELETE FROM tag_followers
+WHERE
+    user_id = $1
+    AND tag_id = $2
+"#,
+    )
+    .bind(&user_id)
+    .bind(&tag_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(AppError::from("Tag or relation not found")),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -69,12 +78,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
-        // Follow the tag
+        // Follow the tag.
         let result = sqlx::query(
             r#"
-            INSERT INTO tag_followers(user_id, tag_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO tag_followers (user_id, tag_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(user_id)
         .bind(2_i64)
@@ -91,14 +100,14 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Followed tag relation should not be present in the database
+        // Followed tag relation should not be present in the database.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM tag_followers
-                WHERE user_id = $1 AND tag_id = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM tag_followers
+    WHERE user_id = $1 AND tag_id = $2
+)
+"#,
         )
         .bind(user_id)
         .bind(2_i64)

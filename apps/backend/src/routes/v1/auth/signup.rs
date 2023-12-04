@@ -18,6 +18,7 @@ use crate::{
     AppState,
 };
 use actix_web::{
+    http::StatusCode,
     post,
     web,
     HttpResponse,
@@ -32,7 +33,6 @@ use argon2::{
     Argon2,
     PasswordHasher,
 };
-use email_address::EmailAddress;
 use nanoid::nanoid;
 use serde::{
     Deserialize,
@@ -70,153 +70,153 @@ struct EmailVerificationEmailTemplateData {
 }
 
 #[post("/v1/auth/signup")]
+#[tracing::instrument(
+    name = "POST /v1/auth/signup",
+    skip_all,
+    fields(
+        email = %payload.email,
+        name = %payload.name,
+        username = %payload.username,
+        wpm = %payload.wpm
+    ),
+    err
+)]
 async fn post(
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Option<Identity>,
     templated_email_job_storage: web::Data<JobStorage<TemplatedEmailJob>>,
 ) -> Result<HttpResponse, AppError> {
-    // Return if the user maintains a valid session
+    // Return early if the user is already logged-in.
     if user.is_some() {
-        return Ok(
-            HttpResponse::BadRequest().json(ToastErrorResponse::new("You are already logged-in"))
-        );
+        return Err(ToastErrorResponse::new(None, "You are already logged in").into());
     }
 
     let mut form_errors: Vec<(&str, &str)> = vec![];
 
-    if !EmailAddress::is_valid(&payload.email) {
-        form_errors.push(("email", "Invalid e-mail"));
-    } else {
-        // Check for duplicate e-mail
-        let email_check = sqlx::query(
+    // Check for the uniqueness of the e-mail.
+    {
+        let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM users
-                WHERE email = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM users
+    WHERE email = $1
+)
+"#,
         )
         .bind(&payload.email)
         .fetch_one(&data.db_pool)
         .await?;
 
-        if email_check.get::<bool, _>("exists") {
+        if result.get::<bool, _>("exists") {
             form_errors.push(("email", "This e-mail is already in use"));
         }
     }
 
     let slugged_username = slugify!(&payload.username, separator = "_", max_length = 24);
 
-    // Chekc if username is reserved
+    // Check of a valid username.
     if RESERVED_USERNAMES.contains(&slugged_username.as_str()) {
         form_errors.push(("username", "This username is not available"));
     } else {
-        // Check for duplicate username
-        let username_check = sqlx::query(
+        let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM users
-                WHERE username = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM users
+    WHERE username = $1
+)
+"#,
         )
         .bind(&slugged_username)
         .fetch_one(&data.db_pool)
         .await?;
 
-        if username_check.get::<bool, _>("exists") {
+        if result.get::<bool, _>("exists") {
             form_errors.push(("username", "This username is already in use"));
         }
     }
 
-    // Return duplication errors if not empty
     if !form_errors.is_empty() {
-        return Ok(HttpResponse::Conflict().json(FormErrorResponse::new(form_errors)));
+        return Err(FormErrorResponse::new(Some(StatusCode::CONFLICT), form_errors).into());
     }
 
-    // Generate a hash from the password
-    match Argon2::default().hash_password(
-        &payload.password.as_bytes(),
-        &SaltString::generate(&mut OsRng),
-    ) {
-        Ok(hashed_password) => {
-            let token_id = nanoid!(48);
+    let hashed_password = Argon2::default()
+        .hash_password(
+            &payload.password.as_bytes(),
+            &SaltString::generate(&mut OsRng),
+        )
+        .map_err(|error| AppError::InternalError(error.to_string()))?;
 
-            // Generate the token hash
-            match Argon2::default()
-                .hash_password(&token_id.as_bytes(), &SaltString::generate(&mut OsRng))
-            {
-                Ok(hashed_token) => {
-                    let pg_pool = &data.db_pool;
-                    let mut txn = pg_pool.begin().await?;
+    let token_id = nanoid!(48);
 
-                    // Insert the user
-                    let user_insert_result = sqlx::query(
-                        r#"
-                        INSERT INTO users (email, name, username, password, wpm)
-                        VALUES ($1, $2, $3, $4, $5)
-                        RETURNING id
-                        "#,
-                    )
-                    .bind(&payload.email)
-                    .bind(&payload.name)
-                    .bind(&slugged_username)
-                    .bind(hashed_password.to_string())
-                    .bind((&payload.wpm).clone() as i32)
-                    .fetch_one(&mut *txn)
-                    .await?;
+    let hashed_token = Argon2::default()
+        .hash_password(&token_id.as_bytes(), &SaltString::generate(&mut OsRng))
+        .map_err(|error| AppError::InternalError(error.to_string()))?;
 
-                    let user_id = user_insert_result.get::<i64, _>("id");
+    let pg_pool = &data.db_pool;
+    let mut txn = pg_pool.begin().await?;
 
-                    // Insert email verification token
-                    sqlx::query(
-                        r#"
-                        INSERT INTO tokens (id, type, user_id, expires_at)
-                        VALUES ($1, $2, $3, $4)
-                        "#,
-                    )
-                    .bind(hashed_token.to_string())
-                    .bind(TokenType::EmailVerification as i16)
-                    .bind(user_id)
-                    .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
-                    .execute(&mut *txn)
-                    .await?;
+    // Insert the user.
+    let result = sqlx::query(
+        r#"
+INSERT INTO users (email, name, username, password, wpm)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id
+"#,
+    )
+    .bind(&payload.email)
+    .bind(&payload.name)
+    .bind(&slugged_username)
+    .bind(hashed_password.to_string())
+    .bind((&payload.wpm).clone() as i32)
+    .fetch_one(&mut *txn)
+    .await?;
 
-                    txn.commit().await?;
+    let user_id = result.get::<i64, _>("id");
 
-                    let full_name = payload.name.clone();
-                    let first_name = full_name.split(" ").collect::<Vec<_>>()[0];
-                    let verification_link =
-                        format!("https://storiny.com/auth/verify-email/{}", token_id);
+    // Insert the email verification token.
+    sqlx::query(
+        r#"
+INSERT INTO tokens (id, type, user_id, expires_at)
+VALUES ($1, $2, $3, $4)
+"#,
+    )
+    .bind(hashed_token.to_string())
+    .bind(TokenType::EmailVerification as i16)
+    .bind(&user_id)
+    .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
+    .execute(&mut *txn)
+    .await?;
 
-                    match serde_json::to_string(&EmailVerificationEmailTemplateData {
-                        email: (&payload.email).to_string(),
-                        link: verification_link,
-                        name: first_name.to_string(),
-                    }) {
-                        Ok(template_data) => {
-                            let mut templated_email_job =
-                                (&*templated_email_job_storage.into_inner()).clone();
+    // Push an email job.
 
-                            let _ = templated_email_job
-                                .push(TemplatedEmailJob {
-                                    destination: (&payload.email).to_string(),
-                                    template: EmailTemplate::EmailVerification,
-                                    template_data,
-                                })
-                                .await;
+    let full_name = payload.name.clone();
+    let first_name = full_name.split(" ").collect::<Vec<_>>()[0];
+    let verification_link = format!("https://storiny.com/auth/verify-email/{}", token_id);
 
-                            Ok(HttpResponse::Created().finish())
-                        }
-                        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-                    }
-                }
-                Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-            }
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-    }
+    let template_data = serde_json::to_string(&EmailVerificationEmailTemplateData {
+        email: (&payload.email).to_string(),
+        link: verification_link,
+        name: first_name.to_string(),
+    })
+    .map_err(|error| {
+        AppError::InternalError(format!("unable to serialize the template data: {error:?}"))
+    })?;
+
+    let mut templated_email_job = (&*templated_email_job_storage.into_inner()).clone();
+
+    templated_email_job
+        .push(TemplatedEmailJob {
+            destination: (&payload.email).to_string(),
+            template: EmailTemplate::EmailVerification,
+            template_data,
+        })
+        .await
+        .map_err(|error| AppError::InternalError(format!("unable to push the job: {error:?}")))?;
+
+    txn.commit().await?;
+
+    Ok(HttpResponse::Created().finish())
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -256,21 +256,18 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // User should be present in the database
+        // User should be present in the database.
         let user = sqlx::query(
             r#"
-            SELECT email, name, password, wpm FROM users
-            WHERE username = $1
-            "#,
+SELECT email, name, password, wpm FROM users
+WHERE username = $1
+"#,
         )
         .bind("some_user")
         .fetch_one(&mut *conn)
         .await?;
 
-        // Assert the columns from the database
         assert_eq!(user.get::<String, _>("name"), "Some user".to_string());
-
-        // Check whether the hashed password matches
         assert!(
             Argon2::default()
                 .verify_password(
@@ -280,14 +277,14 @@ mod tests {
                 .is_ok()
         );
 
-        // Should also insert an e-mail verification token
+        // Should also insert an e-mail verification token.
         let token = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM tokens
-                WHERE type = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM tokens
+    WHERE type = $1
+)
+"#,
         )
         .bind(TokenType::EmailVerification as i16)
         .fetch_one(&mut *conn)
@@ -299,16 +296,18 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_signup_when_the_email_already_exists(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_a_signup_request_when_the_email_is_already_in_use(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
 
-        // Insert user into the database
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email)
-            VALUES ($1, $2, $3)
-            "#,
+INSERT INTO users (name, username, email)
+VALUES ($1, $2, $3)
+"#,
         )
         .bind("Some name")
         .bind("some_username")
@@ -335,16 +334,18 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_signup_when_the_username_already_exists(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_a_signup_request_when_the_username_is_already_in_use(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
 
-        // Insert user into the database
+        // Insert the user.
         sqlx::query(
             r#"
-            INSERT INTO users (name, username, email)
-            VALUES ($1, $2, $3)
-            "#,
+INSERT INTO users (name, username, email)
+VALUES ($1, $2, $3)
+"#,
         )
         .bind("Some name")
         .bind("some_username")
@@ -372,7 +373,9 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_signup_for_reserved_usernames(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_a_signup_request_for_a_reserved_usernames(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let app = init_app_for_test(post, pool, false, false, None).await.0;
 
         let req = test::TestRequest::post()

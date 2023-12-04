@@ -2,16 +2,20 @@ use crate::{
     utils::get_user_sessions::get_user_sessions,
     RedisPool,
 };
+use anyhow::anyhow;
 
 /// Clears all the active sessions for a user using its ID.
 ///
 /// * `redis_pool` - The Redis connection pool.
 /// * `user_id` - The target user ID.
-pub async fn clear_user_sessions(redis_pool: &RedisPool, user_id: i64) -> Result<(), ()> {
-    let mut conn = redis_pool.get().await.map_err(|_| ())?;
-    let session_keys = get_user_sessions(redis_pool, user_id)
+pub async fn clear_user_sessions(redis_pool: &RedisPool, user_id: i64) -> anyhow::Result<()> {
+    let mut conn = redis_pool
+        .get()
         .await
-        .map_err(|_| ())?
+        .map_err(|error| anyhow!("unable to acquire a connection from the Redis pool: {error:?}"));
+
+    let session_keys = get_user_sessions(redis_pool, user_id)
+        .await?
         .iter()
         .map(|(key, _)| key.to_string())
         .collect::<Vec<_>>();
@@ -23,7 +27,9 @@ pub async fn clear_user_sessions(redis_pool: &RedisPool, user_id: i64) -> Result
         pipe.del(key).ignore();
     }
 
-    pipe.query_async::<_, ()>(&mut *conn).await.map_err(|_| ())
+    pipe.query_async::<_, ()>(&mut *conn)
+        .await
+        .map_err(|error| anyhow!("unable to clear the sessions: {error:?}"))
 }
 
 #[cfg(test)]

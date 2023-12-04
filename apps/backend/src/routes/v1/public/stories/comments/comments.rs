@@ -203,15 +203,7 @@ async fn get(
             );
 
             query_builder.push(if user_id.is_some() {
-                r#"
-                CASE
-                    WHEN COUNT("c->is_liked") = 1
-                        THEN
-                        TRUE
-                    ELSE
-                        FALSE
-                END AS "is_liked"
-                "#
+                r#""c->is_liked" IS NOT NULL AS "is_liked""#
             } else {
                 r#"FALSE as "is_liked""#
             });
@@ -313,7 +305,7 @@ async fn get(
                     created_at,
                     edited_at,
                     -- Joins
-                    -- This underscore prevents selecting the actual `user` from postgres
+                    -- This underscore prevents selecting the actual `user` from Postgres
                     _user as "user",
                     story,
                     -- Boolean flags
@@ -369,7 +361,7 @@ mod tests {
         // Insert some comments
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $2, $3), ($1, $2, $3)
             "#,
         )
@@ -404,7 +396,7 @@ mod tests {
         // Insert some comments
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
+            INSERT INTO comments (id, content, user_id, story_id)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -417,7 +409,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
+            INSERT INTO comments (id, content, user_id, story_id)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -451,7 +443,7 @@ mod tests {
         // Insert some comments
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
+            INSERT INTO comments (id, content, user_id, story_id)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -464,7 +456,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
+            INSERT INTO comments (id, content, user_id, story_id)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -498,7 +490,7 @@ mod tests {
         // Insert some comments
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id, reply_count)
+            INSERT INTO comments (id, content, user_id, story_id, reply_count)
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -512,7 +504,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
+            INSERT INTO comments (id, content, user_id, story_id)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -549,7 +541,7 @@ mod tests {
         // Insert some comments
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
+            INSERT INTO comments (id, content, user_id, story_id)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -562,7 +554,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id, reply_count)
+            INSERT INTO comments (id, content, user_id, story_id, reply_count)
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -600,7 +592,7 @@ mod tests {
         // Insert some comments
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id, like_count)
+            INSERT INTO comments (id, content, user_id, story_id, like_count)
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -614,7 +606,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
+            INSERT INTO comments (id, content, user_id, story_id)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -651,7 +643,7 @@ mod tests {
         // Insert some comments
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
+            INSERT INTO comments (id, content, user_id, story_id)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -664,7 +656,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id, like_count)
+            INSERT INTO comments (id, content, user_id, story_id, like_count)
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -702,7 +694,7 @@ mod tests {
         // Insert some comments
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
+            INSERT INTO comments (id, content, user_id, story_id)
             VALUES ($1, 'one', $3, $4), ($2, 'two', $3, $4)
             "#,
         )
@@ -742,7 +734,7 @@ mod tests {
         // Insert some comments
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
+            INSERT INTO comments (id, content, user_id, story_id)
             VALUES (4, $1, $2, $3), (5, $1, $2, $3)
             "#,
         )
@@ -834,7 +826,7 @@ mod tests {
         // Insert some comments
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $2, $3), ($1, $2, $3)
             "#,
         )
@@ -870,7 +862,7 @@ mod tests {
         // Insert some comments
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
+            INSERT INTO comments (id, content, user_id, story_id)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -883,7 +875,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
+            INSERT INTO comments (id, content, user_id, story_id)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -918,7 +910,7 @@ mod tests {
         // Insert some comments
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
+            INSERT INTO comments (id, content, user_id, story_id)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -931,7 +923,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
+            INSERT INTO comments (id, content, user_id, story_id)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -968,7 +960,7 @@ mod tests {
         // Insert some comments
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id, reply_count)
+            INSERT INTO comments (id, content, user_id, story_id, reply_count)
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -982,7 +974,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
+            INSERT INTO comments (id, content, user_id, story_id)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -1022,7 +1014,7 @@ mod tests {
         // Insert some comments
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
+            INSERT INTO comments (id, content, user_id, story_id)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -1035,7 +1027,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id, reply_count)
+            INSERT INTO comments (id, content, user_id, story_id, reply_count)
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -1076,7 +1068,7 @@ mod tests {
         // Insert some comments
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id, like_count)
+            INSERT INTO comments (id, content, user_id, story_id, like_count)
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -1090,7 +1082,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
+            INSERT INTO comments (id, content, user_id, story_id)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -1130,7 +1122,7 @@ mod tests {
         // Insert some comments
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
+            INSERT INTO comments (id, content, user_id, story_id)
             VALUES ($1, $2, $3, $4)
             "#,
         )
@@ -1143,7 +1135,7 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id, like_count)
+            INSERT INTO comments (id, content, user_id, story_id, like_count)
             VALUES ($1, $2, $3, $4, $5)
             "#,
         )
@@ -1182,7 +1174,7 @@ mod tests {
         // Insert some comments
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comments(content, user_id, story_id)
+            INSERT INTO comments (content, user_id, story_id)
             VALUES ($1, $3, $4), ($2, $3, $4)
             "#,
         )
@@ -1225,7 +1217,7 @@ mod tests {
         // Insert some comments
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comments(id, content, user_id, story_id)
+            INSERT INTO comments (id, content, user_id, story_id)
             VALUES (4, $1, $2, $3), (5, $1, $2, $3)
             "#,
         )

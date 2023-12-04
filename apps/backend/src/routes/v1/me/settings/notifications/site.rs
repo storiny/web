@@ -28,46 +28,55 @@ struct Request {
 }
 
 #[patch("/v1/me/settings/notifications/site")]
+#[tracing::instrument(
+    name = "PATCH /v1/me/settings/notifications/site",
+    skip_all,
+    fields(
+        user = user.id().ok(),
+        payload
+    ),
+    err
+)]
 async fn patch(
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            match sqlx::query(
-                r#"
-                UPDATE notification_settings
-                SET
-                    push_features_and_updates = $2,
-                    push_stories = $3,
-                    push_story_likes = $4,
-                    push_tags = $5,
-                    push_comments = $6,
-                    push_replies = $7,
-                    push_followers = $8,
-                    push_friend_requests = $9
-                WHERE user_id = $1
-                "#,
-            )
-            .bind(user_id)
-            .bind(&payload.features_and_updates)
-            .bind(&payload.stories)
-            .bind(&payload.story_likes)
-            .bind(&payload.tags)
-            .bind(&payload.comments)
-            .bind(&payload.replies)
-            .bind(&payload.new_followers)
-            .bind(&payload.friend_requests)
-            .execute(&data.db_pool)
-            .await?
-            .rows_affected()
-            {
-                0 => Ok(HttpResponse::InternalServerError().finish()),
-                _ => Ok(HttpResponse::NoContent().finish()),
-            }
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let user_id = user.id()?;
+
+    match sqlx::query(
+        r#"
+UPDATE notification_settings
+SET
+    push_features_and_updates = $2,
+    push_stories = $3,
+    push_story_likes = $4,
+    push_tags = $5,
+    push_comments = $6,
+    push_replies = $7,
+    push_followers = $8,
+    push_friend_requests = $9
+WHERE user_id = $1
+"#,
+    )
+    .bind(&user_id)
+    .bind(&payload.features_and_updates)
+    .bind(&payload.stories)
+    .bind(&payload.story_likes)
+    .bind(&payload.tags)
+    .bind(&payload.comments)
+    .bind(&payload.replies)
+    .bind(&payload.new_followers)
+    .bind(&payload.friend_requests)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(AppError::InternalError(
+            "unable to find a matching row in `notification_settings` table for the user"
+                .to_string(),
+        )),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -90,7 +99,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
-        // Disable all site notifications
+        // Disable all site notifications.
         let req = test::TestRequest::patch()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/settings/notifications/site")
@@ -109,21 +118,21 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Notification settings should get updated in the database
+        // Notification settings should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT
-                push_features_and_updates,
-                push_stories,
-                push_story_likes,
-                push_tags,
-                push_comments,
-                push_replies,
-                push_followers,
-                push_friend_requests
-            FROM notification_settings
-            WHERE user_id = $1
-            "#,
+SELECT
+    push_features_and_updates,
+    push_stories,
+    push_story_likes,
+    push_tags,
+    push_comments,
+    push_replies,
+    push_followers,
+    push_friend_requests
+FROM notification_settings
+WHERE user_id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
@@ -138,7 +147,7 @@ mod tests {
         assert!(!result.get::<bool, _>("push_followers"));
         assert!(!result.get::<bool, _>("push_friend_requests"));
 
-        // Enable all site notifications
+        // Enable all the site notifications.
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
             .uri("/v1/me/settings/notifications/site")
@@ -157,21 +166,21 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Notification settings should get updated in the database
+        // Notification settings should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT
-                push_features_and_updates,
-                push_stories,
-                push_story_likes,
-                push_tags,
-                push_comments,
-                push_replies,
-                push_followers,
-                push_friend_requests
-            FROM notification_settings
-            WHERE user_id = $1
-            "#,
+SELECT
+    push_features_and_updates,
+    push_stories,
+    push_story_likes,
+    push_tags,
+    push_comments,
+    push_replies,
+    push_followers,
+    push_friend_requests
+FROM notification_settings
+WHERE user_id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)

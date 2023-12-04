@@ -17,33 +17,42 @@ struct Fragments {
 }
 
 #[delete("/v1/me/liked-replies/{reply_id}")]
+#[tracing::instrument(
+    name = "DELETE /v1/me/liked-replies/{reply_id}",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        reply_id = %path.reply_id
+    ),
+    err
+)]
 async fn delete(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => match path.reply_id.parse::<i64>() {
-            Ok(reply_id) => {
-                match sqlx::query(
-                    r#"
-                    DELETE FROM reply_likes
-                    WHERE user_id = $1 AND reply_id = $2
-                    "#,
-                )
-                .bind(user_id)
-                .bind(reply_id)
-                .execute(&data.db_pool)
-                .await?
-                .rows_affected()
-                {
-                    0 => Ok(HttpResponse::BadRequest().body("Reply like not found")),
-                    _ => Ok(HttpResponse::NoContent().finish()),
-                }
-            }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid reply ID")),
-        },
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let user_id = user.id()?;
+    let reply_id = path
+        .reply_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid reply ID"))?;
+
+    match sqlx::query(
+        r#"
+DELETE FROM reply_likes
+WHERE
+    user_id = $1
+    AND reply_id = $2
+"#,
+    )
+    .bind(&user_id)
+    .bind(&reply_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(AppError::from("Reply like not found")),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -69,12 +78,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
-        // Like a reply
+        // Like a reply.
         let result = sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO reply_likes (user_id, reply_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(user_id)
         .bind(3_i64)
@@ -91,14 +100,14 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Reply like should not be present in the database
+        // Reply like should not be present in the database.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM reply_likes
-                WHERE user_id = $1 AND reply_id = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM reply_likes
+    WHERE user_id = $1 AND reply_id = $2
+)
+"#,
         )
         .bind(user_id)
         .bind(3_i64)

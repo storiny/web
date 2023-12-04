@@ -34,47 +34,58 @@ struct Fragments {
 }
 
 #[patch("/v1/me/replies/{reply_id}")]
+#[tracing::instrument(
+    name = "PATCH /v1/me/replies/{reply_id}",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        reply_id = %path.reply_id
+        content = %payload.content
+    ),
+    err
+)]
 async fn patch(
     payload: Json<Request>,
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            match path.reply_id.parse::<i64>() {
-                Ok(reply_id) => {
-                    let content = payload.content.trim();
-                    let rendered_content = if content.is_empty() {
-                        "".to_string()
-                    } else {
-                        md_to_html(MarkdownSource::Response(content))
-                    };
+    let user_id = user.id()?;
+    let reply_id = path
+        .reply_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid reply ID"))?;
 
-                    match sqlx::query(
-                        r#"
-                    UPDATE replies
-                    SET content = $1, rendered_content = $2, edited_at = NOW()
-                    WHERE user_id = $3 AND id = $4 AND deleted_at IS NULL
-                    "#,
-                    )
-                    .bind(content)
-                    .bind(rendered_content)
-                    .bind(user_id)
-                    .bind(reply_id)
-                    .execute(&data.db_pool)
-                    .await?
-                    .rows_affected()
-                    {
-                        0 => Ok(HttpResponse::BadRequest()
-                            .json(ToastErrorResponse::new("Reply not found"))),
-                        _ => Ok(HttpResponse::NoContent().finish()),
-                    }
-                }
-                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid reply ID")),
-            }
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let content = payload.content.trim();
+    let rendered_content = if content.is_empty() {
+        "".to_string()
+    } else {
+        md_to_html(MarkdownSource::Response(content))
+    };
+
+    match sqlx::query(
+        r#"
+UPDATE replies
+SET
+    content = $1,
+    rendered_content = $2,
+    edited_at = NOW()
+WHERE
+    user_id = $3
+    AND id = $4
+    AND deleted_at IS NULL
+"#,
+    )
+    .bind(&content)
+    .bind(&rendered_content)
+    .bind(&user_id)
+    .bind(&reply_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(ToastErrorResponse::new(None, "Reply not found").into()),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -101,12 +112,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
-        // Insert a reply
+        // Insert a reply.
         sqlx::query(
             r#"
-            INSERT INTO replies(id, content, user_id, comment_id)
-            VALUES ($1, $2, $3, $4)
-            "#,
+INSERT INTO replies (id, content, user_id, comment_id)
+VALUES ($1, $2, $3, $4)
+"#,
         )
         .bind(4_i64)
         .bind("Sample content")
@@ -126,12 +137,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Reply should get updated in the database
+        // Reply should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT rendered_content, edited_at FROM replies
-            WHERE id = $1
-            "#,
+SELECT rendered_content, edited_at FROM replies
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -155,12 +166,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
-        // Insert a reply
+        // Insert a reply.
         sqlx::query(
             r#"
-            INSERT INTO replies(id, content, user_id, comment_id)
-            VALUES ($1, $2, $3, $4)
-            "#,
+INSERT INTO replies (id, content, user_id, comment_id)
+VALUES ($1, $2, $3, $4)
+"#,
         )
         .bind(4_i64)
         .bind("Sample content")
@@ -169,13 +180,13 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        // Soft-delete the reply
+        // Soft-delete the reply.
         let update_result = sqlx::query(
             r#"
-            UPDATE replies
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE replies
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .execute(&mut *conn)

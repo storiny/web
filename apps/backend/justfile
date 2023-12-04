@@ -1,6 +1,9 @@
 dev:
     cargo watch -w src -x run | bunyan
 
+dev_raw:
+    cargo watch -w src -x run
+
 build:
     cargo build --release
 

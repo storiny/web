@@ -16,41 +16,47 @@ use validator::Validate;
 
 #[derive(Deserialize, Validate)]
 struct Fragments {
-    user_id: String,
+    transmitter_id: String,
 }
 
-#[delete("/v1/me/friend-requests/{user_id}")]
+#[delete("/v1/me/friend-requests/{transmitter_id}")]
+#[tracing::instrument(
+    name = "DELETE /v1/me/friend-requests/{transmitter_id}",
+    skip_all,
+    fields(
+        receiver_id = user.id().ok(),
+        transmitter_id = %path.transmitter_id
+    ),
+    err
+)]
 async fn delete(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => match path.user_id.parse::<i64>() {
-            Ok(transmitter_id) => {
-                match sqlx::query(
-                    r#"
-                    DELETE FROM friends
-                    WHERE
-                        receiver_id = $1
-                        AND transmitter_id = $2
-                        AND accepted_at IS NULL
-                    "#,
-                )
-                .bind(user_id)
-                .bind(transmitter_id)
-                .execute(&data.db_pool)
-                .await?
-                .rows_affected()
-                {
-                    0 => Ok(HttpResponse::BadRequest()
-                        .json(ToastErrorResponse::new("Friend request not found"))),
-                    _ => Ok(HttpResponse::NoContent().finish()),
-                }
-            }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid user ID")),
-        },
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let receiver_id = user.id()?;
+    let transmitter_id = path
+        .transmitter_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid user ID"))?;
+
+    match sqlx::query(
+        r#"
+DELETE FROM friends
+WHERE
+    receiver_id = $1
+    AND transmitter_id = $2
+    AND accepted_at IS NULL
+"#,
+    )
+    .bind(&receiver_id)
+    .bind(&transmitter_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(ToastErrorResponse::new(None, "Friend request not found").into()),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -76,12 +82,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
-        // Receive a friend request
+        // Receive a friend request.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(user_id.unwrap())
@@ -98,14 +104,14 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Friend request should not be present in the database
+        // Friend request should not be present in the database.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM friends
-                WHERE receiver_id = $1 AND transmitter_id = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM friends
+    WHERE receiver_id = $1 AND transmitter_id = $2
+)
+"#,
         )
         .bind(user_id)
         .bind(2_i64)
@@ -118,7 +124,7 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_return_an_error_response_when_rejecting_an_unknown_friend_request(
+    async fn can_return_an_error_response_when_trying_to_reject_an_unknown_friend_request(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(delete, pool, true, false, None).await;

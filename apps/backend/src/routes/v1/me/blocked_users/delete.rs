@@ -13,37 +13,46 @@ use validator::Validate;
 
 #[derive(Deserialize, Validate)]
 struct Fragments {
-    user_id: String,
+    blocked_id: String,
 }
 
-#[delete("/v1/me/blocked-users/{user_id}")]
+#[delete("/v1/me/blocked-users/{blocked_id}")]
+#[tracing::instrument(
+    name = "DELETE /v1/me/blocked-users/{blocked_id}",
+    skip_all,
+    fields(
+        blocker_id = user.id().ok(),
+        blocked_id = %path.blocked_id
+    ),
+    err
+)]
 async fn delete(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => match path.user_id.parse::<i64>() {
-            Ok(blocked_id) => {
-                match sqlx::query(
-                    r#"
-                    DELETE FROM blocks
-                    WHERE blocker_id = $1 AND blocked_id = $2
-                    "#,
-                )
-                .bind(user_id)
-                .bind(blocked_id)
-                .execute(&data.db_pool)
-                .await?
-                .rows_affected()
-                {
-                    0 => Ok(HttpResponse::BadRequest().body("User or block not found")),
-                    _ => Ok(HttpResponse::NoContent().finish()),
-                }
-            }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid user ID")),
-        },
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let blocker_id = user.id()?;
+    let blocked_id = path
+        .blocked_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid blocked user ID"))?;
+
+    match sqlx::query(
+        r#"
+DELETE FROM blocks
+WHERE
+    blocker_id = $1
+    AND blocked_id = $2
+"#,
+    )
+    .bind(&blocker_id)
+    .bind(&blocked_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(AppError::from("Blocked user not found")),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -69,12 +78,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
-        // Block the user
+        // Block the user.
         let result = sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(user_id)
         .bind(2_i64)
@@ -91,14 +100,14 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Block should not be present in the database
+        // Block should not be present in the database.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM blocks
-                WHERE blocker_id = $1 AND blocked_id = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM blocks
+    WHERE blocker_id = $1 AND blocked_id = $2
+)
+"#,
         )
         .bind(user_id)
         .bind(2_i64)
@@ -123,7 +132,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "User or block not found").await;
+        assert_response_body_text(res, "Blocked user not found").await;
 
         Ok(())
     }

@@ -1,123 +1,85 @@
-WITH
-	incremented_view_count AS (
-		UPDATE stories
-			SET view_count = view_count + 1
-			WHERE
-						id = $1
-					AND published_at IS NOT NULL
-					AND deleted_at IS NULL
-	)
-SELECT
-	s.id,
-	s.title,
-	s.slug,
-	s.description,
-	s.splash_id,
-	s.splash_hex,
-	s.category::TEXT             AS "category!",
-	s.age_restriction,
-	s.visibility,
-	s.license,
-	s.user_id,
-	s.disable_comments,
-	s.disable_public_revision_history,
-	s.disable_toc,
-	s.canonical_url,
-	s.seo_description,
-	s.seo_title,
-	s.preview_image,
-	-- Stats
-	s.like_count,
-	s.read_count,
-	s.word_count,
-	s.comment_count,
-	-- Timestamps
-	s.created_at,
-	s.edited_at,
-	s.deleted_at,
-	s.published_at,
-	s.first_published_at,
-	-- Joins
-	"s->document".key            AS "doc_key",
-	-- Boolean flags
-	CASE
-		WHEN COUNT("s->is_bookmarked") = 1
-			THEN
-			TRUE
-		ELSE
-			FALSE
-	END                          AS "is_bookmarked!",
-	CASE
-		WHEN COUNT("s->is_liked") = 1
-			THEN
-			TRUE
-		ELSE
-			FALSE
-	END                          AS "is_liked!",
-	-- User
-	"s->user".name               AS user_name,
-	"s->user".username           AS user_username,
-	"s->user".rendered_bio       AS "user_rendered_bio!",
-	"s->user".location           AS user_location,
-	"s->user".avatar_id          AS user_avatar_id,
-	"s->user".avatar_hex         AS user_avatar_hex,
-	"s->user".public_flags       AS user_public_flags,
-	"s->user".is_private         AS user_is_private,
-	"s->user".created_at         AS user_created_at,
-	"s->user".follower_count     AS user_follower_count,
-	-- User boolean flags
-	CASE
-		WHEN COUNT("s->user->is_following") = 1
-			THEN
-			TRUE
-		ELSE
-			FALSE
-	END                          AS "user_is_following!",
-	CASE
-		WHEN COUNT("s->user->is_follower") = 1
-			THEN
-			TRUE
-		ELSE
-			FALSE
-	END                          AS "user_is_follower!",
-	CASE
-		WHEN COUNT("s->user->is_friend") = 1
-			THEN
-			TRUE
-		ELSE
-			FALSE
-	END                          AS "user_is_friend!",
-	CASE
-		WHEN COUNT("s->user->is_blocked_by_user") = 1
-			THEN
-			TRUE
-		ELSE
-			FALSE
-	END                          AS "user_is_blocked_by_user!",
-	-- User status
-	"s->user->status".emoji      AS "user_status_emoji?",
-	"s->user->status".text       AS "user_status_text?",
-	"s->user->status".expires_at AS "user_status_expires_at?",
-	CASE
-		WHEN "s->user->status".user_id IS NOT NULL AND (
-			-- Global
-					"s->user->status".visibility = 1
-				-- Followers
-				OR ("s->user->status".visibility = 2 AND COUNT("s->user->is_following") = 1)
-				-- Friends
-				OR ("s->user->status".visibility = 3 AND COUNT("s->user->is_friend") = 1)
-			)
-			THEN TRUE
-		ELSE FALSE
-	END                          AS "user_has_status!",
-	-- Tags
-	COALESCE(
-					ARRAY_AGG(
-					("s->story_tags->tag".id, "s->story_tags->tag".name)
-							 ) FILTER (
-						WHERE "s->story_tags->tag".id IS NOT NULL
-						), '{}'
-	)                            AS "tags!: Vec<Tag>"
+WITH incremented_view_count AS (
+	UPDATE stories
+		SET view_count = view_count + 1
+		WHERE
+					id = $1
+				AND published_at IS NOT NULL
+				AND deleted_at IS NULL
+							   )
+SELECT s.id,
+	   s.title,
+	   s.slug,
+	   s.description,
+	   s.splash_id,
+	   s.splash_hex,
+	   s.category::TEXT                          AS "category!",
+	   s.age_restriction,
+	   s.visibility,
+	   s.license,
+	   s.user_id,
+	   s.disable_comments,
+	   s.disable_public_revision_history,
+	   s.disable_toc,
+	   s.canonical_url,
+	   s.seo_description,
+	   s.seo_title,
+	   s.preview_image,
+	   -- Stats
+	   s.like_count,
+	   s.read_count,
+	   s.word_count,
+	   s.comment_count,
+	   -- Timestamps
+	   s.created_at,
+	   s.edited_at,
+	   s.deleted_at,
+	   s.published_at,
+	   s.first_published_at,
+	   -- Joins
+	   "s->document".key                         AS "doc_key",
+	   -- Boolean flags
+	   "s->is_bookmarked" IS NOT NULL            AS "is_bookmarked!",
+	   "s->is_liked" IS NOT NULL                 AS "is_liked!",
+	   -- User
+	   "s->user".name                            AS user_name,
+	   "s->user".username                        AS user_username,
+	   "s->user".rendered_bio                    AS "user_rendered_bio!",
+	   "s->user".location                        AS user_location,
+	   "s->user".avatar_id                       AS user_avatar_id,
+	   "s->user".avatar_hex                      AS user_avatar_hex,
+	   "s->user".public_flags                    AS user_public_flags,
+	   "s->user".is_private                      AS user_is_private,
+	   "s->user".created_at                      AS user_created_at,
+	   "s->user".follower_count                  AS user_follower_count,
+	   -- User boolean flags
+	   "s->user->is_following" IS NOT NULL       AS "user_is_following!",
+	   "s->user->is_follower" IS NOT NULL        AS "user_is_follower!",
+	   "s->user->is_friend" IS NOT NULL          AS "user_is_friend!",
+	   "s->user->is_blocked_by_user" IS NOT NULL AS "user_is_blocked_by_user!",
+	   -- User status
+	   "s->user->status".emoji                   AS "user_status_emoji?",
+	   "s->user->status".text                    AS "user_status_text?",
+	   "s->user->status".expires_at              AS "user_status_expires_at?",
+	   CASE
+		   WHEN "s->user->status".user_id IS NOT NULL AND (
+			   -- Global
+					   "s->user->status".visibility = 1
+				   -- Followers
+				   OR ("s->user->status".visibility = 2 AND "s->user->is_following" IS NOT NULL)
+				   -- Friends
+				   OR ("s->user->status".visibility = 3 AND "s->user->is_friend" IS NOT NULL)
+			   )
+			   THEN TRUE
+		   ELSE FALSE
+	   END                                       AS "user_has_status!",
+	   -- Tags
+	   COALESCE(
+					   ARRAY_AGG(
+					   ("s->story_tags->tag".id, "s->story_tags->tag".name)
+								) FILTER (
+						   WHERE "s->story_tags->tag".id IS NOT NULL
+						   ), '{}'
+	   )                                         AS "tags!: Vec<Tag>"
 FROM
 	stories s
 		-- Join document
@@ -192,5 +154,11 @@ GROUP BY
 	"user_status_emoji?",
 	"user_status_text?",
 	"user_status_expires_at?",
-	"s->user->status".user_id
+	"s->user->status".user_id,
+	"s->user->is_following",
+	"s->user->is_follower",
+	"s->user->is_friend",
+	"s->user->is_blocked_by_user",
+	"s->is_liked",
+	"s->is_bookmarked"
 LIMIT 1

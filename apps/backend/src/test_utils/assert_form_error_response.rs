@@ -9,7 +9,7 @@ use actix_web::dev::ServiceResponse;
 pub async fn assert_form_error_response(res: ServiceResponse, err_data: Vec<(&str, &str)>) {
     assert_response_body_text(
         res,
-        &serde_json::to_string(&FormErrorResponse::new(err_data)).unwrap_or_default(),
+        &serde_json::to_string(&FormErrorResponse::new(None, err_data)).unwrap_or_default(),
     )
     .await;
 }

@@ -20,41 +20,45 @@ struct Fragments {
 }
 
 #[delete("/v1/me/drafts/{draft_id}")]
+#[tracing::instrument(
+    name = "DELETE /v1/me/drafts/{draft_id}",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        draft_id = %path.draft_id
+    ),
+    err
+)]
 async fn delete(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            match path.draft_id.parse::<i64>() {
-                Ok(draft_id) => {
-                    match sqlx::query(
-                        r#"
-                    UPDATE stories
-                    SET deleted_at = NOW()
-                    WHERE
-                        user_id = $1
-                        AND id = $2
-                        AND published_at IS NULL
-                        AND deleted_at IS NULL
-                    "#,
-                    )
-                    .bind(user_id)
-                    .bind(draft_id)
-                    .execute(&data.db_pool)
-                    .await?
-                    .rows_affected()
-                    {
-                        0 => Ok(HttpResponse::BadRequest()
-                            .json(ToastErrorResponse::new("Draft not found"))),
-                        _ => Ok(HttpResponse::NoContent().finish()),
-                    }
-                }
-                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid draft ID")),
-            }
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let user_id = user.id()?;
+    let draft_id = path
+        .draft_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid draft ID"))?;
+
+    match sqlx::query(
+        r#"
+UPDATE stories
+SET deleted_at = NOW()
+WHERE
+    user_id = $1
+    AND id = $2
+    AND published_at IS NULL
+    AND deleted_at IS NULL
+"#,
+    )
+    .bind(&user_id)
+    .bind(&draft_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(ToastErrorResponse::new(None, "Draft not found").into()),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -77,16 +81,16 @@ mod tests {
     use time::OffsetDateTime;
 
     #[sqlx::test]
-    async fn can_remove_a_draft(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_delete_a_draft(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
-        // Insert a draft
+        // Insert a draft.
         let result = sqlx::query(
             r#"
-            INSERT INTO stories (id, user_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO stories (id, user_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(user_id.unwrap())
@@ -103,12 +107,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Draft should get soft-deleted
+        // Draft should get soft-deleted.
         let result = sqlx::query(
             r#"
-            SELECT deleted_at FROM stories
-            WHERE id = $1
-            "#,
+SELECT deleted_at FROM stories
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .fetch_one(&mut *conn)
@@ -128,12 +132,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
-        // Insert a published draft
+        // Insert a published draft.
         let result = sqlx::query(
             r#"
-            INSERT INTO stories (id, user_id, published_at)
-            VALUES ($1, $2, NOW())
-            "#,
+INSERT INTO stories (id, user_id, published_at)
+VALUES ($1, $2, NOW())
+"#,
         )
         .bind(2_i64)
         .bind(user_id.unwrap())

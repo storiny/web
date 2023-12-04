@@ -64,7 +64,7 @@ mod tests {
                 // Mute some users
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO mutes(muted_id, muter_id)
+                    INSERT INTO mutes (muted_id, muter_id)
                     VALUES ($2, $1), ($3, $1)
                     "#,
                 )
@@ -100,7 +100,7 @@ mod tests {
                 // Mute some users
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO mutes(muted_id, muter_id)
+                    INSERT INTO mutes (muted_id, muter_id)
                     VALUES ($2, $1), ($3, $1)
                     "#,
                 )

@@ -64,7 +64,7 @@ mod tests {
                 // Follow some tags
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO tag_followers(tag_id, user_id)
+                    INSERT INTO tag_followers (tag_id, user_id)
                     VALUES ($2, $1), ($3, $1)
                     "#,
                 )
@@ -100,7 +100,7 @@ mod tests {
                 // Follow some tags
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO tag_followers(tag_id, user_id)
+                    INSERT INTO tag_followers (tag_id, user_id)
                     VALUES ($2, $1), ($3, $1)
                     "#,
                 )

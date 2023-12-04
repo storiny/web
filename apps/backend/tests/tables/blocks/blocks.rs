@@ -11,7 +11,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             "#,
         )
@@ -45,7 +45,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             "#,
         )
@@ -86,7 +86,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             "#,
         )
@@ -127,7 +127,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             "#,
         )
@@ -168,7 +168,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             "#,
         )
@@ -200,7 +200,7 @@ mod tests {
         // Follow a user
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             "#,
         )
@@ -214,7 +214,7 @@ mod tests {
         // Block the user
         sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             "#,
         )
@@ -251,7 +251,7 @@ mod tests {
         // Follow a user
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             "#,
         )
@@ -265,7 +265,7 @@ mod tests {
         // Get blocked by the user
         sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             "#,
         )
@@ -300,7 +300,7 @@ mod tests {
         // Add a follower
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             "#,
         )
@@ -314,7 +314,7 @@ mod tests {
         // Block the user
         sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             "#,
         )
@@ -351,7 +351,7 @@ mod tests {
         // Add a follower
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations(follower_id, followed_id)
+            INSERT INTO relations (follower_id, followed_id)
             VALUES ($1, $2)
             "#,
         )
@@ -365,7 +365,7 @@ mod tests {
         // Get blocked by the user
         sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             "#,
         )
@@ -402,7 +402,7 @@ mod tests {
         // Add a friend
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -416,7 +416,7 @@ mod tests {
         // Block the user
         sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             "#,
         )
@@ -453,7 +453,7 @@ mod tests {
         // Add a friend
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -467,7 +467,7 @@ mod tests {
         // Get blocked by the user
         sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             "#,
         )
@@ -502,7 +502,7 @@ mod tests {
         // Add a friend
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -516,7 +516,7 @@ mod tests {
         // Block the user
         sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             "#,
         )
@@ -553,7 +553,7 @@ mod tests {
         // Add a friend
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends(transmitter_id, receiver_id)
+            INSERT INTO friends (transmitter_id, receiver_id)
             VALUES ($1, $2)
             "#,
         )
@@ -567,7 +567,7 @@ mod tests {
         // Get blocked by the user
         sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             "#,
         )

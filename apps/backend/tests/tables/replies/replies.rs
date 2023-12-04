@@ -17,7 +17,7 @@ mod tests {
     async fn insert_sample_reply(conn: &mut PoolConnection<Postgres>) -> Result<PgRow, Error> {
         sqlx::query(
             r#"
-            INSERT INTO replies(content, user_id, comment_id)
+            INSERT INTO replies (content, user_id, comment_id)
             VALUES ($1, $2, $3)
             RETURNING id
             "#,
@@ -55,7 +55,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO replies(content, user_id, comment_id)
+            INSERT INTO replies (content, user_id, comment_id)
             VALUES ($1, $2, $3)
             "#,
         )
@@ -97,7 +97,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO replies(content, user_id, comment_id)
+            INSERT INTO replies (content, user_id, comment_id)
             VALUES ($1, $2, $3)
             "#,
         )
@@ -139,7 +139,7 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO replies(content, user_id, comment_id)
+            INSERT INTO replies (content, user_id, comment_id)
             VALUES ($1, $2, $3)
             "#,
         )
@@ -172,7 +172,7 @@ mod tests {
         // Block the reply writer
         sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO blocks (blocker_id, blocked_id)
             VALUES ($1, $2)
             "#,
         )
@@ -184,7 +184,7 @@ mod tests {
         // Insert a reply
         let result = sqlx::query(
             r#"
-            INSERT INTO replies(content, user_id, comment_id)
+            INSERT INTO replies (content, user_id, comment_id)
             VALUES ($1, $2, $3)
             RETURNING id
             "#,
@@ -219,7 +219,7 @@ mod tests {
         // Like the reply
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
+            INSERT INTO reply_likes (user_id, reply_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -587,7 +587,7 @@ mod tests {
         // Like the reply
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
+            INSERT INTO reply_likes (user_id, reply_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -718,7 +718,7 @@ mod tests {
         // Like the reply
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
+            INSERT INTO reply_likes (user_id, reply_id)
             VALUES ($1, $2)
             RETURNING deleted_at
             "#,
@@ -849,7 +849,7 @@ mod tests {
         // Like the reply
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO reply_likes(user_id, reply_id)
+            INSERT INTO reply_likes (user_id, reply_id)
             VALUES ($1, $2)
             "#,
         )

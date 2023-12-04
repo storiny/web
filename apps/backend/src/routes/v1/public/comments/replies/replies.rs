@@ -174,15 +174,7 @@ async fn get(
             );
 
             query_builder.push(if user_id.is_some() {
-                r#"
-                CASE
-                    WHEN COUNT("r->is_liked") = 1
-                        THEN
-                        TRUE
-                    ELSE
-                        FALSE
-                END AS "is_liked"
-                "#
+                r#""r->is_liked" IS NOT NULL AS "is_liked""#
             } else {
                 r#"FALSE as "is_liked""#
             });
