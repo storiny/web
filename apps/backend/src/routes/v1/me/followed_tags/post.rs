@@ -15,7 +15,6 @@ use actix_web::{
     HttpResponse,
 };
 use serde::Deserialize;
-use sqlx::Acquire;
 use validator::Validate;
 
 #[derive(Deserialize, Validate)]

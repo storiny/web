@@ -99,7 +99,7 @@ struct Story {
     name = "GET /v1/tag/{tag_name}/stories",
     skip_all,
     fields(
-        user_id = maybe_user.and_then(|user| user.id().ok()),
+        user_id = tracing::field::Empty,
         tag_name = %path.tag_name,
         page = query.page,
         sort = query.sort,
@@ -113,7 +113,9 @@ async fn get(
     data: web::Data<AppState>,
     maybe_user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    let user_id = maybe_user.and_then(|user| Some(user.id()?));
+    let user_id = maybe_user.and_then(|user| Some(user.id())).transpose()?;
+
+    tracing::Span::current().record("user_id", &user_id);
 
     // Validate tag name.
     if !TAG_REGEX.is_match(&path.tag_name) {

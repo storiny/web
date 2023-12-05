@@ -97,8 +97,9 @@ WHERE email = $1
     // Generate a new password reset token.
 
     let token_id = nanoid!(48);
+    let salt = SaltString::generate(&mut OsRng);
     let hashed_token = Argon2::default()
-        .hash_password(&token_id.as_bytes(), &SaltString::generate(&mut OsRng))
+        .hash_password(&token_id.as_bytes(), &salt)
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
     sqlx::query(

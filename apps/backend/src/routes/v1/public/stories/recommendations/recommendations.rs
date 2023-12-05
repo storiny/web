@@ -88,7 +88,7 @@ struct Story {
     name = "GET /v1/public/stories/{story_id}/recommendations",
     skip_all,
     fields(
-        user_id = maybe_user.and_then(|user| user.id().ok()),
+        user_id = tracing::field::Empty,
         story_id = %path.story_id,
         page = query.page
     ),
@@ -100,11 +100,14 @@ async fn get(
     data: web::Data<AppState>,
     maybe_user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    let user_id = maybe_user.and_then(|user| Some(user.id()?));
+    let user_id = maybe_user.and_then(|user| Some(user.id())).transpose()?;
+
+    tracing::Span::current().record("user_id", &user_id);
+
     let story_id = path
         .story_id
         .parse::<i64>()
-        .map_err(|_| AppError::from("Invalid story ID"));
+        .map_err(|_| AppError::from("Invalid story ID"))?;
 
     let page = query.page.clone().unwrap_or(1) - 1;
 

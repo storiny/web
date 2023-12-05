@@ -411,8 +411,10 @@ SELECT
                                     EnterRealmError::Internal
                                 })?;
 
-                            if !matches!(error.into_service_error(), HeadObjectError::NotFound(_)) {
-                                error!("unable to head the original document: {error:?}");
+                            let service_error = error.into_service_error();
+
+                            if !matches!(service_error, HeadObjectError::NotFound(_)) {
+                                error!("unable to head the original document: {service_error:?}");
 
                                 return Err(EnterRealmError::Internal);
                             }

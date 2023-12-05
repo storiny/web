@@ -77,7 +77,7 @@ async fn post(
                 AppError::InternalError(format!("unable to save the user session: {error:?}"))
             })?;
 
-        HttpResponse::NoContent().finish()
+        Ok(HttpResponse::NoContent().finish())
     } else {
         Err(ToastErrorResponse::new(None, "Session not found").into())
     }

@@ -52,7 +52,7 @@ struct Tag {
     name = "GET /v1/public/explore/tags",
     skip_all,
     fields(
-        user_id = maybe_user.and_then(|user| user.id().ok()),
+        user_id = tracing::field::Empty,
         category = %query.category,
         page = query.page,
         query = query.query
@@ -64,7 +64,9 @@ async fn get(
     data: web::Data<AppState>,
     maybe_user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    let user_id = maybe_user.and_then(|user| Some(user.id()?));
+    let user_id = maybe_user.and_then(|user| Some(user.id())).transpose()?;
+
+    tracing::Span::current().record("user_id", &user_id);
 
     let page = query.page.clone().unwrap_or(1) - 1;
     let category = if query.category == "all" {

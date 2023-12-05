@@ -113,7 +113,7 @@ WHERE EXISTS (SELECT 1 FROM reply_comment)
     .bind(&user_id)
     .bind(&comment_id)
     .bind(NotificationEntityType::ReplyAdd as i16)
-    .execute(&data.db_pool)
+    .execute(&mut *txn)
     .await
     {
         Ok(_) => {

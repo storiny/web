@@ -109,7 +109,7 @@ struct Comment {
     name = "GET /v1/public/comments/{comment_id}/replies",
     skip_all,
     fields(
-        user_id = maybe_user.and_then(|user| user.id().ok()),
+        user_id = tracing::field::Empty,
         story_id = %path.story_id,
         page = query.page,
         r#type = query.r#type,
@@ -128,7 +128,9 @@ async fn get(
         .story_id
         .parse::<i64>()
         .map_err(|_| AppError::from("Invalid story ID"))?;
-    let user_id = maybe_user.and_then(|user| Some(user.id()?));
+    let user_id = maybe_user.and_then(|user| Some(user.id())).transpose()?;
+
+    tracing::Span::current().record("user_id", &user_id);
 
     let sort = query.sort.clone().unwrap_or("recent".to_string());
     let r#type = query.r#type.clone().unwrap_or("all".to_string());

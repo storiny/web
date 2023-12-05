@@ -129,12 +129,6 @@ pub enum PersistDocError {
     Compression(String),
 }
 
-impl fmt::Display for PersistDocError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{:?}", self)
-    }
-}
-
 /// The error raised while trying to subscribe to a realm using the [Realm::subscribe] method.
 #[derive(Debug)]
 pub enum SubscribeError {

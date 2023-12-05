@@ -90,7 +90,7 @@ struct Story {
     name = "GET /v1/feed",
     skip_all,
     fields(
-        user_id = user.and_then(|user| user.id().ok()),
+        user_id = tracing::field::Empty,
         r#type = query.r#type,
         page = query.page
     ),
@@ -101,55 +101,53 @@ async fn get(
     data: web::Data<AppState>,
     user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
+    let user_id = user.and_then(|user| Some(user.id())).transpose()?;
+
+    tracing::Span::current().record("user_id", &user_id);
+
     let page = query.page.clone().unwrap_or(1) - 1;
     let r#type = query.r#type.clone().unwrap_or("suggested".to_string());
 
-    // Query for logged-in users
-    if user.is_some() {
-        return match user.unwrap().id() {
-            Ok(user_id) => {
-                if r#type == "suggested" {
-                    let result = sqlx::query_file_as!(
-                        Story,
-                        "queries/home_feed/suggested.sql",
-                        user_id,
-                        10 as i16,
-                        (page * 10) as i16
-                    )
-                    .fetch_all(&data.db_pool)
-                    .await?;
+    // Query for logged-in users.
 
-                    Ok(HttpResponse::Ok().json(result))
-                } else {
-                    let result = sqlx::query_file_as!(
-                        Story,
-                        "queries/home_feed/friends_and_following.sql",
-                        user_id,
-                        10 as i16,
-                        (page * 10) as i16
-                    )
-                    .fetch_all(&data.db_pool)
-                    .await?;
+    if let Some(user_id) = user_id {
+        if r#type == "suggested" {
+            let result = sqlx::query_file_as!(
+                Story,
+                "queries/home_feed/suggested.sql",
+                user_id,
+                10 as i16,
+                (page * 10) as i16
+            )
+            .fetch_all(&data.db_pool)
+            .await?;
 
-                    Ok(HttpResponse::Ok().json(result))
-                }
-            }
-            Err(error) => Err(AppError::InternalError(format!(
-                "identity extract error: {error:?}"
-            ))),
-        };
+            Ok(HttpResponse::Ok().json(result))
+        } else {
+            let result = sqlx::query_file_as!(
+                Story,
+                "queries/home_feed/friends_and_following.sql",
+                user_id,
+                10 as i16,
+                (page * 10) as i16
+            )
+            .fetch_all(&data.db_pool)
+            .await?;
+
+            Ok(HttpResponse::Ok().json(result))
+        }
+    } else {
+        let result = sqlx::query_file_as!(
+            Story,
+            "queries/home_feed/default.sql",
+            10 as i16,
+            (page * 10) as i16
+        )
+        .fetch_all(&data.db_pool)
+        .await?;
+
+        Ok(HttpResponse::Ok().json(result))
     }
-
-    let result = sqlx::query_file_as!(
-        Story,
-        "queries/home_feed/default.sql",
-        10 as i16,
-        (page * 10) as i16
-    )
-    .fetch_all(&data.db_pool)
-    .await?;
-
-    Ok(HttpResponse::Ok().json(result))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {

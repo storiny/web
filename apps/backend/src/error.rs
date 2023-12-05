@@ -5,9 +5,12 @@ use actix_web::{
     ResponseError,
 };
 use serde::Serialize;
-use std::fmt::{
-    Display,
-    Formatter,
+use std::{
+    fmt,
+    fmt::{
+        Display,
+        Formatter,
+    },
 };
 
 // Form error
@@ -173,7 +176,7 @@ impl ResponseError for AppError {
             AppError::InternalError(_) | AppError::SqlxError(_) | AppError::RedisPoolError(_) => {
                 StatusCode::INTERNAL_SERVER_ERROR
             }
-            AppError::ClientError(status_code, _) => status_code,
+            AppError::ClientError(status_code, _) => *status_code,
             AppError::ToastError(error) => error.status_code.clone(),
             AppError::FormError(error) => error.status_code.clone(),
         }
@@ -276,5 +279,11 @@ pub enum ExternalAuthError {
 impl From<sqlx::Error> for ExternalAuthError {
     fn from(value: sqlx::Error) -> Self {
         ExternalAuthError::Other(value.to_string())
+    }
+}
+
+impl fmt::Display for ExternalAuthError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", self)
     }
 }

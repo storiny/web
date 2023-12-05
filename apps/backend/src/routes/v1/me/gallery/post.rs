@@ -334,8 +334,6 @@ RETURNING id, rating
         Ok(asset) => {
             incr_resource_limit(&data.redis, ResourceLimit::CreateAsset, user_id).await?;
 
-            txn.commit().await?;
-
             match txn.commit().await {
                 Ok(_) => {
                     trace!("photo upload completed");
