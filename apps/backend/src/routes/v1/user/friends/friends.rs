@@ -63,7 +63,7 @@ struct Friend {
     name = "GET /v1/user/{user_id}/friends",
     skip_all,
     fields(
-        current_user_id = maybe_user.and_then(|user| user.id().ok()),
+        current_user_id = tracing::field::Empty,
         user_id = %path.user_id,
         page = query.page,
         sort = query.sort,
@@ -77,7 +77,10 @@ async fn get(
     data: web::Data<AppState>,
     maybe_user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    let current_user_id = maybe_user.and_then(|user| Some(user.id()?));
+    let current_user_id = maybe_user.and_then(|user| Some(user.id())).transpose()?;
+
+    tracing::Span::current().record("current_user_id", &current_user_id);
+
     let user_id = path
         .user_id
         .parse::<i64>()

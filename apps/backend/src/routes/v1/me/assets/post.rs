@@ -169,12 +169,7 @@ async fn handle_upload(
     if image_mime_type.is_none()
         || !supported_image_mimes.contains(&image_mime_type.clone().unwrap().to_string())
     {
-        debug!(
-            "received an image with unknown format: {}",
-            image_mime_type
-                .and_then(|mime| Some(mime.to_string()))
-                .unwrap_or("unknown".to_string())
-        );
+        debug!("received an image with unknown format: {image_mime_type:?}",);
 
         return Err(ToastErrorResponse::new(None, "Unsupported image type").into());
     }

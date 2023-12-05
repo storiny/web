@@ -39,7 +39,7 @@ struct Response {
     name = "GET /v1/rsb_content",
     skip_all,
     fields(
-        user_id = maybe_user.and_then(|user| user.id().ok()),
+        user_id = tracing::field::Empty,
     ),
     err
 )]
@@ -47,7 +47,9 @@ async fn get(
     data: web::Data<AppState>,
     maybe_user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    let user_id = maybe_user.and_then(|user| Some(user.id()?));
+    let user_id = maybe_user.and_then(|user| Some(user.id())).transpose()?;
+
+    tracing::Span::current().record("user_id", &user_id);
 
     let (stories, users, tags) = tokio::try_join!(
         get_rsb_content_stories(user_id, &data.db_pool),

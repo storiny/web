@@ -107,7 +107,8 @@ WHERE type = $1 AND user_id = $2
 
     // Validate the token.
     {
-        let hashed_token = PasswordHash::new(&token.get::<String, _>("id"))
+        let token_id = token.get::<String, _>("id");
+        let hashed_token = PasswordHash::new(&token_id)
             .map_err(|error| AppError::InternalError(error.to_string()))?;
 
         Argon2::default()
@@ -127,11 +128,9 @@ WHERE type = $1 AND user_id = $2
         }
     }
 
+    let salt = SaltString::generate(&mut OsRng);
     let next_hashed_password = Argon2::default()
-        .hash_password(
-            &payload.password.as_bytes(),
-            &SaltString::generate(&mut OsRng),
-        )
+        .hash_password(&payload.password.as_bytes(), &salt)
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
     sqlx::query(

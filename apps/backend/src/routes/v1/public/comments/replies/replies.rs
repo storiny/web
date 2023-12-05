@@ -104,7 +104,7 @@ struct Reply {
     name = "GET /v1/public/comments/{comment_id}/replies",
     skip_all,
     fields(
-        user_id = maybe_user.and_then(|user| user.id().ok()),
+        user_id = tracing::field::Empty,
         comment_id = %path.comment_id,
         page = query.page
     ),
@@ -120,7 +120,9 @@ async fn get(
         .comment_id
         .parse::<i64>()
         .map_err(|_| AppError::from("Invalid comment ID"))?;
-    let user_id = maybe_user.and_then(|user| Some(user.id()?));
+    let user_id = maybe_user.and_then(|user| Some(user.id())).transpose()?;
+
+    tracing::Span::current().record("user_id", &user_id);
 
     let page = query.page.clone().unwrap_or(1) - 1;
 

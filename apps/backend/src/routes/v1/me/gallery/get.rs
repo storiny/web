@@ -41,7 +41,7 @@ async fn get(
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    user.ok()?;
+    user.id()?;
 
     let reqwest_client = &data.reqwest_client;
     let pexels_api_key = &data.config.pexels_api_key.to_string();

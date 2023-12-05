@@ -23,10 +23,7 @@ use serde::{
     Deserialize,
     Serialize,
 };
-use sqlx::{
-    Acquire,
-    Row,
-};
+use sqlx::Row;
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
@@ -52,7 +49,7 @@ async fn post(
     let pg_pool = &data.db_pool;
     let mut txn = pg_pool.begin().await?;
 
-    let user = sqlx::query(
+    let db_user = sqlx::query(
         r#"
 SELECT password FROM users
 WHERE id = $1
@@ -62,7 +59,7 @@ WHERE id = $1
     .fetch_one(&mut *txn)
     .await?;
 
-    let user_password = user.get::<Option<String>, _>("password");
+    let user_password = db_user.get::<Option<String>, _>("password");
 
     if user_password.is_none() {
         return Err(ToastErrorResponse::new(None, "You have not set a password yet").into());
@@ -70,7 +67,8 @@ WHERE id = $1
 
     // Validate the current password.
     {
-        let password_hash = PasswordHash::new(&user_password.unwrap())
+        let user_password = user_password.unwrap_or_default();
+        let password_hash = PasswordHash::new(&user_password)
             .map_err(|error| AppError::InternalError(error.to_string()))?;
 
         Argon2::default()

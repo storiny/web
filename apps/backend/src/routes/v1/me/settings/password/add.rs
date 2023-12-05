@@ -58,7 +58,7 @@ async fn post(
     let pg_pool = &data.db_pool;
     let mut txn = pg_pool.begin().await?;
 
-    let user = sqlx::query(
+    let db_user = sqlx::query(
         r#"
 SELECT password FROM users
 WHERE id = $1
@@ -68,7 +68,7 @@ WHERE id = $1
     .fetch_one(&mut *txn)
     .await?;
 
-    let user_password = user.get::<Option<String>, _>("password");
+    let user_password = db_user.get::<Option<String>, _>("password");
 
     if user_password.is_some() {
         return Err(ToastErrorResponse::new(None, "You have already set a password").into());
@@ -92,7 +92,8 @@ WHERE type = $1 AND user_id = $2
         }
     })?;
 
-    let token_hash = PasswordHash::new(&token.get::<String, _>("id")).map_err(|error| {
+    let token_id = token.get::<String, _>("id");
+    let token_hash = PasswordHash::new(&token_id).map_err(|error| {
         AppError::InternalError(format!("unable to parse the token hash: {error:?}"))
     })?;
 
@@ -112,11 +113,9 @@ WHERE type = $1 AND user_id = $2
         }
     }
 
+    let salt = SaltString::generate(&mut OsRng);
     let hashed_password = Argon2::default()
-        .hash_password(
-            &payload.new_password.as_bytes(),
-            &SaltString::generate(&mut OsRng),
-        )
+        .hash_password(&payload.new_password.as_bytes(), &salt)
         .map_err(|error| AppError::from(format!("unable to generate password hash: {error:?}")))?;
 
     // Delete the verification token and update the user's password.

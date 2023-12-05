@@ -91,13 +91,14 @@ WHERE email = $1
         );
     }
 
-    let password_hash = PasswordHash::new(&user_password.unwrap())
+    let user_password = user_password.unwrap_or_default();
+    let password_hash = PasswordHash::new(&user_password)
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
     // Validate the password.
     Argon2::default()
         .verify_password(&payload.password.as_bytes(), &password_hash)
-        .map_err(|error| {
+        .map_err(|_| {
             AppError::ToastError(ToastErrorResponse::new(
                 Some(StatusCode::UNAUTHORIZED),
                 "Invalid credentials",

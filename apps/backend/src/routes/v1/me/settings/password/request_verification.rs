@@ -79,11 +79,9 @@ WHERE id = $1
     }
 
     let verification_code = generate_verification_code();
+    let salt = SaltString::generate(&mut OsRng);
     let hashed_verification_code = Argon2::default()
-        .hash_password(
-            &verification_code.as_bytes(),
-            &SaltString::generate(&mut OsRng),
-        )
+        .hash_password(&verification_code.as_bytes(), &salt)
         .map_err(|error| {
             AppError::InternalError(format!("unable to hash the verification code: {error:?}"))
         })?;

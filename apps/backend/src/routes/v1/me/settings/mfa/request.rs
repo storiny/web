@@ -74,10 +74,9 @@ WHERE id = $1
         AppError::InternalError(format!("unable to generate the totp secret: {error:?}"))
     })?;
 
-    let totp =
-        generate_totp(secret_as_bytes, user.get::<String, _>("username")).map_err(|error| {
-            AppError::InternalError(format!("unable to generate a totp instance: {error:?}"))
-        })?;
+    let totp = generate_totp(secret_as_bytes, user.get::<String, _>("username").as_str()).map_err(
+        |error| AppError::InternalError(format!("unable to generate a totp instance: {error:?}")),
+    )?;
 
     let qr_code = totp.get_qr_base64().map_err(|error| {
         AppError::InternalError(format!("unable to generate a QR code: {error:?}"))

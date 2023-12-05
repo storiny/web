@@ -41,7 +41,7 @@ struct Request {
     name = "POST /v1/public/reports",
     skip_all,
     fields(
-        user_id = maybe_user.and_then(|user| user.id().ok()),
+        user_id = tracing::field::Empty,
         payload
     ),
     err
@@ -52,15 +52,18 @@ async fn post(
     data: web::Data<AppState>,
     maybe_user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    let report_limit_identifier =
+    let user_id = maybe_user.and_then(|user| Some(user.id())).transpose()?;
+
+    tracing::Span::current().record("user_id", &user_id);
+
+    let report_limit_identifier = if let Some(user_id) = user_id {
         // Always use `user_id` when logged-in
-        if let Some(user_id) = maybe_user.and_then(|user| Some(user.id()?)) {
-           Some(user_id.to_string())
-        } else {
-            req.connection_info()
-                .realip_remote_addr()
-                .and_then(|ip| Some(ip.to_string()))
-        };
+        Some(user_id.to_string())
+    } else {
+        req.connection_info()
+            .realip_remote_addr()
+            .and_then(|ip| Some(ip.to_string()))
+    };
 
     if report_limit_identifier.is_none() {
         // TODO: If the client IP cannot be parsed and the user is not logged-in, we simple

@@ -144,17 +144,16 @@ SELECT EXISTS (
         return Err(FormErrorResponse::new(Some(StatusCode::CONFLICT), form_errors).into());
     }
 
+    let salt = SaltString::generate(&mut OsRng);
     let hashed_password = Argon2::default()
-        .hash_password(
-            &payload.password.as_bytes(),
-            &SaltString::generate(&mut OsRng),
-        )
+        .hash_password(&payload.password.as_bytes(), &salt)
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
     let token_id = nanoid!(48);
 
+    let salt = SaltString::generate(&mut OsRng);
     let hashed_token = Argon2::default()
-        .hash_password(&token_id.as_bytes(), &SaltString::generate(&mut OsRng))
+        .hash_password(&token_id.as_bytes(), &salt)
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
     let pg_pool = &data.db_pool;

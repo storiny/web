@@ -83,7 +83,8 @@ WHERE id = $1
 
     // Validate the current password.
     {
-        let password_hash = PasswordHash::new(&user_password.unwrap())
+        let user_password = user_password.unwrap_or_default();
+        let password_hash = PasswordHash::new(&user_password)
             .map_err(|error| AppError::InternalError(error.to_string()))?;
 
         Argon2::default()

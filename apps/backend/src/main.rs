@@ -64,6 +64,10 @@ use storiny::{
         },
         server::start_realms_server,
     },
+    telemetry::{
+        get_subscriber,
+        init_subscriber,
+    },
     *,
 };
 use tracing::info;
@@ -83,6 +87,11 @@ async fn main() -> io::Result<()> {
 
     match get_app_config() {
         Ok(config) => {
+            if config.is_dev {
+                let subscriber = get_subscriber("dev".to_string(), "info".to_string(), io::stdout);
+                init_subscriber(subscriber);
+            }
+
             let host = config.host.to_string();
             let port = config.port.clone().parse::<u16>().unwrap();
             let redis_connection_string =
