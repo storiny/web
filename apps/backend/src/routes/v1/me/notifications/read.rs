@@ -83,7 +83,7 @@ mod tests {
         // Receive a notification.
         let insert_result = sqlx::query(
             r#"
-INSERT INTO notification_outs(notified_id, notification_id)
+INSERT INTO notification_outs (notified_id, notification_id)
 VALUES ($1, $2)
 RETURNING read_at
 "#,
@@ -152,7 +152,7 @@ WHERE notified_id = $1 AND notification_id = $2
         // Receive a notification.
         let insert_result = sqlx::query(
             r#"
-INSERT INTO notification_outs(notified_id, notification_id)
+INSERT INTO notification_outs (notified_id, notification_id)
 VALUES ($1, $2)
 RETURNING read_at
 "#,

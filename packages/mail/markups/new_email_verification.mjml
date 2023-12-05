@@ -1,0 +1,49 @@
+<mjml lang="en">
+  <mj-head>
+    <mj-attributes>
+      <mj-title>Verify your new e-mail</mj-title>
+      <mj-include path="./partials/attributes.mjml" />
+    </mj-attributes>
+    <mj-include path="./partials/styles.mjml" />
+  </mj-head>
+  <mj-body>
+    <mj-section css-class="section main">
+      <mj-column>
+        <mj-table align="center">
+          <tr>
+            <td align="center">
+              <p class="t-head">Verify your e-mail</p>
+            </td>
+          </tr>
+        </mj-table>
+        <mj-spacer height="36px" />
+        <mj-text mj-class="t-body1 t-major" align="center">
+          An e-mail update request has been received to change the e-mail
+          address of a Storiny account to this e-mail. Please click on the
+          button below to verify your e-mail address.
+        </mj-text>
+        <mj-spacer height="24px" />
+        <mj-button target="_blank" href="{{link}}">
+          Verify my e-mail
+        </mj-button>
+        <mj-spacer mj-class="body-spacer" />
+        <mj-text mj-class="t-body1 t-minor" align="center">
+          This verification request will automatically expire in 24 hours. If
+          the button above does not work, please navigate to this link:
+          <a href="{{link}}" class="link" target="_blank">{{link}}</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section css-class="section footer">
+      <mj-column>
+        <mj-text mj-class="t-body2 t-muted" align="center">
+          If you did not initiate this request, you can safely ignore this
+          e-mail.
+        </mj-text>
+        <mj-include path="./partials/noreply.mjml" />
+        <mj-spacer height="64px" />
+        <mj-include path="./partials/copyright.mjml" />
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

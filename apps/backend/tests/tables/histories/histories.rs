@@ -8,9 +8,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO histories (user_id, story_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO histories (user_id, story_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -33,10 +33,10 @@ mod tests {
         // `disable_read_history` for the user
         sqlx::query(
             r#"
-            UPDATE users
-            SET disable_read_history = TRUE
-            WHERE id = $1
-            "#,
+UPDATE users
+SET disable_read_history = TRUE
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -44,9 +44,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO histories (user_id, story_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO histories (user_id, story_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -68,10 +68,10 @@ mod tests {
         // Soft-delete the story
         sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -79,16 +79,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO histories (user_id, story_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO histories (user_id, story_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -109,10 +109,10 @@ mod tests {
         // Unpublish the story
         sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET published_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -120,16 +120,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO histories (user_id, story_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO histories (user_id, story_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -150,10 +150,10 @@ mod tests {
         // Soft-delete the user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -161,16 +161,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO histories (user_id, story_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO histories (user_id, story_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -191,10 +191,10 @@ mod tests {
         // Deactivate the user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -202,16 +202,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO histories (user_id, story_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO histories (user_id, story_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()

@@ -11,8 +11,16 @@ use tonic::{
     Response,
     Status,
 };
+use tracing::error;
 
 /// Returns the notification settings for a user.
+#[tracing::instrument(
+    name = "GRPC get_notification_settings",
+    skip_all,
+    fields(
+        user_id = tracing::field::Empty
+    )
+)]
 pub async fn get_notification_settings(
     client: &GrpcService,
     request: Request<GetNotificationSettingsRequest>,
@@ -23,56 +31,59 @@ pub async fn get_notification_settings(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
-    match sqlx::query(
+    tracing::Span::current().record("user_id", &user_id);
+
+    let notification_settings = sqlx::query(
         r#"
-        SELECT
-            -- Push
-            push_features_and_updates AS "features_and_updates",
-            push_stories              AS "stories",
-            push_story_likes          AS "story_likes",
-            push_tags                 AS "tags",
-            push_comments             AS "comments",
-            push_replies              AS "replies",
-            push_followers            AS "new_followers",
-            push_friend_requests      AS "friend_requests",
-            -- Mail
-            mail_login_activity,
-            mail_features_and_updates,
-            mail_newsletters,
-            mail_suggested_stories    AS "mail_digest"
-        FROM
-            notification_settings
-        WHERE
-            user_id = $1
-        "#,
+SELECT
+    -- Push
+    push_features_and_updates AS "features_and_updates",
+    push_stories              AS "stories",
+    push_story_likes          AS "story_likes",
+    push_tags                 AS "tags",
+    push_comments             AS "comments",
+    push_replies              AS "replies",
+    push_followers            AS "new_followers",
+    push_friend_requests      AS "friend_requests",
+    -- Mail
+    mail_login_activity,
+    mail_features_and_updates,
+    mail_newsletters,
+    mail_suggested_stories    AS "mail_digest"
+FROM
+    notification_settings
+WHERE
+    user_id = $1
+"#,
     )
     .bind(user_id)
     .fetch_one(&client.db_pool)
     .await
-    {
-        Ok(notification_settings) => Ok(Response::new(GetNotificationSettingsResponse {
-            features_and_updates: notification_settings.get::<bool, _>("features_and_updates"),
-            stories: notification_settings.get::<bool, _>("stories"),
-            story_likes: notification_settings.get::<bool, _>("story_likes"),
-            tags: notification_settings.get::<bool, _>("tags"),
-            comments: notification_settings.get::<bool, _>("comments"),
-            replies: notification_settings.get::<bool, _>("replies"),
-            new_followers: notification_settings.get::<bool, _>("new_followers"),
-            friend_requests: notification_settings.get::<bool, _>("friend_requests"),
-            mail_login_activity: notification_settings.get::<bool, _>("mail_login_activity"),
-            mail_features_and_updates: notification_settings
-                .get::<bool, _>("mail_features_and_updates"),
-            mail_newsletters: notification_settings.get::<bool, _>("mail_newsletters"),
-            mail_digest: notification_settings.get::<bool, _>("mail_digest"),
-        })),
-        Err(kind) => {
-            if matches!(kind, sqlx::Error::RowNotFound) {
-                Err(Status::not_found("Notification settings not found"))
-            } else {
-                Err(Status::internal("Database error"))
-            }
+    .map_err(|error| {
+        if matches!(error, sqlx::Error::RowNotFound) {
+            Status::not_found("Notification settings not found")
+        } else {
+            error!("database error: {error:?}");
+
+            Status::internal("Database error")
         }
-    }
+    })?;
+
+    Ok(Response::new(GetNotificationSettingsResponse {
+        features_and_updates: notification_settings.get::<bool, _>("features_and_updates"),
+        stories: notification_settings.get::<bool, _>("stories"),
+        story_likes: notification_settings.get::<bool, _>("story_likes"),
+        tags: notification_settings.get::<bool, _>("tags"),
+        comments: notification_settings.get::<bool, _>("comments"),
+        replies: notification_settings.get::<bool, _>("replies"),
+        new_followers: notification_settings.get::<bool, _>("new_followers"),
+        friend_requests: notification_settings.get::<bool, _>("friend_requests"),
+        mail_login_activity: notification_settings.get::<bool, _>("mail_login_activity"),
+        mail_features_and_updates: notification_settings
+            .get::<bool, _>("mail_features_and_updates"),
+        mail_newsletters: notification_settings.get::<bool, _>("mail_newsletters"),
+        mail_digest: notification_settings.get::<bool, _>("mail_digest"),
+    }))
 }
 
 #[cfg(test)]
@@ -93,27 +104,27 @@ mod tests {
             pool,
             true,
             Box::new(|mut client, pool, _, user_id| async move {
-                // Update the notification settings
+                // Update the notification settings.
                 let result = sqlx::query(
                     r#"
-                    UPDATE notification_settings
-                    SET
-                        -- Push
-                        push_features_and_updates = FALSE,
-                        push_stories = FALSE,
-                        push_story_likes = FALSE,
-                        push_tags = FALSE,
-                        push_comments = FALSE,
-                        push_replies = FALSE,
-                        push_followers = FALSE,
-                        push_friend_requests = FALSE,
-                        -- Mail
-                        mail_login_activity = FALSE,
-                        mail_features_and_updates = FALSE,
-                        mail_newsletters = FALSE,
-                        mail_suggested_stories = FALSE
-                    WHERE user_id = $1
-                    "#,
+UPDATE notification_settings
+SET
+    -- Push
+    push_features_and_updates = FALSE,
+    push_stories = FALSE,
+    push_story_likes = FALSE,
+    push_tags = FALSE,
+    push_comments = FALSE,
+    push_replies = FALSE,
+    push_followers = FALSE,
+    push_friend_requests = FALSE,
+    -- Mail
+    mail_login_activity = FALSE,
+    mail_features_and_updates = FALSE,
+    mail_newsletters = FALSE,
+    mail_suggested_stories = FALSE
+WHERE user_id = $1
+"#,
                 )
                 .bind(user_id.unwrap())
                 .execute(&pool)

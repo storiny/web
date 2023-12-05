@@ -6,12 +6,12 @@ use markdown::{
     ParseOptions,
 };
 
-/// Source of the markdown string. Controls how the markdown is parsed and rendered into
+/// The source of the markdown string. Decides how the markdown is parsed and rendered into
 /// the HTML string and which features are enabled for the specific source.
 pub enum MarkdownSource<'a> {
-    /// Markdown for user bio
+    /// The markdown variant for user bio.
     Bio(&'a str),
-    /// Markdown for response (comment or reply)
+    /// The markdown variant for response (comment or reply).
     Response(&'a str),
 }
 
@@ -139,7 +139,7 @@ pub fn md_to_html(md_source: MarkdownSource) -> String {
                 },
             };
 
-            // Can be safely unwrapped unless using MDX
+            // Can be safely unwrapped unless using MDX.
             to_html_with_options(md_str, &options).unwrap()
         }
     }

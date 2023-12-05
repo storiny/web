@@ -11,9 +11,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO story_likes (user_id, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_likes (user_id, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -32,10 +32,10 @@ mod tests {
         // Soft-delete the story
         sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -43,16 +43,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO story_likes (user_id, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_likes (user_id, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -73,10 +73,10 @@ mod tests {
         // Unpublish the story
         sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET published_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -84,16 +84,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO story_likes (user_id, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_likes (user_id, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -114,10 +114,10 @@ mod tests {
         // Soft-delete the user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -125,16 +125,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO story_likes (user_id, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_likes (user_id, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -155,10 +155,10 @@ mod tests {
         // Deactivate the user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -166,16 +166,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO story_likes (user_id, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_likes (user_id, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -198,9 +198,9 @@ mod tests {
         // Like the story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_likes (user_id, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_likes (user_id, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -212,9 +212,9 @@ mod tests {
         // Should increment `like_count` on story
         let result = sqlx::query(
             r#"
-            SELECT like_count FROM stories
-            WHERE id = $1
-            "#,
+SELECT like_count FROM stories
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .fetch_one(&mut *conn)
@@ -234,9 +234,9 @@ mod tests {
         // Like the story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_likes (user_id, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_likes (user_id, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -248,9 +248,9 @@ mod tests {
         // Should increment `like_count` on story
         let result = sqlx::query(
             r#"
-            SELECT like_count FROM stories
-            WHERE id = $1
-            "#,
+SELECT like_count FROM stories
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .fetch_one(&mut *conn)
@@ -261,10 +261,10 @@ mod tests {
         // Soft-delete the story like
         sqlx::query(
             r#"
-            UPDATE story_likes
-            SET deleted_at = NOW()
-            WHERE user_id = $1 AND story_id = $2
-            "#,
+UPDATE story_likes
+SET deleted_at = NOW()
+WHERE user_id = $1 AND story_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -274,9 +274,9 @@ mod tests {
         // Should decrement `like_count` on story
         let result = sqlx::query(
             r#"
-            SELECT like_count FROM stories
-            WHERE id = $1
-            "#,
+SELECT like_count FROM stories
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .fetch_one(&mut *conn)
@@ -287,10 +287,10 @@ mod tests {
         // Restore the story like
         sqlx::query(
             r#"
-            UPDATE story_likes
-            SET deleted_at = NULL
-            WHERE user_id = $1 AND story_id = $2
-            "#,
+UPDATE story_likes
+SET deleted_at = NULL
+WHERE user_id = $1 AND story_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -300,9 +300,9 @@ mod tests {
         // Should increment `like_count` on story again
         let result = sqlx::query(
             r#"
-            SELECT like_count FROM stories
-            WHERE id = $1
-            "#,
+SELECT like_count FROM stories
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .fetch_one(&mut *conn)
@@ -322,9 +322,9 @@ mod tests {
         // Like the story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_likes (user_id, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_likes (user_id, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -336,9 +336,9 @@ mod tests {
         // Should increment `like_count` on story
         let result = sqlx::query(
             r#"
-            SELECT like_count FROM stories
-            WHERE id = $1
-            "#,
+SELECT like_count FROM stories
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .fetch_one(&mut *conn)
@@ -349,9 +349,9 @@ mod tests {
         // Delete the story like
         sqlx::query(
             r#"
-            DELETE FROM story_likes
-            WHERE user_id = $1 AND story_id = $2
-            "#,
+DELETE FROM story_likes
+WHERE user_id = $1 AND story_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -361,9 +361,9 @@ mod tests {
         // Should decrement `like_count` on story
         let result = sqlx::query(
             r#"
-            SELECT like_count FROM stories
-            WHERE id = $1
-            "#,
+SELECT like_count FROM stories
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .fetch_one(&mut *conn)
@@ -383,9 +383,9 @@ mod tests {
         // Like the story
         sqlx::query(
             r#"
-            INSERT INTO story_likes (user_id, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_likes (user_id, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -397,9 +397,9 @@ mod tests {
         // on the story when decrementing the `like_count`.
         sqlx::query(
             r#"
-            INSERT INTO story_likes (user_id, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_likes (user_id, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(3_i64)
@@ -409,9 +409,9 @@ mod tests {
         // Should increment `like_count` on story
         let result = sqlx::query(
             r#"
-            SELECT like_count FROM stories
-            WHERE id = $1
-            "#,
+SELECT like_count FROM stories
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .fetch_one(&mut *conn)
@@ -422,10 +422,10 @@ mod tests {
         // Soft-delete the story like
         sqlx::query(
             r#"
-            UPDATE story_likes
-            SET deleted_at = NOW()
-            WHERE user_id = $1 AND story_id = $2
-            "#,
+UPDATE story_likes
+SET deleted_at = NOW()
+WHERE user_id = $1 AND story_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -435,9 +435,9 @@ mod tests {
         // Should decrement `like_count` on story
         let result = sqlx::query(
             r#"
-            SELECT like_count FROM stories
-            WHERE id = $1
-            "#,
+SELECT like_count FROM stories
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .fetch_one(&mut *conn)
@@ -448,9 +448,9 @@ mod tests {
         // Delete the story like
         sqlx::query(
             r#"
-            DELETE FROM story_likes
-            WHERE user_id = $1 AND story_id = $2
-            "#,
+DELETE FROM story_likes
+WHERE user_id = $1 AND story_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -460,9 +460,9 @@ mod tests {
         // Should not decrement `like_count` on story any further
         let result = sqlx::query(
             r#"
-            SELECT like_count FROM stories
-            WHERE id = $1
-            "#,
+SELECT like_count FROM stories
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .fetch_one(&mut *conn)

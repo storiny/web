@@ -24,8 +24,16 @@ use tonic::{
     Response,
     Status,
 };
+use tracing::error;
 
 /// Returns the connection settings for a user.
+#[tracing::instrument(
+    name = "GRPC get_connection_settings",
+    skip_all,
+    fields(
+        user_id = tracing::field::Empty
+    )
+)]
 pub async fn get_connection_settings(
     client: &GrpcService,
     request: Request<GetConnectionSettingsRequest>,
@@ -36,20 +44,22 @@ pub async fn get_connection_settings(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
+    tracing::Span::current().record("user_id", &user_id);
+
     let connections = sqlx::query(
         r#"
-        SELECT
-            id,
-            provider,
-            provider_identifier,
-            display_name,
-            hidden,
-            created_at
-        FROM
-            connections
-        WHERE
-            user_id = $1
-        "#,
+SELECT
+    id,
+    provider,
+    provider_identifier,
+    display_name,
+    hidden,
+    created_at
+FROM
+    connections
+WHERE
+    user_id = $1
+"#,
     )
     .bind(user_id)
     .map(|row: PgRow| ConnectionSetting {
@@ -69,7 +79,11 @@ pub async fn get_connection_settings(
     })
     .fetch_all(&client.db_pool)
     .await
-    .map_err(|_| Status::internal("Database error"))?;
+    .map_err(|error| {
+        error!("unable to fetch connections: {error:?}");
+
+        Status::internal("Database error")
+    })?;
 
     Ok(Response::new(GetConnectionSettingsResponse { connections }))
 }
@@ -102,20 +116,20 @@ mod tests {
             Box::new(|mut client, pool, _, user_id| async move {
                 let created_at = OffsetDateTime::now_utc();
 
-                // Insert a connection
+                // Insert a connection.
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO connections (
-                        id,
-                        provider,
-                        provider_identifier,
-                        display_name,
-                        hidden,
-                        user_id,
-                        created_at
-                    )
-                    VALUES ($1, $2, $3, $4, $5, $6, $7)
-                    "#,
+INSERT INTO connections (
+    id,
+    provider,
+    provider_identifier,
+    display_name,
+    hidden,
+    user_id,
+    created_at
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+"#,
                 )
                 .bind(2_i64)
                 .bind(Provider::Github as i16)

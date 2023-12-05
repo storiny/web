@@ -8,9 +8,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO notifications(entity_type, entity_id, notifier_id) 
-            VALUES ($1, $2, $3)
-            "#,
+INSERT INTO notifications (entity_type, entity_id, notifier_id) 
+VALUES ($1, $2, $3)
+"#,
         )
         .bind(0)
         .bind(1_i64)
@@ -34,10 +34,10 @@ mod tests {
         // Soft-delete the notifier user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -45,9 +45,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO notifications(entity_type, entity_id, notifier_id) 
-            VALUES ($1, $2, $3)
-            "#,
+INSERT INTO notifications (entity_type, entity_id, notifier_id) 
+VALUES ($1, $2, $3)
+"#,
         )
         .bind(0)
         .bind(1_i64)
@@ -55,7 +55,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -78,10 +78,10 @@ mod tests {
         // Deactivate the notifier user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -89,9 +89,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO notifications(entity_type, entity_id, notifier_id) 
-            VALUES ($1, $2, $3)
-            "#,
+INSERT INTO notifications (entity_type, entity_id, notifier_id) 
+VALUES ($1, $2, $3)
+"#,
         )
         .bind(0)
         .bind(1_i64)
@@ -99,7 +99,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()

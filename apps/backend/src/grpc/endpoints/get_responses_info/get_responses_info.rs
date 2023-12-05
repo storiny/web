@@ -11,8 +11,16 @@ use tonic::{
     Response,
     Status,
 };
+use tracing::error;
 
 /// Returns the `comment_count` and `reply_count` for a user.
+#[tracing::instrument(
+    name = "GRPC get_responses_info",
+    skip_all,
+    fields(
+        user_id = tracing::field::Empty
+    )
+)]
 pub async fn get_responses_info(
     client: &GrpcService,
     request: Request<GetResponsesInfoRequest>,
@@ -23,31 +31,34 @@ pub async fn get_responses_info(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
+    tracing::Span::current().record("user_id", &user_id);
+
     let result = sqlx::query(
         r#"
-        SELECT
-            (SELECT
-                 COUNT(*)
-             FROM
-                 replies
-             WHERE
-                   user_id = $1
-               AND deleted_at IS NULL
-            ) AS "reply_count",
-            (SELECT
-                 COUNT(*)
-             FROM
-                 comments
-             WHERE
-                   user_id = $1
-               AND deleted_at IS NULL
-            ) AS "comment_count"    
-        "#,
+SELECT (
+    SELECT COUNT(*)
+    FROM replies
+    WHERE
+        user_id = $1
+        AND deleted_at IS NULL
+    ) AS "reply_count",
+    (
+    SELECT COUNT(*)
+    FROM comments
+    WHERE
+        user_id = $1
+        AND deleted_at IS NULL
+    ) AS "comment_count"
+"#,
     )
-    .bind(user_id)
+    .bind(&user_id)
     .fetch_one(&client.db_pool)
     .await
-    .map_err(|_| Status::internal("Database error"))?;
+    .map_err(|error| {
+        error!("database error: {error:?}");
+
+        Status::internal("Database error")
+    })?;
 
     Ok(Response::new(GetResponsesInfoResponse {
         comment_count: result.get::<i64, _>("comment_count") as u32,
@@ -91,7 +102,7 @@ mod tests {
             pool,
             false,
             Box::new(|mut client, pool, _, _| async move {
-                // Should count all the comments initially
+                // Should count all the comments initially.
                 let response = client
                     .get_responses_info(Request::new(GetResponsesInfoRequest {
                         user_id: 1_i64.to_string(),
@@ -102,13 +113,13 @@ mod tests {
 
                 assert_eq!(response.comment_count, 2_u32);
 
-                // Soft-delete one of the comments
+                // Soft-delete one of the comments.
                 let result = sqlx::query(
                     r#"
-                    UPDATE comments
-                    SET deleted_at = NOW()
-                    WHERE id = $1
-                    "#,
+UPDATE comments
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
                 )
                 .bind(2_i64)
                 .execute(&pool)
@@ -117,7 +128,7 @@ mod tests {
 
                 assert_eq!(result.rows_affected(), 1);
 
-                // Should count only one comment
+                // Should count only one comment.
                 let response = client
                     .get_responses_info(Request::new(GetResponsesInfoRequest {
                         user_id: 1_i64.to_string(),
@@ -138,7 +149,7 @@ mod tests {
             pool,
             false,
             Box::new(|mut client, pool, _, _| async move {
-                // Should count all the replies initially
+                // Should count all the replies initially.
                 let response = client
                     .get_responses_info(Request::new(GetResponsesInfoRequest {
                         user_id: 1_i64.to_string(),
@@ -149,13 +160,13 @@ mod tests {
 
                 assert_eq!(response.reply_count, 2_u32);
 
-                // Soft-delete one of the replies
+                // Soft-delete one of the replies.
                 let result = sqlx::query(
                     r#"
-                    UPDATE replies
-                    SET deleted_at = NOW()
-                    WHERE id = $1
-                    "#,
+UPDATE replies
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
                 )
                 .bind(3_i64)
                 .execute(&pool)
@@ -164,7 +175,7 @@ mod tests {
 
                 assert_eq!(result.rows_affected(), 1);
 
-                // Should count only one reply
+                // Should count only one reply.
                 let response = client
                     .get_responses_info(Request::new(GetResponsesInfoRequest {
                         user_id: 1_i64.to_string(),

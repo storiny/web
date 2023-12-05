@@ -55,7 +55,6 @@ mod tests {
         utils::delete_s3_objects::delete_s3_objects,
     };
     use futures::future;
-
     use storiny_macros::test_context;
 
     struct LocalTestContext {

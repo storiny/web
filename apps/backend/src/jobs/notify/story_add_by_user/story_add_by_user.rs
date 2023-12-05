@@ -8,6 +8,7 @@ use serde::{
     Serialize,
 };
 use std::sync::Arc;
+use tracing::debug;
 
 pub const NOTIFY_STORY_ADD_BY_USER_JOB_NAME: &'static str = "j:n:story_add_by_user";
 
@@ -22,71 +23,74 @@ impl Job for NotifyStoryAddByUserJob {
 }
 
 /// Notifies the followers and friends of the story writer.
+#[tracing::instrument(
+    name = "JOB notify_story_add_by_user",
+    skip_all,
+    fields(
+        story_id = %job.story_id
+    ),
+    err
+)]
 pub async fn notify_story_add_by_user(
     job: NotifyStoryAddByUserJob,
     ctx: JobContext,
 ) -> Result<(), JobError> {
-    log::info!(
-        "Attempting to insert notifications for story with ID `{}`",
+    debug!(
+        "attempting to insert notifications for story with ID `{}`",
         job.story_id
     );
 
     let state = ctx.data::<Arc<SharedJobState>>()?;
     let result = sqlx::query(
         r#"
-        WITH
-            published_story AS (
-                SELECT
-                    user_id
-                FROM
-                    stories
-                WHERE
-                    id = $1
-                    AND published_at IS NOT NULL
-                    AND deleted_at IS NULL
-            ),
-            inserted_notification AS (
-                INSERT INTO notifications (entity_type, entity_id, notifier_id)
-                SELECT $2, $1, (SELECT user_id FROM published_story)
-                WHERE EXISTS (SELECT 1 FROM published_story)
-                RETURNING id
-            )
-        INSERT
-        INTO
-            notification_outs (notified_id, notification_id)
+WITH published_story AS (
+    SELECT user_id
+    FROM stories
+    WHERE
+        id = $1
+        AND published_at IS NOT NULL
+        AND deleted_at IS NULL
+),
+inserted_notification AS (
+    INSERT INTO notifications (entity_type, entity_id, notifier_id)
+    SELECT $2, $1, (SELECT user_id FROM published_story)
+    WHERE EXISTS (SELECT 1 FROM published_story)
+    RETURNING id
+)
+INSERT INTO
+    notification_outs (notified_id, notification_id)
+SELECT
+    target_id, (SELECT id FROM inserted_notification)
+FROM
+    (
+        -- Friends
         SELECT
-            target_id,
-            (SELECT id FROM inserted_notification)
+            CASE
+                WHEN f.receiver_id = (SELECT user_id FROM published_story)
+                    THEN f.transmitter_id
+                ELSE f.receiver_id
+            END AS "target_id"
         FROM
-            (
-                -- Friends
-                SELECT
-                    CASE
-                        WHEN f.receiver_id = (SELECT user_id FROM published_story)
-                            THEN f.transmitter_id
-                        ELSE f.receiver_id
-                    END AS "target_id"
-                FROM
-                    friends f
-                WHERE
-                     f.transmitter_id = (SELECT user_id FROM published_story)
-                  OR f.receiver_id = (SELECT user_id FROM published_story)
-                         AND f.deleted_at IS NULL
-                         AND f.accepted_at IS NOT NULL
-                UNION
-                -- Followers
-                SELECT
-                    r.follower_id as "target_id"
-                FROM
-                    relations r
-                WHERE
-                      r.followed_id = (SELECT user_id FROM published_story)
-                  AND r.deleted_at IS NULL
-                  AND r.subscribed_at IS NOT NULL
-            ) AS user_relations
+            friends f
         WHERE
-            EXISTS (SELECT 1 FROM published_story)
-        "#,
+            (
+                f.transmitter_id = (SELECT user_id FROM published_story)
+            OR
+                f.receiver_id = (SELECT user_id FROM published_story)
+            )
+            AND f.deleted_at IS NULL
+            AND f.accepted_at IS NOT NULL
+        UNION
+        -- Followers
+        SELECT r.follower_id as "target_id"
+        FROM relations r
+        WHERE
+              r.followed_id = (SELECT user_id FROM published_story)
+          AND r.deleted_at IS NULL
+          AND r.subscribed_at IS NOT NULL
+    ) AS user_relations
+WHERE EXISTS (SELECT 1 FROM published_story)
+"#,
     )
     .bind(&job.story_id)
     .bind(NotificationEntityType::StoryAddByUser as i16)
@@ -95,8 +99,8 @@ pub async fn notify_story_add_by_user(
     .map_err(Box::new)
     .map_err(|err| JobError::Failed(err))?;
 
-    log::info!(
-        "Inserted `{}` notifications for story with ID `{}`",
+    debug!(
+        "inserted `{}` notifications for story with ID `{}`",
         result.rows_affected(),
         job.story_id
     );
@@ -122,18 +126,18 @@ mod tests {
 
         assert!(result.is_ok());
 
-        // Notifications should be present in the database
+        // Notifications should be present in the database.
         let result = sqlx::query(
             r#"
-            WITH notification AS (
-                SELECT id FROM notifications
-                WHERE entity_id = $1 AND entity_type = $2
-            )
-            SELECT 1 FROM notification_outs
-            WHERE notification_id = (
-                (SELECT id FROM notification)
-            )
-            "#,
+WITH notification AS (
+    SELECT id FROM notifications
+    WHERE entity_id = $1 AND entity_type = $2
+)
+SELECT 1 FROM notification_outs
+WHERE notification_id = (
+    (SELECT id FROM notification)
+)
+"#,
         )
         .bind(4_i64)
         .bind(NotificationEntityType::StoryAddByUser as i16)
@@ -152,13 +156,13 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let ctx = get_job_ctx_for_test(pool, None).await;
 
-        // Unpublish the story
+        // Unpublish the story.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET published_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .execute(&mut *conn)
@@ -171,14 +175,14 @@ mod tests {
 
         assert!(result.is_ok());
 
-        // Notifications should not be present in the database
+        // Notifications should not be present in the database.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM notifications
-                WHERE entity_id = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM notifications
+    WHERE entity_id = $1
+)
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -196,13 +200,13 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let ctx = get_job_ctx_for_test(pool, None).await;
 
-        // Soft-delete the story
+        // Soft-delete the story.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .execute(&mut *conn)
@@ -215,14 +219,14 @@ mod tests {
 
         assert!(result.is_ok());
 
-        // Notifications should not be present in the database
+        // Notifications should not be present in the database.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM notifications
-                WHERE entity_id = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM notifications
+    WHERE entity_id = $1
+)
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)

@@ -530,8 +530,8 @@ struct VerificationRequest {
     password: String,
 }
 
-#[tracing::instrument(name = "GET /v1/auth/external/google/verification", skip_all, err)]
 #[get("/v1/auth/external/google/verification")]
+#[tracing::instrument(name = "GET /v1/auth/external/google/verification", skip_all, err)]
 async fn verify(
     req: HttpRequest,
     data: web::Data<AppState>,

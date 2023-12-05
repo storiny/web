@@ -66,6 +66,7 @@ use storiny::{
     },
     *,
 };
+use tracing::info;
 use tracing_actix_web::TracingLogger;
 use user_agent_parser::UserAgentParser;
 
@@ -82,14 +83,12 @@ async fn main() -> io::Result<()> {
 
     match get_app_config() {
         Ok(config) => {
-            env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
-
             let host = config.host.to_string();
             let port = config.port.clone().parse::<u16>().unwrap();
             let redis_connection_string =
                 format!("redis://{}:{}", &config.redis_host, &config.redis_port);
 
-            log::info!(
+            info!(
                 "{}",
                 format!(
                     "Starting API HTTP server in {} mode at {}:{}",
@@ -240,7 +239,7 @@ async fn main() -> io::Result<()> {
                         actix_web_validator::Error::Validate(error) => {
                             FormErrorResponse::from(error)
                         }
-                        _ => FormErrorResponse::new(Vec::new()),
+                        _ => FormErrorResponse::new(None, Vec::new()),
                     };
 
                     actix_web::error::InternalError::from_response(

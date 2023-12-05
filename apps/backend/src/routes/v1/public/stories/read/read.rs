@@ -3,7 +3,10 @@ use crate::{
         reading_session::MAXIMUM_READING_SESSION_DURATION,
         redis_namespaces::RedisNamespace,
     },
-    error::AppError,
+    error::{
+        AppError,
+        ToastErrorResponse,
+    },
     grpc::defs::login_activity_def::v1::DeviceType,
     middlewares::identity::identity::Identity,
     utils::{
@@ -19,10 +22,7 @@ use actix_web::{
     HttpResponse,
 };
 use actix_web_validator::Json;
-use redis::{
-    AsyncCommands,
-    RedisResult,
-};
+use redis::AsyncCommands;
 use serde::{
     Deserialize,
     Serialize,
@@ -44,127 +44,132 @@ struct Request {
 }
 
 #[post("/v1/public/stories/{story_id}/read")]
+#[tracing::instrument(
+    name = "POST /v1/public/stories/{story_id}/read",
+    skip_all,
+    fields(
+        user_id = maybe_user.and_then(|user| user.id().ok()),
+        story_id = %path.story_id,
+        payload
+    ),
+    err
+)]
 async fn post(
     req: HttpRequest,
     payload: Json<Request>,
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
-    user: Option<Identity>,
+    maybe_user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    match path.story_id.parse::<i64>() {
-        Ok(story_id) => {
-            match (&data.redis).get().await {
-                Ok(ref mut conn) => {
-                    let cache_key = format!(
-                        "{}:{story_id}:{}",
-                        RedisNamespace::ReadingSession.to_string(),
-                        &payload.token
-                    );
+    let user_id = maybe_user.and_then(|user| Some(user.id()?));
+    let story_id = path
+        .story_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid story ID"));
 
-                    match conn.ttl::<_, i32>(&cache_key).await {
-                        Ok(ttl) => {
-                            let _: RedisResult<()> = conn.del(&cache_key).await;
+    let mut redis_conn = (&data.redis).get().await?;
 
-                            // The command returns -1 if the key exists but has no associated
-                            // expire, and -2 if the key does not exist.
-                            if ttl < 0 {
-                                return Ok(
-                                    HttpResponse::BadRequest().body("Invalid reading session")
-                                );
-                            }
+    let cache_key = format!(
+        "{}:{story_id}:{}",
+        RedisNamespace::ReadingSession.to_string(),
+        &payload.token
+    );
 
-                            // Compute the elapsed reading duration using:
-                            // MAXIMUM_READING_SESSION_DURATION - current ttl
-                            let elapsed_reading_duration =
-                                MAXIMUM_READING_SESSION_DURATION - (ttl as i16);
+    let session_ttl = redis_conn
+        .ttl::<_, i32>(&cache_key)
+        .await
+        .map_err(|error| {
+            AppError::InternalError(format!("unable to fetch the reading session: {error:?}"))
+        })?;
 
-                            // This should never happen provided that the keys expire after the TTL
-                            if elapsed_reading_duration < 0 {
-                                return Ok(HttpResponse::InternalServerError().finish());
-                            }
+    redis_conn.del::<_, ()>(&cache_key).await.map_err(|error| {
+        AppError::InternalError(format!("unable to delete the reading session: {error:?}"))
+    })?;
 
-                            let mut country_code: Option<String> = None;
-                            let mut device: i32 = DeviceType::Unknown as i32;
+    // The command returns -1 if the key exists but has no associated expire, and -2 if the key does
+    // not exist.
+    if session_ttl < 0 {
+        return Err(AppError::from("Invalid reading session"));
+    }
 
-                            if let Some(ip) = req.connection_info().realip_remote_addr() {
-                                if let Ok(parsed_ip) = ip.parse::<IpAddr>() {
-                                    if let Some(code) = get_client_country(parsed_ip, &data.geo_db)
-                                    {
-                                        country_code = Some(code);
-                                    }
-                                }
-                            }
+    // Compute the elapsed reading duration using: MAXIMUM_READING_SESSION_DURATION - current ttl
+    let elapsed_reading_duration = MAXIMUM_READING_SESSION_DURATION - (session_ttl as i16);
 
-                            if let Some(ua_header) = (&req.headers()).get("user-agent") {
-                                if let Ok(ua) = ua_header.to_str() {
-                                    device = get_client_device(ua, &data.ua_parser).r#type;
-                                }
-                            }
+    // This should never happen provided that the keys expire after the TTL.
+    if elapsed_reading_duration < 0 {
+        return Err(AppError::InternalError(format!(
+            "unexpected negative value for session duration: {elapsed_reading_duration}"
+        )));
+    }
 
-                            let hostname = {
-                                if let Some(referrer) = &payload.referrer {
-                                    let referrer_url = url::Url::parse(referrer).ok();
-                                    referrer_url.and_then(|ref_url| {
-                                        ref_url.host_str().map(|host| host.to_string())
-                                    })
-                                } else {
-                                    None
-                                }
-                            }
-                            // Ignore internal referrals
-                            .and_then(|host| {
-                                if host.contains("storiny.com") {
-                                    None
-                                } else {
-                                    Some(host)
-                                }
-                            });
+    let mut country_code: Option<String> = None;
+    let mut device: i32 = DeviceType::Unknown as i32;
 
-                            match sqlx::query(
-                                r#"
-                                WITH target_story AS (
-                                    SELECT id FROM stories
-                                    WHERE
-                                        id = $6
-                                        AND published_at IS NOT NULL
-                                        AND deleted_at IS NULL
-                                )
-                                INSERT INTO story_reads (
-                                    hostname,
-                                    device,
-                                    country_code,
-                                    duration,
-                                    user_id,
-                                    story_id
-                                )
-                                SELECT $1, $2, $3, $4, $5,
-                                    (SELECT id FROM target_story)
-                                WHERE EXISTS (
-                                    SELECT 1 FROM target_story
-                                )
-                               "#,
-                            )
-                            .bind(hostname)
-                            .bind(device)
-                            .bind(country_code)
-                            .bind(elapsed_reading_duration)
-                            .bind(user.and_then(|user| user.id().ok()))
-                            .bind(story_id)
-                            .execute(&data.db_pool)
-                            .await?
-                            .rows_affected()
-                            {
-                                0 => Ok(HttpResponse::BadRequest().body("Story not found")),
-                                _ => Ok(HttpResponse::NoContent().finish()),
-                            }
-                        }
-                        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-                    }
-                }
-                Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    if let Some(ip) = req.connection_info().realip_remote_addr() {
+        if let Ok(parsed_ip) = ip.parse::<IpAddr>() {
+            if let Some(code) = get_client_country(parsed_ip, &data.geo_db) {
+                country_code = Some(code);
             }
         }
-        Err(_) => Ok(HttpResponse::BadRequest().body("Invalid story ID")),
+    }
+
+    if let Some(ua_header) = (&req.headers()).get("user-agent") {
+        if let Ok(ua) = ua_header.to_str() {
+            device = get_client_device(ua, &data.ua_parser).r#type;
+        }
+    }
+
+    let hostname = {
+        if let Some(referrer) = &payload.referrer {
+            let referrer_url = url::Url::parse(referrer).ok();
+            referrer_url.and_then(|ref_url| ref_url.host_str().map(|host| host.to_string()))
+        } else {
+            None
+        }
+    }
+    // Ignore internal referrals
+    .and_then(|host| {
+        if host.contains("storiny.com") {
+            None
+        } else {
+            Some(host)
+        }
+    });
+
+    match sqlx::query(
+        r#"
+WITH target_story AS (
+    SELECT id FROM stories
+    WHERE
+        id = $6
+        AND published_at IS NOT NULL
+        AND deleted_at IS NULL
+)
+INSERT INTO story_reads (
+    hostname,
+    device,
+    country_code,
+    duration,
+    user_id,
+    story_id
+)
+SELECT $1, $2, $3, $4, $5,
+    (SELECT id FROM target_story)
+WHERE EXISTS (SELECT 1 FROM target_story)
+"#,
+    )
+    .bind(&hostname)
+    .bind(&device)
+    .bind(&country_code)
+    .bind(&elapsed_reading_duration)
+    .bind(&user_id)
+    .bind(&story_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(ToastErrorResponse::new(None, "Story not found").into()),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -230,7 +235,7 @@ mod tests {
                 RedisNamespace::ReadingSession.to_string(),
             );
 
-            // Start a reading session
+            // Start a reading session.
             redis_conn
                 .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
                 .await
@@ -247,12 +252,12 @@ mod tests {
 
             assert!(res.status().is_success());
 
-            // Story read row should get inserted into the database
+            // Story read row should get inserted into the database.
             let result = sqlx::query(
                 r#"
-                SELECT 1 FROM story_reads
-                WHERE story_id = $1
-                "#,
+SELECT 1 FROM story_reads
+WHERE story_id = $1
+"#,
             )
             .bind(story_id)
             .fetch_all(&mut *conn)
@@ -260,7 +265,7 @@ mod tests {
 
             assert_eq!(result.len(), 1);
 
-            // Reading session should not be present in the cache
+            // Reading session should not be present in the cache.
             let result = redis_conn.ttl::<_, i32>(&cache_key).await.unwrap();
 
             assert_eq!(result, -2_i32);
@@ -286,7 +291,7 @@ mod tests {
                 RedisNamespace::ReadingSession.to_string(),
             );
 
-            // Start a reading session
+            // Start a reading session.
             redis_conn
                 .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
                 .await
@@ -304,12 +309,12 @@ mod tests {
 
             assert!(res.status().is_success());
 
-            // Story read row should get inserted into the database
+            // Story read row should get inserted into the database.
             let result = sqlx::query(
                 r#"
-                SELECT user_id FROM story_reads
-                WHERE story_id = $1
-                "#,
+SELECT user_id FROM story_reads
+WHERE story_id = $1
+"#,
             )
             .bind(story_id)
             .fetch_all(&mut *conn)
@@ -321,7 +326,7 @@ mod tests {
                 user_id.unwrap()
             );
 
-            // Reading session should not be present in the cache
+            // Reading session should not be present in the cache.
             let result = redis_conn.ttl::<_, i32>(&cache_key).await.unwrap();
 
             assert_eq!(result, -2_i32);
@@ -347,13 +352,13 @@ mod tests {
                 RedisNamespace::ReadingSession.to_string(),
             );
 
-            // Start a reading session
+            // Start a reading session.
             redis_conn
                 .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
                 .await
                 .unwrap();
 
-            // Hold the reading session for 5 seconds
+            // Hold the reading session for 5 seconds.
             tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
 
             let req = test::TestRequest::post()
@@ -372,23 +377,23 @@ mod tests {
 
             assert!(res.status().is_success());
 
-            // Story read row should get inserted into the database
+            // Story read row should get inserted into the database.
             let result = sqlx::query(
                 r#"
-                SELECT
-                    duration,
-                    hostname,
-                    device,
-                    country_code
-                FROM story_reads
-                WHERE story_id = $1
-                "#,
+SELECT
+    duration,
+    hostname,
+    device,
+    country_code
+FROM story_reads
+WHERE story_id = $1
+"#,
             )
             .bind(story_id)
             .fetch_one(&mut *conn)
             .await?;
 
-            // Duration should in the expected range
+            // Duration should in the expected range.
             assert!(result.get::<i16, _>("duration") > 4 && result.get::<i16, _>("duration") < 10);
             assert_eq!(
                 result.get::<Option<String>, _>("hostname"),
@@ -420,14 +425,14 @@ mod tests {
                 RedisNamespace::ReadingSession.to_string(),
             );
 
-            // Start a reading session
+            // Start a reading session.
             redis_conn
                 .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
                 .await
                 .unwrap();
 
             let req = test::TestRequest::post()
-                // Use an invalid story ID with a valid token value
+                // Use an invalid story ID with a valid token value.
                 .uri(&format!("/v1/public/stories/{}/read", 4))
                 .set_json(Request {
                     referrer: None,
@@ -460,19 +465,19 @@ mod tests {
                 RedisNamespace::ReadingSession.to_string(),
             );
 
-            // Start a reading session
+            // Start a reading session.
             redis_conn
                 .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
                 .await
                 .unwrap();
 
-            // Soft-delete the story
+            // Soft-delete the story.
             let result = sqlx::query(
                 r#"
-                UPDATE stories
-                SET deleted_at = NOW()
-                WHERE id = $1
-                "#,
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
             )
             .bind(story_id)
             .execute(&mut *conn)
@@ -513,19 +518,19 @@ mod tests {
                 RedisNamespace::ReadingSession.to_string(),
             );
 
-            // Start a reading session
+            // Start a reading session.
             redis_conn
                 .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
                 .await
                 .unwrap();
 
-            // Unpublish the story
+            // Unpublish the story.
             let result = sqlx::query(
                 r#"
-                UPDATE stories
-                SET published_at = NULL
-                WHERE id = $1
-                "#,
+UPDATE stories
+SET published_at = NULL
+WHERE id = $1
+"#,
             )
             .bind(story_id)
             .execute(&mut *conn)

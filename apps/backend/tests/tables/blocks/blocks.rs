@@ -11,9 +11,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO blocks (blocker_id, blocked_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -31,13 +31,13 @@ mod tests {
     async fn can_reject_block_for_soft_deleted_blocker_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Soft-delete the blocker user
+        // Soft-delete the blocker user.
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -45,16 +45,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO blocks (blocker_id, blocked_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -72,13 +72,13 @@ mod tests {
     async fn can_reject_block_for_deactivated_blocker_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Deactivate the blocker user
+        // Deactivate the blocker user.
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -86,16 +86,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO blocks (blocker_id, blocked_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -113,13 +113,13 @@ mod tests {
     async fn can_reject_block_for_soft_deleted_blocked_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Soft-delete the blocked user
+        // Soft-delete the blocked user.
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -127,16 +127,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO blocks (blocker_id, blocked_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -154,13 +154,13 @@ mod tests {
     async fn can_reject_block_for_deactivated_blocked_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Deactivate the blocked user
+        // Deactivate the blocked user.
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -168,16 +168,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO blocks (blocker_id, blocked_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -197,12 +197,12 @@ mod tests {
     async fn can_delete_followed_relation_when_blocking_a_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Follow a user
+        // Follow a user.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -211,26 +211,26 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 1);
 
-        // Block the user
+        // Block the user.
         sqlx::query(
             r#"
-            INSERT INTO blocks (blocker_id, blocked_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Should delete the followed relation
+        // Should delete the followed relation.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM relations
-                WHERE follower_id = $1 AND followed_id = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM relations
+    WHERE follower_id = $1 AND followed_id = $2
+)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -248,12 +248,12 @@ mod tests {
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Follow a user
+        // Follow a user.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -262,26 +262,26 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 1);
 
-        // Get blocked by the user
+        // Get blocked by the user.
         sqlx::query(
             r#"
-            INSERT INTO blocks (blocker_id, blocked_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Should delete the followed relation
+        // Should delete the followed relation.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM relations
-                WHERE follower_id = $1 AND followed_id = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM relations
+    WHERE follower_id = $1 AND followed_id = $2
+)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -297,12 +297,12 @@ mod tests {
     async fn can_delete_follower_relation_when_blocking_a_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Add a follower
+        // Add a follower.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -311,26 +311,26 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 1);
 
-        // Block the user
+        // Block the user.
         sqlx::query(
             r#"
-            INSERT INTO blocks (blocker_id, blocked_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Should delete the follower relation
+        // Should delete the follower relation.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM relations
-                WHERE follower_id = $1 AND followed_id = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM relations
+    WHERE follower_id = $1 AND followed_id = $2
+)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -348,12 +348,12 @@ mod tests {
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Add a follower
+        // Add a follower.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -362,26 +362,26 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 1);
 
-        // Get blocked by the user
+        // Get blocked by the user.
         sqlx::query(
             r#"
-            INSERT INTO blocks (blocker_id, blocked_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Should delete the follower relation
+        // Should delete the follower relation.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM relations
-                WHERE follower_id = $1 AND followed_id = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM relations
+    WHERE follower_id = $1 AND followed_id = $2
+)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -399,12 +399,12 @@ mod tests {
     async fn can_delete_transmitter_friend_when_blocking_a_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Add a friend
+        // Add a friend.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -413,26 +413,26 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 1);
 
-        // Block the user
+        // Block the user.
         sqlx::query(
             r#"
-            INSERT INTO blocks (blocker_id, blocked_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Should delete the friend relation
+        // Should delete the friend relation.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM friends
-                WHERE transmitter_id = $1 AND receiver_id = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM friends
+    WHERE transmitter_id = $1 AND receiver_id = $2
+)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -450,12 +450,12 @@ mod tests {
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Add a friend
+        // Add a friend.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -464,26 +464,26 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 1);
 
-        // Get blocked by the user
+        // Get blocked by the user.
         sqlx::query(
             r#"
-            INSERT INTO blocks (blocker_id, blocked_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Should delete the friend relation
+        // Should delete the friend relation.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM friends
-                WHERE transmitter_id = $1 AND receiver_id = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM friends
+    WHERE transmitter_id = $1 AND receiver_id = $2
+)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -499,12 +499,12 @@ mod tests {
     async fn can_delete_receiver_friend_when_blocking_a_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Add a friend
+        // Add a friend.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -513,26 +513,26 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 1);
 
-        // Block the user
+        // Block the user.
         sqlx::query(
             r#"
-            INSERT INTO blocks (blocker_id, blocked_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Should delete the friend relation
+        // Should delete the friend relation.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM friends
-                WHERE transmitter_id = $1 AND receiver_id = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM friends
+    WHERE transmitter_id = $1 AND receiver_id = $2
+)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -550,12 +550,12 @@ mod tests {
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Add a friend
+        // Add a friend.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -564,26 +564,26 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 1);
 
-        // Get blocked by the user
+        // Get blocked by the user.
         sqlx::query(
             r#"
-            INSERT INTO blocks (blocker_id, blocked_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Should delete the friend relation
+        // Should delete the friend relation.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM friends
-                WHERE transmitter_id = $1 AND receiver_id = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM friends
+    WHERE transmitter_id = $1 AND receiver_id = $2
+)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)

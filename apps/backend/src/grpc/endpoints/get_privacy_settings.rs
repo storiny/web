@@ -11,8 +11,16 @@ use tonic::{
     Response,
     Status,
 };
+use tracing::error;
 
 /// Returns the privacy settings for a user.
+#[tracing::instrument(
+    name = "GRPC get_privacy_settings",
+    skip_all,
+    fields(
+        user_id = tracing::field::Empty
+    )
+)]
 pub async fn get_privacy_settings(
     client: &GrpcService,
     request: Request<GetPrivacySettingsRequest>,
@@ -23,39 +31,42 @@ pub async fn get_privacy_settings(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
-    match sqlx::query(
+    tracing::Span::current().record("user_id", &user_id);
+
+    let user = sqlx::query(
         r#"
-        SELECT
-            is_private,
-            disable_read_history,
-            allow_sensitive_content,
-            incoming_friend_requests,
-            following_list_visibility,
-            friend_list_visibility
-        FROM users
-        WHERE id = $1
-        "#,
+SELECT
+    is_private,
+    disable_read_history,
+    allow_sensitive_content,
+    incoming_friend_requests,
+    following_list_visibility,
+    friend_list_visibility
+FROM users
+WHERE id = $1
+"#,
     )
     .bind(user_id)
     .fetch_one(&client.db_pool)
     .await
-    {
-        Ok(user) => Ok(Response::new(GetPrivacySettingsResponse {
-            is_private_account: user.get::<bool, _>("is_private"),
-            record_read_history: !user.get::<bool, _>("disable_read_history"),
-            allow_sensitive_media: user.get::<bool, _>("allow_sensitive_content"),
-            incoming_friend_requests: user.get::<i16, _>("incoming_friend_requests") as i32,
-            following_list_visibility: user.get::<i16, _>("following_list_visibility") as i32,
-            friend_list_visibility: user.get::<i16, _>("friend_list_visibility") as i32,
-        })),
-        Err(kind) => {
-            if matches!(kind, sqlx::Error::RowNotFound) {
-                Err(Status::not_found("User not found"))
-            } else {
-                Err(Status::internal("Database error"))
-            }
+    .map_err(|error| {
+        if matches!(error, sqlx::Error::RowNotFound) {
+            Status::not_found("User not found")
+        } else {
+            error!("database error: {error:?}");
+
+            Status::internal("Database error")
         }
-    }
+    })?;
+
+    Ok(Response::new(GetPrivacySettingsResponse {
+        is_private_account: user.get::<bool, _>("is_private"),
+        record_read_history: !user.get::<bool, _>("disable_read_history"),
+        allow_sensitive_media: user.get::<bool, _>("allow_sensitive_content"),
+        incoming_friend_requests: user.get::<i16, _>("incoming_friend_requests") as i32,
+        following_list_visibility: user.get::<i16, _>("following_list_visibility") as i32,
+        friend_list_visibility: user.get::<i16, _>("friend_list_visibility") as i32,
+    }))
 }
 
 #[cfg(test)]
@@ -81,23 +92,23 @@ mod tests {
             pool,
             false,
             Box::new(|mut client, pool, _, _| async move {
-                // Insert the user
+                // Insert the user.
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO users (
-                        name,
-                        username,
-                        email,
-                        is_private,
-                        disable_read_history,
-                        allow_sensitive_content,
-                        incoming_friend_requests,
-                        following_list_visibility,
-                        friend_list_visibility
-                    )
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-                    RETURNING id
-                    "#,
+INSERT INTO users (
+    name,
+    username,
+    email,
+    is_private,
+    disable_read_history,
+    allow_sensitive_content,
+    incoming_friend_requests,
+    following_list_visibility,
+    friend_list_visibility
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+RETURNING id
+"#,
                 )
                 .bind("Some user".to_string())
                 .bind("some_user".to_string())

@@ -11,9 +11,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO comment_likes (user_id, comment_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO comment_likes (user_id, comment_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(4_i64)
@@ -29,13 +29,13 @@ mod tests {
     async fn can_reject_comment_like_for_soft_deleted_comment(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Soft-delete the comment
+        // Soft-delete the comment.
         sqlx::query(
             r#"
-            UPDATE comments
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE comments
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .execute(&mut *conn)
@@ -43,16 +43,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO comment_likes (user_id, comment_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO comment_likes (user_id, comment_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(4_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -70,13 +70,13 @@ mod tests {
     async fn can_reject_comment_like_for_soft_deleted_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Soft-delete the user
+        // Soft-delete the user.
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -84,16 +84,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO comment_likes (user_id, comment_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO comment_likes (user_id, comment_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(4_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -111,13 +111,13 @@ mod tests {
     async fn can_reject_comment_like_for_deactivated_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Deactivate the user
+        // Deactivate the user.
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -125,16 +125,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO comment_likes (user_id, comment_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO comment_likes (user_id, comment_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(4_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -154,12 +154,12 @@ mod tests {
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Like the comment
+        // Like the comment.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comment_likes (user_id, comment_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO comment_likes (user_id, comment_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(4_i64)
@@ -171,9 +171,9 @@ mod tests {
         // Should increment `like_count` on comment
         let result = sqlx::query(
             r#"
-            SELECT like_count FROM comments
-            WHERE id = $1
-            "#,
+SELECT like_count FROM comments
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -190,12 +190,12 @@ mod tests {
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Like the comment
+        // Like the comment.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comment_likes (user_id, comment_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO comment_likes (user_id, comment_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(4_i64)
@@ -207,9 +207,9 @@ mod tests {
         // Should increment `like_count` on comment
         let result = sqlx::query(
             r#"
-            SELECT like_count FROM comments
-            WHERE id = $1
-            "#,
+SELECT like_count FROM comments
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -217,25 +217,25 @@ mod tests {
 
         assert_eq!(result.get::<i32, _>("like_count"), 1);
 
-        // Soft-delete the comment like
+        // Soft-delete the comment like.
         sqlx::query(
             r#"
-            UPDATE comment_likes
-            SET deleted_at = NOW()
-            WHERE user_id = $1 AND comment_id = $2
-            "#,
+UPDATE comment_likes
+SET deleted_at = NOW()
+WHERE user_id = $1 AND comment_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Should decrement `like_count` on comment
+        // Should decrement `like_count` on comment.
         let result = sqlx::query(
             r#"
-            SELECT like_count FROM comments
-            WHERE id = $1
-            "#,
+SELECT like_count FROM comments
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -243,25 +243,25 @@ mod tests {
 
         assert_eq!(result.get::<i32, _>("like_count"), 0);
 
-        // Restore the comment like
+        // Restore the comment like.
         sqlx::query(
             r#"
-            UPDATE comment_likes
-            SET deleted_at = NULL
-            WHERE user_id = $1 AND comment_id = $2
-            "#,
+UPDATE comment_likes
+SET deleted_at = NULL
+WHERE user_id = $1 AND comment_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Should increment `like_count` on comment again
+        // Should increment `like_count` on comment again.
         let result = sqlx::query(
             r#"
-            SELECT like_count FROM comments
-            WHERE id = $1
-            "#,
+SELECT like_count FROM comments
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -278,12 +278,12 @@ mod tests {
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Like the comment
+        // Like the comment.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO comment_likes (user_id, comment_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO comment_likes (user_id, comment_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(4_i64)
@@ -292,12 +292,12 @@ mod tests {
 
         assert_eq!(insert_result.rows_affected(), 1);
 
-        // Should increment `like_count` on comment
+        // Should increment `like_count` on comment.
         let result = sqlx::query(
             r#"
-            SELECT like_count FROM comments
-            WHERE id = $1
-            "#,
+SELECT like_count FROM comments
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -305,24 +305,24 @@ mod tests {
 
         assert_eq!(result.get::<i32, _>("like_count"), 1);
 
-        // Delete the comment like
+        // Delete the comment like.
         sqlx::query(
             r#"
-            DELETE FROM comment_likes
-            WHERE user_id = $1 AND comment_id = $2
-            "#,
+DELETE FROM comment_likes
+WHERE user_id = $1 AND comment_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Should decrement `like_count` on comment
+        // Should decrement `like_count` on comment.
         let result = sqlx::query(
             r#"
-            SELECT like_count FROM comments
-            WHERE id = $1
-            "#,
+SELECT like_count FROM comments
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -339,12 +339,12 @@ mod tests {
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Like the comment
+        // Like the comment.
         sqlx::query(
             r#"
-            INSERT INTO comment_likes (user_id, comment_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO comment_likes (user_id, comment_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(4_i64)
@@ -356,21 +356,21 @@ mod tests {
         // on the comment when decrementing the `like_count`.
         sqlx::query(
             r#"
-            INSERT INTO comment_likes (user_id, comment_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO comment_likes (user_id, comment_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Should increment `like_count` on comment
+        // Should increment `like_count` on comment.
         let result = sqlx::query(
             r#"
-            SELECT like_count FROM comments
-            WHERE id = $1
-            "#,
+SELECT like_count FROM comments
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -378,25 +378,25 @@ mod tests {
 
         assert_eq!(result.get::<i32, _>("like_count"), 2);
 
-        // Soft-delete the comment like
+        // Soft-delete the comment like.
         sqlx::query(
             r#"
-            UPDATE comment_likes
-            SET deleted_at = NOW()
-            WHERE user_id = $1 AND comment_id = $2
-            "#,
+UPDATE comment_likes
+SET deleted_at = NOW()
+WHERE user_id = $1 AND comment_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Should decrement `like_count` on comment
+        // Should decrement `like_count` on comment.
         let result = sqlx::query(
             r#"
-            SELECT like_count FROM comments
-            WHERE id = $1
-            "#,
+SELECT like_count FROM comments
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -404,24 +404,24 @@ mod tests {
 
         assert_eq!(result.get::<i32, _>("like_count"), 1);
 
-        // Delete the comment like
+        // Delete the comment like.
         sqlx::query(
             r#"
-            DELETE FROM comment_likes
-            WHERE user_id = $1 AND comment_id = $2
-            "#,
+DELETE FROM comment_likes
+WHERE user_id = $1 AND comment_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Should not decrement `like_count` on comment any further
+        // Should not decrement `like_count` on comment any further.
         let result = sqlx::query(
             r#"
-            SELECT like_count FROM comments
-            WHERE id = $1
-            "#,
+SELECT like_count FROM comments
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)

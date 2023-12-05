@@ -30,7 +30,7 @@ struct Request {
 
 #[post("/v1/me/settings/sessions/acknowledge")]
 #[tracing::instrument(
-    name = "PATCH /v1/me/settings/sessions/acknowledge",
+    name = "POST /v1/me/settings/sessions/acknowledge",
     skip_all,
     fields(user = user.id().ok()),
     err
@@ -49,35 +49,38 @@ async fn post(
         &payload.id
     );
 
-    let result = redis_conn.get::<_, String>(&cache_key).await;
+    let result = redis_conn
+        .get::<_, Option<String>>(&cache_key)
+        .await
+        .map_err(|error| {
+            AppError::InternalError(format!("unable to fetch the session from Redis: {error:?}"))
+        })?;
 
-    match conn.get::<_, String>(&cache_key).await {
-        Ok(session_data) => match serde_json::from_str::<UserSession>(&session_data) {
-            Ok(mut session) => {
-                session.ack = true; // Acknowledge the session
-                let next_session_data = serde_json::to_string(&session);
+    if let Some(session_str) = result {
+        let mut session = serde_json::from_str::<UserSession>(&session_str).map_err(|error| {
+            AppError::InternalError(format!("unable to deserialize the user session: {error:?}"))
+        })?;
 
-                if next_session_data.is_err() {
-                    return HttpResponse::InternalServerError().finish();
-                }
+        session.ack = true; // Acknowledge the session
 
-                let result = redis::cmd("SET")
-                    .arg(&cache_key)
-                    .arg(&next_session_data.unwrap())
-                    .arg("XX") // XX - Only set if the key already exist
-                    .arg("KEEPTTL") // KEEPTTL - Keep the TTL for the key
-                    .query_async::<_, ()>(conn)
-                    .await;
+        let next_session_data = serde_json::to_string(&session).map_err(|error| {
+            AppError::InternalError(format!("unable to serialize the user session: {error:?}"))
+        })?;
 
-                if result.is_err() {
-                    return HttpResponse::InternalServerError().finish();
-                }
+        redis::cmd("SET")
+            .arg(&cache_key)
+            .arg(&next_session_data)
+            .arg("XX") // XX - Only set if the key already exist
+            .arg("KEEPTTL") // KEEPTTL - Keep the TTL for the key
+            .query_async::<_, ()>(&mut *redis_conn)
+            .await
+            .map_err(|error| {
+                AppError::InternalError(format!("unable to save the user session: {error:?}"))
+            })?;
 
-                HttpResponse::NoContent().finish()
-            }
-            Err(_) => HttpResponse::InternalServerError().finish(),
-        },
-        Err(_) => HttpResponse::BadRequest().json(ToastErrorResponse::new("Session not found")),
+        HttpResponse::NoContent().finish()
+    } else {
+        Err(ToastErrorResponse::new(None, "Session not found").into())
     }
 }
 
@@ -97,7 +100,6 @@ mod tests {
         utils::get_user_sessions::get_user_sessions,
     };
     use actix_web::test;
-
     use sqlx::PgPool;
     use storiny_macros::test_context;
     use uuid::Uuid;
@@ -135,7 +137,7 @@ mod tests {
             let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
             let session_token = Uuid::new_v4();
 
-            // Insert an unacknowledged session for the user
+            // Insert an unacknowledged session for the user.
             let _: () = redis_conn
                 .set(
                     &format!(
@@ -164,7 +166,7 @@ mod tests {
 
             assert!(res.status().is_success());
 
-            // Session should get acknowledged in the cache
+            // Session should get acknowledged in the cache.
             let sessions = get_user_sessions(&redis_pool, user_id.unwrap())
                 .await
                 .unwrap();

@@ -7,9 +7,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO test_domains_hex_color
-            VALUES ($1)
-            "#,
+INSERT INTO test_domains_hex_color
+VALUES ($1)
+"#,
         )
         .bind("000000")
         .execute(&mut *conn)
@@ -24,9 +24,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO test_domains_hex_color
-            VALUES ($1)
-            "#,
+INSERT INTO test_domains_hex_color
+VALUES ($1)
+"#,
         )
         .bind("x")
         .execute(&mut *conn)
@@ -41,9 +41,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let three_char_color_result = sqlx::query(
             r#"
-            INSERT INTO test_domains_hex_color
-            VALUES ($1)
-            "#,
+INSERT INTO test_domains_hex_color
+VALUES ($1)
+"#,
         )
         .bind("fff")
         .execute(&mut *conn)
@@ -56,9 +56,9 @@ mod tests {
 
         let eight_char_color_result = sqlx::query(
             r#"
-            INSERT INTO test_domains_hex_color
-            VALUES ($1)
-            "#,
+INSERT INTO test_domains_hex_color
+VALUES ($1)
+"#,
         )
         .bind("00ffffff")
         .execute(&mut *conn)

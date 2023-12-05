@@ -17,10 +17,10 @@ mod tests {
     async fn insert_sample_reply(conn: &mut PoolConnection<Postgres>) -> Result<PgRow, Error> {
         sqlx::query(
             r#"
-            INSERT INTO replies (content, user_id, comment_id)
-            VALUES ($1, $2, $3)
-            RETURNING id
-            "#,
+INSERT INTO replies (content, user_id, comment_id)
+VALUES ($1, $2, $3)
+RETURNING id
+"#,
         )
         .bind("Sample content".to_string())
         .bind(1_i64)
@@ -44,10 +44,10 @@ mod tests {
         // Soft-delete the comment
         sqlx::query(
             r#"
-            UPDATE comments
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE comments
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .execute(&mut *conn)
@@ -55,9 +55,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO replies (content, user_id, comment_id)
-            VALUES ($1, $2, $3)
-            "#,
+INSERT INTO replies (content, user_id, comment_id)
+VALUES ($1, $2, $3)
+"#,
         )
         .bind("Sample content")
         .bind(1_i64)
@@ -65,7 +65,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -86,10 +86,10 @@ mod tests {
         // Soft-delete the user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -97,9 +97,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO replies (content, user_id, comment_id)
-            VALUES ($1, $2, $3)
-            "#,
+INSERT INTO replies (content, user_id, comment_id)
+VALUES ($1, $2, $3)
+"#,
         )
         .bind("Sample content")
         .bind(1_i64)
@@ -107,7 +107,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -128,10 +128,10 @@ mod tests {
         // Deactivate the user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -139,9 +139,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO replies (content, user_id, comment_id)
-            VALUES ($1, $2, $3)
-            "#,
+INSERT INTO replies (content, user_id, comment_id)
+VALUES ($1, $2, $3)
+"#,
         )
         .bind("Sample content")
         .bind(1_i64)
@@ -149,7 +149,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -172,9 +172,9 @@ mod tests {
         // Block the reply writer
         sqlx::query(
             r#"
-            INSERT INTO blocks (blocker_id, blocked_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -184,10 +184,10 @@ mod tests {
         // Insert a reply
         let result = sqlx::query(
             r#"
-            INSERT INTO replies (content, user_id, comment_id)
-            VALUES ($1, $2, $3)
-            RETURNING id
-            "#,
+INSERT INTO replies (content, user_id, comment_id)
+VALUES ($1, $2, $3)
+RETURNING id
+"#,
         )
         .bind("Sample content".to_string())
         .bind(2_i64)
@@ -195,7 +195,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -219,10 +219,10 @@ mod tests {
         // Like the reply
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO reply_likes (user_id, reply_id)
-            VALUES ($1, $2)
-            RETURNING deleted_at
-            "#,
+INSERT INTO reply_likes (user_id, reply_id)
+VALUES ($1, $2)
+RETURNING deleted_at
+"#,
         )
         .bind(1_i64)
         .bind(reply_id)
@@ -238,10 +238,10 @@ mod tests {
         // Soft-delete the reply
         sqlx::query(
             r#"
-            UPDATE replies
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE replies
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(reply_id)
         .execute(&mut *conn)
@@ -250,9 +250,9 @@ mod tests {
         // Reply like should be soft-deleted
         let result = sqlx::query(
             r#"
-            SELECT deleted_at FROM reply_likes
-            WHERE user_id = $1 AND reply_id = $2
-            "#,
+SELECT deleted_at FROM reply_likes
+WHERE user_id = $1 AND reply_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(reply_id)
@@ -268,10 +268,10 @@ mod tests {
         // Restore the reply
         sqlx::query(
             r#"
-            UPDATE replies
-            SET deleted_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE replies
+SET deleted_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(reply_id)
         .execute(&mut *conn)
@@ -280,9 +280,9 @@ mod tests {
         // Reply like should be restored
         let result = sqlx::query(
             r#"
-            SELECT deleted_at FROM reply_likes
-            WHERE user_id = $1 AND reply_id = $2
-            "#,
+SELECT deleted_at FROM reply_likes
+WHERE user_id = $1 AND reply_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(reply_id)
@@ -310,10 +310,10 @@ mod tests {
         // Insert a notification
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO notifications(entity_id, entity_type, notifier_id)
-            VALUES ($1, $2, $3)
-            RETURNING id
-            "#,
+INSERT INTO notifications (entity_id, entity_type, notifier_id)
+VALUES ($1, $2, $3)
+RETURNING id
+"#,
         )
         .bind(reply_id)
         .bind(0)
@@ -326,10 +326,10 @@ mod tests {
         // Soft-delete the reply
         sqlx::query(
             r#"
-            UPDATE replies
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE replies
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(reply_id)
         .execute(&mut *conn)
@@ -338,11 +338,11 @@ mod tests {
         // Notification should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM notifications
-                WHERE id = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM notifications
+    WHERE id = $1
+)
+"#,
         )
         .bind(insert_result.get::<i64, _>("id"))
         .fetch_one(&mut *conn)
@@ -365,9 +365,9 @@ mod tests {
         // Should increment the `reply_count`
         let story_result = sqlx::query(
             r#"
-            SELECT reply_count FROM comments
-            WHERE id = $1
-            "#,
+SELECT reply_count FROM comments
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -388,9 +388,9 @@ mod tests {
         // Should have 1 `reply_count` initially
         let story_result = sqlx::query(
             r#"
-            SELECT reply_count FROM comments
-            WHERE id = $1
-            "#,
+SELECT reply_count FROM comments
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -401,10 +401,10 @@ mod tests {
         // Soft-delete the reply
         sqlx::query(
             r#"
-            UPDATE replies
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE replies
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(reply_id)
         .execute(&mut *conn)
@@ -413,9 +413,9 @@ mod tests {
         // Should decrement the `reply_count`
         let story_result = sqlx::query(
             r#"
-            SELECT reply_count FROM comments
-            WHERE id = $1
-            "#,
+SELECT reply_count FROM comments
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -426,10 +426,10 @@ mod tests {
         // Restore the reply
         sqlx::query(
             r#"
-            UPDATE replies
-            SET deleted_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE replies
+SET deleted_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(reply_id)
         .execute(&mut *conn)
@@ -438,9 +438,9 @@ mod tests {
         // Should increment the `reply_count`
         let story_result = sqlx::query(
             r#"
-            SELECT reply_count FROM comments
-            WHERE id = $1
-            "#,
+SELECT reply_count FROM comments
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -461,9 +461,9 @@ mod tests {
         // Should have 1 `reply_count` initially
         let story_result = sqlx::query(
             r#"
-            SELECT reply_count FROM comments
-            WHERE id = $1
-            "#,
+SELECT reply_count FROM comments
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -474,9 +474,9 @@ mod tests {
         // Delete the reply
         sqlx::query(
             r#"
-            DELETE FROM replies
-            WHERE id = $1
-            "#,
+DELETE FROM replies
+WHERE id = $1
+"#,
         )
         .bind(reply_id)
         .execute(&mut *conn)
@@ -485,9 +485,9 @@ mod tests {
         // Should decrement the `reply_count`
         let story_result = sqlx::query(
             r#"
-            SELECT reply_count FROM comments
-            WHERE id = $1
-            "#,
+SELECT reply_count FROM comments
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -513,9 +513,9 @@ mod tests {
         // Should have 2 `reply_count` initially
         let comment_result = sqlx::query(
             r#"
-            SELECT reply_count FROM comments
-            WHERE id = $1
-            "#,
+SELECT reply_count FROM comments
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -526,10 +526,10 @@ mod tests {
         // Soft-delete the reply
         sqlx::query(
             r#"
-            UPDATE replies
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE replies
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(reply_id)
         .execute(&mut *conn)
@@ -538,9 +538,9 @@ mod tests {
         // Should decrement the `reply_count`
         let story_result = sqlx::query(
             r#"
-            SELECT reply_count FROM comments
-            WHERE id = $1
-            "#,
+SELECT reply_count FROM comments
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -551,9 +551,9 @@ mod tests {
         // Delete the reply
         sqlx::query(
             r#"
-            DELETE FROM replies
-            WHERE id = $1
-            "#,
+DELETE FROM replies
+WHERE id = $1
+"#,
         )
         .bind(reply_id)
         .execute(&mut *conn)
@@ -562,9 +562,9 @@ mod tests {
         // Should not decrement the `reply_count` any further
         let story_result = sqlx::query(
             r#"
-            SELECT reply_count FROM comments
-            WHERE id = $1
-            "#,
+SELECT reply_count FROM comments
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -587,10 +587,10 @@ mod tests {
         // Like the reply
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO reply_likes (user_id, reply_id)
-            VALUES ($1, $2)
-            RETURNING deleted_at
-            "#,
+INSERT INTO reply_likes (user_id, reply_id)
+VALUES ($1, $2)
+RETURNING deleted_at
+"#,
         )
         .bind(1_i64)
         .bind(reply_id)
@@ -606,10 +606,10 @@ mod tests {
         // Soft-delete the reply
         sqlx::query(
             r#"
-            UPDATE replies
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE replies
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(reply_id)
         .execute(&mut *conn)
@@ -618,10 +618,10 @@ mod tests {
         // Soft-delete the user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -630,9 +630,9 @@ mod tests {
         // Reply like should be soft-deleted
         let result = sqlx::query(
             r#"
-            SELECT deleted_at FROM reply_likes
-            WHERE user_id = $1 AND reply_id = $2
-            "#,
+SELECT deleted_at FROM reply_likes
+WHERE user_id = $1 AND reply_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(reply_id)
@@ -648,10 +648,10 @@ mod tests {
         // Restore the reply
         sqlx::query(
             r#"
-            UPDATE replies
-            SET deleted_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE replies
+SET deleted_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(reply_id)
         .execute(&mut *conn)
@@ -660,9 +660,9 @@ mod tests {
         // Reply like should still be soft-deleted
         let result = sqlx::query(
             r#"
-            SELECT deleted_at FROM reply_likes
-            WHERE user_id = $1 AND reply_id = $2
-            "#,
+SELECT deleted_at FROM reply_likes
+WHERE user_id = $1 AND reply_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(reply_id)
@@ -678,10 +678,10 @@ mod tests {
         // Restore the user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -690,9 +690,9 @@ mod tests {
         // Reply like should get restored
         let result = sqlx::query(
             r#"
-            SELECT deleted_at FROM reply_likes
-            WHERE user_id = $1 AND reply_id = $2
-            "#,
+SELECT deleted_at FROM reply_likes
+WHERE user_id = $1 AND reply_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(reply_id)
@@ -718,10 +718,10 @@ mod tests {
         // Like the reply
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO reply_likes (user_id, reply_id)
-            VALUES ($1, $2)
-            RETURNING deleted_at
-            "#,
+INSERT INTO reply_likes (user_id, reply_id)
+VALUES ($1, $2)
+RETURNING deleted_at
+"#,
         )
         .bind(1_i64)
         .bind(reply_id)
@@ -737,10 +737,10 @@ mod tests {
         // Soft-delete the reply
         sqlx::query(
             r#"
-            UPDATE replies
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE replies
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(reply_id)
         .execute(&mut *conn)
@@ -749,10 +749,10 @@ mod tests {
         // Deactivate the user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -761,9 +761,9 @@ mod tests {
         // Reply like should be soft-deleted
         let result = sqlx::query(
             r#"
-            SELECT deleted_at FROM reply_likes
-            WHERE user_id = $1 AND reply_id = $2
-            "#,
+SELECT deleted_at FROM reply_likes
+WHERE user_id = $1 AND reply_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(reply_id)
@@ -779,10 +779,10 @@ mod tests {
         // Restore the reply
         sqlx::query(
             r#"
-            UPDATE replies
-            SET deleted_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE replies
+SET deleted_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(reply_id)
         .execute(&mut *conn)
@@ -791,9 +791,9 @@ mod tests {
         // Reply like should still be soft-deleted
         let result = sqlx::query(
             r#"
-            SELECT deleted_at FROM reply_likes
-            WHERE user_id = $1 AND reply_id = $2
-            "#,
+SELECT deleted_at FROM reply_likes
+WHERE user_id = $1 AND reply_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(reply_id)
@@ -809,10 +809,10 @@ mod tests {
         // Activate the user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -821,9 +821,9 @@ mod tests {
         // Reply like should get restored
         let result = sqlx::query(
             r#"
-            SELECT deleted_at FROM reply_likes
-            WHERE user_id = $1 AND reply_id = $2
-            "#,
+SELECT deleted_at FROM reply_likes
+WHERE user_id = $1 AND reply_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(reply_id)
@@ -849,9 +849,9 @@ mod tests {
         // Like the reply
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO reply_likes (user_id, reply_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO reply_likes (user_id, reply_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(reply_id)
@@ -863,9 +863,9 @@ mod tests {
         // Delete the reply
         sqlx::query(
             r#"
-            DELETE FROM replies
-            WHERE id = $1
-            "#,
+DELETE FROM replies
+WHERE id = $1
+"#,
         )
         .bind(reply_id)
         .execute(&mut *conn)
@@ -874,11 +874,11 @@ mod tests {
         // Reply like should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM reply_likes
-                WHERE user_id = $1 AND reply_id = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM reply_likes
+    WHERE user_id = $1 AND reply_id = $2
+)
+"#,
         )
         .bind(1_i64)
         .bind(reply_id)
@@ -898,10 +898,10 @@ mod tests {
         // Insert a notification
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO notifications(entity_id, entity_type, notifier_id)
-            VALUES ($1, $2, $3)
-            RETURNING id
-            "#,
+INSERT INTO notifications (entity_id, entity_type, notifier_id)
+VALUES ($1, $2, $3)
+RETURNING id
+"#,
         )
         .bind(reply_id)
         .bind(0)
@@ -914,9 +914,9 @@ mod tests {
         // Delete the reply
         sqlx::query(
             r#"
-            DELETE FROM replies
-            WHERE id = $1
-            "#,
+DELETE FROM replies
+WHERE id = $1
+"#,
         )
         .bind(reply_id)
         .execute(&mut *conn)
@@ -925,11 +925,11 @@ mod tests {
         // Notification should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM notifications
-                WHERE id = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM notifications
+    WHERE id = $1
+)
+"#,
         )
         .bind(insert_result.get::<i64, _>("id"))
         .fetch_one(&mut *conn)

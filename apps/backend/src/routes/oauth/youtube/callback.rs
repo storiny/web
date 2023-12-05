@@ -91,7 +91,7 @@ async fn handle_oauth_request(
         return Err(ConnectionError::InsufficientScopes);
     }
 
-    // Fetch the channel details
+    // Fetch the channel details.
     let channel_res = reqwest_client
         .get(&format!(
             "https://youtube.googleapis.com/youtube/v3/channels?{}&{}&{}&{}",
@@ -119,12 +119,12 @@ async fn handle_oauth_request(
     let provider_identifier = channel_res.items[0].id.to_string();
     let display_name = channel_res.items[0].snippet.title.to_string();
 
-    // Save the connection
+    // Save the connection.
     match sqlx::query(
         r#"
-        INSERT INTO connections (provider, provider_identifier, display_name, user_id)
-        VALUES ($1, $2, $3, $4)
-        "#,
+INSERT INTO connections (provider, provider_identifier, display_name, user_id)
+VALUES ($1, $2, $3, $4)
+"#,
     )
     .bind(Provider::Youtube as i16)
     .bind(provider_identifier)

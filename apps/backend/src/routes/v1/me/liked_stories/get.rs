@@ -376,7 +376,7 @@ VALUES ($1, $2), ($1, $3)
     //
 
     #[sqlx::test(fixtures("history"))]
-    async fn can_return_is_bookmarked_flag_in_liked_stories(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_return_is_bookmarked_flag_for_liked_stories(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
@@ -393,7 +393,7 @@ VALUES ($1, $2)
         .await?;
 
         let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
+            .cookie(cookie.clone().unwrap())
             .uri("/v1/me/liked-stories")
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -432,7 +432,7 @@ VALUES ($1, $2)
     }
 
     #[sqlx::test(fixtures("history"))]
-    async fn can_return_is_bookmarked_flag_in_liked_stories_in_asc_order(
+    async fn can_return_is_bookmarked_flag_for_liked_stories_in_asc_order(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -451,7 +451,7 @@ VALUES ($1, $2)
         .await?;
 
         let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
+            .cookie(cookie.clone().unwrap())
             .uri("/v1/me/liked-stories?sort=old")
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -490,7 +490,7 @@ VALUES ($1, $2)
     }
 
     #[sqlx::test(fixtures("history"))]
-    async fn can_return_is_bookmarked_flag_in_liked_stories_in_desc_order(
+    async fn can_return_is_bookmarked_flag_for_liked_stories_in_desc_order(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -509,7 +509,7 @@ VALUES ($1, $2)
         .await?;
 
         let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
+            .cookie(cookie.clone().unwrap())
             .uri("/v1/me/liked-stories?sort=recent")
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -548,7 +548,7 @@ VALUES ($1, $2)
     }
 
     #[sqlx::test(fixtures("history"))]
-    async fn can_return_is_bookmarked_flag_in_liked_stories_when_searching(
+    async fn can_return_is_bookmarked_flag_for_liked_stories_when_searching(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -567,7 +567,7 @@ VALUES ($1, $2)
         .await?;
 
         let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
+            .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/me/liked-stories?query={}", encode("ancient")))
             .to_request();
         let res = test::call_service(&app, req).await;

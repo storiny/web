@@ -74,7 +74,7 @@ async fn handle_oauth_request(
         return Err(ConnectionError::InsufficientScopes);
     }
 
-    // Fetch the profile details
+    // Fetch the profile details.
     let profile_res = reqwest_client
         .get("https://api.spotify.com/v1/me")
         .header("Content-type", ContentType::json().to_string())
@@ -94,12 +94,12 @@ async fn handle_oauth_request(
         .display_name
         .unwrap_or(provider_identifier.clone());
 
-    // Save the connection
+    // Save the connection.
     match sqlx::query(
         r#"
-        INSERT INTO connections (provider, provider_identifier, display_name, user_id)
-        VALUES ($1, $2, $3, $4)
-        "#,
+INSERT INTO connections (provider, provider_identifier, display_name, user_id)
+VALUES ($1, $2, $3, $4)
+"#,
     )
     .bind(Provider::Spotify as i16)
     .bind(provider_identifier)

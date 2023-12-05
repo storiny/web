@@ -20,8 +20,10 @@ use serde_json::Value;
 async fn get(
     data: web::Data<AppState>,
     session: Session,
-    _user: Identity,
+    user: Identity,
 ) -> Result<HttpResponse, AppError> {
+    user.id()?;
+
     let (authorize_url, csrf_token) = &data
         .oauth_client_map
         .discord

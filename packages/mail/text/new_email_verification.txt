@@ -1,0 +1,8 @@
+An e-mail update request has been received to change the e-mail address of a Storiny account to this e-mail. To complete the verification process, please navigate to this link: {{link}}
+
+If you did not initiate this request, you can safely ignore this e-mail.
+
+This email was sent from a system that we only use for sending emails. Please do not reply to this email, as we will not receive your response. Instead, reach out to us using the support email provided below.
+
+© Storiny 2023
+Contact us: support@storiny.com

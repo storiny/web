@@ -30,6 +30,9 @@ pub enum ResourceLimit {
     FollowTag,
     /// The daily limit for bookmarking stories.
     BookmarkStory,
+    /// The daily limit for creating reports. This is computed on the basis of IP address rather
+    /// the user ID as the user need not be logged-in to create a report.
+    CreateReport,
 }
 
 impl ResourceLimit {
@@ -49,6 +52,7 @@ impl ResourceLimit {
             ResourceLimit::FollowUser => 400,
             ResourceLimit::FollowTag => 400,
             ResourceLimit::BookmarkStory => 400,
+            ResourceLimit::CreateReport => 25,
         }
     }
 }

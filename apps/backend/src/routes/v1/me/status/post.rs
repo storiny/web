@@ -47,68 +47,78 @@ struct Response {
 }
 
 #[post("/v1/me/status")]
+#[tracing::instrument(
+    name = "POST /v1/me/status",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        payload
+    ),
+    err
+)]
 async fn post(
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            let status_text = payload.status_text.clone().unwrap_or_default();
-            let status_emoji = payload.status_emoji.clone().unwrap_or_default();
+    let user_id = user.id()?;
 
-            if status_emoji.is_empty() && status_text.is_empty() {
-                return Ok(
-                    HttpResponse::BadRequest().json(FormErrorResponse::new(vec![(
-                        "status_text",
-                        "Cannot set an empty status",
-                    )])),
-                );
-            }
+    let status_text = payload.status_text.clone().unwrap_or_default();
+    let status_emoji = payload.status_emoji.clone().unwrap_or_default();
 
-            // Delete previous status
-            sqlx::query(
-                r#"
-                DELETE FROM user_statuses
-                WHERE user_id = $1
-                "#,
-            )
-            .bind(user_id)
-            .execute(&data.db_pool)
-            .await
-            .unwrap();
-
-            let status_duration = match StatusDuration::try_from((&payload.duration).clone())
-                .unwrap_or(StatusDuration::Day1)
-            {
-                StatusDuration::Day1 => Some(OffsetDateTime::now_utc() + Duration::days(1)),
-                StatusDuration::Hr4 => Some(OffsetDateTime::now_utc() + Duration::hours(4)),
-                StatusDuration::Min60 => Some(OffsetDateTime::now_utc() + Duration::hours(1)),
-                StatusDuration::Min30 => Some(OffsetDateTime::now_utc() + Duration::minutes(30)),
-                _ => None,
-            };
-
-            let result = sqlx::query_as::<_, Response>(
-                r#"
-                INSERT INTO user_statuses(user_id, text, emoji, duration, visibility, expires_at)
-                VALUES ($1, $2, $3, $4, $5, $6)
-                RETURNING duration, emoji, text, visibility, expires_at
-                "#,
-            )
-            .bind(user_id)
-            .bind(status_text)
-            .bind(&payload.status_emoji)
-            .bind(&payload.duration)
-            .bind(&payload.visibility)
-            .bind(status_duration)
-            .fetch_one(&data.db_pool)
-            .await
-            .unwrap();
-
-            Ok(HttpResponse::Created().json(result))
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    if status_emoji.is_empty() && status_text.is_empty() {
+        return Err(FormErrorResponse::new(
+            None,
+            vec![("status_text", "Cannot set an empty status")],
+        )
+        .into());
     }
+
+    let pg_pool = &data.db_pool;
+    let mut txn = pg_pool.begin().await?;
+
+    // Delete the previous status.
+    sqlx::query(
+        r#"
+DELETE FROM user_statuses
+WHERE user_id = $1
+"#,
+    )
+    .bind(user_id)
+    .execute(&mut *txn)
+    .await?;
+
+    let status_duration = match StatusDuration::try_from((&payload.duration).clone())
+        .unwrap_or(StatusDuration::Day1)
+    {
+        StatusDuration::Day1 => Some(OffsetDateTime::now_utc() + Duration::days(1)),
+        StatusDuration::Hr4 => Some(OffsetDateTime::now_utc() + Duration::hours(4)),
+        StatusDuration::Min60 => Some(OffsetDateTime::now_utc() + Duration::hours(1)),
+        StatusDuration::Min30 => Some(OffsetDateTime::now_utc() + Duration::minutes(30)),
+        _ => None,
+    };
+
+    let result = sqlx::query_as::<_, Response>(
+        r#"
+INSERT INTO user_statuses
+    (user_id, text, emoji, duration, visibility, expires_at)
+VALUES
+    ($1, $2, $3, $4, $5, $6)
+RETURNING duration, emoji, text, visibility, expires_at
+"#,
+    )
+    .bind(&user_id)
+    .bind(&status_text)
+    .bind(&payload.status_emoji)
+    .bind(&payload.duration)
+    .bind(&payload.visibility)
+    .bind(status_duration)
+    .fetch_one(&mut *txn)
+    .await?;
+
+    txn.commit().await?;
+
+    Ok(HttpResponse::Created().json(result))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -150,14 +160,14 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Status should be present in the database
+        // Status should be present in the database.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM user_statuses
-                WHERE user_id = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM user_statuses
+    WHERE user_id = $1
+)
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
@@ -189,9 +199,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            SELECT expires_at FROM user_statuses
-            WHERE user_id = $1
-            "#,
+SELECT expires_at FROM user_statuses
+WHERE user_id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
@@ -207,7 +217,7 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_status_when_both_text_and_emoji_are_empty(
+    async fn can_reject_status_request_when_both_the_text_and_emoji_are_empty(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
@@ -231,13 +241,13 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_delete_previous_status_before_inserting_a_new_row(
+    async fn can_delete_the_previous_status_before_inserting_a_new_one(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Insert status for the first time
+        // Insert status for the first time.
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/status")
@@ -252,7 +262,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Insert status again
+        // Insert status again.
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .uri("/v1/me/status")
@@ -267,12 +277,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // New status should be present in the database
+        // New status should be present in the database.
         let result = sqlx::query(
             r#"
-            SELECT text FROM user_statuses
-            WHERE user_id = $1
-            "#,
+SELECT text FROM user_statuses
+WHERE user_id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)

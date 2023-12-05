@@ -17,6 +17,7 @@ use serde::{
     Serialize,
 };
 use std::sync::Arc;
+use tracing::debug;
 
 pub const TEMPLATED_EMAIL_JOB_NAME: &'static str = "j:n:tmpl_email";
 
@@ -35,17 +36,24 @@ impl Job for TemplatedEmailJob {
 }
 
 /// Sends a templated email.
+#[tracing::instrument(
+    name = "JOB send_templated_email",
+    skip_all,
+    fields(
+        template_name = job.template.to_string()
+    ),
+    err
+)]
 pub async fn send_templated_email(job: TemplatedEmailJob, ctx: JobContext) -> Result<(), JobError> {
-    log::info!(
-        "Attempting to send a templated email (`{}`)",
-        job.template.to_string()
-    );
+    let template_name = job.template.to_string();
+
+    debug!("attempting to send a templated email (`{template_name}`)");
 
     let state = ctx.data::<Arc<SharedJobState>>()?;
     let message_id = send_email(&state.ses_client, job).await?;
 
-    log::info!(
-        "Sent a templated email with message ID `{}`",
+    debug!(
+        "sent a templated email with message ID `{}`",
         message_id.unwrap_or("empty message id".to_string())
     );
 

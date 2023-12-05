@@ -11,8 +11,17 @@ use tonic::{
     Response,
     Status,
 };
+use tracing::error;
 
 /// Returns the `total_count` and `hidden_count` comments for a story.
+#[tracing::instrument(
+    name = "GRPC get_story_responses_info",
+    skip_all,
+    fields(
+        user_id = tracing::field::Empty,
+        story_id = tracing::field::Empty
+    )
+)]
 pub async fn get_story_responses_info(
     client: &GrpcService,
     request: Request<GetStoryResponsesInfoRequest>,
@@ -27,35 +36,39 @@ pub async fn get_story_responses_info(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`story_id` is invalid"))?;
 
+    tracing::Span::current().record("user_id", &user_id);
+    tracing::Span::current().record("story_id", &user_id);
+
     let result = sqlx::query(
         r#"
-        SELECT
-            (SELECT
-                 COUNT(*)
-             FROM
-                 comments
-             WHERE
-                   user_id = $1
-               AND story_id = $2
-               AND deleted_at IS NULL
-            ) AS "total_count",
-            (SELECT
-                 COUNT(*)
-             FROM
-                 comments
-             WHERE
-                   user_id = $1
-               AND story_id = $2
-               AND hidden IS TRUE
-               AND deleted_at IS NULL
-            ) AS "hidden_count"    
-        "#,
+SELECT (
+    SELECT COUNT(*)
+    FROM comments
+    WHERE
+        user_id = $1
+        AND story_id = $2
+        AND deleted_at IS NULL
+    ) AS "total_count",
+    (
+    SELECT COUNT(*)
+    FROM comments
+    WHERE
+        user_id = $1
+        AND story_id = $2
+        AND hidden IS TRUE
+        AND deleted_at IS NULL
+    ) AS "hidden_count"    
+"#,
     )
-    .bind(user_id)
-    .bind(story_id)
+    .bind(&user_id)
+    .bind(&story_id)
     .fetch_one(&client.db_pool)
     .await
-    .map_err(|_| Status::internal("Database error"))?;
+    .map_err(|error| {
+        error!("database error: {error:?}");
+
+        Status::internal("Database error")
+    })?;
 
     Ok(Response::new(GetStoryResponsesInfoResponse {
         total_count: result.get::<i64, _>("total_count") as u32,
@@ -100,7 +113,7 @@ mod tests {
             pool,
             false,
             Box::new(|mut client, pool, _, _| async move {
-                // Should count all the comments initially
+                // Should count all the comments initially.
                 let response = client
                     .get_story_responses_info(Request::new(GetStoryResponsesInfoRequest {
                         user_id: 1_i64.to_string(),
@@ -112,13 +125,13 @@ mod tests {
 
                 assert_eq!(response.total_count, 2_u32);
 
-                // Soft-delete one of the comments
+                // Soft-delete one of the comments.
                 let result = sqlx::query(
                     r#"
-                    UPDATE comments
-                    SET deleted_at = NOW()
-                    WHERE id = $1
-                    "#,
+UPDATE comments
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
                 )
                 .bind(2_i64)
                 .execute(&pool)
@@ -127,7 +140,7 @@ mod tests {
 
                 assert_eq!(result.rows_affected(), 1);
 
-                // Should count only one comment
+                // Should count only one comment.
                 let response = client
                     .get_story_responses_info(Request::new(GetStoryResponsesInfoRequest {
                         user_id: 1_i64.to_string(),
@@ -149,7 +162,7 @@ mod tests {
             pool,
             false,
             Box::new(|mut client, pool, _, _| async move {
-                // Should count all the comments initially
+                // Should count all the comments initially.
                 let response = client
                     .get_story_responses_info(Request::new(GetStoryResponsesInfoRequest {
                         user_id: 1_i64.to_string(),
@@ -161,13 +174,13 @@ mod tests {
 
                 assert_eq!(response.total_count, 2_u32);
 
-                // Soft-delete one of the comments
+                // Soft-delete one of the comments.
                 let result = sqlx::query(
                     r#"
-                    UPDATE comments
-                    SET deleted_at = NOW()
-                    WHERE id = $1
-                    "#,
+UPDATE comments
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
                 )
                 .bind(3_i64)
                 .execute(&pool)
@@ -176,7 +189,7 @@ mod tests {
 
                 assert_eq!(result.rows_affected(), 1);
 
-                // Should count only one comment
+                // Should count only one comment.
                 let response = client
                     .get_story_responses_info(Request::new(GetStoryResponsesInfoRequest {
                         user_id: 1_i64.to_string(),

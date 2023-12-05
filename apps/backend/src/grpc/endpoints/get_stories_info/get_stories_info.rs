@@ -11,8 +11,16 @@ use tonic::{
     Response,
     Status,
 };
+use tracing::error;
 
 /// Returns the `published_story_count` and `deleted_story_count` for a user.
+#[tracing::instrument(
+    name = "GRPC get_stories_info",
+    skip_all,
+    fields(
+        user_id = tracing::field::Empty
+    )
+)]
 pub async fn get_stories_info(
     client: &GrpcService,
     request: Request<GetStoriesInfoRequest>,
@@ -23,33 +31,36 @@ pub async fn get_stories_info(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
+    tracing::Span::current().record("user_id", &user_id);
+
     let result = sqlx::query(
         r#"
-        SELECT
-            (SELECT
-                 COUNT(*)
-             FROM
-                 stories
-             WHERE
-                   user_id = $1
-               AND published_at IS NOT NULL    
-               AND deleted_at IS NULL
-            ) AS "published_story_count",
-            (SELECT
-                 COUNT(*)
-             FROM
-                 stories
-             WHERE
-                   user_id = $1
-               AND published_at IS NOT NULL    
-               AND deleted_at IS NOT NULL
-            ) AS "deleted_story_count"    
-        "#,
+SELECT (
+    SELECT COUNT(*)
+    FROM stories
+    WHERE
+        user_id = $1
+        AND published_at IS NOT NULL    
+        AND deleted_at IS NULL
+    ) AS "published_story_count",
+    (
+    SELECT COUNT(*)
+    FROM stories
+    WHERE
+        user_id = $1
+        AND published_at IS NOT NULL    
+        AND deleted_at IS NOT NULL
+    ) AS "deleted_story_count"
+"#,
     )
-    .bind(user_id)
+    .bind(&user_id)
     .fetch_one(&client.db_pool)
     .await
-    .map_err(|_| Status::internal("Database error"))?;
+    .map_err(|error| {
+        error!("database error: {error:?}");
+
+        Status::internal("Database error")
+    })?;
 
     Ok(Response::new(GetStoriesInfoResponse {
         published_story_count: result.get::<i64, _>("published_story_count") as u32,

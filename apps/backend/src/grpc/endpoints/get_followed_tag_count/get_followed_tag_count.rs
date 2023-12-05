@@ -11,8 +11,16 @@ use tonic::{
     Response,
     Status,
 };
+use tracing::error;
 
 /// Returns the followed tag count for a user.
+#[tracing::instrument(
+    name = "GRPC get_followed_tag_count",
+    skip_all,
+    fields(
+        user_id = tracing::field::Empty
+    )
+)]
 pub async fn get_followed_tag_count(
     client: &GrpcService,
     request: Request<GetFollowedTagCountRequest>,
@@ -23,23 +31,27 @@ pub async fn get_followed_tag_count(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
+    tracing::Span::current().record("user_id", &user_id);
+
     let result = sqlx::query(
         r#"
-        SELECT
-            (SELECT
-                 COUNT(*)
-             FROM
-                 tag_followers
-             WHERE
-                   user_id = $1
-               AND deleted_at IS NULL
-            ) AS "followed_tag_count"
-        "#,
+SELECT (
+    SELECT COUNT(*)
+    FROM tag_followers
+    WHERE
+        user_id = $1
+        AND deleted_at IS NULL
+) AS "followed_tag_count"
+"#,
     )
-    .bind(user_id)
+    .bind(&user_id)
     .fetch_one(&client.db_pool)
     .await
-    .map_err(|_| Status::internal("Database error"))?;
+    .map_err(|error| {
+        error!("unable to get the followed tag count: {error:?}");
+
+        Status::internal("Database error")
+    })?;
 
     Ok(Response::new(GetFollowedTagCountResponse {
         followed_tag_count: result.get::<i64, _>("followed_tag_count") as u32,
@@ -61,12 +73,12 @@ mod tests {
             pool,
             true,
             Box::new(|mut client, pool, _, user_id| async move {
-                // Follow some tags
+                // Follow some tags.
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO tag_followers (tag_id, user_id)
-                    VALUES ($2, $1), ($3, $1)
-                    "#,
+INSERT INTO tag_followers (tag_id, user_id)
+VALUES ($2, $1), ($3, $1)
+"#,
                 )
                 .bind(user_id.unwrap())
                 .bind(2_i64)
@@ -97,12 +109,12 @@ mod tests {
             pool,
             true,
             Box::new(|mut client, pool, _, user_id| async move {
-                // Follow some tags
+                // Follow some tags.
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO tag_followers (tag_id, user_id)
-                    VALUES ($2, $1), ($3, $1)
-                    "#,
+INSERT INTO tag_followers (tag_id, user_id)
+VALUES ($2, $1), ($3, $1)
+"#,
                 )
                 .bind(user_id.unwrap())
                 .bind(2_i64)
@@ -113,7 +125,7 @@ mod tests {
 
                 assert_eq!(result.rows_affected(), 2);
 
-                // Should count all the followed tags initially
+                // Should count all the followed tags initially.
                 let response = client
                     .get_followed_tag_count(Request::new(GetFollowedTagCountRequest {
                         user_id: user_id.unwrap().to_string(),
@@ -124,13 +136,13 @@ mod tests {
 
                 assert_eq!(response.followed_tag_count, 2_u32);
 
-                // Soft-delete one of the followed tag relation
+                // Soft-delete one of the followed tag relation.
                 let result = sqlx::query(
                     r#"
-                    UPDATE tag_followers
-                    SET deleted_at = NOW()
-                    WHERE tag_id = $1
-                    "#,
+UPDATE tag_followers
+SET deleted_at = NOW()
+WHERE tag_id = $1
+"#,
                 )
                 .bind(2_i64)
                 .execute(&pool)
@@ -139,7 +151,7 @@ mod tests {
 
                 assert_eq!(result.rows_affected(), 1);
 
-                // Should count only one followed tag relation
+                // Should count only one followed tag relation.
                 let response = client
                     .get_followed_tag_count(Request::new(GetFollowedTagCountRequest {
                         user_id: user_id.unwrap().to_string(),

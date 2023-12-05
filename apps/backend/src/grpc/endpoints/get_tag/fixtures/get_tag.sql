@@ -1,4 +1,4 @@
 INSERT INTO
-	tags (name)
+	tags (id, name)
 VALUES
-	('sample');
+	(2, 'sample');

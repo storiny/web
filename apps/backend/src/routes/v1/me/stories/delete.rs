@@ -17,6 +17,7 @@ use actix_web::{
 };
 use lockable::AsyncLimit;
 use serde::Deserialize;
+use tracing::debug;
 use validator::Validate;
 
 #[derive(Deserialize, Validate)]
@@ -25,56 +26,71 @@ struct Fragments {
 }
 
 #[delete("/v1/me/stories/{story_id}")]
+#[tracing::instrument(
+    name = "DELETE /v1/me/stories/{story_id}",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        story_id = %path.story_id
+    ),
+    err
+)]
 async fn delete(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
     realm_map: RealmData,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => match path.story_id.parse::<i64>() {
-            Ok(story_id) => {
-                if let Ok(mut realm) = realm_map.async_lock(story_id, AsyncLimit::no_limit()).await
-                {
-                    match sqlx::query(
-                        r#"
-                        UPDATE stories
-                        SET
-                            deleted_at = NOW(),
-                            published_at = NULL
-                        WHERE
-                            user_id = $1
-                            AND id = $2
-                            AND published_at IS NOT NULL
-                            AND deleted_at IS NULL
-                        "#,
-                    )
-                    .bind(user_id)
-                    .bind(story_id)
-                    .execute(&data.db_pool)
-                    .await?
-                    .rows_affected()
-                    {
-                        0 => Ok(HttpResponse::BadRequest()
-                            .json(ToastErrorResponse::new("Story not found"))),
-                        _ => {
-                            // Drop the realm
-                            if let Some(realm_inner) = realm.value() {
-                                realm_inner.destroy(RealmDestroyReason::StoryDeleted).await;
-                            }
+    let user_id = user.id()?;
+    let story_id = path
+        .story_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid story ID"))?;
 
-                            realm.remove();
+    let mut realm = realm_map
+        .async_lock(story_id, AsyncLimit::no_limit())
+        .await
+        .map_err(|error| {
+            AppError::InternalError(format!("unable to acquire a lock on the realm: {error:?}"))
+        })?;
 
-                            Ok(HttpResponse::NoContent().finish())
-                        }
-                    }
-                } else {
-                    return Ok(HttpResponse::InternalServerError().finish());
-                }
+    let pg_pool = &data.db_pool;
+    let mut txn = pg_pool.begin().await?;
+
+    match sqlx::query(
+        r#"
+UPDATE stories
+SET
+    deleted_at = NOW(),
+    published_at = NULL
+WHERE
+    user_id = $1
+    AND id = $2
+    AND published_at IS NOT NULL
+    AND deleted_at IS NULL
+"#,
+    )
+    .bind(&user_id)
+    .bind(&story_id)
+    .execute(&mut *txn)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(ToastErrorResponse::new(None, "Story not found").into()),
+        _ => {
+            // Drop the realm.
+            if let Some(realm_inner) = realm.value() {
+                debug!("realm is present in the map, destroying");
+
+                realm_inner.destroy(RealmDestroyReason::StoryDeleted).await;
             }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid story ID")),
-        },
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+
+            realm.remove();
+
+            txn.commit().await?;
+
+            Ok(HttpResponse::NoContent().finish())
+        }
     }
 }
 
@@ -97,16 +113,16 @@ mod tests {
     use time::OffsetDateTime;
 
     #[sqlx::test]
-    async fn can_remove_a_story(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_delete_a_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
-        // Insert a published story
+        // Insert a published story.
         let result = sqlx::query(
             r#"
-            INSERT INTO stories (id, user_id, published_at)
-            VALUES ($1, $2, NOW())
-            "#,
+INSERT INTO stories (id, user_id, published_at)
+VALUES ($1, $2, NOW())
+"#,
         )
         .bind(2_i64)
         .bind(user_id.unwrap())
@@ -123,12 +139,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Story should get soft-deleted and unpublished
+        // Story should get soft-deleted and unpublished.
         let result = sqlx::query(
             r#"
-            SELECT deleted_at, published_at FROM stories
-            WHERE id = $1
-            "#,
+SELECT deleted_at, published_at FROM stories
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .fetch_one(&mut *conn)
@@ -153,12 +169,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
 
-        // Insert a draft
+        // Insert a draft.
         let result = sqlx::query(
             r#"
-            INSERT INTO stories (id, user_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO stories (id, user_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(user_id.unwrap())

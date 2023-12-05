@@ -1,11 +1,17 @@
 use crate::constants::user_flag::UserFlag;
 
+/// The user flag object.
+#[derive(Debug)]
 pub struct Flag {
     flags: u32,
 }
 
+/// The flag mask.
+#[derive(Debug)]
 pub enum Mask {
+    /// The single flag mark variant. It can only hold a single user flag.
     Single(UserFlag),
+    /// The multiple flag mask variant. It can hold an array of user flags.
     Multiple(Vec<UserFlag>),
 }
 

@@ -18,8 +18,16 @@ use tonic::{
     Response,
     Status,
 };
+use tracing::error;
 
 /// Creates a new draft.
+#[tracing::instrument(
+    name = "GRPC create_draft",
+    skip_all,
+    fields(
+        user_id = tracing::field::Empty
+    )
+)]
 pub async fn create_draft(
     client: &GrpcService,
     request: Request<CreateDraftRequest>,
@@ -30,9 +38,15 @@ pub async fn create_draft(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
+    tracing::Span::current().record("user_id", &user_id);
+
     if !check_resource_limit(&client.redis_pool, ResourceLimit::CreateStory, user_id)
         .await
-        .map_err(|_| Status::internal("Cache error"))?
+        .map_err(|error| {
+            error!("unable to check the resource limit: {error:?}");
+
+            Status::internal("Cache error")
+        })?
     {
         return Err(Status::resource_exhausted(
             "Daily limit exceeded for creating drafts. Try again tomorrow.",
@@ -40,47 +54,52 @@ pub async fn create_draft(
     }
 
     let pg_pool = &client.db_pool;
-    let mut txn = pg_pool
-        .begin()
-        .await
-        .map_err(|_| Status::internal("Database error"))?;
+    let mut txn = pg_pool.begin().await.map_err(|error| {
+        error!("unable to begin the transaction: {error:?}");
 
-    match sqlx::query(
+        Status::internal("Database error")
+    })?;
+
+    let draft = sqlx::query(
         r#"
-        INSERT INTO stories (user_id)
-        VALUES ($1)
-        RETURNING id
-        "#,
+INSERT INTO stories (user_id)
+VALUES ($1)
+RETURNING id
+"#,
     )
     .bind(&user_id)
     .fetch_one(&mut *txn)
     .await
-    {
-        Ok(draft) => {
-            incr_resource_limit(&client.redis_pool, ResourceLimit::CreateStory, user_id)
-                .await
-                .map_err(|_| Status::internal("Cache error"))?;
-
-            txn.commit()
-                .await
-                .map_err(|_| Status::internal("Database error"))?;
-
-            Ok(Response::new(CreateDraftResponse {
-                draft_id: draft.get::<i64, _>("id").to_string(),
-            }))
-        }
-        Err(error) => {
-            if let Some(db_error) = error.into_database_error() {
-                if matches!(db_error.kind(), sqlx::error::ErrorKind::ForeignKeyViolation) {
-                    Err(Status::not_found("User not found"))
-                } else {
-                    Err(Status::internal("Database error"))
-                }
-            } else {
-                Err(Status::internal("Database error"))
+    .map_err(|error| {
+        if let Some(db_error) = error.as_database_error() {
+            // Check if the user exists.
+            if matches!(db_error.kind(), sqlx::error::ErrorKind::ForeignKeyViolation) {
+                return Err(Status::not_found("User not found"));
             }
         }
-    }
+
+        error!("unable to insert a draft: {error:?}");
+
+        Err(Status::internal("Database error"))
+    })?;
+
+    incr_resource_limit(&client.redis_pool, ResourceLimit::CreateStory, user_id)
+        .await
+        .map_err(|error| {
+            error!("unable to increment the resource limit: {error:?}");
+
+            Status::internal("Cache error")
+        })?;
+
+    txn.commit().await.map_err(|error| {
+        error!("unable to commit the transaction: {error:?}");
+
+        Status::internal("Database error")
+    })?;
+
+    Ok(Response::new(CreateDraftResponse {
+        draft_id: draft.get::<i64, _>("id").to_string(),
+    }))
 }
 
 #[cfg(test)]
@@ -122,14 +141,14 @@ mod tests {
 
                     let draft_id = response.unwrap().into_inner().draft_id;
 
-                    // Story should be present in the database
+                    // Draft should be present in the database.
                     let result = sqlx::query(
                         r#"
-                        SELECT EXISTS (
-                            SELECT 1 FROM stories
-                            WHERE id = $1
-                        )
-                        "#,
+SELECT EXISTS (
+    SELECT 1 FROM stories
+    WHERE id = $1
+)
+"#,
                     )
                     .bind(draft_id.parse::<i64>().unwrap())
                     .fetch_one(&pool)
@@ -138,7 +157,7 @@ mod tests {
 
                     assert!(result.get::<bool, _>("exists"));
 
-                    // Should also increment the resource limit
+                    // Should also increment the resource limit.
                     let result = get_resource_limit(
                         &redis_pool,
                         ResourceLimit::CreateStory,

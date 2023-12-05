@@ -11,9 +11,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -34,16 +34,16 @@ mod tests {
         // Insert relation with overlapping IDs
         let result = sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -66,10 +66,10 @@ mod tests {
         // Soft-delete the follower user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -77,16 +77,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -107,10 +107,10 @@ mod tests {
         // Deactivate the follower user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -118,16 +118,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -148,10 +148,10 @@ mod tests {
         // Soft-delete the followed user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -159,16 +159,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -189,10 +189,10 @@ mod tests {
         // Deactivate the followed user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -200,16 +200,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -234,9 +234,9 @@ mod tests {
         // Follow a user
         sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -246,9 +246,9 @@ mod tests {
         // Should increment the `follower_count`
         let user_result = sqlx::query(
             r#"
-            SELECT follower_count FROM users
-            WHERE id = $1
-            "#,
+SELECT follower_count FROM users
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .fetch_one(&mut *conn)
@@ -268,9 +268,9 @@ mod tests {
         // Follow a user
         sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -280,9 +280,9 @@ mod tests {
         // Should have 1 `follower_count` initially
         let user_result = sqlx::query(
             r#"
-            SELECT follower_count FROM users
-            WHERE id = $1
-            "#,
+SELECT follower_count FROM users
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .fetch_one(&mut *conn)
@@ -293,10 +293,10 @@ mod tests {
         // Soft-delete the relation
         sqlx::query(
             r#"
-            UPDATE relations
-            SET deleted_at = NOW()
-            WHERE follower_id = $1 AND followed_id = $2
-            "#,
+UPDATE relations
+SET deleted_at = NOW()
+WHERE follower_id = $1 AND followed_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -306,9 +306,9 @@ mod tests {
         // Should decrement the `follower_count`
         let user_result = sqlx::query(
             r#"
-            SELECT follower_count FROM users
-            WHERE id = $1
-            "#,
+SELECT follower_count FROM users
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .fetch_one(&mut *conn)
@@ -319,10 +319,10 @@ mod tests {
         // Restore the relation
         sqlx::query(
             r#"
-            UPDATE relations
-            SET deleted_at = NULL
-            WHERE follower_id = $1 AND followed_id = $2
-            "#,
+UPDATE relations
+SET deleted_at = NULL
+WHERE follower_id = $1 AND followed_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -332,9 +332,9 @@ mod tests {
         // Should increment the `follower_count`
         let user_result = sqlx::query(
             r#"
-            SELECT follower_count FROM users
-            WHERE id = $1
-            "#,
+SELECT follower_count FROM users
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .fetch_one(&mut *conn)
@@ -354,9 +354,9 @@ mod tests {
         // Follow a user
         sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -366,9 +366,9 @@ mod tests {
         // Should have 1 `follower_count` initially
         let user_result = sqlx::query(
             r#"
-            SELECT follower_count FROM users
-            WHERE id = $1
-            "#,
+SELECT follower_count FROM users
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .fetch_one(&mut *conn)
@@ -379,9 +379,9 @@ mod tests {
         // Delete the relation
         sqlx::query(
             r#"
-            DELETE FROM relations
-            WHERE follower_id = $1 AND followed_id = $2
-            "#,
+DELETE FROM relations
+WHERE follower_id = $1 AND followed_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -391,9 +391,9 @@ mod tests {
         // Should decrement the `follower_count`
         let user_result = sqlx::query(
             r#"
-            SELECT follower_count FROM users
-            WHERE id = $1
-            "#,
+SELECT follower_count FROM users
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .fetch_one(&mut *conn)
@@ -413,9 +413,9 @@ mod tests {
         // Follow a user
         sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -427,9 +427,9 @@ mod tests {
         // on the user when decrementing the `follower_count`.
         sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(3_i64)
         .bind(1_i64)
@@ -439,9 +439,9 @@ mod tests {
         // Should have 2 `follower_count` initially
         let user_result = sqlx::query(
             r#"
-            SELECT follower_count FROM users
-            WHERE id = $1
-            "#,
+SELECT follower_count FROM users
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .fetch_one(&mut *conn)
@@ -452,10 +452,10 @@ mod tests {
         // Soft-delete the relation
         sqlx::query(
             r#"
-            UPDATE relations
-            SET deleted_at = NOW()
-            WHERE follower_id = $1 AND followed_id = $2
-            "#,
+UPDATE relations
+SET deleted_at = NOW()
+WHERE follower_id = $1 AND followed_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -465,9 +465,9 @@ mod tests {
         // Should decrement the `follower_count`
         let user_result = sqlx::query(
             r#"
-            SELECT follower_count FROM users
-            WHERE id = $1
-            "#,
+SELECT follower_count FROM users
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .fetch_one(&mut *conn)
@@ -478,9 +478,9 @@ mod tests {
         // Delete the relation
         sqlx::query(
             r#"
-            DELETE FROM relations
-            WHERE follower_id = $1 AND followed_id = $2
-           "#,
+DELETE FROM relations
+WHERE follower_id = $1 AND followed_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -490,9 +490,9 @@ mod tests {
         // Should not decrement the `follower_count` any further
         let user_result = sqlx::query(
             r#"
-            SELECT follower_count FROM users
-            WHERE id = $1
-            "#,
+SELECT follower_count FROM users
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .fetch_one(&mut *conn)
@@ -514,9 +514,9 @@ mod tests {
         // Follow a user
         sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -526,9 +526,9 @@ mod tests {
         // Should increment the `following_count`
         let user_result = sqlx::query(
             r#"
-            SELECT following_count FROM users
-            WHERE id = $1
-            "#,
+SELECT following_count FROM users
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .fetch_one(&mut *conn)
@@ -548,9 +548,9 @@ mod tests {
         // Follow a user
         sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -560,9 +560,9 @@ mod tests {
         // Should have 1 `following_count` initially
         let user_result = sqlx::query(
             r#"
-            SELECT following_count FROM users
-            WHERE id = $1
-            "#,
+SELECT following_count FROM users
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .fetch_one(&mut *conn)
@@ -573,10 +573,10 @@ mod tests {
         // Soft-delete the relation
         sqlx::query(
             r#"
-            UPDATE relations
-            SET deleted_at = NOW()
-            WHERE follower_id = $1 AND followed_id = $2
-            "#,
+UPDATE relations
+SET deleted_at = NOW()
+WHERE follower_id = $1 AND followed_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -586,9 +586,9 @@ mod tests {
         // Should decrement the `following_count`
         let user_result = sqlx::query(
             r#"
-            SELECT following_count FROM users
-            WHERE id = $1
-            "#,
+SELECT following_count FROM users
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .fetch_one(&mut *conn)
@@ -599,10 +599,10 @@ mod tests {
         // Restore the relation
         sqlx::query(
             r#"
-            UPDATE relations
-            SET deleted_at = NULL
-            WHERE follower_id = $1 AND followed_id = $2
-            "#,
+UPDATE relations
+SET deleted_at = NULL
+WHERE follower_id = $1 AND followed_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -612,9 +612,9 @@ mod tests {
         // Should increment the `following_count`
         let user_result = sqlx::query(
             r#"
-            SELECT following_count FROM users
-            WHERE id = $1
-            "#,
+SELECT following_count FROM users
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .fetch_one(&mut *conn)
@@ -634,9 +634,9 @@ mod tests {
         // Follow a user
         sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -646,9 +646,9 @@ mod tests {
         // Should have 1 `following_count` initially
         let user_result = sqlx::query(
             r#"
-            SELECT following_count FROM users
-            WHERE id = $1
-            "#,
+SELECT following_count FROM users
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .fetch_one(&mut *conn)
@@ -659,9 +659,9 @@ mod tests {
         // Delete the relation
         sqlx::query(
             r#"
-            DELETE FROM relations
-            WHERE follower_id = $1 AND followed_id = $2
-            "#,
+DELETE FROM relations
+WHERE follower_id = $1 AND followed_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -671,9 +671,9 @@ mod tests {
         // Should decrement the `following_count`
         let user_result = sqlx::query(
             r#"
-            SELECT following_count FROM users
-            WHERE id = $1
-            "#,
+SELECT following_count FROM users
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .fetch_one(&mut *conn)
@@ -693,9 +693,9 @@ mod tests {
         // Follow a user
         sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -707,9 +707,9 @@ mod tests {
         // on the user when decrementing the `following_count`.
         sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(3_i64)
@@ -719,9 +719,9 @@ mod tests {
         // Should have 2 `following_count` initially
         let user_result = sqlx::query(
             r#"
-            SELECT following_count FROM users
-            WHERE id = $1
-            "#,
+SELECT following_count FROM users
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .fetch_one(&mut *conn)
@@ -732,10 +732,10 @@ mod tests {
         // Soft-delete the relation
         sqlx::query(
             r#"
-            UPDATE relations
-            SET deleted_at = NOW()
-            WHERE follower_id = $1 AND followed_id = $2
-            "#,
+UPDATE relations
+SET deleted_at = NOW()
+WHERE follower_id = $1 AND followed_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -745,9 +745,9 @@ mod tests {
         // Should decrement the `following_count`
         let user_result = sqlx::query(
             r#"
-            SELECT following_count FROM users
-            WHERE id = $1
-            "#,
+SELECT following_count FROM users
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .fetch_one(&mut *conn)
@@ -758,9 +758,9 @@ mod tests {
         // Delete the relation
         sqlx::query(
             r#"
-            DELETE FROM relations
-            WHERE follower_id = $1 AND followed_id = $2
-           "#,
+DELETE FROM relations
+WHERE follower_id = $1 AND followed_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -770,9 +770,9 @@ mod tests {
         // Should not decrement the `following_count` any further
         let user_result = sqlx::query(
             r#"
-            SELECT following_count FROM users
-            WHERE id = $1
-            "#,
+SELECT following_count FROM users
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .fetch_one(&mut *conn)
@@ -794,9 +794,9 @@ mod tests {
         // Follow a user
         sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -806,10 +806,10 @@ mod tests {
         // Insert a notification
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO notifications(entity_id, entity_type, notifier_id)
-            VALUES ($1, $2, $3)
-            RETURNING id
-            "#,
+INSERT INTO notifications (entity_id, entity_type, notifier_id)
+VALUES ($1, $2, $3)
+RETURNING id
+"#,
         )
         .bind(2_i64)
         .bind(0)
@@ -822,10 +822,10 @@ mod tests {
         // Soft-delete the relation
         sqlx::query(
             r#"
-            UPDATE relations
-            SET deleted_at = NOW()
-            WHERE follower_id = $1 AND followed_id = $2
-            "#,
+UPDATE relations
+SET deleted_at = NOW()
+WHERE follower_id = $1 AND followed_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -835,11 +835,11 @@ mod tests {
         // Notification should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM notifications
-                WHERE id = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM notifications
+    WHERE id = $1
+)
+"#,
         )
         .bind(insert_result.get::<i64, _>("id"))
         .fetch_one(&mut *conn)
@@ -859,9 +859,9 @@ mod tests {
         // Follow a user
         sqlx::query(
             r#"
-            INSERT INTO relations (follower_id, followed_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -871,10 +871,10 @@ mod tests {
         // Insert a notification
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO notifications(entity_id, entity_type, notifier_id)
-            VALUES ($1, $2, $3)
-            RETURNING id
-            "#,
+INSERT INTO notifications (entity_id, entity_type, notifier_id)
+VALUES ($1, $2, $3)
+RETURNING id
+"#,
         )
         .bind(2_i64)
         .bind(0)
@@ -887,9 +887,9 @@ mod tests {
         // Delete the relation
         sqlx::query(
             r#"
-            DELETE FROM relations
-            WHERE follower_id = $1 AND followed_id = $2
-            "#,
+DELETE FROM relations
+WHERE follower_id = $1 AND followed_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -899,11 +899,11 @@ mod tests {
         // Notification should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM notifications
-                WHERE id = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM notifications
+    WHERE id = $1
+)
+"#,
         )
         .bind(insert_result.get::<i64, _>("id"))
         .fetch_one(&mut *conn)

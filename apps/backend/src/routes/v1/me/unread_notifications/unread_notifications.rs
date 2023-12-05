@@ -11,27 +11,29 @@ use actix_web::{
 use sqlx::Row;
 
 #[get("/v1/me/unread-notifications")]
+#[tracing::instrument(
+    name = "GET /v1/me/unread-notifications",
+    skip_all,
+    fields(
+        user_id = user.id().ok()
+    ),
+    err
+)]
 async fn get(data: web::Data<AppState>, user: Identity) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            let result = sqlx::query(
-                r#"
-                SELECT
-                    COUNT(*) AS "count"
-                FROM
-                    notification_outs
-                WHERE
-                    notified_id = $1;
-                "#,
-            )
-            .bind(user_id)
-            .fetch_one(&data.db_pool)
-            .await?;
+    let user_id = user.id()?;
 
-            Ok(HttpResponse::Ok().json(result.get::<i64, _>("count")))
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-    }
+    let result = sqlx::query(
+        r#"
+SELECT COUNT(*) AS "count"
+FROM notification_outs
+WHERE notified_id = $1;
+"#,
+    )
+    .bind(&user_id)
+    .fetch_one(&data.db_pool)
+    .await?;
+
+    Ok(HttpResponse::Ok().json(result.get::<i64, _>("count")))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -53,12 +55,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Receive some notifications
+        // Receive some notifications.
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO notification_outs(notified_id, notification_id)
-            VALUES ($1, $2), ($1, $3)
-            "#,
+INSERT INTO notification_outs (notified_id, notification_id)
+VALUES ($1, $2), ($1, $3)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(4_i64)

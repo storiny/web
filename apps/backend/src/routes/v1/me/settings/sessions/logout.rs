@@ -1,5 +1,6 @@
 use crate::{
     constants::redis_namespaces::RedisNamespace,
+    error::AppError,
     middlewares::identity::identity::Identity,
     AppState,
 };
@@ -24,26 +25,31 @@ struct Request {
 }
 
 #[post("/v1/me/settings/sessions/logout")]
-async fn post(user: Identity, payload: Json<Request>, data: web::Data<AppState>) -> impl Responder {
-    match user.id() {
-        Ok(user_id) => match (&data.redis).get().await {
-            Ok(ref mut conn) => {
-                let cache_key = format!(
-                    "{}:{}:{}",
-                    RedisNamespace::Session.to_string(),
-                    user_id.to_string(),
-                    &payload.id
-                );
+#[tracing::instrument(
+    name = "POST /v1/me/settings/sessions/logout",
+    skip_all,
+    fields(user = user.id().ok()),
+    err
+)]
+async fn post(
+    user: Identity,
+    payload: Json<Request>,
+    data: web::Data<AppState>,
+) -> Result<HttpResponse, AppError> {
+    let user_id = user.id()?;
+    let mut redis_conn = (&data.redis).get().await?;
 
-                match conn.del::<_, ()>(cache_key).await {
-                    Ok(_) => HttpResponse::Ok().finish(),
-                    Err(_) => HttpResponse::InternalServerError().finish(),
-                }
-            }
-            Err(_) => HttpResponse::InternalServerError().finish(),
-        },
-        Err(_) => HttpResponse::InternalServerError().finish(),
-    }
+    let cache_key = format!(
+        "{}:{user_id}:{}",
+        RedisNamespace::Session.to_string(),
+        &payload.id
+    );
+
+    redis_conn.del::<_, ()>(cache_key).await.map_err(|error| {
+        AppError::InternalError(format!("unable to delete the session: {error:?}"))
+    })?;
+
+    Ok(HttpResponse::Ok().finish())
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -64,7 +70,6 @@ mod tests {
         },
     };
     use actix_web::test;
-
     use sqlx::PgPool;
     use storiny_macros::test_context;
     use uuid::Uuid;
@@ -103,7 +108,7 @@ mod tests {
             let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, None).await;
             let session_token = Uuid::new_v4();
 
-            // Insert a session for the user
+            // Insert a session for the user.
             let _: () = redis_conn
                 .set(
                     &format!(
@@ -121,7 +126,7 @@ mod tests {
                 .await
                 .unwrap();
 
-            // Should have 2 sessions initially
+            // Should have 2 sessions initially.
             let sessions = get_user_sessions(&redis_pool, user_id.unwrap())
                 .await
                 .unwrap();
@@ -139,7 +144,7 @@ mod tests {
 
             assert!(res.status().is_success());
 
-            // Cache should only have the current session
+            // Cache should only have the current session.
             let sessions = get_user_sessions(&redis_pool, user_id.unwrap())
                 .await
                 .unwrap();

@@ -30,45 +30,53 @@ struct Request {
 }
 
 #[patch("/v1/me/settings/profile")]
+#[tracing::instrument(
+    name = "PATCH /v1/me/settings/profile",
+    skip_all,
+    fields(
+        user = user.id().ok(),
+        payload
+    ),
+    err
+)]
 async fn patch(
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            let bio = payload.bio.trim();
-            let rendered_bio = if bio.is_empty() {
-                "".to_string()
-            } else {
-                md_to_html(MarkdownSource::Bio(bio))
-            };
+    let user_id = user.id()?;
 
-            match sqlx::query(
-                r#"
-                UPDATE users
-                SET
-                    bio = $1,
-                    rendered_bio = $2,
-                    name = $3,
-                    location = $4
-                WHERE id = $5
-                "#,
-            )
-            .bind(bio)
-            .bind(rendered_bio)
-            .bind(&payload.name)
-            .bind(&payload.location)
-            .bind(user_id)
-            .execute(&data.db_pool)
-            .await?
-            .rows_affected()
-            {
-                0 => Ok(HttpResponse::InternalServerError().finish()),
-                _ => Ok(HttpResponse::NoContent().finish()),
-            }
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let bio = payload.bio.trim();
+    let rendered_bio = if bio.is_empty() {
+        "".to_string()
+    } else {
+        md_to_html(MarkdownSource::Bio(bio))
+    };
+
+    match sqlx::query(
+        r#"
+UPDATE users
+SET
+    bio = $1,
+    rendered_bio = $2,
+    name = $3,
+    location = $4
+WHERE id = $5
+"#,
+    )
+    .bind(&bio)
+    .bind(&rendered_bio)
+    .bind(&payload.name)
+    .bind(&payload.location)
+    .bind(&user_id)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(AppError::InternalError(
+            "user not found in database".to_string(),
+        )),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -104,17 +112,17 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // User should get updated in the database, with rendered bio
+        // User should get updated in the database, with rendered bio.
         let result = sqlx::query(
             r#"
-            SELECT
-                bio,
-                rendered_bio,
-                name,
-                location
-            FROM users
-            WHERE id = $1
-            "#,
+SELECT
+    bio,
+    rendered_bio,
+    name,
+    location
+FROM users
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)

@@ -120,7 +120,6 @@ mod tests {
     };
     use actix_http::StatusCode;
     use actix_web::test;
-
     use sqlx::{
         PgPool,
         Row,

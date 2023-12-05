@@ -431,7 +431,7 @@ VALUES ($1, (SELECT id FROM inserted_user), 'story-1', NOW());
         assert_eq!(result.rows_affected(), 1);
 
         let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
+            .cookie(cookie.clone().unwrap())
             .uri("/v1/feed?type=suggested")
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -495,7 +495,7 @@ VALUES ($1, (SELECT id FROM inserted_user), 'story-1', NOW());
         assert_eq!(result.rows_affected(), 1);
 
         let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
+            .cookie(cookie.clone().unwrap())
             .uri("/v1/feed?type=suggested")
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -901,7 +901,7 @@ RETURNING followed_id
         assert_eq!(result.rows_affected(), 1);
 
         let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
+            .cookie(cookie.clone().unwrap())
             .uri("/v1/feed?type=friends-and-following")
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -971,7 +971,7 @@ RETURNING followed_id
         assert_eq!(result.rows_affected(), 1);
 
         let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
+            .cookie(cookie.clone().unwrap())
             .uri("/v1/feed?type=friends-and-following")
             .to_request();
         let res = test::call_service(&app, req).await;

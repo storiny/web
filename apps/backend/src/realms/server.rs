@@ -58,6 +58,12 @@ use tokio::{
         RwLock,
     },
 };
+use tracing::{
+    debug,
+    error,
+    info,
+    trace,
+};
 use uuid::Uuid;
 use warp::{
     http::StatusCode,
@@ -196,6 +202,7 @@ async fn fetch_doc_from_s3(s3_client: &S3Client, doc_key: &str) -> Result<Vec<u8
 /// * `db_pool` - The Postgres connection pool.
 /// * `redis_pool` - The Redis connection pool.
 /// * `s3_client` - The S3 client instance.
+#[tracing::instrument(name = "REALM enter_realm", skip_all, fields(story_id), err)]
 async fn enter_realm(
     config: Arc<Config>,
     story_id: i64,
@@ -213,10 +220,11 @@ async fn enter_realm(
         )
         .ok_or(EnterRealmError::Unauthorized)?;
 
-        let mut redis_conn = redis_pool
-            .get()
-            .await
-            .map_err(|_| EnterRealmError::Internal)?;
+        let mut redis_conn = redis_pool.get().await.map_err(|error| {
+            error!("unable to acquire a Redis connection from the pool: {error:?}");
+
+            EnterRealmError::Internal
+        })?;
 
         let session_value = redis_conn
             .get::<_, Option<String>>(format!(
@@ -224,33 +232,48 @@ async fn enter_realm(
                 RedisNamespace::Session.to_string()
             ))
             .await
-            .map_err(|_| EnterRealmError::Internal)?
+            .map_err(|error| {
+                error!("unable to fetch the session data from Redis: {error:?}");
+
+                EnterRealmError::Internal
+            })?
             .ok_or(EnterRealmError::Unauthorized)?;
 
         serde_json::from_str::<UserSession>(&session_value)
-            .map_err(|_| EnterRealmError::Internal)?
+            .map_err(|error| {
+                error!("unable to deserialize the user session: {error:?}");
+
+                EnterRealmError::Internal
+            })?
             .user_id
     };
+
+    trace!("peer authenticated");
 
     let mut realm_guard = realm_map
         .async_lock(story_id.clone(), AsyncLimit::no_limit())
         .await
         // This should never throw
-        .map_err(|_| EnterRealmError::Internal)?;
+        .map_err(|error| {
+            error!("unable to acquire a lock on the realm map: {error:?}");
 
-    let mut txn = db_pool
-        .begin()
-        .await
-        .map_err(|_| EnterRealmError::Internal)?;
+            EnterRealmError::Internal
+        })?;
+
+    let mut txn = db_pool.begin().await.map_err(|error| {
+        error!("unable begin a transaction: {error:?}");
+
+        EnterRealmError::Internal
+    })?;
 
     let story = sqlx::query(
         r#"
-        SELECT id, published_at FROM stories
-        WHERE
-            id = $1
-            AND user_id = $2
-            AND deleted_at IS NULL
-        "#,
+SELECT id, published_at FROM stories
+WHERE
+    id = $1
+    AND user_id = $2
+    AND deleted_at IS NULL
+"#,
     )
     .bind(&story_id)
     .bind(&user_id)
@@ -260,18 +283,24 @@ async fn enter_realm(
         if matches!(error, sqlx::Error::RowNotFound) {
             EnterRealmError::MissingStory
         } else {
+            error!("database error: {error:?}");
+
             EnterRealmError::Internal
         }
     })?;
 
     if let Some(realm) = realm_guard.value() {
-        txn.commit().await.map_err(|_| EnterRealmError::Internal)?;
+        txn.commit().await.map_err(|error| {
+            error!("unable to commit the transaction: {error:?}");
+
+            EnterRealmError::Internal
+        })?;
 
         if !realm.can_join().await {
             return Err(EnterRealmError::Full);
         }
 
-        log::info!("[{story_id}] Joining realm…");
+        debug!("[{story_id}] joining realm…");
 
         Ok((user_id, realm.clone()))
     } else {
@@ -280,32 +309,32 @@ async fn enter_realm(
                 .get::<Option<OffsetDateTime>, _>("published_at")
                 .is_some()
             {
-                // Fetch the editable document
+                // Fetch the editable document.
                 let result = sqlx::query(
                     r#"
-                    WITH original_document AS (
-                        SELECT key FROM documents
-                        WHERE
-                            story_id = $1
-                            AND is_editable IS FALSE
-                    ), editable_document AS (
-                        SELECT key FROM documents
-                        WHERE
-                            story_id = $1
-                            AND is_editable IS TRUE
-                    ), inserted_document AS (
-                        INSERT INTO documents (story_id, is_editable)
-                        SELECT $1, TRUE
-                        WHERE NOT EXISTS (
-                            SELECT 1 FROM editable_document
-                        )
-                        RETURNING key
-                    )
-                    SELECT
-                        (SELECT key FROM original_document) AS "original_doc_key",
-                        (SELECT key FROM inserted_document) AS "inserted_doc_key",
-                        (SELECT key FROM editable_document) AS "editable_doc_key"
-                    "#,
+WITH original_document AS (
+    SELECT key FROM documents
+    WHERE
+        story_id = $1
+        AND is_editable IS FALSE
+), editable_document AS (
+    SELECT key FROM documents
+    WHERE
+        story_id = $1
+        AND is_editable IS TRUE
+), inserted_document AS (
+    INSERT INTO documents (story_id, is_editable)
+    SELECT $1, TRUE
+    WHERE NOT EXISTS (
+        SELECT 1 FROM editable_document
+    )
+    RETURNING key
+)
+SELECT
+    (SELECT key FROM original_document) AS "original_doc_key",
+    (SELECT key FROM inserted_document) AS "inserted_doc_key",
+    (SELECT key FROM editable_document) AS "editable_doc_key"
+"#,
                 )
                 .bind(&story_id)
                 .fetch_one(&mut *txn)
@@ -314,6 +343,8 @@ async fn enter_realm(
                     if matches!(error, sqlx::Error::RowNotFound) {
                         EnterRealmError::MissingStory
                     } else {
+                        error!("database error: {error:?}");
+
                         EnterRealmError::Internal
                     }
                 })?;
@@ -332,6 +363,8 @@ async fn enter_realm(
                 };
 
                 if final_doc_key.is_none() {
+                    error!("unable to resolve the final document key");
+
                     return Err(EnterRealmError::Internal);
                 }
 
@@ -356,17 +389,30 @@ async fn enter_realm(
                                 .copy_source(format!("{}/{original_doc_key}", S3_DOCS_BUCKET))
                                 .send()
                                 .await
-                                .map_err(|_| EnterRealmError::Internal)?;
+                                .map_err(|error| {
+                                    error!("unable to copy the original document: {error:?}");
+
+                                    EnterRealmError::Internal
+                                })?;
                         }
                         Err(error) => {
-                            let _ = s3_client
+                            s3_client
                                 .delete_object()
                                 .bucket(S3_DOCS_BUCKET)
                                 .key(inserted_doc_key.to_string())
                                 .send()
-                                .await;
+                                .await
+                                .map_err(|error| {
+                                    error!(
+                                        "unable to delete the orphaned document copy: {error:?}"
+                                    );
+
+                                    EnterRealmError::Internal
+                                })?;
 
                             if !matches!(error.into_service_error(), HeadObjectError::NotFound(_)) {
+                                error!("unable to head the original document: {error:?}");
+
                                 return Err(EnterRealmError::Internal);
                             }
                         }
@@ -377,9 +423,9 @@ async fn enter_realm(
             } else {
                 sqlx::query(
                     r#"
-                    SELECT key FROM documents
-                    WHERE story_id = $1
-                    "#,
+SELECT key FROM documents
+WHERE story_id = $1
+"#,
                 )
                 .bind(&story_id)
                 .fetch_one(&mut *txn)
@@ -388,6 +434,8 @@ async fn enter_realm(
                     if matches!(error, sqlx::Error::RowNotFound) {
                         EnterRealmError::MissingStory
                     } else {
+                        error!("database error: {error:?}");
+
                         EnterRealmError::Internal
                     }
                 })?
@@ -395,13 +443,21 @@ async fn enter_realm(
             }
         };
 
-        txn.commit().await.map_err(|_| EnterRealmError::Internal)?;
+        txn.commit().await.map_err(|error| {
+            error!("unable to commit the transaction: {error:?}");
+
+            EnterRealmError::Internal
+        })?;
 
         let doc_body = fetch_doc_from_s3(&s3_client, &doc_key.to_string())
             .await
-            .map_err(|_| EnterRealmError::Internal)?;
+            .map_err(|error| {
+                error!("unable to fetch the document from s3: {error:?}");
 
-        log::info!("[{story_id}] Created realm");
+                EnterRealmError::Internal
+            })?;
+
+        debug!("[{story_id}] created realm");
 
         let doc = Doc::new();
 
@@ -482,7 +538,7 @@ pub async fn start_realms_server(
     .parse()
     .expect("unable to parse the socket address");
 
-    log::info!(
+    info!(
         "{}",
         format!("Starting realms server at http://{}:{}", &host, &port)
     );
@@ -690,17 +746,17 @@ pub mod tests {
         .await
         .expect("unable to start the server");
 
-        // Insert a story
+        // Insert a story.
         if insert_story {
             sqlx::query(
                 r#"
-                WITH inserted_user AS (
-                    INSERT INTO users (id, name, username, email)
-                    VALUES ($1, $2, $3, $4)
-                )
-                INSERT INTO stories (id, user_id)
-                VALUES ($5, $1)
-                "#,
+WITH inserted_user AS (
+    INSERT INTO users (id, name, username, email)
+    VALUES ($1, $2, $3, $4)
+)
+INSERT INTO stories (id, user_id)
+VALUES ($5, $1)
+"#,
             )
             .bind(&user_id)
             .bind("Some user")
@@ -712,7 +768,7 @@ pub mod tests {
             .expect("unable to insert the story");
         }
 
-        // Insert a session
+        // Insert a session.
         if logged_in {
             let mut conn = redis_pool.get().await.unwrap();
             let session_key = format!("{}:{}", user_id, Uuid::new_v4().to_string());
@@ -847,16 +903,16 @@ pub mod tests {
         ) -> sqlx::Result<()> {
             let mut conn = pool.acquire().await?;
 
-            // Insert a soft-deleted story
+            // Insert a soft-deleted story.
             let result = sqlx::query(
                 r#"
-                WITH inserted_user AS (
-                    INSERT INTO users (id, name, username, email)
-                    VALUES ($1, $2, $3, $4)
-                )
-                INSERT INTO stories (id, user_id, deleted_at)
-                VALUES ($5, $1, NOW())
-                "#,
+WITH inserted_user AS (
+    INSERT INTO users (id, name, username, email)
+    VALUES ($1, $2, $3, $4)
+)
+INSERT INTO stories (id, user_id, deleted_at)
+VALUES ($5, $1, NOW())
+"#,
             )
             .bind(1_i64)
             .bind("Some user")
@@ -892,7 +948,7 @@ pub mod tests {
 
             tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
 
-            // Realm should be present in the map
+            // Realm should be present in the map.
             let realm = realm_map
                 .async_lock(story_id, AsyncLimit::no_limit())
                 .await
@@ -912,16 +968,16 @@ pub mod tests {
             let s3_client = &ctx.s3_client;
             let mut conn = pool.acquire().await?;
 
-            // Insert a published story
+            // Insert a published story.
             let result = sqlx::query(
                 r#"
-                WITH inserted_user AS (
-                    INSERT INTO users (id, name, username, email)
-                    VALUES ($1, $2, $3, $4)
-                )
-                INSERT INTO stories (id, user_id, published_at)
-                VALUES ($5, $1, NOW())
-                "#,
+WITH inserted_user AS (
+    INSERT INTO users (id, name, username, email)
+    VALUES ($1, $2, $3, $4)
+)
+INSERT INTO stories (id, user_id, published_at)
+VALUES ($5, $1, NOW())
+"#,
             )
             .bind(1_i64)
             .bind("Some user")
@@ -933,14 +989,14 @@ pub mod tests {
 
             assert_eq!(result.rows_affected(), 1);
 
-            // Attach the document to object storage
+            // Attach the document to object storage.
             let document = sqlx::query(
                 r#"
-                SELECT key FROM documents
-                WHERE
-                    story_id = $1
-                    AND is_editable IS FALSE
-                "#,
+SELECT key FROM documents
+WHERE
+    story_id = $1
+    AND is_editable IS FALSE
+"#,
             )
             .bind(2_i64)
             .fetch_one(&mut *conn)
@@ -972,7 +1028,7 @@ pub mod tests {
 
             tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
 
-            // Realm should be present in the map
+            // Realm should be present in the map.
             let realm = realm_map
                 .async_lock(story_id, AsyncLimit::no_limit())
                 .await
@@ -980,16 +1036,16 @@ pub mod tests {
 
             assert!(realm.value().is_some());
 
-            // Should insert an editable document
+            // Should insert an editable document.
             let result = sqlx::query(
                 r#"
-                SELECT EXISTS (
-                    SELECT 1 FROM documents
-                    WHERE 
-                        story_id = $1
-                        AND is_editable IS TRUE
-                )
-                "#,
+SELECT EXISTS (
+    SELECT 1 FROM documents
+    WHERE 
+        story_id = $1
+        AND is_editable IS TRUE
+)
+"#,
             )
             .bind(&story_id)
             .fetch_one(&mut *conn)
@@ -1018,16 +1074,16 @@ pub mod tests {
             let s3_client = &ctx.s3_client;
             let mut conn = pool.acquire().await?;
 
-            // Insert a story
+            // Insert a story.
             let result = sqlx::query(
                 r#"
-                WITH inserted_user AS (
-                    INSERT INTO users (id, name, username, email)
-                    VALUES ($1, $2, $3, $4)
-                )
-                INSERT INTO stories (id, user_id)
-                VALUES ($5, $1)
-                "#,
+WITH inserted_user AS (
+    INSERT INTO users (id, name, username, email)
+    VALUES ($1, $2, $3, $4)
+)
+INSERT INTO stories (id, user_id)
+VALUES ($5, $1)
+"#,
             )
             .bind(1_i64)
             .bind("Some user")
@@ -1039,14 +1095,14 @@ pub mod tests {
 
             assert_eq!(result.rows_affected(), 1);
 
-            // Attach the document to object storage with invalid data
+            // Attach the document to object storage with invalid data.
             let document = sqlx::query(
                 r#"
-                SELECT key FROM documents
-                WHERE
-                    story_id = $1
-                    AND is_editable IS FALSE
-                "#,
+SELECT key FROM documents
+WHERE
+    story_id = $1
+    AND is_editable IS FALSE
+"#,
             )
             .bind(2_i64)
             .fetch_one(&mut *conn)

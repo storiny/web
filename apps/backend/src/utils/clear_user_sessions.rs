@@ -41,7 +41,6 @@ mod tests {
         utils::get_user_sessions::UserSession,
     };
     use redis::AsyncCommands;
-
     use storiny_macros::test_context;
     use uuid::Uuid;
 

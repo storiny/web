@@ -10,10 +10,10 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO reports(entity_id, type, reason)
-            VALUES ($1, $2, $3)
-            RETURNING id
-            "#,
+INSERT INTO reports (entity_id, type, reason)
+VALUES ($1, $2, $3)
+RETURNING id
+"#,
         )
         .bind(1_i64)
         .bind("report_type")

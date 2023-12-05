@@ -8,9 +8,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO draft_tags(name, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO draft_tags(name, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind("sample".to_string())
         .bind(2_i64)
@@ -31,12 +31,12 @@ mod tests {
         // Publish and soft-delete the story
         sqlx::query(
             r#"
-            UPDATE stories
-            SET
-                first_published_at = NOW(),
-                deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET
+    first_published_at = NOW(),
+    deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -44,9 +44,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO draft_tags(name, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO draft_tags(name, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind("sample".to_string())
         .bind(2_i64)
@@ -65,11 +65,11 @@ mod tests {
         // Set `first_published_at` on the story
         sqlx::query(
             r#"
-            UPDATE stories
-            SET
-                first_published_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET
+    first_published_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -77,9 +77,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO draft_tags(name, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO draft_tags(name, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind("sample".to_string())
         .bind(2_i64)
@@ -98,10 +98,10 @@ mod tests {
         // Publish the story
         sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET published_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -109,16 +109,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO draft_tags(name, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO draft_tags(name, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind("sample".to_string())
         .bind(2_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()

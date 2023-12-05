@@ -11,8 +11,16 @@ use tonic::{
     Response,
     Status,
 };
+use tracing::error;
 
 /// Returns the muted user count for a user.
+#[tracing::instrument(
+    name = "GRPC get_user_mute_count",
+    skip_all,
+    fields(
+        user_id = tracing::field::Empty
+    )
+)]
 pub async fn get_user_mute_count(
     client: &GrpcService,
     request: Request<GetUserMuteCountRequest>,
@@ -23,23 +31,27 @@ pub async fn get_user_mute_count(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
+    tracing::Span::current().record("user_id", &user_id);
+
     let result = sqlx::query(
         r#"
-        SELECT
-            (SELECT
-                 COUNT(*)
-             FROM
-                 mutes
-             WHERE
-                   muter_id = $1
-               AND deleted_at IS NULL
-            ) AS "mute_count"
-        "#,
+SELECT (
+    SELECT COUNT(*)
+    FROM mutes
+    WHERE
+        muter_id = $1
+        AND deleted_at IS NULL
+) AS "mute_count"
+"#,
     )
-    .bind(user_id)
+    .bind(&user_id)
     .fetch_one(&client.db_pool)
     .await
-    .map_err(|_| Status::internal("Database error"))?;
+    .map_err(|error| {
+        error!("database error: {error:?}");
+
+        Status::internal("Database error")
+    })?;
 
     Ok(Response::new(GetUserMuteCountResponse {
         mute_count: result.get::<i64, _>("mute_count") as u32,
@@ -61,12 +73,12 @@ mod tests {
             pool,
             true,
             Box::new(|mut client, pool, _, user_id| async move {
-                // Mute some users
+                // Mute some users.
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO mutes (muted_id, muter_id)
-                    VALUES ($2, $1), ($3, $1)
-                    "#,
+INSERT INTO mutes (muted_id, muter_id)
+VALUES ($2, $1), ($3, $1)
+"#,
                 )
                 .bind(user_id.unwrap())
                 .bind(2_i64)
@@ -97,12 +109,12 @@ mod tests {
             pool,
             true,
             Box::new(|mut client, pool, _, user_id| async move {
-                // Mute some users
+                // Mute some users.
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO mutes (muted_id, muter_id)
-                    VALUES ($2, $1), ($3, $1)
-                    "#,
+INSERT INTO mutes (muted_id, muter_id)
+VALUES ($2, $1), ($3, $1)
+"#,
                 )
                 .bind(user_id.unwrap())
                 .bind(2_i64)
@@ -113,7 +125,7 @@ mod tests {
 
                 assert_eq!(result.rows_affected(), 2);
 
-                // Should count all the mutes initially
+                // Should count all the mutes initially.
                 let response = client
                     .get_user_mute_count(Request::new(GetUserMuteCountRequest {
                         user_id: user_id.unwrap().to_string(),
@@ -124,13 +136,13 @@ mod tests {
 
                 assert_eq!(response.mute_count, 2_u32);
 
-                // Soft-delete one of the mute relation
+                // Soft-delete one of the mute relation.
                 let result = sqlx::query(
                     r#"
-                    UPDATE mutes
-                    SET deleted_at = NOW()
-                    WHERE muted_id = $1
-                    "#,
+UPDATE mutes
+SET deleted_at = NOW()
+WHERE muted_id = $1
+"#,
                 )
                 .bind(2_i64)
                 .execute(&pool)
@@ -139,7 +151,7 @@ mod tests {
 
                 assert_eq!(result.rows_affected(), 1);
 
-                // Should count only one mute relation
+                // Should count only one mute relation.
                 let response = client
                     .get_user_mute_count(Request::new(GetUserMuteCountRequest {
                         user_id: user_id.unwrap().to_string(),

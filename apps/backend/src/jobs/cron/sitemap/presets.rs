@@ -12,6 +12,7 @@ use sitemap_rs::{
     },
     url_set::UrlSet,
 };
+use tracing::debug;
 
 /// Generates a URL entry for the provided path.
 ///
@@ -71,6 +72,11 @@ pub async fn generate_preset_sitemap(
         .map_err(Box::new)
         .map_err(|err| JobError::Failed(err))?;
 
+    debug!(
+        "sitemap size after compression: {} bytes",
+        compressed_bytes.len()
+    );
+
     s3_client
         .put_object()
         .bucket(S3_SITEMAPS_BUCKET)
@@ -101,7 +107,6 @@ mod tests {
             TestContext,
         },
     };
-
     use storiny_macros::test_context;
 
     struct LocalTestContext {
@@ -140,7 +145,7 @@ mod tests {
 
             assert!(result.is_ok());
 
-            // Sitemap file should be present in the bucket
+            // Sitemap file should be present in the bucket.
             let sitemap_count = count_s3_objects(
                 &s3_client,
                 S3_SITEMAPS_BUCKET,

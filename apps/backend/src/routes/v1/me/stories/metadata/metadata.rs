@@ -64,165 +64,165 @@ struct Request {
 }
 
 #[patch("/v1/me/stories/{story_id}/metadata")]
+#[tracing::instrument(
+    name = "PATCH /v1/me/stories/{story_id}/metadata",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        story_id = %path.story_id,
+        payload
+    ),
+    err
+)]
 async fn patch(
     payload: Json<Request>,
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            match path.story_id.parse::<i64>() {
-                Ok(story_id) => {
-                    // Validate story category
-                    if !STORY_CATEGORY_VEC.contains(&payload.category) {
-                        return Ok(HttpResponse::BadRequest().json(FormErrorResponse::new(vec![
-                            ("category", "Invalid category"),
-                        ])));
-                    }
+    let user_id = user.id()?;
+    let story_id = path
+        .story_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid story ID"))?;
 
-                    // Validate tags
-                    if payload.tags.iter().any(|tag| !TAG_REGEX.is_match(tag)) {
-                        return Ok(HttpResponse::BadRequest()
-                            .json(FormErrorResponse::new(vec![("tags", "Invalid tags")])));
-                    }
+    // Validate story category.
+    if !STORY_CATEGORY_VEC.contains(&payload.category) {
+        return Err(FormErrorResponse::new(None, vec![("category", "Invalid category")]).into());
+    }
 
-                    let mut splash_hex: Option<String> = None;
-                    let pg_pool = &data.db_pool;
-                    let mut txn = pg_pool.begin().await?;
+    // Validate tags.
+    if payload.tags.iter().any(|tag| !TAG_REGEX.is_match(tag)) {
+        return Err(FormErrorResponse::new(None, vec![("tags", "Invalid tags")]).into());
+    }
 
-                    // Check if the splash is valid
-                    if payload.splash_id.is_some() {
-                        match sqlx::query(
-                            r#"
-                            SELECT hex FROM assets
-                            WHERE
-                                user_id = $1
-                                AND key = $2
-                            "#,
-                        )
-                        .bind(user_id)
-                        .bind(&payload.splash_id)
-                        .fetch_one(&mut *txn)
-                        .await
-                        {
-                            Ok(asset) => {
-                                splash_hex = Some(asset.get::<String, _>("hex"));
-                            }
-                            Err(kind) => {
-                                return match kind {
-                                    sqlx::Error::RowNotFound => Ok(HttpResponse::BadRequest()
-                                        .json(ToastErrorResponse::new("Invalid splash ID"))),
-                                    _ => Ok(HttpResponse::InternalServerError().finish()),
-                                };
-                            }
-                        };
-                    }
+    let mut splash_hex: Option<String> = None;
 
-                    // Check if the preview image is valid
-                    if payload.preview_image.is_some() {
-                        let result = sqlx::query(
-                            r#"
-                            SELECT EXISTS (
-                                SELECT 1 FROM assets
-                                WHERE
-                                    user_id = $1
-                                    AND key = $2
-                            )
-                            "#,
-                        )
-                        .bind(user_id)
-                        .bind(&payload.preview_image)
-                        .fetch_one(&mut *txn)
-                        .await?;
+    let pg_pool = &data.db_pool;
+    let mut txn = pg_pool.begin().await?;
 
-                        if !result.get::<bool, _>("exists") {
-                            return Ok(HttpResponse::BadRequest()
-                                .json(ToastErrorResponse::new("Invalid preview image")));
-                        }
-                    }
-
-                    match sqlx::query(
-                        r#"
-                        WITH
-                            updated_tags AS (
-                                SELECT update_draft_or_story_tags($2, $1, $18)
-                            )
-                        UPDATE stories
-                        SET
-                            title                           = $3,
-                            description                     = $4,
-                            splash_id                       = $5,
-                            splash_hex                      = $6,
-                            license                         = $7,
-                            visibility                      = $8,
-                            age_restriction                 = $9,
-                            category                        = $10::story_category,
-                            disable_toc                     = $11,
-                            disable_comments                = $12,
-                            disable_public_revision_history = $13,
-                            seo_title                       = $14,
-                            seo_description                 = $15,
-                            canonical_url                   = $16,
-                            preview_image                   = $17
-                        WHERE
-                              user_id = $1
-                          AND id = $2
-                          AND deleted_at IS NULL
-                          AND EXISTS (SELECT 1 FROM updated_tags)
-                        "#,
-                    )
-                    .bind(user_id)
-                    .bind(story_id)
-                    .bind(&payload.title)
-                    .bind(&payload.description)
-                    .bind(&payload.splash_id)
-                    .bind(splash_hex)
-                    .bind(&payload.license)
-                    .bind(&payload.visibility)
-                    .bind(&payload.age_restriction)
-                    .bind(&payload.category)
-                    .bind(&payload.disable_toc)
-                    .bind(&payload.disable_comments)
-                    .bind(&payload.disable_public_revision_history)
-                    .bind(&payload.seo_title)
-                    .bind(&payload.seo_description)
-                    .bind(&payload.canonical_url)
-                    .bind(&payload.preview_image)
-                    .bind(&payload.tags)
-                    .execute(&mut *txn)
-                    .await
-                    {
-                        Ok(result) => match result.rows_affected() {
-                            0 => Ok(HttpResponse::BadRequest()
-                                .json(ToastErrorResponse::new("Story not found"))),
-                            _ => {
-                                txn.commit().await?;
-                                Ok(HttpResponse::NoContent().finish())
-                            }
-                        },
-                        Err(err) => {
-                            if let Some(db_err) = err.into_database_error() {
-                                // Check for error returned from `update_draft_or_story_tags`
-                                // function.
-                                if db_err.code().unwrap_or_default()
-                                    == SqlState::EntityUnavailable.to_string()
-                                {
-                                    Ok(HttpResponse::BadRequest()
-                                        .json(ToastErrorResponse::new("Story not found")))
-                                } else {
-                                    Ok(HttpResponse::InternalServerError().finish())
-                                }
-                            } else {
-                                Ok(HttpResponse::InternalServerError().finish())
-                            }
-                        }
-                    }
+    // Validate splash.
+    if payload.splash_id.is_some() {
+        splash_hex = Some(
+            sqlx::query(
+                r#"
+SELECT hex FROM assets
+WHERE
+    user_id = $1
+    AND key = $2
+"#,
+            )
+            .bind(&user_id)
+            .bind(&payload.splash_id)
+            .fetch_one(&mut *txn)
+            .await
+            .map_err(|error| {
+                if matches!(error, sqlx::Error::RowNotFound) {
+                    AppError::ToastError(ToastErrorResponse::new(None, "Invalid splash ID"))
+                } else {
+                    AppError::SqlxError(error)
                 }
-                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid story ID")),
+            })?
+            .get::<String, _>("hex"),
+        );
+    }
+
+    // Validate preview image.
+    if payload.preview_image.is_some() {
+        sqlx::query(
+            r#"
+SELECT 1 FROM assets
+WHERE
+    user_id = $1
+    AND key = $2
+"#,
+        )
+        .bind(user_id)
+        .bind(&payload.preview_image)
+        .fetch_one(&mut *txn)
+        .await
+        .map_err(|error| {
+            if matches!(error, sqlx::Error::RowNotFound) {
+                AppError::ToastError(ToastErrorResponse::new(None, "Invalid preview image"))
+            } else {
+                AppError::SqlxError(error)
             }
+        })?;
+    }
+
+    match sqlx::query(
+        r#"
+WITH updated_tags AS (
+    SELECT update_draft_or_story_tags($2, $1, $18)
+)
+UPDATE stories
+SET
+    title                           = $3,
+    description                     = $4,
+    splash_id                       = $5,
+    splash_hex                      = $6,
+    license                         = $7,
+    visibility                      = $8,
+    age_restriction                 = $9,
+    category                        = $10::story_category,
+    disable_toc                     = $11,
+    disable_comments                = $12,
+    disable_public_revision_history = $13,
+    seo_title                       = $14,
+    seo_description                 = $15,
+    canonical_url                   = $16,
+    preview_image                   = $17
+WHERE
+      user_id = $1
+  AND id = $2
+  AND deleted_at IS NULL
+  AND EXISTS (SELECT 1 FROM updated_tags)
+"#,
+    )
+    .bind(&user_id)
+    .bind(&story_id)
+    .bind(&payload.title)
+    .bind(&payload.description)
+    .bind(&payload.splash_id)
+    .bind(&splash_hex)
+    .bind(&payload.license)
+    .bind(&payload.visibility)
+    .bind(&payload.age_restriction)
+    .bind(&payload.category)
+    .bind(&payload.disable_toc)
+    .bind(&payload.disable_comments)
+    .bind(&payload.disable_public_revision_history)
+    .bind(&payload.seo_title)
+    .bind(&payload.seo_description)
+    .bind(&payload.canonical_url)
+    .bind(&payload.preview_image)
+    .bind(&payload.tags)
+    .execute(&mut *txn)
+    .await
+    {
+        Ok(result) => match result.rows_affected() {
+            0 => Err(ToastErrorResponse::new(None, "Story not found").into()),
+            _ => {
+                txn.commit().await?;
+
+                Ok(HttpResponse::NoContent().finish())
+            }
+        },
+        Err(error) => {
+            if let Some(db_err) = error.as_database_error() {
+                let error_code = db_err.code().unwrap_or_default();
+
+                // Check for error returned from the `update_draft_or_story_tags` function.
+                if error_code == SqlState::EntityUnavailable.to_string() {
+                    return Err(AppError::ToastError(ToastErrorResponse::new(
+                        None,
+                        "Story not found",
+                    )));
+                }
+            }
+
+            Err(AppError::SqlxError(error))
         }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
     }
 }
 
@@ -263,7 +263,7 @@ mod tests {
         license: i16,
         visibility: i16,
         age_restriction: i16,
-        // Story category is validated in the request handler
+        // Story category is validated in the request handler.
         category: String,
         disable_toc: bool,
         disable_comments: bool,
@@ -280,28 +280,28 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, true, Some(1_i64)).await;
 
-        // Assert initial metadata
+        // Assert initial metadata.
         let result = sqlx::query_as::<_, Metadata>(
             r#"
-            SELECT
-                title,
-                description,
-                splash_id,
-                splash_hex,
-                license,
-                visibility,
-                age_restriction,
-                category::text,
-                disable_toc,
-                disable_comments,
-                disable_public_revision_history,
-                seo_title,
-                seo_description,
-                canonical_url,
-                preview_image
-            FROM stories
-            WHERE id = $1
-            "#,
+SELECT
+    title,
+    description,
+    splash_id,
+    splash_hex,
+    license,
+    visibility,
+    age_restriction,
+    category::text,
+    disable_toc,
+    disable_comments,
+    disable_public_revision_history,
+    seo_title,
+    seo_description,
+    canonical_url,
+    preview_image
+FROM stories
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .fetch_one(&mut *conn)
@@ -326,13 +326,13 @@ mod tests {
         assert!(result.canonical_url.is_none());
         assert!(result.preview_image.is_none());
 
-        // Insert an asset for splash and preview image
+        // Insert an asset for splash and preview image.
         let asset_key = Uuid::new_v4();
         let result = sqlx::query(
             r#"
-            INSERT INTO assets (key, hex, height, width, user_id)
-            VALUES ($1, $2, $3, $4, $5)
-            "#,
+INSERT INTO assets (key, hex, height, width, user_id)
+VALUES ($1, $2, $3, $4, $5)
+"#,
         )
         .bind(&asset_key)
         .bind("000000")
@@ -344,7 +344,6 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Update the metadata
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
             .uri(&format!("/v1/me/stories/{}/metadata", 2))
@@ -370,28 +369,28 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Story should get updated in the database
+        // Story should get updated in the database.
         let result = sqlx::query_as::<_, Metadata>(
             r#"
-            SELECT
-                title,
-                description,
-                splash_id,
-                splash_hex,
-                license,
-                visibility,
-                age_restriction,
-                category::text,
-                disable_toc,
-                disable_comments,
-                disable_public_revision_history,
-                seo_title,
-                seo_description,
-                canonical_url,
-                preview_image
-            FROM stories
-            WHERE id = $1
-            "#,
+SELECT
+    title,
+    description,
+    splash_id,
+    splash_hex,
+    license,
+    visibility,
+    age_restriction,
+    category::text,
+    disable_toc,
+    disable_comments,
+    disable_public_revision_history,
+    seo_title,
+    seo_description,
+    canonical_url,
+    preview_image
+FROM stories
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .fetch_one(&mut *conn)
@@ -451,13 +450,13 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Tags should get inserted in the database
+        // Tags should get inserted in the database.
         let result = sqlx::query(
             r#"
-            SELECT name FROM draft_tags
-            WHERE story_id = $1
-            ORDER BY name
-            "#,
+SELECT name FROM draft_tags
+WHERE story_id = $1
+ORDER BY name
+"#,
         )
         .bind(2_i64)
         .fetch_all(&mut *conn)
@@ -571,17 +570,17 @@ mod tests {
     }
 
     #[sqlx::test(fixtures("story"))]
-    async fn should_not_update_metadata_for_soft_deleted_story(pool: PgPool) -> sqlx::Result<()> {
+    async fn should_not_update_metadata_for_a_soft_deleted_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(patch, pool, true, true, Some(1_i64)).await;
 
-        // Soft-delete the story
+        // Soft-delete the story.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)

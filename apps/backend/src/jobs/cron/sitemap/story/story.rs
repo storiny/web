@@ -20,6 +20,7 @@ use sqlx::{
     Postgres,
 };
 use time::OffsetDateTime;
+use tracing::debug;
 
 /// The maximum number of story entries per sitemap file.
 const CHUNK_SIZE: u32 = 50_000;
@@ -54,35 +55,37 @@ pub async fn generate_story_sitemap(
         return Ok(GenerateSitemapResponse::default());
     }
 
+    debug!("starting to generate sitemap at index: {index:?} with offset: {offset:?}");
+
     let mut generated_result = GenerateSitemapResponse::default();
 
     let mut result = sqlx::query_as::<_, Story>(
         r#"
-        SELECT
-            s.edited_at,
-            CASE
-                WHEN COALESCE(s.edited_at, s.published_at) >= (NOW() - INTERVAL '1 week')
-                    THEN 'weekly'
-                WHEN COALESCE(s.edited_at, s.published_at) >= (NOW() - INTERVAL '6 months')
-                    THEN 'monthly'
-                ELSE 'yearly'
-            END AS change_freq,
-            $3 || '/' || "s->user".username || '/' || s.slug AS url
-        FROM
-            stories s
-                INNER JOIN users AS "s->user"
-                           ON s.user_id = "s->user".id
-                               -- Ignore stories from private users
-                               AND "s->user".is_private IS FALSE
-        WHERE
-              s.published_at IS NOT NULL
-              -- Public
-          AND s.visibility = 2
-          AND s.deleted_at IS NULL
-        ORDER BY
-            s.read_count DESC
-        LIMIT $1 OFFSET $2
-        "#,
+SELECT
+    s.edited_at,
+    CASE
+        WHEN COALESCE(s.edited_at, s.published_at) >= (NOW() - INTERVAL '1 week')
+            THEN 'weekly'
+        WHEN COALESCE(s.edited_at, s.published_at) >= (NOW() - INTERVAL '6 months')
+            THEN 'monthly'
+        ELSE 'yearly'
+    END AS change_freq,
+    $3 || '/' || "s->user".username || '/' || s.slug AS url
+FROM
+    stories s
+        INNER JOIN users AS "s->user"
+            ON s.user_id = "s->user".id
+            -- Ignore stories from private users
+            AND "s->user".is_private IS FALSE
+WHERE
+      s.published_at IS NOT NULL
+      -- Public
+  AND s.visibility = 2
+  AND s.deleted_at IS NULL
+ORDER BY
+    s.read_count DESC
+LIMIT $1 OFFSET $2
+"#,
     )
     // Return a maximum of 50,000 rows for a single sitemap file. (+1) is added to determine whether
     // there are more rows to return.
@@ -115,7 +118,9 @@ pub async fn generate_story_sitemap(
     let mut result_length = result.len() as u32;
     let has_more_rows = result_length > CHUNK_SIZE;
 
-    // Upload the sitemap to S3 if it is non-empty
+    debug!("received {result_length} rows from the database");
+
+    // Upload the sitemap to S3 if it is non-empty.
     if !result.is_empty() {
         if has_more_rows {
             result.pop(); // Remove the extra row
@@ -135,6 +140,11 @@ pub async fn generate_story_sitemap(
             .await
             .map_err(Box::new)
             .map_err(|err| JobError::Failed(err))?;
+
+        debug!(
+            "sitemap size after compression: {} bytes",
+            compressed_bytes.len()
+        );
 
         s3_client
             .put_object()
@@ -186,7 +196,6 @@ mod tests {
         },
         utils::delete_s3_objects::delete_s3_objects,
     };
-
     use sqlx::PgPool;
     use storiny_macros::test_context;
 
@@ -237,7 +246,7 @@ mod tests {
                 }
             );
 
-            // Sitemaps should be present in the bucket
+            // Sitemaps should be present in the bucket.
             let sitemap_count = count_s3_objects(
                 &s3_client,
                 S3_SITEMAPS_BUCKET,
@@ -272,7 +281,7 @@ mod tests {
                 }
             );
 
-            // Sitemaps should be present in the bucket
+            // Sitemaps should be present in the bucket.
             let sitemap_count = count_s3_objects(
                 &s3_client,
                 S3_SITEMAPS_BUCKET,

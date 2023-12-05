@@ -282,7 +282,7 @@ VALUES ($1, $2, NOW())
         assert_eq!(insert_result.rows_affected(), 1);
 
         let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
+            .cookie(cookie.clone().unwrap())
             .uri("/v1/me/friends")
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -340,7 +340,7 @@ VALUES ($1, $2, NOW())
         assert_eq!(insert_result.rows_affected(), 1);
 
         let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
+            .cookie(cookie.clone().unwrap())
             .uri("/v1/me/friends")
             .to_request();
         let res = test::call_service(&app, req).await;

@@ -47,13 +47,13 @@ pub async fn test_grpc_service<B>(
     let mut user_id: i64 = 1_i64;
 
     if insert_user {
-        // Insert the user
+        // Insert the user.
         let result = sqlx::query(
             r#"
-            INSERT INTO users (name, username, email)
-            VALUES ($1, $2, $3)
-            RETURNING id
-            "#,
+INSERT INTO users (name, username, email)
+VALUES ($1, $2, $3)
+RETURNING id
+"#,
         )
         .bind("Some user".to_string())
         .bind("some_user".to_string())
@@ -87,7 +87,7 @@ pub async fn test_grpc_service<B>(
         assert!(result.is_ok());
     };
 
-    // Connect to the server over a Unix socket
+    // Connect to the server over a Unix socket.
     let socket = Arc::clone(&socket);
 
     // The URL will be ignored.
@@ -100,10 +100,10 @@ pub async fn test_grpc_service<B>(
         .await
         .unwrap();
 
-    // Build a client instance
+    // Build a client instance.
     let client = ApiServiceClient::new(channel);
 
-    // Execute the test closure
+    // Execute the test closure.
     let request_future = test_closure(
         client,
         db_pool.clone(),

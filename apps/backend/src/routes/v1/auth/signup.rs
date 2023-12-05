@@ -62,10 +62,14 @@ struct Request {
     wpm: u16,
 }
 
+/// The data for email verification template.
 #[derive(Debug, Serialize)]
 struct EmailVerificationEmailTemplateData {
+    /// The display name of the user.
     name: String,
+    /// The e-mail address of the user.
     email: String,
+    /// The e-mail verification link for the user.
     link: String,
 }
 
@@ -156,12 +160,16 @@ SELECT EXISTS (
     let pg_pool = &data.db_pool;
     let mut txn = pg_pool.begin().await?;
 
-    // Insert the user.
-    let result = sqlx::query(
+    // Insert the user and the email verification token.
+    sqlx::query(
         r#"
-INSERT INTO users (email, name, username, password, wpm)
-VALUES ($1, $2, $3, $4, $5)
-RETURNING id
+WITH inserted_user AS (
+    INSERT INTO users (email, name, username, password, wpm)
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING id
+)
+INSERT INTO tokens (id, type, user_id, expires_at)
+SELECT $6, $7, (SELECT id FROM inserted_user), $8
 "#,
     )
     .bind(&payload.email)
@@ -169,23 +177,10 @@ RETURNING id
     .bind(&slugged_username)
     .bind(hashed_password.to_string())
     .bind((&payload.wpm).clone() as i32)
-    .fetch_one(&mut *txn)
-    .await?;
-
-    let user_id = result.get::<i64, _>("id");
-
-    // Insert the email verification token.
-    sqlx::query(
-        r#"
-INSERT INTO tokens (id, type, user_id, expires_at)
-VALUES ($1, $2, $3, $4)
-"#,
-    )
     .bind(hashed_token.to_string())
     .bind(TokenType::EmailVerification as i16)
-    .bind(&user_id)
     .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
-    .execute(&mut *txn)
+    .fetch_one(&mut *txn)
     .await?;
 
     // Push an email job.

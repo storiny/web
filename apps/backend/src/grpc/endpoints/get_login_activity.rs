@@ -26,6 +26,7 @@ use tonic::{
     Response,
     Status,
 };
+use tracing::error;
 
 /// Converts a user session object into a login object.
 ///
@@ -74,6 +75,13 @@ fn convert_user_session_to_login(
 }
 
 /// Returns the login activity for the user.
+#[tracing::instrument(
+    name = "GRPC get_login_activity",
+    skip_all,
+    fields(
+        user_id = tracing::field::Empty
+    )
+)]
 pub async fn get_login_activity(
     client: &GrpcService,
     request: Request<GetLoginActivityRequest>,
@@ -85,14 +93,17 @@ pub async fn get_login_activity(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
-    let user_sessions = get_user_sessions(&client.redis_pool, user_id).await;
+    tracing::Span::current().record("user_id", &user_id);
 
-    if user_sessions.is_err() {
-        return Err(Status::internal("Unable to get sessions for the user"));
-    }
+    let sessions = get_user_sessions(&client.redis_pool, user_id)
+        .await
+        .map_err(|error| {
+            error!("unable to fetch the user's sessions: {error:?}");
 
-    let sessions = user_sessions.unwrap();
-    // Find the most recent unacknowledged session
+            Status::internal("Unable to get the sessions for the user")
+        })?;
+
+    // Find the most recent unacknowledged session.
     let maybe_recent_login = sessions
         .iter()
         .filter(|&item| !item.1.ack)
@@ -142,7 +153,6 @@ mod tests {
         Key,
     };
     use redis::AsyncCommands;
-
     use sqlx::PgPool;
     use storiny_macros::test_context;
     use time::OffsetDateTime;
@@ -162,7 +172,7 @@ mod tests {
                     let config = get_app_config().unwrap();
                     let mut conn = redis_pool.get().await.unwrap();
 
-                    // Insert a session
+                    // Insert a session.
                     let session_key =
                         format!("{}:{}", user_id.unwrap(), Uuid::new_v4().to_string());
                     let secret_key = Key::from(&config.session_secret_key.as_bytes());
@@ -206,7 +216,7 @@ mod tests {
 
                     assert!(response.recent.is_some());
                     assert_eq!(response.logins.len(), 1);
-                    assert!(response.recent.unwrap().is_active); // The only session should be active
+                    assert!(response.recent.unwrap().is_active); // The only session should be active.
                 }),
             )
             .await;

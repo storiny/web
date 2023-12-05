@@ -16,6 +16,7 @@ use tonic::{
     Response,
     Status,
 };
+use tracing::error;
 use uuid::Uuid;
 
 #[derive(Debug, FromRow)]
@@ -30,6 +31,13 @@ struct Draft {
 }
 
 /// Returns the `pending_draft_count`, `deleted_draft_count` and `latest_draft` for a user.
+#[tracing::instrument(
+    name = "GRPC get_drafts_info",
+    skip_all,
+    fields(
+        user_id = tracing::field::Empty
+    )
+)]
 pub async fn get_drafts_info(
     client: &GrpcService,
     request: Request<GetDraftsInfoRequest>,
@@ -40,76 +48,85 @@ pub async fn get_drafts_info(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
+    tracing::Span::current().record("user_id", &user_id);
+
     let pg_pool = &client.db_pool;
-    let mut txn = pg_pool
-        .begin()
-        .await
-        .map_err(|_| Status::internal("Database error"))?;
+    let mut txn = pg_pool.begin().await.map_err(|error| {
+        error!("unable to begin the transaction: {error:?}");
+
+        Status::internal("Database error")
+    })?;
 
     let result = sqlx::query(
         r#"
-        SELECT
-            (SELECT
-                 COUNT(*)
-             FROM
-                 stories
-             WHERE
-                   user_id = $1
-               AND first_published_at IS NULL
-               AND deleted_at IS NULL
-            ) AS "pending_draft_count",
-            (SELECT
-                 COUNT(*)
-             FROM
-                 stories
-             WHERE
-                   user_id = $1
-               AND first_published_at IS NULL
-               AND deleted_at IS NOT NULL
-            ) AS "deleted_draft_count"
-        "#,
+SELECT
+(
+    SELECT COUNT(*)
+    FROM stories
+    WHERE
+        user_id = $1
+        AND first_published_at IS NULL
+        AND deleted_at IS NULL
+) AS "pending_draft_count",
+(
+    SELECT COUNT(*)
+    FROM stories
+    WHERE
+        user_id = $1
+        AND first_published_at IS NULL
+        AND deleted_at IS NOT NULL
+) AS "deleted_draft_count"
+"#,
     )
-    .bind(user_id)
+    .bind(&user_id)
     .fetch_one(&mut *txn)
     .await
-    .map_err(|_| Status::internal("Database error"))?;
+    .map_err(|error| {
+        error!("database error: {error:?}");
+
+        Status::internal("Database error")
+    })?;
 
     let latest_draft = sqlx::query_as::<_, Draft>(
         r#"
-        SELECT
-            id,
-            title,
-            splash_id,
-            splash_hex,
-            word_count,
-            created_at,
-            edited_at
-        FROM
-            stories
-        WHERE
-            user_id = $1
-                AND first_published_at IS NULL
-                AND deleted_at IS NULL
-        ORDER BY
-            edited_at DESC NULLS LAST,
-            created_at DESC
-        LIMIT 1
-        "#,
+SELECT
+    id,
+    title,
+    splash_id,
+    splash_hex,
+    word_count,
+    created_at,
+    edited_at
+FROM
+    stories
+WHERE
+    user_id = $1
+    AND first_published_at IS NULL
+    AND deleted_at IS NULL
+ORDER BY
+    edited_at DESC NULLS LAST,
+    created_at DESC
+LIMIT 1
+"#,
     )
-    .bind(user_id)
+    .bind(&user_id)
     .fetch_one(&mut *txn)
     .await;
 
-    // Throw for internal server error
-    if let Err(ref err) = latest_draft {
-        if matches!(err, sqlx::Error::RowNotFound) {
+    // Throw for database errors.
+    if let Err(ref error) = latest_draft {
+        if !matches!(error, sqlx::Error::RowNotFound) {
+            error!("unable to fetch the latest draft: {error:?}");
+
             return Err(Status::internal("Database error"));
         }
     }
 
-    txn.commit()
-        .await
-        .map_err(|_| Status::internal("Database error"))?;
+    txn.commit().await.map_err(|error| {
+        error!("unable to commit the transaction: {error:?}");
+
+        Status::internal("Database error")
+    })?;
 
     Ok(Response::new(GetDraftsInfoResponse {
         pending_draft_count: result.get::<i64, _>("pending_draft_count") as u32,

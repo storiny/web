@@ -14,23 +14,23 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO story_reads (
-                hostname,
-                country_code,
-                duration,
-                device,
-                user_id,
-                story_id
-            )
-            VALUES (
-                $1,
-                $2,
-                $3,
-                $4,
-                $5,
-                $6
-            )
-            "#,
+INSERT INTO story_reads (
+    hostname,
+    country_code,
+    duration,
+    device,
+    user_id,
+    story_id
+)
+VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6
+)
+"#,
         )
         .bind("storiny.com")
         .bind("XX")
@@ -53,10 +53,10 @@ mod tests {
         // Soft-delete the story
         sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -64,16 +64,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO story_reads(country_code, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_reads(country_code, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind("XX")
         .bind(3_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -94,10 +94,10 @@ mod tests {
         // Unpublish the story
         sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET published_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
@@ -105,16 +105,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO story_reads(country_code, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_reads(country_code, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind("XX")
         .bind(3_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -137,9 +137,9 @@ mod tests {
         // Read the story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_reads(country_code, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_reads(country_code, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind("XX")
         .bind(3_i64)
@@ -151,9 +151,9 @@ mod tests {
         // Should increment `read_count` on story
         let result = sqlx::query(
             r#"
-            SELECT read_count FROM stories
-            WHERE id = $1
-            "#,
+SELECT read_count FROM stories
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .fetch_one(&mut *conn)
