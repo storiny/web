@@ -19,8 +19,8 @@ WITH stories_result AS (SELECT
 							s.published_at                 AS "published_at!",
 							s.edited_at,
 							-- Boolean flags
-							"s->is_liked" IS NOT NULL      AS "is_liked!",
-							"s->is_bookmarked" IS NOT NULL AS "is_bookmarked!",
+							"s->is_liked".story_id IS NOT NULL      AS "is_liked!",
+							"s->is_bookmarked".story_id IS NOT NULL AS "is_bookmarked!",
 							-- Tags
 							COALESCE(
 											ARRAY_AGG(
@@ -54,8 +54,8 @@ WITH stories_result AS (SELECT
 						GROUP BY
 							s.id,
 							s.published_at,
-							"s->is_liked",
-							"s->is_bookmarked"
+							"s->is_liked".story_id,
+							"s->is_bookmarked".story_id
 						ORDER BY s.published_at
 						LIMIT $2 OFFSET $3
 					   )

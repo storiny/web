@@ -155,7 +155,7 @@ SELECT
         )
     ) AS "story",
     -- Boolean flags
-    "c->is_liked" IS NOT NULL AS "is_liked"
+    "c->is_liked".comment_id IS NOT NULL AS "is_liked"
 "#,
     );
 
@@ -199,7 +199,7 @@ AND c.deleted_at IS NULL
 GROUP BY
     c.id,
     cs.id,
-    "c->is_liked",
+    "c->is_liked".comment_id,
     "cs->user".id,
     c.created_at
 ORDER BY

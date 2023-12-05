@@ -38,8 +38,8 @@ SELECT s.id,
 	   -- Joins
 	   "s->document".key                         AS "doc_key",
 	   -- Boolean flags
-	   "s->is_bookmarked" IS NOT NULL            AS "is_bookmarked!",
-	   "s->is_liked" IS NOT NULL                 AS "is_liked!",
+	   "s->is_bookmarked".story_id IS NOT NULL            AS "is_bookmarked!",
+	   "s->is_liked".story_id IS NOT NULL                 AS "is_liked!",
 	   -- User
 	   "s->user".name                            AS user_name,
 	   "s->user".username                        AS user_username,
@@ -52,10 +52,10 @@ SELECT s.id,
 	   "s->user".created_at                      AS user_created_at,
 	   "s->user".follower_count                  AS user_follower_count,
 	   -- User boolean flags
-	   "s->user->is_following" IS NOT NULL       AS "user_is_following!",
-	   "s->user->is_follower" IS NOT NULL        AS "user_is_follower!",
-	   "s->user->is_friend" IS NOT NULL          AS "user_is_friend!",
-	   "s->user->is_blocked_by_user" IS NOT NULL AS "user_is_blocked_by_user!",
+	   "s->user->is_following".follower_id IS NOT NULL       AS "user_is_following!",
+	   "s->user->is_follower".follower_id IS NOT NULL        AS "user_is_follower!",
+	   "s->user->is_friend".transmitter_id IS NOT NULL          AS "user_is_friend!",
+	   "s->user->is_blocked_by_user".blocker_id IS NOT NULL AS "user_is_blocked_by_user!",
 	   -- User status
 	   "s->user->status".emoji                   AS "user_status_emoji?",
 	   "s->user->status".text                    AS "user_status_text?",
@@ -155,10 +155,10 @@ GROUP BY
 	"user_status_text?",
 	"user_status_expires_at?",
 	"s->user->status".user_id,
-	"s->user->is_following",
-	"s->user->is_follower",
-	"s->user->is_friend",
-	"s->user->is_blocked_by_user",
-	"s->is_liked",
-	"s->is_bookmarked"
+	"s->user->is_following".follower_id,
+	"s->user->is_follower".follower_id,
+	"s->user->is_friend".transmitter_id,
+	"s->user->is_blocked_by_user".blocker_id,
+	"s->is_liked".story_id,
+	"s->is_bookmarked".story_id
 LIMIT 1

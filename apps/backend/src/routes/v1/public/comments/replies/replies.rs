@@ -180,7 +180,7 @@ JSON_BUILD_OBJECT(
     );
 
     query_builder.push(if user_id.is_some() {
-        r#""r->is_liked" IS NOT NULL AS "is_liked""#
+        r#""r->is_liked".reply_id IS NOT NULL AS "is_liked""#
     } else {
         r#"FALSE as "is_liked""#
     });
@@ -233,7 +233,7 @@ GROUP BY
 
     if user_id.is_some() {
         query_builder.push(",");
-        query_builder.push(r#" "r->is_liked" "#);
+        query_builder.push(r#" "r->is_liked".reply_id "#);
     }
 
     query_builder.push(
