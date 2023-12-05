@@ -202,7 +202,7 @@ mod tests {
         // Receive some notifications.
         let insert_result = sqlx::query(
             r#"
-INSERT INTO notification_outs(notified_id, notification_id)
+INSERT INTO notification_outs (notified_id, notification_id)
 VALUES ($1, $2), ($1, $3)
 "#,
         )
@@ -238,7 +238,7 @@ VALUES ($1, $2), ($1, $3)
         // Receive a system notification.
         let insert_result = sqlx::query(
             r#"
-INSERT INTO notification_outs(notified_id, notification_id)
+INSERT INTO notification_outs (notified_id, notification_id)
 VALUES ($1, $2)
 "#,
         )
@@ -273,7 +273,7 @@ VALUES ($1, $2)
         // Receive some notifications.
         let insert_result = sqlx::query(
             r#"
-INSERT INTO notification_outs(notified_id, notification_id)
+INSERT INTO notification_outs (notified_id, notification_id)
 VALUES ($1, $2), ($1, $3)
 "#,
         )
@@ -338,7 +338,7 @@ WHERE notification_id = $1
         // Receive some notifications.
         let insert_result = sqlx::query(
             r#"
-INSERT INTO notification_outs(notified_id, notification_id)
+INSERT INTO notification_outs (notified_id, notification_id)
 VALUES ($1, $2), ($1, $3)
 "#,
         )
@@ -403,7 +403,7 @@ VALUES ($1, $2)
         // Receive some notifications.
         let insert_result = sqlx::query(
             r#"
-INSERT INTO notification_outs(notified_id, notification_id)
+INSERT INTO notification_outs (notified_id, notification_id)
 VALUES ($1, $2), ($1, $3)
 "#,
         )
@@ -470,7 +470,7 @@ VALUES ($1, $2, NOW())
         // Receive some notifications.
         let insert_result = sqlx::query(
             r#"
-INSERT INTO notification_outs(notified_id, notification_id)
+INSERT INTO notification_outs (notified_id, notification_id)
 VALUES ($1, $2), ($1, $3)
 "#,
         )
@@ -551,7 +551,7 @@ WHERE follower_id = $1 AND followed_id = $2
         // Receive some notifications.
         let insert_result = sqlx::query(
             r#"
-INSERT INTO notification_outs(notified_id, notification_id)
+INSERT INTO notification_outs (notified_id, notification_id)
 VALUES ($1, $2), ($1, $3)
 "#,
         )
@@ -632,7 +632,7 @@ WHERE transmitter_id = $1 AND receiver_id = $2
         // Receive some notifications.
         let insert_result = sqlx::query(
             r#"
-INSERT INTO notification_outs(notified_id, notification_id)
+INSERT INTO notification_outs (notified_id, notification_id)
 VALUES ($1, $2), ($1, $3)
 "#,
         )

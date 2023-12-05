@@ -1,9 +1,17 @@
 use crate::{
-    constants::account_activity_type::AccountActivityType,
+    constants::{
+        account_activity_type::AccountActivityType,
+        email_template::EmailTemplate,
+    },
     error::{
         AppError,
         FormErrorResponse,
         ToastErrorResponse,
+    },
+    grpc::defs::token_def::v1::TokenType,
+    jobs::{
+        email::templated_email::TemplatedEmailJob,
+        storage::JobStorage,
     },
     middlewares::identity::identity::Identity,
     utils::clear_user_sessions::clear_user_sessions,
@@ -16,16 +24,27 @@ use actix_web::{
     HttpResponse,
 };
 use actix_web_validator::Json;
+use apalis::prelude::Storage;
 use argon2::{
+    password_hash::{
+        rand_core::OsRng,
+        SaltString,
+    },
     Argon2,
     PasswordHash,
+    PasswordHasher,
     PasswordVerifier,
 };
+use nanoid::nanoid;
 use serde::{
     Deserialize,
     Serialize,
 };
 use sqlx::Row;
+use time::{
+    Duration,
+    OffsetDateTime,
+};
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
@@ -35,6 +54,13 @@ struct Request {
     new_email: String,
     #[validate(length(min = 6, max = 64, message = "Invalid password length"))]
     current_password: String,
+}
+
+/// The data for new email verification template.
+#[derive(Debug, Serialize)]
+struct NewEmailVerificationEmailTemplateData {
+    /// The e-mail verification link for the user.
+    link: String,
 }
 
 #[patch("/v1/me/settings/email")]
@@ -51,6 +77,7 @@ async fn patch(
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Identity,
+    templated_email_job_storage: web::Data<JobStorage<TemplatedEmailJob>>,
 ) -> Result<HttpResponse, AppError> {
     let user_id = user.id()?;
 
@@ -92,6 +119,13 @@ WHERE id = $1
             })?;
     }
 
+    // Token ID for verification email.
+    let token_id = nanoid!(48);
+
+    let hashed_token = Argon2::default()
+        .hash_password(&token_id.as_bytes(), &SaltString::generate(&mut OsRng))
+        .map_err(|error| AppError::InternalError(error.to_string()))?;
+
     match sqlx::query(
         r#"
 WITH updated_user AS (
@@ -100,6 +134,10 @@ WITH updated_user AS (
         email = $2,
         email_verified = FALSE
     WHERE id = $1
+),
+inserted_token AS (
+    INSERT INTO tokens (id, type, user_id, expires_at)
+    VALUES ($4, $5, $1, $6)
 )
 INSERT INTO account_activities (type, description, user_id)
 VALUES ($3, 'You changed your e-mail address to <m>' || $2 || '</m>', $1)
@@ -108,13 +146,41 @@ VALUES ($3, 'You changed your e-mail address to <m>' || $2 || '</m>', $1)
     .bind(&user_id)
     .bind(&payload.new_email)
     .bind(AccountActivityType::Email as i16)
+    .bind(hashed_token.to_string())
+    .bind(TokenType::EmailVerification as i16)
+    .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
     .execute(&mut *txn)
     .await
     {
         Ok(_) => {
-            // Log the user out and destroy all the sessions.
+            // Log the user out and destroy all the sessions so that the user is forced to the auth
+            // screen and needs to verify the new e-mail address.
             clear_user_sessions(&data.redis, user_id).await?;
             user.logout();
+
+            // Push an email verification job.
+
+            let verification_link = format!("https://storiny.com/auth/verify-email/{}", token_id);
+
+            let template_data = serde_json::to_string(&NewEmailVerificationEmailTemplateData {
+                link: verification_link,
+            })
+            .map_err(|error| {
+                AppError::InternalError(format!("unable to serialize the template data: {error:?}"))
+            })?;
+
+            let mut templated_email_job = (&*templated_email_job_storage.into_inner()).clone();
+
+            templated_email_job
+                .push(TemplatedEmailJob {
+                    destination: (&payload.new_email).to_string(),
+                    template: EmailTemplate::NewEmailVerification,
+                    template_data,
+                })
+                .await
+                .map_err(|error| {
+                    AppError::InternalError(format!("unable to push the job: {error:?}"))
+                })?;
 
             txn.commit().await?;
 
@@ -241,6 +307,21 @@ WHERE user_id = $1 AND type = $2
             result.get::<String, _>("description"),
             "You changed your e-mail address to <m>new@example.com</m>".to_string()
         );
+
+        // Should also insert an e-mail verification token.
+        let token = sqlx::query(
+            r#"
+SELECT EXISTS (
+    SELECT 1 FROM tokens
+    WHERE type = $1
+)
+"#,
+        )
+        .bind(TokenType::EmailVerification as i16)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(token.get::<bool, _>("exists"));
 
         Ok(())
     }

@@ -35,20 +35,19 @@ struct Response {
 }
 
 #[get("/v1/rsb_content")]
+#[tracing::instrument(
+    name = "GET /v1/rsb_content",
+    skip_all,
+    fields(
+        user_id = maybe_user.and_then(|user| user.id().ok()),
+    ),
+    err
+)]
 async fn get(
     data: web::Data<AppState>,
     maybe_user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    let mut user_id: Option<i64> = None;
-
-    if let Some(user) = maybe_user {
-        match user.id() {
-            Ok(id) => {
-                user_id = Some(id);
-            }
-            Err(_) => return Ok(HttpResponse::InternalServerError().finish()),
-        }
-    }
+    let user_id = maybe_user.and_then(|user| Some(user.id()?));
 
     let (stories, users, tags) = tokio::try_join!(
         get_rsb_content_stories(user_id, &data.db_pool),

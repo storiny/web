@@ -10,9 +10,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO tags (name)
-            VALUES ($1)
-            "#,
+INSERT INTO tags (name)
+VALUES ($1)
+"#,
         )
         .bind("some-tag".to_string())
         .execute(&mut *conn)
@@ -30,9 +30,9 @@ mod tests {
         for case in cases {
             let result = sqlx::query(
                 r#"
-            INSERT INTO tags (name)
-            VALUES ($1)
-            "#,
+INSERT INTO tags (name)
+VALUES ($1)
+"#,
             )
             .bind(case.to_string())
             .execute(&mut *conn)
@@ -52,9 +52,9 @@ mod tests {
         for case in cases {
             let result = sqlx::query(
                 r#"
-            INSERT INTO tags (name)
-            VALUES ($1)
-            "#,
+INSERT INTO tags (name)
+VALUES ($1)
+"#,
             )
             .bind(case.to_string())
             .execute(&mut *conn)
@@ -71,10 +71,10 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO tags (name)
-            VALUES ($1)
-            RETURNING id
-            "#,
+INSERT INTO tags (name)
+VALUES ($1)
+RETURNING id
+"#,
         )
         .bind("some-tag".to_string())
         .fetch_one(&mut *conn)
@@ -85,9 +85,9 @@ mod tests {
         // Insert a story tag
         sqlx::query(
             r#"
-            INSERT INTO story_tags (tag_id, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_tags (tag_id, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(result.get::<i64, _>("id"))
         .bind(2_i64)
@@ -97,9 +97,9 @@ mod tests {
         // Delete the story tag
         sqlx::query(
             r#"
-            DELETE FROM story_tags
-            WHERE tag_id = $1 AND story_id = $2
-            "#,
+DELETE FROM story_tags
+WHERE tag_id = $1 AND story_id = $2
+"#,
         )
         .bind(result.get::<i64, _>("id"))
         .bind(2_i64)
@@ -109,11 +109,11 @@ mod tests {
         // Tag should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM tags
-                WHERE id = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM tags
+    WHERE id = $1
+)
+"#,
         )
         .bind(result.get::<i64, _>("id"))
         .fetch_one(&mut *conn)
@@ -129,10 +129,10 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO tags (name)
-            VALUES ($1)
-            RETURNING id
-            "#,
+INSERT INTO tags (name)
+VALUES ($1)
+RETURNING id
+"#,
         )
         .bind("some-tag".to_string())
         .fetch_one(&mut *conn)
@@ -143,9 +143,9 @@ mod tests {
         // Insert a story tag
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_tags (tag_id, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_tags (tag_id, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(result.get::<i64, _>("id"))
         .bind(2_i64)
@@ -157,9 +157,9 @@ mod tests {
         // Delete the tag
         sqlx::query(
             r#"
-            DELETE FROM tags
-            WHERE id = $1
-            "#,
+DELETE FROM tags
+WHERE id = $1
+"#,
         )
         .bind(result.get::<i64, _>("id"))
         .execute(&mut *conn)
@@ -168,11 +168,11 @@ mod tests {
         // Story tag should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM story_tags
-                WHERE tag_id = $1 AND story_id = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM story_tags
+    WHERE tag_id = $1 AND story_id = $2
+)
+"#,
         )
         .bind(result.get::<i64, _>("id"))
         .bind(2_i64)
@@ -189,10 +189,10 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO tags (name)
-            VALUES ($1)
-            RETURNING id
-            "#,
+INSERT INTO tags (name)
+VALUES ($1)
+RETURNING id
+"#,
         )
         .bind("some-tag".to_string())
         .fetch_one(&mut *conn)
@@ -203,9 +203,9 @@ mod tests {
         // Insert a tag follower
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO tag_followers (tag_id, user_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO tag_followers (tag_id, user_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(result.get::<i64, _>("id"))
         .bind(1_i64)
@@ -217,9 +217,9 @@ mod tests {
         // Delete the tag
         sqlx::query(
             r#"
-            DELETE FROM tags
-            WHERE id = $1
-            "#,
+DELETE FROM tags
+WHERE id = $1
+"#,
         )
         .bind(result.get::<i64, _>("id"))
         .execute(&mut *conn)
@@ -228,11 +228,11 @@ mod tests {
         // Tag follower should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM tag_followers
-                WHERE tag_id = $1 AND user_id = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM tag_followers
+    WHERE tag_id = $1 AND user_id = $2
+)
+"#,
         )
         .bind(result.get::<i64, _>("id"))
         .bind(1_i64)

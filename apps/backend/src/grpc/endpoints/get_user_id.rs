@@ -17,6 +17,10 @@ use tonic::{
     Response,
     Status,
 };
+use tracing::{
+    debug,
+    error,
+};
 
 #[derive(Debug, Deserialize)]
 struct CacheResponse {
@@ -24,35 +28,46 @@ struct CacheResponse {
 }
 
 /// Returns the user's ID using the session token.
+#[tracing::instrument(name = "GRPC get_user_id", skip_all)]
 pub async fn get_user_id(
     client: &GrpcService,
     request: Request<GetUserIdRequest>,
 ) -> Result<Response<GetUserIdResponse>, Status> {
     let secret_key = Key::from(client.config.session_secret_key.as_bytes());
-    // Session key is in the format `user_id:token`
+    // Session key is in the format `user_id:token`.
     let session_key = extract_session_key_from_cookie(&request.into_inner().token, &secret_key)
         .ok_or(Status::not_found("Invalid token"))?;
     let cache_key = format!("{}:{}", RedisNamespace::Session.to_string(), session_key);
 
-    let mut conn = client
-        .redis_pool
-        .get()
-        .await
-        .map_err(|_| Status::internal("Redis pool error"))?;
+    let mut conn = client.redis_pool.get().await.map_err(|error| {
+        error!("unable to acquire a connection from the Redis pool: {error:?}");
+
+        Status::internal("Redis error")
+    })?;
 
     let result: Option<String> = cmd("GET")
         .arg(&[cache_key])
         .query_async(&mut conn)
         .await
-        .map_err(|_| Status::internal("Redis command error"))?;
+        .map_err(|error| {
+            error!("unable to fetch the session data: {error:?}");
 
-    // Invalid session
+            Status::internal("Redis error")
+        })?;
+
+    // Missing session.
     if result.is_none() {
+        debug!("no session found in the cache");
+
         return Err(Status::not_found("Session not found"));
     }
 
     let user_id = serde_json::from_str::<CacheResponse>(&result.unwrap())
-        .map_err(|_| Status::internal("Unable to deserialize the session state"))?
+        .map_err(|error| {
+            error!("unable to deserialize the session data: {error:?}");
+
+            Status::internal("Unable to deserialize the session state")
+        })?
         .user_id;
 
     Ok(Response::new(GetUserIdResponse {

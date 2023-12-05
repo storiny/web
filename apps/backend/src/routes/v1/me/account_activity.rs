@@ -77,36 +77,44 @@ fn get_description_for_activity(activity: &AccountActivity) -> String {
 }
 
 #[get("/v1/me/account-activity")]
+#[tracing::instrument(
+    name = "GET /v1/me/account-activity",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        page = query.page
+    ),
+    err
+)]
 async fn get(
     query: QsQuery<QueryParams>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            let page = query.page.unwrap_or(1) - 1;
-            let mut result = sqlx::query_as::<_, AccountActivity>(
-                r#"
-                SELECT id, type, description, created_at FROM account_activities
-                WHERE user_id = $1
-                ORDER BY created_at DESC
-                LIMIT $2 OFFSET $3
-                "#,
-            )
-            .bind(user_id)
-            .bind(10_i16)
-            .bind((page * 10) as i16)
-            .fetch_all(&data.db_pool)
-            .await?;
+    let user_id = user.id()?;
 
-            for item in &mut result {
-                (*item).description = Some(get_description_for_activity(&item));
-            }
+    let page = query.page.unwrap_or(1) - 1;
 
-            Ok(HttpResponse::Ok().json(result))
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let mut result = sqlx::query_as::<_, AccountActivity>(
+        r#"
+SELECT id, type, description, created_at
+FROM account_activities
+WHERE user_id = $1
+ORDER BY created_at DESC
+LIMIT $2 OFFSET $3
+"#,
+    )
+    .bind(&user_id)
+    .bind(10_i16)
+    .bind((page * 10) as i16)
+    .fetch_all(&data.db_pool)
+    .await?;
+
+    for item in &mut result {
+        (*item).description = Some(get_description_for_activity(&item));
     }
+
+    Ok(HttpResponse::Ok().json(result))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -139,10 +147,10 @@ mod tests {
         assert!(json.is_ok());
 
         let json_data = json.unwrap();
-        // By default, the user will have `Account created` activity
+        // By default, the user will have `Account created` activity.
         let creation_activity = &json_data[0];
 
-        // Should return description generated at the application layer
+        // Should return description generated at the application layer.
         assert!(
             creation_activity
                 .description
@@ -161,12 +169,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Insert an account activity with a description
+        // Insert an account activity with a description.
         sqlx::query(
             r#"
-            INSERT INTO account_activities(type, description, user_id)
-            VALUES ($1, $2, $3)
-            "#,
+INSERT INTO account_activities(type, description, user_id)
+VALUES ($1, $2, $3)
+"#,
         )
         .bind(AccountActivityType::Password as i16)
         .bind("You updated your password")

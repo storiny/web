@@ -24,6 +24,10 @@ use sqlx::{
     Row,
 };
 use std::sync::Arc;
+use tracing::{
+    debug,
+    info,
+};
 use uuid::Uuid;
 
 pub const CLEANUP_S3_JOB_NAME: &'static str = "j:cleanup:s3";
@@ -63,6 +67,8 @@ pub async fn clean_assets(
         ))));
     }
 
+    debug!("starting to clean documents at index: {index:?}");
+
     let has_more_rows: bool;
 
     {
@@ -74,20 +80,18 @@ pub async fn clean_assets(
 
         let result = sqlx::query(
             r#"
-            DELETE
-            FROM
-                assets
-            WHERE
-                id IN (
-                    SELECT id
-                    FROM assets
-                    WHERE
-                       user_id IS NULL
-                    ORDER BY created_at
-                    LIMIT $1
-                )
-            RETURNING key
-            "#,
+DELETE FROM assets
+WHERE
+    id IN (
+        SELECT id
+        FROM assets
+        WHERE
+           user_id IS NULL
+        ORDER BY created_at
+        LIMIT $1
+    )
+RETURNING key
+"#,
         )
         // Return a maximum of 999 rows per invocation. (+1) is added to determine whether
         // there are more rows to return.
@@ -104,9 +108,11 @@ pub async fn clean_assets(
         .map_err(Box::new)
         .map_err(|err| JobError::Failed(err))?;
 
+        debug!("received {} rows from the database", result.len());
+
         has_more_rows = result.len() as u32 > CHUNK_SIZE;
 
-        // Delete objects from S3 if the list is non-empty
+        // Delete objects from S3 if the list is non-empty.
         if !result.is_empty() {
             let delete = Delete::builder()
                 .set_objects(Some(result))
@@ -159,6 +165,8 @@ pub async fn clean_documents(
         ))));
     }
 
+    debug!("starting to clean documents at index: {index:?}");
+
     let has_more_rows: bool;
 
     {
@@ -170,20 +178,18 @@ pub async fn clean_documents(
 
         let result = sqlx::query(
             r#"
-            DELETE
-            FROM
-                documents
-            WHERE
-                id IN (
-                    SELECT id
-                    FROM documents
-                    WHERE
-                       story_id IS NULL
-                    ORDER BY created_at
-                    LIMIT $1
-                )
-            RETURNING key
-            "#,
+DELETE FROM documents
+WHERE
+    id IN (
+        SELECT id
+        FROM documents
+        WHERE
+           story_id IS NULL
+        ORDER BY created_at
+        LIMIT $1
+    )
+RETURNING key
+"#,
         )
         // Return a maximum of 999 rows per invocation. (+1) is added to determine whether
         // there are more rows to return.
@@ -200,9 +206,11 @@ pub async fn clean_documents(
         .map_err(Box::new)
         .map_err(|err| JobError::Failed(err))?;
 
+        debug!("received {} rows from the database", result.len());
+
         has_more_rows = result.len() as u32 > CHUNK_SIZE;
 
-        // Delete objects from S3 if the list is non-empty
+        // Delete objects from S3 if the list is non-empty.
         if !result.is_empty() {
             let delete = Delete::builder()
                 .set_objects(Some(result))
@@ -236,8 +244,9 @@ pub async fn clean_documents(
 
 /// Deletes stale rows from the `assets` and the `documents` table, along with the attached objects
 /// from the S3 bucket.
+#[tracing::instrument(name = "JOB cleanup_s3", skip_all, ret, err)]
 pub async fn cleanup_s3(_: S3CleanupJob, ctx: JobContext) -> Result<(), JobError> {
-    log::info!("Starting S3 cleanup");
+    info!("starting S3 cleanup");
 
     let state = ctx.data::<Arc<SharedJobState>>()?;
 
@@ -247,7 +256,7 @@ pub async fn cleanup_s3(_: S3CleanupJob, ctx: JobContext) -> Result<(), JobError
     )
     .await?;
 
-    log::info!("Finished S3 cleanup");
+    info!("finished S3 cleanup");
 
     Ok(())
 }
@@ -264,7 +273,6 @@ mod tests {
         },
         utils::delete_s3_objects::delete_s3_objects,
     };
-
     use sqlx::PgPool;
     use storiny_macros::test_context;
 
@@ -300,9 +308,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO assets (key, hex, height, width)
-            SELECT UNNEST($1::UUID[]), $2, $3, $4
-            "#,
+INSERT INTO assets (key, hex, height, width)
+SELECT UNNEST($1::UUID[]), $2, $3, $4
+"#,
         )
         .bind(&object_keys[..])
         .bind("000000")
@@ -314,7 +322,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), object_keys.len() as u64);
 
-        // Upload empty objects to S3
+        // Upload empty objects to S3.
         let mut put_futures = vec![];
 
         for key in object_keys {
@@ -346,9 +354,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO documents (key)
-            SELECT UNNEST($1::UUID[])
-            "#,
+INSERT INTO documents (key)
+SELECT UNNEST($1::UUID[])
+"#,
         )
         .bind(&object_keys[..])
         .execute(pg_pool)
@@ -357,7 +365,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), object_keys.len() as u64);
 
-        // Upload empty objects to S3
+        // Upload empty objects to S3.
         let mut put_futures = vec![];
 
         for key in object_keys {
@@ -392,7 +400,7 @@ mod tests {
         ) -> sqlx::Result<()> {
             let s3_client = &ctx.s3_client;
 
-            // Generate some assets
+            // Generate some assets.
             generate_dummy_assets(5, &pool, s3_client).await;
 
             let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
@@ -400,14 +408,14 @@ mod tests {
 
             assert!(result.is_ok());
 
-            // Assets should not be present in the database
+            // Assets should not be present in the database.
             let result = sqlx::query(r#"SELECT 1 FROM assets"#)
                 .fetch_all(&pool)
                 .await?;
 
             assert!(result.is_empty());
 
-            // Objects should not be present in the bucket
+            // Objects should not be present in the bucket.
             let object_count = count_s3_objects(&s3_client, S3_UPLOADS_BUCKET, None, None)
                 .await
                 .unwrap();
@@ -425,7 +433,7 @@ mod tests {
         ) -> sqlx::Result<()> {
             let s3_client = &ctx.s3_client;
 
-            // Generate a large number of assets
+            // Generate a large number of assets.
             generate_dummy_assets(2500, &pool, s3_client).await;
 
             let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
@@ -433,14 +441,14 @@ mod tests {
 
             assert!(result.is_ok());
 
-            // Assets should not be present in the database
+            // Assets should not be present in the database.
             let result = sqlx::query(r#"SELECT 1 FROM assets"#)
                 .fetch_all(&pool)
                 .await?;
 
             assert!(result.is_empty());
 
-            // Objects should not be present in the bucket
+            // Objects should not be present in the bucket.
             let object_count = count_s3_objects(&s3_client, S3_UPLOADS_BUCKET, None, None)
                 .await
                 .unwrap();
@@ -458,19 +466,19 @@ mod tests {
         ) -> sqlx::Result<()> {
             let s3_client = &ctx.s3_client;
 
-            // Generate a single asset
+            // Generate a single asset.
             generate_dummy_assets(1, &pool, s3_client).await;
 
-            // Update the user_id of the asset
+            // Update the user_id of the asset.
             let result = sqlx::query(
                 r#"
-            WITH selected_asset AS (
-                SELECT id FROM assets
-            )
-            UPDATE assets
-            SET user_id = $1
-            WHERE id = (SELECT id FROM selected_asset)
-            "#,
+WITH selected_asset AS (
+    SELECT id FROM assets
+)
+UPDATE assets
+SET user_id = $1
+WHERE id = (SELECT id FROM selected_asset)
+"#,
             )
             .bind(1_i64)
             .execute(&pool)
@@ -483,14 +491,14 @@ mod tests {
 
             assert!(result.is_ok());
 
-            // Asset should still be present in the database
+            // Asset should still be present in the database.
             let result = sqlx::query(r#"SELECT 1 FROM assets"#)
                 .fetch_all(&pool)
                 .await?;
 
             assert_eq!(result.len(), 1);
 
-            // Object should still be present in the bucket
+            // Object should still be present in the bucket.
             let object_count = count_s3_objects(&s3_client, S3_UPLOADS_BUCKET, None, None)
                 .await
                 .unwrap();
@@ -510,7 +518,7 @@ mod tests {
         ) -> sqlx::Result<()> {
             let s3_client = &ctx.s3_client;
 
-            // Generate some documents
+            // Generate some documents.
             generate_dummy_documents(5, &pool, s3_client).await;
 
             let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
@@ -518,14 +526,14 @@ mod tests {
 
             assert!(result.is_ok());
 
-            // Documents should not be present in the database
+            // Documents should not be present in the database.
             let result = sqlx::query(r#"SELECT 1 FROM documents"#)
                 .fetch_all(&pool)
                 .await?;
 
             assert!(result.is_empty());
 
-            // Objects should not be present in the bucket
+            // Objects should not be present in the bucket.
             let object_count = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
                 .await
                 .unwrap();
@@ -543,7 +551,7 @@ mod tests {
         ) -> sqlx::Result<()> {
             let s3_client = &ctx.s3_client;
 
-            // Generate a large number of documents
+            // Generate a large number of documents.
             generate_dummy_documents(2500, &pool, s3_client).await;
 
             let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
@@ -551,14 +559,14 @@ mod tests {
 
             assert!(result.is_ok());
 
-            // Documents should not be present in the database
+            // Documents should not be present in the database.
             let result = sqlx::query(r#"SELECT 1 FROM documents"#)
                 .fetch_all(&pool)
                 .await?;
 
             assert!(result.is_empty());
 
-            // Objects should not be present in the bucket
+            // Objects should not be present in the bucket.
             let object_count = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
                 .await
                 .unwrap();
@@ -588,7 +596,7 @@ mod tests {
 
             assert!(result.is_ok());
 
-            // Document should still be present in the database
+            // Document should still be present in the database.
             let result = sqlx::query(r#"SELECT 1 FROM documents"#)
                 .fetch_all(&pool)
                 .await?;

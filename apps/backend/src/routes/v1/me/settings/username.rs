@@ -12,6 +12,7 @@ use crate::{
     middlewares::identity::identity::Identity,
     AppState,
 };
+use actix_http::StatusCode;
 use actix_web::{
     patch,
     web,
@@ -41,115 +42,116 @@ struct Request {
 }
 
 #[patch("/v1/me/settings/username")]
+#[tracing::instrument(
+    name = "PATCH /v1/me/settings/username",
+    skip_all,
+    fields(
+        user = user.id().ok(),
+        new_username = %payload.new_username
+    ),
+    err
+)]
 async fn patch(
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            let db_user = sqlx::query(
-                r#"
-                SELECT password FROM users
-                WHERE id = $1
-                "#,
-            )
-            .bind(user_id)
-            .fetch_one(&data.db_pool)
-            .await?;
+    let user_id = user.id()?;
 
-            let user_password = db_user.get::<Option<String>, _>("password");
+    let pg_pool = &data.db_pool;
+    let mut txn = pg_pool.begin().await?;
 
-            if user_password.is_none() {
-                return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
-                    "You need to set a password to change your username",
-                )));
-            }
+    let user = sqlx::query(
+        r#"
+SELECT password FROM users
+WHERE id = $1
+"#,
+    )
+    .bind(&user_id)
+    .fetch_one(&mut *txn)
+    .await?;
 
-            match PasswordHash::new(&user_password.unwrap()) {
-                Ok(hash) => {
-                    match Argon2::default()
-                        .verify_password(&payload.current_password.as_bytes(), &hash)
-                    {
-                        Ok(_) => {
-                            let slugged_username =
-                                slugify!(&payload.new_username, separator = "_", max_length = 24);
+    let user_password = user.get::<Option<String>, _>("password");
 
-                            match sqlx::query(
-                                r#"
-                                WITH
-                                    updated_user AS (
-                                        UPDATE users
-                                        SET
-                                            username = $2,
-                                            username_modified_at = NOW()
-                                        WHERE id = $1
-                                    )
-                                INSERT
-                                INTO
-                                    account_activities (type, description, user_id)
-                                VALUES (
-                                    $3,
-                                    'You changed your username to <m>' || '@' || $2 || '</m>',
-                                    $1
-                                )
-                                "#,
-                            )
-                            .bind(user_id)
-                            .bind(slugged_username)
-                            .bind(AccountActivityType::Username as i16)
-                            .execute(&data.db_pool)
-                            .await
-                            {
-                                Ok(_) => Ok(HttpResponse::NoContent().finish()),
-                                Err(err) => {
-                                    if let Some(db_err) = err.into_database_error() {
-                                        match db_err.kind() {
-                                            // Check whether the new username is already in use
-                                            sqlx::error::ErrorKind::UniqueViolation => {
-                                                Ok(HttpResponse::Conflict().json(
-                                                    FormErrorResponse::new(vec![(
-                                                        "new_username",
-                                                        "This username is already in use",
-                                                    )]),
-                                                ))
-                                            }
-                                            _ => {
-                                                // Check if the username is on a cooldown period
-                                                if db_err.code().unwrap_or_default()
-                                                    == SqlState::UsernameCooldown.to_string()
-                                                {
-                                                    Ok(HttpResponse::TooManyRequests().json(
-                                                        FormErrorResponse::new(vec![
-                                                                (
-                                                                    "new_username",
-                                                                    "You can only change your username once a month"
-                                                                )
-                                                        ]),
-                                                    ))
-                                                } else {
-                                                    Ok(HttpResponse::InternalServerError().finish())
-                                                }
-                                            }
-                                        }
-                                    } else {
-                                        Ok(HttpResponse::InternalServerError().finish())
-                                    }
-                                }
-                            }
-                        }
-                        Err(_) => {
-                            Ok(HttpResponse::Forbidden().json(FormErrorResponse::new(vec![(
-                                "current_password",
-                                "Invalid password",
-                            )])))
-                        }
-                    }
-                }
-                Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-            }
+    if user_password.is_none() {
+        return Err(ToastErrorResponse::new(
+            None,
+            "You need to set a password to change your username",
+        )
+        .into());
+    }
+
+    // Validate the current password.
+    {
+        let password_hash = PasswordHash::new(&user_password.unwrap())
+            .map_err(|error| AppError::InternalError(error.to_string()))?;
+
+        Argon2::default()
+            .verify_password(&payload.current_password.as_bytes(), &password_hash)
+            .map_err(|_| {
+                AppError::FormError(FormErrorResponse::new(
+                    Some(StatusCode::FORBIDDEN),
+                    vec![("current_password", "Invalid password")],
+                ))
+            })?;
+    }
+
+    let slugged_username = slugify!(&payload.new_username, separator = "_", max_length = 24);
+
+    match sqlx::query(
+        r#"
+WITH updated_user AS (
+    UPDATE users
+    SET
+        username = $2,
+        username_modified_at = NOW()
+    WHERE id = $1
+)
+INSERT INTO account_activities (type, description, user_id)
+VALUES (
+    $3,
+    'You changed your username to <m>' || '@' || $2 || '</m>',
+    $1
+)
+"#,
+    )
+    .bind(&user_id)
+    .bind(&slugged_username)
+    .bind(AccountActivityType::Username as i16)
+    .execute(&mut *txn)
+    .await
+    {
+        Ok(_) => {
+            txn.commit().await?;
+
+            Ok(HttpResponse::NoContent().finish())
         }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+        Err(error) => {
+            if let Some(db_err) = error.as_database_error() {
+                // Check whether the new username is already in use.
+                if matches!(db_err.kind(), sqlx::error::ErrorKind::UniqueViolation) {
+                    return Err(AppError::FormError(FormErrorResponse::new(
+                        Some(StatusCode::CONFLICT),
+                        vec![("new_username", "This username is already in use")],
+                    )));
+                }
+
+                let error_code = db_err.code().unwrap_or_default();
+
+                // Check if the username is on a cooldown period.
+                if error_code == SqlState::UsernameCooldown.to_string() {
+                    return Err(AppError::FormError(FormErrorResponse::new(
+                        Some(StatusCode::TOO_MANY_REQUESTS),
+                        vec![(
+                            "new_username",
+                            "You can only change your username once a month",
+                        )],
+                    )));
+                }
+            }
+
+            Err(AppError::SqlxError(error))
+        }
     }
 }
 
@@ -179,7 +181,7 @@ mod tests {
     };
     use time::OffsetDateTime;
 
-    /// Returns sample hashed password
+    /// Returns a sample hashed password.
     fn get_sample_password() -> (String, String) {
         let password = "sample";
         let salt = SaltString::generate(&mut OsRng);
@@ -197,12 +199,12 @@ mod tests {
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, true, Some(1_i64)).await;
         let (password_hash, password) = get_sample_password();
 
-        // Insert the user
+        // Insert the user.
         let result = sqlx::query(
             r#"
-            INSERT INTO users (id, name, username, email, password)
-            VALUES ($1, $2, $3, $4, $5)
-            "#,
+INSERT INTO users (id, name, username, email, password)
+VALUES ($1, $2, $3, $4, $5)
+"#,
         )
         .bind(user_id.unwrap())
         .bind("Sample user")
@@ -214,7 +216,6 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Change the username
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
             .uri("/v1/me/settings/username")
@@ -227,12 +228,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // Username should get updated in the database
+        // Username should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT username, username_modified_at FROM users
-            WHERE id = $1
-            "#,
+SELECT username, username_modified_at FROM users
+WHERE id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
@@ -248,12 +249,12 @@ mod tests {
                 .is_some()
         );
 
-        // Should also insert an account activity
+        // Should also insert an account activity.
         let result = sqlx::query(
             r#"
-            SELECT description FROM account_activities
-            WHERE user_id = $1 AND type = $2
-            "#,
+SELECT description FROM account_activities
+WHERE user_id = $1 AND type = $2
+"#,
         )
         .bind(user_id.unwrap())
         .bind(AccountActivityType::Username as i16)
@@ -269,7 +270,7 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_updating_username_for_a_user_without_password(
+    async fn can_reject_an_update_username_request_for_a_user_without_password(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(patch, pool, true, false, None).await;
@@ -292,17 +293,20 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_updating_username_for_invalid_password(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_an_update_username_request_for_an_invalid_password(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, true, Some(1_i64)).await;
+
         let (password_hash, _) = get_sample_password();
 
-        // Insert the user
+        // Insert the user.
         let result = sqlx::query(
             r#"
-            INSERT INTO users (id, name, username, email, password)
-            VALUES ($1, $2, $3, $4, $5)
-            "#,
+INSERT INTO users (id, name, username, email, password)
+VALUES ($1, $2, $3, $4, $5)
+"#,
         )
         .bind(user_id.unwrap())
         .bind("Sample user")
@@ -331,17 +335,20 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_updating_username_for_duplicate_username(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_an_update_username_request_for_a_duplicate_username(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, true, Some(1_i64)).await;
+
         let (password_hash, password) = get_sample_password();
 
-        // Insert the user
+        // Insert the user.
         let result = sqlx::query(
             r#"
-            INSERT INTO users (id, name, username, email, password)
-            VALUES ($1, $2, $3, $4, $5)
-            "#,
+INSERT INTO users (id, name, username, email, password)
+VALUES ($1, $2, $3, $4, $5)
+"#,
         )
         .bind(user_id.unwrap())
         .bind("Sample user 1")
@@ -353,12 +360,12 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Insert another user
+        // Insert another user.
         let result = sqlx::query(
             r#"
-            INSERT INTO users (id, name, username, email)
-            VALUES ($1, $2, $3, $4)
-            "#,
+INSERT INTO users (id, name, username, email)
+VALUES ($1, $2, $3, $4)
+"#,
         )
         .bind(2_i64)
         .bind("Sample user 2")
@@ -386,14 +393,14 @@ mod tests {
         )
         .await;
 
-        // Should not insert an account activity
+        // Should not insert an account activity.
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM account_activities
-                WHERE user_id = $1 AND type = $2
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM account_activities
+    WHERE user_id = $1 AND type = $2
+)
+"#,
         )
         .bind(user_id.unwrap())
         .bind(AccountActivityType::Username as i16)
@@ -406,17 +413,20 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn can_reject_updating_username_on_cooldown_period(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_an_update_username_request_for_an_account_on_cooldown_period(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, true, Some(1_i64)).await;
+
         let (password_hash, password) = get_sample_password();
 
-        // Insert the user with recent `username_modified_at`
+        // Insert the user with recent `username_modified_at`.
         let result = sqlx::query(
             r#"
-            INSERT INTO users (id, name, username, email, password, username_modified_at)
-            VALUES ($1, $2, $3, $4, $5, NOW())
-            "#,
+INSERT INTO users (id, name, username, email, password, username_modified_at)
+VALUES ($1, $2, $3, $4, $5, NOW())
+"#,
         )
         .bind(user_id.unwrap())
         .bind("Sample user 1")

@@ -26,6 +26,10 @@ use sitemap_rs::{
     sitemap_index::SitemapIndex,
 };
 use std::sync::Arc;
+use tracing::{
+    debug,
+    info,
+};
 
 pub const SITEMAP_JOB_NAME: &'static str = "j:sitemap";
 
@@ -43,11 +47,13 @@ impl Job for SitemapJob {
 }
 
 /// Regenerates all the sitemaps.
+
+#[tracing::instrument(name = "JOB refresh_sitemap", skip_all, ret, err)]
 pub async fn refresh_sitemap(
     _: SitemapJob,
     ctx: JobContext,
 ) -> Result<GenerateSitemapResponse, JobError> {
-    log::info!("Attempting to refresh sitemaps");
+    info!("attempting to refresh sitemaps");
 
     let state = ctx.data::<Arc<SharedJobState>>()?;
     let s3_client = &state.s3_client;
@@ -56,7 +62,7 @@ pub async fn refresh_sitemap(
         .map_err(|err| Box::from(err.to_string()))
         .map_err(|err| JobError::Failed(err))?;
 
-    log::trace!("Deleted {} old sitemap files", deleted_sitemaps);
+    debug!("deleted {} old sitemap files", deleted_sitemaps);
 
     // Generate individual sitemap files.
 
@@ -105,7 +111,7 @@ pub async fn refresh_sitemap(
         + user_sitemap_result.url_count
         + tag_sitemap_result.url_count;
 
-    log::trace!(
+    debug!(
         r#"
         Regenerated sitemap files:
         - {} preset sitemap file(s) with {} entrie(s)
@@ -183,6 +189,11 @@ pub async fn refresh_sitemap(
         .map_err(Box::new)
         .map_err(|err| JobError::Failed(err))?;
 
+    debug!(
+        "sitemap index size after compression: {} bytes",
+        compressed_bytes.len()
+    );
+
     s3_client
         .put_object()
         .bucket(S3_SITEMAPS_BUCKET)
@@ -196,7 +207,7 @@ pub async fn refresh_sitemap(
         .map_err(|error| Box::new(error.into_service_error()))
         .map_err(|error| JobError::Failed(error))?;
 
-    log::info!("Regenerate sitemap index file");
+    info!("regenerate sitemap index file");
 
     Ok(GenerateSitemapResponse {
         file_count: total_sitemap_file_count + 1, // Add one for the index file itself
@@ -216,7 +227,6 @@ mod tests {
         },
         S3Client,
     };
-
     use sqlx::PgPool;
     use storiny_macros::test_context;
 
@@ -248,13 +258,13 @@ mod tests {
             let s3_client = &ctx.s3_client;
             let ctx = get_job_ctx_for_test(pool, Some(s3_client.clone())).await;
             let result = refresh_sitemap(SitemapJob { 0: Utc::now() }, ctx).await;
-            // 1 preset file + 1 story file + 1 user file + 1 tag file + 1 index sitemap file
+            // 1 preset file + 1 story file + 1 user file + 1 tag file + 1 index sitemap file.
             let expected_sitemap_file_count = 5;
 
             assert!(result.is_ok());
             assert_eq!(result.unwrap().file_count, expected_sitemap_file_count);
 
-            // Sitemaps should be present in the bucket
+            // Sitemaps should be present in the bucket.
             let sitemap_count = count_s3_objects(&s3_client, S3_SITEMAPS_BUCKET, None, None)
                 .await
                 .unwrap();
@@ -268,13 +278,13 @@ mod tests {
             let s3_client = &ctx.s3_client;
             let ctx = get_job_ctx_for_test(pool, Some(s3_client.clone())).await;
             let result = refresh_sitemap(SitemapJob { 0: Utc::now() }, ctx).await;
-            // 1 preset file + 3 story files + 3 user files + 3 tag files + 1 index sitemap file
+            // 1 preset file + 3 story files + 3 user files + 3 tag files + 1 index sitemap file.
             let expected_sitemap_file_count = 11;
 
             assert!(result.is_ok());
             assert_eq!(result.unwrap().file_count, expected_sitemap_file_count);
 
-            // Sitemaps should be present in the bucket
+            // Sitemaps should be present in the bucket.
             let sitemap_count = count_s3_objects(&s3_client, S3_SITEMAPS_BUCKET, None, None)
                 .await
                 .unwrap();

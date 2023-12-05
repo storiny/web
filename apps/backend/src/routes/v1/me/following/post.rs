@@ -150,7 +150,6 @@ mod tests {
         http::StatusCode,
         test,
     };
-
     use sqlx::{
         PgPool,
         Row,

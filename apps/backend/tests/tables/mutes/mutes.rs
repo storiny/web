@@ -8,9 +8,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO mutes (muter_id, muted_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO mutes (muter_id, muted_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -31,10 +31,10 @@ mod tests {
         // Soft-delete the muter user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -42,16 +42,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO mutes (muter_id, muted_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO mutes (muter_id, muted_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -72,10 +72,10 @@ mod tests {
         // Deactivate the muter user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -83,16 +83,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO mutes (muter_id, muted_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO mutes (muter_id, muted_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -113,10 +113,10 @@ mod tests {
         // Soft-delete the muted user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -124,16 +124,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO mutes (muter_id, muted_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO mutes (muter_id, muted_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -154,10 +154,10 @@ mod tests {
         // Deactivate the muted user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -165,16 +165,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO mutes (muter_id, muted_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO mutes (muter_id, muted_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()

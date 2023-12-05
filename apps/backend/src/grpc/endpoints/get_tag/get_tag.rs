@@ -16,6 +16,7 @@ use tonic::{
     Response,
     Status,
 };
+use tracing::error;
 
 #[derive(Debug, FromRow)]
 struct Tag {
@@ -29,91 +30,99 @@ struct Tag {
 }
 
 /// Returns the tag object.
+#[tracing::instrument(
+    name = "GRPC get_tag",
+    skip_all,
+    fields(
+        user_id = tracing::field::Empty,
+        request
+    )
+)]
 pub async fn get_tag(
     client: &GrpcService,
     request: Request<GetTagRequest>,
 ) -> Result<Response<GetTagResponse>, Status> {
     let request = request.into_inner();
     let tag_name = request.name;
-    let current_user_id = {
-        if let Some(user_id) = request.current_user_id {
-            let value = user_id
+    let current_user_id = request.current_user_id.and_then(|user_id| {
+        Some(
+            user_id
                 .parse::<i64>()
-                .map_err(|_| Status::invalid_argument("`current_user_id` is invalid"))?;
-
-            Some(value)
-        } else {
-            None
-        }
-    };
+                .map_err(|_| Status::invalid_argument("`current_user_id` is invalid"))?,
+        )
+    });
 
     let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
         r#"
-        SELECT
-            t.id,
-            t.name,
-            t.story_count,
-            t.follower_count,
-            t.created_at,
-        "#,
+SELECT
+    t.id,
+    t.name,
+    t.story_count,
+    t.follower_count,
+    t.created_at,
+"#,
     );
 
     query_builder.push(if current_user_id.is_some() {
         r#"
-        -- Boolean flags
-        "t->is_following" IS NOT NULL AS "is_following"
-        "#
+-- Boolean flags
+"t->is_following" IS NOT NULL AS "is_following"
+"#
     } else {
         r#"
-        -- Boolean flags
-        FALSE AS "is_following"
-        "#
+-- Boolean flags
+FALSE AS "is_following"
+"#
     });
 
-    query_builder.push(
-        r#"
-        FROM tags t
-        "#,
-    );
+    query_builder.push(r#" FROM tags t "#);
 
     if current_user_id.is_some() {
         query_builder.push(
             r#"
-            -- Boolean following flag
-            LEFT OUTER JOIN tag_followers AS "t->is_following"
-                ON "t->is_following".tag_id = t.id
-                    AND "t->is_following".user_id = $2
-                    AND "t->is_following".deleted_at IS NULL
-            "#,
+-- Boolean following flag
+LEFT OUTER JOIN tag_followers AS "t->is_following"
+    ON "t->is_following".tag_id = t.id
+    AND "t->is_following".user_id = $2
+    AND "t->is_following".deleted_at IS NULL
+"#,
         );
     }
 
     query_builder.push(
         r#"
-        WHERE
-            t.name = $1
-        GROUP BY
-            t.id
-        "#,
+WHERE
+    t.name = $1
+GROUP BY
+    t.id
+"#,
     );
+
+    if current_user_id.is_some() {
+        query_builder.push(",");
+        query_builder.push(r#" "t->is_following" "#);
+    }
 
     let mut query_result = query_builder.build_query_as::<Tag>().bind(tag_name);
 
     if let Some(user_id) = current_user_id {
+        tracing::Span::current().record("user_id", &user_id);
+
         query_result = query_result.bind(user_id);
     }
 
-    let result = query_result.fetch_one(&client.db_pool).await;
+    let tag = query_result
+        .fetch_one(&client.db_pool)
+        .await
+        .map_err(|error| {
+            if matches!(error, sqlx::Error::RowNotFound) {
+                Status::not_found("Tag not found")
+            } else {
+                error!("unable to fetch the tag: {error:?}");
 
-    if let Err(ref err) = result {
-        if matches!(err, sqlx::Error::RowNotFound) {
-            return Err(Status::not_found("Tag not found"));
-        }
-
-        return Err(Status::internal("Database error"));
-    }
-
-    let tag = result.unwrap();
+                Status::internal("Database error")
+            }
+        })?;
 
     Ok(Response::new(GetTagResponse {
         id: tag.id.to_string(),
@@ -148,6 +157,10 @@ mod tests {
                     .await;
 
                 assert!(response.is_ok());
+
+                let response = response.unwrap().into_inner();
+
+                assert!(!response.is_following);
             }),
         )
         .await;
@@ -167,6 +180,54 @@ mod tests {
                     .await;
 
                 assert!(response.is_ok());
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_tag"))]
+    async fn can_return_is_following_flag_for_tag_when_logged_in(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                let response = client
+                    .get_tag(Request::new(GetTagRequest {
+                        name: "sample".to_string(),
+                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be false initially.
+                assert!(!response.is_following);
+
+                // Follow the tag.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO tag_followers (user_id, tag_id)
+VALUES ($1, $2)
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(2_i64)
+                .execute(&pool)
+                .await?;
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_tag(Request::new(GetTagRequest {
+                        name: "sample".to_string(),
+                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be true.
+                assert!(response.is_following);
             }),
         )
         .await;

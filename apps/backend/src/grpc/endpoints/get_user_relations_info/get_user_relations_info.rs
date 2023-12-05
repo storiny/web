@@ -11,8 +11,16 @@ use tonic::{
     Response,
     Status,
 };
+use tracing::error;
 
 /// Returns the relations details for a user.
+#[tracing::instrument(
+    name = "GRPC get_user_relations_info",
+    skip_all,
+    fields(
+        user_id = tracing::field::Empty
+    )
+)]
 pub async fn get_user_relations_info(
     client: &GrpcService,
     request: Request<GetUserRelationsInfoRequest>,
@@ -23,53 +31,55 @@ pub async fn get_user_relations_info(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
+    tracing::Span::current().record("user_id", &user_id);
+
     let result = sqlx::query(
         r#"
-        SELECT
-            -- Follower count
-            (SELECT
-                 COUNT(*)
-             FROM
-                 relations
-             WHERE
-                   followed_id = $1
-               AND deleted_at IS NULL
-            ) AS "follower_count",
-            -- Following count
-            (SELECT
-                 COUNT(*)
-             FROM
-                 relations
-             WHERE
-                   follower_id = $1
-               AND deleted_at IS NULL
-            ) AS "following_count",
-            -- Friend count
-            (SELECT
-                 COUNT(*)
-             FROM
-                 friends
-             WHERE
-                 (transmitter_id = $1 OR receiver_id = $1)
-             AND accepted_at IS NOT NULL  
-             AND deleted_at IS NULL
-            ) AS "friend_count",
-            -- Pending friend request count
-            (SELECT
-                 COUNT(*)
-             FROM
-                 friends
-             WHERE
-                 receiver_id = $1
-             AND accepted_at IS NULL  
-             AND deleted_at IS NULL
-            ) AS "pending_friend_request_count"    
-        "#,
+SELECT
+-- Follower count
+(
+    SELECT COUNT(*)
+    FROM relations
+    WHERE
+        followed_id = $1
+        AND deleted_at IS NULL
+) AS "follower_count",
+-- Following count
+(
+    SELECT COUNT(*)
+    FROM relations
+    WHERE
+        follower_id = $1
+        AND deleted_at IS NULL
+) AS "following_count",
+-- Friend count
+(
+    SELECT COUNT(*)
+    FROM friends
+    WHERE
+        (transmitter_id = $1 OR receiver_id = $1)
+        AND accepted_at IS NOT NULL  
+        AND deleted_at IS NULL
+) AS "friend_count",
+-- Pending friend request count
+(
+    SELECT COUNT(*)
+    FROM friends
+    WHERE
+        receiver_id = $1
+        AND accepted_at IS NULL  
+        AND deleted_at IS NULL
+) AS "pending_friend_request_count"    
+"#,
     )
     .bind(user_id)
     .fetch_one(&client.db_pool)
     .await
-    .map_err(|_| Status::internal("Database error"))?;
+    .map_err(|error| {
+        error!("database error: {error:?}");
+
+        Status::internal("Database error")
+    })?;
 
     Ok(Response::new(GetUserRelationsInfoResponse {
         follower_count: result.get::<i64, _>("follower_count") as u32,
@@ -94,12 +104,12 @@ mod tests {
             pool,
             true,
             Box::new(|mut client, pool, _, user_id| async move {
-                // Add some relations
+                // Add some relations.
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO relations (follower_id, followed_id)
-                    VALUES ($1, $2), ($2, $1)
-                    "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2), ($2, $1)
+"#,
                 )
                 .bind(user_id.unwrap())
                 .bind(2_i64)
@@ -109,12 +119,12 @@ mod tests {
 
                 assert_eq!(result.rows_affected(), 2);
 
-                // Add some friends
+                // Add some friends.
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
-                    VALUES ($1, $2, NOW()), ($3, $1, DEFAULT)
-                    "#,
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW()), ($3, $1, DEFAULT)
+"#,
                 )
                 .bind(user_id.unwrap())
                 .bind(2_i64)
@@ -148,12 +158,12 @@ mod tests {
             pool,
             true,
             Box::new(|mut client, pool, _, user_id| async move {
-                // Add some relations
+                // Add some relations.
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO relations (follower_id, followed_id)
-                    VALUES ($1, $2), ($2, $1)
-                    "#,
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2), ($2, $1)
+"#,
                 )
                 .bind(user_id.unwrap())
                 .bind(2_i64)
@@ -163,12 +173,12 @@ mod tests {
 
                 assert_eq!(result.rows_affected(), 2);
 
-                // Add some friends
+                // Add some friends.
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
-                    VALUES ($1, $2, NOW()), ($3, $1, DEFAULT)
-                    "#,
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW()), ($3, $1, DEFAULT)
+"#,
                 )
                 .bind(user_id.unwrap())
                 .bind(2_i64)
@@ -179,7 +189,7 @@ mod tests {
 
                 assert_eq!(result.rows_affected(), 2);
 
-                // Should return all the relations initially
+                // Should return all the relations initially.
                 let response = client
                     .get_user_relations_info(Request::new(GetUserRelationsInfoRequest {
                         user_id: user_id.unwrap().to_string(),
@@ -193,13 +203,13 @@ mod tests {
                 assert_eq!(response.friend_count, 1_u32);
                 assert_eq!(response.pending_friend_request_count, 1_u32);
 
-                // Soft-delete relations
+                // Soft-delete relations.
                 let result = sqlx::query(
                     r#"
-                    UPDATE relations
-                    SET deleted_at = NOW()
-                    WHERE follower_id = $1 OR followed_id = $1
-                    "#,
+UPDATE relations
+SET deleted_at = NOW()
+WHERE follower_id = $1 OR followed_id = $1
+"#,
                 )
                 .bind(user_id.unwrap())
                 .execute(&pool)
@@ -208,13 +218,13 @@ mod tests {
 
                 assert_eq!(result.rows_affected(), 2);
 
-                // Soft-delete friends
+                // Soft-delete friends.
                 let result = sqlx::query(
                     r#"
-                    UPDATE friends
-                    SET deleted_at = NOW()
-                    WHERE transmitter_id = $1 OR receiver_id = $1
-                    "#,
+UPDATE friends
+SET deleted_at = NOW()
+WHERE transmitter_id = $1 OR receiver_id = $1
+"#,
                 )
                 .bind(user_id.unwrap())
                 .execute(&pool)

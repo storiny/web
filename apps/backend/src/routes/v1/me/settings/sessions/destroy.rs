@@ -1,4 +1,5 @@
 use crate::{
+    error::AppError,
     middlewares::identity::identity::Identity,
     utils::clear_user_sessions::clear_user_sessions,
     AppState,
@@ -11,18 +12,19 @@ use actix_web::{
 };
 
 #[post("/v1/me/settings/sessions/destroy")]
-async fn post(user: Identity, data: web::Data<AppState>) -> impl Responder {
-    match user.id() {
-        Ok(user_id) => {
-            user.logout();
+#[tracing::instrument(
+    name = "POST /v1/me/settings/sessions/destroy",
+    skip_all,
+    fields(user = user.id().ok()),
+    err
+)]
+async fn post(user: Identity, data: web::Data<AppState>) -> Result<HttpResponse, AppError> {
+    let user_id = user.id()?;
 
-            match clear_user_sessions(&data.redis, user_id).await {
-                Ok(_) => HttpResponse::Ok().finish(),
-                Err(_) => HttpResponse::InternalServerError().finish(),
-            }
-        }
-        Err(_) => HttpResponse::InternalServerError().finish(),
-    }
+    clear_user_sessions(&data.redis, user_id).await?;
+    user.logout();
+
+    Ok(HttpResponse::Ok().finish())
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -45,7 +47,6 @@ mod tests {
     };
     use actix_web::test;
     use redis::AsyncCommands;
-
     use sqlx::PgPool;
     use storiny_macros::test_context;
     use uuid::Uuid;
@@ -55,7 +56,7 @@ mod tests {
 
         #[test_context(RedisTestContext)]
         #[sqlx::test]
-        async fn can_destroy_all_sessions(
+        async fn can_destroy_all_the_sessions(
             ctx: &mut RedisTestContext,
             pool: PgPool,
         ) -> sqlx::Result<()> {
@@ -63,7 +64,7 @@ mod tests {
             let mut redis_conn = redis_pool.get().await.unwrap();
             let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-            // Insert some sessions
+            // Insert some sessions.
             for _ in 0..5 {
                 redis_conn
                     .set::<_, _, ()>(
@@ -97,7 +98,7 @@ mod tests {
 
             assert!(res.status().is_success());
 
-            // Sessions should not be present in the cache
+            // Sessions should not be present in the cache.
             let sessions = get_user_sessions(&redis_pool, user_id.unwrap())
                 .await
                 .unwrap();

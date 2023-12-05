@@ -11,9 +11,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO story_tags (tag_id, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_tags (tag_id, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(4_i64)
         .bind(2_i64)
@@ -32,10 +32,10 @@ mod tests {
         // Soft-delete the story
         sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -43,16 +43,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO story_tags (tag_id, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_tags (tag_id, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(4_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -75,9 +75,9 @@ mod tests {
         // Insert a story tag
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_tags (tag_id, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_tags (tag_id, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(4_i64)
         .bind(2_i64)
@@ -89,9 +89,9 @@ mod tests {
         // Should increment `story_count` on tag
         let result = sqlx::query(
             r#"
-            SELECT story_count FROM tags
-            WHERE id = $1
-            "#,
+SELECT story_count FROM tags
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -111,9 +111,9 @@ mod tests {
         // Insert a story tag
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO story_tags (tag_id, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_tags (tag_id, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(4_i64)
         .bind(2_i64)
@@ -126,9 +126,9 @@ mod tests {
         // when the `story_count` reaches 0
         sqlx::query(
             r#"
-            INSERT INTO story_tags (tag_id, story_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO story_tags (tag_id, story_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(4_i64)
         .bind(3_i64)
@@ -138,9 +138,9 @@ mod tests {
         // Should increment `story_count` on tag
         let result = sqlx::query(
             r#"
-            SELECT story_count FROM tags
-            WHERE id = $1
-            "#,
+SELECT story_count FROM tags
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -151,9 +151,9 @@ mod tests {
         // Delete the story tag
         sqlx::query(
             r#"
-            DELETE FROM story_tags
-            WHERE tag_id = $1 AND story_id = $2
-            "#,
+DELETE FROM story_tags
+WHERE tag_id = $1 AND story_id = $2
+"#,
         )
         .bind(4_i64)
         .bind(2_i64)
@@ -163,9 +163,9 @@ mod tests {
         // Should decrement `story_count` on tag
         let result = sqlx::query(
             r#"
-            SELECT story_count FROM tags
-            WHERE id = $1
-            "#,
+SELECT story_count FROM tags
+WHERE id = $1
+"#,
         )
         .bind(4_i64)
         .fetch_one(&mut *conn)
@@ -183,10 +183,10 @@ mod tests {
         // Insert a story tag
         let story_tag_result = sqlx::query(
             r#"
-            INSERT INTO story_tags (tag_id, story_id)
-            VALUES ($1, $2)
-            RETURNING id
-            "#,
+INSERT INTO story_tags (tag_id, story_id)
+VALUES ($1, $2)
+RETURNING id
+"#,
         )
         .bind(4_i64)
         .bind(2_i64)
@@ -199,10 +199,10 @@ mod tests {
         // Insert a notification
         let notification_result = sqlx::query(
             r#"
-            INSERT INTO notifications(entity_id, entity_type, notifier_id)
-            VALUES ($1, $2, $3)
-            RETURNING id
-            "#,
+INSERT INTO notifications (entity_id, entity_type, notifier_id)
+VALUES ($1, $2, $3)
+RETURNING id
+"#,
         )
         .bind(story_tag_id)
         .bind(0)
@@ -215,9 +215,9 @@ mod tests {
         // Delete the story tag
         sqlx::query(
             r#"
-            DELETE FROM story_tags
-            WHERE id = $1
-            "#,
+DELETE FROM story_tags
+WHERE id = $1
+"#,
         )
         .bind(story_tag_id)
         .execute(&mut *conn)
@@ -226,11 +226,11 @@ mod tests {
         // Notification should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM notifications
-                WHERE id = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM notifications
+    WHERE id = $1
+)
+"#,
         )
         .bind(notification_result.get::<i64, _>("id"))
         .fetch_one(&mut *conn)

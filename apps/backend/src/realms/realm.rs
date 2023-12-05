@@ -27,6 +27,12 @@ use tokio::{
         Duration,
     },
 };
+use tracing::{
+    debug,
+    error,
+    trace,
+    warn,
+};
 use uuid::Uuid;
 use y_sync::{
     awareness::{
@@ -137,8 +143,14 @@ impl Protocol for RealmProtocol {
         awareness: &mut Awareness,
         update: AwarenessUpdate,
     ) -> Result<Option<Message>, y_sync::sync::Error> {
-        if update.encode_v2().len() < MAX_AWARENESS_PAYLOAD_SIZE {
+        let update_size = update.encode_v2().len();
+
+        if update_size < MAX_AWARENESS_PAYLOAD_SIZE {
             awareness.apply_update(update)?;
+        } else {
+            warn!(
+                "aborted awareness update due to unexpectedly large update size: {update_size} bytes"
+            );
         }
 
         Ok(None)
@@ -245,6 +257,17 @@ impl Realm {
     /// * `user_id` - The user ID of the peer.
     /// * `sink` - The websocket sink wrapper.
     /// * `stream` - The websocket stream wrapper.
+    #[tracing::instrument(
+        name = "REALM subscribe",
+        skip_all,
+        fields(
+            doc_id = self.doc_id,
+            doc_key = self.doc_key,
+            peer_id,
+            user_id
+        ),
+        err
+    )]
     pub async fn subscribe(
         self: Arc<Self>,
         peer_id: Uuid,
@@ -252,9 +275,19 @@ impl Realm {
         sink: Arc<Mutex<WarpSink>>,
         stream: WarpStream,
     ) -> Result<(), SubscribeError> {
+        debug!(
+            "[{}] peer join request with ID: {peer_id} and user_id: {user_id}",
+            self.doc_id
+        );
+
         if !self.can_join().await {
             return Err(SubscribeError::RealmFull);
         }
+
+        debug!(
+            "[{}] peer joined with ID: {peer_id} and user_id: {user_id}",
+            self.doc_id
+        );
 
         let mut peer_map = self.peer_map.write().await;
         let subscription = self.bc_group.subscribe_with(sink, stream, RealmProtocol);
@@ -270,6 +303,12 @@ impl Realm {
                 let _ = subscription.completed().await;
 
                 let mut peer_map = self_ref.peer_map.write().await;
+
+                trace!(
+                    "[{}] peer unsubscribed with ID: {peer_id} and user_id: {user_id}",
+                    self_ref.doc_id
+                );
+
                 peer_map.remove(&peer_id);
             }
         });
@@ -358,7 +397,18 @@ impl Realm {
     /// Serializes the present document state to binary data, deflates it using GZIP, and uploads it
     /// to the S3 docs bucket. Returns the size (in bytes) of the document at the time of uploading
     /// it to the object storage.
+    #[tracing::instrument(
+        name = "REALM persist_doc_to_s3",
+        skip_all,
+        fields(
+            doc_id = self.doc_id,
+            doc_key = self.doc_key
+        ),
+        err
+    )]
     async fn persist_doc_to_s3(&self) -> Result<usize, PersistDocError> {
+        trace!("[{}] trying to persist the doc to s3", self.doc_id);
+
         let mut last_state_vec = self.last_state_vector.write().await;
         let awareness = self.bc_group.awareness().read().await;
         let doc = awareness.doc();
@@ -373,7 +423,7 @@ impl Realm {
 
         // Document has been updated since the last persistence call.
         if *last_state_vec != next_state_vec {
-            log::info!("[{}] Persisting the doc…", self.doc_id);
+            debug!("[{}] persisting the doc…", self.doc_id);
 
             let doc_binary_data = {
                 let txn = doc
@@ -391,8 +441,8 @@ impl Realm {
 
             // If the document is too large, try compressing it with the highest compression level.
             if doc_size as u32 > MAX_DOCUMENT_SIZE {
-                log::warn!(
-                    "[{}] Exceeded the maximum document size ({doc_size} bytes), trying to compress with the highest level",
+                warn!(
+                    "[{}] exceeded the maximum document size ({doc_size} bytes), trying to compress with the highest level",
                     self.doc_id
                 );
 
@@ -406,8 +456,8 @@ impl Realm {
                 // issues. This should be a very rare case unless the peers are sending malformed
                 // updates.
                 if doc_size as u32 > MAX_DOCUMENT_SIZE {
-                    log::warn!(
-                        "[{}] Dropping due to unexpectedly large document size ({doc_size} bytes)",
+                    error!(
+                        "[{}] dropping due to unexpectedly large document size ({doc_size} bytes)",
                         self.doc_id
                     );
 
@@ -435,10 +485,14 @@ impl Realm {
             // Update the state vector after the compression and uploading process.
             *last_state_vec = next_state_vec;
 
-            log::info!("[{}] Persisted {doc_size} bytes", self.doc_id);
+            debug!("[{}] persisted {doc_size} bytes", self.doc_id);
 
             Ok(doc_size)
         } else {
+            trace!(
+                "aborting persistence call as the state vector was not modified since the last call"
+            );
+
             // Document has not been updated since the last persistence call.
             Ok(0)
         }
@@ -468,10 +522,21 @@ impl Realm {
     /// Spawns a child task that starts a document persistence loop, which internally calls the
     /// [Realm::persist_doc_to_s3] method every [PERSISTENCE_LOOP_DURATION] seconds. The task is
     /// aborted when the [Realm] instance is destroyed.
+    #[tracing::instrument(
+        name = "REALM start_persistence_loop",
+        skip_all,
+        fields(
+            doc_id = self.doc_id,
+            doc_key = self.doc_key
+        ),
+        err
+    )]
     async fn start_persistence_loop(self: Arc<Self>) {
         let mut persistence_loop_task = self.persistence_loop_task.write().await;
 
         if persistence_loop_task.is_none() {
+            trace!("[{}] starting persistence loop task", self_ref.doc_id);
+
             let mut interval = interval(Duration::from_secs(PERSISTENCE_LOOP_DURATION));
 
             *persistence_loop_task = Some(tokio::spawn({
@@ -484,7 +549,7 @@ impl Realm {
                         if self_ref.created_at + REALM_LIFETIME
                             < OffsetDateTime::now_utc().unix_timestamp()
                         {
-                            log::info!("[{}] Lifetime exceeded, dropping…", self_ref.doc_id);
+                            debug!("[{}] lifetime exceeded, dropping…", self_ref.doc_id);
 
                             self_ref
                                 .destroy_and_remove_from_map(RealmDestroyReason::LifetimeExceeded)
@@ -515,8 +580,8 @@ impl Realm {
                         } else {
                             *is_last_persistence_iteration = true;
 
-                            log::info!(
-                                "[{}] No subscriptions, dropping the realm on next cycle",
+                            debug!(
+                                "[{}] no subscriptions, dropping the realm on next cycle",
                                 self_ref.doc_id
                             );
                         }
@@ -529,7 +594,7 @@ impl Realm {
 
 impl Drop for Realm {
     fn drop(&mut self) {
-        log::info!("[{}] Dropped", self.doc_id);
+        debug!("[{}] dropped", self.doc_id);
     }
 }
 

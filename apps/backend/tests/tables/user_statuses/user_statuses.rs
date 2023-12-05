@@ -7,9 +7,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO user_statuses(user_id, text, emoji)
-            VALUES ($1, $2, $3)
-            "#,
+INSERT INTO user_statuses (user_id, text, emoji)
+VALUES ($1, $2, $3)
+"#,
         )
         .bind(1_i64)
         .bind("Some status text")

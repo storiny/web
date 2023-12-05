@@ -28,29 +28,34 @@ struct Request {
 }
 
 #[post("/v1/public/validation/username")]
+#[tracing::instrument(
+    name = "POST /v1/public/validation/username",
+    skip_all,
+    fields(payload),
+    err
+)]
 async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpResponse, AppError> {
     let slugged_username = slugify!(&payload.username, separator = "_", max_length = 24);
 
-    // Chekc if username is reserved
+    // Chekc if username is reserved.
     if RESERVED_USERNAMES.contains(&slugged_username.as_str()) {
-        return Ok(HttpResponse::BadRequest().body("Bad username"));
+        return Err(AppError::from("Bad username"));
     }
 
-    // Check for duplicate username
     let username_check = sqlx::query(
         r#"
-        SELECT EXISTS (
-            SELECT 1 FROM users
-            WHERE username = $1
-        )
-        "#,
+SELECT EXISTS (
+    SELECT 1 FROM users
+    WHERE username = $1
+)
+"#,
     )
     .bind(&slugged_username)
     .fetch_one(&data.db_pool)
     .await?;
 
     if username_check.get::<bool, _>("exists") {
-        return Ok(HttpResponse::BadRequest().body("This username is already in use"));
+        return Err(AppError::from("This username is already in use"));
     }
 
     Ok(HttpResponse::Ok().finish())
@@ -110,12 +115,12 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
 
-        // Insert a user with a specific username
+        // Insert a user with a specific username.
         let result = sqlx::query(
             r#"
-            INSERT INTO users (name, username, email)
-            VALUES ($1, $2, $3)
-            "#,
+INSERT INTO users (name, username, email)
+VALUES ($1, $2, $3)
+"#,
         )
         .bind("Sample user")
         .bind("sample_username")

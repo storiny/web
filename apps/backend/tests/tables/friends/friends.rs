@@ -14,9 +14,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -37,16 +37,16 @@ mod tests {
         // Insert friend with overlapping IDs
         let result = sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -69,10 +69,10 @@ mod tests {
         // Soft-delete the transmitter user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -80,16 +80,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -110,10 +110,10 @@ mod tests {
         // Deactivate the transmitter user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -121,16 +121,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -151,10 +151,10 @@ mod tests {
         // Soft-delete the receiver user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -162,16 +162,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -192,10 +192,10 @@ mod tests {
         // Deactivate the receiver user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -203,16 +203,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -237,9 +237,9 @@ mod tests {
         // Send a friend request
         sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -249,9 +249,9 @@ mod tests {
         // Should not increment `friend_count`
         let user_result = sqlx::query(
             r#"
-            SELECT friend_count FROM users
-            WHERE id IN ($1, $2)
-            "#,
+SELECT friend_count FROM users
+WHERE id IN ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -265,10 +265,10 @@ mod tests {
         // Accept the friend request
         sqlx::query(
             r#"
-            UPDATE friends
-            SET accepted_at = NOW()
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET accepted_at = NOW()
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -278,9 +278,9 @@ mod tests {
         // Should increment the `friend_count`
         let user_result = sqlx::query(
             r#"
-            SELECT friend_count FROM users
-            WHERE id IN ($1, $2)
-            "#,
+SELECT friend_count FROM users
+WHERE id IN ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -303,9 +303,9 @@ mod tests {
         // Send a friend request
         sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -315,10 +315,10 @@ mod tests {
         // Accept the friend request
         sqlx::query(
             r#"
-            UPDATE friends
-            SET accepted_at = NOW()
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET accepted_at = NOW()
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -328,9 +328,9 @@ mod tests {
         // Should have 1 `friend_count` initially
         let user_result = sqlx::query(
             r#"
-            SELECT friend_count FROM users
-            WHERE id IN ($1, $2)
-            "#,
+SELECT friend_count FROM users
+WHERE id IN ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -344,10 +344,10 @@ mod tests {
         // Soft-delete the friend
         sqlx::query(
             r#"
-            UPDATE friends
-            SET deleted_at = NOW()
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET deleted_at = NOW()
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -357,9 +357,9 @@ mod tests {
         // Should decrement the `friend_count`
         let user_result = sqlx::query(
             r#"
-            SELECT friend_count FROM users
-            WHERE id IN ($1, $2)
-            "#,
+SELECT friend_count FROM users
+WHERE id IN ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -373,10 +373,10 @@ mod tests {
         // Restore the friend
         sqlx::query(
             r#"
-            UPDATE friends
-            SET deleted_at = NULL
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET deleted_at = NULL
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -386,9 +386,9 @@ mod tests {
         // Should increment the `friend_count`
         let user_result = sqlx::query(
             r#"
-            SELECT friend_count FROM users
-            WHERE id IN ($1, $2)
-            "#,
+SELECT friend_count FROM users
+WHERE id IN ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -411,9 +411,9 @@ mod tests {
         // Send a friend request
         sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -423,10 +423,10 @@ mod tests {
         // Accept the friend request
         sqlx::query(
             r#"
-            UPDATE friends
-            SET accepted_at = NOW()
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET accepted_at = NOW()
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -436,9 +436,9 @@ mod tests {
         // Should have 1 `friend_count` initially
         let user_result = sqlx::query(
             r#"
-            SELECT friend_count FROM users
-            WHERE id IN ($1, $2)
-            "#,
+SELECT friend_count FROM users
+WHERE id IN ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -452,9 +452,9 @@ mod tests {
         // Delete the friend
         sqlx::query(
             r#"
-            DELETE FROM friends
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+DELETE FROM friends
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -464,9 +464,9 @@ mod tests {
         // Should decrement the `friend_count`
         let user_result = sqlx::query(
             r#"
-            SELECT friend_count FROM users
-            WHERE id IN ($1, $2)
-            "#,
+SELECT friend_count FROM users
+WHERE id IN ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -489,9 +489,9 @@ mod tests {
         // Send a friend request
         sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -501,10 +501,10 @@ mod tests {
         // Accept the friend request
         sqlx::query(
             r#"
-            UPDATE friends
-            SET accepted_at = NOW()
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET accepted_at = NOW()
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -516,9 +516,9 @@ mod tests {
         // on the user when decrementing the `friend_count`.
         sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(3_i64)
         .bind(1_i64)
@@ -527,10 +527,10 @@ mod tests {
 
         sqlx::query(
             r#"
-            UPDATE friends
-            SET accepted_at = NOW()
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET accepted_at = NOW()
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(3_i64)
         .bind(1_i64)
@@ -541,9 +541,9 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(3_i64)
         .bind(2_i64)
@@ -552,10 +552,10 @@ mod tests {
 
         sqlx::query(
             r#"
-            UPDATE friends
-            SET accepted_at = NOW()
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET accepted_at = NOW()
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(3_i64)
         .bind(2_i64)
@@ -565,9 +565,9 @@ mod tests {
         // Should have 2 `friend_count` initially
         let user_result = sqlx::query(
             r#"
-            SELECT friend_count FROM users
-            WHERE id IN ($1, $2)
-            "#,
+SELECT friend_count FROM users
+WHERE id IN ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -581,10 +581,10 @@ mod tests {
         // Soft-delete the friend
         sqlx::query(
             r#"
-            UPDATE friends
-            SET deleted_at = NOW()
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET deleted_at = NOW()
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -594,9 +594,9 @@ mod tests {
         // Should decrement the `friend_count`
         let user_result = sqlx::query(
             r#"
-            SELECT friend_count FROM users
-            WHERE id IN ($1, $2)
-            "#,
+SELECT friend_count FROM users
+WHERE id IN ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -610,9 +610,9 @@ mod tests {
         // Delete the friend
         sqlx::query(
             r#"
-            DELETE FROM friends
-            WHERE transmitter_id = $1 AND receiver_id = $2
-           "#,
+DELETE FROM friends
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -622,9 +622,9 @@ mod tests {
         // Should not decrement the `friend_count` any further
         let user_result = sqlx::query(
             r#"
-            SELECT friend_count FROM users
-            WHERE id IN ($1, $2)
-            "#,
+SELECT friend_count FROM users
+WHERE id IN ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -649,9 +649,9 @@ mod tests {
         // Send a friend request
         sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -661,9 +661,9 @@ mod tests {
         // Should not increment `friend_count`
         let user_result = sqlx::query(
             r#"
-            SELECT friend_count FROM users
-            WHERE id IN ($1, $2)
-            "#,
+SELECT friend_count FROM users
+WHERE id IN ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -686,9 +686,9 @@ mod tests {
         // Send a friend request
         sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -698,10 +698,10 @@ mod tests {
         // Soft-delete the friend
         sqlx::query(
             r#"
-            UPDATE friends
-            SET deleted_at = NOW()
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET deleted_at = NOW()
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -711,10 +711,10 @@ mod tests {
         // Restore the friend
         sqlx::query(
             r#"
-            UPDATE friends
-            SET deleted_at = NULL
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET deleted_at = NULL
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -724,9 +724,9 @@ mod tests {
         // Should not increment the `friend_count`
         let user_result = sqlx::query(
             r#"
-            SELECT friend_count FROM users
-            WHERE id IN ($1, $2)
-            "#,
+SELECT friend_count FROM users
+WHERE id IN ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -749,9 +749,9 @@ mod tests {
         // Send a friend request
         sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -763,9 +763,9 @@ mod tests {
         // on the user when decrementing the `friend_count`.
         sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(3_i64)
         .bind(1_i64)
@@ -774,10 +774,10 @@ mod tests {
 
         sqlx::query(
             r#"
-            UPDATE friends
-            SET accepted_at = NOW()
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET accepted_at = NOW()
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(3_i64)
         .bind(1_i64)
@@ -788,9 +788,9 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(3_i64)
         .bind(2_i64)
@@ -799,10 +799,10 @@ mod tests {
 
         sqlx::query(
             r#"
-            UPDATE friends
-            SET accepted_at = NOW()
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET accepted_at = NOW()
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(3_i64)
         .bind(2_i64)
@@ -812,9 +812,9 @@ mod tests {
         // Should have 1 `friend_count` initially
         let user_result = sqlx::query(
             r#"
-            SELECT friend_count FROM users
-            WHERE id IN ($1, $2)
-            "#,
+SELECT friend_count FROM users
+WHERE id IN ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -828,9 +828,9 @@ mod tests {
         // Delete the friend
         sqlx::query(
             r#"
-            DELETE FROM friends
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+DELETE FROM friends
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -840,9 +840,9 @@ mod tests {
         // Should not decrement the `friend_count`
         let user_result = sqlx::query(
             r#"
-            SELECT friend_count FROM users
-            WHERE id IN ($1, $2)
-            "#,
+SELECT friend_count FROM users
+WHERE id IN ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -865,9 +865,9 @@ mod tests {
         // Send a friend request
         sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -879,9 +879,9 @@ mod tests {
         // on the user when decrementing the `friend_count`.
         sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(3_i64)
         .bind(1_i64)
@@ -890,10 +890,10 @@ mod tests {
 
         sqlx::query(
             r#"
-            UPDATE friends
-            SET accepted_at = NOW()
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET accepted_at = NOW()
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(3_i64)
         .bind(1_i64)
@@ -904,9 +904,9 @@ mod tests {
 
         sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(3_i64)
         .bind(2_i64)
@@ -915,10 +915,10 @@ mod tests {
 
         sqlx::query(
             r#"
-            UPDATE friends
-            SET accepted_at = NOW()
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET accepted_at = NOW()
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(3_i64)
         .bind(2_i64)
@@ -928,9 +928,9 @@ mod tests {
         // Should have 1 `friend_count` initially
         let user_result = sqlx::query(
             r#"
-            SELECT friend_count FROM users
-            WHERE id IN ($1, $2)
-            "#,
+SELECT friend_count FROM users
+WHERE id IN ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -944,10 +944,10 @@ mod tests {
         // Soft-delete the friend
         sqlx::query(
             r#"
-            UPDATE friends
-            SET deleted_at = NOW()
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET deleted_at = NOW()
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -957,9 +957,9 @@ mod tests {
         // Should not decrement the `friend_count`
         let user_result = sqlx::query(
             r#"
-            SELECT friend_count FROM users
-            WHERE id IN ($1, $2)
-            "#,
+SELECT friend_count FROM users
+WHERE id IN ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -973,9 +973,9 @@ mod tests {
         // Delete the friend
         sqlx::query(
             r#"
-            DELETE FROM friends
-            WHERE transmitter_id = $1 AND receiver_id = $2
-           "#,
+DELETE FROM friends
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -985,9 +985,9 @@ mod tests {
         // Should not decrement the `friend_count`
         let user_result = sqlx::query(
             r#"
-            SELECT friend_count FROM users
-            WHERE id IN ($1, $2)
-            "#,
+SELECT friend_count FROM users
+WHERE id IN ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -1012,10 +1012,10 @@ mod tests {
         // Set `incoming_friend_requests` to none
         sqlx::query(
             r#"
-            UPDATE users
-            SET incoming_friend_requests = $1
-            WHERE id = $2
-            "#,
+UPDATE users
+SET incoming_friend_requests = $1
+WHERE id = $2
+"#,
         )
         .bind(IncomingFriendRequest::None as i64)
         .bind(1_i64)
@@ -1024,16 +1024,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -1056,10 +1056,10 @@ mod tests {
         // Set `incoming_friend_requests` to none
         sqlx::query(
             r#"
-            UPDATE users
-            SET incoming_friend_requests = $1
-            WHERE id = $2
-            "#,
+UPDATE users
+SET incoming_friend_requests = $1
+WHERE id = $2
+"#,
         )
         .bind(IncomingFriendRequest::None as i64)
         .bind(1_i64)
@@ -1068,16 +1068,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -1100,10 +1100,10 @@ mod tests {
         // Set `incoming_friend_requests` to none
         sqlx::query(
             r#"
-            UPDATE users
-            SET incoming_friend_requests = $1
-            WHERE id = $2
-            "#,
+UPDATE users
+SET incoming_friend_requests = $1
+WHERE id = $2
+"#,
         )
         .bind(IncomingFriendRequest::None as i64)
         .bind(1_i64)
@@ -1112,16 +1112,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -1146,10 +1146,10 @@ mod tests {
         // Set `incoming_friend_requests` to none
         sqlx::query(
             r#"
-            UPDATE users
-            SET incoming_friend_requests = $1
-            WHERE id = $2
-            "#,
+UPDATE users
+SET incoming_friend_requests = $1
+WHERE id = $2
+"#,
         )
         .bind(IncomingFriendRequest::Following as i64)
         .bind(1_i64)
@@ -1158,16 +1158,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -1190,10 +1190,10 @@ mod tests {
         // Set `incoming_friend_requests` to none
         sqlx::query(
             r#"
-            UPDATE users
-            SET incoming_friend_requests = $1
-            WHERE id = $2
-            "#,
+UPDATE users
+SET incoming_friend_requests = $1
+WHERE id = $2
+"#,
         )
         .bind(IncomingFriendRequest::Following as i64)
         .bind(1_i64)
@@ -1202,9 +1202,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -1225,10 +1225,10 @@ mod tests {
         // Set `incoming_friend_requests` to none
         sqlx::query(
             r#"
-            UPDATE users
-            SET incoming_friend_requests = $1
-            WHERE id = $2
-            "#,
+UPDATE users
+SET incoming_friend_requests = $1
+WHERE id = $2
+"#,
         )
         .bind(IncomingFriendRequest::Following as i64)
         .bind(1_i64)
@@ -1237,16 +1237,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -1271,10 +1271,10 @@ mod tests {
         // Set `incoming_friend_requests` to none
         sqlx::query(
             r#"
-            UPDATE users
-            SET incoming_friend_requests = $1
-            WHERE id = $2
-            "#,
+UPDATE users
+SET incoming_friend_requests = $1
+WHERE id = $2
+"#,
         )
         .bind(IncomingFriendRequest::Fof as i64)
         .bind(1_i64)
@@ -1283,16 +1283,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -1315,10 +1315,10 @@ mod tests {
         // Set `incoming_friend_requests` to none
         sqlx::query(
             r#"
-            UPDATE users
-            SET incoming_friend_requests = $1
-            WHERE id = $2
-            "#,
+UPDATE users
+SET incoming_friend_requests = $1
+WHERE id = $2
+"#,
         )
         .bind(IncomingFriendRequest::Fof as i64)
         .bind(1_i64)
@@ -1327,16 +1327,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -1359,10 +1359,10 @@ mod tests {
         // Set `incoming_friend_requests` to none
         sqlx::query(
             r#"
-            UPDATE users
-            SET incoming_friend_requests = $1
-            WHERE id = $2
-            "#,
+UPDATE users
+SET incoming_friend_requests = $1
+WHERE id = $2
+"#,
         )
         .bind(IncomingFriendRequest::Fof as i64)
         .bind(1_i64)
@@ -1371,9 +1371,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -1396,9 +1396,9 @@ mod tests {
         // Send a friend request
         sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -1408,10 +1408,10 @@ mod tests {
         // Insert a notification
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO notifications(entity_id, entity_type, notifier_id)
-            VALUES ($1, $2, $3)
-            RETURNING id
-            "#,
+INSERT INTO notifications (entity_id, entity_type, notifier_id)
+VALUES ($1, $2, $3)
+RETURNING id
+"#,
         )
         .bind(2_i64)
         .bind(0)
@@ -1424,10 +1424,10 @@ mod tests {
         // Soft-delete the friend
         sqlx::query(
             r#"
-            UPDATE friends
-            SET deleted_at = NOW()
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+UPDATE friends
+SET deleted_at = NOW()
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -1437,11 +1437,11 @@ mod tests {
         // Notification should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM notifications
-                WHERE id = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM notifications
+    WHERE id = $1
+)
+"#,
         )
         .bind(insert_result.get::<i64, _>("id"))
         .fetch_one(&mut *conn)
@@ -1461,9 +1461,9 @@ mod tests {
         // Send a friend request
         sqlx::query(
             r#"
-            INSERT INTO friends (transmitter_id, receiver_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -1473,10 +1473,10 @@ mod tests {
         // Insert a notification
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO notifications(entity_id, entity_type, notifier_id)
-            VALUES ($1, $2, $3)
-            RETURNING id
-            "#,
+INSERT INTO notifications (entity_id, entity_type, notifier_id)
+VALUES ($1, $2, $3)
+RETURNING id
+"#,
         )
         .bind(2_i64)
         .bind(0)
@@ -1489,9 +1489,9 @@ mod tests {
         // Delete the friend
         sqlx::query(
             r#"
-            DELETE FROM friends
-            WHERE transmitter_id = $1 AND receiver_id = $2
-            "#,
+DELETE FROM friends
+WHERE transmitter_id = $1 AND receiver_id = $2
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -1501,11 +1501,11 @@ mod tests {
         // Notification should get deleted
         let result = sqlx::query(
             r#"
-            SELECT EXISTS (
-                SELECT 1 FROM notifications
-                WHERE id = $1
-            )
-            "#,
+SELECT EXISTS (
+    SELECT 1 FROM notifications
+    WHERE id = $1
+)
+"#,
         )
         .bind(insert_result.get::<i64, _>("id"))
         .fetch_one(&mut *conn)

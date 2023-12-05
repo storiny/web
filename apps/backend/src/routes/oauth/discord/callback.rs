@@ -74,7 +74,7 @@ async fn handle_oauth_request(
         return Err(ConnectionError::InsufficientScopes);
     }
 
-    // Fetch the account details
+    // Fetch the account details.
     let account_res = reqwest_client
         .get("https://discord.com/api/v10/users/@me")
         .header("Content-type", ContentType::json().to_string())
@@ -92,12 +92,12 @@ async fn handle_oauth_request(
     let provider_identifier = account_res.id;
     let display_name = account_res.username;
 
-    // Save the connection
+    // Save the connection.
     match sqlx::query(
         r#"
-        INSERT INTO connections (provider, provider_identifier, display_name, user_id)
-        VALUES ($1, $2, $3, $4)
-        "#,
+INSERT INTO connections (provider, provider_identifier, display_name, user_id)
+VALUES ($1, $2, $3, $4)
+"#,
     )
     .bind(Provider::Discord as i16)
     .bind(provider_identifier)

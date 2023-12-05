@@ -92,7 +92,6 @@ mod tests {
     };
     use aws_sdk_s3::operation::get_object::GetObjectError;
     use futures::future;
-
     use storiny_macros::test_context;
 
     struct LocalTestContext {

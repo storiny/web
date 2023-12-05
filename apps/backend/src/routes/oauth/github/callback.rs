@@ -135,7 +135,7 @@ async fn handle_oauth_request(
         return Err(ConnectionError::InsufficientScopes);
     }
 
-    // Fetch the profile details
+    // Fetch the profile details.
     let profile_res = reqwest_client
         .get("https://api.github.com/user")
         .header("Content-type", ContentType::json().to_string())
@@ -153,12 +153,12 @@ async fn handle_oauth_request(
     let provider_identifier = profile_res.login;
     let display_name = profile_res.name;
 
-    // Save the connection
+    // Save the connection.
     match sqlx::query(
         r#"
-        INSERT INTO connections (provider, provider_identifier, display_name, user_id)
-        VALUES ($1, $2, $3, $4)
-        "#,
+INSERT INTO connections (provider, provider_identifier, display_name, user_id)
+VALUES ($1, $2, $3, $4)
+"#,
     )
     .bind(Provider::Github as i16)
     .bind(provider_identifier)

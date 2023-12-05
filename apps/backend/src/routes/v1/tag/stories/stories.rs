@@ -95,15 +95,29 @@ struct Story {
 }
 
 #[get("/v1/tag/{tag_name}/stories")]
+#[tracing::instrument(
+    name = "GET /v1/tag/{tag_name}/stories",
+    skip_all,
+    fields(
+        user_id = maybe_user.and_then(|user| user.id().ok()),
+        tag_name = %path.tag_name,
+        page = query.page
+        sort = query.sort
+        query = query.query
+    ),
+    err
+)]
 async fn get(
     query: QsQuery<QueryParams>,
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     maybe_user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    // Validate tag name
+    let user_id = maybe_user.and_then(|user| Some(user.id()?));
+
+    // Validate tag name.
     if !TAG_REGEX.is_match(&path.tag_name) {
-        return Ok(HttpResponse::BadRequest().body("Invalid tag name"));
+        return Err(AppError::from("Invalid tag name"));
     }
 
     let page = query.page.clone().unwrap_or(1) - 1;
@@ -111,52 +125,47 @@ async fn get(
     let search_query = query.query.clone().unwrap_or_default();
     let has_search_query = !search_query.trim().is_empty();
 
-    if let Some(user) = maybe_user {
-        match user.id() {
-            Ok(user_id) => {
-                if has_search_query {
-                    let result = sqlx::query_file_as!(
-                        Story,
-                        "queries/tag/stories/logged_in_with_query.sql",
-                        search_query,
-                        &path.tag_name,
-                        10 as i16,
-                        (page * 10) as i16,
-                        user_id
-                    )
-                    .fetch_all(&data.db_pool)
-                    .await?;
+    if let Some(user_id) = user_id {
+        if has_search_query {
+            let result = sqlx::query_file_as!(
+                Story,
+                "queries/tag/stories/logged_in_with_query.sql",
+                search_query,
+                &path.tag_name,
+                10 as i16,
+                (page * 10) as i16,
+                user_id
+            )
+            .fetch_all(&data.db_pool)
+            .await?;
 
-                    Ok(HttpResponse::Ok().json(result))
-                } else if sort == "recent" {
-                    let result = sqlx::query_file_as!(
-                        Story,
-                        "queries/tag/stories/logged_in_recent.sql",
-                        &path.tag_name,
-                        10 as i16,
-                        (page * 10) as i16,
-                        user_id
-                    )
-                    .fetch_all(&data.db_pool)
-                    .await?;
+            Ok(HttpResponse::Ok().json(result))
+        } else if sort == "recent" {
+            let result = sqlx::query_file_as!(
+                Story,
+                "queries/tag/stories/logged_in_recent.sql",
+                &path.tag_name,
+                10 as i16,
+                (page * 10) as i16,
+                user_id
+            )
+            .fetch_all(&data.db_pool)
+            .await?;
 
-                    Ok(HttpResponse::Ok().json(result))
-                } else {
-                    let result = sqlx::query_file_as!(
-                        Story,
-                        "queries/tag/stories/logged_in_popular.sql",
-                        &path.tag_name,
-                        10 as i16,
-                        (page * 10) as i16,
-                        user_id
-                    )
-                    .fetch_all(&data.db_pool)
-                    .await?;
+            Ok(HttpResponse::Ok().json(result))
+        } else {
+            let result = sqlx::query_file_as!(
+                Story,
+                "queries/tag/stories/logged_in_popular.sql",
+                &path.tag_name,
+                10 as i16,
+                (page * 10) as i16,
+                user_id
+            )
+            .fetch_all(&data.db_pool)
+            .await?;
 
-                    Ok(HttpResponse::Ok().json(result))
-                }
-            }
-            Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+            Ok(HttpResponse::Ok().json(result))
         }
     } else {
         if has_search_query {
@@ -259,7 +268,7 @@ mod tests {
     use urlencoding::encode;
 
     #[sqlx::test]
-    async fn can_reject_invalid_tag_name(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_an_invalid_tag_name(pool: PgPool) -> sqlx::Result<()> {
         let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
@@ -289,7 +298,15 @@ mod tests {
         let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 3);
+
+        let stories = json.unwrap();
+
+        assert_eq!(stories.len(), 3);
+        assert!(
+            stories
+                .iter()
+                .all(|&story| !story.is_liked && !story.is_bookmarked)
+        );
 
         Ok(())
     }
@@ -358,7 +375,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(get, pool, false, false, None).await.0;
 
-        // Should return all the stories initially
+        // Should return all the stories initially.
         let req = test::TestRequest::get()
             .uri("/v1/tag/tag-1/stories")
             .to_request();
@@ -371,15 +388,15 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 3);
 
-        // Soft-delete one of the stories
+        // Soft-delete one of the stories.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET
-                deleted_at = NOW(),
-                published_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET
+    deleted_at = NOW(),
+    published_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -387,7 +404,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only two stories
+        // Should return only two stories.
         let req = test::TestRequest::get()
             .uri("/v1/tag/tag-1/stories")
             .to_request();
@@ -400,15 +417,15 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
 
-        // Recover the soft-deleted story
+        // Recover the soft-deleted story.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET
-                deleted_at = NULL,
-                published_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET
+    deleted_at = NULL,
+    published_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -416,7 +433,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the stories again
+        // Should return all the stories again.
         let req = test::TestRequest::get()
             .uri("/v1/tag/tag-1/stories")
             .to_request();
@@ -439,7 +456,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(get, pool, false, false, None).await.0;
 
-        // Should return all the stories initially
+        // Should return all the stories initially.
         let req = test::TestRequest::get()
             .uri("/v1/tag/tag-1/stories")
             .to_request();
@@ -452,13 +469,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 3);
 
-        // Unpublish one of the stories
+        // Unpublish one of the stories.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET published_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -466,7 +483,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only two stories
+        // Should return only two stories.
         let req = test::TestRequest::get()
             .uri("/v1/tag/tag-1/stories")
             .to_request();
@@ -479,13 +496,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
 
-        // Republish the unpublished story
+        // Republish the unpublished story.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET published_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -493,7 +510,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the stories again
+        // Should return all the stories again.
         let req = test::TestRequest::get()
             .uri("/v1/tag/tag-1/stories")
             .to_request();
@@ -595,6 +612,290 @@ mod tests {
         Ok(())
     }
 
+    //
+
+    #[sqlx::test(fixtures("story"))]
+    async fn can_return_is_liked_flag_for_tag_stories_in_recent_order_when_logged_in(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/tag/tag-1/stories?sort=recent")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be false initially.
+        let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
+        assert!(stories.iter().all(|&story| !story.is_liked));
+
+        // Like the stories.
+        let result = sqlx::query(
+            r#"
+INSERT INTO story_likes (user_id, story_id)
+VALUES ($1, $2), ($1, $3), ($1, $4)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .bind(3_i64)
+        .bind(4_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 3);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/tag/tag-1/stories?sort=recent")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be true.
+        let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
+        assert!(stories.iter().all(|&story| story.is_liked));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("story"))]
+    async fn can_return_is_bookmarked_flag_for_tag_stories_in_recent_order_when_logged_in(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/tag/tag-1/stories?sort=recent")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be false initially.
+        let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
+        assert!(stories.iter().all(|&story| !story.is_bookmarked));
+
+        // Bookmark the stories.
+        let result = sqlx::query(
+            r#"
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2), ($1, $3), ($1, $4)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .bind(3_i64)
+        .bind(4_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 3);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/tag/tag-1/stories?sort=recent")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be true.
+        let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
+        assert!(stories.iter().all(|&story| story.is_bookmarked));
+
+        Ok(())
+    }
+
+    //
+
+    #[sqlx::test(fixtures("story"))]
+    async fn can_return_is_liked_flag_for_tag_stories_in_popular_order_when_logged_in(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/tag/tag-1/stories?sort=popular")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be false initially.
+        let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
+        assert!(stories.iter().all(|&story| !story.is_liked));
+
+        // Like the stories.
+        let result = sqlx::query(
+            r#"
+INSERT INTO story_likes (user_id, story_id)
+VALUES ($1, $2), ($1, $3), ($1, $4)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .bind(3_i64)
+        .bind(4_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 3);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/tag/tag-1/stories?sort=popular")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be true.
+        let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
+        assert!(stories.iter().all(|&story| story.is_liked));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("story"))]
+    async fn can_return_is_bookmarked_flag_for_tag_stories_in_popular_order_when_logged_in(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/tag/tag-1/stories?sort=popular")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be false initially.
+        let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
+        assert!(stories.iter().all(|&story| !story.is_bookmarked));
+
+        // Bookmark the stories.
+        let result = sqlx::query(
+            r#"
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2), ($1, $3), ($1, $4)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .bind(3_i64)
+        .bind(4_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 3);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/tag/tag-1/stories?sort=popular")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be true.
+        let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
+        assert!(stories.iter().all(|&story| story.is_bookmarked));
+
+        Ok(())
+    }
+
+    //
+
+    #[sqlx::test(fixtures("story"))]
+    async fn can_return_is_liked_flag_for_tag_stories_when_logged_in_and_searching(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/tag/tag-1/stories?query={}", encode("two")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be false initially.
+        let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
+        assert!(stories.iter().all(|&story| !story.is_liked));
+
+        // Like the stories.
+        let result = sqlx::query(
+            r#"
+INSERT INTO story_likes (user_id, story_id)
+VALUES ($1, $2), ($1, $3), ($1, $4)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .bind(3_i64)
+        .bind(4_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 3);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/tag/tag-1/stories?query={}", encode("two")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be true.
+        let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
+        assert!(stories.iter().all(|&story| story.is_liked));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("story"))]
+    async fn can_return_is_bookmarked_flag_for_tag_stories_when_logged_in_and_searching(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/tag/tag-1/stories?query={}", encode("two")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be false initially.
+        let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
+        assert!(stories.iter().all(|&story| !story.is_bookmarked));
+
+        // Bookmark the stories.
+        let result = sqlx::query(
+            r#"
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2), ($1, $3), ($1, $4)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .bind(3_i64)
+        .bind(4_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 3);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/tag/tag-1/stories?query={}", encode("two")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be true.
+        let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
+        assert!(stories.iter().all(|&story| story.is_bookmarked));
+
+        Ok(())
+    }
+
+    //
+
     #[sqlx::test(fixtures("story"))]
     async fn should_not_include_soft_deleted_stories_in_tag_stories_when_logged_in(
         pool: PgPool,
@@ -602,7 +903,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
-        // Should return all the stories initially
+        // Should return all the stories initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/tag/tag-1/stories")
@@ -616,15 +917,15 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 3);
 
-        // Soft-delete one of the stories
+        // Soft-delete one of the stories.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET
-                deleted_at = NOW(),
-                published_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET
+    deleted_at = NOW(),
+    published_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -632,7 +933,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only two stories
+        // Should return only two stories.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/tag/tag-1/stories")
@@ -646,15 +947,15 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
 
-        // Recover the soft-deleted story
+        // Recover the soft-deleted story.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET
-                deleted_at = NULL,
-                published_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET
+    deleted_at = NULL,
+    published_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -662,7 +963,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the stories again
+        // Should return all the stories again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
             .uri("/v1/tag/tag-1/stories")
@@ -686,7 +987,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
-        // Should return all the stories initially
+        // Should return all the stories initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/tag/tag-1/stories")
@@ -700,13 +1001,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 3);
 
-        // Unpublish one of the stories
+        // Unpublish one of the stories.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET published_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -714,7 +1015,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only two stories
+        // Should return only two stories.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/tag/tag-1/stories")
@@ -728,13 +1029,13 @@ mod tests {
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
 
-        // Republish the unpublished story
+        // Republish the unpublished story.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET published_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -742,7 +1043,7 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the stories again
+        // Should return all the stories again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
             .uri("/v1/tag/tag-1/stories")

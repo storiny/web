@@ -8,9 +8,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO connections (provider, provider_identifier, display_name, user_id)
-            VALUES ($1, $2, $3, $4)
-            "#,
+INSERT INTO connections (provider, provider_identifier, display_name, user_id)
+VALUES ($1, $2, $3, $4)
+"#,
         )
         .bind(0)
         .bind("some-id")
@@ -33,10 +33,10 @@ mod tests {
         // Soft-delete the user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -44,9 +44,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO connections (provider, provider_identifier, display_name, user_id)
-            VALUES ($1, $2, $3, $4)
-            "#,
+INSERT INTO connections (provider, provider_identifier, display_name, user_id)
+VALUES ($1, $2, $3, $4)
+"#,
         )
         .bind(0)
         .bind("some-id")
@@ -55,7 +55,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -76,10 +76,10 @@ mod tests {
         // Deactivate the user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -87,9 +87,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO connections (provider, provider_identifier, display_name, user_id)
-            VALUES ($1, $2, $3, $4)
-            "#,
+INSERT INTO connections (provider, provider_identifier, display_name, user_id)
+VALUES ($1, $2, $3, $4)
+"#,
         )
         .bind(0)
         .bind("some-id")
@@ -98,7 +98,7 @@ mod tests {
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()

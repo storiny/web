@@ -351,7 +351,7 @@ RETURNING id
         let reply_id = insert_result.get::<i64, _>("id");
 
         let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
+            .cookie(cookie.clone().unwrap())
             .uri("/v1/me/replies")
             .to_request();
         let res = test::call_service(&app, req).await;

@@ -7,11 +7,11 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO mfa_recovery_codes(code, user_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO mfa_recovery_codes(code, user_id)
+VALUES ($1, $2)
+"#,
         )
-        .bind("00000000")
+        .bind("0".repeat(12))
         .bind(1_i64)
         .execute(&mut *conn)
         .await?;

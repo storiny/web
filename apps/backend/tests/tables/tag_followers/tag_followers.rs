@@ -11,9 +11,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO tag_followers (tag_id, user_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO tag_followers (tag_id, user_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(3_i64)
         .bind(1_i64)
@@ -34,10 +34,10 @@ mod tests {
         // Soft-delete the user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -45,16 +45,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO tag_followers (tag_id, user_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO tag_followers (tag_id, user_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(3_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -75,10 +75,10 @@ mod tests {
         // Deactivate the user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -86,16 +86,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO tag_followers (tag_id, user_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO tag_followers (tag_id, user_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(3_i64)
         .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -120,9 +120,9 @@ mod tests {
         // Follow the tag
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO tag_followers (user_id, tag_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO tag_followers (user_id, tag_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -134,9 +134,9 @@ mod tests {
         // Should increment `follower_count` on tag
         let result = sqlx::query(
             r#"
-            SELECT follower_count FROM tags
-            WHERE id = $1
-            "#,
+SELECT follower_count FROM tags
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .fetch_one(&mut *conn)
@@ -156,9 +156,9 @@ mod tests {
         // Follow the tag
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO tag_followers (user_id, tag_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO tag_followers (user_id, tag_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -170,9 +170,9 @@ mod tests {
         // Should increment `follower_count` on tag
         let result = sqlx::query(
             r#"
-            SELECT follower_count FROM tags
-            WHERE id = $1
-            "#,
+SELECT follower_count FROM tags
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .fetch_one(&mut *conn)
@@ -183,10 +183,10 @@ mod tests {
         // Soft-delete the tag follower relation
         sqlx::query(
             r#"
-            UPDATE tag_followers
-            SET deleted_at = NOW()
-            WHERE user_id = $1 AND tag_id = $2
-            "#,
+UPDATE tag_followers
+SET deleted_at = NOW()
+WHERE user_id = $1 AND tag_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -196,9 +196,9 @@ mod tests {
         // Should decrement `follower_count` on tag
         let result = sqlx::query(
             r#"
-            SELECT follower_count FROM tags
-            WHERE id = $1
-            "#,
+SELECT follower_count FROM tags
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .fetch_one(&mut *conn)
@@ -209,10 +209,10 @@ mod tests {
         // Restore the tag follower relation
         sqlx::query(
             r#"
-            UPDATE tag_followers
-            SET deleted_at = NULL
-            WHERE user_id = $1 AND tag_id = $2
-            "#,
+UPDATE tag_followers
+SET deleted_at = NULL
+WHERE user_id = $1 AND tag_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -222,9 +222,9 @@ mod tests {
         // Should increment `follower_count` on tag again
         let result = sqlx::query(
             r#"
-            SELECT follower_count FROM tags
-            WHERE id = $1
-            "#,
+SELECT follower_count FROM tags
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .fetch_one(&mut *conn)
@@ -244,9 +244,9 @@ mod tests {
         // Follow the tag
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO tag_followers (user_id, tag_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO tag_followers (user_id, tag_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -258,9 +258,9 @@ mod tests {
         // Should increment `follower_count` on tag
         let result = sqlx::query(
             r#"
-            SELECT follower_count FROM tags
-            WHERE id = $1
-            "#,
+SELECT follower_count FROM tags
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .fetch_one(&mut *conn)
@@ -271,9 +271,9 @@ mod tests {
         // Delete the tag follower relation
         sqlx::query(
             r#"
-            DELETE FROM tag_followers
-            WHERE user_id = $1 AND tag_id = $2
-            "#,
+DELETE FROM tag_followers
+WHERE user_id = $1 AND tag_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -283,9 +283,9 @@ mod tests {
         // Should decrement `follower_count` on tag
         let result = sqlx::query(
             r#"
-            SELECT follower_count FROM tags
-            WHERE id = $1
-            "#,
+SELECT follower_count FROM tags
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .fetch_one(&mut *conn)
@@ -305,9 +305,9 @@ mod tests {
         // Follow the tag
         sqlx::query(
             r#"
-            INSERT INTO tag_followers (user_id, tag_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO tag_followers (user_id, tag_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -319,9 +319,9 @@ mod tests {
         // on the tag when decrementing the `follower_count`.
         sqlx::query(
             r#"
-            INSERT INTO tag_followers (user_id, tag_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO tag_followers (user_id, tag_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(3_i64)
@@ -331,9 +331,9 @@ mod tests {
         // Should increment `follower_count` on tag
         let result = sqlx::query(
             r#"
-            SELECT follower_count FROM tags
-            WHERE id = $1
-            "#,
+SELECT follower_count FROM tags
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .fetch_one(&mut *conn)
@@ -344,10 +344,10 @@ mod tests {
         // Soft-delete the tag follower relation
         sqlx::query(
             r#"
-            UPDATE tag_followers
-            SET deleted_at = NOW()
-            WHERE user_id = $1 AND tag_id = $2
-            "#,
+UPDATE tag_followers
+SET deleted_at = NOW()
+WHERE user_id = $1 AND tag_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -357,9 +357,9 @@ mod tests {
         // Should decrement `follower_count` on tag
         let result = sqlx::query(
             r#"
-            SELECT follower_count FROM tags
-            WHERE id = $1
-            "#,
+SELECT follower_count FROM tags
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .fetch_one(&mut *conn)
@@ -370,9 +370,9 @@ mod tests {
         // Delete the tag follower relation
         sqlx::query(
             r#"
-            DELETE FROM tag_followers
-            WHERE user_id = $1 AND tag_id = $2
-            "#,
+DELETE FROM tag_followers
+WHERE user_id = $1 AND tag_id = $2
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -382,9 +382,9 @@ mod tests {
         // Should not decrement `follower_count` on tag any further
         let result = sqlx::query(
             r#"
-            SELECT follower_count FROM tags
-            WHERE id = $1
-            "#,
+SELECT follower_count FROM tags
+WHERE id = $1
+"#,
         )
         .bind(3_i64)
         .fetch_one(&mut *conn)

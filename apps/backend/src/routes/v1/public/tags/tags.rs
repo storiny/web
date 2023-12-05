@@ -26,38 +26,45 @@ struct QueryParams {
 }
 
 #[get("/v1/public/tags")]
+#[tracing::instrument(
+    name = "GET /v1/public/tags",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        query = %query.query
+    ),
+    err
+)]
 async fn get(
     query: QsQuery<QueryParams>,
     data: web::Data<AppState>,
-    _user: Identity,
+    user: Identity,
 ) -> Result<HttpResponse, AppError> {
+    user.id()?;
+
     let result = sqlx::query(
         r#"
-        WITH
-            tags_result AS (
-                WITH
-                    search_query AS (SELECT
-                        PLAINTO_TSQUERY('english', $1) AS tsq
-                    )
-                    SELECT
-                        -- Tag
-                        t.name,
-                        -- Query score
-                        TS_RANK_CD(t.search_vec, (SELECT tsq FROM search_query)) AS "query_score"
-                    FROM
-                        tags t
-                    WHERE
-                        t.search_vec @@ (SELECT tsq FROM search_query)
-                    ORDER BY
-                        query_score      DESC,
-                        t.follower_count DESC
-                    LIMIT $2
-            )
-        SELECT
-            name
-        FROM
-            tags_result
-        "#,
+WITH tags_result AS (
+    WITH search_query AS (
+        SELECT PLAINTO_TSQUERY('english', $1) AS tsq
+    )
+    SELECT
+        -- Tag
+        t.name,
+        -- Query score
+        TS_RANK_CD(t.search_vec, (SELECT tsq FROM search_query)) AS "query_score"
+    FROM
+        tags t
+    WHERE
+        t.search_vec @@ (SELECT tsq FROM search_query)
+    ORDER BY
+        query_score      DESC,
+        t.follower_count DESC
+    LIMIT $2
+ )
+SELECT name
+FROM tags_result
+"#,
     )
     .bind(&query.query)
     .bind(5_i16)

@@ -288,119 +288,7 @@ VALUES ($1, $2), ($1, $3)
     //
 
     #[sqlx::test(fixtures("bookmark"))]
-    async fn can_return_is_liked_flag_in_bookmarks_in_desc_order(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Insert a bookmark.
-        sqlx::query(
-            r#"
-INSERT INTO bookmarks (user_id, story_id)
-VALUES ($1, $2)
-"#,
-        )
-        .bind(user_id.unwrap())
-        .bind(3_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/bookmarks?sort=recent")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        // Should be false initially.
-        let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
-        let story = &json[0];
-        assert!(!story.is_liked);
-
-        // Like the story.
-        let result = sqlx::query(
-            r#"
-INSERT INTO story_likes (story_id, user_id)
-VALUES ($1, $2)
-"#,
-        )
-        .bind(3_i64)
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/bookmarks?sort=recent")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        // Should be true.
-        let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
-        let story = &json[0];
-        assert!(!story.is_liked);
-
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("bookmark"))]
-    async fn can_return_is_liked_flag_in_bookmarks_in_asc_order(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Insert a bookmark.
-        sqlx::query(
-            r#"
-INSERT INTO bookmarks (user_id, story_id)
-VALUES ($1, $2)
-"#,
-        )
-        .bind(user_id.unwrap())
-        .bind(3_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/bookmarks?sort=old")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        // Should be false initially.
-        let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
-        let story = &json[0];
-        assert!(!story.is_liked);
-
-        // Like the story.
-        let result = sqlx::query(
-            r#"
-INSERT INTO story_likes (story_id, user_id)
-VALUES ($1, $2)
-"#,
-        )
-        .bind(3_i64)
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/bookmarks?sort=old")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        // Should be true.
-        let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
-        let story = &json[0];
-        assert!(!story.is_liked);
-
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("bookmark"))]
-    async fn can_return_is_liked_flag_in_bookmarks_when_searching(
+    async fn can_return_is_liked_flag_for_bookmarks_in_desc_order(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -419,7 +307,121 @@ VALUES ($1, $2)
         .await?;
 
         let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/bookmarks?sort=recent")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be false initially.
+        let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
+        let story = &json[0];
+        assert!(!story.is_liked);
+
+        // Like the story.
+        let result = sqlx::query(
+            r#"
+INSERT INTO story_likes (story_id, user_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(3_i64)
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
+            .uri("/v1/me/bookmarks?sort=recent")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be true.
+        let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
+        let story = &json[0];
+        assert!(!story.is_liked);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("bookmark"))]
+    async fn can_return_is_liked_flag_for_bookmarks_in_asc_order(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Insert a bookmark.
+        sqlx::query(
+            r#"
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/bookmarks?sort=old")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be false initially.
+        let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
+        let story = &json[0];
+        assert!(!story.is_liked);
+
+        // Like the story.
+        let result = sqlx::query(
+            r#"
+INSERT INTO story_likes (story_id, user_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(3_i64)
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/bookmarks?sort=old")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be true.
+        let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
+        let story = &json[0];
+        assert!(!story.is_liked);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("bookmark"))]
+    async fn can_return_is_liked_flag_for_bookmarks_when_searching(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Insert a bookmark.
+        sqlx::query(
+            r#"
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/me/bookmarks?query={}", encode("ancient")))
             .to_request();
         let res = test::call_service(&app, req).await;

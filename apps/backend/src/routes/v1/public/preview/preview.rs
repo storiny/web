@@ -49,59 +49,64 @@ struct Story {
 }
 
 #[get("/v1/public/preview/{story_id}")]
+#[tracing::instrument(
+    name = "GET /v1/public/preview/{story_id}",
+    skip_all,
+    fields(story_id = %path.story_id),
+    err
+)]
 async fn get(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
 ) -> Result<HttpResponse, AppError> {
-    match path.story_id.parse::<i64>() {
-        Ok(story_id) => {
-            match sqlx::query_as::<_, Story>(
-                r#"
-                SELECT
-                    s.id,
-                    s.title,
-                    s.slug,
-                    s.splash_id,
-                    s.splash_hex,
-                    s.description,
-                    s.read_count,
-                    s.like_count,
-                    s.comment_count,
-                    -- User
-                    JSON_BUILD_OBJECT('id', u.id, 'username', u.username) AS "user"
-                FROM
-                    stories s
-                        -- Join user
-                        INNER JOIN users u
-                                   ON u.id = s.user_id
-                                       AND u.deleted_at IS NULL
-                                       AND u.deactivated_at IS NULL
-                                       -- Skip stories from private users
-                                       AND u.is_private IS FALSE
-                WHERE
-                
-                      s.id = $1
-                      -- Public
-                  AND s.visibility = 2
-                  AND s.published_at IS NOT NULL
-                  AND s.deleted_at IS NULL
-                "#,
-            )
-            .bind(story_id)
-            .fetch_one(&data.db_pool)
-            .await
-            {
-                Ok(story) => Ok(HttpResponse::Ok().json(story)),
-                Err(kind) => match kind {
-                    sqlx::Error::RowNotFound => {
-                        Ok(HttpResponse::BadRequest().body("Story not found"))
-                    }
-                    _ => Ok(HttpResponse::InternalServerError().finish()),
-                },
-            }
+    let story_id = path
+        .story_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid story ID"))?;
+
+    let story = sqlx::query_as::<_, Story>(
+        r#"
+SELECT
+    s.id,
+    s.title,
+    s.slug,
+    s.splash_id,
+    s.splash_hex,
+    s.description,
+    s.read_count,
+    s.like_count,
+    s.comment_count,
+    -- User
+    JSON_BUILD_OBJECT('id', u.id, 'username', u.username) AS "user"
+FROM
+    stories s
+        -- Join user
+        INNER JOIN users u
+            ON u.id = s.user_id
+            AND u.deleted_at IS NULL
+            AND u.deactivated_at IS NULL
+            -- Skip stories from private users
+            AND u.is_private IS FALSE
+WHERE
+      s.id = $1
+      -- Public
+  AND s.visibility = 2
+  AND s.published_at IS NOT NULL
+  AND s.deleted_at IS NULL
+"#,
+    )
+    .bind(&story_id)
+    .fetch_one(&data.db_pool)
+    .await
+    .map_err(|error| {
+        if matches!(error, sqlx::Error::RowNotFound) {
+            AppError::from("Story not found")
+        } else {
+            AppError::SqlxError(error)
         }
-        Err(_) => Ok(HttpResponse::BadRequest().body("Invalid story ID")),
-    }
+    })?;
+
+    Ok(HttpResponse::Ok().json(story))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -120,7 +125,7 @@ mod tests {
     use sqlx::PgPool;
 
     #[sqlx::test(fixtures("preview"))]
-    async fn can_return_story_preview(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_return_a_story_preview(pool: PgPool) -> sqlx::Result<()> {
         let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
@@ -157,13 +162,13 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(get, pool, false, false, None).await.0;
 
-        // Soft-delete the story
+        // Soft-delete the story.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -187,13 +192,13 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(get, pool, false, false, None).await.0;
 
-        // Unpublish the story
+        // Unpublish the story.
         let result = sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET published_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)

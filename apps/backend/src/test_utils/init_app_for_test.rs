@@ -196,13 +196,13 @@ pub async fn init_app_for_test(
         let mut next_user_id: Option<i64> = Some(user_id.unwrap_or(rng.gen::<i64>()));
 
         if !skip_inserting_user {
-            // Insert the user
+            // Insert the user.
             let result = sqlx::query(
                 r#"
-                INSERT INTO users (name, username, email)
-                VALUES ($1, $2, $3)
-                RETURNING id
-                "#,
+INSERT INTO users (name, username, email)
+VALUES ($1, $2, $3)
+RETURNING id
+"#,
             )
             .bind("Some user".to_string())
             .bind("some_user".to_string())

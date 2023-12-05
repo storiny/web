@@ -12,51 +12,59 @@ use tonic::{
     Response,
     Status,
 };
+use tracing::error;
 
 /// Verifies an email for a user.
+#[tracing::instrument(name = "GRPC verify_email", skip_all)]
 pub async fn verify_email(
     client: &GrpcService,
     request: Request<VerifyEmailRequest>,
 ) -> Result<Response<VerifyEmailResponse>, Status> {
     let pg_pool = &client.db_pool;
-    let mut txn = pg_pool
-        .begin()
-        .await
-        .map_err(|_| Status::internal("Database error"))?;
+    let mut txn = pg_pool.begin().await.map_err(|error| {
+        error!("unable to begin the transaction: {error:?}");
+
+        Status::internal("Database error")
+    })?;
 
     let token_id = request.into_inner().identifier;
     let token_result = sqlx::query(
         r#"
-        SELECT user_id FROM tokens
-        WHERE
-            id = $1
-            AND type = $2
-            AND expires_at > NOW()
-        "#,
+SELECT user_id
+FROM tokens
+WHERE
+    id = $1
+    AND type = $2
+    AND expires_at > NOW()
+"#,
     )
     .bind(&token_id)
     .bind(TokenType::EmailVerification as i16)
     .fetch_one(&mut *txn)
     .await
-    .map_err(|kind| {
-        if matches!(kind, sqlx::Error::RowNotFound) {
+    .map_err(|error| {
+        if matches!(error, sqlx::Error::RowNotFound) {
             Status::not_found("Token not found")
         } else {
+            error!("database error: {error:?}");
+
             Status::internal("Database error")
         }
     })?;
 
     match sqlx::query(
         r#"
-        WITH updated_user as (
-            UPDATE users
-            SET email_verified = TRUE
-            WHERE id = $1
-        )
-        -- Delete the token
-        DELETE FROM tokens
-        WHERE id = $2 AND type = $3
-        "#,
+WITH updated_user as (
+    UPDATE users
+    SET email_verified = TRUE
+    WHERE id = $1
+)
+-- Delete the token
+DELETE FROM tokens
+WHERE
+    id = $2
+    AND type = $3
+"#,
     )
     .bind(token_result.get::<i64, _>("user_id"))
     .bind(&token_id)
@@ -66,11 +74,17 @@ pub async fn verify_email(
     .map_err(|_| Status::internal("Database error"))?
     .rows_affected()
     {
-        0 => Err(Status::internal("Internal error")),
+        0 => {
+            error!("token not found");
+
+            Err(Status::internal("Internal error"))
+        }
         _ => {
-            txn.commit()
-                .await
-                .map_err(|_| Status::internal("Database error"))?;
+            txn.commit().await.map_err(|error| {
+                error!("unable to commit the transaction: {error:?}");
+
+                Status::internal("Database error")
+            })?;
 
             Ok(Response::new(VerifyEmailResponse {}))
         }
@@ -105,12 +119,12 @@ mod tests {
             pool,
             true,
             Box::new(|mut client, pool, _, user_id| async move {
-                // Insert token
+                // Insert token.
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO tokens (id, type, user_id, expires_at)
-                    VALUES ($1, $2, $3, $4)
-                    "#,
+INSERT INTO tokens (id, type, user_id, expires_at)
+VALUES ($1, $2, $3, $4)
+"#,
                 )
                 .bind("sample".to_string())
                 .bind(TokenType::EmailVerification as i16)
@@ -130,12 +144,12 @@ mod tests {
 
                 assert!(response.is_ok());
 
-                // Should update the user
+                // Should update the user.
                 let result = sqlx::query(
                     r#"
-                    SELECT email_verified FROM users
-                    WHERE id = $1
-                    "#,
+SELECT email_verified FROM users
+WHERE id = $1
+"#,
                 )
                 .bind(user_id.unwrap())
                 .fetch_one(&pool)
@@ -154,12 +168,12 @@ mod tests {
             pool,
             true,
             Box::new(|mut client, pool, _, user_id| async move {
-                // Insert an expired token
+                // Insert an expired token.
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO tokens (id, type, user_id, expires_at)
-                    VALUES ($1, $2, $3, $4)
-                    "#,
+INSERT INTO tokens (id, type, user_id, expires_at)
+VALUES ($1, $2, $3, $4)
+"#,
                 )
                 .bind("sample".to_string())
                 .bind(TokenType::EmailVerification as i16)

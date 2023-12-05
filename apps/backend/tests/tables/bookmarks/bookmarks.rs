@@ -8,9 +8,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO bookmarks (user_id, story_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO bookmarks (user_id, story_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
@@ -28,13 +28,13 @@ mod tests {
     async fn can_reject_bookmark_for_soft_deleted_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Soft-delete the story
+        // Soft-delete the story.
         sqlx::query(
             r#"
-            UPDATE stories
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -42,16 +42,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO bookmarks (user_id, story_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO bookmarks (user_id, story_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -69,13 +69,13 @@ mod tests {
     async fn can_reject_bookmark_for_unpublished_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Unpublish the story
+        // Unpublish the story.
         sqlx::query(
             r#"
-            UPDATE stories
-            SET published_at = NULL
-            WHERE id = $1
-            "#,
+UPDATE stories
+SET published_at = NULL
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -83,16 +83,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO bookmarks (user_id, story_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO bookmarks (user_id, story_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -110,13 +110,13 @@ mod tests {
     async fn can_reject_bookmark_for_soft_deleted_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Soft-delete the user
+        // Soft-delete the user.
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -124,16 +124,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO bookmarks (user_id, story_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO bookmarks (user_id, story_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -151,13 +151,13 @@ mod tests {
     async fn can_reject_bookmark_for_deactivated_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Deactivate the user
+        // Deactivate the user.
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -165,16 +165,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO bookmarks (user_id, story_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO bookmarks (user_id, story_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()

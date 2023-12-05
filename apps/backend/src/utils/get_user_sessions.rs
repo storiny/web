@@ -77,7 +77,6 @@ pub async fn get_user_sessions(
 mod tests {
     use super::*;
     use crate::test_utils::RedisTestContext;
-
     use storiny_macros::test_context;
     use time::OffsetDateTime;
     use uuid::Uuid;

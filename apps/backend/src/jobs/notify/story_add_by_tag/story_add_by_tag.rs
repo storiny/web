@@ -8,6 +8,7 @@ use serde::{
     Serialize,
 };
 use std::sync::Arc;
+use tracing::debug;
 
 pub const NOTIFY_STORY_ADD_BY_TAG_JOB_NAME: &'static str = "j:n:story_add_by_tag";
 
@@ -22,12 +23,20 @@ impl Job for NotifyStoryAddByTagJob {
 }
 
 /// Notifies the followers of the story tags.
+#[tracing::instrument(
+    name = "JOB notify_story_add_by_tag",
+    skip_all,
+    fields(
+        story_id = %job.story_id
+    ),
+    err
+)]
 pub async fn notify_story_add_by_tag(
     job: NotifyStoryAddByTagJob,
     ctx: JobContext,
 ) -> Result<(), JobError> {
-    log::info!(
-        "Attempting to insert notifications for story with ID `{}`",
+    debug!(
+        "attempting to insert notifications for story with ID `{}`",
         job.story_id
     );
 
@@ -40,8 +49,8 @@ pub async fn notify_story_add_by_tag(
         .map_err(Box::new)
         .map_err(|err| JobError::Failed(err))?;
 
-    log::info!(
-        "Inserted `{}` notifications for story with ID `{}`",
+    debug!(
+        "inserted `{}` notifications for story with ID `{}`",
         result.rows_affected(),
         job.story_id
     );
@@ -63,16 +72,16 @@ mod tests {
 
         assert!(result.is_ok());
 
-        // Notifications should be present in the database
+        // Notifications should be present in the database.
         let result = sqlx::query(
             r#"
-            WITH notification AS (
-                SELECT id FROM notifications
-                WHERE entity_id = $1 AND entity_type = $2
-            )
-            SELECT 1 FROM notification_outs
-            WHERE notification_id = (SELECT id FROM notification)
-            "#,
+WITH notification AS (
+    SELECT id FROM notifications
+    WHERE entity_id = $1 AND entity_type = $2
+)
+SELECT 1 FROM notification_outs
+WHERE notification_id = (SELECT id FROM notification)
+"#,
         )
         .bind(6_i64)
         .bind(NotificationEntityType::StoryAddByTag as i16)

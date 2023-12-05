@@ -13,8 +13,16 @@ use tonic::{
     Response,
     Status,
 };
+use tracing::error;
 
 /// Returns the token object.
+#[tracing::instrument(
+    name = "GRPC get_token",
+    skip_all,
+    fields(
+        token_type = tracing::field::Empty
+    )
+)]
 pub async fn get_token(
     client: &GrpcService,
     request: Request<GetTokenRequest>,
@@ -24,11 +32,13 @@ pub async fn get_token(
     let token_type = TokenType::try_from(request.r#type)
         .map_err(|_| Status::invalid_argument("`type` is invalid"))?;
 
+    tracing::Span::current().record("token_type", &token_type);
+
     match sqlx::query(
         r#"
-        SELECT expires_at FROM tokens
-        WHERE id = $1 AND type = $2
-        "#,
+SELECT expires_at FROM tokens
+WHERE id = $1 AND type = $2
+"#,
     )
     .bind(token_id)
     .bind(token_type as i16)
@@ -36,7 +46,7 @@ pub async fn get_token(
     .await
     {
         Ok(token) => {
-            // Check whether the token has expired
+            // Check whether the token has expired.
             if token.get::<OffsetDateTime, _>("expires_at") < OffsetDateTime::now_utc() {
                 Ok(Response::new(GetTokenResponse {
                     is_valid: false,
@@ -49,15 +59,17 @@ pub async fn get_token(
                 }))
             }
         }
-        Err(kind) => {
-            if matches!(kind, sqlx::Error::RowNotFound) {
-                Ok(Response::new(GetTokenResponse {
+        Err(error) => {
+            if matches!(error, sqlx::Error::RowNotFound) {
+                return Ok(Response::new(GetTokenResponse {
                     is_valid: false,
                     is_expired: false,
-                }))
-            } else {
-                Err(Status::internal("Database error"))
+                }));
             }
+
+            error!("database error: {error:?}");
+
+            Err(Status::internal("Database error"))
         }
     }
 }
@@ -84,12 +96,12 @@ mod tests {
             pool,
             true,
             Box::new(|mut client, pool, _, user_id| async move {
-                // Insert token
+                // Insert the token.
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO tokens (id, type, user_id, expires_at)
-                    VALUES ($1, $2, $3, $4)
-                    "#,
+INSERT INTO tokens (id, type, user_id, expires_at)
+VALUES ($1, $2, $3, $4)
+"#,
                 )
                 .bind("sample".to_string())
                 .bind(TokenType::EmailVerification as i16)
@@ -123,12 +135,12 @@ mod tests {
             pool,
             true,
             Box::new(|mut client, pool, _, user_id| async move {
-                // Insert an expired token
+                // Insert an expired token.
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO tokens (id, type, user_id, expires_at)
-                    VALUES ($1, $2, $3, $4)
-                    "#,
+INSERT INTO tokens (id, type, user_id, expires_at)
+VALUES ($1, $2, $3, $4)
+"#,
                 )
                 .bind("sample".to_string())
                 .bind(TokenType::EmailVerification as i16)

@@ -156,7 +156,7 @@ VALUES
     }
 
     #[sqlx::test]
-    async fn can_return_favourite_flag_in_assets(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_return_favourite_flag_for_assets(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 

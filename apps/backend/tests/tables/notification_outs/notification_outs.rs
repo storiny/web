@@ -11,9 +11,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            INSERT INTO notification_outs(notified_id, notification_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO notification_outs (notified_id, notification_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(3_i64)
@@ -36,10 +36,10 @@ mod tests {
         // Soft-delete the notified user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -47,16 +47,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO notification_outs(notified_id, notification_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO notification_outs (notified_id, notification_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -79,10 +79,10 @@ mod tests {
         // Deactivate the notified user
         sqlx::query(
             r#"
-            UPDATE users
-            SET deactivated_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -90,16 +90,16 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO notification_outs(notified_id, notification_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO notification_outs (notified_id, notification_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await;
 
-        // Should reject with the correct SQLSTATE
+        // Should reject with the correct SQLSTATE.
         assert_eq!(
             result
                 .unwrap_err()
@@ -124,9 +124,9 @@ mod tests {
         // Mute the notifier user
         sqlx::query(
             r#"
-            INSERT INTO mutes (muter_id, muted_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO mutes (muter_id, muted_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -135,9 +135,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO notification_outs(notified_id, notification_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO notification_outs (notified_id, notification_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(3_i64)
@@ -159,9 +159,9 @@ mod tests {
         // Block the notifier user
         sqlx::query(
             r#"
-            INSERT INTO blocks (blocker_id, blocked_id)
-            VALUES ($1, $2)
-            "#,
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(1_i64)
@@ -170,9 +170,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO notification_outs(notified_id, notification_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO notification_outs (notified_id, notification_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(2_i64)
         .bind(3_i64)
@@ -196,10 +196,10 @@ mod tests {
         // Update notification settings for the notified user
         sqlx::query(
             r#"
-            UPDATE notification_settings
-            SET push_stories = FALSE
-            WHERE user_id = $1
-            "#,
+UPDATE notification_settings
+SET push_stories = FALSE
+WHERE user_id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -208,10 +208,10 @@ mod tests {
         // Set entity type to story add by user
         sqlx::query(
             r#"
-            UPDATE notifications
-            SET entity_type = $1
-            WHERE id = $2
-            "#,
+UPDATE notifications
+SET entity_type = $1
+WHERE id = $2
+"#,
         )
         .bind(NotificationEntityType::StoryAddByUser as i16)
         .bind(3_i64)
@@ -220,9 +220,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO notification_outs(notified_id, notification_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO notification_outs (notified_id, notification_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -235,10 +235,10 @@ mod tests {
         // Set entity type to story add by tag
         sqlx::query(
             r#"
-            UPDATE notifications
-            SET entity_type = $1
-            WHERE id = $2
-            "#,
+UPDATE notifications
+SET entity_type = $1
+WHERE id = $2
+"#,
         )
         .bind(NotificationEntityType::StoryAddByTag as i16)
         .bind(3_i64)
@@ -247,9 +247,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO notification_outs(notified_id, notification_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO notification_outs (notified_id, notification_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -271,10 +271,10 @@ mod tests {
         // Update notification settings for the notified user
         sqlx::query(
             r#"
-            UPDATE notification_settings
-            SET push_story_likes = FALSE
-            WHERE user_id = $1
-            "#,
+UPDATE notification_settings
+SET push_story_likes = FALSE
+WHERE user_id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -283,10 +283,10 @@ mod tests {
         // Set entity type to story like
         sqlx::query(
             r#"
-            UPDATE notifications
-            SET entity_type = $1
-            WHERE id = $2
-            "#,
+UPDATE notifications
+SET entity_type = $1
+WHERE id = $2
+"#,
         )
         .bind(NotificationEntityType::StoryLike as i16)
         .bind(3_i64)
@@ -295,9 +295,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO notification_outs(notified_id, notification_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO notification_outs (notified_id, notification_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -319,10 +319,10 @@ mod tests {
         // Update notification settings for the notified user
         sqlx::query(
             r#"
-            UPDATE notification_settings
-            SET push_comments = FALSE
-            WHERE user_id = $1
-            "#,
+UPDATE notification_settings
+SET push_comments = FALSE
+WHERE user_id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -331,10 +331,10 @@ mod tests {
         // Set entity type to comment add
         sqlx::query(
             r#"
-            UPDATE notifications
-            SET entity_type = $1
-            WHERE id = $2
-            "#,
+UPDATE notifications
+SET entity_type = $1
+WHERE id = $2
+"#,
         )
         .bind(NotificationEntityType::CommentAdd as i16)
         .bind(3_i64)
@@ -343,9 +343,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO notification_outs(notified_id, notification_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO notification_outs (notified_id, notification_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -367,10 +367,10 @@ mod tests {
         // Update notification settings for the notified user
         sqlx::query(
             r#"
-            UPDATE notification_settings
-            SET push_replies = FALSE
-            WHERE user_id = $1
-            "#,
+UPDATE notification_settings
+SET push_replies = FALSE
+WHERE user_id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -379,10 +379,10 @@ mod tests {
         // Set entity type to reply add
         sqlx::query(
             r#"
-            UPDATE notifications
-            SET entity_type = $1
-            WHERE id = $2
-            "#,
+UPDATE notifications
+SET entity_type = $1
+WHERE id = $2
+"#,
         )
         .bind(NotificationEntityType::ReplyAdd as i16)
         .bind(3_i64)
@@ -391,9 +391,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO notification_outs(notified_id, notification_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO notification_outs (notified_id, notification_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -415,10 +415,10 @@ mod tests {
         // Update notification settings for the notified user
         sqlx::query(
             r#"
-            UPDATE notification_settings
-            SET push_followers = FALSE
-            WHERE user_id = $1
-            "#,
+UPDATE notification_settings
+SET push_followers = FALSE
+WHERE user_id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -427,10 +427,10 @@ mod tests {
         // Set entity type to follower add
         sqlx::query(
             r#"
-            UPDATE notifications
-            SET entity_type = $1
-            WHERE id = $2
-            "#,
+UPDATE notifications
+SET entity_type = $1
+WHERE id = $2
+"#,
         )
         .bind(NotificationEntityType::FollowerAdd as i16)
         .bind(3_i64)
@@ -439,9 +439,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO notification_outs(notified_id, notification_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO notification_outs (notified_id, notification_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -463,10 +463,10 @@ mod tests {
         // Update notification settings for the notified user
         sqlx::query(
             r#"
-            UPDATE notification_settings
-            SET push_friend_requests = FALSE
-            WHERE user_id = $1
-            "#,
+UPDATE notification_settings
+SET push_friend_requests = FALSE
+WHERE user_id = $1
+"#,
         )
         .bind(1_i64)
         .execute(&mut *conn)
@@ -475,10 +475,10 @@ mod tests {
         // Set entity type to friend request received
         sqlx::query(
             r#"
-            UPDATE notifications
-            SET entity_type = $1
-            WHERE id = $2
-            "#,
+UPDATE notifications
+SET entity_type = $1
+WHERE id = $2
+"#,
         )
         .bind(NotificationEntityType::FriendReqReceived as i16)
         .bind(3_i64)
@@ -487,9 +487,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO notification_outs(notified_id, notification_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO notification_outs (notified_id, notification_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)
@@ -502,10 +502,10 @@ mod tests {
         // Set entity type to friend request accept
         sqlx::query(
             r#"
-            UPDATE notifications
-            SET entity_type = $1
-            WHERE id = $2
-            "#,
+UPDATE notifications
+SET entity_type = $1
+WHERE id = $2
+"#,
         )
         .bind(NotificationEntityType::FriendReqAccept as i16)
         .bind(3_i64)
@@ -514,9 +514,9 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            INSERT INTO notification_outs(notified_id, notification_id) 
-            VALUES ($1, $2)
-            "#,
+INSERT INTO notification_outs (notified_id, notification_id) 
+VALUES ($1, $2)
+"#,
         )
         .bind(1_i64)
         .bind(3_i64)

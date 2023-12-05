@@ -27,6 +27,7 @@ use tonic::{
     Response,
     Status,
 };
+use tracing::error;
 use uuid::Uuid;
 
 #[derive(sqlx::Type, Debug, Deserialize)]
@@ -80,27 +81,31 @@ struct Profile {
 }
 
 /// Returns the user profile object.
+#[tracing::instrument(
+    name = "GRPC get_profile",
+    skip_all,
+    fields(
+        user_id = tracing::field::Empty
+    )
+)]
 pub async fn get_profile(
     client: &GrpcService,
     request: Request<GetProfileRequest>,
 ) -> Result<Response<GetProfileResponse>, Status> {
     let request = request.into_inner();
     let username = request.username;
-
-    let current_user_id = {
-        if let Some(user_id) = request.current_user_id {
-            let value = user_id
+    let current_user_id = request.current_user_id.and_then(|user_id| {
+        Some(
+            user_id
                 .parse::<i64>()
-                .map_err(|_| Status::invalid_argument("`current_user_id` is invalid"))?;
+                .map_err(|_| Status::invalid_argument("`current_user_id` is invalid"))?,
+        )
+    });
 
-            Some(value)
-        } else {
-            None
-        }
-    };
-
-    let result = {
+    let profile = {
         if let Some(user_id) = current_user_id {
+            tracing::Span::current().record("user_id", &user_id);
+
             sqlx::query_file_as!(
                 Profile,
                 "queries/grpc/get_profile/logged_in.sql",
@@ -114,17 +119,16 @@ pub async fn get_profile(
                 .fetch_one(&client.db_pool)
                 .await
         }
-    };
-
-    if let Err(ref err) = result {
-        if matches!(err, sqlx::Error::RowNotFound) {
-            return Err(Status::not_found("User not found"));
-        }
-
-        return Err(Status::internal("Database error"));
     }
+    .map_err(|error| {
+        if matches!(error, sqlx::Error::RowNotFound) {
+            Status::not_found("User not found")
+        } else {
+            error!("unable to fetch the profile: {error:?}");
 
-    let profile = result.unwrap();
+            Status::internal("Database error")
+        }
+    })?;
 
     Ok(Response::new(GetProfileResponse {
         id: profile.id.to_string(),
@@ -213,6 +217,17 @@ mod tests {
                     .await;
 
                 assert!(response.is_ok());
+
+                let response = response.unwrap().into_inner();
+
+                assert!(!response.is_following);
+                assert!(!response.is_follower);
+                assert!(!response.is_friend);
+                assert!(!response.is_subscribed);
+                assert!(!response.is_friend_request_sent);
+                assert!(!response.is_blocked_by_user);
+                assert!(!response.is_blocking);
+                assert!(!response.is_muted);
             }),
         )
         .await;
@@ -224,13 +239,13 @@ mod tests {
             pool,
             false,
             Box::new(|mut client, pool, _, _| async move {
-                // Soft-delete the user
+                // Soft-delete the user.
                 let result = sqlx::query(
                     r#"
-                    UPDATE users
-                    SET deleted_at = NOW()
-                    WHERE id = $1
-                    "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
                 )
                 .bind(2_i64)
                 .execute(&pool)
@@ -258,13 +273,13 @@ mod tests {
             pool,
             false,
             Box::new(|mut client, pool, _, _| async move {
-                // Deactivate the user
+                // Deactivate the user.
                 let result = sqlx::query(
                     r#"
-                    UPDATE users
-                    SET deactivated_at = NOW()
-                    WHERE id = $1
-                    "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
                 )
                 .bind(2_i64)
                 .execute(&pool)
@@ -308,18 +323,410 @@ mod tests {
     }
 
     #[sqlx::test(fixtures("get_profile"))]
+    async fn can_return_is_following_flag_for_profile_when_logged_in(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                let response = client
+                    .get_profile(Request::new(GetProfileRequest {
+                        username: "target_user".to_string(),
+                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be false initially.
+                assert!(!response.is_following);
+
+                // Follow the user.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO relations (follower_id, following_id)
+VALUES ($1, $2)
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(2_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_profile(Request::new(GetProfileRequest {
+                        username: "target_user".to_string(),
+                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be true.
+                assert!(response.is_following);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_profile"))]
+    async fn can_return_is_follower_flag_for_profile_when_logged_in(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                let response = client
+                    .get_profile(Request::new(GetProfileRequest {
+                        username: "target_user".to_string(),
+                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be false initially.
+                assert!(!response.is_follower);
+
+                // Add the user as follower.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO relations (follower_id, following_id)
+VALUES ($2, $1)
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(2_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_profile(Request::new(GetProfileRequest {
+                        username: "target_user".to_string(),
+                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be true.
+                assert!(response.is_follower);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_profile"))]
+    async fn can_return_is_friend_and_is_friend_request_sent_flags_for_profile_when_logged_in(
+        pool: PgPool,
+    ) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                let response = client
+                    .get_profile(Request::new(GetProfileRequest {
+                        username: "target_user".to_string(),
+                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be false initially.
+                assert!(!response.is_friend);
+                assert!(!response.is_friend_request_sent);
+
+                // Send a friend request.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(2_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_profile(Request::new(GetProfileRequest {
+                        username: "target_user".to_string(),
+                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be still be false as the request has not been accepted yet.
+                assert!(!response.is_follower);
+                // Friend request should be sent.
+                assert!(response.is_friend_request_sent);
+
+                // Accept the friend request.
+                let result = sqlx::query(
+                    r#"
+UPDATE friends
+SET accepted_at = NOW()
+WHERE transmitter_id = $1
+"#,
+                )
+                .bind(user_id.unwrap())
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_profile(Request::new(GetProfileRequest {
+                        username: "target_user".to_string(),
+                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be true.
+                assert!(response.is_friend);
+                // Friend request should get deleted.
+                assert!(!response.is_friend_request_sent);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_profile"))]
+    async fn can_return_is_subscribed_flag_for_profile_when_logged_in(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                // Follow the user without subscribing.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO relations (follower_id, following_id)
+VALUES ($1, $2)
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(2_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_profile(Request::new(GetProfileRequest {
+                        username: "target_user".to_string(),
+                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be false initially.
+                assert!(!response.is_subscribed);
+
+                // Subscribe to the user.
+                let result = sqlx::query(
+                    r#"
+UPDATE relations
+SET subscribed_at = NOW()
+WHERE follower_id = $1
+"#,
+                )
+                .bind(user_id.unwrap())
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_profile(Request::new(GetProfileRequest {
+                        username: "target_user".to_string(),
+                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be true.
+                assert!(response.is_subscribed);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_profile"))]
+    async fn can_return_is_blocked_by_user_flag_for_profile_when_logged_in(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                let response = client
+                    .get_profile(Request::new(GetProfileRequest {
+                        username: "target_user".to_string(),
+                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be false initially.
+                assert!(!response.is_blocked_by_user);
+
+                // Get blocked by the user.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($2, $1)
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(2_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_profile(Request::new(GetProfileRequest {
+                        username: "target_user".to_string(),
+                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be true.
+                assert!(response.is_blocked_by_user);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_profile"))]
+    async fn can_return_is_blocking_flag_for_profile_when_logged_in(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                let response = client
+                    .get_profile(Request::new(GetProfileRequest {
+                        username: "target_user".to_string(),
+                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be false initially.
+                assert!(!response.is_blocking);
+
+                // Block the user.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(2_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_profile(Request::new(GetProfileRequest {
+                        username: "target_user".to_string(),
+                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be true.
+                assert!(response.is_blocking);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_profile"))]
+    async fn can_return_is_muted_flag_for_profile_when_logged_in(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                let response = client
+                    .get_profile(Request::new(GetProfileRequest {
+                        username: "target_user".to_string(),
+                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be false initially.
+                assert!(!response.is_muted);
+
+                // Mute the user.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO mutes (muter_id, muted_id)
+VALUES ($1, $2)
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(2_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_profile(Request::new(GetProfileRequest {
+                        username: "target_user".to_string(),
+                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be true.
+                assert!(response.is_muted);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_profile"))]
     async fn should_not_return_soft_deleted_user_profile_when_logged_in(pool: PgPool) {
         test_grpc_service(
             pool,
             true,
             Box::new(|mut client, pool, _, user_id| async move {
-                // Soft-delete the user
+                // Soft-delete the user.
                 let result = sqlx::query(
                     r#"
-                    UPDATE users
-                    SET deleted_at = NOW()
-                    WHERE id = $1
-                    "#,
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
                 )
                 .bind(2_i64)
                 .execute(&pool)
@@ -347,13 +754,13 @@ mod tests {
             pool,
             true,
             Box::new(|mut client, pool, _, user_id| async move {
-                // Deactivate the user
+                // Deactivate the user.
                 let result = sqlx::query(
                     r#"
-                    UPDATE users
-                    SET deactivated_at = NOW()
-                    WHERE id = $1
-                    "#,
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
                 )
                 .bind(2_i64)
                 .execute(&pool)

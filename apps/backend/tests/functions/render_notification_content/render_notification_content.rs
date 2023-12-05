@@ -12,22 +12,22 @@ mod tests {
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Insert a login notification
+        // Insert a login notification.
         sqlx::query(
             r#"
-            WITH inserted_notification AS (
-                INSERT INTO notifications (id, entity_type)
-                VALUES ($3, $1)
-            )
-            INSERT
-            INTO
-                notification_outs (
-                    notified_id,
-                    notification_id,
-                    rendered_content
-                )
-            SELECT $2, $3, $4
-            "#,
+WITH inserted_notification AS (
+    INSERT INTO notifications (id, entity_type)
+    VALUES ($3, $1)
+)
+INSERT
+INTO
+    notification_outs (
+        notified_id,
+        notification_id,
+        rendered_content
+    )
+SELECT $2, $3, $4
+"#,
         )
         .bind(NotificationEntityType::LoginAttempt as i16)
         .bind(1_i64)
@@ -38,13 +38,11 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            SELECT
-                public.render_notification_content($1, notification_outs.*) AS "content"
-            FROM
-                notification_outs
-            WHERE
-                notification_id = $2;
-            "#,
+SELECT
+    public.render_notification_content($1, notification_outs.*) AS "content"
+FROM notification_outs
+WHERE notification_id = $2;
+"#,
         )
         .bind(NotificationEntityType::LoginAttempt as i16)
         .bind(2_i64)
@@ -65,22 +63,22 @@ mod tests {
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Insert a login notification
+        // Insert a login notification.
         sqlx::query(
             r#"
-            WITH inserted_notification AS (
-                INSERT INTO notifications (id, entity_type)
-                VALUES ($3, $1)
-            )
-            INSERT
-            INTO
-                notification_outs (
-                    notified_id,
-                    notification_id,
-                    rendered_content
-                )
-            SELECT $2, $3, $4
-            "#,
+WITH inserted_notification AS (
+    INSERT INTO notifications (id, entity_type)
+    VALUES ($3, $1)
+)
+INSERT
+INTO
+    notification_outs (
+        notified_id,
+        notification_id,
+        rendered_content
+    )
+SELECT $2, $3, $4
+"#,
         )
         .bind(NotificationEntityType::LoginAttempt as i16)
         .bind(1_i64)
@@ -91,13 +89,11 @@ mod tests {
 
         let result = sqlx::query(
             r#"
-            SELECT
-                public.render_notification_content($1, notification_outs.*) AS "content"
-            FROM
-                notification_outs
-            WHERE
-                notification_id = $2;
-            "#,
+SELECT
+    public.render_notification_content($1, notification_outs.*) AS "content"
+FROM notification_outs
+WHERE notification_id = $2;
+"#,
         )
         .bind(NotificationEntityType::LoginAttempt as i16)
         .bind(2_i64)
@@ -119,13 +115,11 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            SELECT
-                public.render_notification_content($1, notification_outs.*) AS "content"
-            FROM
-                notification_outs
-            WHERE
-                notification_id = $2;
-            "#,
+SELECT
+    public.render_notification_content($1, notification_outs.*) AS "content"
+FROM notification_outs
+WHERE notification_id = $2;
+"#,
         )
         .bind(NotificationEntityType::FriendReqAccept as i16)
         .bind(3_i64)
@@ -147,13 +141,11 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            SELECT
-                public.render_notification_content($1, notification_outs.*) AS "content"
-            FROM
-                notification_outs
-            WHERE
-                notification_id = $2;
-            "#,
+SELECT
+    public.render_notification_content($1, notification_outs.*) AS "content"
+FROM notification_outs
+WHERE notification_id = $2;
+"#,
         )
         .bind(NotificationEntityType::FriendReqReceived as i16)
         .bind(3_i64)
@@ -176,13 +168,11 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            SELECT
-                public.render_notification_content($1, notification_outs.*) AS "content"
-            FROM
-                notification_outs
-            WHERE
-                notification_id = $2;
-            "#,
+SELECT
+    public.render_notification_content($1, notification_outs.*) AS "content"
+FROM notification_outs
+WHERE notification_id = $2;
+"#,
         )
         .bind(NotificationEntityType::FollowerAdd as i16)
         .bind(3_i64)
@@ -205,13 +195,11 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            SELECT
-                public.render_notification_content($1, notification_outs.*) AS "content"
-            FROM
-                notification_outs
-            WHERE
-                notification_id = $2;
-            "#,
+SELECT
+    public.render_notification_content($1, notification_outs.*) AS "content"
+FROM notification_outs
+WHERE notification_id = $2;
+"#,
         )
         .bind(NotificationEntityType::CommentAdd as i16)
         .bind(5_i64)
@@ -232,13 +220,11 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            SELECT
-                public.render_notification_content($1, notification_outs.*) AS "content"
-            FROM
-                notification_outs
-            WHERE
-                notification_id = $2;
-            "#,
+SELECT
+    public.render_notification_content($1, notification_outs.*) AS "content"
+FROM notification_outs
+WHERE notification_id = $2;
+"#,
         )
         .bind(NotificationEntityType::ReplyAdd as i16)
         .bind(6_i64)
@@ -259,13 +245,11 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            SELECT
-                public.render_notification_content($1, notification_outs.*) AS "content"
-            FROM
-                notification_outs
-            WHERE
-                notification_id = $2;
-            "#,
+SELECT
+    public.render_notification_content($1, notification_outs.*) AS "content"
+FROM notification_outs
+WHERE notification_id = $2;
+"#,
         )
         .bind(NotificationEntityType::StoryLike as i16)
         .bind(5_i64)
@@ -288,13 +272,11 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            SELECT
-                public.render_notification_content($1, notification_outs.*) AS "content"
-            FROM
-                notification_outs
-            WHERE
-                notification_id = $2;
-            "#,
+SELECT
+    public.render_notification_content($1, notification_outs.*) AS "content"
+FROM notification_outs
+WHERE notification_id = $2;
+"#,
         )
         .bind(NotificationEntityType::StoryAddByUser as i16)
         .bind(4_i64)
@@ -317,13 +299,11 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            SELECT
-                public.render_notification_content($1, notification_outs.*) AS "content"
-            FROM
-                notification_outs
-            WHERE
-                notification_id = $2;
-            "#,
+SELECT
+    public.render_notification_content($1, notification_outs.*) AS "content"
+FROM notification_outs
+WHERE notification_id = $2;
+"#,
         )
         .bind(NotificationEntityType::StoryAddByTag as i16)
         .bind(6_i64)
@@ -344,13 +324,11 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            SELECT
-                public.render_notification_content($1, notification_outs.*) AS "content"
-            FROM
-                notification_outs
-            WHERE
-                notification_id = $2;
-            "#,
+SELECT
+    public.render_notification_content($1, notification_outs.*) AS "content"
+FROM notification_outs
+WHERE notification_id = $2;
+"#,
         )
         .bind(-1_i16)
         .bind(3_i64)

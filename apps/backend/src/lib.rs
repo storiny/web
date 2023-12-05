@@ -20,6 +20,7 @@ use user_agent_parser::UserAgentParser;
 pub use aws_sdk_s3::Client as S3Client;
 pub use aws_sdk_sesv2::Client as SesClient;
 pub use deadpool_redis::Pool as RedisPool;
+use serde::Serialize;
 
 pub mod config;
 pub mod constants;

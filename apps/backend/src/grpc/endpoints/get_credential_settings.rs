@@ -11,8 +11,16 @@ use tonic::{
     Response,
     Status,
 };
+use tracing::error;
 
 /// Returns the credential settings for a user.
+#[tracing::instrument(
+    name = "GRPC get_credential_settings",
+    skip_all,
+    fields(
+        user_id = tracing::field::Empty
+    )
+)]
 pub async fn get_credential_settings(
     client: &GrpcService,
     request: Request<GetCredentialSettingsRequest>,
@@ -23,39 +31,38 @@ pub async fn get_credential_settings(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
-    match sqlx::query(
+    tracing::Span::current().record("user_id", &user_id);
+
+    let user = sqlx::query(
         r#"
-        SELECT
-            CASE WHEN password IS NULL THEN
-                    FALSE
-                ELSE
-                    TRUE
-            END AS "has_password",
-            mfa_enabled,
-            login_apple_id,
-            login_google_id
-        FROM users
-        WHERE id = $1
-        "#,
+SELECT
+    password IS NOT NULL "has_password",
+    mfa_enabled,
+    login_apple_id,
+    login_google_id
+FROM users
+WHERE id = $1
+"#,
     )
     .bind(user_id)
     .fetch_one(&client.db_pool)
     .await
-    {
-        Ok(user) => Ok(Response::new(GetCredentialSettingsResponse {
-            has_password: user.get::<bool, _>("has_password"),
-            mfa_enabled: user.get::<bool, _>("mfa_enabled"),
-            login_apple_id: user.get::<Option<String>, _>("login_apple_id"),
-            login_google_id: user.get::<Option<String>, _>("login_google_id"),
-        })),
-        Err(kind) => {
-            if matches!(kind, sqlx::Error::RowNotFound) {
-                Err(Status::not_found("User not found"))
-            } else {
-                Err(Status::internal("Database error"))
-            }
+    .map_err(|error| {
+        if matches!(error, sqlx::Error::RowNotFound) {
+            Status::not_found("User not found")
+        } else {
+            error!("database error: {error:?}");
+
+            Status::internal("Database error")
         }
-    }
+    })?;
+
+    Ok(Response::new(GetCredentialSettingsResponse {
+        has_password: user.get::<bool, _>("has_password"),
+        mfa_enabled: user.get::<bool, _>("mfa_enabled"),
+        login_apple_id: user.get::<Option<String>, _>("login_apple_id"),
+        login_google_id: user.get::<Option<String>, _>("login_google_id"),
+    }))
 }
 
 #[cfg(test)]
@@ -79,21 +86,21 @@ mod tests {
             pool,
             false,
             Box::new(|mut client, pool, _, _| async move {
-                // Insert the user
+                // Insert the user.
                 let result = sqlx::query(
                     r#"
-                    INSERT INTO users (
-                        name,
-                        username,
-                        email,
-                        password,
-                        login_apple_id,
-                        login_google_id,
-                        mfa_enabled
-                    )
-                    VALUES ($1, $2, $3, $4, $5, $6, TRUE)
-                    RETURNING id
-                    "#,
+INSERT INTO users (
+    name,
+    username,
+    email,
+    password,
+    login_apple_id,
+    login_google_id,
+    mfa_enabled
+)
+VALUES ($1, $2, $3, $4, $5, $6, TRUE)
+RETURNING id
+"#,
                 )
                 .bind("Some user".to_string())
                 .bind("some_user".to_string())

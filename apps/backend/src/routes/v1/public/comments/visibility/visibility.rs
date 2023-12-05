@@ -29,51 +29,56 @@ struct Request {
 }
 
 #[post("/v1/public/comments/{comment_id}/visibility")]
+#[tracing::instrument(
+    name = "POST /v1/public/comments/{comment_id}/visibility",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        comment_id = %path.comment_id,
+        payload
+    ),
+    err
+)]
 async fn post(
     payload: Json<Request>,
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => match path.comment_id.parse::<i64>() {
-            Ok(comment_id) => {
-                match sqlx::query(
-                    r#"
-                    WITH
-                        story AS (SELECT
-                                      id
-                                  FROM
-                                      stories
-                                  WHERE
-                                        user_id = $1
-                                    AND published_at IS NOT NULL
-                                    AND deleted_at IS NULL
-                        )
-                    UPDATE comments
-                    SET
-                        hidden = $3
-                    WHERE
-                          id = $2
-                      AND story_id = (SELECT id FROM story)
-                      AND deleted_at IS NULL
-                    "#,
-                )
-                .bind(user_id)
-                .bind(comment_id)
-                .bind(&payload.hidden)
-                .execute(&data.db_pool)
-                .await?
-                .rows_affected()
-                {
-                    0 => Ok(HttpResponse::BadRequest()
-                        .json(ToastErrorResponse::new("Comment not found"))),
-                    _ => Ok(HttpResponse::NoContent().finish()),
-                }
-            }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid comment ID")),
-        },
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let user_id = user.id()?;
+    let comment_id = path
+        .comment_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid comment ID"))?;
+
+    match sqlx::query(
+        r#"
+WITH story AS (
+    SELECT id
+    FROM stories
+    WHERE
+        user_id = $1
+    AND published_at IS NOT NULL
+    AND deleted_at IS NULL
+)
+UPDATE comments
+SET
+    hidden = $3
+WHERE
+      id = $2
+  AND story_id = (SELECT id FROM story)
+  AND deleted_at IS NULL
+"#,
+    )
+    .bind(&user_id)
+    .bind(&comment_id)
+    .bind(&payload.hidden)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(ToastErrorResponse::new(None, "Comment not found").into()),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -99,7 +104,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
-        // Hide the comment
+        // Hide the comment.
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/public/comments/{}/visibility", 2))
@@ -109,12 +114,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // `hidden` should get updated in the database
+        // `hidden` should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT hidden FROM comments
-            WHERE id = $1
-            "#,
+SELECT hidden FROM comments
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .fetch_one(&mut *conn)
@@ -122,7 +127,7 @@ mod tests {
 
         assert!(result.get::<bool, _>("hidden"));
 
-        // Unhide the comment
+        // Unhide the comment.
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/public/comments/{}/visibility", 2))
@@ -132,12 +137,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // `hidden` should get updated in the database
+        // `hidden` should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT hidden FROM comments
-            WHERE id = $1
-            "#,
+SELECT hidden FROM comments
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .fetch_one(&mut *conn)
@@ -172,18 +177,18 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
-        // Change the writer of the story
+        // Change the writer of the story.
         let result = sqlx::query(
             r#"
-            WITH new_user AS (
-                INSERT INTO users (name, username, email)
-                VALUES ('New user', 'new_user', 'new@example.com')
-                RETURNING id
-            )
-            UPDATE stories
-            SET user_id = (SELECT id FROM new_user)
-            WHERE user_id = $1
-            "#,
+WITH new_user AS (
+    INSERT INTO users (name, username, email)
+    VALUES ('New user', 'new_user', 'new@example.com')
+    RETURNING id
+)
+UPDATE stories
+SET user_id = (SELECT id FROM new_user)
+WHERE user_id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .execute(&mut *conn)
@@ -191,7 +196,6 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Try hiding the comment
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/public/comments/{}/visibility", 2))
@@ -210,13 +214,13 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
-        // Soft-delete the comment
+        // Soft-delete the comment.
         let result = sqlx::query(
             r#"
-            UPDATE comments
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE comments
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -224,7 +228,6 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Try hiding the comment
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/public/comments/{}/visibility", 2))

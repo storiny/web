@@ -10,8 +10,8 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-            SELECT public.next_snowflake() as id
-            "#,
+SELECT public.next_snowflake() as id
+"#,
         )
         .fetch_one(&mut *conn)
         .await?;

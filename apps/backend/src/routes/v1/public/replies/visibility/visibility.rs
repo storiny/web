@@ -29,52 +29,55 @@ struct Request {
 }
 
 #[post("/v1/public/replies/{reply_id}/visibility")]
+#[tracing::instrument(
+    name = "POST /v1/public/replies/{reply_id}/visibility",
+    skip_all,
+    fields(
+        user_id = user.id().ok(),
+        reply_id = %path.reply_id,
+        payload
+    ),
+    err
+)]
 async fn post(
     payload: Json<Request>,
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    match user.id() {
-        Ok(user_id) => {
-            match path.reply_id.parse::<i64>() {
-                Ok(reply_id) => {
-                    match sqlx::query(
-                        r#"
-                        WITH
-                            comment AS (SELECT
-                                          id
-                                      FROM
-                                          comments
-                                      WHERE
-                                            user_id = $1
-                                        AND deleted_at IS NULL
-                            )
-                        UPDATE replies
-                        SET
-                            hidden = $3
-                        WHERE
-                              id = $2
-                          AND comment_id = (SELECT id FROM comment)
-                          AND deleted_at IS NULL
-                        "#,
-                    )
-                    .bind(user_id)
-                    .bind(reply_id)
-                    .bind(&payload.hidden)
-                    .execute(&data.db_pool)
-                    .await?
-                    .rows_affected()
-                    {
-                        0 => Ok(HttpResponse::BadRequest()
-                            .json(ToastErrorResponse::new("Reply not found"))),
-                        _ => Ok(HttpResponse::NoContent().finish()),
-                    }
-                }
-                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid reply ID")),
-            }
-        }
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    let user_id = user.id()?;
+    let reply_id = path
+        .reply_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid reply ID"))?;
+
+    match sqlx::query(
+        r#"
+WITH comment AS (
+    SELECT id
+    FROM comments
+    WHERE
+        user_id = $1
+    AND deleted_at IS NULL
+)
+UPDATE replies
+SET
+    hidden = $3
+WHERE
+      id = $2
+  AND comment_id = (SELECT id FROM comment)
+  AND deleted_at IS NULL
+"#,
+    )
+    .bind(&user_id)
+    .bind(&reply_id)
+    .bind(&payload.hidden)
+    .execute(&data.db_pool)
+    .await?
+    .rows_affected()
+    {
+        0 => Err(ToastErrorResponse::new(None, "Reply not found").into()),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -100,7 +103,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
-        // Hide the reply
+        // Hide the reply.
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/public/replies/{}/visibility", 2))
@@ -110,12 +113,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // `hidden` should get updated in the database
+        // `hidden` should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT hidden FROM replies
-            WHERE id = $1
-            "#,
+SELECT hidden FROM replies
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .fetch_one(&mut *conn)
@@ -123,7 +126,7 @@ mod tests {
 
         assert!(result.get::<bool, _>("hidden"));
 
-        // Unhide the reply
+        // Unhide the reply.
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/public/replies/{}/visibility", 2))
@@ -133,12 +136,12 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        // `hidden` should get updated in the database
+        // `hidden` should get updated in the database.
         let result = sqlx::query(
             r#"
-            SELECT hidden FROM replies
-            WHERE id = $1
-            "#,
+SELECT hidden FROM replies
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .fetch_one(&mut *conn)
@@ -173,18 +176,18 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
-        // Change the writer of the comment
+        // Change the writer of the comment.
         let result = sqlx::query(
             r#"
-            WITH new_user AS (
-                INSERT INTO users (name, username, email)
-                VALUES ('New user', 'new_user', 'new@example.com')
-                RETURNING id
-            )
-            UPDATE comments
-            SET user_id = (SELECT id FROM new_user)
-            WHERE user_id = $1
-            "#,
+WITH new_user AS (
+    INSERT INTO users (name, username, email)
+    VALUES ('New user', 'new_user', 'new@example.com')
+    RETURNING id
+)
+UPDATE comments
+SET user_id = (SELECT id FROM new_user)
+WHERE user_id = $1
+"#,
         )
         .bind(user_id.unwrap())
         .execute(&mut *conn)
@@ -192,7 +195,6 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Try hiding the reply
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/public/replies/{}/visibility", 2))
@@ -211,13 +213,13 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
-        // Soft-delete the reply
+        // Soft-delete the reply.
         let result = sqlx::query(
             r#"
-            UPDATE replies
-            SET deleted_at = NOW()
-            WHERE id = $1
-            "#,
+UPDATE replies
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
         )
         .bind(2_i64)
         .execute(&mut *conn)
@@ -225,7 +227,6 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Try hiding the reply
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/public/replies/{}/visibility", 2))

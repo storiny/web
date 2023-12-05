@@ -7,16 +7,16 @@ pub struct AuthRequest {
     pub state: String,
 }
 
-/// An error raised during the processing of the connection.
+/// The error raised during the processing of the connection.
 #[allow(dead_code)]
 pub enum ConnectionError {
-    /// Insufficient scopes were returned on the callback endpoint
+    /// Insufficient scopes were returned on the callback endpoint.
     InsufficientScopes,
-    /// The CSRF token is tampered
+    /// The CSRF token is tampered.
     StateMismatch,
-    /// A duplicate entry already exists in the database
+    /// A duplicate entry already exists in the database.
     Duplicate,
-    /// Other connection error
+    /// Other connection error.
     Other,
 }
 

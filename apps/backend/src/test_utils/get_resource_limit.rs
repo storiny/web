@@ -26,7 +26,7 @@ pub async fn get_resource_limit(
         resource_limit as i32
     ))
     .await
-    .expect("Resource limit has not been set")
+    .expect("resource limit has not been set")
 }
 
 #[cfg(test)]
@@ -36,7 +36,6 @@ mod tests {
         test_utils::RedisTestContext,
         utils::incr_resource_limit::incr_resource_limit,
     };
-
     use storiny_macros::test_context;
 
     mod serial {

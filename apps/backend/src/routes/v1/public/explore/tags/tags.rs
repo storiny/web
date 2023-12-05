@@ -48,11 +48,24 @@ struct Tag {
 }
 
 #[get("/v1/public/explore/tags")]
+#[tracing::instrument(
+    name = "GET /v1/public/explore/tags",
+    skip_all,
+    fields(
+        user_id = maybe_user.and_then(|user| user.id().ok()),
+        category = %query.category,
+        page = query.page,
+        query = query.query
+    ),
+    err
+)]
 async fn get(
     query: QsQuery<QueryParams>,
     data: web::Data<AppState>,
     maybe_user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
+    let user_id = maybe_user.and_then(|user| Some(user.id()?));
+
     let page = query.page.clone().unwrap_or(1) - 1;
     let category = if query.category == "all" {
         "others".to_string()
@@ -61,61 +74,51 @@ async fn get(
     };
     let search_query = query.query.clone().unwrap_or_default();
     let has_search_query = !search_query.trim().is_empty();
-    let mut user_id: Option<i64> = None;
 
-    // Validate story category
+    // Validate story category.
     if !STORY_CATEGORY_VEC.contains(&category) {
-        return Ok(HttpResponse::BadRequest().body("Invalid story category"));
-    }
-
-    if let Some(user) = maybe_user {
-        match user.id() {
-            Ok(id) => {
-                user_id = Some(id);
-            }
-            Err(_) => return Ok(HttpResponse::InternalServerError().finish()),
-        }
+        return Err(AppError::from("Invalid story category"));
     }
 
     let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
         r#"
-        WITH explore_tags AS (
-        "#,
+WITH explore_tags AS (
+"#,
     );
 
     if has_search_query {
         query_builder.push(
             r#"
-            WITH search_query AS (
-                SELECT PLAINTO_TSQUERY('english', "#,
+WITH search_query AS (
+    SELECT PLAINTO_TSQUERY('english', "#,
         );
 
         query_builder.push(if user_id.is_some() { "$5" } else { "$4" });
 
         query_builder.push(
             r#") AS tsq
-            )
-            "#,
+)
+"#,
         );
     }
 
     query_builder.push(
         r#"
-        SELECT
-            -- Tag
-            t.id AS "id",
-            t.name AS "name",
-            t.story_count as "story_count",
-            t.follower_count as "follower_count",
-            t.created_at as "created_at",
-        "#,
+SELECT
+    -- Tag
+    t.id AS "id",
+    t.name AS "name",
+    t.story_count as "story_count",
+    t.follower_count as "follower_count",
+    t.created_at as "created_at",
+"#,
     );
 
     query_builder.push(if user_id.is_some() {
         r#"
-        -- Boolean flags
-        "st->is_followed" IS NOT NULL AS "is_followed"
-        "#
+-- Boolean flags
+"st->is_followed" IS NOT NULL AS "is_followed"
+"#
     } else {
         r#"FALSE as "is_followed""#
     });
@@ -124,57 +127,63 @@ async fn get(
         query_builder.push(",");
         query_builder.push(
             r#"
-            -- Query score
-            TS_RANK_CD(t.search_vec, (SELECT tsq FROM search_query)) AS "query_score"
-            "#,
+-- Query score
+TS_RANK_CD(t.search_vec, (SELECT tsq FROM search_query)) AS "query_score"
+"#,
         );
     }
 
     query_builder.push(
         r#"
-        FROM
-            tags AS t
-                -- Join story_tag
-                INNER JOIN story_tags AS st
-                    ON st.tag_id = t.id
-                    -- Join story_tag story
-                    INNER JOIN stories AS "st->story"
-                        ON st.story_id = "st->story".id
-                            AND "st->story".visibility = 2
-                            AND "st->story".published_at IS NOT NULL
-                            AND "st->story".deleted_at IS NULL
-                            AND "st->story".category::TEXT = $1
-        "#,
+FROM
+    tags AS t
+        -- Join story_tag
+        INNER JOIN story_tags AS st
+            ON st.tag_id = t.id
+        -- Join story_tag story
+        INNER JOIN stories AS "st->story"
+            ON st.story_id = "st->story".id
+            AND "st->story".visibility = 2
+            AND "st->story".published_at IS NOT NULL
+            AND "st->story".deleted_at IS NULL
+            AND "st->story".category::TEXT = $1
+"#,
     );
 
     if user_id.is_some() {
         query_builder.push(
             r#"
-            -- Boolean following flag
-            LEFT OUTER JOIN tag_followers AS "st->is_followed"
-                ON "st->is_followed".tag_id = t.id
-                    AND "st->is_followed".user_id = $4
-                    AND "st->is_followed".deleted_at IS NULL
-            "#,
+-- Boolean following flag
+LEFT OUTER JOIN tag_followers AS "st->is_followed"
+    ON "st->is_followed".tag_id = t.id
+    AND "st->is_followed".user_id = $4
+    AND "st->is_followed".deleted_at IS NULL
+"#,
         );
     }
 
     if has_search_query {
         query_builder.push(
             r#"
-            WHERE
-                t.search_vec @@ (SELECT tsq FROM search_query)
-            "#,
+WHERE
+    t.search_vec @@ (SELECT tsq FROM search_query)
+"#,
         );
     }
 
     query_builder.push(
         r#"
-        GROUP BY
-            t.id
-        ORDER BY
-        "#,
+GROUP BY
+    t.id
+"#,
     );
+
+    if user_id.is_some() {
+        query_builder.push(",");
+        query_builder.push(r#" "st->is_followed" "#);
+    }
+
+    query_builder.push(r#" ORDER BY "#);
 
     if has_search_query {
         query_builder.push("query_score DESC");
@@ -183,30 +192,30 @@ async fn get(
 
     query_builder.push(
         r#"
-                t.follower_count DESC
-            LIMIT $2 OFFSET $3
-        )
-        SELECT
-            -- Tag
-            id,
-            name,
-            story_count,
-            follower_count,
-            created_at,
-            -- Boolean flags
-            is_followed
-        FROM explore_tags
-        "#,
+        t.follower_count DESC
+    LIMIT $2 OFFSET $3
+)
+SELECT
+    -- Tag
+    id,
+    name,
+    story_count,
+    follower_count,
+    created_at,
+    -- Boolean flags
+    is_followed
+FROM explore_tags
+"#,
     );
 
     let mut db_query = query_builder
         .build_query_as::<Tag>()
-        .bind(category)
+        .bind(&category)
         .bind(10_i16)
         .bind((page * 10) as i16);
 
-    if user_id.is_some() {
-        db_query = db_query.bind(user_id.unwrap());
+    if let Some(user_id) = user_id {
+        db_query = db_query.bind(user_id);
     }
 
     if has_search_query {
@@ -265,7 +274,11 @@ mod tests {
         let json = serde_json::from_str::<Vec<Tag>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
+
+        let tags = json.unwrap();
+
+        assert_eq!(tags.len(), 2);
+        assert!(tags.iter().all(|&tag| !tag.is_followed));
 
         Ok(())
     }
@@ -310,6 +323,55 @@ mod tests {
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("tag"))]
+    async fn can_return_is_followed_flag_for_explore_tags_when_logged_in(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/public/explore/tags?category=diy")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        let tags = serde_json::from_str::<Vec<Tag>>(&res_to_string(res).await).unwrap();
+
+        // Should be false initially.
+        assert_eq!(tags.len(), 2);
+        assert!(tags.iter().all(|&tag| !tag.is_followed));
+
+        // Follow the tags.
+        let result = sqlx::query(
+            r#"
+INSERT INTO tag_followers (tag_id, user_id)
+VALUES ($2, $1), ($3, $1)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 2);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/public/explore/tags?category=diy")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        let tags = serde_json::from_str::<Vec<Tag>>(&res_to_string(res).await).unwrap();
+
+        // Should be true.
+        assert_eq!(tags.len(), 2);
+        assert!(tags.iter().all(|&tag| tag.is_followed));
 
         Ok(())
     }

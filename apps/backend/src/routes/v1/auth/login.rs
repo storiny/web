@@ -499,7 +499,6 @@ mod tests {
     };
     use redis::AsyncCommands;
     use serde_json::json;
-
     use sqlx::PgPool;
     use std::net::{
         Ipv4Addr,
