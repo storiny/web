@@ -166,7 +166,7 @@ SELECT
         )
     ) AS "comment",
     -- Boolean flags
-    "r->is_liked" IS NOT NULL AS "is_liked"
+    "r->is_liked".reply_id IS NOT NULL AS "is_liked"
 "#,
     );
 
@@ -216,7 +216,7 @@ AND r.deleted_at IS NULL
 GROUP BY
     r.id,
     rc.id,
-    "r->is_liked",
+    "r->is_liked".reply_id,
     "rc->user".id,
     "rc->story".id,
     "rc->story->user".id,

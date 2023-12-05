@@ -104,8 +104,8 @@ SELECT
     ru.avatar_hex,
     ru.public_flags,
     -- Boolean flags
-    "ru->is_following" IS NOT NULL AS "is_following",
-    "ru->is_friend" IS NOT NULL AS "is_friend"
+    "ru->is_following".follower_id IS NOT NULL AS "is_following",
+    "ru->is_friend".transmitter_id IS NOT NULL AS "is_friend"
 "#,
     );
 
@@ -154,8 +154,8 @@ WHERE
         r#"
 GROUP BY
     ru.id,
-    "ru->is_following",
-    "ru->is_friend",
+    "ru->is_following".follower_id,
+    "ru->is_friend".transmitter_id,
     r.created_at
 ORDER BY 
 "#,

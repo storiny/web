@@ -109,7 +109,7 @@ SELECT
     query_builder.push(if current_user_id.is_some() {
         r#"
 -- Boolean flags
-"c->is_liked" IS NOT NULL AS "is_liked"
+"c->is_liked".comment_id IS NOT NULL AS "is_liked"
 "#
     } else {
         r#"
@@ -161,7 +161,7 @@ GROUP BY
 
     if current_user_id.is_some() {
         query_builder.push(",");
-        query_builder.push(r#" "c->is_liked" "#);
+        query_builder.push(r#" "c->is_liked".comment_id "#);
     }
 
     let mut query_result = query_builder.build_query_as::<Comment>().bind(comment_id);

@@ -62,7 +62,7 @@ SELECT
     query_builder.push(if current_user_id.is_some() {
         r#"
 -- Boolean flags
-"t->is_following" IS NOT NULL AS "is_following"
+"t->is_following".follower_id IS NOT NULL AS "is_following"
 "#
     } else {
         r#"
@@ -96,7 +96,7 @@ GROUP BY
 
     if current_user_id.is_some() {
         query_builder.push(",");
-        query_builder.push(r#" "t->is_following" "#);
+        query_builder.push(r#" "t->is_following".follower_id "#);
     }
 
     let mut query_result = query_builder.build_query_as::<Tag>().bind(tag_name);

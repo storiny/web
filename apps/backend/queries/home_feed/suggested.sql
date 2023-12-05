@@ -19,8 +19,8 @@ WITH suggested_stories AS (SELECT
 							   s.published_at                                                     AS "published_at!",
 							   s.edited_at,
 							   -- Boolean flags
-							   "s->is_bookmarked" IS NOT NULL                                     AS "is_bookmarked!",
-							   "s->is_liked" IS NOT NULL                                          AS "is_liked!",
+							   "s->is_bookmarked".story_id IS NOT NULL                                     AS "is_bookmarked!",
+							   "s->is_liked".story_id IS NOT NULL                                          AS "is_liked!",
 							   -- User
 							   JSON_BUILD_OBJECT('id', u.id, 'name', u.name, 'username', u.username, 'avatar_id',
 												 u.avatar_id, 'avatar_hex', u.avatar_hex, 'public_flags',
@@ -123,8 +123,8 @@ WITH suggested_stories AS (SELECT
 							   s.id,
 							   u.id,
 							   s.published_at,
-							   "s->is_bookmarked",
-							   "s->is_liked"
+							   "s->is_bookmarked".story_id,
+							   "s->is_liked".story_id
 						   ORDER BY
 							   published_at_date_only DESC,
 							   followed_tags_weight   DESC,

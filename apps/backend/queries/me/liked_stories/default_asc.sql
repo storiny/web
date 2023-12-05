@@ -19,7 +19,7 @@ WITH liked_stories AS (SELECT
 						   s.published_at                 AS "published_at!",
 						   s.edited_at,
 						   -- Boolean flags
-						   "s->is_bookmarked" IS NOT NULL AS "is_bookmarked!",
+						   "s->is_bookmarked".story_id IS NOT NULL AS "is_bookmarked!",
 						   -- User
 						   JSON_BUILD_OBJECT(
 								   'id', su.id,
@@ -63,7 +63,7 @@ WITH liked_stories AS (SELECT
 						   s.id,
 						   su.id,
 						   sl.created_at,
-						   "s->is_bookmarked"
+						   "s->is_bookmarked".story_id
 					   ORDER BY sl.created_at
 					   LIMIT $2 OFFSET $3
 					  )

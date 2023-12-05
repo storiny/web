@@ -21,7 +21,7 @@ WITH bookmarks_result AS (WITH search_query AS (SELECT PLAINTO_TSQUERY('english'
 							  s.published_at                                           AS "published_at!",
 							  s.edited_at,
 							  -- Boolean flags
-							  "s->is_liked" IS NOT NULL                                AS "is_liked!",
+							  "s->is_liked".story_id IS NOT NULL                                AS "is_liked!",
 							  -- User
 							  JSON_BUILD_OBJECT(
 									  'id', su.id,
@@ -68,7 +68,7 @@ WITH bookmarks_result AS (WITH search_query AS (SELECT PLAINTO_TSQUERY('english'
 							  s.id,
 							  su.id,
 							  b.created_at,
-							  "s->is_liked"
+							  "s->is_liked".story_id
 						  ORDER BY
 							  query_score  DESC,
 							  b.created_at DESC

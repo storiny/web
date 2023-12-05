@@ -19,8 +19,8 @@ WITH history_result AS (SELECT
 							s.published_at                 AS "published_at!",
 							s.edited_at,
 							-- Boolean flags
-							"s->is_bookmarked" IS NOT NULL AS "is_bookmarked!",
-							"s->is_liked" IS NOT NULL      AS "is_liked!",
+							"s->is_bookmarked".story_id IS NOT NULL AS "is_bookmarked!",
+							"s->is_liked".story_id IS NOT NULL      AS "is_liked!",
 							-- User
 							JSON_BUILD_OBJECT(
 									'id', su.id,
@@ -69,8 +69,8 @@ WITH history_result AS (SELECT
 							s.id,
 							su.id,
 							h.created_at,
-							"s->is_liked",
-							"s->is_bookmarked"
+							"s->is_liked".story_id,
+							"s->is_bookmarked".story_id
 						ORDER BY h.created_at DESC
 						LIMIT $2 OFFSET $3
 					   )

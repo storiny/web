@@ -44,7 +44,7 @@ WITH rsb_users AS (
     query_builder.push(if user_id.is_some() {
         r#"
 -- Boolean flags
-"u->is_following" IS NOT NULL AS "is_following",
+"u->is_following".follower_id IS NOT NULL AS "is_following",
 -- Weights
 COUNT("u->follower_relations") AS "relation_weight"
 "#
@@ -141,7 +141,7 @@ GROUP BY
 
     if user_id.is_some() {
         query_builder.push(",");
-        query_builder.push(r#" "u->is_following" "#);
+        query_builder.push(r#""u->is_following".follower_id "#);
     }
 
     query_builder.push(r#" ORDER BY "#);

@@ -133,9 +133,9 @@ SELECT
     query_builder.push(if current_user_id.is_some() {
         r#"
 -- Boolean flags
-"ru->is_follower" IS NOT NULL AS "is_follower",
-"ru->is_following" IS NOT NULL AS "is_following",
-"ru->is_friend" IS NOT NULL AS "is_friend"
+"ru->is_follower".follower_id IS NOT NULL AS "is_follower",
+"ru->is_following".follower_id IS NOT NULL AS "is_following",
+"ru->is_friend".transmitter_id IS NOT NULL AS "is_friend"
 "#
     } else {
         r#"
@@ -218,9 +218,9 @@ GROUP BY
         query_builder.push(",");
         query_builder.push(
             r#"
-"ru->is_follower",
-"ru->is_following",
-"ru->is_friend"
+"ru->is_follower".follower_id,
+"ru->is_following".follower_id,
+"ru->is_friend".transmitter_id
 "#,
         );
     }
