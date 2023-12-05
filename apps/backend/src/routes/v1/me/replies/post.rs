@@ -46,7 +46,7 @@ struct Request {
     skip_all,
     fields(
         user_id = user.id().ok(),
-        comment_id = %payload.comment_id
+        comment_id = %payload.comment_id,
         content = %payload.content
     ),
     err

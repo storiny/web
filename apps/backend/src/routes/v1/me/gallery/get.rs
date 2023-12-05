@@ -71,7 +71,7 @@ async fn get(
 
     if !response.status().is_success() {
         return Err(AppError::InternalError(format!(
-            "unable to fetch photos from Pexels: {result:?}"
+            "unable to fetch photos from Pexels: {response:?}"
         )));
     };
 

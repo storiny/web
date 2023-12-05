@@ -74,13 +74,9 @@ pub async fn get_comment(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`id` is invalid"))?;
 
-    let current_user_id = request.current_user_id.and_then(|user_id| {
-        Some(
-            user_id
-                .parse::<i64>()
-                .map_err(|_| Status::invalid_argument("`current_user_id` is invalid"))?,
-        )
-    });
+    let current_user_id = request
+        .current_user_id
+        .and_then(|user_id| user_id.parse::<i64>().ok());
 
     let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
         r#"

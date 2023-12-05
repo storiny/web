@@ -20,10 +20,9 @@ pub async fn incr_resource_limit(
     resource_limit: ResourceLimit,
     user_id: i64,
 ) -> anyhow::Result<()> {
-    let mut conn = redis_pool
-        .get()
-        .await
-        .map_err(|error| anyhow!("unable to acquire a connection from the Redis pool: {error:?}"));
+    let mut conn = redis_pool.get().await.map_err(|error| {
+        anyhow!("unable to acquire a connection from the Redis pool: {error:?}")
+    })?;
     let increx = redis::Script::new(include_str!("../../lua/increx.lua"));
     let cache_key = format!(
         "{}:{}:{user_id}",

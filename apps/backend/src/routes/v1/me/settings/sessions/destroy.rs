@@ -8,7 +8,6 @@ use actix_web::{
     post,
     web,
     HttpResponse,
-    Responder,
 };
 
 #[post("/v1/me/settings/sessions/destroy")]

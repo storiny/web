@@ -55,11 +55,12 @@ impl FormErrorResponse {
     }
 }
 
-impl Into<AppError> for FormErrorResponse {
-    fn into(self) -> AppError {
-        AppError::FormError(self)
-    }
-}
+// TODO
+// impl Into<AppError> for FormErrorResponse {
+//     fn into(self) -> AppError {
+//         AppError::FormError(self)
+//     }
+// }
 
 impl From<&validator::ValidationErrors> for FormErrorResponse {
     fn from(error: &validator::ValidationErrors) -> Self {
@@ -108,11 +109,12 @@ impl ToastErrorResponse {
     }
 }
 
-impl Into<AppError> for ToastErrorResponse {
-    fn into(self) -> AppError {
-        AppError::ToastError(self)
-    }
-}
+// TODO
+// impl Into<AppError> for ToastErrorResponse {
+//     fn into(self) -> AppError {
+//         AppError::ToastError(self)
+//     }
+// }
 
 // Application error
 

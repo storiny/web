@@ -46,7 +46,7 @@ struct Request {
     skip_all,
     fields(
         user_id = user.id().ok(),
-        story_id = %payload.story_id
+        story_id = %payload.story_id,
         content = %payload.content
     ),
     err

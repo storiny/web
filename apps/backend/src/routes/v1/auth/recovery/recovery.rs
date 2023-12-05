@@ -18,7 +18,6 @@ use actix_web::{
     HttpResponse,
 };
 use actix_web_validator::Json;
-use anyhow::Context;
 use apalis::prelude::Storage;
 use argon2::{
     password_hash::{

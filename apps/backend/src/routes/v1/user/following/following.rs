@@ -65,8 +65,8 @@ struct Following {
     fields(
         current_user_id = maybe_user.and_then(|user| user.id().ok()),
         user_id = %path.user_id,
-        page = query.page
-        sort = query.sort
+        page = query.page,
+        sort = query.sort,
         query = query.query
     ),
     err

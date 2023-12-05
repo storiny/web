@@ -11,7 +11,11 @@ use lockable::{
     AsyncLimit,
     LockableHashMap,
 };
-use std::sync::Arc;
+use std::{
+    fmt,
+    fmt::Formatter,
+    sync::Arc,
+};
 use strum::Display;
 use thiserror::Error;
 use time::OffsetDateTime;
@@ -125,11 +129,23 @@ pub enum PersistDocError {
     Compression(String),
 }
 
+impl fmt::Display for PersistDocError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
 /// The error raised while trying to subscribe to a realm using the [Realm::subscribe] method.
 #[derive(Debug)]
 pub enum SubscribeError {
     /// The realm cannot accept more peers. This is governed by the [MAX_PEERS_PER_REALM] value.
     RealmFull,
+}
+
+impl fmt::Display for SubscribeError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
 }
 
 /// The realm sync protocol.
@@ -528,14 +544,13 @@ impl Realm {
         fields(
             doc_id = self.doc_id,
             doc_key = self.doc_key
-        ),
-        err
+        )
     )]
     async fn start_persistence_loop(self: Arc<Self>) {
         let mut persistence_loop_task = self.persistence_loop_task.write().await;
 
         if persistence_loop_task.is_none() {
-            trace!("[{}] starting persistence loop task", self_ref.doc_id);
+            trace!("[{}] starting persistence loop task", self.doc_id);
 
             let mut interval = interval(Duration::from_secs(PERSISTENCE_LOOP_DURATION));
 
