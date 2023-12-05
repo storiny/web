@@ -15,13 +15,12 @@ const HOURS_24_AS_SECONDS: i32 = 86400;
 /// * `redis_pool` - The Redis connection pool.
 /// * `ip` - The IP address value for the report limit record.
 pub async fn incr_report_limit(redis_pool: &RedisPool, ip: &str) -> anyhow::Result<()> {
-    let mut conn = redis_pool
-        .get()
-        .await
-        .map_err(|error| anyhow!("unable to acquire a connection from the Redis pool: {error:?}"));
+    let mut conn = redis_pool.get().await.map_err(|error| {
+        anyhow!("unable to acquire a connection from the Redis pool: {error:?}")
+    })?;
     let increx = redis::Script::new(include_str!("../../lua/increx.lua"));
     let cache_key = format!(
-        "{}:{}:{user_id}",
+        "{}:{}:{ip}",
         RedisNamespace::ResourceLimit.to_string(),
         ResourceLimit::CreateReport as i32
     );

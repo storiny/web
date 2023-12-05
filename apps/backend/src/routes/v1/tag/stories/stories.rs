@@ -101,8 +101,8 @@ struct Story {
     fields(
         user_id = maybe_user.and_then(|user| user.id().ok()),
         tag_name = %path.tag_name,
-        page = query.page
-        sort = query.sort
+        page = query.page,
+        sort = query.sort,
         query = query.query
     ),
     err

@@ -74,13 +74,13 @@ RETURNING id
         if let Some(db_error) = error.as_database_error() {
             // Check if the user exists.
             if matches!(db_error.kind(), sqlx::error::ErrorKind::ForeignKeyViolation) {
-                return Err(Status::not_found("User not found"));
+                return Status::not_found("User not found");
             }
         }
 
         error!("unable to insert a draft: {error:?}");
 
-        Err(Status::internal("Database error"))
+        Status::internal("Database error")
     })?;
 
     incr_resource_limit(&client.redis_pool, ResourceLimit::CreateStory, user_id)

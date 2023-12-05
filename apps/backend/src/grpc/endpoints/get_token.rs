@@ -32,7 +32,7 @@ pub async fn get_token(
     let token_type = TokenType::try_from(request.r#type)
         .map_err(|_| Status::invalid_argument("`type` is invalid"))?;
 
-    tracing::Span::current().record("token_type", &token_type);
+    tracing::Span::current().record("token_type", &(token_type as i32));
 
     match sqlx::query(
         r#"

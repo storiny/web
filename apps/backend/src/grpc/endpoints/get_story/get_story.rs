@@ -113,13 +113,9 @@ pub async fn get_story(
     let request = request.into_inner();
     let maybe_story_slug = request.id_or_slug.clone();
     let maybe_story_id = request.id_or_slug.parse::<i64>().ok();
-    let current_user_id = request.current_user_id.and_then(|user_id| {
-        Some(
-            user_id
-                .parse::<i64>()
-                .map_err(|_| Status::invalid_argument("`current_user_id` is invalid"))?,
-        )
-    });
+    let current_user_id = request
+        .current_user_id
+        .and_then(|user_id| user_id.parse::<i64>().ok());
 
     let pg_pool = &client.db_pool;
     let mut txn = pg_pool.begin().await.map_err(|error| {

@@ -39,7 +39,7 @@ struct Fragments {
     skip_all,
     fields(
         user_id = user.id().ok(),
-        reply_id = %path.reply_id
+        reply_id = %path.reply_id,
         content = %payload.content
     ),
     err

@@ -9,10 +9,9 @@ use anyhow::anyhow;
 /// * `redis_pool` - The Redis connection pool.
 /// * `user_id` - The target user ID.
 pub async fn clear_user_sessions(redis_pool: &RedisPool, user_id: i64) -> anyhow::Result<()> {
-    let mut conn = redis_pool
-        .get()
-        .await
-        .map_err(|error| anyhow!("unable to acquire a connection from the Redis pool: {error:?}"));
+    let mut conn = redis_pool.get().await.map_err(|error| {
+        anyhow!("unable to acquire a connection from the Redis pool: {error:?}")
+    })?;
 
     let session_keys = get_user_sessions(redis_pool, user_id)
         .await?

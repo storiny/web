@@ -63,6 +63,7 @@ use tracing::{
     error,
     info,
     trace,
+    warn,
 };
 use uuid::Uuid;
 use warp::{
@@ -145,7 +146,7 @@ async fn handle_rejection(err: Rejection) -> Result<impl Reply, Infallible> {
     if err.is_not_found() {
         Ok(reply::with_status("Not found", StatusCode::NOT_FOUND).into_response())
     } else {
-        log::warn!("unhandled rejection: {:?}", err);
+        warn!("unhandled rejection: {:?}", err);
         Ok(
             reply::with_status("Procedure not found", StatusCode::INTERNAL_SERVER_ERROR)
                 .into_response(),

@@ -94,13 +94,9 @@ pub async fn get_profile(
 ) -> Result<Response<GetProfileResponse>, Status> {
     let request = request.into_inner();
     let username = request.username;
-    let current_user_id = request.current_user_id.and_then(|user_id| {
-        Some(
-            user_id
-                .parse::<i64>()
-                .map_err(|_| Status::invalid_argument("`current_user_id` is invalid"))?,
-        )
-    });
+    let current_user_id = request
+        .current_user_id
+        .and_then(|user_id| user_id.parse::<i64>().ok());
 
     let profile = {
         if let Some(user_id) = current_user_id {

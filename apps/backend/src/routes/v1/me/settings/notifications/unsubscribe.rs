@@ -18,7 +18,6 @@ use sqlx::{
     Postgres,
     QueryBuilder,
 };
-use tracing::warn;
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]

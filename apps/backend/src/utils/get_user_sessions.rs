@@ -34,10 +34,9 @@ pub async fn get_user_sessions(
     redis_pool: &RedisPool,
     user_id: i64,
 ) -> anyhow::Result<Vec<(String, UserSession)>> {
-    let mut conn = redis_pool
-        .get()
-        .await
-        .map_err(|error| anyhow!("unable to acquire a connection from the Redis pool: {error:?}"));
+    let mut conn = redis_pool.get().await.map_err(|error| {
+        anyhow!("unable to acquire a connection from the Redis pool: {error:?}")
+    })?;
 
     let iter: AsyncIter<String> = conn
         .scan_match(format!(
@@ -67,7 +66,8 @@ pub async fn get_user_sessions(
                 key.to_string(),
                 values
                     .get(index)?
-                    .map(|value| serde_json::from_str::<UserSession>(&value).ok())??,
+                    .as_ref()
+                    .map(|value| serde_json::from_str::<UserSession>(value).ok())??,
             ))
         })
         .collect::<Vec<_>>())

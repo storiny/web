@@ -14,10 +14,9 @@ use redis::AsyncCommands;
 /// * `redis_pool` - The Redis connection pool.
 /// * `ip` - The IP address value for the report limit record.
 pub async fn check_report_limit(redis_pool: &RedisPool, ip: &str) -> anyhow::Result<bool> {
-    let mut conn = redis_pool
-        .get()
-        .await
-        .map_err(|error| anyhow!("unable to acquire a connection from the Redis pool: {error:?}"));
+    let mut conn = redis_pool.get().await.map_err(|error| {
+        anyhow!("unable to acquire a connection from the Redis pool: {error:?}")
+    })?;
 
     let limit = conn
         .get::<_, Option<u32>>(&format!(
