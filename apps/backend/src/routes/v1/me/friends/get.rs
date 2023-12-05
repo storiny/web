@@ -257,7 +257,7 @@ VALUES ($2, $1, NOW()), ($3, $1, NOW())
         let friends = json.unwrap();
 
         assert_eq!(friends.len(), 2);
-        assert!(friends.iter().all(|&friend| friend.is_friend));
+        assert!(friends.iter().all(|friend| friend.is_friend));
 
         Ok(())
     }

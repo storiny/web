@@ -244,7 +244,7 @@ VALUES ($1, $2), ($1, $3)
         let bookmarks = json.unwrap();
 
         assert_eq!(bookmarks.len(), 2);
-        assert!(bookmarks.iter().all(|&bookmark| bookmark.is_bookmarked));
+        assert!(bookmarks.iter().all(|bookmark| bookmark.is_bookmarked));
 
         Ok(())
     }

@@ -292,7 +292,7 @@ mod tests {
         let writers = json.unwrap();
 
         assert_eq!(writers.len(), 3);
-        assert!(writers.iter().all(|&writer| writer.is_following));
+        assert!(writers.iter().all(|writer| writer.is_following));
 
         Ok(())
     }
@@ -510,7 +510,7 @@ WHERE id = $1
 
         // Should be false initially.
         let writers = serde_json::from_str::<Vec<Writer>>(&res_to_string(res).await).unwrap();
-        assert!(writers.iter().all(|&writer| !writer.is_following));
+        assert!(writers.iter().all(|writer| !writer.is_following));
 
         // Follow the writers.
         let result = sqlx::query(
@@ -536,7 +536,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         // Should be true.
         let writers = serde_json::from_str::<Vec<Writer>>(&res_to_string(res).await).unwrap();
-        assert!(writers.iter().all(|&writer| writer.is_following));
+        assert!(writers.iter().all(|writer| writer.is_following));
 
         Ok(())
     }

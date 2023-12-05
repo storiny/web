@@ -191,6 +191,8 @@ WHERE id = $1
         .execute(&mut *conn)
         .await?;
 
+        assert_eq!(result.rows_affected(), 1);
+
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
             .uri("/v1/me/assets")

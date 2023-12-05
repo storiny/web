@@ -217,7 +217,7 @@ mod tests {
         assert!(
             stories
                 .iter()
-                .all(|&story| !story.is_liked && !story.is_bookmarked)
+                .all(|story| !story.is_liked && !story.is_bookmarked)
         );
 
         Ok(())
@@ -417,7 +417,7 @@ WHERE id = $1
 
         // Should be false initially.
         let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
-        assert!(stories.iter().all(|&story| !story.is_liked));
+        assert!(stories.iter().all(|story| !story.is_liked));
 
         // Like the stories.
         let result = sqlx::query(
@@ -443,7 +443,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         // Should be true.
         let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
-        assert!(stories.iter().all(|&story| story.is_liked));
+        assert!(stories.iter().all(|story| story.is_liked));
 
         Ok(())
     }
@@ -463,7 +463,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         // Should be false initially.
         let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
-        assert!(stories.iter().all(|&story| !story.is_bookmarked));
+        assert!(stories.iter().all(|story| !story.is_bookmarked));
 
         // Bookmark the stories.
         let result = sqlx::query(
@@ -489,7 +489,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         // Should be true.
         let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
-        assert!(stories.iter().all(|&story| story.is_bookmarked));
+        assert!(stories.iter().all(|story| story.is_bookmarked));
 
         Ok(())
     }

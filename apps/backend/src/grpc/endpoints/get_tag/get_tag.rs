@@ -209,7 +209,8 @@ VALUES ($1, $2)
                 .bind(user_id.unwrap())
                 .bind(2_i64)
                 .execute(&pool)
-                .await?;
+                .await
+                .unwrap();
 
                 assert_eq!(result.rows_affected(), 1);
 

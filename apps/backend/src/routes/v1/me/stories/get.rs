@@ -431,6 +431,8 @@ VALUES ($2, $1, 'sample-story-1', NOW())
         .execute(&mut *conn)
         .await?;
 
+        assert_eq!(insert_result.rows_affected(), 1);
+
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/stories")
@@ -486,6 +488,8 @@ VALUES ($2, $1, 'sample-story-1', NOW())
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
@@ -545,6 +549,8 @@ VALUES ($2, $1, 'sample-story-1', NOW())
         .execute(&mut *conn)
         .await?;
 
+        assert_eq!(insert_result.rows_affected(), 1);
+
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/stories?sort=old")
@@ -602,6 +608,8 @@ VALUES ($2, $1, 'sample-story-1', NOW())
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
@@ -661,6 +669,8 @@ VALUES ($2, $1, 'sample-story-1', NOW())
         .execute(&mut *conn)
         .await?;
 
+        assert_eq!(insert_result.rows_affected(), 1);
+
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/stories?sort=recent")
@@ -718,6 +728,8 @@ VALUES ($2, $1, 'sample-story-1', NOW())
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
@@ -779,6 +791,8 @@ VALUES ($2, $1, 'sample-story-1', NOW())
         .execute(&mut *conn)
         .await?;
 
+        assert_eq!(insert_result.rows_affected(), 1);
+
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/stories?sort=least-popular")
@@ -836,6 +850,8 @@ VALUES ($2, $1, 'sample-story-1', NOW())
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
@@ -897,6 +913,8 @@ VALUES ($2, $1, 'sample-story-1', NOW())
         .execute(&mut *conn)
         .await?;
 
+        assert_eq!(insert_result.rows_affected(), 1);
+
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/stories?sort=most-popular")
@@ -954,6 +972,8 @@ VALUES ($2, $1, 'sample-story-1', NOW())
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
@@ -1015,6 +1035,8 @@ VALUES ($2, $1, 'sample-story-1', NOW())
         .execute(&mut *conn)
         .await?;
 
+        assert_eq!(insert_result.rows_affected(), 1);
+
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/stories?sort=least-liked")
@@ -1072,6 +1094,8 @@ VALUES ($2, $1, 'sample-story-1', NOW())
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
@@ -1133,6 +1157,8 @@ VALUES ($2, $1, 'sample-story-1', NOW())
         .execute(&mut *conn)
         .await?;
 
+        assert_eq!(insert_result.rows_affected(), 1);
+
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/stories?sort=most-liked")
@@ -1191,6 +1217,8 @@ VALUES ($2, $1, 'sample-story-1', NOW())
         .execute(&mut *conn)
         .await?;
 
+        assert_eq!(insert_result.rows_affected(), 1);
+
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri("/v1/me/stories?sort=most-liked")
@@ -1248,6 +1276,8 @@ VALUES ($2, $1, 'one', 'sample-story-1', NOW())
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
@@ -1312,6 +1342,8 @@ VALUES ($2, $1, 'one', 'sample-story-1', NOW())
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())

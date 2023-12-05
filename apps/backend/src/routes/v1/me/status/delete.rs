@@ -96,8 +96,7 @@ SELECT EXISTS (
     async fn should_not_throw_when_trying_to_clear_an_unknown_status(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
+        let (app, cookie, _) = init_app_for_test(delete, pool, true, false, None).await;
 
         let req = test::TestRequest::delete()
             .cookie(cookie.unwrap())

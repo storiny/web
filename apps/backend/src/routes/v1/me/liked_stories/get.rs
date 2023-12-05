@@ -244,7 +244,7 @@ VALUES ($1, $2), ($1, $3)
         let liked_stories = json.unwrap();
 
         assert_eq!(liked_stories.len(), 2);
-        assert!(liked_stories.iter().all(|&story| story.is_liked));
+        assert!(liked_stories.iter().all(|story| story.is_liked));
 
         Ok(())
     }
@@ -375,7 +375,7 @@ VALUES ($1, $2), ($1, $3)
 
     //
 
-    #[sqlx::test(fixtures("history"))]
+    #[sqlx::test(fixtures("liked_story"))]
     async fn can_return_is_bookmarked_flag_for_liked_stories(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
@@ -431,7 +431,7 @@ VALUES ($1, $2)
         Ok(())
     }
 
-    #[sqlx::test(fixtures("history"))]
+    #[sqlx::test(fixtures("liked_story"))]
     async fn can_return_is_bookmarked_flag_for_liked_stories_in_asc_order(
         pool: PgPool,
     ) -> sqlx::Result<()> {
@@ -489,7 +489,7 @@ VALUES ($1, $2)
         Ok(())
     }
 
-    #[sqlx::test(fixtures("history"))]
+    #[sqlx::test(fixtures("liked_story"))]
     async fn can_return_is_bookmarked_flag_for_liked_stories_in_desc_order(
         pool: PgPool,
     ) -> sqlx::Result<()> {
@@ -547,7 +547,7 @@ VALUES ($1, $2)
         Ok(())
     }
 
-    #[sqlx::test(fixtures("history"))]
+    #[sqlx::test(fixtures("liked_story"))]
     async fn can_return_is_bookmarked_flag_for_liked_stories_when_searching(
         pool: PgPool,
     ) -> sqlx::Result<()> {

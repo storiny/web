@@ -191,7 +191,7 @@ mod tests {
         let result = get_rsb_content_users(None, &pool).await?;
 
         assert_eq!(result.len(), 2);
-        assert!(result.iter().all(|&user| !user.is_following));
+        assert!(result.iter().all(|user| !user.is_following));
 
         Ok(())
     }
@@ -306,7 +306,7 @@ WHERE id = $1
         let result = get_rsb_content_users(Some(1_i64), &pool).await?;
 
         // Should be false initially.
-        assert!(result.iter().all(|&user| !user.is_following));
+        assert!(result.iter().all(|user| !user.is_following));
 
         // Follow the user.
         let result = sqlx::query(
@@ -325,7 +325,7 @@ VALUES ($1, $2)
         let result = get_rsb_content_users(Some(1_i64), &pool).await?;
 
         // Should be true.
-        assert!(result.iter().all(|&user| user.is_following));
+        assert!(result.iter().all(|user| user.is_following));
 
         Ok(())
     }

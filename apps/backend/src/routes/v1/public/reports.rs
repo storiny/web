@@ -133,10 +133,7 @@ mod tests {
     use super::*;
     use crate::{
         constants::{
-            redis_namespaces::{
-                RedisNamespace,
-                RedisNamespace::ResourceLimit,
-            },
+            redis_namespaces::RedisNamespace,
             report_type::ReportType,
             resource_limit::ResourceLimit,
         },
@@ -284,10 +281,11 @@ WHERE entity_id = $1
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         let user_id = user_id.unwrap();
+        let user_id_str = user_id.to_string();
         let mut incr_futures = vec![];
 
         for _ in 0..ResourceLimit::CreateReport.get_limit() + 1 {
-            incr_futures.push(incr_report_limit(redis_pool, &user_id.to_string()));
+            incr_futures.push(incr_report_limit(redis_pool, &user_id_str));
         }
 
         future::join_all(incr_futures).await;
