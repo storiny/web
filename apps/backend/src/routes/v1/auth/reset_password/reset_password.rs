@@ -400,7 +400,7 @@ VALUES ($1, $2, $3, $4)
         ) -> sqlx::Result<()> {
             let redis_pool = &ctx.redis_pool;
             let mut conn = pool.acquire().await?;
-            let (app, _, _, _) = init_app_for_test(post, pool, false, false, None).await.0;
+            let (app, _, _) = init_app_for_test(post, pool, false, false, None).await;
 
             let token_id = nanoid!(48);
             let salt = SaltString::generate(&mut OsRng);

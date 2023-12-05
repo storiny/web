@@ -381,7 +381,7 @@ VALUES ($1, $2), ($1, $3)
         assert!(
             followed_users
                 .iter()
-                .all(|&user| !user.is_follower && !user.is_following && !user.is_friend)
+                .all(|user| !user.is_follower && !user.is_following && !user.is_friend)
         );
 
         Ok(())
@@ -770,7 +770,7 @@ VALUES ($1, $2)
         // Should be false initially.
         let followed_users =
             serde_json::from_str::<Vec<Following>>(&res_to_string(res).await).unwrap();
-        assert!(followed_users.iter().all(|&user| !user.is_following));
+        assert!(followed_users.iter().all(|user| !user.is_following));
 
         // Follow the user.
         let result = sqlx::query(
@@ -795,7 +795,7 @@ VALUES ($1, $2)
         // Should be true.
         let followed_users =
             serde_json::from_str::<Vec<Following>>(&res_to_string(res).await).unwrap();
-        assert!(followed_users.iter().all(|&user| user.is_following));
+        assert!(followed_users.iter().all(|user| user.is_following));
 
         Ok(())
     }
@@ -830,7 +830,7 @@ VALUES ($1, $2)
         // Should be false initially.
         let followed_users =
             serde_json::from_str::<Vec<Following>>(&res_to_string(res).await).unwrap();
-        assert!(followed_users.iter().all(|&user| !user.is_follower));
+        assert!(followed_users.iter().all(|user| !user.is_follower));
 
         // Add the user as follower.
         let result = sqlx::query(
@@ -855,7 +855,7 @@ VALUES ($2, $1)
         // Should be true.
         let followed_users =
             serde_json::from_str::<Vec<Following>>(&res_to_string(res).await).unwrap();
-        assert!(followed_users.iter().all(|&user| user.is_follower));
+        assert!(followed_users.iter().all(|user| user.is_follower));
 
         Ok(())
     }
@@ -890,7 +890,7 @@ VALUES ($1, $2)
         // Should be false initially.
         let followed_users =
             serde_json::from_str::<Vec<Following>>(&res_to_string(res).await).unwrap();
-        assert!(followed_users.iter().all(|&user| !user.is_friend));
+        assert!(followed_users.iter().all(|user| !user.is_friend));
 
         // Send a friend request to the user.
         let result = sqlx::query(
@@ -915,7 +915,7 @@ VALUES ($1, $2)
         // Should still be false as the friend request has not been accepted yet.
         let followed_users =
             serde_json::from_str::<Vec<Following>>(&res_to_string(res).await).unwrap();
-        assert!(followed_users.iter().all(|&user| !user.is_friend));
+        assert!(followed_users.iter().all(|user| !user.is_friend));
 
         // Accept the friend request.
         let result = sqlx::query(
@@ -941,7 +941,7 @@ WHERE
         // Should be true.
         let followed_users =
             serde_json::from_str::<Vec<Following>>(&res_to_string(res).await).unwrap();
-        assert!(followed_users.iter().all(|&user| user.is_friend));
+        assert!(followed_users.iter().all(|user| user.is_friend));
 
         Ok(())
     }

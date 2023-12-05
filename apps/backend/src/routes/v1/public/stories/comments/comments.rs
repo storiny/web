@@ -401,7 +401,7 @@ VALUES ($1, $2, $3), ($1, $2, $3)
         let comments = json.unwrap();
 
         assert_eq!(comments.len(), 2);
-        assert!(comments.iter().all(|&comment| !comment.is_liked));
+        assert!(comments.iter().all(|comment| !comment.is_liked));
 
         Ok(())
     }

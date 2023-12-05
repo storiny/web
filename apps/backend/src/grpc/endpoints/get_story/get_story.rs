@@ -371,11 +371,14 @@ WHERE id = $1
                     // Flags should be neutral.
                     assert!(!response.is_liked);
                     assert!(!response.is_bookmarked);
-                    assert!(!response.user.unwrap().is_following);
-                    assert!(!response.user.unwrap().is_follower);
-                    assert!(!response.user.unwrap().is_friend);
-                    assert!(!response.user.unwrap().is_blocked_by_user);
-                    assert!(!response.user.unwrap().is_self);
+
+                    let user = response.user.unwrap();
+
+                    assert!(!user.is_following);
+                    assert!(!user.is_follower);
+                    assert!(!user.is_friend);
+                    assert!(!user.is_blocked_by_user);
+                    assert!(!user.is_self);
                 }),
             )
             .await;
@@ -809,7 +812,7 @@ WHERE id = $1
             test_grpc_service(
                 pool,
                 true,
-                Box::new(|mut client, pool, redis_pool, user_id| async move {
+                Box::new(|mut client, pool, _, user_id| async move {
                     let response = client
                         .get_story(Request::new(GetStoryRequest {
                             id_or_slug: 3_i64.to_string(),
@@ -862,7 +865,7 @@ VALUES ($1, $2)
             test_grpc_service(
                 pool,
                 true,
-                Box::new(|mut client, pool, redis_pool, user_id| async move {
+                Box::new(|mut client, pool, _, user_id| async move {
                     let response = client
                         .get_story(Request::new(GetStoryRequest {
                             id_or_slug: 3_i64.to_string(),
@@ -915,7 +918,7 @@ VALUES ($1, $2)
             test_grpc_service(
                 pool,
                 true,
-                Box::new(|mut client, pool, redis_pool, user_id| async move {
+                Box::new(|mut client, pool, _, user_id| async move {
                     let response = client
                         .get_story(Request::new(GetStoryRequest {
                             id_or_slug: 3_i64.to_string(),
@@ -968,7 +971,7 @@ VALUES ($1, $2)
             test_grpc_service(
                 pool,
                 true,
-                Box::new(|mut client, pool, redis_pool, user_id| async move {
+                Box::new(|mut client, pool, _, user_id| async move {
                     let response = client
                         .get_story(Request::new(GetStoryRequest {
                             id_or_slug: 3_i64.to_string(),
@@ -1021,7 +1024,7 @@ VALUES ($2, $1)
             test_grpc_service(
                 pool,
                 true,
-                Box::new(|mut client, pool, redis_pool, user_id| async move {
+                Box::new(|mut client, pool, _, user_id| async move {
                     let response = client
                         .get_story(Request::new(GetStoryRequest {
                             id_or_slug: 3_i64.to_string(),
@@ -1101,7 +1104,7 @@ WHERE transmitter_id = $1
             test_grpc_service(
                 pool,
                 true,
-                Box::new(|mut client, pool, redis_pool, user_id| async move {
+                Box::new(|mut client, pool, _, user_id| async move {
                     let response = client
                         .get_story(Request::new(GetStoryRequest {
                             id_or_slug: 3_i64.to_string(),
@@ -1154,7 +1157,7 @@ VALUES ($2, $1)
             test_grpc_service(
                 pool,
                 true,
-                Box::new(|mut client, pool, redis_pool, user_id| async move {
+                Box::new(|mut client, pool, _, user_id| async move {
                     let response = client
                         .get_story(Request::new(GetStoryRequest {
                             id_or_slug: 3_i64.to_string(),
@@ -1210,7 +1213,7 @@ WHERE id = $3
             test_grpc_service(
                 pool,
                 true,
-                Box::new(|mut client, pool, redis_pool, user_id| async move {
+                Box::new(|mut client, pool, _, user_id| async move {
                     let response = client
                         .get_story(Request::new(GetStoryRequest {
                             id_or_slug: "some-story".to_string(),
@@ -1263,7 +1266,7 @@ VALUES ($1, $2)
             test_grpc_service(
                 pool,
                 true,
-                Box::new(|mut client, pool, redis_pool, user_id| async move {
+                Box::new(|mut client, pool, _, user_id| async move {
                     let response = client
                         .get_story(Request::new(GetStoryRequest {
                             id_or_slug: "some-story".to_string(),
@@ -1316,7 +1319,7 @@ VALUES ($1, $2)
             test_grpc_service(
                 pool,
                 true,
-                Box::new(|mut client, pool, redis_pool, user_id| async move {
+                Box::new(|mut client, pool, _, user_id| async move {
                     let response = client
                         .get_story(Request::new(GetStoryRequest {
                             id_or_slug: "some-story".to_string(),
@@ -1369,7 +1372,7 @@ VALUES ($1, $2)
             test_grpc_service(
                 pool,
                 true,
-                Box::new(|mut client, pool, redis_pool, user_id| async move {
+                Box::new(|mut client, pool, _, user_id| async move {
                     let response = client
                         .get_story(Request::new(GetStoryRequest {
                             id_or_slug: "some-story".to_string(),
@@ -1422,7 +1425,7 @@ VALUES ($2, $1)
             test_grpc_service(
                 pool,
                 true,
-                Box::new(|mut client, pool, redis_pool, user_id| async move {
+                Box::new(|mut client, pool, _, user_id| async move {
                     let response = client
                         .get_story(Request::new(GetStoryRequest {
                             id_or_slug: "some-story".to_string(),
@@ -1502,7 +1505,7 @@ WHERE transmitter_id = $1
             test_grpc_service(
                 pool,
                 true,
-                Box::new(|mut client, pool, redis_pool, user_id| async move {
+                Box::new(|mut client, pool, _, user_id| async move {
                     let response = client
                         .get_story(Request::new(GetStoryRequest {
                             id_or_slug: "some-story".to_string(),
@@ -1555,7 +1558,7 @@ VALUES ($2, $1)
             test_grpc_service(
                 pool,
                 true,
-                Box::new(|mut client, pool, redis_pool, user_id| async move {
+                Box::new(|mut client, pool, _, user_id| async move {
                     let response = client
                         .get_story(Request::new(GetStoryRequest {
                             id_or_slug: "some-story".to_string(),

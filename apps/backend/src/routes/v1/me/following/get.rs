@@ -257,7 +257,7 @@ VALUES ($1, $2), ($1, $3)
         let following_users = json.unwrap();
 
         assert_eq!(following_users.len(), 2);
-        assert!(following_users.iter().all(|&user| user.is_following));
+        assert!(following_users.iter().all(|user| user.is_following));
 
         Ok(())
     }
@@ -365,7 +365,7 @@ VALUES ($1, $2)
         assert_eq!(insert_result.rows_affected(), 1);
 
         let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
+            .cookie(cookie.clone().unwrap())
             .uri("/v1/me/following")
             .to_request();
         let res = test::call_service(&app, req).await;

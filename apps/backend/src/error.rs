@@ -4,7 +4,10 @@ use actix_web::{
     HttpResponse,
     ResponseError,
 };
-use serde::Serialize;
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use std::{
     fmt,
     fmt::{
@@ -58,13 +61,6 @@ impl FormErrorResponse {
     }
 }
 
-// TODO
-// impl Into<AppError> for FormErrorResponse {
-//     fn into(self) -> AppError {
-//         AppError::FormError(self)
-//     }
-// }
-
 impl From<&validator::ValidationErrors> for FormErrorResponse {
     fn from(error: &validator::ValidationErrors) -> Self {
         FormErrorResponse::from_errors(
@@ -86,7 +82,7 @@ impl From<&validator::ValidationErrors> for FormErrorResponse {
 // Toast error
 
 /// The JSON toast error response object.
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ToastErrorResponse {
     /// The error message.
     pub error: String,
@@ -111,13 +107,6 @@ impl ToastErrorResponse {
         }
     }
 }
-
-// TODO
-// impl Into<AppError> for ToastErrorResponse {
-//     fn into(self) -> AppError {
-//         AppError::ToastError(self)
-//     }
-// }
 
 // Application error
 

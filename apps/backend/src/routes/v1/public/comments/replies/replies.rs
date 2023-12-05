@@ -291,7 +291,7 @@ mod tests {
         let replies = json.unwrap();
 
         assert_eq!(replies.len(), 2);
-        assert!(replies.iter().all(|&reply| !reply.is_liked));
+        assert!(replies.iter().all(|reply| !reply.is_liked));
 
         Ok(())
     }
@@ -331,7 +331,7 @@ mod tests {
         let replies = json.unwrap();
 
         // Should be false initially.
-        assert!(replies.iter().all(|&reply| !reply.is_liked));
+        assert!(replies.iter().all(|reply| !reply.is_liked));
 
         // Like the replies.
         let result = sqlx::query(
@@ -358,7 +358,7 @@ VALUES ($1, $2), ($1, $3)
         let replies = json.unwrap();
 
         // Should be true.
-        assert!(replies.iter().all(|&reply| reply.is_liked));
+        assert!(replies.iter().all(|reply| reply.is_liked));
 
         Ok(())
     }

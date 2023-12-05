@@ -280,7 +280,7 @@ mod tests {
         let tags = json.unwrap();
 
         assert_eq!(tags.len(), 2);
-        assert!(tags.iter().all(|&tag| !tag.is_followed));
+        assert!(tags.iter().all(|tag| !tag.is_followed));
 
         Ok(())
     }
@@ -346,7 +346,7 @@ mod tests {
 
         // Should be false initially.
         assert_eq!(tags.len(), 2);
-        assert!(tags.iter().all(|&tag| !tag.is_followed));
+        assert!(tags.iter().all(|tag| !tag.is_followed));
 
         // Follow the tags.
         let result = sqlx::query(
@@ -373,7 +373,7 @@ VALUES ($2, $1), ($3, $1)
 
         // Should be true.
         assert_eq!(tags.len(), 2);
-        assert!(tags.iter().all(|&tag| tag.is_followed));
+        assert!(tags.iter().all(|tag| tag.is_followed));
 
         Ok(())
     }

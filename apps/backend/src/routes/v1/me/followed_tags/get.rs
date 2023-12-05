@@ -232,7 +232,7 @@ VALUES ($1, $2), ($1, $3)
         let followed_tags = json.unwrap();
 
         assert_eq!(followed_tags.len(), 2);
-        assert!(followed_tags.iter().all(|&tag| tag.is_followed));
+        assert!(followed_tags.iter().all(|tag| tag.is_followed));
 
         Ok(())
     }
