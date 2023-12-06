@@ -85,13 +85,13 @@ impl ResponseError for AppError {
 // Allows creating simple client errors from a string slice.
 impl From<&str> for AppError {
     fn from(value: &str) -> Self {
-        AppError::new_client_error(value)
+        AppError::ClientError(StatusCode::BAD_REQUEST, value.to_string())
     }
 }
 
 // Allows creating simple client errors from a string value.
 impl From<String> for AppError {
     fn from(value: String) -> Self {
-        AppError::new_client_error(&value)
+        AppError::ClientError(StatusCode::BAD_REQUEST, value)
     }
 }

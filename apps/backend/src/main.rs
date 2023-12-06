@@ -236,13 +236,13 @@ async fn main() -> io::Result<()> {
             // Start the realms server
             let realms_future = start_realms_server(realm_map, db_pool, redis_pool, s3_client);
 
-            // Start the main HTTP server
+            // Start the main HTTP server.
             let http_future = HttpServer::new(move || {
                 let input = SimpleInputFunctionBuilder::new(Duration::from_secs(5), 25) // 25 requests / 5s
                     .real_ip_key()
                     .build();
 
-                // JSON validation error handler
+                // JSON validation error handler.
                 let json_config = JsonConfig::default().error_handler(|err, _| {
                     let json_error = match &err {
                         actix_web_validator::Error::Validate(error) => {
@@ -258,7 +258,7 @@ async fn main() -> io::Result<()> {
                     .into()
                 });
 
-                // Query validation error handler
+                // Query validation error handler.
                 let qs_query_config = QsQueryConfig::default().error_handler(|err, _| {
                     actix_web::error::InternalError::from_response(
                         err,
@@ -267,7 +267,7 @@ async fn main() -> io::Result<()> {
                     .into()
                 });
 
-                // Path fragments validation error handler
+                // Path fragments validation error handler.
                 let path_config = PathConfig::default().error_handler(|err, _| {
                     actix_web::error::InternalError::from_response(
                         err,
@@ -319,12 +319,6 @@ async fn main() -> io::Result<()> {
                         actix_web::middleware::DefaultHeaders::new()
                             .add(("x-storiny-api-version", "1")),
                     )
-                    // .wrap(
-                    //     actix_web::middleware::Logger::new(
-                    //         "%{x-request-id}o %a %t \"%r\" %s %b \"%{Referer}i\" %T",
-                    //     )
-                    //     .log_target("api"),
-                    // )
                     .wrap(TracingLogger::default())
                     .wrap(actix_web::middleware::Compress::default())
                     .wrap(actix_web::middleware::NormalizePath::trim())

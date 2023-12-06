@@ -515,7 +515,9 @@ pub async fn get_metadata(
     let html = Client::new(REQUEST_CLIENT.clone())
         .fetch(url.clone())
         .await?;
-    let doc_metadata = DocMetadata::from_string(&html)?;
+    let doc_metadata = DocMetadata::from_string(&html).map_err(|error| {
+        AppError::InternalError(format!("unable to parse the document metadata: {error:?}"))
+    })?;
     let has_opengraph_image = doc_metadata.opengraph.image.is_some();
     let has_twitter_card_image = doc_metadata.twitter_card.image.is_some();
 

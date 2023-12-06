@@ -1,5 +1,4 @@
 use lz_str::decompress_from_encoded_uri_component;
-use std::string::FromUtf16Error;
 
 /// Decompresses a URL compressed using [lz_str::compress_to_encoded_uri_component].
 ///

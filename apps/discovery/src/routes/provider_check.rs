@@ -34,7 +34,7 @@ async fn get(compressed_url: web::Path<String>) -> Result<HttpResponse, AppError
         resolve_provider(&decompressed_url).ok_or(AppError::from("Provider not supported yet"))?;
     let provider_name = provider.name;
 
-    tracing::Span::current().record("resolved_provider", &provider_name);
+    tracing::Span::current().record("resolved_provider", provider_name);
 
     Ok(HttpResponse::Ok().body(format!("OK ({provider_name})")))
 }

@@ -9,7 +9,6 @@ use actix_web::{
         header,
         header::ContentType,
     },
-    middleware::Logger,
     web,
     App,
     HttpResponse,
@@ -26,7 +25,13 @@ use storiny_discovery::{
     config::get_app_config,
     constants::redis_namespaces::RedisNamespace,
     routes,
+    telemetry::{
+        get_subscriber,
+        init_subscriber,
+    },
 };
+use tracing::info;
+use tracing_actix_web::TracingLogger;
 
 mod middlewares;
 
@@ -43,14 +48,17 @@ async fn main() -> io::Result<()> {
 
     match get_app_config() {
         Ok(config) => {
-            env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
+            if config.is_dev {
+                let subscriber = get_subscriber("dev".to_string(), "info".to_string(), io::stdout);
+                init_subscriber(subscriber);
+            }
 
             let host = config.host.to_string();
             let port = config.port.clone().parse::<u16>().unwrap();
             let redis_connection_string =
                 format!("redis://{}:{}", &config.redis_host, &config.redis_port);
 
-            log::info!(
+            info!(
                 "{}",
                 format!(
                     "Starting discovery HTTP server in {} mode at {}:{}",
@@ -97,9 +105,13 @@ async fn main() -> io::Result<()> {
                             .allowed_headers(vec![header::CONTENT_TYPE, header::ACCEPT])
                             .max_age(3600)
                     })
-                    .wrap(Logger::new(
-                        "%a %t \"%r\" %s %b \"%{Referer}i\" \"%{User-Agent}i\" %T",
-                    ))
+                    .wrap(
+                        actix_web::middleware::DefaultHeaders::new()
+                            .add(("x-storiny-discovery-version", "1")),
+                    )
+                    .wrap(TracingLogger::default())
+                    .wrap(actix_web::middleware::Compress::default())
+                    .wrap(actix_web::middleware::NormalizePath::trim())
                     .app_data(web_config.clone())
                     .configure(routes::init_routes)
                     .service(fs::Files::new("/", "./static"))

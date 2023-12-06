@@ -1,5 +1,11 @@
 dev:
+    cargo watch -w src -x run | bunyan
+
+dev_raw:
     cargo watch -w src -x run
+
+build:
+    cargo build --release
 
 fmt:
     cargo +nightly fmt
@@ -9,6 +15,9 @@ test:
 
 test_ci:
     cargo nextest run --no-fail-fast
+
+test_verbose:
+    cargo nextest run --no-capture --no-fail-fast
 
 udeps:
     cargo +nightly udeps --all-targets
