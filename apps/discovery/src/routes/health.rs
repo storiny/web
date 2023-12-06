@@ -13,9 +13,6 @@ async fn get() -> impl Responder {
         .body("OK")
 }
 
-/// Registers health routes
-///
-/// * `cfg` - Web service config
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(get);
 }

@@ -20,7 +20,8 @@ use tracing::error;
     fields(
         user_id = tracing::field::Empty,
         story_id = tracing::field::Empty
-    )
+    ),
+    err
 )]
 pub async fn get_story_responses_info(
     client: &GrpcService,

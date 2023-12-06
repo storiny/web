@@ -26,6 +26,7 @@ use image::{
     imageops::FilterType,
     EncodableLayout,
     GenericImageView,
+    ImageError,
     ImageOutputFormat,
 };
 use mime::IMAGE_JPEG;
@@ -38,6 +39,7 @@ use crate::error::ToastErrorResponse;
 use actix_web::http::StatusCode;
 use sqlx::Row;
 use std::{
+    cmp,
     io::Cursor,
     time::Duration,
 };
@@ -148,10 +150,17 @@ async fn post(
         .send()
         .await
         .map_err(|error| {
-            AppError::InternalError(format!("unable to fetch the Pexels photo: {error:?}"))
+            // Pexels returns 404 status code for an invalid photo.
+            if error.status() == Some(StatusCode::NOT_FOUND) {
+                AppError::ToastError(ToastErrorResponse::new(None, "Photo not found"))
+            } else {
+                AppError::InternalError(format!("unable to fetch the Pexels photo: {error:?}"))
+            }
         })?;
 
-    if !response.status().is_success() {
+    if response.status() == StatusCode::NOT_FOUND {
+        return Err(ToastErrorResponse::new(None, "Photo not found").into());
+    } else if !response.status().is_success() {
         return Err(AppError::InternalError(format!(
             "unable to fetch the Pexels photo: {response:?}"
         )));
@@ -205,8 +214,24 @@ async fn post(
     debug!("downloaded image buffer size: {} bytes", image_bytes.len());
     tracing::Span::current().record("buffer_size", image_bytes.len());
 
-    let mut loaded_image = image::load_from_memory(&image_bytes).map_err(|error| {
-        AppError::InternalError(format!("unable to load the image from memory: {error:?}"))
+    let mut loaded_image = image::load_from_memory(&image_bytes).map_err(|error| match error {
+        ImageError::Decoding(decode_error) => {
+            warn!("image decode error: {decode_error:?}");
+
+            AppError::ToastError(ToastErrorResponse::new(
+                Some(StatusCode::UNPROCESSABLE_ENTITY),
+                "Photo is not supported",
+            ))
+        }
+        ImageError::Limits(limit_error) => {
+            warn!("image limit error: {limit_error:?}");
+
+            AppError::ToastError(ToastErrorResponse::new(
+                Some(StatusCode::UNPROCESSABLE_ENTITY),
+                "Photo is too big",
+            ))
+        }
+        _ => AppError::InternalError(format!("unable to load the image from memory: {error:?}")),
     })?;
 
     let (mut img_width, mut img_height) = loaded_image.dimensions();
@@ -214,6 +239,17 @@ async fn post(
     debug!("image dimensions: {img_width}px width, {img_height}px height");
     tracing::Span::current().record("original_width", img_width);
     tracing::Span::current().record("original_height", img_height);
+
+    // The image is likely a PNG decompression bomb.
+    if cmp::max(img_width, img_height) > 10_000 {
+        debug!("aborting upload due to huge image dimensions");
+
+        return Err(ToastErrorResponse::new(
+            Some(StatusCode::UNPROCESSABLE_ENTITY),
+            "Photo is not supported",
+        )
+        .into());
+    }
 
     // Scale down to 2k
     if img_width > 2048 || img_height > 2048 {
@@ -369,7 +405,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::test_utils::{
-        assert_response_body_text,
+        assert_toast_error_response,
         exceed_resource_limit,
         get_resource_limit,
         init_app_for_test,
@@ -398,7 +434,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Photo not found").await;
+        assert_toast_error_response(res, "Photo not found").await;
 
         Ok(())
     }

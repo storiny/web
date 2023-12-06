@@ -13,9 +13,6 @@ async fn get() -> impl Responder {
         .body("Discovery — Media proxy service for Storiny")
 }
 
-/// Registers index routes
-///
-/// * `cfg` - Web service config
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(get);
 }

@@ -499,7 +499,7 @@ WHERE id = $1
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())

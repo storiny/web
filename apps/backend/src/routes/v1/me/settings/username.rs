@@ -1,6 +1,7 @@
 use crate::{
     constants::{
         account_activity_type::AccountActivityType,
+        reserved_usernames::RESERVED_USERNAMES,
         sql_states::SqlState,
         username_regex::USERNAME_REGEX,
     },
@@ -98,6 +99,15 @@ WHERE id = $1
     }
 
     let slugged_username = slugify!(&payload.new_username, separator = "_", max_length = 24);
+
+    // Chekc if username is reserved.
+    if RESERVED_USERNAMES.contains(&slugged_username.as_str()) {
+        return Err(FormErrorResponse::new(
+            Some(StatusCode::FORBIDDEN),
+            vec![("new_username", "This username is not available")],
+        )
+        .into());
+    }
 
     match sqlx::query(
         r#"
@@ -391,6 +401,68 @@ VALUES ($1, $2, $3, $4)
         assert_form_error_response(
             res,
             vec![("new_username", "This username is already in use")],
+        )
+        .await;
+
+        // Should not insert an account activity.
+        let result = sqlx::query(
+            r#"
+SELECT EXISTS (
+    SELECT 1 FROM account_activities
+    WHERE user_id = $1 AND type = $2
+)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(AccountActivityType::Username as i16)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_an_update_username_request_for_a_reserved_username(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, true, Some(1_i64)).await;
+
+        let (password_hash, password) = get_sample_password();
+
+        // Insert the user.
+        let result = sqlx::query(
+            r#"
+INSERT INTO users (id, name, username, email, password)
+VALUES ($1, $2, $3, $4, $5)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind("Sample user 1")
+        .bind("old_username")
+        .bind("sample.1@example.com")
+        .bind(password_hash)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let req = test::TestRequest::patch()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/settings/username")
+            .set_json(Request {
+                new_username: RESERVED_USERNAMES[10].to_string(),
+                current_password: password.to_string(),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_form_error_response(
+            res,
+            vec![("new_username", "This username is not available")],
         )
         .await;
 

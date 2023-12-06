@@ -179,7 +179,7 @@ SELECT $6, $7, (SELECT id FROM inserted_user), $8
     .bind(hashed_token.to_string())
     .bind(TokenType::EmailVerification as i16)
     .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
-    .fetch_one(&mut *txn)
+    .execute(&mut *txn)
     .await?;
 
     // Push an email job.

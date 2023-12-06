@@ -21,7 +21,8 @@ use tracing::error;
     skip_all,
     fields(
         token_type = tracing::field::Empty
-    )
+    ),
+    err
 )]
 pub async fn get_token(
     client: &GrpcService,

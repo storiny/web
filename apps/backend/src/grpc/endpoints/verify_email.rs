@@ -15,7 +15,7 @@ use tonic::{
 use tracing::error;
 
 /// Verifies an email for a user.
-#[tracing::instrument(name = "GRPC verify_email", skip_all)]
+#[tracing::instrument(name = "GRPC verify_email", skip_all, err)]
 pub async fn verify_email(
     client: &GrpcService,
     request: Request<VerifyEmailRequest>,

@@ -28,7 +28,7 @@ struct CacheResponse {
 }
 
 /// Returns the user's ID using the session token.
-#[tracing::instrument(name = "GRPC get_user_id", skip_all)]
+#[tracing::instrument(name = "GRPC get_user_id", skip_all, err)]
 pub async fn get_user_id(
     client: &GrpcService,
     request: Request<GetUserIdRequest>,

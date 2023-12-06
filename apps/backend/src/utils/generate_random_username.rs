@@ -1,3 +1,4 @@
+use crate::constants::reserved_usernames::RESERVED_USERNAMES;
 use nanoid::nanoid;
 use slugify::slugify;
 use sqlx::{
@@ -40,22 +41,24 @@ pub async fn generate_random_username<'a>(
         nanoid!(SUFFIX_LENGTH, &character_set)
     );
 
-    while match sqlx::query(
-        r#"
+    while RESERVED_USERNAMES.contains(&username.as_str())
+        || match sqlx::query(
+            r#"
 SELECT 1 FROM users
 WHERE username = $1
 "#,
-    )
-    .bind(&username)
-    .fetch_one(&mut **txn)
-    .await
+        )
+        .bind(&username)
+        .fetch_one(&mut **txn)
+        .await
+        {
+            Ok(_) => true,
+            Err(error) => match error {
+                sqlx::Error::RowNotFound => false,
+                _ => return Err(error),
+            },
+        }
     {
-        Ok(_) => true,
-        Err(error) => match error {
-            sqlx::Error::RowNotFound => false,
-            _ => return Err(error),
-        },
-    } {
         if username_retries < MAX_USERNAME_GENERATE_ATTEMPTS {
             username_retries += 1;
             username = format!(

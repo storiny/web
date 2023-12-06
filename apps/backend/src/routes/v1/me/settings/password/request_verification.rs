@@ -64,11 +64,14 @@ async fn post(
 
     let user = sqlx::query(
         r#"
-SELECT email::TEXT, password FROM users
+SELECT
+    email::TEXT,
+    password
+FROM users
 WHERE id = $1
 "#,
     )
-    .bind(user_id)
+    .bind(&user_id)
     .fetch_one(&mut *txn)
     .await?;
 
@@ -92,8 +95,8 @@ WHERE id = $1
 WITH deleted_tokens AS (
     DELETE FROM tokens
     WHERE
-        type = $1
-        AND user_id = $2
+        type = $2
+        AND user_id = $3
 )
 INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)

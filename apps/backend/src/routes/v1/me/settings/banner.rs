@@ -62,7 +62,7 @@ WHERE id = $1
         .execute(&data.db_pool)
         .await?;
 
-        Ok(HttpResponse::NoContent().json(Response {
+        Ok(HttpResponse::Ok().json(Response {
             banner_id: None,
             banner_hex: None,
         }))
@@ -78,11 +78,11 @@ WITH selected_asset AS (
 )
 UPDATE users
 SET
-    banner_id  = (SELECT key FROM asset),
-    banner_hex = (SELECT hex FROM asset)
+    banner_id  = (SELECT key FROM selected_asset),
+    banner_hex = (SELECT hex FROM selected_asset)
 WHERE
     id = $1
-    AND (SELECT key FROM asset) IS NOT NULL
+    AND EXISTS (SELECT 1 FROM selected_asset)
 RETURNING banner_id, banner_hex
 "#,
         )
@@ -98,7 +98,7 @@ RETURNING banner_id, banner_hex
             }
         })?;
 
-        Ok(HttpResponse::NoContent().json(Response {
+        Ok(HttpResponse::Ok().json(Response {
             banner_id: result.get::<Option<Uuid>, _>("banner_id"),
             banner_hex: result.get::<Option<String>, _>("banner_hex"),
         }))

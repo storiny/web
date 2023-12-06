@@ -8,7 +8,7 @@ lazy_static! {
         let mut providers: Vec<Provider> =
             serde_json::from_slice(json_data).expect("failed to read providers from the JSON file");
 
-        // Convert schemas to regex matchers for each provider
+        // Convert schemas to regex matchers for each provider.
         providers.iter_mut().for_each(|provider| {
             let regex_schemas: Vec<Regex> = provider
                 .schemas
