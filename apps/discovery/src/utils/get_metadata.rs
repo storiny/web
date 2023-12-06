@@ -40,7 +40,7 @@ const LARGE_IMAGE_WIDTH_LOWER_BOUND: u16 = 600;
 const LARGE_IMAGE_HEIGHT_LOWER_BOUND: u16 = 300;
 
 /// The metadata client.
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Client(reqwest::Client);
 
 /// The metadata image object.
@@ -321,7 +321,7 @@ impl DomParser {
                 if tag_name == "head" {
                     self.inside_head = true;
                 } else if tag_name == "body" {
-                    self.inside_head = false; // Exit when entering the body
+                    self.inside_head = false; // Exit when entering the body.
                 }
 
                 if self.inside_head {
@@ -383,12 +383,12 @@ impl DocMetadata {
 /// * `attrs` - The attributes associated with the node.
 /// * `metadata` - The metadata object to be updated.
 fn process_head(tag_name: &str, handle: &Handle, attrs: &[Attribute], metadata: &mut DocMetadata) {
-    // If the node is a <title>, update the metadata title
+    // If the node is a <title>, update the metadata title.
     if tag_name == "title" {
         metadata.title = text_content(handle);
     }
 
-    // If the node is a <meta> element, extract content and property
+    // If the node is a <meta> element, extract content and property.
     if tag_name == "meta" {
         let content = get_attribute(attrs, "content");
 
@@ -399,10 +399,10 @@ fn process_head(tag_name: &str, handle: &Handle, attrs: &[Attribute], metadata: 
 
             if let Some(property) = property_opt {
                 if property.starts_with("og:") && property.len() > 3 {
-                    // Extend Opengraph tags
+                    // Extend Opengraph tags.
                     metadata.opengraph.extend(&property[3..], content);
                 } else if property.starts_with("twitter:") && property.len() > 8 {
-                    // Extend Twitter tags
+                    // Extend Twitter tags.
                     metadata.twitter_card.extend(&property[8..], content);
                 } else if property == "description" {
                     metadata.description = Some(content);
@@ -411,19 +411,19 @@ fn process_head(tag_name: &str, handle: &Handle, attrs: &[Attribute], metadata: 
         }
     }
 
-    // If the node is a <link>, check for canonical URL
+    // If the node is a <link>, check for canonical URL.
     if tag_name == "link" {
         let rel = get_attribute(attrs, "rel").unwrap_or_default();
         let href = get_attribute(attrs, "href");
 
-        // Update metadata URL to the canonical URL if present
+        // Update metadata URL to the canonical URL if present.
         if rel == "canonical" {
             metadata.canonical_url = href.clone();
         } else if rel == "icon" || rel == "shortcut icon" {
-            // Handle favicon
+            // Handle favicon.
             metadata.favicon = href.clone();
         } else if metadata.favicon.is_none() {
-            // Try different alternatives for favicon
+            // Try different alternatives for favicon.
             let tag_type = get_attribute(attrs, "type").unwrap_or_default();
 
             if tag_type == "image/x-icon" || tag_type == "image/ico" || tag_type == "image/png" {
@@ -456,7 +456,7 @@ fn get_attribute(attrs: &[Attribute], name: &str) -> Option<String> {
 ///
 /// * `handle` - A reference to a node handle.
 fn text_content(handle: &Handle) -> Option<String> {
-    // Iterate through the children and accumulate text content
+    // Iterate through the children and accumulate text content.
     let mut text_content = String::new();
 
     for child in handle.children.borrow().iter() {
@@ -465,7 +465,7 @@ fn text_content(handle: &Handle) -> Option<String> {
         }
     }
 
-    // Trim the accumulated text content and return it
+    // Trim the accumulated text content and return it.
     let trimmed_content = text_content.trim();
 
     if trimmed_content.is_empty() {
@@ -481,10 +481,10 @@ fn text_content(handle: &Handle) -> Option<String> {
 /// * `base` - Base URL object
 fn process_image_src(src: &str, base: &mut Url) -> Option<String> {
     match Url::parse(src) {
-        Ok(url) => Some(url.to_string()), // Already an absolute URL
+        Ok(url) => Some(url.to_string()), // Already an absolute URL.
         Err(error) => {
             if ParseError::RelativeUrlWithoutBase == error {
-                // Relative URL
+                // Relative URL.
                 base.set_path(""); // Remove paths
                 let joined = base.join(src).ok();
 

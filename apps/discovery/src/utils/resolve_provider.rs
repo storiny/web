@@ -9,21 +9,14 @@ use url::Url;
 ///
 /// * `input_url` - The input URL.
 pub fn resolve_provider(input_url: &str) -> Option<&'static Provider> {
-    // Url sanity check
-    return match Url::parse(input_url) {
-        Ok(url) => {
-            match PROVIDERS.iter().find(|&provider| {
-                provider
-                    .matchers
-                    .iter()
-                    .any(|matcher| matcher.is_match(&url.to_string()))
-            }) {
-                None => None,
-                Some(provider) => Some(provider),
-            }
-        }
-        Err(_) => None,
-    };
+    let url = Url::parse(input_url).ok()?;
+
+    PROVIDERS.iter().find(|&provider| {
+        provider
+            .matchers
+            .iter()
+            .any(|matcher| matcher.is_match(&url.to_string()))
+    })
 }
 
 #[cfg(test)]
