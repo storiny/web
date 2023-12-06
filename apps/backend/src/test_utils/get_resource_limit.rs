@@ -60,6 +60,7 @@ mod tests {
         #[test_context(RedisTestContext)]
         #[tokio::test]
         #[should_panic]
+        #[ignore] // TODO: `#[should_panic]` is not supported by nextest yet. See https://github.com/nextest-rs/nextest/issues/804
         async fn can_panic_when_the_resource_limit_is_missing_from_the_cache(
             ctx: &mut RedisTestContext,
         ) {

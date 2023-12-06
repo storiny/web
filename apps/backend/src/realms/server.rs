@@ -826,21 +826,27 @@ VALUES ($5, $1)
 
     mod serial {
         use super::*;
+        use std::time::Duration;
+        use tokio::time::timeout;
 
         #[sqlx::test]
         async fn can_reject_unauthorized_peers(pool: PgPool) {
             let (endpoint, _, _, _) = init_realms_server_for_test(pool, None, false, false).await;
             let (mut tx, rx) = peer(endpoint).await;
 
-            rx.for_each(|message| async {
-                let message = message.unwrap();
-                assert!(message.is_close());
-                assert_eq!(
-                    message.to_string(),
-                    EnterRealmError::Unauthorized.to_string()
-                );
+            timeout(Duration::from_secs(10), async {
+                rx.for_each(|message| async {
+                    let message = message.unwrap();
+                    assert!(message.is_close());
+                    assert_eq!(
+                        message.to_string(),
+                        EnterRealmError::Unauthorized.to_string()
+                    );
+                })
+                .await
             })
-            .await;
+            .await
+            .expect("no message received");
 
             tx.close().await.unwrap();
         }
@@ -851,12 +857,16 @@ VALUES ($5, $1)
             let (endpoint, _, _, _) = init_realms_server_for_test(pool, None, true, false).await;
             let (mut tx, mut rx) = peer(endpoint).await;
 
-            if let Ok(message) = rx.next().await.unwrap() {
-                assert_eq!(
-                    message.to_string(),
-                    EnterRealmError::MissingStory.to_string()
-                );
-            }
+            timeout(Duration::from_secs(10), async {
+                if let Ok(message) = rx.next().await.unwrap() {
+                    assert_eq!(
+                        message.to_string(),
+                        EnterRealmError::MissingStory.to_string()
+                    );
+                }
+            })
+            .await
+            .expect("no message received");
 
             tx.close().await.unwrap();
         }
@@ -867,12 +877,16 @@ VALUES ($5, $1)
             let (endpoint, _, _, _) = init_realms_server_for_test(pool, None, true, false).await;
             let (mut tx, mut rx) = peer(endpoint).await;
 
-            if let Ok(message) = rx.next().await.unwrap() {
-                assert_eq!(
-                    message.to_string(),
-                    EnterRealmError::MissingStory.to_string()
-                );
-            }
+            timeout(Duration::from_secs(10), async {
+                if let Ok(message) = rx.next().await.unwrap() {
+                    assert_eq!(
+                        message.to_string(),
+                        EnterRealmError::MissingStory.to_string()
+                    );
+                }
+            })
+            .await
+            .expect("no message received");
 
             tx.close().await.unwrap();
         }
@@ -891,9 +905,13 @@ VALUES ($5, $1)
 
             let (mut tx, mut rx) = peer(endpoint).await;
 
-            if let Ok(message) = rx.next().await.unwrap() {
-                assert_eq!(message.to_string(), EnterRealmError::Full.to_string());
-            }
+            timeout(Duration::from_secs(10), async {
+                if let Ok(message) = rx.next().await.unwrap() {
+                    assert_eq!(message.to_string(), EnterRealmError::Full.to_string());
+                }
+            })
+            .await
+            .expect("no message received");
 
             tx.close().await.unwrap();
         }
@@ -930,12 +948,16 @@ VALUES ($5, $1, NOW())
             let (endpoint, _, _, _) = init_realms_server_for_test(pool, None, true, false).await;
             let (mut tx, mut rx) = peer(endpoint).await;
 
-            if let Ok(message) = rx.next().await.unwrap() {
-                assert_eq!(
-                    message.to_string(),
-                    EnterRealmError::MissingStory.to_string()
-                );
-            }
+            timeout(Duration::from_secs(10), async {
+                if let Ok(message) = rx.next().await.unwrap() {
+                    assert_eq!(
+                        message.to_string(),
+                        EnterRealmError::MissingStory.to_string()
+                    );
+                }
+            })
+            .await
+            .expect("no message received");
 
             tx.close().await.unwrap();
 
@@ -1134,12 +1156,16 @@ WHERE
                 init_realms_server_for_test(pool, Some(s3_client.clone()), true, false).await;
             let (mut tx, mut rx) = peer(endpoint).await;
 
-            if let Ok(message) = rx.next().await.unwrap() {
-                assert_eq!(
-                    message.to_string(),
-                    EnterRealmError::DocCorrupted.to_string()
-                );
-            }
+            timeout(Duration::from_secs(10), async {
+                if let Ok(message) = rx.next().await.unwrap() {
+                    assert_eq!(
+                        message.to_string(),
+                        EnterRealmError::DocCorrupted.to_string()
+                    );
+                }
+            })
+            .await
+            .expect("no message received");
 
             tx.close().await.unwrap();
 

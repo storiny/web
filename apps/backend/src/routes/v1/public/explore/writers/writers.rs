@@ -499,7 +499,7 @@ WHERE id = $1
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
@@ -515,16 +515,17 @@ WHERE id = $1
         let result = sqlx::query(
             r#"
 INSERT INTO relations (follower_id, followed_id)
-VALUES ($1, $2), ($1, $3)
+VALUES ($1, $2), ($1, $3), ($1, $4)
 "#,
         )
         .bind(user_id.unwrap())
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
-        assert_eq!(result.rows_affected(), 2);
+        assert_eq!(result.rows_affected(), 3);
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())

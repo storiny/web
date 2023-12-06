@@ -1,4 +1,11 @@
-use sailfish::TemplateOnce;
+use sailfish::{
+    runtime::{
+        Buffer,
+        Render,
+    },
+    RenderError,
+    TemplateOnce,
+};
 use serde::Serialize;
 
 pub mod config;
@@ -56,6 +63,15 @@ pub struct IframeEmbedData {
     supports_binary_theme: bool,
 }
 
+impl Render for IframeEmbedData {
+    #[inline]
+    fn render(&self, buffer: &mut Buffer) -> Result<(), RenderError> {
+        serde_json::to_string(self)
+            .map_err(|error| RenderError::Msg(format!("{error:?}")))?
+            .render(buffer)
+    }
+}
+
 /// The photo embed data.
 #[derive(Serialize)]
 pub struct PhotoEmbedData {
@@ -67,4 +83,13 @@ pub struct PhotoEmbedData {
     embed_type: String,
     /// The embed provider.
     provider: String,
+}
+
+impl Render for PhotoEmbedData {
+    #[inline]
+    fn render(&self, buffer: &mut Buffer) -> Result<(), RenderError> {
+        serde_json::to_string(self)
+            .map_err(|error| RenderError::Msg(format!("{error:?}")))?
+            .render(buffer)
+    }
 }

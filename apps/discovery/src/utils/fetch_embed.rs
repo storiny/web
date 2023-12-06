@@ -191,7 +191,7 @@ mod tests {
             &server.url(),
             ConsumerRequest {
                 url: "https://example.com",
-                ..ConsumerRequest::default()
+                ..Default::default()
             },
         )
         .await;

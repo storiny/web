@@ -1,6 +1,5 @@
 use actix_web::{
     get,
-    http::header::ContentType,
     web,
     HttpResponse,
     Responder,
@@ -8,9 +7,7 @@ use actix_web::{
 
 #[get("/health")]
 async fn get() -> impl Responder {
-    HttpResponse::Ok()
-        .content_type(ContentType::plaintext())
-        .body("OK")
+    HttpResponse::Ok().body("OK")
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
