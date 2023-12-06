@@ -79,11 +79,11 @@ fn parse_response_impl(
     let mut height = height_prop.unwrap_or(DEFAULT_HEIGHT);
     let root = Vis::load(html).unwrap();
 
-    // Get the first iframe
+    // Get the first iframe.
     let mut iframe = root.find("iframe").first();
 
     if !iframe.is_empty() {
-        // Get the optional iframe wrapper
+        // Get the optional iframe wrapper.
         let mut wrapper = iframe.parent("div").first();
         let has_wrapper = !wrapper.is_empty();
 
@@ -106,7 +106,7 @@ fn parse_response_impl(
             width = iframe_width_px;
         }
 
-        // Set the extra params
+        // Set the extra params.
         if let Some(extra_params) = iframe_params {
             let mut iframe_src = Url::parse(&iframe.attr("src").unwrap().to_string()).unwrap();
             iframe_src
@@ -127,7 +127,7 @@ fn parse_response_impl(
             }
         }
 
-        // Replace the wrapper with the iframe element
+        // Replace the wrapper with the iframe element.
         if has_wrapper {
             wrapper.replace_with(&mut iframe);
         }
@@ -169,7 +169,7 @@ fn parse_response_impl(
             return true;
         });
 
-        // Remove the script elements
+        // Remove the script elements.
         scripts.remove();
 
         Some(ParseResult::ScriptResult(ScriptResult {

@@ -14,7 +14,7 @@ use url::Url;
 /// The request for fetching the oembed data.
 ///
 /// See the [oembed specification](https://oembed.com/#section2.2)
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct ConsumerRequest<'a> {
     /// The URL provided by the client.
     pub url: &'a str,
@@ -23,7 +23,7 @@ pub struct ConsumerRequest<'a> {
 }
 
 /// The oEmbed client.
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Client(reqwest::Client);
 
 /// Predicate function for determining endpoints that depend on the Facebook graph API, thus
@@ -61,7 +61,7 @@ impl Client {
             query_map.insert("url".to_string(), request.url.to_string());
             query_map.insert("format".to_string(), "json".to_string());
 
-            // Append Facebook client ID and access token
+            // Append Facebook client ID and access token.
             if is_facebook_graph_dependent(&endpoint.to_string()) {
                 query_map.insert(
                     "access_token".to_string(),
@@ -72,7 +72,7 @@ impl Client {
                 );
             }
 
-            // Custom parameters
+            // Custom parameters.
             if let Some(params) = request.params {
                 let primitive_keys = vec!["url", "format", "access_token"];
 
@@ -112,7 +112,7 @@ impl Client {
             .json()
             .await
             .map(|mut response: EmbedResponse| {
-                // Remove the `type` field from the extra fields as we use #[serde(flatten)] twice
+                // Remove the `type` field from the extra fields as we use #[serde(flatten)] twice.
                 response.extra.remove("type");
                 response
             })?)

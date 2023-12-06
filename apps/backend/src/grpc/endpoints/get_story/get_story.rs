@@ -180,6 +180,9 @@ pub async fn get_story(
                 r#"
 INSERT INTO histories (user_id, story_id) 
 VALUES ($1, $2)
+-- Update the history if the user has already read the story before.
+ON CONFLICT (user_id, story_id) DO UPDATE
+SET created_at = NOW()
 "#,
             )
             .bind(&user_id)
@@ -320,6 +323,7 @@ mod tests {
 
     mod serial {
         use super::*;
+        use time::OffsetDateTime;
 
         // Logged-out
 
@@ -1062,7 +1066,7 @@ VALUES ($1, $2)
                         .into_inner();
 
                     // Should still be false as the friend request has not been not accepted yet.
-                    assert!(response.user.unwrap().is_friend);
+                    assert!(!response.user.unwrap().is_friend);
 
                     // Accept the friend request.
                     let result = sqlx::query(
@@ -1463,7 +1467,7 @@ VALUES ($1, $2)
                         .into_inner();
 
                     // Should still be false as the friend request has not been not accepted yet.
-                    assert!(response.user.unwrap().is_friend);
+                    assert!(!response.user.unwrap().is_friend);
 
                     // Accept the friend request.
                     let result = sqlx::query(
@@ -1598,6 +1602,71 @@ WHERE id = $2
 
                     // Should be true.
                     assert!(response.user.unwrap().is_self);
+                }),
+            )
+            .await;
+        }
+
+        //
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_update_history_when_reading_the_story_again_when_logged_in(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                true,
+                Box::new(|mut client, pool, redis_pool, user_id| async move {
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        }))
+                        .await;
+
+                    assert!(response.is_ok());
+
+                    // Should insert a history record.
+                    let result = sqlx::query(
+                        r#"
+SELECT created_at FROM histories
+WHERE user_id = $1
+"#,
+                    )
+                    .bind(user_id.unwrap())
+                    .fetch_one(&pool)
+                    .await
+                    .unwrap();
+
+                    let previous_created_at = result.get::<OffsetDateTime, _>("created_at");
+
+                    // Read the story again.
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        }))
+                        .await;
+
+                    assert!(response.is_ok());
+
+                    // Should update the history record.
+                    let result = sqlx::query(
+                        r#"
+SELECT created_at FROM histories
+WHERE user_id = $1
+"#,
+                    )
+                    .bind(user_id.unwrap())
+                    .fetch_one(&pool)
+                    .await
+                    .unwrap();
+
+                    let current_created_at = result.get::<OffsetDateTime, _>("created_at");
+
+                    assert!(current_created_at > previous_created_at);
                 }),
             )
             .await;
