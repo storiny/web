@@ -21,7 +21,7 @@ SELECT u.id,
 				   -- Friends
 				   OR (
 								   u.following_list_visibility = 2
-							   AND "u->is_friend" IS NOT NULL
+							   AND "u->is_friend".transmitter_id IS NOT NULL
 						   )
 			   )
 			   THEN u.following_count
@@ -34,7 +34,7 @@ SELECT u.id,
 				   -- Friends
 				   OR (
 								   u.friend_list_visibility = 2
-							   AND "u->is_friend" IS NOT NULL
+							   AND "u->is_friend".transmitter_id IS NOT NULL
 						   )
 			   )
 			   THEN u.friend_count
@@ -56,22 +56,22 @@ SELECT u.id,
 			   -- Global
 					   "u->status".visibility = 1
 				   -- Followers
-				   OR ("u->status".visibility = 2 AND "u->is_following" IS NOT NULL)
+				   OR ("u->status".visibility = 2 AND "u->is_following".follower_id IS NOT NULL)
 				   -- Friends
-				   OR ("u->status".visibility = 3 AND "u->is_friend" IS NOT NULL)
+				   OR ("u->status".visibility = 3 AND "u->is_friend".transmitter_id IS NOT NULL)
 			   )
 			   THEN TRUE
 		   ELSE FALSE
 	   END                                                           AS "has_status!",
 	   -- Boolean flags
-	   "u->is_following" IS NOT NULL                                 AS "is_following!",
-	   "u->is_follower" IS NOT NULL                                  AS "is_follower!",
-	   "u->is_friend" IS NOT NULL                                    AS "is_friend!",
-	   "u->is_subscribed" IS NOT NULL                                AS "is_subscribed!",
-	   "u->is_friend_request_sent" IS NOT NULL                       AS "is_friend_request_sent!",
-	   "u->is_blocked_by_user" IS NOT NULL                           AS "is_blocked_by_user!",
-	   "u->is_blocking" IS NOT NULL                                  AS "is_blocking!",
-	   "u->is_muted" IS NOT NULL                                     AS "is_muted!"
+	   "u->is_following".follower_id IS NOT NULL                     AS "is_following!",
+	   "u->is_follower".follower_id IS NOT NULL                      AS "is_follower!",
+	   "u->is_friend".transmitter_id IS NOT NULL                     AS "is_friend!",
+	   "u->is_subscribed".follower_id IS NOT NULL                    AS "is_subscribed!",
+	   "u->is_friend_request_sent".transmitter_id IS NOT NULL        AS "is_friend_request_sent!",
+	   "u->is_blocked_by_user".blocker_id IS NOT NULL                AS "is_blocked_by_user!",
+	   "u->is_blocking".blocker_id IS NOT NULL                       AS "is_blocking!",
+	   "u->is_muted".muter_id IS NOT NULL                            AS "is_muted!"
 FROM
 	users u
 		-- Join status
@@ -141,12 +141,12 @@ GROUP BY
 	"u->status".text,
 	"u->status".visibility,
 	"u->status".user_id,
-	"u->is_following",
-	"u->is_follower",
-	"u->is_friend",
-	"u->is_subscribed",
-	"u->is_friend_request_sent",
-	"u->is_blocked_by_user",
-	"u->is_blocking",
-	"u->is_muted"
+	"u->is_following".follower_id,
+	"u->is_follower".follower_id,
+	"u->is_friend".transmitter_id,
+	"u->is_subscribed".follower_id,
+	"u->is_friend_request_sent".transmitter_id,
+	"u->is_blocked_by_user".blocker_id,
+	"u->is_blocking".blocker_id,
+	"u->is_muted".muter_id
 LIMIT 1

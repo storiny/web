@@ -163,7 +163,7 @@ VALUES
         // Insert an asset.
         let insert_result = sqlx::query(
             r#"
-INSERT INTO assets (key, hex, height, width, user_id, favourited_at) 
+INSERT INTO assets (key, hex, height, width, user_id) 
 VALUES ($1, $2, $3, $4, $5)
 RETURNING id
 "#,
@@ -178,6 +178,18 @@ RETURNING id
         .await?;
 
         let asset_id = insert_result.get::<i64, _>("id");
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/assets")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        let json = serde_json::from_str::<Vec<Asset>>(&res_to_string(res).await).unwrap();
+        let asset = &json[0];
+
+        // Should false initially.
+        assert!(!asset.favourite);
 
         // Add the asset to favourites.
         let result = sqlx::query(

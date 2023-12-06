@@ -2,11 +2,11 @@ WITH stories_result AS (SELECT
 							-- Story
 							s.id,
 							s.title,
-							s.slug                         AS "slug!",
+							s.slug                                  AS "slug!",
 							s.description,
 							s.splash_id,
 							s.splash_hex,
-							s.category::TEXT               AS "category!",
+							s.category::TEXT                        AS "category!",
 							s.age_restriction,
 							s.license,
 							s.user_id,
@@ -16,7 +16,7 @@ WITH stories_result AS (SELECT
 							s.like_count,
 							s.comment_count,
 							-- Timestamps
-							s.published_at                 AS "published_at!",
+							s.published_at                          AS "published_at!",
 							s.edited_at,
 							-- Boolean flags
 							"s->is_liked".story_id IS NOT NULL      AS "is_liked!",
@@ -28,7 +28,7 @@ WITH stories_result AS (SELECT
 													 ) FILTER (
 												WHERE "s->story_tags->tag".id IS NOT NULL
 												), '{}'
-							)                              AS "tags!: Vec<Tag>"
+							)                                       AS "tags!: Vec<Tag>"
 						FROM
 							stories s
 								-- Join story tags

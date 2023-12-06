@@ -8,9 +8,11 @@ $$
 BEGIN
 	-- Check whether the story is soft-deleted/unpublished
 	IF (EXISTS(SELECT 1
-			   FROM stories
-			   WHERE id = NEW.story_id AND deleted_at IS NOT NULL
-				  OR published_at IS NULL
+			   FROM
+				   stories
+			   WHERE
+					id = NEW.story_id AND deleted_at IS NOT NULL
+				 OR published_at IS NULL
 			  )
 		) THEN
 		RAISE 'Story is soft-deleted/unpublished'
@@ -38,8 +40,10 @@ BEGIN
 	-- Increment `read_count` on story
 	UPDATE
 		stories
-	SET read_count = read_count + 1
-	WHERE id = NEW.story_id;
+	SET
+		read_count = read_count + 1
+	WHERE
+		id = NEW.story_id;
 	--
 	RETURN NEW;
 END;

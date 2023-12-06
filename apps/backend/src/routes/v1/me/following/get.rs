@@ -15,7 +15,6 @@ use serde::{
     Deserialize,
     Serialize,
 };
-
 use sqlx::{
     FromRow,
     Postgres,
@@ -104,8 +103,8 @@ SELECT
     ru.avatar_hex,
     ru.public_flags,
     -- Boolean flags
-    "ru->is_follower" IS NOT NULL AS "is_follower",
-    "ru->is_friend" IS NOT NULL AS "is_friend"
+    "ru->is_follower".follower_id IS NOT NULL AS "is_follower",
+    "ru->is_friend".transmitter_id IS NOT NULL AS "is_friend"
 "#,
     );
 
@@ -154,8 +153,8 @@ WHERE
         r#"
 GROUP BY
     ru.id,
-    "ru->is_follower",
-    "ru->is_friend",
+    "ru->is_follower".follower_id,
+    "ru->is_friend".transmitter_id,
     r.created_at
 ORDER BY 
 "#,

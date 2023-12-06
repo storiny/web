@@ -6,8 +6,10 @@ $$
 BEGIN
 	-- Check whether the muter/muted user is soft-deleted/deactivated
 	IF (EXISTS(SELECT 1
-			   FROM users
-			   WHERE id IN (NEW.muter_id, NEW.muted_id)
+			   FROM
+				   users
+			   WHERE
+					 id IN (NEW.muter_id, NEW.muted_id)
 				 AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL)
 			  )) THEN
 		RAISE 'Muter/muted user is soft-deleted/deactivated'

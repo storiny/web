@@ -14,7 +14,6 @@ use serde::{
     Deserialize,
     Serialize,
 };
-
 use sqlx::{
     FromRow,
     Postgres,
@@ -292,7 +291,7 @@ mod tests {
         let writers = json.unwrap();
 
         assert_eq!(writers.len(), 3);
-        assert!(writers.iter().all(|writer| writer.is_following));
+        assert!(writers.iter().all(|writer| !writer.is_following));
 
         Ok(())
     }
@@ -516,17 +515,16 @@ WHERE id = $1
         let result = sqlx::query(
             r#"
 INSERT INTO relations (follower_id, followed_id)
-VALUES ($1, $2), ($1, $3), ($1, $4)
+VALUES ($1, $2), ($1, $3)
 "#,
         )
         .bind(user_id.unwrap())
         .bind(2_i64)
         .bind(3_i64)
-        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
-        assert_eq!(result.rows_affected(), 3);
+        assert_eq!(result.rows_affected(), 2);
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())

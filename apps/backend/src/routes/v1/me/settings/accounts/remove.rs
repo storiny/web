@@ -296,7 +296,7 @@ LIMIT 1
             .cookie(cookie.unwrap())
             .uri("/v1/me/settings/accounts/remove")
             .set_json(Request {
-                vendor: "apple".to_string(),
+                vendor: "google".to_string(),
                 current_password: "sample".to_string(),
             })
             .to_request();

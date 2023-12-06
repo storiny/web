@@ -20,12 +20,13 @@ pub async fn get_resource_limit(
 ) -> u32 {
     let mut conn = redis_pool.get().await.unwrap();
 
-    conn.get::<_, u32>(&format!(
+    conn.get::<_, Option<u32>>(&format!(
         "{}:{}:{user_id}",
         RedisNamespace::ResourceLimit.to_string(),
         resource_limit as i32
     ))
     .await
+    .unwrap()
     .expect("resource limit has not been set")
 }
 

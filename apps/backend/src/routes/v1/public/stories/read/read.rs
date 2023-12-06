@@ -3,10 +3,7 @@ use crate::{
         reading_session::MAXIMUM_READING_SESSION_DURATION,
         redis_namespaces::RedisNamespace,
     },
-    error::{
-        AppError,
-        ToastErrorResponse,
-    },
+    error::AppError,
     grpc::defs::login_activity_def::v1::DeviceType,
     middlewares::identity::identity::Identity,
     utils::{
@@ -171,7 +168,7 @@ WHERE EXISTS (SELECT 1 FROM target_story)
     .await?
     .rows_affected()
     {
-        0 => Err(ToastErrorResponse::new(None, "Story not found").into()),
+        0 => Err(AppError::from("Story not found")),
         _ => Ok(HttpResponse::NoContent().finish()),
     }
 }

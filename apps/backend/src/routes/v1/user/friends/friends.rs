@@ -15,7 +15,6 @@ use serde::{
     Deserialize,
     Serialize,
 };
-
 use sqlx::{
     FromRow,
     Postgres,
@@ -133,9 +132,9 @@ SELECT
     query_builder.push(if current_user_id.is_some() {
         r#"
 -- Boolean flags
-"fu->is_follower" IS NOT NULL AS "is_follower",
-"fu->is_following" IS NOT NULL AS "is_following",
-"fu->is_friend" IS NOT NULL AS "is_friend"
+"fu->is_follower".follower_id IS NOT NULL AS "is_follower",
+"fu->is_following".follower_id IS NOT NULL AS "is_following",
+"fu->is_friend".transmitter_id IS NOT NULL AS "is_friend"
 "#
     } else {
         r#"
@@ -268,9 +267,9 @@ GROUP BY
         query_builder.push(",");
         query_builder.push(
             r#"
-"fu->is_follower",
-"fu->is_following",
-"fu->is_friend"
+"fu->is_follower".follower_id,
+"fu->is_following".follower_id,
+"fu->is_friend".transmitter_id
 "#,
         );
     }

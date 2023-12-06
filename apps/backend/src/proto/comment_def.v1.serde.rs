@@ -13,7 +13,8 @@ impl serde::Serialize for GetCommentRequest {
         if self.current_user_id.is_some() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("comment_def.v1.GetCommentRequest", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("comment_def.v1.GetCommentRequest", len)?;
         if !self.id.is_empty() {
             struct_ser.serialize_field("id", &self.id)?;
         }
@@ -29,11 +30,7 @@ impl<'de> serde::Deserialize<'de> for GetCommentRequest {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &[
-            "id",
-            "current_user_id",
-            "currentUserId",
-        ];
+        const FIELDS: &[&str] = &["id", "current_user_id", "currentUserId"];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -50,7 +47,10 @@ impl<'de> serde::Deserialize<'de> for GetCommentRequest {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -61,7 +61,9 @@ impl<'de> serde::Deserialize<'de> for GetCommentRequest {
                     {
                         match value {
                             "id" => Ok(GeneratedField::Id),
-                            "currentUserId" | "current_user_id" => Ok(GeneratedField::CurrentUserId),
+                            "currentUserId" | "current_user_id" => {
+                                Ok(GeneratedField::CurrentUserId)
+                            }
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -78,8 +80,8 @@ impl<'de> serde::Deserialize<'de> for GetCommentRequest {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<GetCommentRequest, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut id__ = None;
                 let mut current_user_id__ = None;
@@ -105,7 +107,11 @@ impl<'de> serde::Deserialize<'de> for GetCommentRequest {
                 })
             }
         }
-        deserializer.deserialize_struct("comment_def.v1.GetCommentRequest", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "comment_def.v1.GetCommentRequest",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for GetCommentResponse {
@@ -158,7 +164,8 @@ impl serde::Serialize for GetCommentResponse {
         if self.is_liked {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("comment_def.v1.GetCommentResponse", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("comment_def.v1.GetCommentResponse", len)?;
         if !self.id.is_empty() {
             struct_ser.serialize_field("id", &self.id)?;
         }
@@ -264,7 +271,10 @@ impl<'de> serde::Deserialize<'de> for GetCommentResponse {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -276,11 +286,15 @@ impl<'de> serde::Deserialize<'de> for GetCommentResponse {
                         match value {
                             "id" => Ok(GeneratedField::Id),
                             "content" => Ok(GeneratedField::Content),
-                            "renderedContent" | "rendered_content" => Ok(GeneratedField::RenderedContent),
+                            "renderedContent" | "rendered_content" => {
+                                Ok(GeneratedField::RenderedContent)
+                            }
                             "userId" | "user_id" => Ok(GeneratedField::UserId),
                             "storyId" | "story_id" => Ok(GeneratedField::StoryId),
                             "storySlug" | "story_slug" => Ok(GeneratedField::StorySlug),
-                            "storyWriterUsername" | "story_writer_username" => Ok(GeneratedField::StoryWriterUsername),
+                            "storyWriterUsername" | "story_writer_username" => {
+                                Ok(GeneratedField::StoryWriterUsername)
+                            }
                             "hidden" => Ok(GeneratedField::Hidden),
                             "editedAt" | "edited_at" => Ok(GeneratedField::EditedAt),
                             "createdAt" | "created_at" => Ok(GeneratedField::CreatedAt),
@@ -304,8 +318,8 @@ impl<'de> serde::Deserialize<'de> for GetCommentResponse {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<GetCommentResponse, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut id__ = None;
                 let mut content__ = None;
@@ -361,7 +375,9 @@ impl<'de> serde::Deserialize<'de> for GetCommentResponse {
                         }
                         GeneratedField::StoryWriterUsername => {
                             if story_writer_username__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("storyWriterUsername"));
+                                return Err(serde::de::Error::duplicate_field(
+                                    "storyWriterUsername",
+                                ));
                             }
                             story_writer_username__ = Some(map.next_value()?);
                         }
@@ -387,17 +403,19 @@ impl<'de> serde::Deserialize<'de> for GetCommentResponse {
                             if like_count__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("likeCount"));
                             }
-                            like_count__ = 
-                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
-                            ;
+                            like_count__ = Some(
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
+                            );
                         }
                         GeneratedField::ReplyCount => {
                             if reply_count__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("replyCount"));
                             }
-                            reply_count__ = 
-                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
-                            ;
+                            reply_count__ = Some(
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
+                            );
                         }
                         GeneratedField::User => {
                             if user__.is_some() {
@@ -431,6 +449,10 @@ impl<'de> serde::Deserialize<'de> for GetCommentResponse {
                 })
             }
         }
-        deserializer.deserialize_struct("comment_def.v1.GetCommentResponse", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "comment_def.v1.GetCommentResponse",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }

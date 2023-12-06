@@ -1,4 +1,3 @@
 INSERT INTO
 	stories (user_id)
-VALUES
-	(1);
+VALUES (1);

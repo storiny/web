@@ -10,7 +10,8 @@ impl serde::Serialize for GetPrivacySettingsRequest {
         if !self.user_id.is_empty() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("privacy_settings_def.v1.GetPrivacySettingsRequest", len)?;
+        let mut struct_ser = serializer
+            .serialize_struct("privacy_settings_def.v1.GetPrivacySettingsRequest", len)?;
         if !self.user_id.is_empty() {
             struct_ser.serialize_field("userId", &self.user_id)?;
         }
@@ -23,10 +24,7 @@ impl<'de> serde::Deserialize<'de> for GetPrivacySettingsRequest {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &[
-            "user_id",
-            "userId",
-        ];
+        const FIELDS: &[&str] = &["user_id", "userId"];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -42,7 +40,10 @@ impl<'de> serde::Deserialize<'de> for GetPrivacySettingsRequest {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -68,9 +69,12 @@ impl<'de> serde::Deserialize<'de> for GetPrivacySettingsRequest {
                 formatter.write_str("struct privacy_settings_def.v1.GetPrivacySettingsRequest")
             }
 
-            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetPrivacySettingsRequest, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(
+                self,
+                mut map: V,
+            ) -> std::result::Result<GetPrivacySettingsRequest, V::Error>
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut user_id__ = None;
                 while let Some(k) = map.next_key()? {
@@ -88,7 +92,11 @@ impl<'de> serde::Deserialize<'de> for GetPrivacySettingsRequest {
                 })
             }
         }
-        deserializer.deserialize_struct("privacy_settings_def.v1.GetPrivacySettingsRequest", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "privacy_settings_def.v1.GetPrivacySettingsRequest",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for GetPrivacySettingsResponse {
@@ -117,7 +125,8 @@ impl serde::Serialize for GetPrivacySettingsResponse {
         if self.friend_list_visibility != 0 {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("privacy_settings_def.v1.GetPrivacySettingsResponse", len)?;
+        let mut struct_ser = serializer
+            .serialize_struct("privacy_settings_def.v1.GetPrivacySettingsResponse", len)?;
         if self.is_private_account {
             struct_ser.serialize_field("isPrivateAccount", &self.is_private_account)?;
         }
@@ -128,18 +137,33 @@ impl serde::Serialize for GetPrivacySettingsResponse {
             struct_ser.serialize_field("allowSensitiveMedia", &self.allow_sensitive_media)?;
         }
         if self.incoming_friend_requests != 0 {
-            let v = IncomingFriendRequest::from_i32(self.incoming_friend_requests)
-                .ok_or_else(|| serde::ser::Error::custom(format!("Invalid variant {}", self.incoming_friend_requests)))?;
+            let v = IncomingFriendRequest::from_i32(self.incoming_friend_requests).ok_or_else(
+                || {
+                    serde::ser::Error::custom(format!(
+                        "Invalid variant {}",
+                        self.incoming_friend_requests
+                    ))
+                },
+            )?;
             struct_ser.serialize_field("incomingFriendRequests", &v)?;
         }
         if self.following_list_visibility != 0 {
-            let v = RelationVisibility::from_i32(self.following_list_visibility)
-                .ok_or_else(|| serde::ser::Error::custom(format!("Invalid variant {}", self.following_list_visibility)))?;
+            let v =
+                RelationVisibility::from_i32(self.following_list_visibility).ok_or_else(|| {
+                    serde::ser::Error::custom(format!(
+                        "Invalid variant {}",
+                        self.following_list_visibility
+                    ))
+                })?;
             struct_ser.serialize_field("followingListVisibility", &v)?;
         }
         if self.friend_list_visibility != 0 {
-            let v = RelationVisibility::from_i32(self.friend_list_visibility)
-                .ok_or_else(|| serde::ser::Error::custom(format!("Invalid variant {}", self.friend_list_visibility)))?;
+            let v = RelationVisibility::from_i32(self.friend_list_visibility).ok_or_else(|| {
+                serde::ser::Error::custom(format!(
+                    "Invalid variant {}",
+                    self.friend_list_visibility
+                ))
+            })?;
             struct_ser.serialize_field("friendListVisibility", &v)?;
         }
         struct_ser.end()
@@ -185,7 +209,10 @@ impl<'de> serde::Deserialize<'de> for GetPrivacySettingsResponse {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -195,12 +222,24 @@ impl<'de> serde::Deserialize<'de> for GetPrivacySettingsResponse {
                         E: serde::de::Error,
                     {
                         match value {
-                            "isPrivateAccount" | "is_private_account" => Ok(GeneratedField::IsPrivateAccount),
-                            "recordReadHistory" | "record_read_history" => Ok(GeneratedField::RecordReadHistory),
-                            "allowSensitiveMedia" | "allow_sensitive_media" => Ok(GeneratedField::AllowSensitiveMedia),
-                            "incomingFriendRequests" | "incoming_friend_requests" => Ok(GeneratedField::IncomingFriendRequests),
-                            "followingListVisibility" | "following_list_visibility" => Ok(GeneratedField::FollowingListVisibility),
-                            "friendListVisibility" | "friend_list_visibility" => Ok(GeneratedField::FriendListVisibility),
+                            "isPrivateAccount" | "is_private_account" => {
+                                Ok(GeneratedField::IsPrivateAccount)
+                            }
+                            "recordReadHistory" | "record_read_history" => {
+                                Ok(GeneratedField::RecordReadHistory)
+                            }
+                            "allowSensitiveMedia" | "allow_sensitive_media" => {
+                                Ok(GeneratedField::AllowSensitiveMedia)
+                            }
+                            "incomingFriendRequests" | "incoming_friend_requests" => {
+                                Ok(GeneratedField::IncomingFriendRequests)
+                            }
+                            "followingListVisibility" | "following_list_visibility" => {
+                                Ok(GeneratedField::FollowingListVisibility)
+                            }
+                            "friendListVisibility" | "friend_list_visibility" => {
+                                Ok(GeneratedField::FriendListVisibility)
+                            }
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -216,9 +255,12 @@ impl<'de> serde::Deserialize<'de> for GetPrivacySettingsResponse {
                 formatter.write_str("struct privacy_settings_def.v1.GetPrivacySettingsResponse")
             }
 
-            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetPrivacySettingsResponse, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(
+                self,
+                mut map: V,
+            ) -> std::result::Result<GetPrivacySettingsResponse, V::Error>
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut is_private_account__ = None;
                 let mut record_read_history__ = None;
@@ -242,27 +284,38 @@ impl<'de> serde::Deserialize<'de> for GetPrivacySettingsResponse {
                         }
                         GeneratedField::AllowSensitiveMedia => {
                             if allow_sensitive_media__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("allowSensitiveMedia"));
+                                return Err(serde::de::Error::duplicate_field(
+                                    "allowSensitiveMedia",
+                                ));
                             }
                             allow_sensitive_media__ = Some(map.next_value()?);
                         }
                         GeneratedField::IncomingFriendRequests => {
                             if incoming_friend_requests__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("incomingFriendRequests"));
+                                return Err(serde::de::Error::duplicate_field(
+                                    "incomingFriendRequests",
+                                ));
                             }
-                            incoming_friend_requests__ = Some(map.next_value::<IncomingFriendRequest>()? as i32);
+                            incoming_friend_requests__ =
+                                Some(map.next_value::<IncomingFriendRequest>()? as i32);
                         }
                         GeneratedField::FollowingListVisibility => {
                             if following_list_visibility__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("followingListVisibility"));
+                                return Err(serde::de::Error::duplicate_field(
+                                    "followingListVisibility",
+                                ));
                             }
-                            following_list_visibility__ = Some(map.next_value::<RelationVisibility>()? as i32);
+                            following_list_visibility__ =
+                                Some(map.next_value::<RelationVisibility>()? as i32);
                         }
                         GeneratedField::FriendListVisibility => {
                             if friend_list_visibility__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("friendListVisibility"));
+                                return Err(serde::de::Error::duplicate_field(
+                                    "friendListVisibility",
+                                ));
                             }
-                            friend_list_visibility__ = Some(map.next_value::<RelationVisibility>()? as i32);
+                            friend_list_visibility__ =
+                                Some(map.next_value::<RelationVisibility>()? as i32);
                         }
                     }
                 }
@@ -276,7 +329,11 @@ impl<'de> serde::Deserialize<'de> for GetPrivacySettingsResponse {
                 })
             }
         }
-        deserializer.deserialize_struct("privacy_settings_def.v1.GetPrivacySettingsResponse", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "privacy_settings_def.v1.GetPrivacySettingsResponse",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for IncomingFriendRequest {

@@ -137,7 +137,7 @@ WHERE type = $1 AND user_id = $2
         r#"
 WITH deleted_token AS (
     DELETE FROM tokens
-    WHERE id = $1
+    WHERE id = $3
 )
 UPDATE users
 SET password = $1
@@ -146,6 +146,7 @@ WHERE id = $2
     )
     .bind(next_hashed_password.to_string())
     .bind(&user_id)
+    .bind(token.get::<String, _>("id"))
     .execute(&mut *txn)
     .await?;
 

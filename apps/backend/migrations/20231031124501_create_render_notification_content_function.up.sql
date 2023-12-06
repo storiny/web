@@ -12,8 +12,10 @@ BEGIN
 				WHEN
 					entity_type = 2
 					THEN (WITH notification_out AS (SELECT n_out.rendered_content
-													FROM notification_outs n_out
-													WHERE n_out.notification_id = nu.notification_id
+													FROM
+														notification_outs n_out
+													WHERE
+														  n_out.notification_id = nu.notification_id
 													  AND n_out.notified_id = nu.notified_id
 												   )
 						  SELECT (
@@ -41,14 +43,16 @@ BEGIN
 					entity_type = 3
 					THEN (WITH transmitter AS (SELECT notifier.name,
 													  notifier.username
-											   FROM notification_outs n_out
-														-- Join notification
-														INNER JOIN notifications n
-																   ON n_out.notification_id = n.id
-												   -- Join notifier
-														INNER JOIN users AS notifier
-																   ON notifier.id = n.notifier_id
-											   WHERE n_out.notification_id = nu.notification_id
+											   FROM
+												   notification_outs n_out
+													   -- Join notification
+													   INNER JOIN notifications n
+																  ON n_out.notification_id = n.id
+													   -- Join notifier
+													   INNER JOIN users AS notifier
+																  ON notifier.id = n.notifier_id
+											   WHERE
+													 n_out.notification_id = nu.notification_id
 												 AND n_out.notified_id = nu.notified_id
 											  )
 						  SELECT (
@@ -63,15 +67,17 @@ BEGIN
 					entity_type = 4
 					THEN (WITH transmitter AS (SELECT notifier.name,
 													  notifier.username
-											   FROM notification_outs n_out
-														-- Join notification
-														INNER JOIN notifications n
-																   ON n_out.notification_id = n.id
-												   -- Join notifier
-														INNER JOIN users AS notifier
-																   ON notifier.id = n.notifier_id
+											   FROM
+												   notification_outs n_out
+													   -- Join notification
+													   INNER JOIN notifications n
+																  ON n_out.notification_id = n.id
+													   -- Join notifier
+													   INNER JOIN users AS notifier
+																  ON notifier.id = n.notifier_id
 
-											   WHERE n_out.notification_id = nu.notification_id
+											   WHERE
+													 n_out.notification_id = nu.notification_id
 												 AND n_out.notified_id = nu.notified_id
 											  )
 						  SELECT (
@@ -86,15 +92,17 @@ BEGIN
 					entity_type = 5
 					THEN (WITH follower AS (SELECT notifier.name,
 												   notifier.username
-											FROM notification_outs n_out
-													 -- Join notification
-													 INNER JOIN notifications n
-																ON n_out.notification_id = n.id
-												-- Join notifier
-													 INNER JOIN users AS notifier
-																ON notifier.id = n.notifier_id
+											FROM
+												notification_outs n_out
+													-- Join notification
+													INNER JOIN notifications n
+															   ON n_out.notification_id = n.id
+													-- Join notifier
+													INNER JOIN users AS notifier
+															   ON notifier.id = n.notifier_id
 
-											WHERE n_out.notification_id = nu.notification_id
+											WHERE
+												  n_out.notification_id = nu.notification_id
 											  AND n_out.notified_id = nu.notified_id
 										   )
 						  SELECT (
@@ -113,23 +121,25 @@ BEGIN
 												  ("c->story->user".username || '/' || "c->story".slug || '/' ||
 												   'comments' ||
 												   '/' || c.id)      AS "url"
-										   FROM notification_outs n_out
-													-- Join notification
-													INNER JOIN notifications n
-															   ON n_out.notification_id = n.id
-											   -- Join comment
-													INNER JOIN comments c
-															   ON c.id = n.entity_id
-											   -- Join comment user
-													INNER JOIN users AS "c->user"
-															   ON "c->user".id = c.user_id
-											   -- Join comment story
-													INNER JOIN stories AS "c->story"
-															   ON "c->story".id = c.story_id
-											   -- Join comment story user
-													INNER JOIN users AS "c->story->user"
-															   ON "c->story->user".id = "c->story".user_id
-										   WHERE n_out.notification_id = nu.notification_id
+										   FROM
+											   notification_outs n_out
+												   -- Join notification
+												   INNER JOIN notifications n
+															  ON n_out.notification_id = n.id
+												   -- Join comment
+												   INNER JOIN comments c
+															  ON c.id = n.entity_id
+												   -- Join comment user
+												   INNER JOIN users AS "c->user"
+															  ON "c->user".id = c.user_id
+												   -- Join comment story
+												   INNER JOIN stories AS "c->story"
+															  ON "c->story".id = c.story_id
+												   -- Join comment story user
+												   INNER JOIN users AS "c->story->user"
+															  ON "c->story->user".id = "c->story".user_id
+										   WHERE
+												 n_out.notification_id = nu.notification_id
 											 AND n_out.notified_id = nu.notified_id
 										  )
 						  SELECT (
@@ -155,26 +165,28 @@ BEGIN
 												 '/' ||
 												 'comments' ||
 												 '/' || r.comment_id || '?reply=' || r.id) AS "url"
-										 FROM notification_outs n_out
-												  -- Join notification
-												  INNER JOIN notifications n
-															 ON n_out.notification_id = n.id
-											 -- Join reply
-												  INNER JOIN replies r
-															 ON r.id = n.entity_id
-											 -- Join reply user
-												  INNER JOIN users AS "r->user"
-															 ON "r->user".id = r.user_id
-											 -- Join comment
-												  INNER JOIN comments AS "r->comment"
-															 ON "r->comment".id = r.comment_id
-											 -- Join comment story
-												  INNER JOIN stories AS "r->comment->story"
-															 ON "r->comment->story".id = "r->comment".story_id
-											 -- Join comment story user
-												  INNER JOIN users AS "r->comment->story->user"
-															 ON "r->comment->story->user".id = "r->comment->story".user_id
-										 WHERE n_out.notification_id = nu.notification_id
+										 FROM
+											 notification_outs n_out
+												 -- Join notification
+												 INNER JOIN notifications n
+															ON n_out.notification_id = n.id
+												 -- Join reply
+												 INNER JOIN replies r
+															ON r.id = n.entity_id
+												 -- Join reply user
+												 INNER JOIN users AS "r->user"
+															ON "r->user".id = r.user_id
+												 -- Join comment
+												 INNER JOIN comments AS "r->comment"
+															ON "r->comment".id = r.comment_id
+												 -- Join comment story
+												 INNER JOIN stories AS "r->comment->story"
+															ON "r->comment->story".id = "r->comment".story_id
+												 -- Join comment story user
+												 INNER JOIN users AS "r->comment->story->user"
+															ON "r->comment->story->user".id = "r->comment->story".user_id
+										 WHERE
+											   n_out.notification_id = nu.notification_id
 										   AND n_out.notified_id = nu.notified_id
 										)
 						  SELECT (
@@ -197,20 +209,22 @@ BEGIN
 												notifier.username                     AS "username",
 												notifier.name                         AS "name",
 												("s->user".username || '/' || s.slug) AS "url"
-										 FROM notification_outs n_out
-												  -- Join notification
-												  INNER JOIN notifications n
-															 ON n_out.notification_id = n.id
-											 -- Join notifier
-												  INNER JOIN users AS notifier
-															 ON notifier.id = n.notifier_id
-											 -- Join story
-												  INNER JOIN stories s
-															 ON s.id = n.entity_id
-											 -- Join story user
-												  INNER JOIN users AS "s->user"
-															 ON "s->user".id = s.user_id
-										 WHERE n_out.notification_id = nu.notification_id
+										 FROM
+											 notification_outs n_out
+												 -- Join notification
+												 INNER JOIN notifications n
+															ON n_out.notification_id = n.id
+												 -- Join notifier
+												 INNER JOIN users AS notifier
+															ON notifier.id = n.notifier_id
+												 -- Join story
+												 INNER JOIN stories s
+															ON s.id = n.entity_id
+												 -- Join story user
+												 INNER JOIN users AS "s->user"
+															ON "s->user".id = s.user_id
+										 WHERE
+											   n_out.notification_id = nu.notification_id
 										   AND n_out.notified_id = nu.notified_id
 										)
 						  SELECT (
@@ -232,20 +246,22 @@ BEGIN
 												notifier.username                     AS "username",
 												notifier.name                         AS "name",
 												("s->user".username || '/' || s.slug) AS "url"
-										 FROM notification_outs n_out
-												  -- Join notification
-												  INNER JOIN notifications n
-															 ON n_out.notification_id = n.id
-											 -- Join notifier
-												  INNER JOIN users AS notifier
-															 ON notifier.id = n.notifier_id
-											 -- Join story
-												  INNER JOIN stories s
-															 ON s.id = n.entity_id
-											 -- Join story user
-												  INNER JOIN users AS "s->user"
-															 ON "s->user".id = s.user_id
-										 WHERE n_out.notification_id = nu.notification_id
+										 FROM
+											 notification_outs n_out
+												 -- Join notification
+												 INNER JOIN notifications n
+															ON n_out.notification_id = n.id
+												 -- Join notifier
+												 INNER JOIN users AS notifier
+															ON notifier.id = n.notifier_id
+												 -- Join story
+												 INNER JOIN stories s
+															ON s.id = n.entity_id
+												 -- Join story user
+												 INNER JOIN users AS "s->user"
+															ON "s->user".id = s.user_id
+										 WHERE
+											   n_out.notification_id = nu.notification_id
 										   AND n_out.notified_id = nu.notified_id
 										)
 						  SELECT (
@@ -266,23 +282,25 @@ BEGIN
 					THEN (WITH story AS (SELECT "st->tag".name                                          AS "tag_name",
 												"st->story".title,
 												("st->story->user".username || '/' || "st->story".slug) AS "url"
-										 FROM notification_outs n_out
-												  -- Join notification
-												  INNER JOIN notifications n
-															 ON n_out.notification_id = n.id
-											 -- Join story tag
-												  INNER JOIN story_tags AS st
-															 ON st.id = n.entity_id
-											 -- Join tag
-												  INNER JOIN tags AS "st->tag"
-															 ON "st->tag".id = st.tag_id
-											 -- Join story
-												  INNER JOIN stories AS "st->story"
-															 ON "st->story".id = st.story_id
-											 -- Join story user
-												  INNER JOIN users AS "st->story->user"
-															 ON "st->story->user".id = "st->story".user_id
-										 WHERE n_out.notification_id = nu.notification_id
+										 FROM
+											 notification_outs n_out
+												 -- Join notification
+												 INNER JOIN notifications n
+															ON n_out.notification_id = n.id
+												 -- Join story tag
+												 INNER JOIN story_tags AS st
+															ON st.id = n.entity_id
+												 -- Join tag
+												 INNER JOIN tags AS "st->tag"
+															ON "st->tag".id = st.tag_id
+												 -- Join story
+												 INNER JOIN stories AS "st->story"
+															ON "st->story".id = st.story_id
+												 -- Join story user
+												 INNER JOIN users AS "st->story->user"
+															ON "st->story->user".id = "st->story".user_id
+										 WHERE
+											   n_out.notification_id = nu.notification_id
 										   AND n_out.notified_id = nu.notified_id
 										)
 						  SELECT (

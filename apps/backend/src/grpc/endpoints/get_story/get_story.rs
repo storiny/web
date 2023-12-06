@@ -1175,7 +1175,7 @@ VALUES ($2, $1)
                         r#"
 UPDATE stories
 SET user_id = $1
-WHERE id = $3
+WHERE id = $2
 "#,
                     )
                     .bind(user_id.unwrap())
@@ -1576,7 +1576,7 @@ VALUES ($2, $1)
                         r#"
 UPDATE stories
 SET user_id = $1
-WHERE id = $3
+WHERE id = $2
 "#,
                     )
                     .bind(user_id.unwrap())

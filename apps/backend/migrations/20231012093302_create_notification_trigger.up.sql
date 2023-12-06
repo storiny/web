@@ -6,8 +6,10 @@ $$
 BEGIN
 	-- Check whether the notifier is soft-deleted/deactivated
 	IF (EXISTS(SELECT 1
-			   FROM users
-			   WHERE id = NEW.notifier_id
+			   FROM
+				   users
+			   WHERE
+					 id = NEW.notifier_id
 				 AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL)
 			  )) THEN
 		RAISE 'Notifier is soft-deleted/deactivated'

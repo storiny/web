@@ -2,19 +2,19 @@
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Draft {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
-    #[prost(string, tag="2")]
+    #[prost(string, tag = "2")]
     pub title: ::prost::alloc::string::String,
-    #[prost(string, optional, tag="3")]
+    #[prost(string, optional, tag = "3")]
     pub splash_id: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="4")]
+    #[prost(string, optional, tag = "4")]
     pub splash_hex: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(uint32, tag="5")]
+    #[prost(uint32, tag = "5")]
     pub word_count: u32,
-    #[prost(string, tag="6")]
+    #[prost(string, tag = "6")]
     pub created_at: ::prost::alloc::string::String,
-    #[prost(string, optional, tag="7")]
+    #[prost(string, optional, tag = "7")]
     pub edited_at: ::core::option::Option<::prost::alloc::string::String>,
 }
 // Create draft request
@@ -22,13 +22,13 @@ pub struct Draft {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateDraftRequest {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub user_id: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateDraftResponse {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub draft_id: ::prost::alloc::string::String,
 }
 // Drafts information request
@@ -36,17 +36,17 @@ pub struct CreateDraftResponse {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetDraftsInfoRequest {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub user_id: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetDraftsInfoResponse {
-    #[prost(uint32, tag="1")]
+    #[prost(uint32, tag = "1")]
     pub pending_draft_count: u32,
-    #[prost(uint32, tag="2")]
+    #[prost(uint32, tag = "2")]
     pub deleted_draft_count: u32,
-    #[prost(message, optional, tag="3")]
+    #[prost(message, optional, tag = "3")]
     pub latest_draft: ::core::option::Option<Draft>,
 }
 // Stories information request
@@ -54,15 +54,15 @@ pub struct GetDraftsInfoResponse {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetStoriesInfoRequest {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub user_id: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetStoriesInfoResponse {
-    #[prost(uint32, tag="1")]
+    #[prost(uint32, tag = "1")]
     pub published_story_count: u32,
-    #[prost(uint32, tag="2")]
+    #[prost(uint32, tag = "2")]
     pub deleted_story_count: u32,
 }
 // Main story request
@@ -70,84 +70,84 @@ pub struct GetStoriesInfoResponse {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetStoryRequest {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub id_or_slug: ::prost::alloc::string::String,
-    #[prost(string, optional, tag="2")]
+    #[prost(string, optional, tag = "2")]
     pub current_user_id: ::core::option::Option<::prost::alloc::string::String>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetStoryResponse {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
-    #[prost(string, tag="2")]
+    #[prost(string, tag = "2")]
     pub title: ::prost::alloc::string::String,
-    #[prost(string, optional, tag="3")]
+    #[prost(string, optional, tag = "3")]
     pub slug: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="4")]
+    #[prost(string, optional, tag = "4")]
     pub description: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="5")]
+    #[prost(string, optional, tag = "5")]
     pub splash_id: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="6")]
+    #[prost(string, optional, tag = "6")]
     pub splash_hex: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, tag="7")]
+    #[prost(string, tag = "7")]
     pub doc_key: ::prost::alloc::string::String,
-    #[prost(string, tag="8")]
+    #[prost(string, tag = "8")]
     pub category: ::prost::alloc::string::String,
-    #[prost(string, tag="9")]
+    #[prost(string, tag = "9")]
     pub user_id: ::prost::alloc::string::String,
     /// Replace `uint32` with `uint64` when the read count overflows.
-    #[prost(uint32, tag="10")]
+    #[prost(uint32, tag = "10")]
     pub like_count: u32,
-    #[prost(uint32, tag="11")]
+    #[prost(uint32, tag = "11")]
     pub read_count: u32,
-    #[prost(uint32, tag="12")]
+    #[prost(uint32, tag = "12")]
     pub word_count: u32,
-    #[prost(uint32, tag="13")]
+    #[prost(uint32, tag = "13")]
     pub comment_count: u32,
-    #[prost(enumeration="StoryAgeRestriction", tag="14")]
+    #[prost(enumeration = "StoryAgeRestriction", tag = "14")]
     pub age_restriction: i32,
-    #[prost(enumeration="StoryLicense", tag="15")]
+    #[prost(enumeration = "StoryLicense", tag = "15")]
     pub license: i32,
-    #[prost(enumeration="StoryVisibility", tag="16")]
+    #[prost(enumeration = "StoryVisibility", tag = "16")]
     pub visibility: i32,
-    #[prost(bool, tag="17")]
+    #[prost(bool, tag = "17")]
     pub disable_comments: bool,
-    #[prost(bool, tag="18")]
+    #[prost(bool, tag = "18")]
     pub disable_public_revision_history: bool,
-    #[prost(bool, tag="19")]
+    #[prost(bool, tag = "19")]
     pub disable_toc: bool,
     /// SEO
-    #[prost(string, optional, tag="20")]
+    #[prost(string, optional, tag = "20")]
     pub canonical_url: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="21")]
+    #[prost(string, optional, tag = "21")]
     pub seo_description: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="22")]
+    #[prost(string, optional, tag = "22")]
     pub seo_title: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="23")]
+    #[prost(string, optional, tag = "23")]
     pub preview_image: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, tag="24")]
+    #[prost(string, tag = "24")]
     pub created_at: ::prost::alloc::string::String,
-    #[prost(string, optional, tag="25")]
+    #[prost(string, optional, tag = "25")]
     pub edited_at: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="26")]
+    #[prost(string, optional, tag = "26")]
     pub published_at: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="27")]
+    #[prost(string, optional, tag = "27")]
     pub first_published_at: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="28")]
+    #[prost(string, optional, tag = "28")]
     pub deleted_at: ::core::option::Option<::prost::alloc::string::String>,
     /// Joins
-    #[prost(message, optional, tag="29")]
+    #[prost(message, optional, tag = "29")]
     pub user: ::core::option::Option<super::super::user_def::v1::ExtendedUser>,
-    #[prost(message, repeated, tag="30")]
+    #[prost(message, repeated, tag = "30")]
     pub tags: ::prost::alloc::vec::Vec<super::super::tag_def::v1::Tag>,
     /// User specific props
-    #[prost(bool, tag="31")]
+    #[prost(bool, tag = "31")]
     pub is_bookmarked: bool,
-    #[prost(bool, tag="32")]
+    #[prost(bool, tag = "32")]
     pub is_liked: bool,
     /// Reading session token
-    #[prost(string, tag="33")]
+    #[prost(string, tag = "33")]
     pub reading_session_token: ::prost::alloc::string::String,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]

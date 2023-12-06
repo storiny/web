@@ -1,10 +1,9 @@
 INSERT
 	INTO
 	users (name, username, email)
-SELECT
-	next_snowflake()::TEXT,
-	next_snowflake()::TEXT,
-	uuid_generate_v4() || '@example.com'
+SELECT next_snowflake()::TEXT,
+	   next_snowflake()::TEXT,
+	   uuid_generate_v4() || '@example.com'
 FROM
 	GENERATE_SERIES(1, 5);
 

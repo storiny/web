@@ -210,6 +210,7 @@ async fn handle_upload(
     tracing::Span::current().record("original_width", img_width);
     tracing::Span::current().record("original_height", img_height);
 
+    // We can safely unwrap `image_mime_type` here.
     let is_gif = image_mime_type.clone().unwrap() == IMAGE_GIF
         || file_name.split(".").last().unwrap_or_default() == "gif";
 
@@ -561,7 +562,10 @@ VALUES ($1, $2, $3, $4)
             .unwrap();
 
         assert!(res.status().is_client_error());
-        assert_eq!(res.text().await.unwrap(), "Unsupported image type");
+        assert_eq!(
+            res.json::<ToastErrorResponse>().await.unwrap().error,
+            "Unsupported image type".to_string()
+        );
 
         Ok(())
     }

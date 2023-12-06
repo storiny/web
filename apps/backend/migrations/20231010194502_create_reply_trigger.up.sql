@@ -8,12 +8,16 @@ $$
 BEGIN
 	-- Check whether the comment is soft-deleted or the reply writer is soft-deleted/deactivated
 	IF (EXISTS(SELECT 1
-			   FROM comments
-			   WHERE id = NEW.comment_id
+			   FROM
+				   comments
+			   WHERE
+					 id = NEW.comment_id
 				 AND deleted_at IS NOT NULL
 			  ) OR EXISTS(SELECT 1
-						  FROM users
-						  WHERE id = NEW.user_id
+						  FROM
+							  users
+						  WHERE
+								id = NEW.user_id
 							AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL)
 						 )) THEN
 		RAISE 'Comment is soft-deleted or reply writer is soft-deleted/deactivated'
@@ -22,11 +26,15 @@ BEGIN
 	--
 	-- Check if the user is blocked by the comment writer
 	IF (EXISTS(SELECT 1
-			   FROM comments c
-			   WHERE c.id = NEW.comment_id
+			   FROM
+				   comments c
+			   WHERE
+					 c.id = NEW.comment_id
 				 AND EXISTS(SELECT 1
-							FROM blocks b
-							WHERE b.blocker_id = c.user_id
+							FROM
+								blocks b
+							WHERE
+								  b.blocker_id = c.user_id
 							  AND b.blocked_id = NEW.user_id
 							  AND c.deleted_at IS NULL
 						   )
@@ -56,8 +64,10 @@ BEGIN
 	-- Increment `reply_count` on comment
 	UPDATE
 		comments
-	SET reply_count = reply_count + 1
-	WHERE id = NEW.comment_id;
+	SET
+		reply_count = reply_count + 1
+	WHERE
+		id = NEW.comment_id;
 	--
 	RETURN NEW;
 END;
@@ -83,8 +93,10 @@ BEGIN
 		-- Decrement `reply_count` on comment
 		UPDATE
 			comments
-		SET reply_count = reply_count - 1
-		WHERE id = NEW.comment_id
+		SET
+			reply_count = reply_count - 1
+		WHERE
+			  id = NEW.comment_id
 		  AND reply_count > 0;
 		--
 		RETURN NEW;
@@ -96,8 +108,10 @@ BEGIN
 		-- Increment `reply_count` on comment
 		UPDATE
 			comments
-		SET reply_count = reply_count + 1
-		WHERE id = NEW.comment_id;
+		SET
+			reply_count = reply_count + 1
+		WHERE
+			id = NEW.comment_id;
 		--
 	END IF;
 	--
@@ -125,14 +139,18 @@ BEGIN
 		-- Soft-delete reply likes
 		UPDATE
 			reply_likes
-		SET deleted_at = NOW()
-		WHERE deleted_at IS NULL
+		SET
+			deleted_at = NOW()
+		WHERE
+			  deleted_at IS NULL
 		  AND reply_id = NEW.id;
 		--
 		-- Delete notifications
 		DELETE
-		FROM notifications
-		WHERE entity_id = NEW.id;
+		FROM
+			notifications
+		WHERE
+			entity_id = NEW.id;
 		--
 		RETURN NEW;
 		--
@@ -143,12 +161,16 @@ BEGIN
 		-- Restore reply likes
 		UPDATE
 			reply_likes AS rl
-		SET deleted_at = NULL
-		WHERE deleted_at IS NOT NULL
+		SET
+			deleted_at = NULL
+		WHERE
+			  deleted_at IS NOT NULL
 		  AND rl.reply_id = NEW.id
 		  AND EXISTS(SELECT 1
-					 FROM users AS u
-					 WHERE u.id = rl.user_id
+					 FROM
+						 users AS u
+					 WHERE
+						   u.id = rl.user_id
 					   AND u.deleted_at IS NULL
 					   AND u.deactivated_at IS NULL
 					);
@@ -176,14 +198,18 @@ $$
 BEGIN
 	-- Delete notifications
 	DELETE
-	FROM notifications
-	WHERE entity_id = OLD.id;
+	FROM
+		notifications
+	WHERE
+		entity_id = OLD.id;
 	--
 	-- Decrement `reply_count` on comment
 	UPDATE
 		comments
-	SET reply_count = reply_count - 1
-	WHERE id = OLD.comment_id
+	SET
+		reply_count = reply_count - 1
+	WHERE
+		  id = OLD.comment_id
 	  AND reply_count > 0;
 	--
 	RETURN OLD;

@@ -8,8 +8,10 @@ $$
 BEGIN
 	-- Check whether the user is soft-deleted/deactivated
 	IF (EXISTS(SELECT 1
-			   FROM users
-			   WHERE id = NEW.user_id
+			   FROM
+				   users
+			   WHERE
+					 id = NEW.user_id
 				 AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL)
 			  )) THEN
 		RAISE 'User is soft-deleted/deactivated'
@@ -37,8 +39,10 @@ BEGIN
 	-- Increment `follower_count` on tag
 	UPDATE
 		tags
-	SET follower_count = follower_count + 1
-	WHERE id = NEW.tag_id;
+	SET
+		follower_count = follower_count + 1
+	WHERE
+		id = NEW.tag_id;
 	--
 	RETURN NEW;
 END;
@@ -64,8 +68,10 @@ BEGIN
 		-- Decrement `follower_count` on tag
 		UPDATE
 			tags
-		SET follower_count = follower_count - 1
-		WHERE id = NEW.tag_id
+		SET
+			follower_count = follower_count - 1
+		WHERE
+			  id = NEW.tag_id
 		  AND follower_count > 0;
 		--
 		RETURN NEW;
@@ -77,8 +83,10 @@ BEGIN
 		-- Increment `follower_count` on tag
 		UPDATE
 			tags
-		SET follower_count = follower_count + 1
-		WHERE id = NEW.tag_id;
+		SET
+			follower_count = follower_count + 1
+		WHERE
+			id = NEW.tag_id;
 		--
 	END IF;
 	--
@@ -105,8 +113,10 @@ BEGIN
 	-- Decrement `follower_count` on tag
 	UPDATE
 		tags
-	SET follower_count = follower_count - 1
-	WHERE id = OLD.tag_id
+	SET
+		follower_count = follower_count - 1
+	WHERE
+		  id = OLD.tag_id
 	  AND follower_count > 0;
 	--
 	RETURN OLD;

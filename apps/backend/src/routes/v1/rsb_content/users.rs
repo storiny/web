@@ -2,7 +2,6 @@ use serde::{
     Deserialize,
     Serialize,
 };
-
 use sqlx::{
     FromRow,
     Pool,
@@ -381,7 +380,7 @@ WHERE id = $1
     async fn should_not_include_deactivated_users_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
         // Should return the user initially.
         let result = get_rsb_content_users(Some(1_i64), &pool).await?;
-        assert_eq!(result.len(), 2);
+        assert_eq!(result.len(), 1);
 
         // Deactivate the user.
         let result = sqlx::query(

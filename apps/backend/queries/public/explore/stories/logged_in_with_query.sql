@@ -21,8 +21,8 @@ WITH explore_stories AS (WITH search_query AS (SELECT PLAINTO_TSQUERY('english',
 							 s.published_at                                                     AS "published_at!",
 							 s.edited_at,
 							 -- Boolean flags
-							 "s->is_bookmarked".story_id IS NOT NULL                                     AS "is_bookmarked!",
-							 "s->is_liked".story_id IS NOT NULL                                          AS "is_liked!",
+							 "s->is_bookmarked".story_id IS NOT NULL                            AS "is_bookmarked!",
+							 "s->is_liked".story_id IS NOT NULL                                 AS "is_liked!",
 							 -- User
 							 JSON_BUILD_OBJECT('id', u.id, 'name', u.name, 'username', u.username, 'avatar_id',
 											   u.avatar_id, 'avatar_hex', u.avatar_hex, 'public_flags',
