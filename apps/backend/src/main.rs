@@ -243,34 +243,30 @@ async fn main() -> io::Result<()> {
                     .build();
 
                 // JSON validation error handler.
-                let json_config = JsonConfig::default().error_handler(|err, _| {
-                    let json_error = match &err {
-                        actix_web_validator::Error::Validate(error) => {
-                            FormErrorResponse::from(error)
+                let json_config = JsonConfig::default().error_handler(|error, _| {
+                    let response = match &error {
+                        actix_web_validator::Error::Validate(errors) => {
+                            HttpResponse::Conflict().json(FormErrorResponse::from(errors))
                         }
-                        _ => FormErrorResponse::new(None, Vec::new()),
+                        _ => HttpResponse::BadRequest().body("Invalid or missing form data"),
                     };
 
-                    actix_web::error::InternalError::from_response(
-                        err,
-                        HttpResponse::Conflict().json(json_error),
-                    )
-                    .into()
+                    actix_web::error::InternalError::from_response(error, response).into()
                 });
 
                 // Query validation error handler.
-                let qs_query_config = QsQueryConfig::default().error_handler(|err, _| {
+                let qs_query_config = QsQueryConfig::default().error_handler(|error, _| {
                     actix_web::error::InternalError::from_response(
-                        err,
+                        error,
                         HttpResponse::Conflict().body("Invalid query parameters".to_string()),
                     )
                     .into()
                 });
 
                 // Path fragments validation error handler.
-                let path_config = PathConfig::default().error_handler(|err, _| {
+                let path_config = PathConfig::default().error_handler(|error, _| {
                     actix_web::error::InternalError::from_response(
-                        err,
+                        error,
                         HttpResponse::Conflict().body("Invalid path fragments".to_string()),
                     )
                     .into()

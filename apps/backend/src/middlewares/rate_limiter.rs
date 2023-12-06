@@ -38,6 +38,8 @@ macro_rules! async_transaction {
     };
 }
 
+pub use async_transaction;
+
 /// Custom error type for Redis-related errors.
 #[derive(Debug, Error)]
 pub enum Error {

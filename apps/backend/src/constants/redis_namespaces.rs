@@ -15,8 +15,4 @@ pub enum RedisNamespace {
     BackgroundJob,
     #[strum(serialize = "rl")]
     ResourceLimit,
-    #[strum(serialize = "l:lgn")]
-    LoginLock,
-    #[strum(serialize = "l:pwd")]
-    PasswordLock,
 }

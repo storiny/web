@@ -2,40 +2,87 @@ use crate::{
     constants::{
         redis_namespaces::RedisNamespace,
         resource_limit::ResourceLimit,
+        resource_lock::ResourceLock,
     },
+    middlewares::rate_limiter::async_transaction,
     RedisPool,
 };
 use anyhow::anyhow;
+use redis::AsyncCommands;
+use std::cmp::min;
+
+/// The maximum amount of duration (in seconds) for a locked resource before it is unlocked.
+const MAXIMUM_RESOURCE_LOCK_BACKOFF_DURATION: i32 = 86_400; // 24 hours
+
+/// The backoff factor duration (in seconds). We do not use a random backoff factor here, as opposed
+/// to the [original implementation].
+///
+/// [original implementation]: https://en.wikipedia.org/wiki/Exponential_backoff
+const BACKOFF_FACTOR: i32 = 300; // 5 minutes
 
 const HOURS_24_AS_SECONDS: i32 = 86_400;
 
-/// Increments the resource limit value by `1` if the key exists in the cache, otherwise inserts a
-/// new key with the default value.
+/// Computes the next expiry duration for the key based on exponential-backoff fashion using the
+/// provided attempts.
+///
+/// * `attempts` - The current amount of incorrect attempts.
+fn get_next_backoff_duration(attempts: u32) -> i32 {
+    min(
+        i32::pow(2, attempts) * BACKOFF_FACTOR,
+        MAXIMUM_RESOURCE_LOCK_BACKOFF_DURATION,
+    )
+}
+
+/// Increments the attempts for a resource lock by `1` if the key exists in the cache, otherwise
+/// inserts a new key with default value.
+///
+/// If the number of attempts reach the maximum limit (defined in [ResourceLock::get_max_attempts]),
+/// the expiry of the key is extended in an exponential-backoff fashion based on the number of
+/// incorrect attempts.
 ///
 /// * `redis_pool` - The Redis connection pool.
-/// * `resource_limit` - The resource limit variant.
-/// * `user_id` - The user ID value for the resource limit record.
-pub async fn incr_resource_limit(
+/// * `resource_lock` - The resource lock variant.
+/// * `identifier` - The resource identifier. This can the ID of the user or the client IP address.
+pub async fn incr_resource_lock_attempts(
     redis_pool: &RedisPool,
-    resource_limit: ResourceLimit,
-    user_id: i64,
+    resource_lock: ResourceLock,
+    identifier: &str,
 ) -> anyhow::Result<()> {
     let mut conn = redis_pool.get().await.map_err(|error| {
         anyhow!("unable to acquire a connection from the Redis pool: {error:?}")
     })?;
     let increx = redis::Script::new(include_str!("../../lua/increx.lua"));
-    let cache_key = format!(
-        "{}:{}:{user_id}",
-        RedisNamespace::ResourceLimit.to_string(),
-        resource_limit as i32
-    );
+    let cache_key = format!("{}:{identifier}", resource_lock.to_string());
 
-    increx
-        .key(cache_key)
-        .arg(HOURS_24_AS_SECONDS)
-        .invoke_async(&mut conn)
+    let current_attempts = conn
+        .get::<_, Option<u32>>(&format!("{}:{identifier}", resource_lock.to_string()))
         .await
-        .map_err(|error| anyhow!("unable to increment the resource limit: {error:?}"))
+        .map_err(|error| anyhow!("unable to fetch the lock attempts from Redis: {error:?}"))?;
+
+    let a = async_transaction!(&mut conn, &[cache_key.clone()], {
+        let pipe = redis::pipe().atomic();
+        let current_value: Option<u32> = conn.get(&cache_key)?;
+
+        if current_value.is_some_and(|value| value >= resource_lock.get_max_attempts()) {
+            // Increase the expiry if the key already exists with the sufficient amount of
+            // incorrect attempts. We do not increment the attempts any further if they
+            // reach the limit.
+            let next_expiry = get_next_backoff_duration(value);
+            pipe.expire(&cache_key, next_expiry as usize).ignore();
+        } else {
+            // Increment the existing attempts or create a new record.
+            increx
+                .key(&cache_key)
+                // Keep the new attempts for 1 day.
+                .arg(HOURS_24_AS_SECONDS)
+                .invoke_async(&mut conn)?;
+            pipe.add_command();
+        }
+
+        pipe.query_async(&mut conn).await?
+    });
+
+    Ok(())
 }
 
 #[cfg(test)]

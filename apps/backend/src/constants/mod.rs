@@ -10,6 +10,7 @@ pub mod redis_namespaces;
 pub mod report_type;
 pub mod reserved_usernames;
 pub mod resource_limit;
+pub mod resource_lock;
 pub mod session_cookie;
 pub mod sql_states;
 pub mod story_category;

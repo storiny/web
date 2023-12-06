@@ -7,7 +7,7 @@ use crate::{
 };
 use anyhow::anyhow;
 
-const HOURS_24_AS_SECONDS: i32 = 86400;
+const HOURS_24_AS_SECONDS: i32 = 86_400;
 
 /// Increments the report limit value by `1` if the key exists in the cache, otherwise inserts a
 /// new key with the default value.
