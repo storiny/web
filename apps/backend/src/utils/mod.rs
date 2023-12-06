@@ -18,6 +18,8 @@ pub mod get_sitemap_change_freq;
 pub mod get_user_sessions;
 pub mod incr_report_limit;
 pub mod incr_resource_limit;
+pub mod incr_resource_lock_attempts;
 pub mod inflate_bytes_gzip;
+pub mod is_resource_locked;
 pub mod md_to_html;
 pub mod truncate_str;
