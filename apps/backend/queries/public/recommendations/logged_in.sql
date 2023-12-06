@@ -2,11 +2,11 @@ WITH recommended_stories AS (SELECT
 								 -- Story
 								 s.id,
 								 s.title,
-								 s.slug                            AS "slug!",
+								 s.slug                                  AS "slug!",
 								 s.description,
 								 s.splash_id,
 								 s.splash_hex,
-								 s.category::TEXT                  AS "category!",
+								 s.category::TEXT                        AS "category!",
 								 s.age_restriction,
 								 s.license,
 								 s.user_id,
@@ -16,22 +16,22 @@ WITH recommended_stories AS (SELECT
 								 s.like_count,
 								 s.comment_count,
 								 -- Timestamps
-								 s.published_at                    AS "published_at!",
+								 s.published_at                          AS "published_at!",
 								 s.edited_at,
 								 -- Boolean flags
-								 "s->is_bookmarked".story_id IS NOT NULL    AS "is_bookmarked!",
-								 "s->is_liked".story_id IS NOT NULL         AS "is_liked!",
+								 "s->is_bookmarked".story_id IS NOT NULL AS "is_bookmarked!",
+								 "s->is_liked".story_id IS NOT NULL      AS "is_liked!",
 								 -- User
 								 JSON_BUILD_OBJECT('id', u.id, 'name', u.name, 'username', u.username, 'avatar_id',
 												   u.avatar_id, 'avatar_hex', u.avatar_hex, 'public_flags',
-												   u.public_flags) AS "user!: Json<User>",
+												   u.public_flags)       AS "user!: Json<User>",
 								 -- Tags
 								 COALESCE(ARRAY_AGG(DISTINCT ("s->story_tags->tag".id, "s->story_tags->tag".name))
 										  FILTER (WHERE "s->story_tags->tag".id IS NOT NULL),
-										  '{}')                    AS "tags!: Vec<Tag>",
+										  '{}')                          AS "tags!: Vec<Tag>",
 								 -- Weights
-								 COUNT(DISTINCT "s->source_tags")  AS "source_tags_weight",
-								 s.published_at::DATE              AS "published_at_date_only"
+								 COUNT(DISTINCT "s->source_tags")        AS "source_tags_weight",
+								 s.published_at::DATE                    AS "published_at_date_only"
 							 FROM
 								 stories s
 									 INNER JOIN users u

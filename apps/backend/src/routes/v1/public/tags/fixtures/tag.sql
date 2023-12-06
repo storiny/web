@@ -1,6 +1,5 @@
 INSERT INTO
 	tags (name)
-VALUES
-	('one'),
-	('two'),
-	('three');
+VALUES ('one'),
+	   ('two'),
+	   ('three');

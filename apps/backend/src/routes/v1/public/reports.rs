@@ -138,7 +138,7 @@ mod tests {
             resource_limit::ResourceLimit,
         },
         test_utils::{
-            assert_response_body_text,
+            assert_form_error_response,
             init_app_for_test,
             RedisTestContext,
         },
@@ -325,7 +325,7 @@ WHERE entity_id = $1
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Invalid entity ID").await;
+        assert_form_error_response(res, vec![("entity_id", "Invalid entity ID")]).await;
 
         Ok(())
     }

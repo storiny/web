@@ -6,8 +6,10 @@ $$
 BEGIN
 	-- Delete tag when there are no stories
 	DELETE
-	FROM tags
-	WHERE id = NEW.id;
+	FROM
+		tags
+	WHERE
+		id = NEW.id;
 	RETURN NULL;
 END;
 $$

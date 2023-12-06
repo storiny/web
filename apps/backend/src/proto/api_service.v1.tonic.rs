@@ -2,10 +2,12 @@
 /// Generated client implementations.
 pub mod api_service_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
-    use tonic::codegen::*;
-    use tonic::codegen::http::Uri;
+    use tonic::codegen::{
+        http::Uri,
+        *,
+    };
     /** Service definition
-*/
+     */
     #[derive(Debug, Clone)]
     pub struct ApiServiceClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -44,14 +46,13 @@ pub mod api_service_client {
             F: tonic::service::Interceptor,
             T::ResponseBody: Default,
             T: tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-                Response = http::Response<
-                    <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
+                    http::Request<tonic::body::BoxBody>,
+                    Response = http::Response<
+                        <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
+                    >,
                 >,
-            >,
-            <T as tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-            >>::Error: Into<StdError> + Send + Sync,
+            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
+                Into<StdError> + Send + Sync,
         {
             ApiServiceClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -87,158 +88,125 @@ pub mod api_service_client {
             self
         }
         /** *
- Checks whether the user is authenticated using the token from the session cookie
-*/
+         Checks whether the user is authenticated using the token from the session cookie
+        */
         pub async fn get_user_id(
             &mut self,
-            request: impl tonic::IntoRequest<
-                super::super::super::user_def::v1::GetUserIdRequest,
-            >,
+            request: impl tonic::IntoRequest<super::super::super::user_def::v1::GetUserIdRequest>,
         ) -> std::result::Result<
             tonic::Response<super::super::super::user_def::v1::GetUserIdResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/api_service.v1.ApiService/GetUserId",
-            );
+            let path = http::uri::PathAndQuery::from_static("/api_service.v1.ApiService/GetUserId");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("api_service.v1.ApiService", "GetUserId"));
             self.inner.unary(req, path, codec).await
         }
         /** *
- Returns the profile page data for a user
-*/
+         Returns the profile page data for a user
+        */
         pub async fn get_profile(
             &mut self,
-            request: impl tonic::IntoRequest<
-                super::super::super::profile_def::v1::GetProfileRequest,
-            >,
+            request: impl tonic::IntoRequest<super::super::super::profile_def::v1::GetProfileRequest>,
         ) -> std::result::Result<
             tonic::Response<super::super::super::profile_def::v1::GetProfileResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/api_service.v1.ApiService/GetProfile",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/api_service.v1.ApiService/GetProfile");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("api_service.v1.ApiService", "GetProfile"));
             self.inner.unary(req, path, codec).await
         }
         /** *
- Returns the tag page data for a tag
-*/
+         Returns the tag page data for a tag
+        */
         pub async fn get_tag(
             &mut self,
-            request: impl tonic::IntoRequest<
-                super::super::super::tag_def::v1::GetTagRequest,
-            >,
+            request: impl tonic::IntoRequest<super::super::super::tag_def::v1::GetTagRequest>,
         ) -> std::result::Result<
             tonic::Response<super::super::super::tag_def::v1::GetTagResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/api_service.v1.ApiService/GetTag",
-            );
+            let path = http::uri::PathAndQuery::from_static("/api_service.v1.ApiService/GetTag");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("api_service.v1.ApiService", "GetTag"));
             self.inner.unary(req, path, codec).await
         }
         /** *
- Returns the token using its identifier
-*/
+         Returns the token using its identifier
+        */
         pub async fn get_token(
             &mut self,
-            request: impl tonic::IntoRequest<
-                super::super::super::token_def::v1::GetTokenRequest,
-            >,
+            request: impl tonic::IntoRequest<super::super::super::token_def::v1::GetTokenRequest>,
         ) -> std::result::Result<
             tonic::Response<super::super::super::token_def::v1::GetTokenResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/api_service.v1.ApiService/GetToken",
-            );
+            let path = http::uri::PathAndQuery::from_static("/api_service.v1.ApiService/GetToken");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("api_service.v1.ApiService", "GetToken"));
             self.inner.unary(req, path, codec).await
         }
         /** *
- Verifies a user's email using the provided token identifier
-*/
+         Verifies a user's email using the provided token identifier
+        */
         pub async fn verify_email(
             &mut self,
-            request: impl tonic::IntoRequest<
-                super::super::super::token_def::v1::VerifyEmailRequest,
-            >,
+            request: impl tonic::IntoRequest<super::super::super::token_def::v1::VerifyEmailRequest>,
         ) -> std::result::Result<
             tonic::Response<super::super::super::token_def::v1::VerifyEmailResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/api_service.v1.ApiService/VerifyEmail",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/api_service.v1.ApiService/VerifyEmail");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("api_service.v1.ApiService", "VerifyEmail"));
             self.inner.unary(req, path, codec).await
         }
         /** *
- Returns the user's credentials settings
-*/
+         Returns the user's credentials settings
+        */
         pub async fn get_credential_settings(
             &mut self,
             request: impl tonic::IntoRequest<
@@ -250,29 +218,26 @@ pub mod api_service_client {
             >,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/api_service.v1.ApiService/GetCredentialSettings",
             );
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("api_service.v1.ApiService", "GetCredentialSettings"),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "api_service.v1.ApiService",
+                "GetCredentialSettings",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /** *
- Returns the user's privacy settings
-*/
+         Returns the user's privacy settings
+        */
         pub async fn get_privacy_settings(
             &mut self,
             request: impl tonic::IntoRequest<
@@ -284,29 +249,26 @@ pub mod api_service_client {
             >,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/api_service.v1.ApiService/GetPrivacySettings",
             );
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("api_service.v1.ApiService", "GetPrivacySettings"),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "api_service.v1.ApiService",
+                "GetPrivacySettings",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /** *
- Returns the user's notification settings
-*/
+         Returns the user's notification settings
+        */
         pub async fn get_notification_settings(
             &mut self,
             request: impl tonic::IntoRequest<
@@ -318,32 +280,26 @@ pub mod api_service_client {
             >,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/api_service.v1.ApiService/GetNotificationSettings",
             );
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new(
-                        "api_service.v1.ApiService",
-                        "GetNotificationSettings",
-                    ),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "api_service.v1.ApiService",
+                "GetNotificationSettings",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /** *
- Returns the user's connection settings
-*/
+         Returns the user's connection settings
+        */
         pub async fn get_connection_settings(
             &mut self,
             request: impl tonic::IntoRequest<
@@ -355,407 +311,339 @@ pub mod api_service_client {
             >,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/api_service.v1.ApiService/GetConnectionSettings",
             );
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("api_service.v1.ApiService", "GetConnectionSettings"),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "api_service.v1.ApiService",
+                "GetConnectionSettings",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /** *
- Returns the user's login activity
-*/
+         Returns the user's login activity
+        */
         pub async fn get_login_activity(
             &mut self,
             request: impl tonic::IntoRequest<
                 super::super::super::login_activity_def::v1::GetLoginActivityRequest,
             >,
         ) -> std::result::Result<
-            tonic::Response<
-                super::super::super::login_activity_def::v1::GetLoginActivityResponse,
-            >,
+            tonic::Response<super::super::super::login_activity_def::v1::GetLoginActivityResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/api_service.v1.ApiService/GetLoginActivity",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/api_service.v1.ApiService/GetLoginActivity");
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("api_service.v1.ApiService", "GetLoginActivity"),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "api_service.v1.ApiService",
+                "GetLoginActivity",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /** *
- Returns the user's drafts details
-*/
+         Returns the user's drafts details
+        */
         pub async fn get_drafts_info(
             &mut self,
-            request: impl tonic::IntoRequest<
-                super::super::super::story_def::v1::GetDraftsInfoRequest,
-            >,
+            request: impl tonic::IntoRequest<super::super::super::story_def::v1::GetDraftsInfoRequest>,
         ) -> std::result::Result<
             tonic::Response<super::super::super::story_def::v1::GetDraftsInfoResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/api_service.v1.ApiService/GetDraftsInfo",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/api_service.v1.ApiService/GetDraftsInfo");
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("api_service.v1.ApiService", "GetDraftsInfo"));
+            req.extensions_mut().insert(GrpcMethod::new(
+                "api_service.v1.ApiService",
+                "GetDraftsInfo",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /** *
- Returns the user's stories details
-*/
+         Returns the user's stories details
+        */
         pub async fn get_stories_info(
             &mut self,
-            request: impl tonic::IntoRequest<
-                super::super::super::story_def::v1::GetStoriesInfoRequest,
-            >,
+            request: impl tonic::IntoRequest<super::super::super::story_def::v1::GetStoriesInfoRequest>,
         ) -> std::result::Result<
             tonic::Response<super::super::super::story_def::v1::GetStoriesInfoResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/api_service.v1.ApiService/GetStoriesInfo",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/api_service.v1.ApiService/GetStoriesInfo");
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("api_service.v1.ApiService", "GetStoriesInfo"));
+            req.extensions_mut().insert(GrpcMethod::new(
+                "api_service.v1.ApiService",
+                "GetStoriesInfo",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /** *
- Returns the user's responses details
-*/
+         Returns the user's responses details
+        */
         pub async fn get_responses_info(
             &mut self,
             request: impl tonic::IntoRequest<
                 super::super::super::response_def::v1::GetResponsesInfoRequest,
             >,
         ) -> std::result::Result<
-            tonic::Response<
-                super::super::super::response_def::v1::GetResponsesInfoResponse,
-            >,
+            tonic::Response<super::super::super::response_def::v1::GetResponsesInfoResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/api_service.v1.ApiService/GetResponsesInfo",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/api_service.v1.ApiService/GetResponsesInfo");
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("api_service.v1.ApiService", "GetResponsesInfo"),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "api_service.v1.ApiService",
+                "GetResponsesInfo",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /** *
- Returns the story's responses details
-*/
+         Returns the story's responses details
+        */
         pub async fn get_story_responses_info(
             &mut self,
             request: impl tonic::IntoRequest<
                 super::super::super::response_def::v1::GetStoryResponsesInfoRequest,
             >,
         ) -> std::result::Result<
-            tonic::Response<
-                super::super::super::response_def::v1::GetStoryResponsesInfoResponse,
-            >,
+            tonic::Response<super::super::super::response_def::v1::GetStoryResponsesInfoResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/api_service.v1.ApiService/GetStoryResponsesInfo",
             );
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("api_service.v1.ApiService", "GetStoryResponsesInfo"),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "api_service.v1.ApiService",
+                "GetStoryResponsesInfo",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /** *
- Returns the user's followed tag count
-*/
+         Returns the user's followed tag count
+        */
         pub async fn get_followed_tag_count(
             &mut self,
             request: impl tonic::IntoRequest<
                 super::super::super::tag_def::v1::GetFollowedTagCountRequest,
             >,
         ) -> std::result::Result<
-            tonic::Response<
-                super::super::super::tag_def::v1::GetFollowedTagCountResponse,
-            >,
+            tonic::Response<super::super::super::tag_def::v1::GetFollowedTagCountResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/api_service.v1.ApiService/GetFollowedTagCount",
             );
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("api_service.v1.ApiService", "GetFollowedTagCount"),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "api_service.v1.ApiService",
+                "GetFollowedTagCount",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /** *
- Returns the user's relations details
-*/
+         Returns the user's relations details
+        */
         pub async fn get_user_relations_info(
             &mut self,
             request: impl tonic::IntoRequest<
                 super::super::super::user_def::v1::GetUserRelationsInfoRequest,
             >,
         ) -> std::result::Result<
-            tonic::Response<
-                super::super::super::user_def::v1::GetUserRelationsInfoResponse,
-            >,
+            tonic::Response<super::super::super::user_def::v1::GetUserRelationsInfoResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/api_service.v1.ApiService/GetUserRelationsInfo",
             );
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("api_service.v1.ApiService", "GetUserRelationsInfo"),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "api_service.v1.ApiService",
+                "GetUserRelationsInfo",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /** *
- Returns the user's block count
-*/
+         Returns the user's block count
+        */
         pub async fn get_user_block_count(
             &mut self,
             request: impl tonic::IntoRequest<
                 super::super::super::user_def::v1::GetUserBlockCountRequest,
             >,
         ) -> std::result::Result<
-            tonic::Response<
-                super::super::super::user_def::v1::GetUserBlockCountResponse,
-            >,
+            tonic::Response<super::super::super::user_def::v1::GetUserBlockCountResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/api_service.v1.ApiService/GetUserBlockCount",
             );
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("api_service.v1.ApiService", "GetUserBlockCount"),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "api_service.v1.ApiService",
+                "GetUserBlockCount",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /** *
- Returns the user's mute count
-*/
+         Returns the user's mute count
+        */
         pub async fn get_user_mute_count(
             &mut self,
-            request: impl tonic::IntoRequest<
-                super::super::super::user_def::v1::GetUserMuteCountRequest,
-            >,
+            request: impl tonic::IntoRequest<super::super::super::user_def::v1::GetUserMuteCountRequest>,
         ) -> std::result::Result<
             tonic::Response<super::super::super::user_def::v1::GetUserMuteCountResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/api_service.v1.ApiService/GetUserMuteCount",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/api_service.v1.ApiService/GetUserMuteCount");
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("api_service.v1.ApiService", "GetUserMuteCount"),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "api_service.v1.ApiService",
+                "GetUserMuteCount",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /** *
- Returns the story's data
-*/
+         Returns the story's data
+        */
         pub async fn get_story(
             &mut self,
-            request: impl tonic::IntoRequest<
-                super::super::super::story_def::v1::GetStoryRequest,
-            >,
+            request: impl tonic::IntoRequest<super::super::super::story_def::v1::GetStoryRequest>,
         ) -> std::result::Result<
             tonic::Response<super::super::super::story_def::v1::GetStoryResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/api_service.v1.ApiService/GetStory",
-            );
+            let path = http::uri::PathAndQuery::from_static("/api_service.v1.ApiService/GetStory");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("api_service.v1.ApiService", "GetStory"));
             self.inner.unary(req, path, codec).await
         }
         /** *
- Returns the comment's data
-*/
+         Returns the comment's data
+        */
         pub async fn get_comment(
             &mut self,
-            request: impl tonic::IntoRequest<
-                super::super::super::comment_def::v1::GetCommentRequest,
-            >,
+            request: impl tonic::IntoRequest<super::super::super::comment_def::v1::GetCommentRequest>,
         ) -> std::result::Result<
             tonic::Response<super::super::super::comment_def::v1::GetCommentResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/api_service.v1.ApiService/GetComment",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/api_service.v1.ApiService/GetComment");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("api_service.v1.ApiService", "GetComment"));
             self.inner.unary(req, path, codec).await
         }
         /** *
- Creates a new draft
-*/
+         Creates a new draft
+        */
         pub async fn create_draft(
             &mut self,
-            request: impl tonic::IntoRequest<
-                super::super::super::story_def::v1::CreateDraftRequest,
-            >,
+            request: impl tonic::IntoRequest<super::super::super::story_def::v1::CreateDraftRequest>,
         ) -> std::result::Result<
             tonic::Response<super::super::super::story_def::v1::CreateDraftResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/api_service.v1.ApiService/CreateDraft",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/api_service.v1.ApiService/CreateDraft");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("api_service.v1.ApiService", "CreateDraft"));
@@ -767,12 +655,13 @@ pub mod api_service_client {
 pub mod api_service_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
-    /// Generated trait containing gRPC methods that should be implemented for use with ApiServiceServer.
+    /// Generated trait containing gRPC methods that should be implemented for use with
+    /// ApiServiceServer.
     #[async_trait]
     pub trait ApiService: Send + Sync + 'static {
         /** *
- Checks whether the user is authenticated using the token from the session cookie
-*/
+         Checks whether the user is authenticated using the token from the session cookie
+        */
         async fn get_user_id(
             &self,
             request: tonic::Request<super::super::super::user_def::v1::GetUserIdRequest>,
@@ -781,20 +670,18 @@ pub mod api_service_server {
             tonic::Status,
         >;
         /** *
- Returns the profile page data for a user
-*/
+         Returns the profile page data for a user
+        */
         async fn get_profile(
             &self,
-            request: tonic::Request<
-                super::super::super::profile_def::v1::GetProfileRequest,
-            >,
+            request: tonic::Request<super::super::super::profile_def::v1::GetProfileRequest>,
         ) -> std::result::Result<
             tonic::Response<super::super::super::profile_def::v1::GetProfileResponse>,
             tonic::Status,
         >;
         /** *
- Returns the tag page data for a tag
-*/
+         Returns the tag page data for a tag
+        */
         async fn get_tag(
             &self,
             request: tonic::Request<super::super::super::tag_def::v1::GetTagRequest>,
@@ -803,8 +690,8 @@ pub mod api_service_server {
             tonic::Status,
         >;
         /** *
- Returns the token using its identifier
-*/
+         Returns the token using its identifier
+        */
         async fn get_token(
             &self,
             request: tonic::Request<super::super::super::token_def::v1::GetTokenRequest>,
@@ -813,20 +700,18 @@ pub mod api_service_server {
             tonic::Status,
         >;
         /** *
- Verifies a user's email using the provided token identifier
-*/
+         Verifies a user's email using the provided token identifier
+        */
         async fn verify_email(
             &self,
-            request: tonic::Request<
-                super::super::super::token_def::v1::VerifyEmailRequest,
-            >,
+            request: tonic::Request<super::super::super::token_def::v1::VerifyEmailRequest>,
         ) -> std::result::Result<
             tonic::Response<super::super::super::token_def::v1::VerifyEmailResponse>,
             tonic::Status,
         >;
         /** *
- Returns the user's credentials settings
-*/
+         Returns the user's credentials settings
+        */
         async fn get_credential_settings(
             &self,
             request: tonic::Request<
@@ -839,8 +724,8 @@ pub mod api_service_server {
             tonic::Status,
         >;
         /** *
- Returns the user's privacy settings
-*/
+         Returns the user's privacy settings
+        */
         async fn get_privacy_settings(
             &self,
             request: tonic::Request<
@@ -853,8 +738,8 @@ pub mod api_service_server {
             tonic::Status,
         >;
         /** *
- Returns the user's notification settings
-*/
+         Returns the user's notification settings
+        */
         async fn get_notification_settings(
             &self,
             request: tonic::Request<
@@ -867,8 +752,8 @@ pub mod api_service_server {
             tonic::Status,
         >;
         /** *
- Returns the user's connection settings
-*/
+         Returns the user's connection settings
+        */
         async fn get_connection_settings(
             &self,
             request: tonic::Request<
@@ -881,128 +766,102 @@ pub mod api_service_server {
             tonic::Status,
         >;
         /** *
- Returns the user's login activity
-*/
+         Returns the user's login activity
+        */
         async fn get_login_activity(
             &self,
             request: tonic::Request<
                 super::super::super::login_activity_def::v1::GetLoginActivityRequest,
             >,
         ) -> std::result::Result<
-            tonic::Response<
-                super::super::super::login_activity_def::v1::GetLoginActivityResponse,
-            >,
+            tonic::Response<super::super::super::login_activity_def::v1::GetLoginActivityResponse>,
             tonic::Status,
         >;
         /** *
- Returns the user's drafts details
-*/
+         Returns the user's drafts details
+        */
         async fn get_drafts_info(
             &self,
-            request: tonic::Request<
-                super::super::super::story_def::v1::GetDraftsInfoRequest,
-            >,
+            request: tonic::Request<super::super::super::story_def::v1::GetDraftsInfoRequest>,
         ) -> std::result::Result<
             tonic::Response<super::super::super::story_def::v1::GetDraftsInfoResponse>,
             tonic::Status,
         >;
         /** *
- Returns the user's stories details
-*/
+         Returns the user's stories details
+        */
         async fn get_stories_info(
             &self,
-            request: tonic::Request<
-                super::super::super::story_def::v1::GetStoriesInfoRequest,
-            >,
+            request: tonic::Request<super::super::super::story_def::v1::GetStoriesInfoRequest>,
         ) -> std::result::Result<
             tonic::Response<super::super::super::story_def::v1::GetStoriesInfoResponse>,
             tonic::Status,
         >;
         /** *
- Returns the user's responses details
-*/
+         Returns the user's responses details
+        */
         async fn get_responses_info(
             &self,
-            request: tonic::Request<
-                super::super::super::response_def::v1::GetResponsesInfoRequest,
-            >,
+            request: tonic::Request<super::super::super::response_def::v1::GetResponsesInfoRequest>,
         ) -> std::result::Result<
-            tonic::Response<
-                super::super::super::response_def::v1::GetResponsesInfoResponse,
-            >,
+            tonic::Response<super::super::super::response_def::v1::GetResponsesInfoResponse>,
             tonic::Status,
         >;
         /** *
- Returns the story's responses details
-*/
+         Returns the story's responses details
+        */
         async fn get_story_responses_info(
             &self,
             request: tonic::Request<
                 super::super::super::response_def::v1::GetStoryResponsesInfoRequest,
             >,
         ) -> std::result::Result<
-            tonic::Response<
-                super::super::super::response_def::v1::GetStoryResponsesInfoResponse,
-            >,
+            tonic::Response<super::super::super::response_def::v1::GetStoryResponsesInfoResponse>,
             tonic::Status,
         >;
         /** *
- Returns the user's followed tag count
-*/
+         Returns the user's followed tag count
+        */
         async fn get_followed_tag_count(
             &self,
-            request: tonic::Request<
-                super::super::super::tag_def::v1::GetFollowedTagCountRequest,
-            >,
+            request: tonic::Request<super::super::super::tag_def::v1::GetFollowedTagCountRequest>,
         ) -> std::result::Result<
-            tonic::Response<
-                super::super::super::tag_def::v1::GetFollowedTagCountResponse,
-            >,
+            tonic::Response<super::super::super::tag_def::v1::GetFollowedTagCountResponse>,
             tonic::Status,
         >;
         /** *
- Returns the user's relations details
-*/
+         Returns the user's relations details
+        */
         async fn get_user_relations_info(
             &self,
-            request: tonic::Request<
-                super::super::super::user_def::v1::GetUserRelationsInfoRequest,
-            >,
+            request: tonic::Request<super::super::super::user_def::v1::GetUserRelationsInfoRequest>,
         ) -> std::result::Result<
-            tonic::Response<
-                super::super::super::user_def::v1::GetUserRelationsInfoResponse,
-            >,
+            tonic::Response<super::super::super::user_def::v1::GetUserRelationsInfoResponse>,
             tonic::Status,
         >;
         /** *
- Returns the user's block count
-*/
+         Returns the user's block count
+        */
         async fn get_user_block_count(
             &self,
-            request: tonic::Request<
-                super::super::super::user_def::v1::GetUserBlockCountRequest,
-            >,
+            request: tonic::Request<super::super::super::user_def::v1::GetUserBlockCountRequest>,
         ) -> std::result::Result<
-            tonic::Response<
-                super::super::super::user_def::v1::GetUserBlockCountResponse,
-            >,
+            tonic::Response<super::super::super::user_def::v1::GetUserBlockCountResponse>,
             tonic::Status,
         >;
         /** *
- Returns the user's mute count
-*/
+         Returns the user's mute count
+        */
         async fn get_user_mute_count(
             &self,
-            request: tonic::Request<
-                super::super::super::user_def::v1::GetUserMuteCountRequest,
-            >,
+            request: tonic::Request<super::super::super::user_def::v1::GetUserMuteCountRequest>,
         ) -> std::result::Result<
             tonic::Response<super::super::super::user_def::v1::GetUserMuteCountResponse>,
             tonic::Status,
         >;
         /** *
- Returns the story's data
-*/
+         Returns the story's data
+        */
         async fn get_story(
             &self,
             request: tonic::Request<super::super::super::story_def::v1::GetStoryRequest>,
@@ -1011,32 +870,28 @@ pub mod api_service_server {
             tonic::Status,
         >;
         /** *
- Returns the comment's data
-*/
+         Returns the comment's data
+        */
         async fn get_comment(
             &self,
-            request: tonic::Request<
-                super::super::super::comment_def::v1::GetCommentRequest,
-            >,
+            request: tonic::Request<super::super::super::comment_def::v1::GetCommentRequest>,
         ) -> std::result::Result<
             tonic::Response<super::super::super::comment_def::v1::GetCommentResponse>,
             tonic::Status,
         >;
         /** *
- Creates a new draft
-*/
+         Creates a new draft
+        */
         async fn create_draft(
             &self,
-            request: tonic::Request<
-                super::super::super::story_def::v1::CreateDraftRequest,
-            >,
+            request: tonic::Request<super::super::super::story_def::v1::CreateDraftRequest>,
         ) -> std::result::Result<
             tonic::Response<super::super::super::story_def::v1::CreateDraftResponse>,
             tonic::Status,
         >;
     }
     /** Service definition
-*/
+     */
     #[derive(Debug)]
     pub struct ApiServiceServer<T: ApiService> {
         inner: _Inner<T>,
@@ -1060,10 +915,7 @@ pub mod api_service_server {
                 max_encoding_message_size: None,
             }
         }
-        pub fn with_interceptor<F>(
-            inner: T,
-            interceptor: F,
-        ) -> InterceptedService<Self, F>
+        pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
         where
             F: tonic::service::Interceptor,
         {
@@ -1119,16 +971,13 @@ pub mod api_service_server {
                 "/api_service.v1.ApiService/GetUserId" => {
                     #[allow(non_camel_case_types)]
                     struct GetUserIdSvc<T: ApiService>(pub Arc<T>);
-                    impl<
-                        T: ApiService,
-                    > tonic::server::UnaryService<
-                        super::super::super::user_def::v1::GetUserIdRequest,
-                    > for GetUserIdSvc<T> {
+                    impl<T: ApiService>
+                        tonic::server::UnaryService<
+                            super::super::super::user_def::v1::GetUserIdRequest,
+                        > for GetUserIdSvc<T>
+                    {
                         type Response = super::super::super::user_def::v1::GetUserIdResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<
@@ -1166,16 +1015,13 @@ pub mod api_service_server {
                 "/api_service.v1.ApiService/GetProfile" => {
                     #[allow(non_camel_case_types)]
                     struct GetProfileSvc<T: ApiService>(pub Arc<T>);
-                    impl<
-                        T: ApiService,
-                    > tonic::server::UnaryService<
-                        super::super::super::profile_def::v1::GetProfileRequest,
-                    > for GetProfileSvc<T> {
+                    impl<T: ApiService>
+                        tonic::server::UnaryService<
+                            super::super::super::profile_def::v1::GetProfileRequest,
+                        > for GetProfileSvc<T>
+                    {
                         type Response = super::super::super::profile_def::v1::GetProfileResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<
@@ -1213,16 +1059,12 @@ pub mod api_service_server {
                 "/api_service.v1.ApiService/GetTag" => {
                     #[allow(non_camel_case_types)]
                     struct GetTagSvc<T: ApiService>(pub Arc<T>);
-                    impl<
-                        T: ApiService,
-                    > tonic::server::UnaryService<
-                        super::super::super::tag_def::v1::GetTagRequest,
-                    > for GetTagSvc<T> {
+                    impl<T: ApiService>
+                        tonic::server::UnaryService<super::super::super::tag_def::v1::GetTagRequest>
+                        for GetTagSvc<T>
+                    {
                         type Response = super::super::super::tag_def::v1::GetTagResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<
@@ -1260,16 +1102,13 @@ pub mod api_service_server {
                 "/api_service.v1.ApiService/GetToken" => {
                     #[allow(non_camel_case_types)]
                     struct GetTokenSvc<T: ApiService>(pub Arc<T>);
-                    impl<
-                        T: ApiService,
-                    > tonic::server::UnaryService<
-                        super::super::super::token_def::v1::GetTokenRequest,
-                    > for GetTokenSvc<T> {
+                    impl<T: ApiService>
+                        tonic::server::UnaryService<
+                            super::super::super::token_def::v1::GetTokenRequest,
+                        > for GetTokenSvc<T>
+                    {
                         type Response = super::super::super::token_def::v1::GetTokenResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<
@@ -1307,16 +1146,13 @@ pub mod api_service_server {
                 "/api_service.v1.ApiService/VerifyEmail" => {
                     #[allow(non_camel_case_types)]
                     struct VerifyEmailSvc<T: ApiService>(pub Arc<T>);
-                    impl<
-                        T: ApiService,
-                    > tonic::server::UnaryService<
-                        super::super::super::token_def::v1::VerifyEmailRequest,
-                    > for VerifyEmailSvc<T> {
+                    impl<T: ApiService>
+                        tonic::server::UnaryService<
+                            super::super::super::token_def::v1::VerifyEmailRequest,
+                        > for VerifyEmailSvc<T>
+                    {
                         type Response = super::super::super::token_def::v1::VerifyEmailResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<
@@ -1324,9 +1160,7 @@ pub mod api_service_server {
                             >,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                (*inner).verify_email(request).await
-                            };
+                            let fut = async move { (*inner).verify_email(request).await };
                             Box::pin(fut)
                         }
                     }
@@ -1552,16 +1386,14 @@ pub mod api_service_server {
                 "/api_service.v1.ApiService/GetLoginActivity" => {
                     #[allow(non_camel_case_types)]
                     struct GetLoginActivitySvc<T: ApiService>(pub Arc<T>);
-                    impl<
-                        T: ApiService,
-                    > tonic::server::UnaryService<
-                        super::super::super::login_activity_def::v1::GetLoginActivityRequest,
-                    > for GetLoginActivitySvc<T> {
-                        type Response = super::super::super::login_activity_def::v1::GetLoginActivityResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                    impl<T: ApiService>
+                        tonic::server::UnaryService<
+                            super::super::super::login_activity_def::v1::GetLoginActivityRequest,
+                        > for GetLoginActivitySvc<T>
+                    {
+                        type Response =
+                            super::super::super::login_activity_def::v1::GetLoginActivityResponse;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<
@@ -1569,9 +1401,7 @@ pub mod api_service_server {
                             >,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                (*inner).get_login_activity(request).await
-                            };
+                            let fut = async move { (*inner).get_login_activity(request).await };
                             Box::pin(fut)
                         }
                     }
@@ -1601,16 +1431,13 @@ pub mod api_service_server {
                 "/api_service.v1.ApiService/GetDraftsInfo" => {
                     #[allow(non_camel_case_types)]
                     struct GetDraftsInfoSvc<T: ApiService>(pub Arc<T>);
-                    impl<
-                        T: ApiService,
-                    > tonic::server::UnaryService<
-                        super::super::super::story_def::v1::GetDraftsInfoRequest,
-                    > for GetDraftsInfoSvc<T> {
+                    impl<T: ApiService>
+                        tonic::server::UnaryService<
+                            super::super::super::story_def::v1::GetDraftsInfoRequest,
+                        > for GetDraftsInfoSvc<T>
+                    {
                         type Response = super::super::super::story_def::v1::GetDraftsInfoResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<
@@ -1618,9 +1445,7 @@ pub mod api_service_server {
                             >,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                (*inner).get_drafts_info(request).await
-                            };
+                            let fut = async move { (*inner).get_drafts_info(request).await };
                             Box::pin(fut)
                         }
                     }
@@ -1650,16 +1475,13 @@ pub mod api_service_server {
                 "/api_service.v1.ApiService/GetStoriesInfo" => {
                     #[allow(non_camel_case_types)]
                     struct GetStoriesInfoSvc<T: ApiService>(pub Arc<T>);
-                    impl<
-                        T: ApiService,
-                    > tonic::server::UnaryService<
-                        super::super::super::story_def::v1::GetStoriesInfoRequest,
-                    > for GetStoriesInfoSvc<T> {
+                    impl<T: ApiService>
+                        tonic::server::UnaryService<
+                            super::super::super::story_def::v1::GetStoriesInfoRequest,
+                        > for GetStoriesInfoSvc<T>
+                    {
                         type Response = super::super::super::story_def::v1::GetStoriesInfoResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<
@@ -1667,9 +1489,7 @@ pub mod api_service_server {
                             >,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                (*inner).get_stories_info(request).await
-                            };
+                            let fut = async move { (*inner).get_stories_info(request).await };
                             Box::pin(fut)
                         }
                     }
@@ -1699,16 +1519,14 @@ pub mod api_service_server {
                 "/api_service.v1.ApiService/GetResponsesInfo" => {
                     #[allow(non_camel_case_types)]
                     struct GetResponsesInfoSvc<T: ApiService>(pub Arc<T>);
-                    impl<
-                        T: ApiService,
-                    > tonic::server::UnaryService<
-                        super::super::super::response_def::v1::GetResponsesInfoRequest,
-                    > for GetResponsesInfoSvc<T> {
-                        type Response = super::super::super::response_def::v1::GetResponsesInfoResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                    impl<T: ApiService>
+                        tonic::server::UnaryService<
+                            super::super::super::response_def::v1::GetResponsesInfoRequest,
+                        > for GetResponsesInfoSvc<T>
+                    {
+                        type Response =
+                            super::super::super::response_def::v1::GetResponsesInfoResponse;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<
@@ -1716,9 +1534,7 @@ pub mod api_service_server {
                             >,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                (*inner).get_responses_info(request).await
-                            };
+                            let fut = async move { (*inner).get_responses_info(request).await };
                             Box::pin(fut)
                         }
                     }
@@ -1748,16 +1564,14 @@ pub mod api_service_server {
                 "/api_service.v1.ApiService/GetStoryResponsesInfo" => {
                     #[allow(non_camel_case_types)]
                     struct GetStoryResponsesInfoSvc<T: ApiService>(pub Arc<T>);
-                    impl<
-                        T: ApiService,
-                    > tonic::server::UnaryService<
-                        super::super::super::response_def::v1::GetStoryResponsesInfoRequest,
-                    > for GetStoryResponsesInfoSvc<T> {
-                        type Response = super::super::super::response_def::v1::GetStoryResponsesInfoResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                    impl<T: ApiService>
+                        tonic::server::UnaryService<
+                            super::super::super::response_def::v1::GetStoryResponsesInfoRequest,
+                        > for GetStoryResponsesInfoSvc<T>
+                    {
+                        type Response =
+                            super::super::super::response_def::v1::GetStoryResponsesInfoResponse;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<
@@ -1765,9 +1579,8 @@ pub mod api_service_server {
                             >,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                (*inner).get_story_responses_info(request).await
-                            };
+                            let fut =
+                                async move { (*inner).get_story_responses_info(request).await };
                             Box::pin(fut)
                         }
                     }
@@ -1797,16 +1610,14 @@ pub mod api_service_server {
                 "/api_service.v1.ApiService/GetFollowedTagCount" => {
                     #[allow(non_camel_case_types)]
                     struct GetFollowedTagCountSvc<T: ApiService>(pub Arc<T>);
-                    impl<
-                        T: ApiService,
-                    > tonic::server::UnaryService<
-                        super::super::super::tag_def::v1::GetFollowedTagCountRequest,
-                    > for GetFollowedTagCountSvc<T> {
-                        type Response = super::super::super::tag_def::v1::GetFollowedTagCountResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                    impl<T: ApiService>
+                        tonic::server::UnaryService<
+                            super::super::super::tag_def::v1::GetFollowedTagCountRequest,
+                        > for GetFollowedTagCountSvc<T>
+                    {
+                        type Response =
+                            super::super::super::tag_def::v1::GetFollowedTagCountResponse;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<
@@ -1814,9 +1625,7 @@ pub mod api_service_server {
                             >,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                (*inner).get_followed_tag_count(request).await
-                            };
+                            let fut = async move { (*inner).get_followed_tag_count(request).await };
                             Box::pin(fut)
                         }
                     }
@@ -1846,16 +1655,14 @@ pub mod api_service_server {
                 "/api_service.v1.ApiService/GetUserRelationsInfo" => {
                     #[allow(non_camel_case_types)]
                     struct GetUserRelationsInfoSvc<T: ApiService>(pub Arc<T>);
-                    impl<
-                        T: ApiService,
-                    > tonic::server::UnaryService<
-                        super::super::super::user_def::v1::GetUserRelationsInfoRequest,
-                    > for GetUserRelationsInfoSvc<T> {
-                        type Response = super::super::super::user_def::v1::GetUserRelationsInfoResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                    impl<T: ApiService>
+                        tonic::server::UnaryService<
+                            super::super::super::user_def::v1::GetUserRelationsInfoRequest,
+                        > for GetUserRelationsInfoSvc<T>
+                    {
+                        type Response =
+                            super::super::super::user_def::v1::GetUserRelationsInfoResponse;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<
@@ -1863,9 +1670,8 @@ pub mod api_service_server {
                             >,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                (*inner).get_user_relations_info(request).await
-                            };
+                            let fut =
+                                async move { (*inner).get_user_relations_info(request).await };
                             Box::pin(fut)
                         }
                     }
@@ -1895,16 +1701,14 @@ pub mod api_service_server {
                 "/api_service.v1.ApiService/GetUserBlockCount" => {
                     #[allow(non_camel_case_types)]
                     struct GetUserBlockCountSvc<T: ApiService>(pub Arc<T>);
-                    impl<
-                        T: ApiService,
-                    > tonic::server::UnaryService<
-                        super::super::super::user_def::v1::GetUserBlockCountRequest,
-                    > for GetUserBlockCountSvc<T> {
-                        type Response = super::super::super::user_def::v1::GetUserBlockCountResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                    impl<T: ApiService>
+                        tonic::server::UnaryService<
+                            super::super::super::user_def::v1::GetUserBlockCountRequest,
+                        > for GetUserBlockCountSvc<T>
+                    {
+                        type Response =
+                            super::super::super::user_def::v1::GetUserBlockCountResponse;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<
@@ -1912,9 +1716,7 @@ pub mod api_service_server {
                             >,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                (*inner).get_user_block_count(request).await
-                            };
+                            let fut = async move { (*inner).get_user_block_count(request).await };
                             Box::pin(fut)
                         }
                     }
@@ -1944,16 +1746,13 @@ pub mod api_service_server {
                 "/api_service.v1.ApiService/GetUserMuteCount" => {
                     #[allow(non_camel_case_types)]
                     struct GetUserMuteCountSvc<T: ApiService>(pub Arc<T>);
-                    impl<
-                        T: ApiService,
-                    > tonic::server::UnaryService<
-                        super::super::super::user_def::v1::GetUserMuteCountRequest,
-                    > for GetUserMuteCountSvc<T> {
+                    impl<T: ApiService>
+                        tonic::server::UnaryService<
+                            super::super::super::user_def::v1::GetUserMuteCountRequest,
+                        > for GetUserMuteCountSvc<T>
+                    {
                         type Response = super::super::super::user_def::v1::GetUserMuteCountResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<
@@ -1961,9 +1760,7 @@ pub mod api_service_server {
                             >,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                (*inner).get_user_mute_count(request).await
-                            };
+                            let fut = async move { (*inner).get_user_mute_count(request).await };
                             Box::pin(fut)
                         }
                     }
@@ -1993,16 +1790,13 @@ pub mod api_service_server {
                 "/api_service.v1.ApiService/GetStory" => {
                     #[allow(non_camel_case_types)]
                     struct GetStorySvc<T: ApiService>(pub Arc<T>);
-                    impl<
-                        T: ApiService,
-                    > tonic::server::UnaryService<
-                        super::super::super::story_def::v1::GetStoryRequest,
-                    > for GetStorySvc<T> {
+                    impl<T: ApiService>
+                        tonic::server::UnaryService<
+                            super::super::super::story_def::v1::GetStoryRequest,
+                        > for GetStorySvc<T>
+                    {
                         type Response = super::super::super::story_def::v1::GetStoryResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<
@@ -2040,16 +1834,13 @@ pub mod api_service_server {
                 "/api_service.v1.ApiService/GetComment" => {
                     #[allow(non_camel_case_types)]
                     struct GetCommentSvc<T: ApiService>(pub Arc<T>);
-                    impl<
-                        T: ApiService,
-                    > tonic::server::UnaryService<
-                        super::super::super::comment_def::v1::GetCommentRequest,
-                    > for GetCommentSvc<T> {
+                    impl<T: ApiService>
+                        tonic::server::UnaryService<
+                            super::super::super::comment_def::v1::GetCommentRequest,
+                        > for GetCommentSvc<T>
+                    {
                         type Response = super::super::super::comment_def::v1::GetCommentResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<
@@ -2087,16 +1878,13 @@ pub mod api_service_server {
                 "/api_service.v1.ApiService/CreateDraft" => {
                     #[allow(non_camel_case_types)]
                     struct CreateDraftSvc<T: ApiService>(pub Arc<T>);
-                    impl<
-                        T: ApiService,
-                    > tonic::server::UnaryService<
-                        super::super::super::story_def::v1::CreateDraftRequest,
-                    > for CreateDraftSvc<T> {
+                    impl<T: ApiService>
+                        tonic::server::UnaryService<
+                            super::super::super::story_def::v1::CreateDraftRequest,
+                        > for CreateDraftSvc<T>
+                    {
                         type Response = super::super::super::story_def::v1::CreateDraftResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<
@@ -2104,9 +1892,7 @@ pub mod api_service_server {
                             >,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                (*inner).create_draft(request).await
-                            };
+                            let fut = async move { (*inner).create_draft(request).await };
                             Box::pin(fut)
                         }
                     }
@@ -2133,18 +1919,14 @@ pub mod api_service_server {
                     };
                     Box::pin(fut)
                 }
-                _ => {
-                    Box::pin(async move {
-                        Ok(
-                            http::Response::builder()
-                                .status(200)
-                                .header("grpc-status", "12")
-                                .header("content-type", "application/grpc")
-                                .body(empty_body())
-                                .unwrap(),
-                        )
-                    })
-                }
+                _ => Box::pin(async move {
+                    Ok(http::Response::builder()
+                        .status(200)
+                        .header("grpc-status", "12")
+                        .header("content-type", "application/grpc")
+                        .body(empty_body())
+                        .unwrap())
+                }),
             }
         }
     }

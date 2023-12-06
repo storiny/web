@@ -2,23 +2,23 @@
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetPrivacySettingsRequest {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub user_id: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetPrivacySettingsResponse {
-    #[prost(bool, tag="1")]
+    #[prost(bool, tag = "1")]
     pub is_private_account: bool,
-    #[prost(bool, tag="2")]
+    #[prost(bool, tag = "2")]
     pub record_read_history: bool,
-    #[prost(bool, tag="3")]
+    #[prost(bool, tag = "3")]
     pub allow_sensitive_media: bool,
-    #[prost(enumeration="IncomingFriendRequest", tag="4")]
+    #[prost(enumeration = "IncomingFriendRequest", tag = "4")]
     pub incoming_friend_requests: i32,
-    #[prost(enumeration="RelationVisibility", tag="5")]
+    #[prost(enumeration = "RelationVisibility", tag = "5")]
     pub following_list_visibility: i32,
-    #[prost(enumeration="RelationVisibility", tag="6")]
+    #[prost(enumeration = "RelationVisibility", tag = "6")]
     pub friend_list_visibility: i32,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]

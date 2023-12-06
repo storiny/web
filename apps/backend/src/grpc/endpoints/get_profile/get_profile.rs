@@ -339,7 +339,7 @@ WHERE id = $1
                 // Follow the user.
                 let result = sqlx::query(
                     r#"
-INSERT INTO relations (follower_id, following_id)
+INSERT INTO relations (follower_id, followed_id)
 VALUES ($1, $2)
 "#,
                 )
@@ -388,7 +388,7 @@ VALUES ($1, $2)
                 // Add the user as follower.
                 let result = sqlx::query(
                     r#"
-INSERT INTO relations (follower_id, following_id)
+INSERT INTO relations (follower_id, followed_id)
 VALUES ($2, $1)
 "#,
                 )
@@ -492,7 +492,7 @@ WHERE transmitter_id = $1
 
                 // Should be true.
                 assert!(response.is_friend);
-                // Friend request should get deleted.
+                // Friend request should get accepted.
                 assert!(!response.is_friend_request_sent);
             }),
         )
@@ -508,8 +508,8 @@ WHERE transmitter_id = $1
                 // Follow the user without subscribing.
                 let result = sqlx::query(
                     r#"
-INSERT INTO relations (follower_id, following_id)
-VALUES ($1, $2)
+INSERT INTO relations (follower_id, followed_id, subscribed_at)
+VALUES ($1, $2, NULL)
 "#,
                 )
                 .bind(user_id.unwrap())

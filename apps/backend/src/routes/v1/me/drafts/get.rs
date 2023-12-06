@@ -15,7 +15,6 @@ use serde::{
     Deserialize,
     Serialize,
 };
-
 use sqlx::{
     FromRow,
     Postgres,
@@ -352,11 +351,21 @@ VALUES ($1, NOW()), ($1, NOW())
         // Insert some pending drafts.
         sqlx::query(
             r#"
-INSERT INTO stories (id, user_id)
-VALUES ($1, $3), ($2, $3)
+INSERT INTO stories(id, user_id)
+VALUES ($1, $2)
 "#,
         )
         .bind(2_i64)
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        sqlx::query(
+            r#"
+INSERT INTO stories(id, user_id)
+VALUES ($1, $2)
+"#,
+        )
         .bind(3_i64)
         .bind(user_id.unwrap())
         .execute(&mut *conn)
@@ -386,11 +395,21 @@ VALUES ($1, $3), ($2, $3)
         // Insert some pending drafts.
         sqlx::query(
             r#"
-INSERT INTO stories (id, user_id)
-VALUES ($1, $3), ($2, $3)
+INSERT INTO stories(id, user_id)
+VALUES ($1, $2)
 "#,
         )
         .bind(2_i64)
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        sqlx::query(
+            r#"
+INSERT INTO stories(id, user_id)
+VALUES ($1, $2)
+"#,
+        )
         .bind(3_i64)
         .bind(user_id.unwrap())
         .execute(&mut *conn)
@@ -418,7 +437,7 @@ VALUES ($1, $3), ($2, $3)
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some deleted drafts.
-        sqlx::query(
+        let result = sqlx::query(
             r#"
 INSERT INTO stories (id, user_id, deleted_at)
 VALUES ($1, $3, NOW()), ($2, $3, NOW())
@@ -429,6 +448,8 @@ VALUES ($1, $3, NOW()), ($2, $3, NOW())
         .bind(user_id.unwrap())
         .execute(&mut *conn)
         .await?;
+
+        assert_eq!(result.rows_affected(), 2);
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())

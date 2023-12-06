@@ -23,10 +23,7 @@ impl<'de> serde::Deserialize<'de> for CreateDraftRequest {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &[
-            "user_id",
-            "userId",
-        ];
+        const FIELDS: &[&str] = &["user_id", "userId"];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -42,7 +39,10 @@ impl<'de> serde::Deserialize<'de> for CreateDraftRequest {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -69,8 +69,8 @@ impl<'de> serde::Deserialize<'de> for CreateDraftRequest {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<CreateDraftRequest, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut user_id__ = None;
                 while let Some(k) = map.next_key()? {
@@ -102,7 +102,8 @@ impl serde::Serialize for CreateDraftResponse {
         if !self.draft_id.is_empty() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("story_def.v1.CreateDraftResponse", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("story_def.v1.CreateDraftResponse", len)?;
         if !self.draft_id.is_empty() {
             struct_ser.serialize_field("draftId", &self.draft_id)?;
         }
@@ -115,10 +116,7 @@ impl<'de> serde::Deserialize<'de> for CreateDraftResponse {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &[
-            "draft_id",
-            "draftId",
-        ];
+        const FIELDS: &[&str] = &["draft_id", "draftId"];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -134,7 +132,10 @@ impl<'de> serde::Deserialize<'de> for CreateDraftResponse {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -161,8 +162,8 @@ impl<'de> serde::Deserialize<'de> for CreateDraftResponse {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<CreateDraftResponse, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut draft_id__ = None;
                 while let Some(k) = map.next_key()? {
@@ -180,7 +181,11 @@ impl<'de> serde::Deserialize<'de> for CreateDraftResponse {
                 })
             }
         }
-        deserializer.deserialize_struct("story_def.v1.CreateDraftResponse", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "story_def.v1.CreateDraftResponse",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for Draft {
@@ -278,7 +283,10 @@ impl<'de> serde::Deserialize<'de> for Draft {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -311,8 +319,8 @@ impl<'de> serde::Deserialize<'de> for Draft {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<Draft, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut id__ = None;
                 let mut title__ = None;
@@ -351,9 +359,10 @@ impl<'de> serde::Deserialize<'de> for Draft {
                             if word_count__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("wordCount"));
                             }
-                            word_count__ = 
-                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
-                            ;
+                            word_count__ = Some(
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
+                            );
                         }
                         GeneratedField::CreatedAt => {
                             if created_at__.is_some() {
@@ -394,7 +403,8 @@ impl serde::Serialize for GetDraftsInfoRequest {
         if !self.user_id.is_empty() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("story_def.v1.GetDraftsInfoRequest", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("story_def.v1.GetDraftsInfoRequest", len)?;
         if !self.user_id.is_empty() {
             struct_ser.serialize_field("userId", &self.user_id)?;
         }
@@ -407,10 +417,7 @@ impl<'de> serde::Deserialize<'de> for GetDraftsInfoRequest {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &[
-            "user_id",
-            "userId",
-        ];
+        const FIELDS: &[&str] = &["user_id", "userId"];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -426,7 +433,10 @@ impl<'de> serde::Deserialize<'de> for GetDraftsInfoRequest {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -453,8 +463,8 @@ impl<'de> serde::Deserialize<'de> for GetDraftsInfoRequest {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<GetDraftsInfoRequest, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut user_id__ = None;
                 while let Some(k) = map.next_key()? {
@@ -472,7 +482,11 @@ impl<'de> serde::Deserialize<'de> for GetDraftsInfoRequest {
                 })
             }
         }
-        deserializer.deserialize_struct("story_def.v1.GetDraftsInfoRequest", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "story_def.v1.GetDraftsInfoRequest",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for GetDraftsInfoResponse {
@@ -492,7 +506,8 @@ impl serde::Serialize for GetDraftsInfoResponse {
         if self.latest_draft.is_some() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("story_def.v1.GetDraftsInfoResponse", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("story_def.v1.GetDraftsInfoResponse", len)?;
         if self.pending_draft_count != 0 {
             struct_ser.serialize_field("pendingDraftCount", &self.pending_draft_count)?;
         }
@@ -536,7 +551,10 @@ impl<'de> serde::Deserialize<'de> for GetDraftsInfoResponse {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -546,8 +564,12 @@ impl<'de> serde::Deserialize<'de> for GetDraftsInfoResponse {
                         E: serde::de::Error,
                     {
                         match value {
-                            "pendingDraftCount" | "pending_draft_count" => Ok(GeneratedField::PendingDraftCount),
-                            "deletedDraftCount" | "deleted_draft_count" => Ok(GeneratedField::DeletedDraftCount),
+                            "pendingDraftCount" | "pending_draft_count" => {
+                                Ok(GeneratedField::PendingDraftCount)
+                            }
+                            "deletedDraftCount" | "deleted_draft_count" => {
+                                Ok(GeneratedField::DeletedDraftCount)
+                            }
                             "latestDraft" | "latest_draft" => Ok(GeneratedField::LatestDraft),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
@@ -564,9 +586,12 @@ impl<'de> serde::Deserialize<'de> for GetDraftsInfoResponse {
                 formatter.write_str("struct story_def.v1.GetDraftsInfoResponse")
             }
 
-            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetDraftsInfoResponse, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(
+                self,
+                mut map: V,
+            ) -> std::result::Result<GetDraftsInfoResponse, V::Error>
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut pending_draft_count__ = None;
                 let mut deleted_draft_count__ = None;
@@ -577,17 +602,19 @@ impl<'de> serde::Deserialize<'de> for GetDraftsInfoResponse {
                             if pending_draft_count__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("pendingDraftCount"));
                             }
-                            pending_draft_count__ = 
-                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
-                            ;
+                            pending_draft_count__ = Some(
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
+                            );
                         }
                         GeneratedField::DeletedDraftCount => {
                             if deleted_draft_count__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("deletedDraftCount"));
                             }
-                            deleted_draft_count__ = 
-                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
-                            ;
+                            deleted_draft_count__ = Some(
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
+                            );
                         }
                         GeneratedField::LatestDraft => {
                             if latest_draft__.is_some() {
@@ -604,7 +631,11 @@ impl<'de> serde::Deserialize<'de> for GetDraftsInfoResponse {
                 })
             }
         }
-        deserializer.deserialize_struct("story_def.v1.GetDraftsInfoResponse", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "story_def.v1.GetDraftsInfoResponse",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for GetStoriesInfoRequest {
@@ -618,7 +649,8 @@ impl serde::Serialize for GetStoriesInfoRequest {
         if !self.user_id.is_empty() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("story_def.v1.GetStoriesInfoRequest", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("story_def.v1.GetStoriesInfoRequest", len)?;
         if !self.user_id.is_empty() {
             struct_ser.serialize_field("userId", &self.user_id)?;
         }
@@ -631,10 +663,7 @@ impl<'de> serde::Deserialize<'de> for GetStoriesInfoRequest {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &[
-            "user_id",
-            "userId",
-        ];
+        const FIELDS: &[&str] = &["user_id", "userId"];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -650,7 +679,10 @@ impl<'de> serde::Deserialize<'de> for GetStoriesInfoRequest {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -676,9 +708,12 @@ impl<'de> serde::Deserialize<'de> for GetStoriesInfoRequest {
                 formatter.write_str("struct story_def.v1.GetStoriesInfoRequest")
             }
 
-            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetStoriesInfoRequest, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(
+                self,
+                mut map: V,
+            ) -> std::result::Result<GetStoriesInfoRequest, V::Error>
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut user_id__ = None;
                 while let Some(k) = map.next_key()? {
@@ -696,7 +731,11 @@ impl<'de> serde::Deserialize<'de> for GetStoriesInfoRequest {
                 })
             }
         }
-        deserializer.deserialize_struct("story_def.v1.GetStoriesInfoRequest", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "story_def.v1.GetStoriesInfoRequest",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for GetStoriesInfoResponse {
@@ -713,7 +752,8 @@ impl serde::Serialize for GetStoriesInfoResponse {
         if self.deleted_story_count != 0 {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("story_def.v1.GetStoriesInfoResponse", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("story_def.v1.GetStoriesInfoResponse", len)?;
         if self.published_story_count != 0 {
             struct_ser.serialize_field("publishedStoryCount", &self.published_story_count)?;
         }
@@ -751,7 +791,10 @@ impl<'de> serde::Deserialize<'de> for GetStoriesInfoResponse {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -761,8 +804,12 @@ impl<'de> serde::Deserialize<'de> for GetStoriesInfoResponse {
                         E: serde::de::Error,
                     {
                         match value {
-                            "publishedStoryCount" | "published_story_count" => Ok(GeneratedField::PublishedStoryCount),
-                            "deletedStoryCount" | "deleted_story_count" => Ok(GeneratedField::DeletedStoryCount),
+                            "publishedStoryCount" | "published_story_count" => {
+                                Ok(GeneratedField::PublishedStoryCount)
+                            }
+                            "deletedStoryCount" | "deleted_story_count" => {
+                                Ok(GeneratedField::DeletedStoryCount)
+                            }
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -778,9 +825,12 @@ impl<'de> serde::Deserialize<'de> for GetStoriesInfoResponse {
                 formatter.write_str("struct story_def.v1.GetStoriesInfoResponse")
             }
 
-            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetStoriesInfoResponse, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(
+                self,
+                mut map: V,
+            ) -> std::result::Result<GetStoriesInfoResponse, V::Error>
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut published_story_count__ = None;
                 let mut deleted_story_count__ = None;
@@ -788,19 +838,23 @@ impl<'de> serde::Deserialize<'de> for GetStoriesInfoResponse {
                     match k {
                         GeneratedField::PublishedStoryCount => {
                             if published_story_count__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("publishedStoryCount"));
+                                return Err(serde::de::Error::duplicate_field(
+                                    "publishedStoryCount",
+                                ));
                             }
-                            published_story_count__ = 
-                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
-                            ;
+                            published_story_count__ = Some(
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
+                            );
                         }
                         GeneratedField::DeletedStoryCount => {
                             if deleted_story_count__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("deletedStoryCount"));
                             }
-                            deleted_story_count__ = 
-                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
-                            ;
+                            deleted_story_count__ = Some(
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
+                            );
                         }
                     }
                 }
@@ -810,7 +864,11 @@ impl<'de> serde::Deserialize<'de> for GetStoriesInfoResponse {
                 })
             }
         }
-        deserializer.deserialize_struct("story_def.v1.GetStoriesInfoResponse", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "story_def.v1.GetStoriesInfoResponse",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for GetStoryRequest {
@@ -843,12 +901,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryRequest {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &[
-            "id_or_slug",
-            "idOrSlug",
-            "current_user_id",
-            "currentUserId",
-        ];
+        const FIELDS: &[&str] = &["id_or_slug", "idOrSlug", "current_user_id", "currentUserId"];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -865,7 +918,10 @@ impl<'de> serde::Deserialize<'de> for GetStoryRequest {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -876,7 +932,9 @@ impl<'de> serde::Deserialize<'de> for GetStoryRequest {
                     {
                         match value {
                             "idOrSlug" | "id_or_slug" => Ok(GeneratedField::IdOrSlug),
-                            "currentUserId" | "current_user_id" => Ok(GeneratedField::CurrentUserId),
+                            "currentUserId" | "current_user_id" => {
+                                Ok(GeneratedField::CurrentUserId)
+                            }
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -893,8 +951,8 @@ impl<'de> serde::Deserialize<'de> for GetStoryRequest {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<GetStoryRequest, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut id_or_slug__ = None;
                 let mut current_user_id__ = None;
@@ -1071,25 +1129,31 @@ impl serde::Serialize for GetStoryResponse {
             struct_ser.serialize_field("commentCount", &self.comment_count)?;
         }
         if self.age_restriction != 0 {
-            let v = StoryAgeRestriction::from_i32(self.age_restriction)
-                .ok_or_else(|| serde::ser::Error::custom(format!("Invalid variant {}", self.age_restriction)))?;
+            let v = StoryAgeRestriction::from_i32(self.age_restriction).ok_or_else(|| {
+                serde::ser::Error::custom(format!("Invalid variant {}", self.age_restriction))
+            })?;
             struct_ser.serialize_field("ageRestriction", &v)?;
         }
         if self.license != 0 {
-            let v = StoryLicense::from_i32(self.license)
-                .ok_or_else(|| serde::ser::Error::custom(format!("Invalid variant {}", self.license)))?;
+            let v = StoryLicense::from_i32(self.license).ok_or_else(|| {
+                serde::ser::Error::custom(format!("Invalid variant {}", self.license))
+            })?;
             struct_ser.serialize_field("license", &v)?;
         }
         if self.visibility != 0 {
-            let v = StoryVisibility::from_i32(self.visibility)
-                .ok_or_else(|| serde::ser::Error::custom(format!("Invalid variant {}", self.visibility)))?;
+            let v = StoryVisibility::from_i32(self.visibility).ok_or_else(|| {
+                serde::ser::Error::custom(format!("Invalid variant {}", self.visibility))
+            })?;
             struct_ser.serialize_field("visibility", &v)?;
         }
         if self.disable_comments {
             struct_ser.serialize_field("disableComments", &self.disable_comments)?;
         }
         if self.disable_public_revision_history {
-            struct_ser.serialize_field("disablePublicRevisionHistory", &self.disable_public_revision_history)?;
+            struct_ser.serialize_field(
+                "disablePublicRevisionHistory",
+                &self.disable_public_revision_history,
+            )?;
         }
         if self.disable_toc {
             struct_ser.serialize_field("disableToc", &self.disable_toc)?;
@@ -1251,7 +1315,10 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -1274,26 +1341,38 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                             "readCount" | "read_count" => Ok(GeneratedField::ReadCount),
                             "wordCount" | "word_count" => Ok(GeneratedField::WordCount),
                             "commentCount" | "comment_count" => Ok(GeneratedField::CommentCount),
-                            "ageRestriction" | "age_restriction" => Ok(GeneratedField::AgeRestriction),
+                            "ageRestriction" | "age_restriction" => {
+                                Ok(GeneratedField::AgeRestriction)
+                            }
                             "license" => Ok(GeneratedField::License),
                             "visibility" => Ok(GeneratedField::Visibility),
-                            "disableComments" | "disable_comments" => Ok(GeneratedField::DisableComments),
-                            "disablePublicRevisionHistory" | "disable_public_revision_history" => Ok(GeneratedField::DisablePublicRevisionHistory),
+                            "disableComments" | "disable_comments" => {
+                                Ok(GeneratedField::DisableComments)
+                            }
+                            "disablePublicRevisionHistory" | "disable_public_revision_history" => {
+                                Ok(GeneratedField::DisablePublicRevisionHistory)
+                            }
                             "disableToc" | "disable_toc" => Ok(GeneratedField::DisableToc),
                             "canonicalUrl" | "canonical_url" => Ok(GeneratedField::CanonicalUrl),
-                            "seoDescription" | "seo_description" => Ok(GeneratedField::SeoDescription),
+                            "seoDescription" | "seo_description" => {
+                                Ok(GeneratedField::SeoDescription)
+                            }
                             "seoTitle" | "seo_title" => Ok(GeneratedField::SeoTitle),
                             "previewImage" | "preview_image" => Ok(GeneratedField::PreviewImage),
                             "createdAt" | "created_at" => Ok(GeneratedField::CreatedAt),
                             "editedAt" | "edited_at" => Ok(GeneratedField::EditedAt),
                             "publishedAt" | "published_at" => Ok(GeneratedField::PublishedAt),
-                            "firstPublishedAt" | "first_published_at" => Ok(GeneratedField::FirstPublishedAt),
+                            "firstPublishedAt" | "first_published_at" => {
+                                Ok(GeneratedField::FirstPublishedAt)
+                            }
                             "deletedAt" | "deleted_at" => Ok(GeneratedField::DeletedAt),
                             "user" => Ok(GeneratedField::User),
                             "tags" => Ok(GeneratedField::Tags),
                             "isBookmarked" | "is_bookmarked" => Ok(GeneratedField::IsBookmarked),
                             "isLiked" | "is_liked" => Ok(GeneratedField::IsLiked),
-                            "readingSessionToken" | "reading_session_token" => Ok(GeneratedField::ReadingSessionToken),
+                            "readingSessionToken" | "reading_session_token" => {
+                                Ok(GeneratedField::ReadingSessionToken)
+                            }
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -1310,8 +1389,8 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<GetStoryResponse, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut id__ = None;
                 let mut title__ = None;
@@ -1406,39 +1485,44 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                             if like_count__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("likeCount"));
                             }
-                            like_count__ = 
-                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
-                            ;
+                            like_count__ = Some(
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
+                            );
                         }
                         GeneratedField::ReadCount => {
                             if read_count__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("readCount"));
                             }
-                            read_count__ = 
-                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
-                            ;
+                            read_count__ = Some(
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
+                            );
                         }
                         GeneratedField::WordCount => {
                             if word_count__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("wordCount"));
                             }
-                            word_count__ = 
-                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
-                            ;
+                            word_count__ = Some(
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
+                            );
                         }
                         GeneratedField::CommentCount => {
                             if comment_count__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("commentCount"));
                             }
-                            comment_count__ = 
-                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
-                            ;
+                            comment_count__ = Some(
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
+                            );
                         }
                         GeneratedField::AgeRestriction => {
                             if age_restriction__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("ageRestriction"));
                             }
-                            age_restriction__ = Some(map.next_value::<StoryAgeRestriction>()? as i32);
+                            age_restriction__ =
+                                Some(map.next_value::<StoryAgeRestriction>()? as i32);
                         }
                         GeneratedField::License => {
                             if license__.is_some() {
@@ -1460,7 +1544,9 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                         }
                         GeneratedField::DisablePublicRevisionHistory => {
                             if disable_public_revision_history__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("disablePublicRevisionHistory"));
+                                return Err(serde::de::Error::duplicate_field(
+                                    "disablePublicRevisionHistory",
+                                ));
                             }
                             disable_public_revision_history__ = Some(map.next_value()?);
                         }
@@ -1550,7 +1636,9 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                         }
                         GeneratedField::ReadingSessionToken => {
                             if reading_session_token__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("readingSessionToken"));
+                                return Err(serde::de::Error::duplicate_field(
+                                    "readingSessionToken",
+                                ));
                             }
                             reading_session_token__ = Some(map.next_value()?);
                         }
@@ -1574,7 +1662,8 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                     license: license__.unwrap_or_default(),
                     visibility: visibility__.unwrap_or_default(),
                     disable_comments: disable_comments__.unwrap_or_default(),
-                    disable_public_revision_history: disable_public_revision_history__.unwrap_or_default(),
+                    disable_public_revision_history: disable_public_revision_history__
+                        .unwrap_or_default(),
                     disable_toc: disable_toc__.unwrap_or_default(),
                     canonical_url: canonical_url__,
                     seo_description: seo_description__,

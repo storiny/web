@@ -12,7 +12,7 @@ SELECT s.id,
 	   s.description,
 	   s.splash_id,
 	   s.splash_hex,
-	   s.category::TEXT                          AS "category!",
+	   s.category::TEXT                                     AS "category!",
 	   s.age_restriction,
 	   s.visibility,
 	   s.license,
@@ -36,42 +36,42 @@ SELECT s.id,
 	   s.published_at,
 	   s.first_published_at,
 	   -- Joins
-	   "s->document".key                         AS "doc_key",
+	   "s->document".key                                    AS "doc_key",
 	   -- Boolean flags
-	   "s->is_bookmarked".story_id IS NOT NULL            AS "is_bookmarked!",
-	   "s->is_liked".story_id IS NOT NULL                 AS "is_liked!",
+	   "s->is_bookmarked".story_id IS NOT NULL              AS "is_bookmarked!",
+	   "s->is_liked".story_id IS NOT NULL                   AS "is_liked!",
 	   -- User
-	   "s->user".name                            AS user_name,
-	   "s->user".username                        AS user_username,
-	   "s->user".rendered_bio                    AS "user_rendered_bio!",
-	   "s->user".location                        AS user_location,
-	   "s->user".avatar_id                       AS user_avatar_id,
-	   "s->user".avatar_hex                      AS user_avatar_hex,
-	   "s->user".public_flags                    AS user_public_flags,
-	   "s->user".is_private                      AS user_is_private,
-	   "s->user".created_at                      AS user_created_at,
-	   "s->user".follower_count                  AS user_follower_count,
+	   "s->user".name                                       AS user_name,
+	   "s->user".username                                   AS user_username,
+	   "s->user".rendered_bio                               AS "user_rendered_bio!",
+	   "s->user".location                                   AS user_location,
+	   "s->user".avatar_id                                  AS user_avatar_id,
+	   "s->user".avatar_hex                                 AS user_avatar_hex,
+	   "s->user".public_flags                               AS user_public_flags,
+	   "s->user".is_private                                 AS user_is_private,
+	   "s->user".created_at                                 AS user_created_at,
+	   "s->user".follower_count                             AS user_follower_count,
 	   -- User boolean flags
-	   "s->user->is_following".follower_id IS NOT NULL       AS "user_is_following!",
-	   "s->user->is_follower".follower_id IS NOT NULL        AS "user_is_follower!",
-	   "s->user->is_friend".transmitter_id IS NOT NULL          AS "user_is_friend!",
+	   "s->user->is_following".follower_id IS NOT NULL      AS "user_is_following!",
+	   "s->user->is_follower".follower_id IS NOT NULL       AS "user_is_follower!",
+	   "s->user->is_friend".transmitter_id IS NOT NULL      AS "user_is_friend!",
 	   "s->user->is_blocked_by_user".blocker_id IS NOT NULL AS "user_is_blocked_by_user!",
 	   -- User status
-	   "s->user->status".emoji                   AS "user_status_emoji?",
-	   "s->user->status".text                    AS "user_status_text?",
-	   "s->user->status".expires_at              AS "user_status_expires_at?",
+	   "s->user->status".emoji                              AS "user_status_emoji?",
+	   "s->user->status".text                               AS "user_status_text?",
+	   "s->user->status".expires_at                         AS "user_status_expires_at?",
 	   CASE
 		   WHEN "s->user->status".user_id IS NOT NULL AND (
 			   -- Global
 					   "s->user->status".visibility = 1
 				   -- Followers
-				   OR ("s->user->status".visibility = 2 AND "s->user->is_following" IS NOT NULL)
+				   OR ("s->user->status".visibility = 2 AND "s->user->is_following".follower_id IS NOT NULL)
 				   -- Friends
-				   OR ("s->user->status".visibility = 3 AND "s->user->is_friend" IS NOT NULL)
+				   OR ("s->user->status".visibility = 3 AND "s->user->is_friend".transmitter_id IS NOT NULL)
 			   )
 			   THEN TRUE
 		   ELSE FALSE
-	   END                                       AS "user_has_status!",
+	   END                                                  AS "user_has_status!",
 	   -- Tags
 	   COALESCE(
 					   ARRAY_AGG(
@@ -79,7 +79,7 @@ SELECT s.id,
 								) FILTER (
 						   WHERE "s->story_tags->tag".id IS NOT NULL
 						   ), '{}'
-	   )                                         AS "tags!: Vec<Tag>"
+	   )                                                    AS "tags!: Vec<Tag>"
 FROM
 	stories s
 		-- Join document

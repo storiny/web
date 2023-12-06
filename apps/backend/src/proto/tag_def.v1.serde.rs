@@ -10,7 +10,8 @@ impl serde::Serialize for GetFollowedTagCountRequest {
         if !self.user_id.is_empty() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("tag_def.v1.GetFollowedTagCountRequest", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("tag_def.v1.GetFollowedTagCountRequest", len)?;
         if !self.user_id.is_empty() {
             struct_ser.serialize_field("userId", &self.user_id)?;
         }
@@ -23,10 +24,7 @@ impl<'de> serde::Deserialize<'de> for GetFollowedTagCountRequest {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &[
-            "user_id",
-            "userId",
-        ];
+        const FIELDS: &[&str] = &["user_id", "userId"];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -42,7 +40,10 @@ impl<'de> serde::Deserialize<'de> for GetFollowedTagCountRequest {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -68,9 +69,12 @@ impl<'de> serde::Deserialize<'de> for GetFollowedTagCountRequest {
                 formatter.write_str("struct tag_def.v1.GetFollowedTagCountRequest")
             }
 
-            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetFollowedTagCountRequest, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(
+                self,
+                mut map: V,
+            ) -> std::result::Result<GetFollowedTagCountRequest, V::Error>
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut user_id__ = None;
                 while let Some(k) = map.next_key()? {
@@ -88,7 +92,11 @@ impl<'de> serde::Deserialize<'de> for GetFollowedTagCountRequest {
                 })
             }
         }
-        deserializer.deserialize_struct("tag_def.v1.GetFollowedTagCountRequest", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "tag_def.v1.GetFollowedTagCountRequest",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for GetFollowedTagCountResponse {
@@ -102,7 +110,8 @@ impl serde::Serialize for GetFollowedTagCountResponse {
         if self.followed_tag_count != 0 {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("tag_def.v1.GetFollowedTagCountResponse", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("tag_def.v1.GetFollowedTagCountResponse", len)?;
         if self.followed_tag_count != 0 {
             struct_ser.serialize_field("followedTagCount", &self.followed_tag_count)?;
         }
@@ -115,10 +124,7 @@ impl<'de> serde::Deserialize<'de> for GetFollowedTagCountResponse {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &[
-            "followed_tag_count",
-            "followedTagCount",
-        ];
+        const FIELDS: &[&str] = &["followed_tag_count", "followedTagCount"];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -134,7 +140,10 @@ impl<'de> serde::Deserialize<'de> for GetFollowedTagCountResponse {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -144,7 +153,9 @@ impl<'de> serde::Deserialize<'de> for GetFollowedTagCountResponse {
                         E: serde::de::Error,
                     {
                         match value {
-                            "followedTagCount" | "followed_tag_count" => Ok(GeneratedField::FollowedTagCount),
+                            "followedTagCount" | "followed_tag_count" => {
+                                Ok(GeneratedField::FollowedTagCount)
+                            }
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -160,9 +171,12 @@ impl<'de> serde::Deserialize<'de> for GetFollowedTagCountResponse {
                 formatter.write_str("struct tag_def.v1.GetFollowedTagCountResponse")
             }
 
-            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetFollowedTagCountResponse, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(
+                self,
+                mut map: V,
+            ) -> std::result::Result<GetFollowedTagCountResponse, V::Error>
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut followed_tag_count__ = None;
                 while let Some(k) = map.next_key()? {
@@ -171,9 +185,10 @@ impl<'de> serde::Deserialize<'de> for GetFollowedTagCountResponse {
                             if followed_tag_count__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("followedTagCount"));
                             }
-                            followed_tag_count__ = 
-                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
-                            ;
+                            followed_tag_count__ = Some(
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
+                            );
                         }
                     }
                 }
@@ -182,7 +197,11 @@ impl<'de> serde::Deserialize<'de> for GetFollowedTagCountResponse {
                 })
             }
         }
-        deserializer.deserialize_struct("tag_def.v1.GetFollowedTagCountResponse", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "tag_def.v1.GetFollowedTagCountResponse",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for GetTagRequest {
@@ -215,11 +234,7 @@ impl<'de> serde::Deserialize<'de> for GetTagRequest {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &[
-            "name",
-            "current_user_id",
-            "currentUserId",
-        ];
+        const FIELDS: &[&str] = &["name", "current_user_id", "currentUserId"];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -236,7 +251,10 @@ impl<'de> serde::Deserialize<'de> for GetTagRequest {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -247,7 +265,9 @@ impl<'de> serde::Deserialize<'de> for GetTagRequest {
                     {
                         match value {
                             "name" => Ok(GeneratedField::Name),
-                            "currentUserId" | "current_user_id" => Ok(GeneratedField::CurrentUserId),
+                            "currentUserId" | "current_user_id" => {
+                                Ok(GeneratedField::CurrentUserId)
+                            }
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -264,8 +284,8 @@ impl<'de> serde::Deserialize<'de> for GetTagRequest {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<GetTagRequest, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut name__ = None;
                 let mut current_user_id__ = None;
@@ -380,7 +400,10 @@ impl<'de> serde::Deserialize<'de> for GetTagResponse {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -412,8 +435,8 @@ impl<'de> serde::Deserialize<'de> for GetTagResponse {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<GetTagResponse, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut id__ = None;
                 let mut name__ = None;
@@ -439,17 +462,19 @@ impl<'de> serde::Deserialize<'de> for GetTagResponse {
                             if story_count__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("storyCount"));
                             }
-                            story_count__ = 
-                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
-                            ;
+                            story_count__ = Some(
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
+                            );
                         }
                         GeneratedField::FollowerCount => {
                             if follower_count__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("followerCount"));
                             }
-                            follower_count__ = 
-                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
-                            ;
+                            follower_count__ = Some(
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
+                            );
                         }
                         GeneratedField::CreatedAt => {
                             if created_at__.is_some() {
@@ -508,10 +533,7 @@ impl<'de> serde::Deserialize<'de> for Tag {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &[
-            "id",
-            "name",
-        ];
+        const FIELDS: &[&str] = &["id", "name"];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -528,7 +550,10 @@ impl<'de> serde::Deserialize<'de> for Tag {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -556,8 +581,8 @@ impl<'de> serde::Deserialize<'de> for Tag {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<Tag, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut id__ = None;
                 let mut name__ = None;

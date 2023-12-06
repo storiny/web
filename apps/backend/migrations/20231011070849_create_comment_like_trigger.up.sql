@@ -8,12 +8,16 @@ $$
 BEGIN
 	-- Check whether the comment is soft-deleted or the user is soft-deleted/deactivated
 	IF (EXISTS(SELECT 1
-			   FROM comments
-			   WHERE id = NEW.comment_id
+			   FROM
+				   comments
+			   WHERE
+					 id = NEW.comment_id
 				 AND deleted_at IS NOT NULL
 			  ) OR EXISTS(SELECT 1
-						  FROM users
-						  WHERE id = NEW.user_id
+						  FROM
+							  users
+						  WHERE
+								id = NEW.user_id
 							AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL)
 						 )) THEN
 		RAISE 'Comment is soft-deleted or user is soft-deleted/deactivated'
@@ -41,8 +45,10 @@ BEGIN
 	-- Increment `like_count` on comment
 	UPDATE
 		comments
-	SET like_count = like_count + 1
-	WHERE id = NEW.comment_id;
+	SET
+		like_count = like_count + 1
+	WHERE
+		id = NEW.comment_id;
 	--
 	RETURN NEW;
 END;
@@ -68,8 +74,10 @@ BEGIN
 		-- Decrement `like_count` on comment
 		UPDATE
 			comments
-		SET like_count = like_count - 1
-		WHERE id = NEW.comment_id
+		SET
+			like_count = like_count - 1
+		WHERE
+			  id = NEW.comment_id
 		  AND like_count > 0;
 		--
 		RETURN NEW;
@@ -81,8 +89,10 @@ BEGIN
 		-- Increment `like_count` on comment
 		UPDATE
 			comments
-		SET like_count = like_count + 1
-		WHERE id = NEW.comment_id;
+		SET
+			like_count = like_count + 1
+		WHERE
+			id = NEW.comment_id;
 		--
 	END IF;
 	--
@@ -109,8 +119,10 @@ BEGIN
 	-- Decrement `like_count` on comment
 	UPDATE
 		comments
-	SET like_count = like_count - 1
-	WHERE id = OLD.comment_id
+	SET
+		like_count = like_count - 1
+	WHERE
+		  id = OLD.comment_id
 	  AND like_count > 0;
 	--
 	RETURN OLD;

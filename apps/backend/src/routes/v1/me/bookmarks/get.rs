@@ -340,7 +340,7 @@ VALUES ($1, $2)
         // Should be true.
         let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
         let story = &json[0];
-        assert!(!story.is_liked);
+        assert!(story.is_liked);
 
         Ok(())
     }
@@ -396,7 +396,7 @@ VALUES ($1, $2)
         // Should be true.
         let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
         let story = &json[0];
-        assert!(!story.is_liked);
+        assert!(story.is_liked);
 
         Ok(())
     }
@@ -454,7 +454,7 @@ VALUES ($1, $2)
         // Should be true.
         let json = serde_json::from_str::<Vec<Bookmark>>(&res_to_string(res).await).unwrap();
         let story = &json[0];
-        assert!(!story.is_liked);
+        assert!(story.is_liked);
 
         Ok(())
     }

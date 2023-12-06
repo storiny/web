@@ -21,7 +21,7 @@ WITH liked_stories AS (WITH search_query AS (SELECT PLAINTO_TSQUERY('english', $
 						   s.published_at                                           AS "published_at!",
 						   s.edited_at,
 						   -- Boolean flags
-						   "s->is_bookmarked".story_id IS NOT NULL                           AS "is_bookmarked!",
+						   "s->is_bookmarked".story_id IS NOT NULL                  AS "is_bookmarked!",
 						   -- User
 						   JSON_BUILD_OBJECT(
 								   'id', su.id,

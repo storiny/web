@@ -14,7 +14,6 @@ use serde::{
     Deserialize,
     Serialize,
 };
-
 use sqlx::{
     FromRow,
     Postgres,
@@ -119,7 +118,7 @@ SELECT
     query_builder.push(if user_id.is_some() {
         r#"
 -- Boolean flags
-"st->is_followed" IS NOT NULL AS "is_followed"
+"st->is_followed".tag_id IS NOT NULL AS "is_followed"
 "#
     } else {
         r#"FALSE as "is_followed""#
@@ -182,7 +181,7 @@ GROUP BY
 
     if user_id.is_some() {
         query_builder.push(",");
-        query_builder.push(r#" "st->is_followed" "#);
+        query_builder.push(r#" "st->is_followed".tag_id "#);
     }
 
     query_builder.push(r#" ORDER BY "#);

@@ -17,8 +17,10 @@ BEGIN
 	-- Check whether the transmitter/receiver is soft-deleted or deactivated
 	IF (
 		EXISTS (SELECT 1
-				FROM users
-				WHERE id IN (NEW.transmitter_id, NEW.receiver_id)
+				FROM
+					users
+				WHERE
+					  id IN (NEW.transmitter_id, NEW.receiver_id)
 				  AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL)
 			   )
 		) THEN
@@ -29,8 +31,10 @@ BEGIN
 	-- Check if the transmitter user is blocked by the receiver user
 	IF (
 		EXISTS (SELECT 1
-				FROM blocks
-				WHERE blocker_id = NEW.receiver_id
+				FROM
+					blocks
+				WHERE
+					  blocker_id = NEW.receiver_id
 				  AND blocked_id = NEW.transmitter_id
 				  AND deleted_at IS NULL
 			   )
@@ -42,8 +46,10 @@ BEGIN
 	-- Check for `incoming_friend_requests` flag on the receiver
 	SELECT incoming_friend_requests
 	INTO incoming_friend_requests_value
-	FROM users
-	WHERE id = NEW.receiver_id;
+	FROM
+		users
+	WHERE
+		id = NEW.receiver_id;
 	--
 	IF (
 		-- None
@@ -51,8 +57,10 @@ BEGIN
 			--
 			-- Following
 				incoming_friend_requests_value = 2 AND NOT EXISTS (SELECT 1
-																   FROM relations
-																   WHERE followed_id = NEW.transmitter_id
+																   FROM
+																	   relations
+																   WHERE
+																		 followed_id = NEW.transmitter_id
 																	 AND follower_id = NEW.receiver_id
 																	 AND deleted_at IS NULL
 																  ) OR
@@ -60,31 +68,39 @@ BEGIN
 			-- Friend of friends
 				incoming_friend_requests_value = 3 AND
 				NOT EXISTS (WITH receiver_friends AS (SELECT transmitter_id AS user_id
-													  FROM friends
-													  WHERE (transmitter_id = NEW.receiver_id OR receiver_id = NEW.receiver_id)
+													  FROM
+														  friends
+													  WHERE
+															(transmitter_id = NEW.receiver_id OR receiver_id = NEW.receiver_id)
 														AND accepted_at IS NOT NULL
 														AND deleted_at IS NULL
 													  UNION
 													  SELECT receiver_id AS user_id
-													  FROM friends
-													  WHERE (transmitter_id = NEW.receiver_id OR receiver_id = NEW.receiver_id)
+													  FROM
+														  friends
+													  WHERE
+															(transmitter_id = NEW.receiver_id OR receiver_id = NEW.receiver_id)
 														AND accepted_at IS NOT NULL
 														AND deleted_at IS NULL
 													 )
 							SELECT 1
-							FROM friends
-							WHERE (
-											transmitter_id =
-											NEW.transmitter_id AND
-											receiver_id IN
-											(SELECT user_id
-											 FROM receiver_friends
-											)
-									OR receiver_id = NEW.transmitter_id AND
-									   transmitter_id IN
-									   (SELECT user_id
-										FROM receiver_friends
-									   ))
+							FROM
+								friends
+							WHERE
+								  (
+												  transmitter_id =
+												  NEW.transmitter_id AND
+												  receiver_id IN
+												  (SELECT user_id
+												   FROM
+													   receiver_friends
+												  )
+										  OR receiver_id = NEW.transmitter_id AND
+											 transmitter_id IN
+											 (SELECT user_id
+											  FROM
+												  receiver_friends
+											 ))
 							  AND accepted_at IS NOT NULL
 							  AND deleted_at IS NULL
 							LIMIT 1
@@ -96,8 +112,10 @@ BEGIN
 	--
 	-- Delete existing inverse friend relation
 	DELETE
-	FROM friends
-	WHERE transmitter_id = NEW.receiver_id
+	FROM
+		friends
+	WHERE
+		  transmitter_id = NEW.receiver_id
 	  AND receiver_id = NEW.transmitter_id;
 	--
 	RETURN NEW;
@@ -123,8 +141,10 @@ BEGIN
 	IF (OLD.accepted_at IS NULL AND NEW.accepted_at IS NOT NULL) THEN
 		UPDATE
 			users
-		SET friend_count = friend_count + 1
-		WHERE id IN (NEW.transmitter_id, NEW.receiver_id);
+		SET
+			friend_count = friend_count + 1
+		WHERE
+			id IN (NEW.transmitter_id, NEW.receiver_id);
 		--
 		RETURN NEW;
 	END IF;
@@ -136,14 +156,18 @@ BEGIN
 			-- Decrement `friend_count`
 			UPDATE
 				users
-			SET friend_count = friend_count - 1
-			WHERE id IN (NEW.transmitter_id, NEW.receiver_id)
+			SET
+				friend_count = friend_count - 1
+			WHERE
+				  id IN (NEW.transmitter_id, NEW.receiver_id)
 			  AND friend_count > 0;
 			--
 			-- Delete notifications
 			DELETE
-			FROM notifications
-			WHERE entity_id = OLD.transmitter_id;
+			FROM
+				notifications
+			WHERE
+				entity_id = OLD.transmitter_id;
 			--
 			RETURN NEW;
 		END IF;
@@ -153,8 +177,10 @@ BEGIN
 			-- Increment `friend_count`
 			UPDATE
 				users
-			SET friend_count = friend_count + 1
-			WHERE id IN (NEW.transmitter_id, NEW.receiver_id);
+			SET
+				friend_count = friend_count + 1
+			WHERE
+				id IN (NEW.transmitter_id, NEW.receiver_id);
 			--
 		END IF;
 	END IF;
@@ -162,8 +188,10 @@ BEGIN
 	IF (OLD.deleted_at IS NULL AND NEW.deleted_at IS NOT NULL) THEN
 		-- Delete notifications
 		DELETE
-		FROM notifications
-		WHERE entity_id = NEW.transmitter_id;
+		FROM
+			notifications
+		WHERE
+			entity_id = NEW.transmitter_id;
 	END IF;
 	--
 	--
@@ -189,15 +217,19 @@ $$
 BEGIN
 	-- Delete notifications
 	DELETE
-	FROM notifications
-	WHERE entity_id = OLD.transmitter_id;
+	FROM
+		notifications
+	WHERE
+		entity_id = OLD.transmitter_id;
 	--
 	IF (OLD.accepted_at IS NOT NULL) THEN
 		-- Decrement `friend_count`
 		UPDATE
 			users
-		SET friend_count = friend_count - 1
-		WHERE id IN (OLD.transmitter_id, OLD.receiver_id)
+		SET
+			friend_count = friend_count - 1
+		WHERE
+			  id IN (OLD.transmitter_id, OLD.receiver_id)
 		  AND friend_count > 0;
 	END IF;
 	--
