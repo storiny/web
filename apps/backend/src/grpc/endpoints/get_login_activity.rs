@@ -80,7 +80,8 @@ fn convert_user_session_to_login(
     skip_all,
     fields(
         user_id = tracing::field::Empty
-    )
+    ),
+    err
 )]
 pub async fn get_login_activity(
     client: &GrpcService,

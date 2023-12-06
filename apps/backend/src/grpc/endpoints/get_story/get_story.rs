@@ -104,7 +104,8 @@ struct Story {
     fields(
         user_id = tracing::field::Empty,
         request
-    )
+    ),
+    err
 )]
 pub async fn get_story(
     client: &GrpcService,
@@ -1618,7 +1619,7 @@ WHERE id = $2
             test_grpc_service(
                 pool,
                 true,
-                Box::new(|mut client, pool, redis_pool, user_id| async move {
+                Box::new(|mut client, pool, _, user_id| async move {
                     let response = client
                         .get_story(Request::new(GetStoryRequest {
                             id_or_slug: 3_i64.to_string(),

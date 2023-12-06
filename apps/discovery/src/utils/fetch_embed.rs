@@ -1,6 +1,6 @@
 use crate::{
     config::Config,
-    error::Error,
+    error::AppError,
     request::{
         REQUEST_CLIENT,
         USER_AGENT,
@@ -52,7 +52,7 @@ impl Client {
         config: &Config,
         endpoint: &str,
         request: ConsumerRequest<'_>,
-    ) -> Result<EmbedResponse, Error> {
+    ) -> Result<EmbedResponse, AppError> {
         let mut url = Url::parse(endpoint)?;
 
         {
@@ -128,7 +128,7 @@ pub async fn fetch_embed(
     config: &Config,
     endpoint: &str,
     request: ConsumerRequest<'_>,
-) -> Result<EmbedResponse, Error> {
+) -> Result<EmbedResponse, AppError> {
     Client::new(REQUEST_CLIENT.clone())
         .fetch(config, endpoint, request)
         .await
@@ -196,8 +196,8 @@ mod tests {
         )
         .await;
 
-        if let Err(Error::Reqwest(err)) = result {
-            assert_eq!(err.status(), Some(reqwest::StatusCode::NOT_FOUND))
+        if let Err(AppError::ReqwestError(error)) = result {
+            assert_eq!(error.status(), Some(reqwest::StatusCode::NOT_FOUND))
         } else {
             panic!("Unexpected result: {:?}", result);
         }

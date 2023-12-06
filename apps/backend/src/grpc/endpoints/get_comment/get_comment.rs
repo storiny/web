@@ -62,7 +62,8 @@ struct Comment {
     fields(
         request,
         user_id = tracing::field::Empty
-    )
+    ),
+    err
 )]
 pub async fn get_comment(
     client: &GrpcService,

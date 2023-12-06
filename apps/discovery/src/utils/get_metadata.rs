@@ -1,6 +1,6 @@
 use crate::{
     config::Config,
-    error::Error,
+    error::AppError,
     request::{
         REQUEST_CLIENT,
         USER_AGENT,
@@ -167,7 +167,7 @@ impl Client {
     /// Fetches metadata from the provided URL.
     ///
     /// * `url` - The target URL.
-    pub async fn fetch(&self, url: Url) -> Result<String, Error> {
+    pub async fn fetch(&self, url: Url) -> Result<String, AppError> {
         Ok(self
             .0
             .get(url)
@@ -510,7 +510,7 @@ pub async fn get_metadata(
     config: &Config,
     url_prop: &str,
     skip_encoding_image: bool,
-) -> Result<MetadataResult, Error> {
+) -> Result<MetadataResult, AppError> {
     let url = Url::parse(url_prop)?;
     let html = Client::new(REQUEST_CLIENT.clone())
         .fetch(url.clone())

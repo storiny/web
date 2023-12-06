@@ -19,7 +19,8 @@ use tracing::error;
     skip_all,
     fields(
         user_id = tracing::field::Empty
-    )
+    ),
+    err
 )]
 pub async fn get_notification_settings(
     client: &GrpcService,

@@ -86,7 +86,8 @@ struct Profile {
     skip_all,
     fields(
         user_id = tracing::field::Empty
-    )
+    ),
+    err
 )]
 pub async fn get_profile(
     client: &GrpcService,

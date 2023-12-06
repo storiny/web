@@ -1,6 +1,6 @@
 use crate::{
     config::Config,
-    error::Error,
+    error::AppError,
     spec::EmbedType,
     utils::{
         decompress_url::decompress_url,
@@ -26,44 +26,13 @@ use actix_web::{
     Responder,
 };
 use sailfish::TemplateOnce;
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use serde::Deserialize;
 use url::Url;
 
 /// The embed endpoint query parameters.
 #[derive(Deserialize)]
 struct EmbedQueryParams {
     theme: Option<String>,
-}
-
-/// The rich embed data,
-#[derive(Serialize)]
-struct RichEmbedData {
-    /// The script sources.
-    sources: Vec<String>,
-    /// The embed provider.
-    provider: String,
-    /// The embed CSS styles.
-    styles: String,
-    /// The type of the embed.
-    embed_type: String,
-    /// The boolean flag indicating whether the provider supports both `light` and `dark` themes.
-    supports_binary_theme: bool,
-}
-
-/// The photo embed data
-#[derive(Serialize)]
-struct PhotoEmbedData {
-    /// The embed height (in px).
-    height: Option<u16>,
-    /// The embed width (in px).
-    width: Option<u16>,
-    /// The type of the embed.
-    embed_type: String,
-    /// The embed provider.
-    provider: String,
 }
 
 /// Sends a webpage metadata object for the provided URL.

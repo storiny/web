@@ -1,71 +1,97 @@
-use std::{
-    error,
-    fmt::{
-        self,
-        Display,
-    },
-    io,
+use actix_http::StatusCode;
+use actix_web::{
+    HttpResponse,
+    ResponseError,
+};
+use std::fmt::{
+    Display,
+    Formatter,
 };
 
-/// The custom IO error type.
+/// The application error type.
 #[derive(Debug)]
-#[non_exhaustive]
-pub struct CustomIoError(pub io::Error);
+pub enum AppError {
+    /// The [serde_json::Error] variant.
+    SerdeError(serde_json::Error),
+    /// The [reqwest::Error] variant.
+    ReqwestError(reqwest::Error),
+    /// The [url::ParseError] variant.
+    UrlParseError(url::ParseError),
+    /// Internal server error. The string value of this variant is not sent to the client.
+    InternalError(String),
+    /// The error raised due to bad data sent by the client. The first element of the tuple is the
+    /// HTTP [StatusCode] (defaults to [StatusCode::BAD_REQUEST]) and the second element is the
+    /// string message that is sent to the client.
+    ///
+    /// # Caution
+    ///
+    /// The string value of this variant is sent to the client. It must not contain any sensitive
+    /// details.
+    ClientError(StatusCode, String),
+}
 
-impl error::Error for CustomIoError {}
-
-impl Display for CustomIoError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Custom IO error: {}", self.0)
+impl From<serde_json::Error> for AppError {
+    fn from(error: serde_json::Error) -> Self {
+        AppError::SerdeError(error)
     }
 }
 
-/// The custom error type.
-#[derive(Debug)]
-pub enum Error {
-    /// Serde JSON error.
-    Serde(serde_json::Error),
-    /// Reqwest HTTP request error.
-    Reqwest(reqwest::Error),
-    /// URL parsing error.
-    Url(url::ParseError),
-    /// Custom IO error.
-    CustomIo(CustomIoError),
-}
-
-impl error::Error for Error {}
-
-impl From<serde_json::Error> for Error {
-    fn from(err: serde_json::Error) -> Self {
-        Self::Serde(err)
+impl From<reqwest::Error> for AppError {
+    fn from(error: reqwest::Error) -> Self {
+        AppError::ReqwestError(error)
     }
 }
 
-impl From<reqwest::Error> for Error {
-    fn from(err: reqwest::Error) -> Self {
-        Self::Reqwest(err)
+impl From<url::ParseError> for AppError {
+    fn from(error: url::ParseError) -> Self {
+        AppError::UrlParseError(error)
     }
 }
 
-impl From<url::ParseError> for Error {
-    fn from(err: url::ParseError) -> Self {
-        Self::Url(err)
+impl Display for AppError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self)
     }
 }
 
-impl From<io::Error> for Error {
-    fn from(err: io::Error) -> Self {
-        Self::CustomIo(CustomIoError(err))
-    }
-}
-
-impl Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Error::Serde(err) => err.fmt(f),
-            Error::Reqwest(err) => err.fmt(f),
-            Error::Url(err) => err.fmt(f),
-            Error::CustomIo(err) => err.fmt(f),
+impl ResponseError for AppError {
+    /// Returns the HTTP [StatusCode] for the error.
+    fn status_code(&self) -> StatusCode {
+        match &*self {
+            AppError::InternalError(_) | AppError::SerdeError(_) | AppError::ReqwestError(_) => {
+                StatusCode::INTERNAL_SERVER_ERROR
+            }
+            AppError::UrlParseError(_) => StatusCode::BAD_REQUEST,
+            AppError::ClientError(status_code, _) => *status_code,
         }
+    }
+
+    /// Returns the [HttpResponse] for the error.
+    fn error_response(&self) -> HttpResponse {
+        let mut response_builder = HttpResponse::build(self.status_code());
+
+        match &*self {
+            AppError::InternalError(_) | AppError::SerdeError(_) | AppError::ReqwestError(_) => {
+                response_builder.body("Internal server error")
+            }
+            AppError::UrlParseError(_) => {
+                response_builder.body("Invalid or unsupported URL parameter")
+            }
+            AppError::ClientError(_, message) => response_builder.body(message.to_string()),
+        }
+    }
+}
+
+// Allows creating simple client errors from a string slice.
+impl From<&str> for AppError {
+    fn from(value: &str) -> Self {
+        AppError::new_client_error(value)
+    }
+}
+
+// Allows creating simple client errors from a string value.
+impl From<String> for AppError {
+    fn from(value: String) -> Self {
+        AppError::new_client_error(&value)
     }
 }

@@ -31,6 +31,7 @@ use image::{
     imageops::FilterType,
     EncodableLayout,
     GenericImageView,
+    ImageError,
     ImageOutputFormat,
 };
 use mime::{
@@ -42,6 +43,7 @@ use serde::{
     Deserialize,
     Serialize,
 };
+use std::cmp;
 
 use actix_web::http::StatusCode;
 use sqlx::Row;
@@ -53,6 +55,7 @@ use std::io::{
 use tracing::{
     debug,
     trace,
+    warn,
 };
 use uuid::Uuid;
 
@@ -200,8 +203,29 @@ async fn handle_upload(
     debug!("image buffer size: {} bytes", img_bytes.len());
     tracing::Span::current().record("buffer_size", img_bytes.len());
 
-    let mut loaded_img = image::load_from_memory(&img_bytes).map_err(|error| {
-        AppError::InternalError(format!("unable to load the image from memory: {error:?}"))
+    // Validate the image size again after reading.
+    if img_bytes.len() > MAX_FILE_SIZE {
+        return Err(ToastErrorResponse::new(None, "Image is too big").into());
+    }
+
+    let mut loaded_img = image::load_from_memory(&img_bytes).map_err(|error| match error {
+        ImageError::Decoding(decode_error) => {
+            warn!("image decode error: {decode_error:?}");
+
+            AppError::ToastError(ToastErrorResponse::new(
+                Some(StatusCode::UNPROCESSABLE_ENTITY),
+                "Image is not supported",
+            ))
+        }
+        ImageError::Limits(limit_error) => {
+            warn!("image limit error: {limit_error:?}");
+
+            AppError::ToastError(ToastErrorResponse::new(
+                Some(StatusCode::UNPROCESSABLE_ENTITY),
+                "Image is too big",
+            ))
+        }
+        _ => AppError::InternalError(format!("unable to load the image from memory: {error:?}")),
     })?;
 
     let (mut img_width, mut img_height) = loaded_img.dimensions();
@@ -209,6 +233,17 @@ async fn handle_upload(
     debug!("image dimensions: {img_width}px width, {img_height}px height");
     tracing::Span::current().record("original_width", img_width);
     tracing::Span::current().record("original_height", img_height);
+
+    // The image is likely a PNG decompression bomb.
+    if cmp::max(img_width, img_height) > 10_000 {
+        debug!("aborting upload due to huge image dimensions");
+
+        return Err(ToastErrorResponse::new(
+            Some(StatusCode::UNPROCESSABLE_ENTITY),
+            "Image is not supported",
+        )
+        .into());
+    }
 
     // We can safely unwrap `image_mime_type` here.
     let is_gif = image_mime_type.clone().unwrap() == IMAGE_GIF

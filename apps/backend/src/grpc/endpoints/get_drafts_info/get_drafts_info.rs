@@ -36,7 +36,8 @@ struct Draft {
     skip_all,
     fields(
         user_id = tracing::field::Empty
-    )
+    ),
+    err
 )]
 pub async fn get_drafts_info(
     client: &GrpcService,

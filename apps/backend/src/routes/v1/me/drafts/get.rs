@@ -437,19 +437,27 @@ VALUES ($1, $2)
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Insert some deleted drafts.
-        let result = sqlx::query(
+        sqlx::query(
             r#"
-INSERT INTO stories (id, user_id, deleted_at)
-VALUES ($1, $3, NOW()), ($2, $3, NOW())
+INSERT INTO stories(id, user_id, deleted_at)
+VALUES ($1, $2, now())
 "#,
         )
         .bind(2_i64)
-        .bind(3_i64)
         .bind(user_id.unwrap())
         .execute(&mut *conn)
         .await?;
 
-        assert_eq!(result.rows_affected(), 2);
+        sqlx::query(
+            r#"
+INSERT INTO stories(id, user_id, deleted_at)
+VALUES ($1, $2, now())
+"#,
+        )
+        .bind(3_i64)
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
@@ -475,11 +483,21 @@ VALUES ($1, $3, NOW()), ($2, $3, NOW())
         // Insert some deleted drafts.
         sqlx::query(
             r#"
-INSERT INTO stories (id, user_id, deleted_at)
-VALUES ($1, $3, NOW()), ($2, $3, NOW())
+INSERT INTO stories(id, user_id, deleted_at)
+VALUES ($1, $2, now())
 "#,
         )
         .bind(2_i64)
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        sqlx::query(
+            r#"
+INSERT INTO stories(id, user_id, deleted_at)
+VALUES ($1, $2, now())
+"#,
+        )
         .bind(3_i64)
         .bind(user_id.unwrap())
         .execute(&mut *conn)

@@ -62,7 +62,7 @@ WHERE id = $1
         .execute(&data.db_pool)
         .await?;
 
-        Ok(HttpResponse::NoContent().json(Response {
+        Ok(HttpResponse::Ok().json(Response {
             avatar_id: None,
             avatar_hex: None,
         }))
@@ -82,7 +82,7 @@ SET
     avatar_hex = (SELECT hex FROM selected_asset)
 WHERE
     id = $1
-    AND (SELECT key FROM selected_asset) IS NOT NULL
+    AND EXISTS (SELECT 1 FROM selected_asset)
 RETURNING avatar_id, avatar_hex
 "#,
         )
@@ -98,7 +98,7 @@ RETURNING avatar_id, avatar_hex
             }
         })?;
 
-        Ok(HttpResponse::NoContent().json(Response {
+        Ok(HttpResponse::Ok().json(Response {
             avatar_id: result.get::<Option<Uuid>, _>("avatar_id"),
             avatar_hex: result.get::<Option<String>, _>("avatar_hex"),
         }))

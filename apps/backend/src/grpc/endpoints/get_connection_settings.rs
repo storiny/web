@@ -32,7 +32,8 @@ use tracing::error;
     skip_all,
     fields(
         user_id = tracing::field::Empty
-    )
+    ),
+    err
 )]
 pub async fn get_connection_settings(
     client: &GrpcService,

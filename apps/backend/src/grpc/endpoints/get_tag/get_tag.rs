@@ -36,7 +36,8 @@ struct Tag {
     fields(
         user_id = tracing::field::Empty,
         request
-    )
+    ),
+    err
 )]
 pub async fn get_tag(
     client: &GrpcService,
@@ -62,7 +63,7 @@ SELECT
     query_builder.push(if current_user_id.is_some() {
         r#"
 -- Boolean flags
-"t->is_following".follower_id IS NOT NULL AS "is_following"
+"t->is_following".tag_id IS NOT NULL AS "is_following"
 "#
     } else {
         r#"
@@ -96,29 +97,26 @@ GROUP BY
 
     if current_user_id.is_some() {
         query_builder.push(",");
-        query_builder.push(r#" "t->is_following".follower_id "#);
+        query_builder.push(r#" "t->is_following".tag_id "#);
     }
 
-    let mut query_result = query_builder.build_query_as::<Tag>().bind(tag_name);
+    let mut db_query = query_builder.build_query_as::<Tag>().bind(tag_name);
 
     if let Some(user_id) = current_user_id {
         tracing::Span::current().record("user_id", &user_id);
 
-        query_result = query_result.bind(user_id);
+        db_query = db_query.bind(user_id);
     }
 
-    let tag = query_result
-        .fetch_one(&client.db_pool)
-        .await
-        .map_err(|error| {
-            if matches!(error, sqlx::Error::RowNotFound) {
-                Status::not_found("Tag not found")
-            } else {
-                error!("unable to fetch the tag: {error:?}");
+    let tag = db_query.fetch_one(&client.db_pool).await.map_err(|error| {
+        if matches!(error, sqlx::Error::RowNotFound) {
+            Status::not_found("Tag not found")
+        } else {
+            error!("unable to fetch the tag: {error:?}");
 
-                Status::internal("Database error")
-            }
-        })?;
+            Status::internal("Database error")
+        }
+    })?;
 
     Ok(Response::new(GetTagResponse {
         id: tag.id.to_string(),

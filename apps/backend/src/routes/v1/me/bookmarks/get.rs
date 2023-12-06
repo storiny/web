@@ -467,12 +467,22 @@ VALUES ($1, $2)
         // Insert some bookmarks.
         sqlx::query(
             r#"
-INSERT INTO bookmarks (user_id, story_id)
-VALUES ($1, $2), ($1, $3)
+INSERT INTO bookmarks(user_id, story_id)
+VALUES ($1, $2)
 "#,
         )
         .bind(user_id.unwrap())
         .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        sqlx::query(
+            r#"
+INSERT INTO bookmarks(user_id, story_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(user_id.unwrap())
         .bind(4_i64)
         .execute(&mut *conn)
         .await?;
@@ -501,12 +511,22 @@ VALUES ($1, $2), ($1, $3)
         // Insert some bookmarks.
         sqlx::query(
             r#"
-INSERT INTO bookmarks (user_id, story_id)
-VALUES ($1, $2), ($1, $3)
+INSERT INTO bookmarks(user_id, story_id)
+VALUES ($1, $2)
 "#,
         )
         .bind(user_id.unwrap())
         .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        sqlx::query(
+            r#"
+INSERT INTO bookmarks(user_id, story_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(user_id.unwrap())
         .bind(4_i64)
         .execute(&mut *conn)
         .await?;
