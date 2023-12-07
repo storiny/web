@@ -43,10 +43,7 @@ mod tests {
     fn can_generate_recovery_codes() {
         let recovery_codes = generate_recovery_codes();
 
-        // TODO:
-        recovery_codes.unwrap();
-
-        // assert!(recovery_codes.is_ok());
-        // assert_eq!(recovery_codes.unwrap().len(), 10);
+        assert!(recovery_codes.is_ok());
+        assert_eq!(recovery_codes.unwrap().len(), 10);
     }
 }

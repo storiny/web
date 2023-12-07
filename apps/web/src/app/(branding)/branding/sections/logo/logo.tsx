@@ -19,9 +19,9 @@ const LogoSpacingAndSize = (): React.ReactElement => (
   <>
     <Typography level={"h4"}>Spacing & Size</Typography>
     <Typography level={"legible"}>
-      Give the Storiny logo some space to breathe, don&apos;t crowd it like
-      it&apos;s a concert mosh pit. Leave at least 50% of the icon&apos;s width
-      as clear space around the logo.
+      Make sure not to crowd the Storiny logo. Give the logo some space to
+      breathe by leaving at least 50% of the icon&apos;s width as clear space
+      around it.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
     <figure className={clsx(css["flex-center"], page_styles.figure)}>
@@ -55,7 +55,7 @@ const LogoColor = (): React.ReactElement => (
   <>
     <Typography level={"h4"}>Color</Typography>
     <Typography level={"legible"}>
-      The Storiny logo is intended to be displayed in monochrome, with a color
+      The Storiny logo is crafted to be displayed in monochrome, with a color
       that closely resembles pure white (The Storiny Snow color) or pure black
       (The Storiny Obsidian color) as defined in our brand colors.
     </Typography>
@@ -136,9 +136,8 @@ const IconSpacingAndSize = (): React.ReactElement => (
   <>
     <Typography level={"h4"}>Spacing & Size</Typography>
     <Typography level={"legible"}>
-      To ensure the legibility of the Storiny icon, it is advisable to allocate
-      adequate clear space around it. A good rule of thumb is to leave at least
-      150% of its width as empty space around it.
+      To ensure that the Storiny icon remains legible and recognizable, please
+      leave at least 150% of its width as empty space around it.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
     <figure className={clsx(css["flex-center"], page_styles.figure)}>
@@ -152,8 +151,8 @@ const IconSpacingAndSize = (): React.ReactElement => (
     <Spacer orientation={"vertical"} size={5} />
     <Typography level={"legible"}>
       The Storiny icon should never be scaled down below 15 pixels in width to
-      maintain its distinctive charm and prevent it from becoming
-      unrecognizable.
+      make sure that it maintains its distinctive charm and prevent it from
+      becoming unrecognizable.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
     <figure className={clsx(css["flex-center"], page_styles.figure)}>
@@ -172,7 +171,7 @@ const IconColor = (): React.ReactElement => (
   <>
     <Typography level={"h4"}>Color</Typography>
     <Typography level={"legible"}>
-      The Storiny icon follows the same monochromatic colors as those defined
+      The Storiny icon follows the same monochromatic fashion as those defined
       for the Storiny logo.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
@@ -295,15 +294,14 @@ const LogoSection = (): React.ReactElement => (
     </Typography>
     <div className={clsx(css["flex-col"], page_styles["section-content"])}>
       <Typography level={"legible"}>
-        We take great pride in our minimal and memorable logo design, and how it
+        We take great pride in our minimal and memorable logo, and how it
         represents our brand. In order to preserve its visual integrity, we
-        kindly request that you follow the guidelines outlined below when using
-        it.
+        require you to follow the guidelines outlined below when using it.
       </Typography>
       <div className={clsx(css["flex-col"], page_styles["sub-section"])}>
         <Typography level={"h3"}>The Storiny Logo</Typography>
         <Typography level={"legible"}>
-          Our logo is comprised of a contemporary wordmark and icon, which
+          Our logo consists of a contemporary wordmark and an icon, which
           together create a clean and pleasing aesthetic.
         </Typography>
         <Spacer orientation={"vertical"} size={5} />
@@ -323,9 +321,9 @@ const LogoSection = (): React.ReactElement => (
         </figure>
         <Spacer orientation={"vertical"} size={5} />
         <Typography level={"legible"}>
-          The wordmark should not be used without the icon as they complement
-          each other. However, in certain cases specified in these guidelines,
-          the icon can be used as a standalone element.
+          The wordmark should never be used without the icon as it loses the
+          brand identity. However, the icon can be used as a standalone element
+          for few limited use cases specified in these guidelines.
         </Typography>
         <Spacer orientation={"vertical"} size={5} />
         <LogoSpacingAndSize />
@@ -338,9 +336,10 @@ const LogoSection = (): React.ReactElement => (
       <div className={clsx(css["flex-col"], page_styles["sub-section"])}>
         <Typography level={"h3"}>The Storiny Icon</Typography>
         <Typography level={"legible"}>
-          The use of the Storiny icon as a standalone element is permissible in
-          situations where there is insufficient space for the complete logo, or
-          when the Storiny brand is explicitly referenced elsewhere on the page.
+          The use of the Storiny icon as a standalone element is allowed in
+          situations where there is insufficient space for the complete logo
+          that includes the wordmark, or when the Storiny brand is clearly
+          referenced elsewhere on the page.
         </Typography>
         <Spacer orientation={"vertical"} size={5} />
         <figure
@@ -370,10 +369,10 @@ const LogoSection = (): React.ReactElement => (
         <Typography level={"h3"}>Color combinations</Typography>
         <Typography level={"legible"}>
           The Storiny icon and the Storiny logo must always be displayed in
-          either black or white, as indicated in our usage guidelines, and no
-          other colors are allowed. However, you are free to choose the
-          background for our brand assets, as long as there is sufficient
-          contrast between them and your background.
+          either black or white, as indicated in our usage guidelines. However,
+          you are free to choose the background for the icon and logo, as long
+          as there is sufficient contrast between them and your choice of
+          background.
         </Typography>
         <Spacer orientation={"vertical"} size={5} />
         <figure

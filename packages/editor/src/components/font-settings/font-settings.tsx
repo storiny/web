@@ -6,7 +6,7 @@
 // Import { set_font_settings_notification_visibility } from "~/redux/features";
 // Import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
-// TODO: Implement once `useNotification` gets fixed
+// TODO: Implement once `use_notification` gets fixed
 //
 // Const EditorFontSettingsNotification = (): null => {
 //   Const router = use_router();

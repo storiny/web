@@ -22,7 +22,7 @@ const LeftSidebarDefaultContent = dynamic(() => import("./default-content"), {
 const LeftSidebar = (props: LeftSidebarProps): React.ReactElement | null => {
   const { className, force_mount, component_props, children, ...rest } = props;
   const sticky_ref = use_sticky({
-    offset_top: 52 // TODO: Add banner height to the offset after banner gets implemented
+    offset_top: 52 // TODO: Add <Banner /> height to the offset after banner gets implemented
   });
   const should_render = use_media_query(BREAKPOINTS.up("desktop"));
 

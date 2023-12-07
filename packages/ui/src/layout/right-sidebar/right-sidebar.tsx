@@ -32,7 +32,7 @@ const RightSidebar = (props: RightSidebarProps): React.ReactElement | null => {
     ...rest
   } = props;
   const sticky_ref = use_sticky({
-    offset_top: 52 // TODO: Add banner height to the offset after banner gets implemented
+    offset_top: 52 // TODO: Add <Banner /> height to the offset after banner gets implemented
   });
   const should_render = use_media_query(BREAKPOINTS.up("tablet"));
 
