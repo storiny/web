@@ -26,20 +26,12 @@ const Page = (): React.ReactElement => {
   return (
     <>
       <Typography as={"h1"} level={"h3"}>
-        Good to see you again
+        Verify it&apos;s you
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
       <Typography className={css["t-minor"]} level={"body2"}>
-        Need an account?{" "}
-        <Link
-          className={css["t-medium"]}
-          href={"/auth"}
-          level={"body2"}
-          onClick={(): void => actions.switch_segment("signup_base")}
-          underline={"always"}
-        >
-          Sign up
-        </Link>
+        Enter your authentication code to continue. You can also use one of the
+        backup codes for your Storiny account.
       </Typography>
       <Spacer orientation={"vertical"} size={5} />
       <LoginForm />

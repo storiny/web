@@ -14,7 +14,7 @@ export interface LoginResponse {
     | "verification_pending"; // Pending email verification
 }
 
-export type LoginPayload = LoginSchema & { bypass?: boolean };
+export type LoginPayload = LoginSchema & { bypass?: boolean; code?: string };
 
 export const { useLoginMutation: use_login_mutation } =
   api_slice.injectEndpoints({

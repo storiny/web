@@ -139,11 +139,15 @@ MESSAGE_HANDLERS[Message.AUTH] = (_, decoder, provider): void => {
  * @param decoder Decoder
  * @param provider Websocket provider
  */
-MESSAGE_HANDLERS[Message.INTERNAL] = (encoder, decoder, provider): void => {
+MESSAGE_HANDLERS[Message.INTERNAL] = (
+  encoder
+  // Decoder
+  // Provider
+): void => {
   encoding.writeVarUint(encoder, Message.SYNC);
-  const event = decoding.readVarString(decoder);
+  // Const event = decoding.readVarString(decoder);
   // TODO: Handle server sent events here (published and deleted)
-  provider.emit(event, []);
+  // provider.emit(event, []);
 };
 
 /**

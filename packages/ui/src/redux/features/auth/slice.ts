@@ -40,12 +40,15 @@ export const fetch_user = create_async_thunk<User>(
   {
     condition: (_, { getState: get_state }) => {
       const {
-        auth: { logged_in, user, status }
+        auth: { logged_in, status }
       } = get_state() as AppState;
+      // This environment variable is not present in production.
+      const is_storybook = process.env.STORYBOOK_FLAG === "1";
 
-      // TODO: Should we send the request even if the user object is present in the cache? It currently breaks the purpose of refreshing the user (in `<Initializer />`) as no requests are sent to the server.
-      if (!logged_in || status === "loading" || user !== null) {
-        // Do not send a request if logged out or the status is `loading`
+      // Requests are not sent to the server when running inside Storybook as the user data is
+      // usually provided through Storybook arguments.
+      if (is_storybook || !logged_in || status === "loading") {
+        // Do not send a request if logged out or the status is `loading`.
         return false;
       }
     }

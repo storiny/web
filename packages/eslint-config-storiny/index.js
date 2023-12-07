@@ -7,6 +7,7 @@ module.exports = {
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:jest-dom/recommended",
+    "plugin:comment-length/recommended",
   ],
   env: {
     "jest/globals": true,

@@ -15,6 +15,7 @@ type AnyCallback<Payload = any> = (
 
 type StateActions = {
   set_login_data: (state: GlobalState, payload: LoginSchema) => GlobalState;
+  set_mfa_code: (state: GlobalState, payload: string) => GlobalState;
   set_recovery_state: <T extends keyof GlobalState["recovery"]>(
     state: GlobalState,
     payload: Record<T, GlobalState["recovery"][T]>
@@ -106,12 +107,23 @@ export const set_reset_password_token: StateActions["set_reset_password_token"] 
   });
 
 /**
+ * Updates the MFA code
+ * @param state Global state
+ * @param payload The MFA code
+ */
+export const set_mfa_code: StateActions["set_mfa_code"] = (state, payload) => ({
+  ...state,
+  mfa_code: payload
+});
+
+/**
  * Extended version of `useStateMachine` with actions
  */
 export const use_auth_state = (): ReturnType<typeof use_state_machine> =>
   use_state_machine<AnyCallback, StateActions>({
     switch_segment,
     set_login_data,
+    set_mfa_code,
     set_signup_state,
     set_recovery_state,
     set_reset_password_token
