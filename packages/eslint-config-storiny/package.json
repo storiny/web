@@ -10,6 +10,7 @@
     "eslint-config-next": "^13.5.4",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-turbo": "latest",
+    "eslint-plugin-comment-length": "^1.7.2",
     "eslint-plugin-jest": "^27.2.1",
     "eslint-plugin-jest-dom": "^4.0.3",
     "eslint-plugin-no-literal-classnames": "1.2.0",

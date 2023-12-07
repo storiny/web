@@ -34,9 +34,9 @@ struct Response {
     tags: Vec<Tag>,
 }
 
-#[get("/v1/rsb_content")]
+#[get("/v1/rsb-content")]
 #[tracing::instrument(
-    name = "GET /v1/rsb_content",
+    name = "GET /v1/rsb-content",
     skip_all,
     fields(
         user_id = tracing::field::Empty,
@@ -82,7 +82,7 @@ mod tests {
     async fn can_return_rsb_content(pool: PgPool) -> sqlx::Result<()> {
         let app = init_app_for_test(get, pool, false, false, None).await.0;
 
-        let req = test::TestRequest::get().uri("/v1/rsb_content").to_request();
+        let req = test::TestRequest::get().uri("/v1/rsb-content").to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
@@ -100,7 +100,7 @@ mod tests {
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri("/v1/rsb_content")
+            .uri("/v1/rsb-content")
             .to_request();
         let res = test::call_service(&app, req).await;
 

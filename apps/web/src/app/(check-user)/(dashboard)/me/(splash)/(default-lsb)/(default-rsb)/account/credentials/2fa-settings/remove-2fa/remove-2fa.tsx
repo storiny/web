@@ -27,7 +27,7 @@ const Remove2FAModal = (): React.ReactElement => (
       <Typography className={css["t-minor"]} level={"body2"}>
         Without two-factor authentication, your account will only be protected
         by your password. To disable two-factor authentication, provide your
-        6-digit authentication code or one of your 8-digit recovery codes.
+        6-digit authentication code or one of your recovery codes.
       </Typography>
     </Description>
     <Spacer orientation={"vertical"} size={5} />
@@ -45,7 +45,7 @@ const Remove2FAModal = (): React.ReactElement => (
       maxLength={RECOVERY_CODE_MAX_LENGTH}
       minLength={RECOVERY_CODE_MIN_LENGTH}
       name={"code"}
-      placeholder={"6-digit authentication or 8-digit backup code"}
+      placeholder={"Authentication code"}
       required
     />
     <Spacer orientation={"vertical"} size={2} />

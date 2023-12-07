@@ -14,7 +14,10 @@ import Grow from "~/components/grow";
 import Link from "~/components/link";
 import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
-import { use_login_mutation } from "~/redux/features";
+import {
+  use_login_mutation,
+  use_mfa_preflight_mutation
+} from "~/redux/features";
 import css from "~/theme/main.module.scss";
 
 import { use_auth_state } from "../../../actions";
@@ -36,7 +39,10 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
       remember_me: true
     }
   });
-  const [mutate_login, { isLoading: is_loading }] = use_login_mutation();
+  const [mutate_login, { isLoading: is_login_loading }] = use_login_mutation();
+  const [mutate_mfa_preflight, { isLoading: is_mfa_preflight_loading }] =
+    use_mfa_preflight_mutation();
+  const is_loading = is_login_loading || is_mfa_preflight_loading;
 
   const handle_submit: SubmitHandler<LoginSchema> = React.useCallback(
     (values) => {
@@ -45,21 +51,38 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
       if (on_submit) {
         on_submit(values);
       } else {
-        mutate_login(values)
+        // Send a preflight request first to determine whether the user has
+        // enabled multi-factor authorization.
+        mutate_mfa_preflight({
+          email: values.email,
+          password: values.password
+        })
           .unwrap()
-          .then((res) => {
-            if (res.result === "success") {
-              router.replace("/"); // Home page
+          .then((result) => {
+            if (result.mfa_enabled) {
+              actions.switch_segment("mfa");
             } else {
-              actions.switch_segment(
-                res.result === "suspended"
-                  ? "suspended"
-                  : res.result === "held_for_deletion"
-                  ? "deletion"
-                  : res.result === "deactivated"
-                  ? "deactivated"
-                  : "email_confirmation"
-              );
+              // Continue login if MFA is not enabled for the user.
+              mutate_login(values)
+                .unwrap()
+                .then((res) => {
+                  if (res.result === "success") {
+                    router.replace("/"); // Home page
+                  } else {
+                    actions.switch_segment(
+                      res.result === "suspended"
+                        ? "suspended"
+                        : res.result === "held_for_deletion"
+                        ? "deletion"
+                        : res.result === "deactivated"
+                        ? "deactivated"
+                        : "email_confirmation"
+                    );
+                  }
+                })
+                .catch((e) =>
+                  toast(e?.data?.error || "Could not log you in", "error")
+                );
             }
           })
           .catch((e) =>
@@ -67,7 +90,7 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
           );
       }
     },
-    [actions, mutate_login, on_submit, router, toast]
+    [actions, mutate_login, mutate_mfa_preflight, on_submit, router, toast]
   );
 
   return (

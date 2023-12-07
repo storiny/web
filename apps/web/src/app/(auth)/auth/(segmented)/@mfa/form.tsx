@@ -5,6 +5,7 @@ import { clsx } from "clsx";
 import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
+import { sanitize_authentication_code } from "~/common/utils/sanitize-authentication-code";
 import Button from "~/components/button";
 import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
 import FormCheckbox from "~/components/form-checkbox";
@@ -17,8 +18,14 @@ import { use_toast } from "~/components/toast";
 import { use_login_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 
+import { RECOVERY_CODE_MAX_LENGTH } from "../../../../(check-user)/(dashboard)/me/(splash)/(default-lsb)/(default-rsb)/account/credentials/2fa-settings/remove-2fa";
 import { use_auth_state } from "../../../actions";
-import { MFA_SCHEMA, MFASchema } from "./schema";
+import {
+  AUTHENTICATION_CODE_MAX_LENGTH,
+  AUTHENTICATION_CODE_MIN_LENGTH,
+  MFA_SCHEMA,
+  MFASchema
+} from "./schema";
 
 interface Props {
   on_submit?: SubmitHandler<MFASchema>;
@@ -26,7 +33,7 @@ interface Props {
 
 const MFAForm = ({ on_submit }: Props): React.ReactElement => {
   const router = use_router();
-  const { actions } = use_auth_state();
+  const { actions, state } = use_auth_state();
   const toast = use_toast();
   const form = use_form<MFASchema>({
     resolver: zod_resolver(MFA_SCHEMA),
@@ -38,12 +45,18 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
 
   const handle_submit: SubmitHandler<MFASchema> = React.useCallback(
     (values) => {
-      actions.set_login_data(values);
+      actions.set_mfa_code(values.mfa_code);
+      const login_data = state.login_data;
 
       if (on_submit) {
         on_submit(values);
-      } else {
-        mutate_login(values)
+      } else if (login_data) {
+        mutate_login({
+          email: login_data.email,
+          password: login_data.password,
+          remember_me: login_data.remember_me,
+          code: sanitize_authentication_code(values.mfa_code)
+        })
           .unwrap()
           .then((res) => {
             if (res.result === "success") {
@@ -63,9 +76,11 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
           .catch((e) =>
             toast(e?.data?.error || "Could not log you in", "error")
           );
+      } else {
+        toast("Missing credentials", "error");
       }
     },
-    [actions, mutate_login, on_submit, router, toast]
+    [actions, mutate_login, on_submit, router, state.login_data, toast]
   );
 
   return (
@@ -76,47 +91,16 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
       provider_props={form}
     >
       <FormInput
-        autoComplete={"email"}
-        data-testid={"email-input"}
-        label={"E-mail address"}
-        maxLength={USER_PROPS.email.max_length}
-        minLength={USER_PROPS.email.min_length}
-        name={"email"}
-        placeholder={"Your e-mail address"}
+        autoComplete={"off"}
+        data-testid={"mfa-code-input"}
+        label={"Authentication code"}
+        maxLength={AUTHENTICATION_CODE_MAX_LENGTH}
+        minLength={AUTHENTICATION_CODE_MIN_LENGTH}
+        name={"mfa_code"}
+        placeholder={"6-digit authentication code"}
         required
         size={"lg"}
-        type={"email"}
-      />
-      <Spacer orientation={"vertical"} size={3} />
-      <FormPasswordInput
-        data-testid={"password-input"}
-        form_slot_props={{
-          label: { className: clsx(css["flex"], css["full-w"]) }
-        }}
-        label={
-          <>
-            <span className={css["f-grow"]}>Password</span>
-            <Link
-              className={css["t-medium"]}
-              href={"/auth"}
-              level={"body3"}
-              onClick={(): void => actions.switch_segment("recovery_base")}
-              underline={"always"}
-            >
-              Forgot password?
-            </Link>
-          </>
-        }
-        name={"password"}
-        placeholder={"Your password"}
-        required={false} // Asterisk is placed after the Link
-        size={"lg"}
-      />
-      <Spacer orientation={"vertical"} size={3} />
-      <FormCheckbox
-        data-testid={"remember-me-checkbox"}
-        label={"Remember me"}
-        name={"remember_me"}
+        type={"text"}
       />
       <Spacer orientation={"vertical"} size={5} />
       <Grow />
@@ -127,7 +111,7 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
           size={"lg"}
           type={"submit"}
         >
-          Log in
+          Continue
         </Button>
       </div>
     </Form>
