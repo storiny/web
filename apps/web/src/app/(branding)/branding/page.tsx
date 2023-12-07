@@ -61,20 +61,19 @@ const Page = (): React.ReactElement => (
         </Typography>
         <div className={clsx(css["flex-col"], styles["section-content"])}>
           <Typography level={"legible"}>
-            The Storiny brand is made up of some pretty recognizable assets –
-            you&apos;ve probably seen them around. To ensure the appropriate use
-            of our brand resources and avoid any potential missteps, we have
-            created a comprehensive guide that outlines the do&apos;s and
-            don&apos;ts when utilizing them.
+            The Storiny brand is crafted with a clean and minimalistic design in
+            mind. To ensure that our brand looks equally pleasing and maintains
+            the same aesthetic, we have prepared this comprehensive guide that
+            details the do&apos;s and don&apos;ts when using our brand resource
+            for advertising or marketing purposes.
             <br />
             <br />
-            Additionally, our{" "}
+            If you need to know more about Storiny and our mission statement,
+            please visit our{" "}
             <Link href={"/about"} underline={"always"}>
               About us
             </Link>{" "}
-            page serves as an ideal source to acquaint yourself with our
-            company&apos;s history, mission statement, and operational
-            practices.
+            page.
           </Typography>
           <div className={clsx(css["flex-center"], styles.action)}>
             <Button

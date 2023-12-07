@@ -46,9 +46,9 @@ const ColorsSection = (): React.ReactElement => (
     </Typography>
     <div className={clsx(css["flex-col"], page_styles["section-content"])}>
       <Typography level={"legible"}>
-        The color palette of our brand consists of only two minimalistic colors,
-        which conveys a strong and straightforward design language that embodies
-        loyalty and power.
+        The color palette of our brand consists only of two minimalistic and
+        bold colors, which conveys a strong and straightforward design language
+        that embodies loyalty and power.
       </Typography>
       <div className={clsx(css["flex-center"], styles["swatch-container"])}>
         <div

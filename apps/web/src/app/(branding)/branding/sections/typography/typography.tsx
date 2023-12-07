@@ -48,28 +48,26 @@ const PrimaryTypeface = (): React.ReactElement => (
     <Typography level={"legible"}>
       Cabinet Grotesk is a contemporary font family with distinct design
       features. Although classified as a sans-serif, its letters incorporate a
-      unique stroke-contrast that distinguishes it from other fonts within the
-      category. This contrast lends itself well to headings and larger text,
-      providing a visually appealing element.
+      unique stroke-contrast. This contrast lends itself well to headings and
+      larger text, providing a visually appealing element.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
     <Typography level={"h4"}>Usage</Typography>
     <Typography level={"legible"}>
-      Cabinet Grotesk is predominantly utilized as our primary typeface for
-      large texts, story titles, and headlines. In terms of headline
-      composition, either title case or sentence case may be employed, with the
-      latter being the preferred choice. Moreover, a heavy font weight is
-      applied to the headline to effectively accentuate its significance.
+      Cabinet Grotesk is primarily used as our primary typeface for large texts,
+      story titles, and headlines. In terms of headline composition, either
+      title case or sentence case may be used, with the latter being the
+      preferred choice. Moreover, a heavy font weight is applied to the headline
+      to effectively emphasize its significance.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
     <Typography level={"h5"}>Large headline</Typography>
     <Typography level={"legible"}>
-      For concise headlines, a large headline variant is utilized. Our primary
-      typeface is used with the font weight set to &quot;Black&quot; to create a
+      For concise headlines, a large headline variant is used. We use Cabinet
+      Grotesk with the font weight set to &quot;Black&quot; to create a
       heightened emphasis on the headlines. To enhance compactness, the line
-      height is set to 100% for shorter copies. Conversely, for longer copies, a
-      line height of 112% is employed to ensure optimal legibility and
-      readability.
+      height is set to 100% for shorter copies. For longer copies, a line height
+      of 112% is used to ensure optimal legibility and readability.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
     <div
@@ -98,11 +96,10 @@ const PrimaryTypeface = (): React.ReactElement => (
     <Spacer orientation={"vertical"} size={5} />
     <Typography level={"h5"}>Headline</Typography>
     <Typography level={"legible"}>
-      Our primary typeface is also utilized for normal and longer headlines. The
-      font weight is set to &quot;Extrabold&quot; to create a strong emphasis.
-      In contrast to the large headline variant, the line height for the normal
-      headline is consistently set at 112%, regardless of the length of the
-      headline.
+      Cabinet Grotesk is also used for normal and longer headlines. The font
+      weight is set to &quot;Extrabold&quot; to create a strong emphasis. In
+      contrast to the large headline variant, the line height for the normal
+      headline is always set at 112%, regardless of the length of the headline.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
     <div
@@ -131,15 +128,16 @@ const PrimaryTypeface = (): React.ReactElement => (
     <Spacer orientation={"vertical"} size={5} />
     <Typography level={"h5"}>Styling usernames</Typography>
     <Typography level={"legible"}>
-      When indicating your Storiny handle featuring your username, you have the
-      option to choose between two distinct styles.
+      When representing your Storiny handle featuring your username, you have
+      the option to choose between two distinct styles.
       <br />
       <br />
-      The username + icon version entails placing the username adjacent to the
-      Storiny icon with sufficient clear space surrounding it, as detailed in
-      the icon usage guidelines. This option is recommended when the display of
-      your avatar is not required or when the layout does not allow sufficient
-      space for the icon to be legible, particularly at smaller sizes.
+      The username combined with icon version requires placing the username next
+      to the Storiny icon with sufficient clear space surrounding it, as
+      specified in the icon usage guidelines. This option is preferred when you
+      do not want to include your avatar or when the layout does not allow
+      sufficient space for the icon to be legible, particularly at smaller
+      sizes.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
     <div
@@ -170,11 +168,11 @@ const PrimaryTypeface = (): React.ReactElement => (
     </div>
     <Spacer orientation={"vertical"} size={5} />
     <Typography level={"legible"}>
-      The other version involves placing your username adjacent to your avatar,
-      which is masked with the Storiny icon. This version should only be used
-      when the icon is displayed at a minimum width of 15 pixels, as specified
-      in the icon usage guidelines. A template of this version is included in
-      our asset kit.
+      The other version allows placing your username adjacent to your avatar,
+      which is masked with the Storiny icon. This style should only be used when
+      the icon can displayed at a minimum width of 15 pixels, as specified in
+      the icon usage guidelines. A template of this style is included in our
+      asset kit.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
     <figure
@@ -254,7 +252,7 @@ const SecondaryTypeface = (): React.ReactElement => (
   <div className={clsx(css["flex-col"], page_styles["sub-section"])}>
     <Typography level={"h3"}>Secondary Typeface</Typography>
     <Typography level={"legible"}>
-      Our primary secondary typeface is Satoshi.
+      Our secondary typeface is Satoshi.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
     <figure
@@ -287,23 +285,21 @@ const SecondaryTypeface = (): React.ReactElement => (
     <Spacer orientation={"vertical"} size={5} />
     <Typography level={"h4"}>Usage</Typography>
     <Typography level={"legible"}>
-      We utilize Satoshi as our preferred typeface for body and supporting text,
+      We chose Satoshi as our preferred typeface for body and supporting text,
       as it enables optimal legibility across a range of screen sizes.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
     <Typography level={"h5"}>Text length</Typography>
     <Typography level={"legible"}>
       For optimal legibility, it is recommended that each line contain between
-      50 to 75 characters, or roughly 10 words, in the English language.
-      Deviations from this range, whether too wide or too narrow, can negatively
-      impact readability and should be avoided.
+      50 to 75 characters, or roughly 10 words. Too long or too short lines can
+      negatively impact readability and should be avoided.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
     <Typography level={"h5"}>Line height</Typography>
     <Typography level={"legible"}>
-      Our secondary typeface is most legible at 175% line height for body text,
-      such as large paragraphs, and 130% for supporting text, such as helper
-      texts and labels.
+      Satoshi is most legible at 175% line height for body text, such as large
+      paragraphs, and 130% for supporting text, such as helper texts and labels.
     </Typography>
   </div>
 );
@@ -312,9 +308,9 @@ const FallbackTypeface = (): React.ReactElement => (
   <div className={clsx(css["flex-col"], page_styles["sub-section"])}>
     <Typography level={"h3"}>Fallback fonts</Typography>
     <Typography level={"legible"}>
-      In rare instances when the designated font families are not feasible, the
-      following substitutes may be employed. Please note that the username
-      lockups must always utilize our primary typeface.
+      In rare cases where our recommended font families are not feasible, the
+      following substitutes may be used. Please note that the username lockups
+      must always use our primary typeface.
       <br />
       <br />
       For Cabinet Grotesk, our primary typeface, Helvetica with a 900 font
@@ -343,9 +339,9 @@ const TypographySection = (): React.ReactElement => {
       </Typography>
       <div className={clsx(css["flex-col"], page_styles["section-content"])}>
         <Typography level={"legible"}>
-          Our typographical selection consists of two unique fonts: Cabinet
+          Our typographical choice consists of a binary set of fonts: Cabinet
           Grotesk, a display font, and Satoshi, a legible sans-serif font. Both
-          of these typefaces were designed by the Indian Type Foundry (ITF).
+          of these typefaces are designed by the Indian Type Foundry (ITF).
         </Typography>
         <PrimaryTypeface />
         <Divider />

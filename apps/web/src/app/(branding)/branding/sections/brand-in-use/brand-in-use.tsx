@@ -27,13 +27,6 @@ const BrandInUseSection = (): React.ReactElement => (
             src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/branding/brand-in-use/001`}
           />
         </figure>
-        <figure className={clsx(css["flex-center"], styles.figure)}>
-          <img
-            alt={""}
-            loading={"lazy"}
-            src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/branding/brand-in-use/002`}
-          />
-        </figure>
       </div>
     </div>
   </section>

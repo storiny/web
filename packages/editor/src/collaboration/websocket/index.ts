@@ -200,8 +200,6 @@ const setup_ws = (provider: WebsocketProvider): void => {
     };
 
     websocket.onclose = (event): void => {
-      // TODO: remove console
-      console.log(event);
       provider.emit("connection-close", [event, provider]);
       provider.ws = null;
       provider.wsconnecting = false;
