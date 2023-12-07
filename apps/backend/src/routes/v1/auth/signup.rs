@@ -2,6 +2,7 @@ use crate::{
     constants::{
         email_template::EmailTemplate,
         reserved_usernames::RESERVED_USERNAMES,
+        resource_lock::ResourceLock,
         username_regex::USERNAME_REGEX,
     },
     error::{
@@ -15,12 +16,17 @@ use crate::{
         storage::JobStorage,
     },
     middlewares::identity::identity::Identity,
+    utils::{
+        incr_resource_lock_attempts::incr_resource_lock_attempts,
+        is_resource_locked::is_resource_locked,
+    },
     AppState,
 };
 use actix_web::{
     http::StatusCode,
     post,
     web,
+    HttpRequest,
     HttpResponse,
 };
 use actix_web_validator::Json;
@@ -86,6 +92,7 @@ struct EmailVerificationEmailTemplateData {
     err
 )]
 async fn post(
+    req: HttpRequest,
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Option<Identity>,
@@ -94,6 +101,17 @@ async fn post(
     // Return early if the user is already logged-in.
     if user.is_some() {
         return Err(ToastErrorResponse::new(None, "You are already logged in").into());
+    }
+
+    let conn_info = req.connection_info();
+    let client_ip = conn_info.realip_remote_addr().unwrap_or_default();
+
+    if is_resource_locked(&data.redis, ResourceLock::Signup, client_ip).await? {
+        return Err(ToastErrorResponse::new(
+            Some(StatusCode::TOO_MANY_REQUESTS),
+            "You are being rate-limited. Try again later.",
+        )
+        .into());
     }
 
     let mut form_errors: Vec<(&str, &str)> = vec![];
@@ -182,6 +200,9 @@ SELECT $6, $7, (SELECT id FROM inserted_user), $8
     .execute(&mut *txn)
     .await?;
 
+    // Increment the signup attempts.
+    incr_resource_lock_attempts(&data.redis, ResourceLock::Signup, client_ip).await?;
+
     // Push an email job.
 
     let full_name = payload.name.clone();
@@ -222,7 +243,10 @@ mod tests {
     use super::*;
     use crate::test_utils::{
         assert_form_error_response,
+        exceed_resource_lock_attempts,
+        get_resource_lock_attempts,
         init_app_for_test,
+        RedisTestContext,
     };
     use actix_web::test;
     use argon2::{
@@ -230,64 +254,12 @@ mod tests {
         PasswordVerifier,
     };
     use sqlx::PgPool;
-
-    #[sqlx::test]
-    async fn can_signup_using_valid_details(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool, false, false, None).await.0;
-
-        let req = test::TestRequest::post()
-            .uri("/v1/auth/signup")
-            .set_json(Request {
-                email: "someone@example.com".to_string(),
-                name: "Some user".to_string(),
-                username: "some_user".to_string(),
-                password: "some_secret_password".to_string(),
-                wpm: 270,
-            })
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // User should be present in the database.
-        let user = sqlx::query(
-            r#"
-SELECT email, name, password, wpm FROM users
-WHERE username = $1
-"#,
-        )
-        .bind("some_user")
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert_eq!(user.get::<String, _>("name"), "Some user".to_string());
-        assert!(
-            Argon2::default()
-                .verify_password(
-                    "some_secret_password".as_bytes(),
-                    &PasswordHash::new(&user.get::<String, _>("password")).unwrap(),
-                )
-                .is_ok()
-        );
-
-        // Should also insert an e-mail verification token.
-        let token = sqlx::query(
-            r#"
-SELECT EXISTS (
-    SELECT 1 FROM tokens
-    WHERE type = $1
-)
-"#,
-        )
-        .bind(TokenType::EmailVerification as i16)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(token.get::<bool, _>("exists"));
-
-        Ok(())
-    }
+    use std::net::{
+        Ipv4Addr,
+        SocketAddr,
+        SocketAddrV4,
+    };
+    use storiny_macros::test_context;
 
     #[sqlx::test]
     async fn can_reject_a_signup_request_when_the_email_is_already_in_use(
@@ -388,5 +360,114 @@ VALUES ($1, $2, $3)
         assert_form_error_response(res, vec![("username", "This username is not available")]).await;
 
         Ok(())
+    }
+
+    mod serial {
+        use super::*;
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_signup_using_valid_details(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let mut conn = pool.acquire().await?;
+            let app = init_app_for_test(post, pool, false, false, None).await.0;
+
+            let req = test::TestRequest::post()
+                .peer_addr(SocketAddr::from(SocketAddrV4::new(
+                    Ipv4Addr::new(8, 8, 8, 8),
+                    8080,
+                )))
+                .uri("/v1/auth/signup")
+                .set_json(Request {
+                    email: "someone@example.com".to_string(),
+                    name: "Some user".to_string(),
+                    username: "some_user".to_string(),
+                    password: "some_secret_password".to_string(),
+                    wpm: 270,
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_success());
+
+            // User should be present in the database.
+            let user = sqlx::query(
+                r#"
+SELECT email, name, password, wpm FROM users
+WHERE username = $1
+"#,
+            )
+            .bind("some_user")
+            .fetch_one(&mut *conn)
+            .await?;
+
+            assert_eq!(user.get::<String, _>("name"), "Some user".to_string());
+            assert!(
+                Argon2::default()
+                    .verify_password(
+                        "some_secret_password".as_bytes(),
+                        &PasswordHash::new(&user.get::<String, _>("password")).unwrap(),
+                    )
+                    .is_ok()
+            );
+
+            // Should also insert an e-mail verification token.
+            let token = sqlx::query(
+                r#"
+SELECT EXISTS (
+    SELECT 1 FROM tokens
+    WHERE type = $1
+)
+"#,
+            )
+            .bind(TokenType::EmailVerification as i16)
+            .fetch_one(&mut *conn)
+            .await?;
+
+            assert!(token.get::<bool, _>("exists"));
+
+            // Should increment the signup attempts.
+            let result =
+                get_resource_lock_attempts(&ctx.redis_pool, ResourceLock::Signup, "8.8.8.8")
+                    .await
+                    .unwrap();
+
+            assert_eq!(result, 1);
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_reject_a_signup_request_on_exceeding_the_max_attempts(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let app = init_app_for_test(post, pool, false, false, None).await.0;
+
+            exceed_resource_lock_attempts(&ctx.redis_pool, ResourceLock::Signup, "8.8.8.8").await;
+
+            let req = test::TestRequest::post()
+                .peer_addr(SocketAddr::from(SocketAddrV4::new(
+                    Ipv4Addr::new(8, 8, 8, 8),
+                    8080,
+                )))
+                .uri("/v1/auth/signup")
+                .set_json(Request {
+                    email: "someone@example.com".to_string(),
+                    name: "Some user".to_string(),
+                    username: "some_user".to_string(),
+                    password: "some_secret_password".to_string(),
+                    wpm: 270,
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
+
+            Ok(())
+        }
     }
 }

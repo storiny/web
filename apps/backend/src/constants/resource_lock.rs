@@ -1,7 +1,7 @@
 use strum_macros::Display;
 
 /// The resource lock.
-#[derive(Display, Debug)]
+#[derive(Display, Debug, Copy, Clone)]
 pub enum ResourceLock {
     /// The login resource lock. This occurs when there are too many failed attempts for password,
     /// authentication code, or the recovery code during the login process.
@@ -12,14 +12,18 @@ pub enum ResourceLock {
     ///
     /// # Caution
     ///
-    /// This might cause issues when users from a company or organization use an intranet to
-    /// register, as they share the same IP address.
+    /// This might cause issues when users from a particular company or organization use an
+    /// intranet to register, as they share the same IP address.
     #[strum(serialize = "l:sgn")]
     Signup,
-    /// The password resource lock. This occurs when there are too many failed attempts for the
-    /// account password verification operation.
-    #[strum(serialize = "l:pwd")]
-    Password,
+    /// The password reset resource lock. This occurs when there are too many passowrd reset
+    /// requests for a single account.
+    #[strum(serialize = "l:pwd:rst")]
+    ResetPassword,
+    /// The account recovery resource lock. This occurs when there are too many recovery requests
+    /// for a single account.
+    #[strum(serialize = "l:rcv")]
+    Recovery,
 }
 
 impl ResourceLock {
@@ -27,9 +31,10 @@ impl ResourceLock {
     /// an exponential-backoff fashion.
     pub fn get_max_attempts(&self) -> u32 {
         match self {
-            ResourceLock::Login => 10,
+            ResourceLock::Login => 8,
             ResourceLock::Signup => 30,
-            ResourceLock::Password => 15,
+            ResourceLock::Recovery => 10,
+            ResourceLock::ResetPassword => 10,
         }
     }
 }

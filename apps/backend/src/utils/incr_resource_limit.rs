@@ -58,7 +58,7 @@ mod tests {
                 .await
                 .unwrap();
 
-            // Key should be present in the cache
+            // Key should be present in the cache.
             let cache_key = format!(
                 "{}:{}:{}",
                 RedisNamespace::ResourceLimit.to_string(),
@@ -70,7 +70,7 @@ mod tests {
 
             assert_eq!(result, "1");
 
-            // Should also set an expiry on the key
+            // Should also set an expiry on the key.
             let ttl: i32 = conn.ttl(&cache_key).await.unwrap();
 
             assert_ne!(ttl, -1);
@@ -82,17 +82,17 @@ mod tests {
             let redis_pool = &ctx.redis_pool;
             let mut conn = redis_pool.get().await.unwrap();
 
-            // Increment for the first time
+            // Increment for the first time.
             incr_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64)
                 .await
                 .unwrap();
 
-            // Increment again
+            // Increment again.
             incr_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64)
                 .await
                 .unwrap();
 
-            // Key should be present in the cache with the correct value
+            // Key should be present in the cache with the correct value.
             let cache_key = format!(
                 "{}:{}:{}",
                 RedisNamespace::ResourceLimit.to_string(),
@@ -104,7 +104,7 @@ mod tests {
 
             assert_eq!(result, "2");
 
-            // Should not reset expiry on the key
+            // Should not reset expiry on the key.
             let ttl: i32 = conn.ttl(&cache_key).await.unwrap();
 
             assert_ne!(ttl, -1);

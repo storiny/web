@@ -1,9 +1,5 @@
 use crate::{
-    constants::{
-        redis_namespaces::RedisNamespace,
-        resource_limit::ResourceLimit,
-        resource_lock::ResourceLock,
-    },
+    constants::resource_lock::ResourceLock,
     RedisPool,
 };
 use anyhow::anyhow;
@@ -15,7 +11,7 @@ use redis::AsyncCommands;
 ///
 /// * `redis_pool` - The Redis connection pool.
 /// * `resource_lock` - The resource lock variant.
-/// * `identifier` - The resource identifier. This can the ID of the user or the client IP address.
+/// * `identifier` - The resource identifier.
 pub async fn is_resource_locked(
     redis_pool: &RedisPool,
     resource_lock: ResourceLock,
@@ -37,55 +33,64 @@ pub async fn is_resource_locked(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        test_utils::RedisTestContext,
-        utils::incr_report_limit::incr_report_limit,
-    };
+    use crate::test_utils::RedisTestContext;
     use futures::future;
     use storiny_macros::test_context;
 
     mod serial {
         use super::*;
+        use crate::utils::incr_resource_lock_attempts::incr_resource_lock_attempts;
 
         #[test_context(RedisTestContext)]
         #[tokio::test]
-        async fn can_check_report_limit_for_a_missing_key(ctx: &mut RedisTestContext) {
+        async fn can_check_resource_lock_status_for_a_missing_key(ctx: &mut RedisTestContext) {
             let redis_pool = &ctx.redis_pool;
-            let result = check_report_limit(redis_pool, "::1").await.unwrap();
+            let result = is_resource_locked(redis_pool, ResourceLock::Signup, "::1")
+                .await
+                .unwrap();
 
-            assert!(result);
+            assert!(!result);
         }
 
         #[test_context(RedisTestContext)]
         #[tokio::test]
-        async fn can_check_report_limit_for_an_existing_key(ctx: &mut RedisTestContext) {
+        async fn can_check_resource_lock_status_for_an_existing_key(ctx: &mut RedisTestContext) {
             let redis_pool = &ctx.redis_pool;
 
-            // Increment the report limit
-            incr_report_limit(redis_pool, "::1").await.unwrap();
+            // Increment the attempts.
+            incr_resource_lock_attempts(redis_pool, ResourceLock::Signup, "::1")
+                .await
+                .unwrap();
 
-            let result = check_report_limit(redis_pool, "::1").await.unwrap();
+            let result = is_resource_locked(redis_pool, ResourceLock::Signup, "::1")
+                .await
+                .unwrap();
 
-            assert!(result);
+            assert!(!result);
         }
 
         #[test_context(RedisTestContext)]
         #[tokio::test]
-        async fn can_return_false_when_exceeding_a_report_limit(ctx: &mut RedisTestContext) {
+        async fn can_return_true_for_a_locked_resource(ctx: &mut RedisTestContext) {
             let redis_pool = &ctx.redis_pool;
             let mut incr_futures = vec![];
 
-            // Exceed the report limit. Do not use [crate::test_utils::exceed_report_limit] as
-            // it depends on [check_report_limit].
-            for _ in 0..ResourceLimit::CreateReport.get_limit() + 1 {
-                incr_futures.push(incr_report_limit(redis_pool, "::1"));
+            // Exceed the attempts.
+            for _ in 0..ResourceLock::Signup.get_max_attempts() + 1 {
+                incr_futures.push(incr_resource_lock_attempts(
+                    redis_pool,
+                    ResourceLock::Signup,
+                    "::1",
+                ));
             }
 
             future::join_all(incr_futures).await;
 
-            let result = check_report_limit(redis_pool, "::1").await.unwrap();
+            let result = is_resource_locked(redis_pool, ResourceLock::Signup, "::1")
+                .await
+                .unwrap();
 
-            assert!(!result);
+            assert!(result);
         }
     }
 }

@@ -9,7 +9,7 @@ worker.use(
         ctx.json(
           [...Array(10)].map((_, index) => ({
             used: index % 2 === 0,
-            value: `00000000`,
+            value: "0".repeat(12),
           })),
         ),
       );

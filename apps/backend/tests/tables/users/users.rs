@@ -10004,7 +10004,7 @@ INSERT INTO mfa_recovery_codes(code, user_id)
 VALUES ($1, $2)
 "#,
         )
-        .bind("00000000")
+        .bind("0".repeat(12))
         .bind(user_id)
         .execute(&mut *conn)
         .await?;
@@ -10031,7 +10031,7 @@ SELECT EXISTS (
 )
 "#,
         )
-        .bind("00000000")
+        .bind("0".repeat(12))
         .fetch_one(&mut *conn)
         .await?;
 
