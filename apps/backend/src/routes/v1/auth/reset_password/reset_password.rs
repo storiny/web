@@ -1,11 +1,17 @@
 use crate::{
+    constants::resource_lock::ResourceLock,
     error::{
         AppError,
         FormErrorResponse,
         ToastErrorResponse,
     },
     grpc::defs::token_def::v1::TokenType,
-    utils::clear_user_sessions::clear_user_sessions,
+    utils::{
+        clear_user_sessions::clear_user_sessions,
+        incr_resource_lock_attempts::incr_resource_lock_attempts,
+        is_resource_locked::is_resource_locked,
+        reset_resource_lock::reset_resource_lock,
+    },
     AppState,
 };
 use actix_web::{
@@ -56,6 +62,14 @@ struct Request {
     err
 )]
 async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpResponse, AppError> {
+    if is_resource_locked(&data.redis, ResourceLock::ResetPassword, &payload.email).await? {
+        return Err(ToastErrorResponse::new(
+            Some(StatusCode::TOO_MANY_REQUESTS),
+            "Password reset requests for this email are currently rate-limited. Try again later.",
+        )
+        .into());
+    }
+
     let pg_pool = &data.db_pool;
     let mut txn = pg_pool.begin().await?;
 
@@ -87,7 +101,7 @@ WHERE
 
     let user_id = user.get::<i64, _>("id");
 
-    let token = sqlx::query(
+    let token = match sqlx::query(
         r#"
 SELECT id, expires_at FROM tokens
 WHERE type = $1 AND user_id = $2
@@ -97,13 +111,24 @@ WHERE type = $1 AND user_id = $2
     .bind(&user_id)
     .fetch_one(&mut *txn)
     .await
-    .map_err(|error| {
-        if matches!(error, sqlx::Error::RowNotFound) {
-            AppError::ToastError(ToastErrorResponse::new(None, "Invalid token"))
-        } else {
-            AppError::SqlxError(error)
+    {
+        Ok(token) => token,
+        Err(error) => {
+            return if matches!(error, sqlx::Error::RowNotFound) {
+                // Increment the password reset attempts.
+                incr_resource_lock_attempts(
+                    &data.redis,
+                    ResourceLock::ResetPassword,
+                    &payload.email,
+                )
+                .await?;
+
+                Err(ToastErrorResponse::new(None, "Invalid token").into())
+            } else {
+                Err(AppError::SqlxError(error))
+            };
         }
-    })?;
+    };
 
     // Validate the token.
     {
@@ -111,9 +136,26 @@ WHERE type = $1 AND user_id = $2
         let hashed_token = PasswordHash::new(&token_id)
             .map_err(|error| AppError::InternalError(error.to_string()))?;
 
-        Argon2::default()
-            .verify_password(&payload.token.as_bytes(), &hashed_token)
-            .map_err(|_| AppError::ToastError(ToastErrorResponse::new(None, "Invalid token")))?;
+        match Argon2::default().verify_password(&payload.token.as_bytes(), &hashed_token) {
+            Ok(_) => {
+                reset_resource_lock(&data.redis, ResourceLock::ResetPassword, &payload.email)
+                    .await?;
+            }
+            Err(_) => {
+                // Increment the password reset attempts.
+                incr_resource_lock_attempts(
+                    &data.redis,
+                    ResourceLock::ResetPassword,
+                    &payload.email,
+                )
+                .await?;
+
+                return Err(AppError::ToastError(ToastErrorResponse::new(
+                    None,
+                    "Invalid token",
+                )));
+            }
+        };
     }
 
     // Check the token expiry.
@@ -174,6 +216,8 @@ mod tests {
         test_utils::{
             assert_form_error_response,
             assert_toast_error_response,
+            exceed_resource_lock_attempts,
+            get_resource_lock_attempts,
             init_app_for_test,
             RedisTestContext,
         },
@@ -188,6 +232,7 @@ mod tests {
         PasswordVerifier,
     };
     use nanoid::nanoid;
+    use redis::AsyncCommands;
     use sqlx::PgPool;
     use storiny_macros::test_context;
     use time::Duration;
@@ -272,7 +317,7 @@ SELECT EXISTS (
     }
 
     #[sqlx::test(fixtures("user"))]
-    async fn can_reject_reset_password_request_for_an_invalid_email(
+    async fn can_reject_a_reset_password_request_for_an_invalid_email(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -321,7 +366,7 @@ VALUES ($1, $2, $3, $4)
     }
 
     #[sqlx::test(fixtures("user"))]
-    async fn can_reject_reset_password_request_for_an_expired_token(
+    async fn can_reject_a_reset_password_request_for_an_expired_token(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -366,42 +411,103 @@ VALUES ($1, $2, $3, $4)
         Ok(())
     }
 
-    #[sqlx::test(fixtures("user"))]
-    async fn can_reject_reset_password_request_for_an_invalid_token(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let app = init_app_for_test(post, pool, false, false, None).await.0;
-
-        let req = test::TestRequest::post()
-            .uri("/v1/auth/reset-password")
-            .set_json(Request {
-                email: "someone@example.com".to_string(),
-                password: "new_password".to_string(),
-                logout_of_all_devices: false,
-                token: nanoid!(48).to_string(),
-            })
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Invalid token").await;
-
-        Ok(())
-    }
-
     mod serial {
         use super::*;
-        use redis::AsyncCommands;
 
         #[test_context(RedisTestContext)]
         #[sqlx::test(fixtures("user"))]
-        async fn can_log_out_of_other_devices(
+        async fn can_reject_a_reset_password_request_for_an_invalid_token(
             ctx: &mut RedisTestContext,
             pool: PgPool,
         ) -> sqlx::Result<()> {
-            let redis_pool = &ctx.redis_pool;
+            let app = init_app_for_test(post, pool, false, false, None).await.0;
+
+            let req = test::TestRequest::post()
+                .uri("/v1/auth/reset-password")
+                .set_json(Request {
+                    email: "someone@example.com".to_string(),
+                    password: "new_password".to_string(),
+                    logout_of_all_devices: false,
+                    token: nanoid!(48).to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_client_error());
+            assert_toast_error_response(res, "Invalid token").await;
+
+            // Should increment the password reset attempts.
+            let result = get_resource_lock_attempts(
+                &ctx.redis_pool,
+                ResourceLock::ResetPassword,
+                "someone@example.com",
+            )
+            .await
+            .unwrap();
+
+            assert_eq!(result, 1);
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_reject_a_reset_password_request_on_exceeding_the_max_attempts(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let app = init_app_for_test(post, pool, false, false, None).await.0;
+
+            exceed_resource_lock_attempts(
+                &ctx.redis_pool,
+                ResourceLock::ResetPassword,
+                "someone@example.com",
+            )
+            .await;
+
+            let req = test::TestRequest::post()
+                .uri("/v1/auth/reset-password")
+                .set_json(Request {
+                    email: "someone@example.com".to_string(),
+                    password: "new_password".to_string(),
+                    logout_of_all_devices: false,
+                    token: nanoid!(48).to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("user"))]
+        async fn can_reset_the_resource_lock_on_a_valid_reset_password_request(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
             let mut conn = pool.acquire().await?;
-            let (app, _, _) = init_app_for_test(post, pool, false, false, None).await;
+            let app = init_app_for_test(post, pool, false, false, None).await.0;
+
+            // Increment the resource lock.
+            incr_resource_lock_attempts(
+                &ctx.redis_pool,
+                ResourceLock::ResetPassword,
+                "someone@example.com",
+            )
+            .await
+            .unwrap();
+
+            let result = get_resource_lock_attempts(
+                &ctx.redis_pool,
+                ResourceLock::ResetPassword,
+                "someone@example.com",
+            )
+            .await
+            .unwrap();
+
+            assert_eq!(result, 1);
 
             let token_id = nanoid!(48);
             let salt = SaltString::generate(&mut OsRng);
@@ -425,8 +531,67 @@ VALUES ($1, $2, $3, $4)
 
             assert_eq!(result.rows_affected(), 1);
 
-            let mut redis_conn = redis_pool.get().await.unwrap();
+            let req = test::TestRequest::post()
+                .uri("/v1/auth/reset-password")
+                .set_json(Request {
+                    email: "someone@example.com".to_string(),
+                    password: "new_password".to_string(),
+                    logout_of_all_devices: false,
+                    token: token_id,
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_success());
+
+            // Should reset the attempts.
+            let result = get_resource_lock_attempts(
+                &ctx.redis_pool,
+                ResourceLock::ResetPassword,
+                "someone@example.com",
+            )
+            .await;
+
+            assert!(result.is_none());
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("user"))]
+        async fn can_log_out_of_other_devices(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let redis_pool = &ctx.redis_pool;
+            let mut conn = pool.acquire().await?;
+            let (app, _, _) = init_app_for_test(post, pool, false, false, None).await;
+
             let user_id = 1_i64;
+
+            let token_id = nanoid!(48);
+            let salt = SaltString::generate(&mut OsRng);
+            let hashed_token = Argon2::default()
+                .hash_password(&token_id.as_bytes(), &salt)
+                .unwrap();
+
+            // Insert the reset password token.
+            let result = sqlx::query(
+                r#"
+INSERT INTO tokens (id, type, user_id, expires_at)
+VALUES ($1, $2, $3, $4)
+"#,
+            )
+            .bind(hashed_token.to_string())
+            .bind(TokenType::PasswordReset as i16)
+            .bind(&user_id)
+            .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
+            .execute(&mut *conn)
+            .await?;
+
+            assert_eq!(result.rows_affected(), 1);
+
+            let mut redis_conn = redis_pool.get().await.unwrap();
 
             // Create some sessions for the user.
             for _ in 0..5 {

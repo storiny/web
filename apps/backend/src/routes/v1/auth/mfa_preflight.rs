@@ -1,9 +1,15 @@
 use crate::{
+    constants::resource_lock::ResourceLock,
     error::{
         AppError,
         ToastErrorResponse,
     },
     middlewares::identity::identity::Identity,
+    utils::{
+        incr_resource_lock_attempts::incr_resource_lock_attempts,
+        is_resource_locked::is_resource_locked,
+        reset_resource_lock::reset_resource_lock,
+    },
     AppState,
 };
 use actix_web::{
@@ -58,6 +64,14 @@ async fn post(
         return Err(ToastErrorResponse::new(None, "You are already logged in").into());
     }
 
+    if is_resource_locked(&data.redis, ResourceLock::Login, &payload.email).await? {
+        return Err(ToastErrorResponse::new(
+            Some(StatusCode::TOO_MANY_REQUESTS),
+            "Login attempts for this email are currently rate-limited. Try again later.",
+        )
+        .into());
+    }
+
     let user = sqlx::query(
         r#"
 SELECT
@@ -86,9 +100,11 @@ WHERE email = $1
     // The password can be NULL if the user has created the account using a third-party service,
     // such as Apple or Google.
     if user_password.is_none() {
-        return Err(
-            ToastErrorResponse::new(Some(StatusCode::UNAUTHORIZED), "Invalid credentials").into(),
-        );
+        return Err(ToastErrorResponse::new(
+            Some(StatusCode::UNAUTHORIZED),
+            "Invalid e-mail or password",
+        )
+        .into());
     }
 
     let user_password = user_password.unwrap_or_default();
@@ -96,14 +112,22 @@ WHERE email = $1
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
     // Validate the password.
-    Argon2::default()
-        .verify_password(&payload.password.as_bytes(), &password_hash)
-        .map_err(|_| {
-            AppError::ToastError(ToastErrorResponse::new(
+    match Argon2::default().verify_password(&payload.password.as_bytes(), &password_hash) {
+        Ok(_) => {
+            // The user is validated at this point, so it is safe to reset the login attempts.
+            reset_resource_lock(&data.redis, ResourceLock::Login, &payload.email).await?;
+        }
+        Err(_) => {
+            // Increment the login attempts.
+            incr_resource_lock_attempts(&data.redis, ResourceLock::Login, &payload.email).await?;
+
+            return Err(ToastErrorResponse::new(
                 Some(StatusCode::UNAUTHORIZED),
-                "Invalid credentials",
-            ))
-        })?;
+                "Invalid e-mail or password",
+            )
+            .into());
+        }
+    }
 
     Ok(HttpResponse::Ok().json(Response {
         mfa_enabled: user.get::<bool, _>("mfa_enabled"),
@@ -119,8 +143,11 @@ mod tests {
     use super::*;
     use crate::test_utils::{
         assert_toast_error_response,
+        exceed_resource_lock_attempts,
+        get_resource_lock_attempts,
         init_app_for_test,
         res_to_string,
+        RedisTestContext,
     };
     use actix_web::test;
     use argon2::{
@@ -131,6 +158,7 @@ mod tests {
         PasswordHasher,
     };
     use sqlx::PgPool;
+    use storiny_macros::test_context;
 
     /// Returns a sample email and hashed password.
     fn get_sample_email_and_password() -> (String, String, String) {
@@ -299,46 +327,140 @@ VALUES ($1, $2, $3)
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Invalid credentials").await;
+        assert_toast_error_response(res, "Invalid e-mail or password").await;
 
         Ok(())
     }
 
-    #[sqlx::test]
-    async fn can_reject_a_mfa_preflight_request_for_an_invalid_password(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool, false, false, None).await.0;
+    mod serial {
+        use super::*;
 
-        let (email, password_hash, _) = get_sample_email_and_password();
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_reject_a_mfa_preflight_request_for_an_invalid_password(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let mut conn = pool.acquire().await?;
+            let app = init_app_for_test(post, pool, false, false, None).await.0;
 
-        // Insert the user.
-        sqlx::query(
-            r#"
+            let (email, password_hash, _) = get_sample_email_and_password();
+
+            // Insert the user.
+            sqlx::query(
+                r#"
 INSERT INTO users (name, username, email, password)
 VALUES ($1, $2, $3, $4)
 "#,
-        )
-        .bind("Sample user".to_string())
-        .bind("sample_user".to_string())
-        .bind((&email).to_string())
-        .bind(password_hash)
-        .execute(&mut *conn)
-        .await?;
+            )
+            .bind("Sample user".to_string())
+            .bind("sample_user".to_string())
+            .bind((&email).to_string())
+            .bind(password_hash)
+            .execute(&mut *conn)
+            .await?;
 
-        let req = test::TestRequest::post()
-            .uri("/v1/auth/mfa-preflight")
-            .set_json(Request {
-                email: email.to_string(),
-                password: "some_invalid_password".to_string(),
-            })
-            .to_request();
-        let res = test::call_service(&app, req).await;
+            let req = test::TestRequest::post()
+                .uri("/v1/auth/mfa-preflight")
+                .set_json(Request {
+                    email: email.to_string(),
+                    password: "some_invalid_password".to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
 
-        assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Invalid credentials").await;
+            assert!(res.status().is_client_error());
+            assert_toast_error_response(res, "Invalid e-mail or password").await;
 
-        Ok(())
+            // Should increment the login attempts.
+            let result = get_resource_lock_attempts(&ctx.redis_pool, ResourceLock::Login, &email)
+                .await
+                .unwrap();
+
+            assert_eq!(result, 1);
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_reject_a_mfa_preflight_request_on_exceeding_the_max_attempts(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let app = init_app_for_test(post, pool, false, false, None).await.0;
+            let (email, _, password) = get_sample_email_and_password();
+
+            exceed_resource_lock_attempts(&ctx.redis_pool, ResourceLock::Login, &email).await;
+
+            let req = test::TestRequest::post()
+                .uri("/v1/auth/mfa-preflight")
+                .set_json(Request {
+                    email: email.to_string(),
+                    password: password.to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_reset_the_resource_lock_on_a_valid_mfa_preflight_request(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let mut conn = pool.acquire().await?;
+            let app = init_app_for_test(post, pool, false, false, None).await.0;
+
+            let (email, password_hash, password) = get_sample_email_and_password();
+
+            // Increment the resource lock.
+            incr_resource_lock_attempts(&ctx.redis_pool, ResourceLock::Login, &email)
+                .await
+                .unwrap();
+
+            let result = get_resource_lock_attempts(&ctx.redis_pool, ResourceLock::Login, &email)
+                .await
+                .unwrap();
+
+            assert_eq!(result, 1);
+
+            // Insert the user.
+            sqlx::query(
+                r#"
+INSERT INTO users (name, username, email, password, email_verified, mfa_enabled)
+VALUES ($1, $2, $3, $4, TRUE, TRUE)
+"#,
+            )
+            .bind("Sample user".to_string())
+            .bind("sample_user".to_string())
+            .bind((&email).to_string())
+            .bind(password_hash)
+            .execute(&mut *conn)
+            .await?;
+
+            let req = test::TestRequest::post()
+                .uri("/v1/auth/mfa-preflight")
+                .set_json(Request {
+                    email: email.to_string(),
+                    password: password.to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_success());
+
+            // Should reset the attempts.
+            let result =
+                get_resource_lock_attempts(&ctx.redis_pool, ResourceLock::Login, &email).await;
+
+            assert!(result.is_none());
+
+            Ok(())
+        }
     }
 }

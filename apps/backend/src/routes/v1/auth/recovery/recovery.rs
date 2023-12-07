@@ -1,13 +1,21 @@
 use crate::{
-    constants::email_template::EmailTemplate,
+    constants::{
+        email_template::EmailTemplate,
+        resource_lock::ResourceLock,
+    },
     error::{
         AppError,
         FormErrorResponse,
+        ToastErrorResponse,
     },
     grpc::defs::token_def::v1::TokenType,
     jobs::{
         email::templated_email::TemplatedEmailJob,
         storage::JobStorage,
+    },
+    utils::{
+        incr_resource_lock_attempts::incr_resource_lock_attempts,
+        is_resource_locked::is_resource_locked,
     },
     AppState,
 };
@@ -65,6 +73,14 @@ async fn post(
     data: web::Data<AppState>,
     templated_email_job_storage: web::Data<JobStorage<TemplatedEmailJob>>,
 ) -> Result<HttpResponse, AppError> {
+    if is_resource_locked(&data.redis, ResourceLock::Recovery, &payload.email).await? {
+        return Err(ToastErrorResponse::new(
+            Some(StatusCode::TOO_MANY_REQUESTS),
+            "Account recovery requests for this email are currently rate-limited. Try again later.",
+        )
+        .into());
+    }
+
     let pg_pool = &data.db_pool;
     let mut txn = pg_pool.begin().await?;
 
@@ -119,6 +135,9 @@ VALUES ($1, $2, $3, $4)
     .execute(&mut *txn)
     .await?;
 
+    // Increment the recovery attempts.
+    incr_resource_lock_attempts(&data.redis, ResourceLock::Recovery, &payload.email).await?;
+
     let template_data = serde_json::to_string(&ResetPasswordEmailTemplateData {
         link: format!("https://storiny.com/auth/reset-password/{}", token_id),
     })
@@ -151,43 +170,14 @@ mod tests {
     use super::*;
     use crate::test_utils::{
         assert_form_error_response,
+        exceed_resource_lock_attempts,
+        get_resource_lock_attempts,
         init_app_for_test,
+        RedisTestContext,
     };
     use actix_web::test;
     use sqlx::PgPool;
-
-    #[sqlx::test(fixtures("user"))]
-    async fn can_handle_account_recovery_request(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool, false, false, None).await.0;
-
-        let req = test::TestRequest::post()
-            .uri("/v1/auth/recovery")
-            .set_json(Request {
-                email: "someone@example.com".to_string(),
-            })
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // Should insert a password reset token into the database.
-        let result = sqlx::query(
-            r#"
-SELECT EXISTS (
-    SELECT 1 FROM tokens
-    WHERE type = $1    
-)
-"#,
-        )
-        .bind(TokenType::PasswordReset as i16)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(result.get::<bool, _>("exists"));
-
-        Ok(())
-    }
+    use storiny_macros::test_context;
 
     #[sqlx::test(fixtures("user"))]
     async fn can_reject_an_account_recovery_request_for_an_invalid_email(
@@ -216,54 +206,136 @@ SELECT EXISTS (
         Ok(())
     }
 
-    #[sqlx::test(fixtures("user"))]
-    async fn can_delete_previous_password_reset_tokens_for_the_user(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool, false, false, None).await.0;
+    mod serial {
+        use super::*;
 
-        // Insert a password reset token.
-        let prev_result = sqlx::query(
-            r#"
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("user"))]
+        async fn can_handle_account_recovery_request(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let mut conn = pool.acquire().await?;
+            let app = init_app_for_test(post, pool, false, false, None).await.0;
+
+            let req = test::TestRequest::post()
+                .uri("/v1/auth/recovery")
+                .set_json(Request {
+                    email: "someone@example.com".to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_success());
+
+            // Should insert a password reset token into the database.
+            let result = sqlx::query(
+                r#"
+SELECT EXISTS (
+    SELECT 1 FROM tokens
+    WHERE type = $1    
+)
+"#,
+            )
+            .bind(TokenType::PasswordReset as i16)
+            .fetch_one(&mut *conn)
+            .await?;
+
+            assert!(result.get::<bool, _>("exists"));
+
+            // Should also increment the recovery attempts.
+            let result = get_resource_lock_attempts(
+                &ctx.redis_pool,
+                ResourceLock::Recovery,
+                "someone@example.com",
+            )
+            .await
+            .unwrap();
+
+            assert_eq!(result, 1);
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_reject_an_account_recovery_request_on_exceeding_the_max_attempts(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let app = init_app_for_test(post, pool, false, false, None).await.0;
+
+            exceed_resource_lock_attempts(
+                &ctx.redis_pool,
+                ResourceLock::Recovery,
+                "someone@example.com",
+            )
+            .await;
+
+            let req = test::TestRequest::post()
+                .uri("/v1/auth/recovery")
+                .set_json(Request {
+                    email: "someone@example.com".to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("user"))]
+        async fn can_delete_previous_password_reset_tokens_for_the_user(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let mut conn = pool.acquire().await?;
+            let app = init_app_for_test(post, pool, false, false, None).await.0;
+
+            // Insert a password reset token.
+            let prev_result = sqlx::query(
+                r#"
 INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
-        )
-        .bind("sample")
-        .bind(TokenType::PasswordReset as i16)
-        .bind(1_i64)
-        .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
-        .execute(&mut *conn)
-        .await?;
+            )
+            .bind("sample")
+            .bind(TokenType::PasswordReset as i16)
+            .bind(1_i64)
+            .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
+            .execute(&mut *conn)
+            .await?;
 
-        assert_eq!(prev_result.rows_affected(), 1);
+            assert_eq!(prev_result.rows_affected(), 1);
 
-        let req = test::TestRequest::post()
-            .uri("/v1/auth/recovery")
-            .set_json(Request {
-                email: "someone@example.com".to_string(),
-            })
-            .to_request();
-        let res = test::call_service(&app, req).await;
+            let req = test::TestRequest::post()
+                .uri("/v1/auth/recovery")
+                .set_json(Request {
+                    email: "someone@example.com".to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
 
-        assert!(res.status().is_success());
+            assert!(res.status().is_success());
 
-        // Should delete the previous token.
-        let result = sqlx::query(
-            r#"
+            // Should delete the previous token.
+            let result = sqlx::query(
+                r#"
 SELECT EXISTS (
     SELECT 1 FROM tokens
     WHERE id = $1
 )
 "#,
-        )
-        .bind("sample")
-        .fetch_one(&mut *conn)
-        .await?;
+            )
+            .bind("sample")
+            .fetch_one(&mut *conn)
+            .await?;
 
-        assert!(!result.get::<bool, _>("exists"));
+            assert!(!result.get::<bool, _>("exists"));
 
-        Ok(())
+            Ok(())
+        }
     }
 }

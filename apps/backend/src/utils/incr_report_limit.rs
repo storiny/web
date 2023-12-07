@@ -51,7 +51,7 @@ mod tests {
 
             incr_report_limit(redis_pool, "::1").await.unwrap();
 
-            // Key should be present in the cache
+            // Key should be present in the cache.
             let cache_key = format!(
                 "{}:{}:{}",
                 RedisNamespace::ResourceLimit.to_string(),

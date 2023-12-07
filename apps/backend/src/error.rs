@@ -1,4 +1,7 @@
-use crate::middlewares::identity::error::GetIdentityError;
+use crate::{
+    middlewares::identity::error::GetIdentityError,
+    utils::incr_resource_lock_attempts::IncrResourceLockError,
+};
 use actix_web::{
     http::StatusCode,
     HttpResponse,
@@ -235,6 +238,14 @@ impl From<ToastErrorResponse> for AppError {
 impl From<FormErrorResponse> for AppError {
     fn from(error: FormErrorResponse) -> Self {
         AppError::FormError(error)
+    }
+}
+
+impl From<IncrResourceLockError> for AppError {
+    fn from(error: IncrResourceLockError) -> Self {
+        AppError::InternalError(format!(
+            "unable to increment to resource lock attempts: {error:?}"
+        ))
     }
 }
 

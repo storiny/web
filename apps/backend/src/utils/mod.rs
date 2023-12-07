@@ -22,4 +22,6 @@ pub mod incr_resource_lock_attempts;
 pub mod inflate_bytes_gzip;
 pub mod is_resource_locked;
 pub mod md_to_html;
+pub mod redis_async_transaction;
+pub mod reset_resource_lock;
 pub mod truncate_str;

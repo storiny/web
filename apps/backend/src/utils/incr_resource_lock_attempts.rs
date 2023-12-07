@@ -1,15 +1,30 @@
 use crate::{
-    constants::{
-        redis_namespaces::RedisNamespace,
-        resource_limit::ResourceLimit,
-        resource_lock::ResourceLock,
-    },
-    middlewares::rate_limiter::async_transaction,
+    async_transaction,
+    constants::resource_lock::ResourceLock,
     RedisPool,
 };
-use anyhow::anyhow;
 use redis::AsyncCommands;
 use std::cmp::min;
+use thiserror::Error;
+
+/// The error raised while incrementing the resource lock attempts.
+#[derive(Debug, Error)]
+pub enum IncrResourceLockError {
+    /// The error raised during the Redis transaction.
+    #[error("redis error: {0}")]
+    Redis(
+        #[source]
+        #[from]
+        redis::RedisError,
+    ),
+    /// The error raised while trying to acquire a connection from the pool.
+    #[error("pool error: {0}")]
+    Pool(
+        #[source]
+        #[from]
+        deadpool_redis::PoolError,
+    ),
+}
 
 /// The maximum amount of duration (in seconds) for a locked resource before it is unlocked.
 const MAXIMUM_RESOURCE_LOCK_BACKOFF_DURATION: i32 = 86_400; // 24 hours
@@ -42,47 +57,41 @@ fn get_next_backoff_duration(attempts: u32) -> i32 {
 ///
 /// * `redis_pool` - The Redis connection pool.
 /// * `resource_lock` - The resource lock variant.
-/// * `identifier` - The resource identifier. This can the ID of the user or the client IP address.
+/// * `identifier` - The resource identifier.
 pub async fn incr_resource_lock_attempts(
     redis_pool: &RedisPool,
     resource_lock: ResourceLock,
     identifier: &str,
-) -> anyhow::Result<()> {
-    let mut conn = redis_pool.get().await.map_err(|error| {
-        anyhow!("unable to acquire a connection from the Redis pool: {error:?}")
-    })?;
-    let increx = redis::Script::new(include_str!("../../lua/increx.lua"));
+) -> Result<(), IncrResourceLockError> {
+    let mut conn = redis_pool.get().await?;
     let cache_key = format!("{}:{identifier}", resource_lock.to_string());
 
-    let current_attempts = conn
-        .get::<_, Option<u32>>(&format!("{}:{identifier}", resource_lock.to_string()))
-        .await
-        .map_err(|error| anyhow!("unable to fetch the lock attempts from Redis: {error:?}"))?;
+    Ok(async_transaction!(&mut conn, &[cache_key.clone()], {
+        let mut pipe = redis::pipe();
+        let current_value: Option<u32> = conn.get(&cache_key).await?;
 
-    let a = async_transaction!(&mut conn, &[cache_key.clone()], {
-        let pipe = redis::pipe().atomic();
-        let current_value: Option<u32> = conn.get(&cache_key)?;
+        pipe.atomic();
 
         if current_value.is_some_and(|value| value >= resource_lock.get_max_attempts()) {
             // Increase the expiry if the key already exists with the sufficient amount of
-            // incorrect attempts. We do not increment the attempts any further if they
-            // reach the limit.
-            let next_expiry = get_next_backoff_duration(value);
-            pipe.expire(&cache_key, next_expiry as usize).ignore();
+            // incorrect attempts. We use the difference of the incorrect attempts and the maximum
+            // limit to compute the backoff duration.
+            let attempts = current_value.unwrap() - resource_lock.get_max_attempts();
+            let next_expiry = get_next_backoff_duration(attempts);
+
+            pipe.incr(&cache_key, 1)
+                .expire(&cache_key, next_expiry as usize)
+                .ignore();
         } else {
-            // Increment the existing attempts or create a new record.
-            increx
-                .key(&cache_key)
-                // Keep the new attempts for 1 day.
-                .arg(HOURS_24_AS_SECONDS)
-                .invoke_async(&mut conn)?;
-            pipe.add_command();
+            // Increment the existing attempts or create a new record. Always reset the expiry to 24
+            // hours on every incorrect attempt.
+            pipe.incr(&cache_key, 1)
+                .expire(&cache_key, HOURS_24_AS_SECONDS as usize)
+                .ignore();
         }
 
-        pipe.query_async(&mut conn).await?
-    });
-
-    Ok(())
+        pipe.query_async::<_, Option<()>>(&mut conn).await?
+    }))
 }
 
 #[cfg(test)]
@@ -97,27 +106,24 @@ mod tests {
 
         #[test_context(RedisTestContext)]
         #[tokio::test]
-        async fn can_increment_resource_limit_for_a_missing_key(ctx: &mut RedisTestContext) {
+        async fn can_increment_resource_lock_attempts_for_a_missing_key(
+            ctx: &mut RedisTestContext,
+        ) {
             let redis_pool = &ctx.redis_pool;
             let mut conn = redis_pool.get().await.unwrap();
 
-            incr_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64)
+            incr_resource_lock_attempts(redis_pool, ResourceLock::Signup, "::1")
                 .await
                 .unwrap();
 
-            // Key should be present in the cache
-            let cache_key = format!(
-                "{}:{}:{}",
-                RedisNamespace::ResourceLimit.to_string(),
-                ResourceLimit::CreateStory as i32,
-                1
-            );
+            // Key should be present in the cache.
+            let cache_key = format!("{}:{}", ResourceLock::Signup.to_string(), "::1");
 
             let result: String = conn.get(&cache_key).await.unwrap();
 
             assert_eq!(result, "1");
 
-            // Should also set an expiry on the key
+            // Should also set an expiry on the key.
             let ttl: i32 = conn.ttl(&cache_key).await.unwrap();
 
             assert_ne!(ttl, -1);
@@ -125,36 +131,112 @@ mod tests {
 
         #[test_context(RedisTestContext)]
         #[tokio::test]
-        async fn can_increment_resource_limit_for_an_existing_key(ctx: &mut RedisTestContext) {
+        async fn can_increment_resource_lock_attempts_for_an_existing_key(
+            ctx: &mut RedisTestContext,
+        ) {
             let redis_pool = &ctx.redis_pool;
             let mut conn = redis_pool.get().await.unwrap();
 
-            // Increment for the first time
-            incr_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64)
+            let cache_key = format!("{}:{}", ResourceLock::Signup.to_string(), "::1");
+
+            // Increment for the first time.
+            incr_resource_lock_attempts(redis_pool, ResourceLock::Signup, "::1")
                 .await
                 .unwrap();
 
-            // Increment again
-            incr_resource_limit(redis_pool, ResourceLimit::CreateStory, 1_i64)
+            // Change the expiry of the key to 5 minutes.
+            conn.expire::<_, ()>(&cache_key, 300).await.unwrap();
+
+            // Increment again.
+            incr_resource_lock_attempts(redis_pool, ResourceLock::Signup, "::1")
                 .await
                 .unwrap();
 
-            // Key should be present in the cache with the correct value
-            let cache_key = format!(
-                "{}:{}:{}",
-                RedisNamespace::ResourceLimit.to_string(),
-                ResourceLimit::CreateStory as i32,
-                1
-            );
-
+            // Key should be present in the cache with the correct value.
             let result: String = conn.get(&cache_key).await.unwrap();
 
             assert_eq!(result, "2");
 
-            // Should not reset expiry on the key
+            // Should reset expiry on the key to 24 hours.
             let ttl: i32 = conn.ttl(&cache_key).await.unwrap();
 
-            assert_ne!(ttl, -1);
+            assert!(ttl > (HOURS_24_AS_SECONDS - 60));
+        }
+
+        #[test_context(RedisTestContext)]
+        #[tokio::test]
+        async fn can_increment_resource_lock_attempts_on_reaching_the_limit(
+            ctx: &mut RedisTestContext,
+        ) {
+            let redis_pool = &ctx.redis_pool;
+            let mut conn = redis_pool.get().await.unwrap();
+
+            let cache_key = format!("{}:{}", ResourceLock::Signup.to_string(), "::1");
+
+            // Set the maximum attempts for the key.
+            conn.set::<_, _, ()>(&cache_key, ResourceLock::Signup.get_max_attempts())
+                .await
+                .unwrap();
+
+            let result: String = conn.get(&cache_key).await.unwrap();
+
+            assert_eq!(result, ResourceLock::Signup.get_max_attempts().to_string());
+
+            // Try incrementing the lock attempts.
+            incr_resource_lock_attempts(redis_pool, ResourceLock::Signup, "::1")
+                .await
+                .unwrap();
+
+            let result: String = conn.get(&cache_key).await.unwrap();
+
+            // Should increment the attempts.
+            assert_eq!(
+                result,
+                (ResourceLock::Signup.get_max_attempts() + 1).to_string()
+            );
+        }
+
+        #[test_context(RedisTestContext)]
+        #[tokio::test]
+        async fn can_set_expiry_after_reaching_the_maximum_attempts_limit(
+            ctx: &mut RedisTestContext,
+        ) {
+            let redis_pool = &ctx.redis_pool;
+            let mut conn = redis_pool.get().await.unwrap();
+
+            let cache_key = format!("{}:{}", ResourceLock::Signup.to_string(), "::1");
+
+            // Set the maximum attempts for the key.
+            conn.set::<_, _, ()>(&cache_key, ResourceLock::Signup.get_max_attempts() + 1)
+                .await
+                .unwrap();
+
+            let result: String = conn.get(&cache_key).await.unwrap();
+
+            assert_eq!(
+                result,
+                (ResourceLock::Signup.get_max_attempts() + 1).to_string()
+            );
+
+            // Increment the lock attempts.
+            incr_resource_lock_attempts(redis_pool, ResourceLock::Signup, "::1")
+                .await
+                .unwrap();
+
+            let result: String = conn.get(&cache_key).await.unwrap();
+
+            // Should increment the attempts.
+            assert_eq!(
+                result,
+                (ResourceLock::Signup.get_max_attempts() + 2).to_string()
+            );
+
+            // Should reset expiry using the exponential-backoff pattern.
+            let ttl: i32 = conn.ttl(&cache_key).await.unwrap();
+            let expiry = get_next_backoff_duration(1);
+
+            // We relax 30 seconds for tests.
+            assert!(ttl > expiry - 30 && ttl < expiry + 30);
         }
     }
 }
