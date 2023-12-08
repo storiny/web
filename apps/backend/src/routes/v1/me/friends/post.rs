@@ -263,7 +263,7 @@ WHERE id = $1
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         let req = test::TestRequest::post()
-            .cookie(cookie.clone().unwrap())
+            .cookie(cookie.unwrap())
             .uri(&format!("/v1/me/friends/{}", user_id.unwrap()))
             .to_request();
         let res = test::call_service(&app, req).await;

@@ -49,7 +49,7 @@ const EditorAuxiliaryContentSuggestionList = dynamic(
   }
 );
 
-export type StoryCommentsSortValue = "likes-dsc" | "recent";
+export type StoryCommentsSortValue = "most-liked" | "recent";
 export type EditorAuxiliaryContentTabValue = "suggested" | "comments";
 
 // Header tabs
@@ -90,7 +90,7 @@ const Content = (): React.ReactElement => {
   const [value, set_value] = React.useState<EditorAuxiliaryContentTabValue>(
     is_smaller_than_desktop ? "suggested" : "comments"
   );
-  const [sort, set_sort] = React.useState<StoryCommentsSortValue>("likes-dsc");
+  const [sort, set_sort] = React.useState<StoryCommentsSortValue>("most-liked");
 
   const handle_sort_change = React.useCallback(
     (next_sort: StoryCommentsSortValue) => {
@@ -146,7 +146,7 @@ const Content = (): React.ReactElement => {
               }}
               value={sort}
             >
-              <Option value={"likes-dsc"}>Relevant</Option>
+              <Option value={"most-liked"}>Relevant</Option>
               <Option value={"recent"}>Recent</Option>
             </Select>
           </div>

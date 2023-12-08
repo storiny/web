@@ -19,18 +19,9 @@ pub struct ClientLocation {
 ///
 /// * `ip` - The IP address of the client.
 /// * `reader` - The geo-ip database reader instance.
-pub fn get_client_location(ip: IpAddr, reader: &Reader<Vec<u8>>) -> ClientLocation {
-    let lookup_result = reader.lookup::<geoip2::City>(ip);
+pub fn get_client_location(ip: IpAddr, reader: &Reader<Vec<u8>>) -> Option<ClientLocation> {
+    let result = reader.lookup::<geoip2::City>(ip).ok()?;
 
-    if lookup_result.is_err() {
-        return ClientLocation {
-            display_name: "Unknown location".to_string(),
-            lat: None,
-            lng: None,
-        };
-    }
-
-    let result = lookup_result.unwrap();
     let mut city_name: Option<String> = None;
     let mut country_name: Option<String> = None;
     let mut lat: Option<f64> = None;
@@ -74,11 +65,11 @@ pub fn get_client_location(ip: IpAddr, reader: &Reader<Vec<u8>>) -> ClientLocati
         display_name = "Unknown location".to_string()
     }
 
-    ClientLocation {
+    Some(ClientLocation {
         display_name,
         lat,
         lng,
-    }
+    })
 }
 
 #[cfg(test)]
@@ -93,7 +84,8 @@ mod tests {
 
     #[test]
     fn can_return_valid_client_location_information() {
-        let result = get_client_location(IpAddr::V4(Ipv4Addr::new(8, 8, 8, 8)), &get_geo_db());
+        let result =
+            get_client_location(IpAddr::V4(Ipv4Addr::new(8, 8, 8, 8)), &get_geo_db()).unwrap();
 
         assert_eq!(result.display_name, "United States".to_string());
         assert!(result.lat.is_some());
@@ -103,9 +95,6 @@ mod tests {
     #[test]
     fn can_handle_invalid_ip_address() {
         let result = get_client_location(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), &get_geo_db());
-
-        assert_eq!(result.display_name, "Unknown location".to_string());
-        assert!(result.lat.is_none());
-        assert!(result.lng.is_none());
+        assert!(result.is_none());
     }
 }

@@ -13,7 +13,7 @@ import styles from "./doc-status.module.scss";
 
 type LocalDocStatus = Exclude<
   TDocStatus,
-  "connected" | "overloaded" | "forbidden" | "publishing"
+  "connected" | "overloaded" | "forbidden" | "publishing" | "corrupted"
 >;
 
 const DOC_STATUS_TOOLTIP_MAP: Record<LocalDocStatus, string> = {
@@ -34,7 +34,13 @@ const DocStatus = (): React.ReactElement | null => {
   const doc_status = use_atom_value(doc_status_atom);
 
   if (
-    ["publishing", "connected", "overloaded", "forbidden"].includes(doc_status)
+    [
+      "publishing",
+      "connected",
+      "overloaded",
+      "forbidden",
+      "corrupted"
+    ].includes(doc_status)
   ) {
     return null;
   }

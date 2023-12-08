@@ -1,6 +1,7 @@
 "use client";
 
 import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import { dev_console } from "@storiny/shared/src/utils/dev-log";
 import React from "react";
 import { applyUpdateV2 as apply_update_v2, Doc, YEvent } from "yjs";
 
@@ -11,16 +12,19 @@ import {
 import { sync_yjs_changes_to_lexical } from "../../utils/sync-yjs-changes-to-lexical";
 
 /**
- * Hook for rendering a read-only instance of the editor
- * @param initial_doc Initial Yjs document
- * @param excluded_properties Excluded properties
+ * Hook for rendering a read-only instance of the editor.
+ * @param initial_doc The initial binary document data.
+ * @param excluded_properties The excluded properties.
+ * @param on_read_error The callback invoked when there is an error while reading the `initial_doc` data.
  */
 export const use_yjs_read_only = ({
   initial_doc,
-  excluded_properties
+  excluded_properties,
+  on_read_error
 }: {
   excluded_properties?: ExcludedProperties;
   initial_doc: Uint8Array;
+  on_read_error?: () => void;
 }): void => {
   const [editor] = use_lexical_composer_context();
   const { map, doc } = React.useMemo(() => {
@@ -46,7 +50,15 @@ export const use_yjs_read_only = ({
     };
 
     root.get_shared_type().observeDeep(listener);
-    apply_update_v2(doc, initial_doc);
+
+    try {
+      // This can throw on a corrupted document data.
+      apply_update_v2(doc, new Uint8Array(initial_doc));
+    } catch (e) {
+      dev_console.error(e);
+      on_read_error?.();
+    }
+
     root.get_shared_type().unobserveDeep(listener);
     doc.destroy();
   }

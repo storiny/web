@@ -88,8 +88,15 @@ VALUES ($1, $2)
                     return Err(AppError::from("User does not exist"));
                 }
 
+                let error_code = db_err.code().unwrap_or_default();
+
+                // Check if the `blocker_id` is same as `blocked_id`.
+                if error_code == SqlState::RelationOverlap.to_string() {
+                    return Err(AppError::from("You cannot block yourself"));
+                }
+
                 // Check if the blocked user is soft-deleted or deactivated.
-                if db_err.code().unwrap_or_default() == SqlState::EntityUnavailable.to_string() {
+                if error_code == SqlState::EntityUnavailable.to_string() {
                     return Err(AppError::from(
                         "User being blocked is either deleted or deactivated",
                     ));
@@ -183,6 +190,22 @@ WHERE id = $1
 
         assert!(res.status().is_client_error());
         assert_response_body_text(res, "User being blocked is either deleted or deactivated").await;
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn should_not_allow_the_user_to_block_itself(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/blocked-users/{}", user_id.unwrap()))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_response_body_text(res, "You cannot block yourself").await;
 
         Ok(())
     }

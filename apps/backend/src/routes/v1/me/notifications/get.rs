@@ -93,7 +93,11 @@ SELECT
     nu.created_at,
     -- Render notification content
     CASE
-        WHEN nu.rendered_content IS NULL
+        WHEN
+            nu.rendered_content IS NULL
+            -- Also render login attempts (entity_type = 2) with this function, because
+            -- their `rendered_content` column contains the login data (`device:location`).
+            OR "nu->notification".entity_type = 2
             THEN
             public.render_notification_content("nu->notification".entity_type, nu.*)
         ELSE nu.rendered_content
