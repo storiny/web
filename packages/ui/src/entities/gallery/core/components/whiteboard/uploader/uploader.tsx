@@ -11,6 +11,7 @@ import { selected_atom } from "~/entities/gallery/core/atoms";
 import { use_upload_asset_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import UploadProgress from "../../upload-progress";
 import styles from "./uploader.module.scss";
@@ -42,10 +43,8 @@ const WhiteboardUploader = (
           source: "native"
         });
       })
-      .catch((e) => {
-        if (e?.data?.error) {
-          toast(e.data.error, "error");
-        }
+      .catch((error) => {
+        handle_api_error(error, toast, null, "Could not upload your sketch");
       });
   }, [alt, file, set_selected, toast, upload_image]);
 

@@ -3,6 +3,7 @@ import React from "react";
 import Button from "~/components/button";
 import { use_toast } from "~/components/toast";
 import { use_connection_visibility_mutation } from "~/redux/features";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import { VisibilityButtonProps } from "./visibility-button.props";
 
@@ -20,11 +21,16 @@ const VisibilityButton = ({
    * Handles visibility mutations
    */
   const handle_visibility = (): void => {
-    mutate_connection_visibility({ id: connection.id, visible: hidden })
+    mutate_connection_visibility({ id: connection.id, visible: !hidden })
       .unwrap()
       .then(() => set_hidden((prev_state) => !prev_state))
-      .catch((e) =>
-        toast(e?.data?.error || "Could not change your connection settings")
+      .catch((error) =>
+        handle_api_error(
+          error,
+          toast,
+          null,
+          "Could not change your connection settings"
+        )
       );
   };
 

@@ -1,3 +1,5 @@
+"use client";
+
 import { useRouter as use_router } from "next/dist/client/components/navigation";
 import React from "react";
 
@@ -8,6 +10,7 @@ import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import { use_login_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import { use_auth_state } from "../../../actions";
 
@@ -28,8 +31,13 @@ const Page = (): React.ReactElement => {
             toast("Could not reactivate your account", "error");
           }
         })
-        .catch((e) =>
-          toast(e?.data?.error || "Could not reactivate your account", "error")
+        .catch((error) =>
+          handle_api_error(
+            error,
+            toast,
+            null,
+            "Could not reactivate your account"
+          )
         );
     } else {
       toast("Could not reactivate your account", "error");

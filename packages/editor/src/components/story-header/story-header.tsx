@@ -54,7 +54,7 @@ const StoryActions = (): React.ReactElement => {
     (state) => state.entities.bookmarks[story.id]
   );
   const is_muted = use_app_selector(
-    (state) => state.entities.mutes[story.user!.id]
+    (state) => state.entities.mutes[story.user?.id || ""]
   );
 
   return (
@@ -130,7 +130,7 @@ const StoryActions = (): React.ReactElement => {
           check_auth
           decorator={<MuteIcon />}
           onClick={(): void => {
-            dispatch(boolean_action("mutes", story.user!.id));
+            dispatch(boolean_action("mutes", story.user?.id || ""));
           }}
         >
           {is_muted ? "Unmute" : "Mute"} this writer

@@ -23,6 +23,7 @@ import {
 import { use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import styles from "./recovery-codes.module.scss";
 
@@ -73,8 +74,13 @@ const RecoveryCodesModal = (): React.ReactElement => {
         toast("Regenerated recovery codes", "success");
         set_codes(next_codes);
       })
-      .catch((e) =>
-        toast(e?.data?.error || "Could not regenerate recovery codes", "error")
+      .catch((error) =>
+        handle_api_error(
+          error,
+          toast,
+          null,
+          "Could not regenerate recovery codes"
+        )
       );
   };
 

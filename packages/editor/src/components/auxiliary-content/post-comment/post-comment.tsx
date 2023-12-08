@@ -15,6 +15,7 @@ import {
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import { story_metadata_atom } from "../../../atoms";
 import styles from "./post-comment.module.scss";
@@ -48,8 +49,8 @@ const PostComment = ({
           toast("Comment added", "success");
           dispatch(get_story_comments_api.util.resetApiState());
         })
-        .catch((e) =>
-          toast(e?.data?.error || "Could not add your comment", "error")
+        .catch((error) =>
+          handle_api_error(error, toast, null, "Could not add your comment")
         );
     } else {
       toast("Comment content cannot be empty", "error");

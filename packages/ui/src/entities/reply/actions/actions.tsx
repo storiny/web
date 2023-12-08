@@ -22,6 +22,7 @@ import {
   use_reply_visibility_mutation
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import ResponseEditor from "../../common/response-editor";
 
@@ -56,8 +57,8 @@ const ReplyActions = ({
         toast("Reply deleted", "success");
         dispatch(get_replies_api.util.resetApiState());
       })
-      .catch((e) =>
-        toast(e?.data?.error || "Could not delete your reply", "error")
+      .catch((error) =>
+        handle_api_error(error, toast, null, "Could not delete your reply")
       );
   };
 
@@ -97,10 +98,12 @@ const ReplyActions = ({
         toast(`Reply ${hidden ? "unhidden" : "hidden"}`, "success");
         dispatch(get_replies_api.util.resetApiState());
       })
-      .catch((e) =>
-        toast(
-          e?.data?.error || `Could not ${hidden ? "unhide" : "hide"} reply`,
-          "error"
+      .catch((error) =>
+        handle_api_error(
+          error,
+          toast,
+          null,
+          `Could not ${hidden ? "unhide" : "hide"} the reply`
         )
       );
   };

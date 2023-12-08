@@ -9,7 +9,9 @@ import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
 import FormInput from "~/components/form-input";
 import Grow from "~/components/grow";
 import Spacer from "~/components/spacer";
+import { use_toast } from "~/components/toast";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import { use_auth_state } from "../../../actions";
 import { use_signup } from "../../../use-signup";
@@ -22,6 +24,7 @@ interface Props {
 const SignupWPMForm = ({ on_submit }: Props): React.ReactElement => {
   const { state, actions } = use_auth_state();
   const { is_loading, handle_signup } = use_signup();
+  const toast = use_toast();
   const form = use_form<SignupWPMSchema>({
     resolver: zod_resolver(SIGNUP_WPM_SCHEMA),
     defaultValues: {
@@ -31,7 +34,6 @@ const SignupWPMForm = ({ on_submit }: Props): React.ReactElement => {
 
   const handle_submit: SubmitHandler<SignupWPMSchema> = (values) => {
     actions.set_signup_state(values);
-    actions.set_form({ wpm_manual: form });
 
     if (on_submit) {
       on_submit(values);
@@ -39,6 +41,17 @@ const SignupWPMForm = ({ on_submit }: Props): React.ReactElement => {
       handle_signup();
     }
   };
+
+  React.useEffect(() => {
+    if (state.signup_errors?.wpm_manual) {
+      handle_api_error(
+        state.signup_errors.wpm_manual,
+        toast,
+        form,
+        "Could not sign you up"
+      );
+    }
+  }, [form, state.signup_errors, toast]);
 
   return (
     <Form<SignupWPMSchema>

@@ -22,6 +22,7 @@ import {
 } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import styles from "./enable-2fa.module.scss";
 import { Enable2FAProps } from "./enable-2fa.props";
@@ -174,11 +175,14 @@ const Enable2FA = ({
           set_enabled(true);
           toast("Successfully enabled two-factor authentication", "success");
         })
-        .catch((e) => {
+        .catch((error) => {
           set_enabled(false);
-          toast(
-            e?.data?.error || "Could not verify your authentication code",
-            "error"
+
+          handle_api_error(
+            error,
+            toast,
+            form,
+            "Could not verify your authentication code"
           );
         });
     }

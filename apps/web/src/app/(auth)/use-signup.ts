@@ -24,35 +24,41 @@ export const use_signup = (): {
       wpm: state.signup.wpm || DEFAULT_WPM
     })
       .unwrap()
-      .then(() => actions.switch_segment("email_confirmation"))
+      .then(() => {
+        actions.set_signup_errors({
+          base: undefined,
+          username: undefined,
+          wpm_manual: undefined
+        });
+
+        actions.switch_segment("email_confirmation");
+      })
       .catch((error) => {
         if (is_form_error(error)) {
-          const error_fields = error.errors.map((item) => item[0]);
+          const error_fields = error.data?.errors.map((item) => item[0]);
 
           if (
             ["email", "name", "password"].some((item) =>
               error_fields.includes(item)
             )
           ) {
-            const signup_base_form = state.forms.signup_base;
-            handle_api_error(
-              error,
-              toast,
-              signup_base_form,
-              "Could not sign you up"
-            );
+            actions.set_signup_errors({
+              base: error
+            });
 
             actions.switch_segment("signup_base");
           } else if (error_fields.includes("username")) {
-            const signup_username_form = state.forms.signup_username;
-            handle_api_error(
-              error,
-              toast,
-              signup_username_form,
-              "Could not sign you up"
-            );
+            actions.set_signup_errors({
+              username: error
+            });
 
             actions.switch_segment("signup_username");
+          } else if (error_fields.includes("wpm")) {
+            actions.set_signup_errors({
+              wpm_manual: error
+            });
+
+            actions.switch_segment("wpm_manual");
           }
         } else {
           handle_api_error(error, toast, null, "Could not sign you up");

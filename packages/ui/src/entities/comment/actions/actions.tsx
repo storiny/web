@@ -22,6 +22,7 @@ import {
   use_delete_comment_mutation
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import ResponseEditor from "../../common/response-editor";
 
@@ -56,8 +57,8 @@ const CommentActions = ({
         toast("Comment deleted", "success");
         dispatch(get_comments_api.util.resetApiState());
       })
-      .catch((e) =>
-        toast(e?.data?.error || "Could not delete your comment", "error")
+      .catch((error) =>
+        handle_api_error(error, toast, null, "Could not delete your comment")
       );
   };
 
@@ -101,10 +102,12 @@ const CommentActions = ({
         toast(`Comment ${hidden ? "unhidden" : "hidden"}`, "success");
         dispatch(get_comments_api.util.resetApiState());
       })
-      .catch((e) =>
-        toast(
-          e?.data?.error || `Could not ${hidden ? "unhide" : "hide"} comment`,
-          "error"
+      .catch((error) =>
+        handle_api_error(
+          error,
+          toast,
+          null,
+          `Could not ${hidden ? "unhide" : "hide"} the comment`
         )
       );
   };

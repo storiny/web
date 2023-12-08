@@ -12,6 +12,7 @@ import {
 } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import styles from "./post-reply.module.scss";
 
@@ -42,8 +43,8 @@ const PostReply = ({
 
           toast("Reply added", "success");
         })
-        .catch((e) =>
-          toast(e?.data?.error || "Could not add your reply", "error")
+        .catch((error) =>
+          handle_api_error(error, toast, null, "Could not add your reply")
         );
     } else {
       toast("Reply content cannot be empty", "error");

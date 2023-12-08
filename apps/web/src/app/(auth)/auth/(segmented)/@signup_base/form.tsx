@@ -10,7 +10,9 @@ import FormInput from "~/components/form-input";
 import FormNewPasswordInput from "~/components/form-new-password-input";
 import Grow from "~/components/grow";
 import Spacer from "~/components/spacer";
+import { use_toast } from "~/components/toast";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import { use_auth_state } from "../../../actions";
 import { SIGNUP_BASE_SCHEMA, SignupBaseSchema } from "./schema";
@@ -21,6 +23,7 @@ interface Props {
 
 const SignupBaseForm = ({ on_submit }: Props): React.ReactElement => {
   const { state, actions } = use_auth_state();
+  const toast = use_toast();
   const form = use_form<SignupBaseSchema>({
     resolver: zod_resolver(SIGNUP_BASE_SCHEMA),
     defaultValues: {
@@ -31,12 +34,23 @@ const SignupBaseForm = ({ on_submit }: Props): React.ReactElement => {
   });
 
   const handle_submit: SubmitHandler<SignupBaseSchema> = (values) => {
-    actions.set_form({ signup_base: form });
-
     if (on_submit) {
       on_submit(values);
+    } else {
+      actions.switch_segment("signup_username");
     }
   };
+
+  React.useEffect(() => {
+    if (state.signup_errors?.base) {
+      handle_api_error(
+        state.signup_errors.base,
+        toast,
+        form,
+        "Could not sign you up"
+      );
+    }
+  }, [form, state.signup_errors, toast]);
 
   return (
     <Form<SignupBaseSchema>

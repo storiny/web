@@ -8,6 +8,7 @@ import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import { use_read_history_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import styles from "../site-safety.module.scss";
 import { AccountHistory_props } from "./account-history.props";
@@ -38,11 +39,14 @@ const AccountHistory = ({
       mutate_read_history({ read_history: !values["read_history"] })
         .unwrap()
         .then(() => (prev_values_ref.current = values))
-        .catch((e) => {
+        .catch((error) => {
           form.reset(prev_values_ref.current);
-          toast(
-            e?.data?.error || "Could not change your history settings",
-            "error"
+
+          handle_api_error(
+            error,
+            toast,
+            form,
+            "Could not change your history settings"
           );
         });
     }

@@ -18,6 +18,7 @@ import {
 import { use_app_dispatch } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import { capitalize } from "~/utils/capitalize";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import { ResponseEditorProps } from "./response-editor.props";
 
@@ -53,10 +54,12 @@ const ResponseEditor = (props: ResponseEditorProps): React.ReactElement => {
             ).util.resetApiState()
           );
         })
-        .catch((e) =>
-          toast(
-            e?.data?.error || `Could not edit your ${response_type}`,
-            "error"
+        .catch((error) =>
+          handle_api_error(
+            error,
+            toast,
+            null,
+            `Could not edit your ${response_type}`
           )
         );
     } else {

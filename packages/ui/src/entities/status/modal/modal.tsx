@@ -28,6 +28,7 @@ import { select_user, use_set_status_mutation } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import status_styles from "../status.module.scss";
 import styles from "./modal.module.scss";
@@ -175,8 +176,8 @@ const StatusModal = ({
         set_open(false);
         toast("Status updated", "success");
       })
-      .catch((e) =>
-        toast(e?.data?.error || "Could not update your status", "error")
+      .catch((error) =>
+        handle_api_error(error, toast, form, "Could not update your status")
       );
   };
 
@@ -193,8 +194,8 @@ const StatusModal = ({
         set_open(false);
         toast("Status cleared", "success");
       })
-      .catch((e) =>
-        toast(e?.data?.error || "Could not clear your status", "error")
+      .catch((error) =>
+        handle_api_error(error, toast, form, "Could not clear your status")
       );
   };
 

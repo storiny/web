@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 
 import { use_media_query } from "~/hooks/use-media-query";

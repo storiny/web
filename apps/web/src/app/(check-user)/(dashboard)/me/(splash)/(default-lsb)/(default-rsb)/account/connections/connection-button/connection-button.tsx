@@ -5,6 +5,7 @@ import Button from "~/components/button";
 import { use_confirmation } from "~/components/confirmation";
 import { use_toast } from "~/components/toast";
 import { use_remove_connection_mutation } from "~/redux/features";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import {
   PROVIDER_DISPLAY_NAME_MAP,
@@ -38,9 +39,15 @@ const ConnectionButton = ({
           set_connected(false);
           toast("Connection removed", "success");
         })
-        .catch((e) => {
+        .catch((error) => {
           set_connected(true);
-          toast(e?.data?.error || "Could not remove your connection", "error");
+
+          handle_api_error(
+            error,
+            toast,
+            null,
+            "Could not remove your connection"
+          );
         });
     }
   };

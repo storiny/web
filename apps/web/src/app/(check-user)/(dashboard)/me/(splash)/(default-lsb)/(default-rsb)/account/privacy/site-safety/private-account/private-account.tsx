@@ -13,6 +13,7 @@ import LockIcon from "~/icons/lock";
 import LockOpenIcon from "~/icons/lock-open";
 import { use_private_account_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import styles from "../site-safety.module.scss";
 import { PrivateAccountProps } from "./private-account.props";
@@ -54,9 +55,15 @@ const PrivateAccount = ({
     })
       .unwrap()
       .then(() => router.refresh())
-      .catch((e) => {
+      .catch((error) => {
         form.reset();
-        toast(e?.data?.error || "Could not change your account type", "error");
+
+        handle_api_error(
+          error,
+          toast,
+          form,
+          "Could not change your account type"
+        );
       });
   };
 

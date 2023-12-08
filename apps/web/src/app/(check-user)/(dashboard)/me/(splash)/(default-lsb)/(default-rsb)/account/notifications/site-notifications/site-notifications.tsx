@@ -8,6 +8,7 @@ import { use_toast } from "~/components/toast";
 import TitleBlock from "~/entities/title-block";
 import { use_site_notification_settings_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import DashboardGroup from "../../../../dashboard-group";
 import styles from "../styles.module.scss";
@@ -53,12 +54,14 @@ const SiteNotifications = ({
       mutate_site_notification_settings(values)
         .unwrap()
         .then(() => (prev_values_ref.current = values))
-        .catch((e) => {
+        .catch((error) => {
           form.reset(prev_values_ref.current);
-          toast(
-            e?.data?.error ||
-              "Could not update your site notification settings",
-            "error"
+
+          handle_api_error(
+            error,
+            toast,
+            form,
+            "Could not update your site notification settings"
           );
         });
     }

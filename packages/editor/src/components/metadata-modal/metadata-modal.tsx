@@ -21,6 +21,7 @@ import StoryIcon from "~/icons/story";
 import { use_story_metadata_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import {
   nav_segment_atom,
@@ -92,8 +93,13 @@ const StoryMetadataModalImpl = (
         reset(values);
         toast("Story metadata updated", "success");
       })
-      .catch((e) =>
-        toast(e?.data?.error || "Could not modify the story metadata", "error")
+      .catch((error) =>
+        handle_api_error(
+          error,
+          toast,
+          form,
+          "Could not modify the story metadata"
+        )
       );
   };
 

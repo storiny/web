@@ -1,7 +1,6 @@
 "use client";
 
 import clsx from "clsx";
-import get_config from "next/config";
 import NextLink from "next/link";
 import { useSelectedLayoutSegments as use_selected_layout_segments } from "next/navigation";
 import React from "react";
@@ -28,11 +27,9 @@ import {
 import { DashboardSegment } from "../../../types";
 import styles from "./left-sidebar.module.scss";
 
-const { publicRuntimeConfig } = get_config();
-
 const APP_STATUS = process.env.NEXT_PUBLIC_APP_STATUS; // Stable / beta
-const APP_VERSION = publicRuntimeConfig?.version;
-const APP_BUILD_HASH = publicRuntimeConfig?.buildHash;
+const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION;
+const APP_BUILD_HASH = process.env.NEXT_PUBLIC_BUILD_HASH;
 
 /**
  * Returns formatted the app version

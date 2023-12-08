@@ -24,6 +24,7 @@ import {
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import styles from "./general-form.module.scss";
 import { GeneralFormProps } from "./general-form.props";
@@ -84,10 +85,12 @@ const AccountGeneralForm = ({
           form.reset(values);
           toast("Profile updated successfully", "success");
         })
-        .catch((e) => {
-          toast(
-            e?.data?.error || "Could not update your profile settings",
-            "error"
+        .catch((error) => {
+          handle_api_error(
+            error,
+            toast,
+            form,
+            "Could not update your profile settings"
           );
         });
     }

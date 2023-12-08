@@ -12,6 +12,7 @@ import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
 import { use_recovery_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import { use_auth_state } from "../../../actions";
 import { RECOVERY_SCHEMA, RecoverySchema } from "./schema";
@@ -39,8 +40,8 @@ const RecoveryForm = ({ on_submit }: Props): React.ReactElement => {
       mutate_recover(values)
         .unwrap()
         .then(() => actions.switch_segment("recovery_inbox"))
-        .catch((e) =>
-          toast(e?.data?.error || "Could not recover your account", "error")
+        .catch((error) =>
+          handle_api_error(error, toast, form, "Could not recover your account")
         );
     }
   };

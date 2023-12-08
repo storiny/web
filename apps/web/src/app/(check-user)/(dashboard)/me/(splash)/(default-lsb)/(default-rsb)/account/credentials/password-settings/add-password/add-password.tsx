@@ -20,6 +20,7 @@ import {
 } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import { AddPasswordProps } from "./add-password.props";
 import {
@@ -133,10 +134,12 @@ const Component = ({ on_submit }: AddPasswordProps): React.ReactElement => {
       add_password_request_verification()
         .unwrap()
         .then(() => set_screen("verification-code"))
-        .catch((e) =>
-          toast(
-            e?.data?.error || "Could not send the verification code",
-            "error"
+        .catch((error) =>
+          handle_api_error(
+            error,
+            toast,
+            form,
+            "Could not send the verification code"
           )
         );
     }
@@ -149,8 +152,8 @@ const Component = ({ on_submit }: AddPasswordProps): React.ReactElement => {
       add_password(values)
         .unwrap()
         .then(() => set_screen("finish"))
-        .catch((e) =>
-          toast(e?.data?.error || "Could not add your password", "error")
+        .catch((error) =>
+          handle_api_error(error, toast, form, "Could not add your password")
         );
     }
   };

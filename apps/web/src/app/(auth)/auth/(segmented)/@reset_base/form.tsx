@@ -14,6 +14,7 @@ import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
 import { use_reset_password_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import { use_auth_state } from "../../../actions";
 import { RESET_SCHEMA, ResetSchema } from "./schema";
@@ -44,8 +45,8 @@ const ResetForm = ({ on_submit, token }: Props): React.ReactElement => {
       mutate_reset_password({ ...values, token })
         .unwrap()
         .then(() => actions.switch_segment("reset_success"))
-        .catch((e) =>
-          toast(e?.data?.error || "Could not reset your password", "error")
+        .catch((error) =>
+          handle_api_error(error, toast, form, "Could not reset your password")
         );
     }
   };

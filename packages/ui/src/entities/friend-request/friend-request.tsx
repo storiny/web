@@ -16,6 +16,7 @@ import {
 import { use_app_dispatch } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 import { DateFormat, format_date } from "~/utils/format-date";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import styles from "./friend-request.module.scss";
 import { FriendRequestProps } from "./friend-request.props";
@@ -41,8 +42,8 @@ const FriendRequest = (props: FriendRequestProps): React.ReactElement => {
         toast("Request accepted", "success");
         dispatch(get_friend_requests_api.util.resetApiState());
       })
-      .catch((e) =>
-        toast(e?.data?.error || `Could not accept the request`, "error")
+      .catch((error) =>
+        handle_api_error(error, toast, null, "Could not accept the request")
       );
   };
 
@@ -56,8 +57,8 @@ const FriendRequest = (props: FriendRequestProps): React.ReactElement => {
         toast("Request rejected", "success");
         dispatch(get_friend_requests_api.util.resetApiState());
       })
-      .catch((e) =>
-        toast(e?.data?.error || `Could not reject the request`, "error")
+      .catch((error) =>
+        handle_api_error(error, toast, null, "Could not reject the request")
       );
   };
 
