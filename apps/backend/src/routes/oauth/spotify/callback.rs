@@ -10,7 +10,6 @@ use crate::{
     AppState,
     ConnectionTemplate,
 };
-use actix_extended_session::Session;
 use actix_web::{
     get,
     http::header::{
@@ -28,6 +27,7 @@ use oauth2::{
 };
 use sailfish::TemplateOnce;
 use serde::Deserialize;
+use storiny_session::Session;
 
 /// A [Spotify User Profile](https://developer.spotify.com/documentation/web-api/reference/get-current-users-profile) endpoint response.
 #[derive(Debug, Deserialize)]

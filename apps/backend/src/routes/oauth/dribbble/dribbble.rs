@@ -3,7 +3,6 @@ use crate::{
     middlewares::identity::identity::Identity,
     AppState,
 };
-use actix_extended_session::Session;
 use actix_web::{
     get,
     http::header,
@@ -15,6 +14,7 @@ use oauth2::{
     Scope,
 };
 use serde_json::Value;
+use storiny_session::Session;
 
 #[get("/oauth/dribbble")]
 async fn get(

@@ -228,7 +228,7 @@ async fn enter_realm(
         })?;
 
         let session_value = redis_conn
-            .get::<_, Option<String>>(format!(
+            .get::<_, Option<Vec<u8>>>(format!(
                 "{}:{session_key}",
                 RedisNamespace::Session.to_string()
             ))
@@ -240,7 +240,7 @@ async fn enter_realm(
             })?
             .ok_or(EnterRealmError::Unauthorized)?;
 
-        serde_json::from_str::<UserSession>(&session_value)
+        rmp_serde::from_slice::<UserSession>(&session_value)
             .map_err(|error| {
                 error!("unable to deserialize the user session: {error:?}");
 
@@ -786,7 +786,7 @@ VALUES ($5, $1)
             let _: () = conn
                 .set(
                     &format!("{}:{session_key}", RedisNamespace::Session.to_string()),
-                    &serde_json::to_string(&UserSession {
+                    &rmp_serde::to_vec_named(&UserSession {
                         user_id,
                         ..Default::default()
                     })

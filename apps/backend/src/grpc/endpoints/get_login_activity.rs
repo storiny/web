@@ -28,6 +28,19 @@ use tonic::{
 };
 use tracing::error;
 
+/// Predicate function for determining whether a session is currently active.
+///
+/// * `session_secret_key` - The secret key used to sign the cookies.
+/// * `key` - The session key to check against.
+/// * `token` - The session cookie value received from the client.
+fn is_active_login(session_secret_key: &Key, key: &str, token: &str) -> bool {
+    let session_key =
+        extract_session_key_from_cookie(token, &session_secret_key).unwrap_or_default();
+
+    // Add namespace `s` to the session key.
+    key == &format!("{}:{session_key}", RedisNamespace::Session.to_string())
+}
+
 /// Converts a user session object into a login object.
 ///
 /// * `session_secret_key` - The secret key used to sign the cookies.
@@ -35,7 +48,7 @@ use tracing::error;
 /// * `token` - The session cookie value, used to determine whether the session is currently active.
 /// * `user_session` - The user session object.
 fn convert_user_session_to_login(
-    session_secret_key: &str,
+    session_secret_key: &Key,
     key: &str,
     token: &str,
     user_session: &UserSession,
@@ -47,9 +60,6 @@ fn convert_user_session_to_login(
         .get(2)
         .map(|value| value.to_string())
         .unwrap_or_default();
-
-    let secret_key = Key::from(session_secret_key.as_bytes());
-    let session_key = extract_session_key_from_cookie(token, &secret_key).unwrap_or_default();
 
     Login {
         id: token_from_key,
@@ -66,8 +76,7 @@ fn convert_user_session_to_login(
                 lng: value.lng,
             })
         }),
-        // Add namespace `s` to the session key.
-        is_active: key == &format!("{}:{session_key}", RedisNamespace::Session.to_string()),
+        is_active: is_active_login(session_secret_key, key, token),
         created_at: OffsetDateTime::from_unix_timestamp(user_session.created_at)
             .unwrap_or(OffsetDateTime::now_utc())
             .to_string(),
@@ -104,17 +113,20 @@ pub async fn get_login_activity(
             Status::internal("Unable to get the sessions for the user")
         })?;
 
+    let session_secret_key = &client.config.session_secret_key;
+    let secret_key = Key::from(session_secret_key.as_bytes());
+
     // Find the most recent unacknowledged session.
     let maybe_recent_login = sessions
         .iter()
-        .filter(|&item| !item.1.ack)
+        .filter(|&item| !item.1.ack && !is_active_login(&secret_key, &item.0, &token))
         .sorted_by_key(|&item| item.1.created_at)
         .last(); // Last item with the largest `created_at` value.
 
     Ok(Response::new(GetLoginActivityResponse {
         recent: maybe_recent_login.and_then(|(key, value)| {
             Some(convert_user_session_to_login(
-                &client.config.session_secret_key,
+                &secret_key,
                 key,
                 &token,
                 value,
@@ -122,9 +134,7 @@ pub async fn get_login_activity(
         }),
         logins: sessions
             .iter()
-            .map(|(key, value)| {
-                convert_user_session_to_login(&client.config.session_secret_key, key, &token, value)
-            })
+            .map(|(key, value)| convert_user_session_to_login(&secret_key, key, &token, value))
             .collect::<Vec<_>>(),
     }))
 }
@@ -187,7 +197,7 @@ mod tests {
                     let _: () = conn
                         .set(
                             &format!("{}:{session_key}", RedisNamespace::Session.to_string()),
-                            &serde_json::to_string(&UserSession {
+                            &rmp_serde::to_vec_named(&UserSession {
                                 user_id: user_id.unwrap(),
                                 created_at: OffsetDateTime::now_utc().unix_timestamp(),
                                 device: Some(ClientDevice {

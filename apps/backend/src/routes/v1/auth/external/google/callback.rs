@@ -25,7 +25,6 @@ use crate::{
     AppState,
     ExternalAuthTemplate,
 };
-use actix_extended_session::Session;
 use actix_http::HttpMessage;
 use actix_web::{
     get,
@@ -52,6 +51,7 @@ use sailfish::TemplateOnce;
 use serde::Deserialize;
 use sqlx::Row;
 use std::net::IpAddr;
+use storiny_session::Session;
 use time::OffsetDateTime;
 use tracing::{
     debug,

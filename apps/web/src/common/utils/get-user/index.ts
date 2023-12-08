@@ -1,7 +1,10 @@
+"use server";
+
 import "server-only";
 
 import { Status } from "@grpc/grpc-js/build/src/constants";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 import { SESSION_COOKIE_ID } from "~/common/constants";
 import { get_user_id } from "~/common/grpc";
@@ -31,8 +34,7 @@ export const get_user = async (): Promise<string | null> => {
 
       // User not found
       if (err_code === Status.NOT_FOUND) {
-        cookie_store.delete(SESSION_COOKIE_ID); // Remove stale or invalid cookie
-        return null;
+        redirect("/logout");
       }
 
       handle_exception(e);

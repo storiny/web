@@ -5,7 +5,6 @@ use super::error::{
     MissingIdentityError,
     SessionExpiryError,
 };
-use actix_extended_session::Session;
 use actix_utils::future::{
     ready,
     Ready,
@@ -23,6 +22,7 @@ use actix_web::{
     HttpResponse,
 };
 use serde_json::Value;
+use storiny_session::Session;
 
 /// A verified user identity. It can be used as a request extractor.
 ///

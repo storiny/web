@@ -52,7 +52,7 @@ pub async fn get_user_sessions(
         return Ok(vec![]);
     }
 
-    let values: Vec<Option<String>> = conn
+    let values: Vec<Option<Vec<u8>>> = conn
         .mget(&keys)
         .await
         .map_err(|error| anyhow!("unable to fetch value for the session keys: {error:?}"))?;
@@ -67,7 +67,7 @@ pub async fn get_user_sessions(
                 values
                     .get(index)?
                     .as_ref()
-                    .map(|value| serde_json::from_str::<UserSession>(value).ok())??,
+                    .map(|value| rmp_serde::from_slice::<UserSession>(value).ok())??,
             ))
         })
         .collect::<Vec<_>>())
@@ -104,7 +104,7 @@ mod tests {
                             RedisNamespace::Session.to_string(),
                             Uuid::new_v4()
                         ),
-                        &serde_json::to_string(&UserSession {
+                        &rmp_serde::to_vec_named(&UserSession {
                             user_id,
                             created_at: OffsetDateTime::now_utc().unix_timestamp(),
                             ack: false,

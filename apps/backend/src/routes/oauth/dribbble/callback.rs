@@ -10,7 +10,6 @@ use crate::{
     AppState,
     ConnectionTemplate,
 };
-use actix_extended_session::Session;
 use actix_web::{
     get,
     http::header::{
@@ -28,6 +27,7 @@ use oauth2::{
 };
 use sailfish::TemplateOnce;
 use serde::Deserialize;
+use storiny_session::Session;
 
 /// A [Dribbble User](https://developer.dribbble.com/v2/user/#get-the-authenticated-user) endpoint response.
 #[derive(Debug, Deserialize)]

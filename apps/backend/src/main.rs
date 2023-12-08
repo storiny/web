@@ -1,8 +1,4 @@
 use actix_cors::Cors;
-use actix_extended_session::{
-    storage::RedisSessionStore,
-    SessionMiddleware,
-};
 use actix_extensible_rate_limit::{
     backend::SimpleInputFunctionBuilder,
     RateLimiter,
@@ -69,6 +65,10 @@ use storiny::{
         init_subscriber,
     },
     *,
+};
+use storiny_session::{
+    storage::RedisSessionStore,
+    SessionMiddleware,
 };
 use tracing::info;
 use tracing_actix_web::TracingLogger;
@@ -285,7 +285,7 @@ async fn main() -> io::Result<()> {
                                 Some("storiny.com".into())
                             })
                             .cookie_path("/".to_string())
-                            .cookie_secure(true)
+                            .cookie_secure(!config.is_dev)
                             // Cookie is read from the client side and used as the auth token for
                             // the realms endpoint.
                             .cookie_http_only(false)
