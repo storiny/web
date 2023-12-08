@@ -45,7 +45,7 @@ pub async fn get_user_id(
         Status::internal("Redis error")
     })?;
 
-    let result: Option<String> = cmd("GET")
+    let result: Option<Vec<u8>> = cmd("GET")
         .arg(&[cache_key])
         .query_async(&mut conn)
         .await
@@ -62,7 +62,7 @@ pub async fn get_user_id(
         return Err(Status::not_found("Session not found"));
     }
 
-    let user_id = serde_json::from_str::<CacheResponse>(&result.unwrap())
+    let user_id = rmp_serde::from_slice::<CacheResponse>(&result.unwrap())
         .map_err(|error| {
             error!("unable to deserialize the session data: {error:?}");
 

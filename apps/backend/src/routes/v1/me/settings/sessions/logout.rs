@@ -116,7 +116,7 @@ mod tests {
                         user_id.unwrap(),
                         session_token
                     ),
-                    &serde_json::to_string(&UserSession {
+                    &rmp_serde::to_vec_named(&UserSession {
                         user_id: user_id.unwrap(),
                         ..Default::default()
                     })

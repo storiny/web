@@ -27,10 +27,6 @@ use crate::{
     },
     AppState,
 };
-use actix_extended_session::{
-    storage::RedisSessionStore,
-    SessionMiddleware,
-};
 use actix_http::{
     HttpMessage,
     Request,
@@ -64,6 +60,10 @@ use sqlx::{
     Row,
 };
 use std::sync::Arc;
+use storiny_session::{
+    storage::RedisSessionStore,
+    SessionMiddleware,
+};
 use user_agent_parser::UserAgentParser;
 
 #[derive(Deserialize)]

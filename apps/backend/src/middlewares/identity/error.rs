@@ -1,6 +1,5 @@
 //! Failure modes of identity operations.
 
-use actix_extended_session::SessionGetError;
 use actix_web::{
     cookie::time::error::ComponentRange,
     http::StatusCode,
@@ -11,6 +10,7 @@ use derive_more::{
     Error,
     From,
 };
+use storiny_session::SessionGetError;
 
 /// Error that can occur during login attempts.
 #[derive(Debug, Display, Error, From)]

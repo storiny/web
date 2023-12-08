@@ -49,20 +49,20 @@ async fn post(
     );
 
     let result = redis_conn
-        .get::<_, Option<String>>(&cache_key)
+        .get::<_, Option<Vec<u8>>>(&cache_key)
         .await
         .map_err(|error| {
             AppError::InternalError(format!("unable to fetch the session from Redis: {error:?}"))
         })?;
 
     if let Some(session_str) = result {
-        let mut session = serde_json::from_str::<UserSession>(&session_str).map_err(|error| {
+        let mut session = rmp_serde::from_slice::<UserSession>(&session_str).map_err(|error| {
             AppError::InternalError(format!("unable to deserialize the user session: {error:?}"))
         })?;
 
         session.ack = true; // Acknowledge the session
 
-        let next_session_data = serde_json::to_string(&session).map_err(|error| {
+        let next_session_data = rmp_serde::to_vec_named(&session).map_err(|error| {
             AppError::InternalError(format!("unable to serialize the user session: {error:?}"))
         })?;
 
@@ -145,7 +145,7 @@ mod tests {
                         user_id.unwrap(),
                         session_token
                     ),
-                    &serde_json::to_string(&UserSession {
+                    &rmp_serde::to_vec_named(&UserSession {
                         user_id: user_id.unwrap(),
                         ..Default::default()
                     })

@@ -2,7 +2,6 @@ use super::{
     config::IdentityMiddlewareBuilder,
     identity::IdentityInner,
 };
-use actix_extended_session::SessionExt;
 use actix_utils::future::{
     ready,
     Ready,
@@ -21,6 +20,7 @@ use actix_web::{
 };
 use futures_core::future::LocalBoxFuture;
 use std::rc::Rc;
+use storiny_session::SessionExt;
 
 /// Identity management middleware.
 #[derive(Default, Clone)]

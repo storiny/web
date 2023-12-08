@@ -26,10 +26,6 @@ use crate::{
     },
     AppState,
 };
-use actix_extended_session::{
-    config::SessionLifecycle,
-    Session,
-};
 use actix_http::HttpMessage;
 use actix_web::{
     http::StatusCode,
@@ -53,6 +49,10 @@ use serde::{
 };
 use sqlx::Row;
 use std::net::IpAddr;
+use storiny_session::{
+    config::SessionLifecycle,
+    Session,
+};
 use time::OffsetDateTime;
 use totp_rs::Secret;
 use tracing::{
@@ -1754,7 +1754,7 @@ VALUES ($1, $2, $3, $4, TRUE)
                             user_id.unwrap(),
                             Uuid::new_v4()
                         ),
-                        &serde_json::to_string(&UserSession {
+                        &rmp_serde::to_vec_named(&UserSession {
                             user_id: user_id.unwrap(),
                             ..Default::default()
                         })

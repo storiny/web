@@ -1,6 +1,7 @@
 import React from "react";
 
-// Critical styles to prevent dark mode flicker. These are inlined into the initial HTML content sent to the client.
+// Critical styles to prevent dark mode flicker. These are inlined into the
+// initial HTML content sent to the client.
 const CriticalStyles = (): React.ReactElement => (
   <>
     <style

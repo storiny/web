@@ -4,6 +4,7 @@ html {
   // stylelint-disable-next-line -- Fix font resize problem in iOS
   -webkit-text-size-adjust: 100%;
   box-sizing: border-box;
+  font-synthesis: none;
   text-rendering: optimizelegibility;
 }
 
@@ -108,6 +109,14 @@ a {
   &::-moz-focus-inner {
     border-style: none;
   }
+}
+
+// Remove search input decorations
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  appearance: none;
 }
 
 html,

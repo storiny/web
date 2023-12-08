@@ -602,7 +602,7 @@ VALUES ($1, $2, $3, $4)
                             RedisNamespace::Session.to_string(),
                             Uuid::new_v4()
                         ),
-                        &serde_json::to_string(&UserSession {
+                        &rmp_serde::to_vec_named(&UserSession {
                             user_id,
                             ..Default::default()
                         })

@@ -1,0 +1,24 @@
+[package]
+name = "storiny_session"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+actix-service = "2"
+actix-utils = "3"
+actix-web = { version = "4", default-features = false, features = ["cookies", "secure-cookies"] }
+anyhow = "1"
+async-trait = "0.1"
+derive_more = "0.99.7"
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+tracing = { version = "0.1.30", default-features = false, features = ["log"] }
+redis = { version = "0.23.3", default-features = false, features = ["tokio-comp", "connection-manager"] }
+rmp-serde = "1.1.2"
+rand = "0.8.5"
+
+[dev-dependencies]
+actix-test = "0.1.0-beta.10"
+actix-web = { version = "4", default-features = false, features = ["cookies", "secure-cookies", "macros"] }
+env_logger = "0.10"
+log = "0.4"
