@@ -5,24 +5,24 @@ import React from "react";
 import { render_test_with_provider } from "~/redux/test-utils";
 
 import AuthState from "../../../state";
-import LoginForm from "./form";
+import MFAForm from "./form";
 
-describe("<LoginForm />", () => {
+describe("<MFAForm />", () => {
   it("renders validation messages", async () => {
     const mock_submit = jest.fn();
     const user = user_event.setup();
     render_test_with_provider(
       <AuthState>
-        <LoginForm on_submit={mock_submit} />
+        <MFAForm on_submit={mock_submit} />
       </AuthState>
     );
 
     await act(async () => {
-      await user.click(screen.getByRole("button", { name: /log in/i }));
+      await user.click(screen.getByRole("button", { name: /continue/i }));
     });
 
     await wait_for(() => {
-      expect(screen.getAllByRole("alert")).toHaveLength(2);
+      expect(screen.getByRole("alert")).toBeInTheDocument();
       expect(mock_submit).not.toBeCalled();
     });
   });
@@ -32,22 +32,18 @@ describe("<LoginForm />", () => {
     const user = user_event.setup();
     render_test_with_provider(
       <AuthState>
-        <LoginForm on_submit={mock_submit} />
+        <MFAForm on_submit={mock_submit} />
       </AuthState>
     );
 
     await act(async () => {
-      await user.type(screen.getByTestId("email-input"), "someone@example.com");
-      await user.type(screen.getByTestId("password-input"), "test-password");
-      await user.click(screen.getByTestId("remember-me-checkbox"));
-      await user.click(screen.getByRole("button", { name: /log in/i }));
+      await user.type(screen.getByTestId("mfa-code-input"), "123456");
+      await user.click(screen.getByRole("button", { name: /continue/i }));
     });
 
     await wait_for(() => {
       expect(mock_submit).toHaveBeenCalledWith({
-        email: "someone@example.com",
-        password: "test-password",
-        remember_me: true
+        mfa_code: "123456"
       });
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });

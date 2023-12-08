@@ -132,7 +132,7 @@ const SignupUsernameForm = ({
   on_submit,
   skip_validation
 }: Props): React.ReactElement => {
-  const { state } = use_auth_state();
+  const { state, actions } = use_auth_state();
   const form = use_form<SignupUsernameSchema>({
     resolver: zod_resolver(SIGNUP_USERNAME_SCHEMA),
     defaultValues: {
@@ -147,6 +147,8 @@ const SignupUsernameForm = ({
   );
 
   const handle_submit: SubmitHandler<SignupUsernameSchema> = (values) => {
+    actions.set_form({ signup_username: form });
+
     if (on_submit) {
       on_submit(values);
     }

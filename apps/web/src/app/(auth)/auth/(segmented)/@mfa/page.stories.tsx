@@ -6,11 +6,11 @@ import React from "react";
 import { render_with_state } from "~/redux/mock";
 
 import AuthLayout from "../../../layout";
-import AuthLoginPage from "./page";
+import AuthMfaPage from "./page";
 
-const meta: Meta<typeof AuthLoginPage> = {
-  title: "pages/auth/@login",
-  component: AuthLoginPage,
+const meta: Meta<typeof AuthMfaPage> = {
+  title: "pages/auth/@mfa",
+  component: AuthMfaPage,
   parameters: {
     layout: "fullscreen"
   },
@@ -18,7 +18,7 @@ const meta: Meta<typeof AuthLoginPage> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof AuthLoginPage>;
+type Story = StoryObj<typeof AuthMfaPage>;
 
 export const Default: Story = {
   decorators: [

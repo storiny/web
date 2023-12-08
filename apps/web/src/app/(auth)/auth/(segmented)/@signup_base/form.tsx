@@ -20,7 +20,7 @@ interface Props {
 }
 
 const SignupBaseForm = ({ on_submit }: Props): React.ReactElement => {
-  const { state } = use_auth_state();
+  const { state, actions } = use_auth_state();
   const form = use_form<SignupBaseSchema>({
     resolver: zod_resolver(SIGNUP_BASE_SCHEMA),
     defaultValues: {
@@ -31,6 +31,8 @@ const SignupBaseForm = ({ on_submit }: Props): React.ReactElement => {
   });
 
   const handle_submit: SubmitHandler<SignupBaseSchema> = (values) => {
+    actions.set_form({ signup_base: form });
+
     if (on_submit) {
       on_submit(values);
     }
