@@ -167,6 +167,7 @@ const JsonLD = ({ story }: Props): React.ReactElement => {
 
 const Component = (props: Props): React.ReactElement => {
   const { story, doc } = props;
+
   return (
     <div
       className={clsx(

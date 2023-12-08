@@ -16,6 +16,7 @@ import {
 } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 import { DateFormat, format_date } from "~/utils/format-date";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import { DEVICE_TYPE_ICON_MAP } from "../icon-map";
 import styles from "./login-item.module.scss";
@@ -41,8 +42,13 @@ const AcknowledgeButton = (
     acknowledge_session({ id: login.id })
       .unwrap()
       .then(on_acknowledge)
-      .catch((e) =>
-        toast(e?.data?.error || "Could not acknowledge your session", "error")
+      .catch((error) =>
+        handle_api_error(
+          error,
+          toast,
+          null,
+          "Could not acknowledge your session"
+        )
       );
   };
 
@@ -79,8 +85,8 @@ const LogoutButton = (
     session_logout({ id: login.id })
       .unwrap()
       .then(on_logout)
-      .catch((e) =>
-        toast(e?.data?.error || "Could not revoke your session", "error")
+      .catch((error) =>
+        handle_api_error(error, toast, null, "Could not revoke your session")
       );
   };
 

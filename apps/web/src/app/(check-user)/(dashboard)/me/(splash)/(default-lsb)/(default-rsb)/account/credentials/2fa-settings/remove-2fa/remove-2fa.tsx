@@ -12,6 +12,7 @@ import TwoFAIcon from "~/icons/two-fa";
 import { use_remove_mfa_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import { Remove2FAProps } from "./remove-2fa.props";
 import {
@@ -76,10 +77,12 @@ const Remove2FA = ({
           set_enabled(false);
           toast("Successfully disabled two-factor authentication", "success");
         })
-        .catch((e) => {
-          toast(
-            e?.data?.error || "Could not disable two-factor authentication",
-            "error"
+        .catch((error) => {
+          handle_api_error(
+            error,
+            toast,
+            form,
+            "Could not disable two-factor authentication"
           );
         });
     }

@@ -32,6 +32,7 @@ import {
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import { doc_status_atom, story_metadata_atom } from "../../../atoms";
 import { $is_tk_node } from "../../../nodes/tk";
@@ -117,9 +118,9 @@ const Publish = ({
     publish_story({ id: story.id, status })
       .unwrap()
       .then(() => router.refresh())
-      .catch((e) => {
+      .catch((error) => {
         set_doc_status("connected");
-        toast(e?.data?.error || "Could not publish your story", "error");
+        handle_api_error(error, toast, null, "Could not publish your story");
       });
   }, [publish_story, router, set_doc_status, status, story.id, toast]);
 
@@ -206,9 +207,9 @@ const Recover = (): React.ReactElement => {
       .then(() => {
         redirect(`/doc/${story.id}`, RedirectType.replace);
       })
-      .catch((e) => {
+      .catch((error) => {
         set_loading(false);
-        toast(e?.data?.error || "Could not recover your story", "error");
+        handle_api_error(error, toast, null, "Could not recover your story");
       });
   }, [recover_story, story.id, toast]);
 

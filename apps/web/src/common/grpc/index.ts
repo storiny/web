@@ -37,6 +37,8 @@ import {
   GetStoryResponsesInfoResponse
 } from "@storiny/proto/dist/response_def/v1/def";
 import {
+  CreateDraftRequest,
+  CreateDraftResponse,
   GetDraftsInfoRequest,
   GetDraftsInfoResponse,
   GetStoriesInfoRequest,
@@ -76,7 +78,7 @@ declare global {
 }
 
 global.grpc_client = new ApiServiceClient(
-  process.env.RPC_ENDPOINT as string,
+  process.env.GRPC_ENDPOINT as string,
   credentials.createInsecure()
 );
 
@@ -100,6 +102,7 @@ const promisify =
     });
 
 export {
+  CreateDraftResponse,
   GetCommentResponse,
   GetConnectionSettingsResponse,
   GetCredentialSettingsResponse,
@@ -231,5 +234,11 @@ export const get_story = cache(
 export const get_comment = cache(
   promisify<GetCommentRequest, GetCommentResponse>(
     global.grpc_client.getComment
+  )
+);
+
+export const create_draft = cache(
+  promisify<CreateDraftRequest, CreateDraftResponse>(
+    global.grpc_client.createDraft
   )
 );

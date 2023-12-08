@@ -10,6 +10,7 @@ import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import { use_incoming_friend_requests_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import styles from "../site-safety.module.scss";
 import { FriendRequestsProps } from "./friend-requests.props";
@@ -40,11 +41,14 @@ const FriendRequests = ({
       mutate_incoming_friend_requests(values)
         .unwrap()
         .then(() => (prev_values_ref.current = values))
-        .catch((e) => {
+        .catch((error) => {
           form.reset(prev_values_ref.current);
-          toast(
-            e?.data?.error || "Could not change your friend request settings",
-            "error"
+
+          handle_api_error(
+            error,
+            toast,
+            form,
+            "Could not change your friend request settings"
           );
         });
     }

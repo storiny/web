@@ -14,6 +14,7 @@ import PasswordIcon from "~/icons/password";
 import { use_export_data_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import DashboardGroup from "../../../../../dashboard-group";
 import { ExportDataGroupProps } from "./export-data-group.props";
@@ -74,10 +75,12 @@ export const ExportData = ({
           close();
           toast("Data export request sent", "success");
         })
-        .catch((e) =>
-          toast(
-            e?.data?.error || "Could not send your data export request",
-            "error"
+        .catch((error) =>
+          handle_api_error(
+            error,
+            toast,
+            form,
+            "Could not send your data export request"
           )
         );
     }

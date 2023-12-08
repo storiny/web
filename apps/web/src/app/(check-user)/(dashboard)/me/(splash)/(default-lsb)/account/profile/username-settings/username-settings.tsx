@@ -16,6 +16,7 @@ import { mutate_user, use_username_settings_mutation } from "~/redux/features";
 import { use_app_dispatch } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import { UsernameSettingsProps } from "./username-settings.props";
 import {
@@ -98,8 +99,13 @@ const UsernameSettings = ({
           close_modal();
           toast("Username updated successfully", "success");
         })
-        .catch((e) => {
-          toast(e?.data?.error || "Could not update your username", "error");
+        .catch((error) => {
+          handle_api_error(
+            error,
+            toast,
+            form,
+            "Could not update your username"
+          );
         });
     }
   };

@@ -10,6 +10,7 @@ import { get_drafts_api, use_recover_draft_mutation } from "~/redux/features";
 import { use_app_dispatch } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 const RestoreAction = ({
   story,
@@ -34,11 +35,12 @@ const RestoreAction = ({
         toast(`${is_draft ? "Draft" : "Story"} recovered`, "success");
         dispatch(get_drafts_api.util.resetApiState());
       })
-      .catch((e) =>
-        toast(
-          e?.data?.error ||
-            `Could not recover your ${is_draft ? "draft" : "story"}`,
-          "error"
+      .catch((error) =>
+        handle_api_error(
+          error,
+          toast,
+          null,
+          `Could not recover your ${is_draft ? "draft" : "story"}`
         )
       );
   };

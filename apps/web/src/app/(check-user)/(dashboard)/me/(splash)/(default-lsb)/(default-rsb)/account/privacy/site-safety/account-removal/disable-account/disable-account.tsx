@@ -14,6 +14,7 @@ import UserIcon from "~/icons/user";
 import { use_disable_account_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import { DisableAccountProps } from "./disable-account.props";
 import {
@@ -80,9 +81,15 @@ const DisableAccount = ({
       disable_account(values)
         .unwrap()
         .then(() => set_disabled(true))
-        .catch((e) => {
+        .catch((error) => {
           set_disabled(false);
-          toast(e?.data?.error || "Could not disable your account", "error");
+
+          handle_api_error(
+            error,
+            toast,
+            form,
+            "Could not disable your account"
+          );
         });
     }
   };

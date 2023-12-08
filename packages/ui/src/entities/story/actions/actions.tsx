@@ -36,6 +36,7 @@ import {
 import { select_is_logged_in } from "~/redux/features/auth/selectors";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 const StoryActions = ({
   story,
@@ -53,10 +54,10 @@ const StoryActions = ({
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const logged_in = use_app_selector(select_is_logged_in);
   const is_blocking = use_app_selector(
-    (state) => state.entities.blocks[story.user!.id]
+    (state) => state.entities.blocks[story.user?.id || ""]
   );
   const is_muted = use_app_selector(
-    (state) => state.entities.mutes[story.user!.id]
+    (state) => state.entities.mutes[story.user?.id || ""]
   );
   const [delete_draft] = use_delete_draft_mutation();
   const [delete_story] = use_delete_story_mutation();
@@ -76,8 +77,11 @@ const StoryActions = ({
     ),
     {
       color: is_blocking ? "inverted" : "ruby",
-      on_confirm: () => dispatch(boolean_action("blocks", story.user!.id)),
-      title: `${is_blocking ? "Unblock" : "Block"} @${story.user!.username}?`,
+      on_confirm: () =>
+        dispatch(boolean_action("blocks", story.user?.id || "")),
+      title: `${is_blocking ? "Unblock" : "Block"} @${
+        story.user?.username || ""
+      }?`,
       description: is_blocking
         ? `The public content you publish will be available to them as well as the ability to follow you.`
         : `Your feed will not include their content, and they will not be able to follow you or interact with your profile.`
@@ -94,8 +98,8 @@ const StoryActions = ({
         toast("Draft deleted", "success");
         dispatch(get_drafts_api.util.resetApiState());
       })
-      .catch((e) =>
-        toast(e?.data?.error || "Could not delete your draft", "error")
+      .catch((error) =>
+        handle_api_error(error, toast, null, "Could not delete your draft")
       );
   };
 
@@ -132,8 +136,8 @@ const StoryActions = ({
         toast("Story deleted", "success");
         dispatch(get_stories_api.util.resetApiState());
       })
-      .catch((e) =>
-        toast(e?.data?.error || "Could not delete your story", "error")
+      .catch((error) =>
+        handle_api_error(error, toast, null, "Could not delete your story")
       );
   };
 
@@ -171,8 +175,8 @@ const StoryActions = ({
         dispatch(get_stories_api.util.resetApiState());
         dispatch(get_drafts_api.util.resetApiState());
       })
-      .catch((e) =>
-        toast(e?.data?.error || "Could not unpublish your story", "error")
+      .catch((error) =>
+        handle_api_error(error, toast, null, "Could not unpublish your story")
       );
   };
 
@@ -309,7 +313,7 @@ const StoryActions = ({
                     check_auth
                     decorator={<MuteIcon />}
                     onClick={(): void => {
-                      dispatch(boolean_action("mutes", story.user!.id));
+                      dispatch(boolean_action("mutes", story.user?.id || ""));
                     }}
                   >
                     {is_muted ? "Unmute" : "Mute"} this writer

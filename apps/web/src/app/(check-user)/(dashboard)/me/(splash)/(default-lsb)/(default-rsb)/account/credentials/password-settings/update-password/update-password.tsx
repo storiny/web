@@ -14,6 +14,7 @@ import PasswordIcon from "~/icons/password";
 import { use_update_password_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import { UpdatePasswordProps } from "./update-password.props";
 import {
@@ -95,9 +96,15 @@ const UpdatePassword = ({
       update_password(values)
         .unwrap()
         .then(() => set_updated(true))
-        .catch((e) => {
+        .catch((error) => {
           set_updated(false);
-          toast(e?.data?.error || "Could not update your password", "error");
+
+          handle_api_error(
+            error,
+            toast,
+            form,
+            "Could not update your password"
+          );
         });
     }
   };

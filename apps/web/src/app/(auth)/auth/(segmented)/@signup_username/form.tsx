@@ -15,9 +15,11 @@ import FormInput from "~/components/form-input";
 import Grow from "~/components/grow";
 import Spacer from "~/components/spacer";
 import Spinner from "~/components/spinner";
+import { use_toast } from "~/components/toast";
 import { use_debounce } from "~/hooks/use-debounce";
 import { use_username_validation_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import { use_auth_state } from "../../../actions";
 import { SIGNUP_USERNAME_SCHEMA, SignupUsernameSchema } from "./schema";
@@ -132,7 +134,8 @@ const SignupUsernameForm = ({
   on_submit,
   skip_validation
 }: Props): React.ReactElement => {
-  const { state, actions } = use_auth_state();
+  const { state } = use_auth_state();
+  const toast = use_toast();
   const form = use_form<SignupUsernameSchema>({
     resolver: zod_resolver(SIGNUP_USERNAME_SCHEMA),
     defaultValues: {
@@ -147,12 +150,21 @@ const SignupUsernameForm = ({
   );
 
   const handle_submit: SubmitHandler<SignupUsernameSchema> = (values) => {
-    actions.set_form({ signup_username: form });
-
     if (on_submit) {
       on_submit(values);
     }
   };
+
+  React.useEffect(() => {
+    if (state.signup_errors?.username) {
+      handle_api_error(
+        state.signup_errors.username,
+        toast,
+        form,
+        "Could not sign you up"
+      );
+    }
+  }, [form, state.signup_errors, toast]);
 
   return (
     <Form<SignupUsernameSchema>

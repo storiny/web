@@ -13,6 +13,7 @@ import UnlinkIcon from "~/icons/unlink";
 import { use_remove_account_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import { RemoveAccountProps } from "./remove-account.props";
 import {
@@ -79,11 +80,14 @@ const RemoveAccount = ({
           toast(`Removed your ${vendor} account`, "success");
           on_remove();
         })
-        .catch((e) => {
+        .catch((error) => {
           set_updated(false);
-          toast(
-            e?.data?.error || `Could not remove your ${vendor} account`,
-            "error"
+
+          handle_api_error(
+            error,
+            toast,
+            form,
+            `Could not remove your ${vendor} account`
           );
         });
     }

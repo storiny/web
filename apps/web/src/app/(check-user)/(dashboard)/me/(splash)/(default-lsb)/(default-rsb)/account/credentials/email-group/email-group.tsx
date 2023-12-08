@@ -22,6 +22,7 @@ import {
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import DashboardGroup from "../../../../dashboard-group";
 import { EmailGroupProps } from "./email-group.props";
@@ -117,9 +118,10 @@ export const EmailSettings = ({
             })
           );
         })
-        .catch((e) => {
+        .catch((error) => {
           set_updated(false);
-          toast(e?.data?.error || "Could not update your e-mail", "error");
+
+          handle_api_error(error, toast, form, "Could not update your e-mail");
         });
     }
   };

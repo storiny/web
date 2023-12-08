@@ -8,6 +8,7 @@ import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import { use_sensitive_content_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import styles from "../site-safety.module.scss";
 import { SensitiveContentProps } from "./sensitive-content.props";
@@ -38,11 +39,14 @@ const SensitiveContent = ({
       mutate_sensitive_content(values)
         .unwrap()
         .then(() => (prev_values_ref.current = values))
-        .catch((e) => {
+        .catch((error) => {
           form.reset(prev_values_ref.current);
-          toast(
-            e?.data?.error || "Could not change your sensitive media settings",
-            "error"
+
+          handle_api_error(
+            error,
+            toast,
+            form,
+            "Could not change your sensitive media settings"
           );
         });
     }

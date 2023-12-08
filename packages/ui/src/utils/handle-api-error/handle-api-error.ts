@@ -1,8 +1,9 @@
 "use client";
 
-import { Form, UseFormReturn } from "react-hook-form";
+import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
 import { use_toast } from "~/components/toast";
+import { is_form_error } from "~/utils/is-form-error";
 
 /**
  * Handles errors received from a request to the API server. If the received
@@ -29,29 +30,35 @@ import { use_toast } from "~/components/toast";
  * }
  * ```
  *
- * @param error
- * @param toaster
- * @param form
+ * @param error The error from the API server.
+ * @param toaster The toast instance.
+ * @param form The form instance.
+ * @param default_message The default error message for the toast.
  */
-export const handle_api_error = (
+export const handle_api_error = <T extends FieldValues>(
   error: any,
   toaster: ReturnType<typeof use_toast>,
-  form: UseFormReturn
+  form: UseFormReturn<T> | null,
+  default_message: string
 ): void => {
-  const error_type = error?.data?.type;
-  if (error_type === "form") {
-    handle_form_error(error.errors, form.setError);
-  } else if (error_type === "toast") {
-    toaster(error.data.message, "error");
+  if (form && is_form_error(error)) {
+    handle_form_error<T>(error.data?.errors, form.setError);
+  } else {
+    toaster(error?.data?.error || default_message, "error");
   }
 };
 
-const handle_form_error = (
+/**
+ * Handles form errors from the server.
+ * @param errors The errors from the API server.
+ * @param set_error The `setError` method of the form instance.
+ */
+const handle_form_error = <T extends FieldValues>(
   errors: [string, string][],
-  set_error: UseFormReturn["setError"]
+  set_error: UseFormReturn<T>["setError"]
 ): void =>
   errors.forEach(([field, message]) => {
-    set_error(field, {
+    set_error(field as Path<T>, {
       type: "server",
       message
     });

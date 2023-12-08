@@ -21,6 +21,7 @@ import LogoutIcon from "~/icons/logout";
 import { use_session_logout_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 import { DateFormat, format_date } from "~/utils/format-date";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import { DEVICE_TYPE_ICON_MAP } from "../icon-map";
 import styles from "./login-accordion.module.scss";
@@ -54,7 +55,9 @@ const LogoutButton = (props: LoginAccordionProps): React.ReactElement => {
         on_logout();
         toast("Session successfully revoked", "success");
       })
-      .catch((e) => toast(e?.data?.error || "Could not log you out", "error"));
+      .catch((error) =>
+        handle_api_error(error, toast, null, "Could not log you out")
+      );
   };
 
   return (

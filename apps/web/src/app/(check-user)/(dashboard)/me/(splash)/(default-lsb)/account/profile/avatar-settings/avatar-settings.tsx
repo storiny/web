@@ -17,6 +17,7 @@ import {
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import styles from "./avatar-settings.module.scss";
 
@@ -58,25 +59,31 @@ const AvatarSettings = (): React.ReactElement | null => {
   /**
    * Dispatches the current avatar settings
    */
-  const dispatch_avatar_settings = React.useCallback(() => {
-    mutate_avatar_settings({ avatar_id: avatar_id })
-      .unwrap()
-      .then((res) => {
-        dispatch(
-          mutate_user({ avatar_id: res.avatar_id, avatar_hex: res.avatar_hex })
+  const dispatch_avatar_settings = React.useCallback(
+    (avatar_id?: string) => {
+      mutate_avatar_settings({ avatar_id: avatar_id || null })
+        .unwrap()
+        .then((res) => {
+          dispatch(
+            mutate_user({
+              avatar_id: res.avatar_id,
+              avatar_hex: res.avatar_hex
+            })
+          );
+          set_avatar_id(res.avatar_id);
+          toast(
+            `Avatar ${
+              res.avatar_id === null ? "removed" : "updated"
+            } successfully`,
+            "success"
+          );
+        })
+        .catch((error) =>
+          handle_api_error(error, toast, null, "Could not update your avatar")
         );
-        set_avatar_id(res.avatar_id);
-        toast(
-          `Avatar ${
-            res.avatar_id === null ? "remove" : "updated"
-          } successfully`,
-          "success"
-        );
-      })
-      .catch((e) =>
-        toast(e?.data?.error || "Could not update your avatar", "error")
-      );
-  }, [avatar_id, mutate_avatar_settings, dispatch, toast]);
+    },
+    [mutate_avatar_settings, dispatch, toast]
+  );
 
   return (
     <div className={clsx(css["flex-col"], styles["avatar-settings"])}>
@@ -92,7 +99,7 @@ const AvatarSettings = (): React.ReactElement | null => {
           <Gallery
             on_confirm={(asset): void => {
               set_avatar_id(asset.key);
-              dispatch_avatar_settings();
+              dispatch_avatar_settings(asset.key);
             }}
           >
             <Button

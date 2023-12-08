@@ -14,6 +14,7 @@ import UserIcon from "~/icons/user";
 import { use_delete_account_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import { DeleteAccountProps } from "./delete-account.props";
 import {
@@ -80,9 +81,10 @@ const DeleteAccount = ({
       delete_account(values)
         .unwrap()
         .then(() => set_deleted(true))
-        .catch((e) => {
+        .catch((error) => {
           set_deleted(false);
-          toast(e?.data?.error || "Could not delete your account", "error");
+
+          handle_api_error(error, toast, form, "Could not delete your account");
         });
     }
   };

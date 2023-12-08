@@ -14,10 +14,6 @@ type AnyCallback<Payload = any> = (
 ) => GlobalState;
 
 type StateActions = {
-  set_form: <T extends keyof GlobalState["forms"]>(
-    state: GlobalState,
-    payload: Record<T, GlobalState["forms"][T]>
-  ) => GlobalState;
   set_login_data: (state: GlobalState, payload: LoginSchema) => GlobalState;
   set_mfa_code: (state: GlobalState, payload: string) => GlobalState;
   set_recovery_state: <T extends keyof GlobalState["recovery"]>(
@@ -25,6 +21,10 @@ type StateActions = {
     payload: Record<T, GlobalState["recovery"][T]>
   ) => GlobalState;
   set_reset_password_token: AnyCallback<string>;
+  set_signup_errors: <T extends keyof GlobalState["signup_errors"]>(
+    state: GlobalState,
+    payload: Record<T, GlobalState["signup_errors"][T]>
+  ) => GlobalState;
   set_signup_state: <T extends keyof GlobalState["signup"]>(
     state: GlobalState,
     payload: Record<T, GlobalState["signup"][T]>
@@ -49,14 +49,17 @@ export const switch_segment: StateActions["switch_segment"] = (
 });
 
 /**
- * Updates the form instances
+ * Updates the errors received from the server during the signup process
  * @param state Global state
- * @param payload Form to update
+ * @param payload The errors received from the server
  */
-export const set_form: StateActions["set_form"] = (state, payload) => ({
+export const set_signup_errors: StateActions["set_signup_errors"] = (
+  state,
+  payload
+) => ({
   ...state,
-  forms: {
-    ...state.forms,
+  signup_errors: {
+    ...state.signup_errors,
     ...payload
   }
 });
@@ -139,7 +142,7 @@ export const set_mfa_code: StateActions["set_mfa_code"] = (state, payload) => ({
 export const use_auth_state = (): ReturnType<typeof use_state_machine> =>
   use_state_machine<AnyCallback, StateActions>({
     switch_segment,
-    set_form,
+    set_signup_errors,
     set_login_data,
     set_mfa_code,
     set_signup_state,

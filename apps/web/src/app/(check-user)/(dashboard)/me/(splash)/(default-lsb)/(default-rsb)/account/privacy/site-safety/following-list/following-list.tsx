@@ -14,6 +14,7 @@ import {
 } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import styles from "../site-safety.module.scss";
 import { FollowingListProps } from "./following-list.props";
@@ -45,11 +46,14 @@ const FollowingList = ({
       mutate_following_list(values)
         .unwrap()
         .then(() => (prev_values_ref.current = values))
-        .catch((e) => {
+        .catch((error) => {
           form.reset(prev_values_ref.current);
-          toast(
-            e?.data?.error || "Could not change your following list settings",
-            "error"
+
+          handle_api_error(
+            error,
+            toast,
+            form,
+            "Could not change your following list settings"
           );
         });
     }

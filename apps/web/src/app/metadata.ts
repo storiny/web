@@ -1,7 +1,23 @@
-import { Metadata } from "next";
+import { Metadata, Viewport } from "next";
 
 const description =
   "Discover captivating stories on Storiny, the platform that harbors the narratives that reside within you.";
+
+/**
+ * Site-wide viewport config
+ * @see https://nextjs.org/docs/app/api-reference/functions/generate-viewport#the-viewport-object
+ */
+export const viewport: Viewport = {
+  /* eslint-disable prefer-snakecase/prefer-snakecase */
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fafafa" },
+    { media: "(prefers-color-scheme: dark)", color: "#17191c" }
+  ]
+  /* eslint-enable prefer-snakecase/prefer-snakecase */
+};
 
 /**
  * Site-wide metadata config
@@ -14,15 +30,6 @@ export const metadata: Metadata = {
     template: "%s — Storiny",
     default: "Storiny – Share your story"
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1
-  },
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fafafa" },
-    { media: "(prefers-color-scheme: dark)", color: "#17191c" }
-  ],
   description,
   manifest: "/app.webmanifest",
   openGraph: {

@@ -20,6 +20,7 @@ import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import styles from "./banner-settings.module.scss";
 
@@ -60,25 +61,31 @@ const BannerSettings = (): React.ReactElement => {
   /**
    * Dispatches the current banner settings
    */
-  const dispatch_banner_settings = React.useCallback(() => {
-    mutate_banner_settings({ banner_id: banner_id })
-      .unwrap()
-      .then((res) => {
-        dispatch(
-          mutate_user({ banner_id: res.banner_id, banner_hex: res.banner_hex })
+  const dispatch_banner_settings = React.useCallback(
+    (banner_id?: string) => {
+      mutate_banner_settings({ banner_id: banner_id || null })
+        .unwrap()
+        .then((res) => {
+          dispatch(
+            mutate_user({
+              banner_id: res.banner_id,
+              banner_hex: res.banner_hex
+            })
+          );
+          set_banner_id(res.banner_id);
+          toast(
+            `Banner ${
+              res.banner_id === null ? "remove" : "updated"
+            } successfully`,
+            "success"
+          );
+        })
+        .catch((error) =>
+          handle_api_error(error, toast, null, "Could not update your banner")
         );
-        set_banner_id(res.banner_id);
-        toast(
-          `Banner ${
-            res.banner_id === null ? "remove" : "updated"
-          } successfully`,
-          "success"
-        );
-      })
-      .catch((e) =>
-        toast(e?.data?.error || "Could not update your banner", "error")
-      );
-  }, [banner_id, mutate_banner_settings, dispatch, toast]);
+    },
+    [banner_id, mutate_banner_settings, dispatch, toast]
+  );
 
   return (
     <AspectRatio
@@ -125,7 +132,7 @@ const BannerSettings = (): React.ReactElement => {
         <Gallery
           on_confirm={(asset): void => {
             set_banner_id(asset.key);
-            dispatch_banner_settings();
+            dispatch_banner_settings(asset.key);
           }}
         >
           <IconButton

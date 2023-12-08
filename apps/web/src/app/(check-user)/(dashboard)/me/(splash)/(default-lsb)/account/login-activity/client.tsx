@@ -18,6 +18,7 @@ import LogoutIcon from "~/icons/logout";
 import { use_destroy_sessions_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import DashboardGroup from "../../dashboard-group";
 import DashboardTitle from "../../dashboard-title";
@@ -74,8 +75,8 @@ const DestroySessions = ({
     destroy_sessions()
       .unwrap()
       .then(on_destroy)
-      .catch((e) =>
-        toast(e?.data?.error || "Could not log you out of devices", "error")
+      .catch((error) =>
+        handle_api_error(error, toast, null, "Could not log you out of devices")
       );
   };
 

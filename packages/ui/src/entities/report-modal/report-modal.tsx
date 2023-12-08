@@ -17,6 +17,7 @@ import { use_report_entity_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { capitalize } from "~/utils/capitalize";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import styles from "./report-modal.module.scss";
 import { ReportModalProps } from "./report-modal.props";
@@ -49,8 +50,13 @@ const ReportModal = (props: ReportModalProps): React.ReactElement => {
         close_modal();
         form.reset();
       })
-      .catch((e) =>
-        toast(e?.data?.error || `Could not report the ${entity_type}`, "error")
+      .catch((error) =>
+        handle_api_error(
+          error,
+          toast,
+          form,
+          `Could not report the ${entity_type}`
+        )
       );
   };
 
