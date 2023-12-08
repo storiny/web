@@ -4,6 +4,12 @@ CREATE OR REPLACE FUNCTION mute_trigger_proc(
 AS
 $$
 BEGIN
+	-- Sanity check
+	IF (NEW.muter_id = NEW.muted_id) THEN
+		RAISE 'Source user is equivalent to the target user'
+			USING ERRCODE = '52000';
+	END IF;
+	--
 	-- Check whether the muter/muted user is soft-deleted/deactivated
 	IF (EXISTS(SELECT 1
 			   FROM

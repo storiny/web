@@ -29,6 +29,14 @@ interface StorySeoProps {
   seo_title: string | null;
 }
 
+type StoryTag = Omit<
+  Tag,
+  "created_at" | "follower_count" | "is_following" | "story_count"
+> &
+  Partial<
+    Pick<Tag, "created_at" | "follower_count" | "is_following" | "story_count">
+  >;
+
 export type Story = {
   age_restriction: StoryAgeRestriction;
   category: StoryCategory;
@@ -48,7 +56,7 @@ export type Story = {
   slug: string;
   splash_hex: string | null;
   splash_id: string | null;
-  tags: Tag[];
+  tags: StoryTag[];
   title: string;
   user_id: string;
   visibility: StoryVisibility;

@@ -28,6 +28,38 @@ VALUES ($1, $2)
     //
 
     #[sqlx::test(fixtures("user"))]
+    async fn can_reject_block_on_overlap(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Block a user with overlapping IDs
+        let result = sqlx::query(
+            r#"
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(1_i64)
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await;
+
+        // Should reject with the correct SQLSTATE.
+        assert_eq!(
+            result
+                .unwrap_err()
+                .into_database_error()
+                .unwrap()
+                .code()
+                .unwrap(),
+            SqlState::RelationOverlap.to_string()
+        );
+
+        Ok(())
+    }
+
+    //
+
+    #[sqlx::test(fixtures("user"))]
     async fn can_reject_block_for_soft_deleted_blocker_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 

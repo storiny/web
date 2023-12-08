@@ -6,6 +6,12 @@ CREATE OR REPLACE FUNCTION block_before_insert_trigger_proc(
 AS
 $$
 BEGIN
+	-- Sanity check
+	IF (NEW.blocker_id = NEW.blocked_id) THEN
+		RAISE 'Source user is equivalent to the target user'
+			USING ERRCODE = '52000';
+	END IF;
+	--
 	-- Check whether the blocker/blocked user is soft-deleted/deactivated
 	IF (EXISTS(SELECT 1
 			   FROM

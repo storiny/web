@@ -44,6 +44,7 @@ import styles from "./story-header.module.scss";
 const StoryActions = (): React.ReactElement => {
   const is_larger_than_desktop = use_media_query(BREAKPOINTS.up("desktop"));
   const story = use_atom_value(story_metadata_atom);
+  const user = use_app_selector(select_user);
   const [sidebars_collapsed, set_sidebars_collapsed] = use_atom(
     sidebars_collapsed_atom
   );
@@ -56,6 +57,7 @@ const StoryActions = (): React.ReactElement => {
   const is_muted = use_app_selector(
     (state) => state.entities.mutes[story.user?.id || ""]
   );
+  const is_self = story.user_id === user?.id;
 
   return (
     <div className={css["flex-center"]}>
@@ -125,29 +127,33 @@ const StoryActions = (): React.ReactElement => {
             </MenuItem>
           </React.Fragment>
         )}
-        <Separator />
-        <MenuItem
-          check_auth
-          decorator={<MuteIcon />}
-          onClick={(): void => {
-            dispatch(boolean_action("mutes", story.user?.id || ""));
-          }}
-        >
-          {is_muted ? "Unmute" : "Mute"} this writer
-        </MenuItem>
-        <ReportModal
-          entity_id={story.id}
-          entity_type={"story"}
-          trigger={({ open_modal }): React.ReactElement => (
+        {!is_self && (
+          <>
+            <Separator />
             <MenuItem
-              decorator={<ReportIcon />}
-              onClick={open_modal}
-              onSelect={(event): void => event.preventDefault()}
+              check_auth
+              decorator={<MuteIcon />}
+              onClick={(): void => {
+                dispatch(boolean_action("mutes", story.user?.id || ""));
+              }}
             >
-              Report this story
+              {is_muted ? "Unmute" : "Mute"} this writer
             </MenuItem>
-          )}
-        />
+            <ReportModal
+              entity_id={story.id}
+              entity_type={"story"}
+              trigger={({ open_modal }): React.ReactElement => (
+                <MenuItem
+                  decorator={<ReportIcon />}
+                  onClick={open_modal}
+                  onSelect={(event): void => event.preventDefault()}
+                >
+                  Report this story
+                </MenuItem>
+              )}
+            />
+          </>
+        )}
       </Menu>
     </div>
   );

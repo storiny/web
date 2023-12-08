@@ -386,11 +386,12 @@ WHERE id = $1
     {
         if let Some(ip) = req.connection_info().realip_remote_addr() {
             if let Ok(parsed_ip) = ip.parse::<IpAddr>() {
-                let client_location_result = get_client_location(parsed_ip, &data.geo_db);
-                client_location_value = Some(client_location_result.display_name.to_string());
+                if let Some(client_location_result) = get_client_location(parsed_ip, &data.geo_db) {
+                    client_location_value = Some(client_location_result.display_name.to_string());
 
-                if let Ok(client_location) = serde_json::to_value(client_location_result) {
-                    session.insert("location", client_location);
+                    if let Ok(client_location) = serde_json::to_value(client_location_result) {
+                        session.insert("location", client_location);
+                    }
                 }
             }
         }

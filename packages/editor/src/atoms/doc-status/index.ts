@@ -8,6 +8,7 @@ export type DocStatus =
   | "overloaded"
   | "disconnected"
   | "reconnecting"
-  | "publishing";
+  | "publishing"
+  | "corrupted";
 
 export const doc_status_atom = atom<DocStatus>("connecting");

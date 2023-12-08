@@ -1,5 +1,8 @@
 "use client";
 
+import { useSetAtom as use_set_atom } from "jotai";
+
+import { doc_status_atom } from "../../atoms";
 import { ExcludedProperties } from "../../collaboration/bindings";
 import { use_yjs_read_only } from "../../hooks/use-yjs-read-only";
 
@@ -9,7 +12,13 @@ interface Props {
 }
 
 const ReadOnlyPlugin = (props: Props): null => {
-  use_yjs_read_only(props);
+  const set_doc_status = use_set_atom(doc_status_atom);
+
+  use_yjs_read_only({
+    ...props,
+    on_read_error: () => set_doc_status("corrupted")
+  });
+
   return null;
 };
 

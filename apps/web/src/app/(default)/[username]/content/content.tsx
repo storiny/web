@@ -363,11 +363,11 @@ const ProfileContent = ({
             {/* Badges */}
             <Badges public_flags={profile.public_flags} />
             {/* Bio */}
-            {Boolean(profile.bio?.trim()) && (
+            {Boolean((profile.rendered_bio || "").trim()) && (
               <div className={clsx(css["flex-col"], styles.container)}>
                 <Title>About</Title>
                 <Typography className={css["t-minor"]} level={"body2"}>
-                  <BioParser className={profile.rendered_bio} />
+                  <BioParser content={profile.rendered_bio} />
                 </Typography>
               </div>
             )}
