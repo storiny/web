@@ -19,6 +19,7 @@ import {
   use_mfa_preflight_mutation
 } from "~/redux/features";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import { use_auth_state } from "../../../actions";
 import { LOGIN_SCHEMA, LoginSchema } from "./schema";
@@ -80,17 +81,25 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
                     );
                   }
                 })
-                .catch((e) =>
-                  toast(e?.data?.error || "Could not log you in", "error")
+                .catch((error) =>
+                  handle_api_error(error, toast, form, "Could not log you in")
                 );
             }
           })
-          .catch((e) =>
-            toast(e?.data?.error || "Could not log you in", "error")
+          .catch((error) =>
+            handle_api_error(error, toast, form, "Could not log you in")
           );
       }
     },
-    [actions, mutate_login, mutate_mfa_preflight, on_submit, router, toast]
+    [
+      actions,
+      form,
+      mutate_login,
+      mutate_mfa_preflight,
+      on_submit,
+      router,
+      toast
+    ]
   );
 
   return (

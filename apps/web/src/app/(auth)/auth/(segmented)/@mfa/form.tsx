@@ -1,6 +1,5 @@
 "use client";
 
-import { USER_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
 import { useRouter as use_router } from "next/navigation";
 import React from "react";
@@ -8,17 +7,14 @@ import React from "react";
 import { sanitize_authentication_code } from "~/common/utils/sanitize-authentication-code";
 import Button from "~/components/button";
 import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
-import FormCheckbox from "~/components/form-checkbox";
 import FormInput from "~/components/form-input";
-import FormPasswordInput from "~/components/form-password-input";
 import Grow from "~/components/grow";
-import Link from "~/components/link";
 import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
 import { use_login_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
+import { handle_api_error } from "~/utils/handle-api-error";
 
-import { RECOVERY_CODE_MAX_LENGTH } from "../../../../(check-user)/(dashboard)/me/(splash)/(default-lsb)/(default-rsb)/account/credentials/2fa-settings/remove-2fa";
 import { use_auth_state } from "../../../actions";
 import {
   AUTHENTICATION_CODE_MAX_LENGTH,
@@ -73,14 +69,14 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
               );
             }
           })
-          .catch((e) =>
-            toast(e?.data?.error || "Could not log you in", "error")
+          .catch((error) =>
+            handle_api_error(error, toast, form, "Could not log you in")
           );
       } else {
         toast("Missing credentials", "error");
       }
     },
-    [actions, mutate_login, on_submit, router, state.login_data, toast]
+    [actions, form, mutate_login, on_submit, router, state.login_data, toast]
   );
 
   return (

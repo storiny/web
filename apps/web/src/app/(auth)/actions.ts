@@ -14,6 +14,10 @@ type AnyCallback<Payload = any> = (
 ) => GlobalState;
 
 type StateActions = {
+  set_form: <T extends keyof GlobalState["forms"]>(
+    state: GlobalState,
+    payload: Record<T, GlobalState["forms"][T]>
+  ) => GlobalState;
   set_login_data: (state: GlobalState, payload: LoginSchema) => GlobalState;
   set_mfa_code: (state: GlobalState, payload: string) => GlobalState;
   set_recovery_state: <T extends keyof GlobalState["recovery"]>(
@@ -41,6 +45,19 @@ export const switch_segment: StateActions["switch_segment"] = (
   auth: {
     ...state.auth,
     segment: payload
+  }
+});
+
+/**
+ * Updates the form instances
+ * @param state Global state
+ * @param payload Form to update
+ */
+export const set_form: StateActions["set_form"] = (state, payload) => ({
+  ...state,
+  forms: {
+    ...state.forms,
+    ...payload
   }
 });
 
@@ -122,6 +139,7 @@ export const set_mfa_code: StateActions["set_mfa_code"] = (state, payload) => ({
 export const use_auth_state = (): ReturnType<typeof use_state_machine> =>
   use_state_machine<AnyCallback, StateActions>({
     switch_segment,
+    set_form,
     set_login_data,
     set_mfa_code,
     set_signup_state,
