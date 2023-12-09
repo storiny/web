@@ -3,10 +3,10 @@ import "server-only";
 import Editor from "@storiny/editor";
 import { Story } from "@storiny/types";
 import { decompressSync as decompress_sync } from "fflate";
-import { notFound as not_found, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import React from "react";
 
-import { get_story } from "~/common/grpc";
+import { get_story_metadata } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
 import { get_doc_by_key } from "~/common/utils/get-doc-by-key";
 import { get_user } from "~/common/utils/get-user";
@@ -23,37 +23,34 @@ const Page = async ({
       redirect("/login");
     }
 
-    const story_response = await get_story({
-      id_or_slug: doc_id_or_slug
+    const story_metadata_response = await get_story_metadata({
+      id_or_slug: doc_id_or_slug,
+      user_id
     });
 
-    if (story_response.user?.id !== user_id) {
-      not_found();
-    }
-
-    if (typeof story_response.deleted_at !== "undefined") {
-      const doc = await get_doc_by_key(story_response.doc_key);
+    if (typeof story_metadata_response.deleted_at !== "undefined") {
+      const doc = await get_doc_by_key(story_metadata_response.doc_key);
       return (
         <Editor
-          doc_id={story_response.id}
+          doc_id={story_metadata_response.id}
           initial_doc={decompress_sync(doc)}
           role={"editor"}
           status={"deleted"}
-          story={story_response as Story}
+          story={story_metadata_response as Story}
         />
       );
     }
 
     return (
       <Editor
-        doc_id={story_response.id}
+        doc_id={story_metadata_response.id}
         role={"editor"}
         status={
-          typeof story_response.published_at !== "undefined"
+          typeof story_metadata_response.published_at !== "undefined"
             ? "published"
             : "draft"
         }
-        story={story_response as Story}
+        story={story_metadata_response as Story}
       />
     );
   } catch (e) {

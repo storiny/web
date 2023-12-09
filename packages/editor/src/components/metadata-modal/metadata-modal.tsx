@@ -48,21 +48,23 @@ const StoryMetadataModalImpl = (
   const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
   const [nav_segment, set_nav_segment] = use_atom(nav_segment_atom);
   const [value, set_value] = use_atom(sidebar_tab_atom);
+  // Since fields marked as `optional` in protobuf defs are returned as
+  // `undefined`, we need to convert them to `null` values.
   const form = use_form<StoryMetadataSchema>({
     defaultValues: {
       age_restriction: story.age_restriction,
-      canonical_url: story.canonical_url,
+      canonical_url: story.canonical_url || null,
       category: story.category,
-      description: story.description,
+      description: story.description || null,
       disable_comments: story.disable_comments,
       disable_public_revision_history: story.disable_public_revision_history,
       disable_toc: story.disable_toc,
       license: story.license,
-      preview_image: story.preview_image,
-      seo_description: story.seo_description,
-      seo_title: story.seo_title,
-      splash_hex: story.splash_hex,
-      splash_id: story.splash_id,
+      preview_image: story.preview_image || null,
+      seo_description: story.seo_description || null,
+      seo_title: story.seo_title || null,
+      splash_hex: story.splash_hex || null,
+      splash_id: story.splash_id || null,
       tags: story.tags.map(({ name }) => name),
       title: story.title,
       visibility: story.visibility
@@ -87,9 +89,16 @@ const StoryMetadataModalImpl = (
     // `splash_hex` is not needed in the request
     mutate_story_metadata({ ...values, splash_hex: undefined, id: story.id })
       .unwrap()
-      .then((res) => {
+      .then(() => {
         set_open(false);
-        set_story(res);
+        set_story({
+          ...story,
+          ...values,
+          id: story.id,
+          // We simply use the tag's name as the ID since the ID part is not
+          // used anywhere in the editor.
+          tags: values.tags.map((tag) => ({ id: tag, name: tag }))
+        });
         reset(values);
         toast("Story metadata updated", "success");
       })
