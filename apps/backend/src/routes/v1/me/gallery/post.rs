@@ -303,7 +303,7 @@ async fn post(
 
             color
         }
-    };
+    }.to_lowercase();
 
     debug!("computed the dominant color for the image: #{hex_color}");
     tracing::Span::current().record("computed_color", format!("#{hex_color}"));

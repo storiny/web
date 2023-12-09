@@ -276,7 +276,8 @@ async fn handle_upload(
         dom_color[1].into(),
         dom_color[2].into(),
     )
-    .to_css_hex_string();
+    .to_css_hex_string()
+    .to_lowercase();
     // Remove the `#` prefix from the hex color.
     hex_color.remove(0);
 

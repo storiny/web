@@ -11,6 +11,7 @@ const SuspendedEditorRightSidebarReadOnlyContent = (): React.ReactElement => {
   const is_auxiliary_content_visible = use_atom_value(
     is_auxiliary_content_visible_atom
   );
+
   return (
     <React.Fragment>
       {is_auxiliary_content_visible ? (

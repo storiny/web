@@ -4,13 +4,14 @@ import { setup_store } from "~/redux/store";
 
 import {
   hydrate_state,
-  LOCAL_STORAGE_KEY,
   preferences_initial_state,
+  PREFERENCES_STORAGE_KEY,
   set_code_font,
   set_reading_font,
   set_reading_font_size,
   set_reduced_motion,
   set_theme,
+  THEME_STORAGE_KEY,
   toggle_code_ligatures
 } from "./slice";
 
@@ -84,13 +85,23 @@ describe("preferences_listener", () => {
 
   it("serializes state to localStorage", () => {
     const store = setup_store(undefined, true);
+    store.dispatch(set_theme("system"));
+
+    expect(localStorage.setItem).toHaveBeenCalledWith(
+      PREFERENCES_STORAGE_KEY,
+      compress_to_utf16(
+        JSON.stringify({ ...preferences_initial_state, theme: undefined })
+      )
+    );
+  });
+
+  it("serializes theme to localStorage", () => {
+    const store = setup_store(undefined, true);
     store.dispatch(set_theme("dark"));
 
     expect(localStorage.setItem).toHaveBeenCalledWith(
-      LOCAL_STORAGE_KEY,
-      compress_to_utf16(
-        JSON.stringify({ ...preferences_initial_state, theme: "dark" })
-      )
+      THEME_STORAGE_KEY,
+      "dark"
     );
   });
 });

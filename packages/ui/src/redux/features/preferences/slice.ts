@@ -14,7 +14,33 @@ import css from "~/theme/main.module.scss";
 
 import { AppStartListening } from "../../listener-middleware";
 
-export const LOCAL_STORAGE_KEY = "preferences";
+export const PREFERENCES_STORAGE_KEY = "preferences";
+export const THEME_STORAGE_KEY = "theme";
+
+/**
+ * Resolves the system theme variant to binary theme value based on the
+ * client's color scheme preference. Falls back to the `light` theme by
+ * default.
+ * @param theme The theme value.
+ */
+export const resolve_theme_value = (theme: Theme): Exclude<Theme, "system"> => {
+  if (theme === "system") {
+    try {
+      if (
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+      ) {
+        return "dark";
+      } else {
+        return "light";
+      }
+    } catch {
+      return "light";
+    }
+  }
+
+  return theme;
+};
 
 /**
  * Returns the defautl values of a schema
@@ -261,14 +287,16 @@ export const add_preferences_listeners = (
     actionCreator: sync_to_browser,
     effect: (_, listener_api) => {
       try {
-        const client_value = localStorage.getItem(LOCAL_STORAGE_KEY);
+        const client_value = localStorage.getItem(PREFERENCES_STORAGE_KEY);
+        const theme_value = localStorage.getItem(THEME_STORAGE_KEY);
 
         if (client_value) {
           listener_api.dispatch(
             hydrate_state(
-              preferences_schema.parse(
-                JSON.parse(decompress_from_utf16(client_value))
-              )
+              preferences_schema.parse({
+                ...JSON.parse(decompress_from_utf16(client_value)),
+                theme: theme_value || "system"
+              })
             )
           );
         }
@@ -298,20 +326,7 @@ export const add_preferences_listeners = (
     matcher: is_any_of(set_theme, hydrate_state),
     effect: (_, listener_api) => {
       const { theme } = listener_api.getState().preferences;
-      let next_theme = theme;
-
-      if (next_theme === "system") {
-        try {
-          if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-            next_theme = "dark";
-          } else {
-            next_theme = "light";
-          }
-        } catch {
-          next_theme = "light";
-        }
-      }
-
+      const next_theme = resolve_theme_value(theme);
       document.documentElement.setAttribute("data-theme", next_theme);
     }
   });
@@ -382,7 +397,6 @@ export const add_preferences_listeners = (
    */
   start_listening({
     matcher: is_any_of(
-      set_theme,
       set_alert_visibility,
       set_reduced_motion,
       set_code_font,
@@ -396,7 +410,22 @@ export const add_preferences_listeners = (
         const serialized_state = compress_to_utf16(
           JSON.stringify(listener_api.getState().preferences)
         );
-        localStorage.setItem(LOCAL_STORAGE_KEY, serialized_state);
+        localStorage.setItem(PREFERENCES_STORAGE_KEY, serialized_state);
+      } catch (e) {
+        dev_console.error(e);
+      }
+    }
+  });
+
+  /**
+   * Persist the theme state in the browser
+   */
+  start_listening({
+    actionCreator: set_theme,
+    effect: (action) => {
+      try {
+        const theme = action.payload;
+        localStorage.setItem(THEME_STORAGE_KEY, theme);
       } catch (e) {
         dev_console.error(e);
       }
