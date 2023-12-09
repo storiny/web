@@ -139,13 +139,10 @@ MESSAGE_HANDLERS[Message.AUTH] = (_, decoder, provider): void => {
  * @param decoder Decoder
  * @param provider Websocket provider
  */
-MESSAGE_HANDLERS[Message.INTERNAL] = (
-  encoder
-  // Decoder
-  // Provider
-): void => {
-  encoding.writeVarUint(encoder, Message.SYNC);
-  // Const event = decoding.readVarString(decoder);
+MESSAGE_HANDLERS[Message.INTERNAL] = (encoder, decoder, provider): void => {
+  // Encoding.writeVarUint(encoder, Message.SYNC);
+  const event = decoding.readVarString(decoder);
+  console.log("custom!!!---", event);
   // TODO: Handle server sent events here (published and deleted)
   // provider.emit(event, []);
 };
@@ -164,6 +161,8 @@ const read_message = (
   const decoder = decoding.createDecoder(buf);
   const encoder = encoding.createEncoder();
   const message_type = decoding.readVarUint(decoder);
+  // This should return 5
+  console.error(message_type);
   const message_handler = provider.message_handlers[message_type];
 
   if (message_handler) {
@@ -190,6 +189,7 @@ const setup_ws = (provider: WebsocketProvider): void => {
     provider.synced = false;
 
     websocket.onmessage = (event): void => {
+      console.log(event);
       // TODO: Check if this is a custom message
       provider.ws_last_message_received = Date.now();
       const encoder = read_message(provider, new Uint8Array(event.data), true);
@@ -328,8 +328,9 @@ const set_if_undefined = <V, K>(
 };
 
 /**
- * Websocket Provider for Yjs. Creates a websocket connection to sync the shared document.
- * The document name is appended to the provided url (scheme://<url>/<document-name>)
+ * Websocket Provider for Yjs. Creates a websocket connection to sync the
+ * shared document. The document name is appended to the provided url
+ * (scheme://<url>/<document-name>)
  */
 export class WebsocketProvider {
   /**
@@ -491,8 +492,9 @@ export class WebsocketProvider {
         MESSAGE_RECONNECT_TIMEOUT < Date.now() - this.ws_last_message_received
       ) {
         // TODO: This is the culprit which is causing auto close of the WS.
-        // Close the connection when no messages are received since a long duration,
-        // Not even the client's own awareness updates (which are updated every 15 seconds)
+        // Close the connection when no messages are received since a long
+        // duration, Not even the client's own awareness updates (which are
+        // updated every 15 seconds)
         this.ws?.close();
       }
     }, MESSAGE_RECONNECT_TIMEOUT / 10);
@@ -680,8 +682,9 @@ export class WebsocketProvider {
    * @param args Arguments that are applied to the event listener
    */
   public emit(name: ProviderEvent, args: any[]): void {
-    // Copy all listeners to an array first to make sure that no event is emitted to the
-    // Listeners that are subscribed while the event handler is being called
+    // Copy all listeners to an array first to make sure that no event is
+    // emitted to the Listeners that are subscribed while the event handler is
+    // being called
     return Array.from((this.observers.get(name) || new Map()).values()).forEach(
       (fn) => fn(...args)
     );
@@ -764,7 +767,8 @@ export class WebsocketProvider {
    * Diconnects from the broadcast channel
    */
   public disconnect_bc(): void {
-    // Broadcast message with the local awareness state set to `null` (indicating disconnect)
+    // Broadcast message with the local awareness state set to `null`
+    // (indicating disconnect)
     const encoder = encoding.createEncoder();
     encoding.writeVarUint(encoder, Message.AWARENESS);
     encoding.writeVarUint8Array(

@@ -2,11 +2,11 @@ WITH explore_stories AS (SELECT
 							 -- Story
 							 s.id,
 							 s.title,
-							 s.slug                                                             AS "slug!",
+							 s.slug                                  AS "slug!",
 							 s.description,
 							 s.splash_id,
 							 s.splash_hex,
-							 s.category::TEXT                                                   AS "category!",
+							 s.category::TEXT                        AS "category!",
 							 s.age_restriction,
 							 s.license,
 							 s.user_id,
@@ -16,20 +16,25 @@ WITH explore_stories AS (SELECT
 							 s.like_count,
 							 s.comment_count,
 							 -- Timestamps
-							 s.published_at                                                     AS "published_at!",
+							 s.published_at                          AS "published_at!",
 							 s.edited_at,
 							 -- Boolean flags
-							 "s->is_bookmarked".story_id IS NOT NULL                            AS "is_bookmarked!",
-							 "s->is_liked".story_id IS NOT NULL                                 AS "is_liked!",
+							 "s->is_bookmarked".story_id IS NOT NULL AS "is_bookmarked!",
+							 "s->is_liked".story_id IS NOT NULL      AS "is_liked!",
 							 -- User
 							 JSON_BUILD_OBJECT('id', u.id, 'name', u.name, 'username', u.username, 'avatar_id',
 											   u.avatar_id, 'avatar_hex', u.avatar_hex, 'public_flags',
-											   u.public_flags)                                  AS "user!: Json<User>",
+											   u.public_flags)       AS "user!: Json<User>",
 							 -- Tags
-							 COALESCE(ARRAY_AGG(DISTINCT ("s->story_tags->tag".id, "s->story_tags->tag".name))
-									  FILTER (WHERE "s->story_tags->tag".id IS NOT NULL), '{}') AS "tags!: Vec<Tag>",
+							 (
+								 COALESCE(ARRAY_AGG(DISTINCT ("s->main_tag->tag".id, "s->main_tag->tag".name))
+										  FILTER (WHERE "s->main_tag->tag".id IS NOT NULL), '{}')
+									 ||
+								 COALESCE(ARRAY_AGG(DISTINCT ("s->story_tags->tag".id, "s->story_tags->tag".name))
+										  FILTER (WHERE "s->story_tags->tag".id IS NOT NULL),
+										  '{}'))                     AS "tags!: Vec<Tag>",
 							 -- Weights
-							 s.published_at::DATE                                               AS "published_at_date_only"
+							 s.published_at::DATE                    AS "published_at_date_only"
 						 FROM
 							 stories s
 								 INNER JOIN users u
@@ -38,15 +43,15 @@ WITH explore_stories AS (SELECT
 												AND u.deactivated_at IS NULL
 												-- Make sure to handle stories from private users
 												AND (
-													   NOT u.is_private OR
-													   EXISTS (SELECT 1
-															   FROM
-																   friends
-															   WHERE
-																	(transmitter_id = u.id AND receiver_id = $4)
-																 OR (transmitter_id = $4 AND receiver_id = u.id)
-																		AND accepted_at IS NOT NULL
-															  )
+												   NOT u.is_private OR
+												   EXISTS (SELECT 1
+														   FROM
+															   friends
+														   WHERE
+																(transmitter_id = u.id AND receiver_id = $4)
+															 OR (transmitter_id = $4 AND receiver_id = u.id)
+																	AND accepted_at IS NOT NULL
+														  )
 												   )
 												-- Filter out stories from blocked and muted users
 												AND u.id NOT IN (SELECT b.blocked_id
@@ -62,13 +67,22 @@ WITH explore_stories AS (SELECT
 																	 m.muter_id = $4
 																)
 								 --
-								 -- Join story tags
-								 INNER JOIN (story_tags AS "s->story_tags"
+								 -- Join the main story tag
+								 INNER JOIN (story_tags AS "s->main_tag"
+								 -- Join tags
+								 INNER JOIN tags AS "s->main_tag->tag"
+											 ON "s->main_tag->tag".id = "s->main_tag".tag_id
+												 AND "s->main_tag->tag".name = $1)
+											ON "s->main_tag".story_id = s.id
+								 --
+								 -- Join other story tags
+								 LEFT OUTER JOIN (story_tags AS "s->story_tags"
 								 -- Join tags
 								 INNER JOIN tags AS "s->story_tags->tag"
-											 ON "s->story_tags->tag".id = "s->story_tags".tag_id
-												 AND "s->story_tags->tag".name = $1)
-											ON "s->story_tags".story_id = s.id
+												  ON "s->story_tags->tag".id = "s->story_tags".tag_id
+													  AND "s->story_tags->tag".name <> $1)
+												 ON "s->story_tags".story_id = s.id
+								 --
 								 -- Boolean bookmark flag
 								 LEFT OUTER JOIN bookmarks AS "s->is_bookmarked"
 												 ON "s->is_bookmarked".story_id = s.id

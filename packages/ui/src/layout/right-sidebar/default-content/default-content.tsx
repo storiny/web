@@ -5,7 +5,6 @@ import Link from "~/components/link";
 import Separator from "~/components/separator";
 import Skeleton from "~/components/skeleton";
 import Typography, { TypographyProps } from "~/components/typography";
-import CustomState from "~/entities/custom-state";
 import ErrorState from "~/entities/error-state";
 import TagChip from "~/entities/tag-chip";
 import ChevronIcon from "~/icons/chevron";
@@ -57,11 +56,10 @@ const RightSidebarDefaultContent = ({
     error,
     refetch
   } = use_get_right_sidebar_content_query();
-  const is_empty =
-    !is_loading &&
-    !data?.stories?.length &&
-    !data?.users?.length &&
-    !data?.tags?.length;
+  const has_stories = Boolean(data?.stories?.length);
+  const has_users = Boolean(data?.users?.length);
+  const has_tags = Boolean(data?.tags?.length);
+  const is_empty = !is_loading && !has_stories && !has_users && !has_tags;
 
   return is_error ? (
     <ErrorState
@@ -93,7 +91,7 @@ const RightSidebarDefaultContent = ({
                   <PopularStory key={story.id} story={story} />
                 ))}
           </div>
-          <Separator />
+          {is_loading || has_users || has_tags ? <Separator /> : null}
         </>
       )}
       {!is_loading && !data?.users?.length ? null : (
@@ -122,10 +120,10 @@ const RightSidebarDefaultContent = ({
               </Link>
             </div>
           )}
-          <Separator />
+          {is_loading || has_tags ? <Separator /> : null}
         </>
       )}
-      {!is_loading && !data?.users?.length ? null : (
+      {!is_loading && !data?.tags?.length ? null : (
         <>
           <TitleWithIcon icon={<TagsIcon />}>Popular tags</TitleWithIcon>
           <div className={clsx(css["flex-col"], styles["tags-container"])}>

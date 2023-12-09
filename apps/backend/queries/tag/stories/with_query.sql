@@ -4,11 +4,11 @@ WITH explore_stories AS (WITH search_query AS (SELECT PLAINTO_TSQUERY('english',
 							 -- Story
 							 s.id,
 							 s.title,
-							 s.slug                                                             AS "slug!",
+							 s.slug                                                   AS "slug!",
 							 s.description,
 							 s.splash_id,
 							 s.splash_hex,
-							 s.category::TEXT                                                   AS "category!",
+							 s.category::TEXT                                         AS "category!",
 							 s.age_restriction,
 							 s.license,
 							 s.user_id,
@@ -18,19 +18,24 @@ WITH explore_stories AS (WITH search_query AS (SELECT PLAINTO_TSQUERY('english',
 							 s.like_count,
 							 s.comment_count,
 							 -- Timestamps
-							 s.published_at                                                     AS "published_at!",
+							 s.published_at                                           AS "published_at!",
 							 s.edited_at,
 							 -- User
 							 JSON_BUILD_OBJECT('id', u.id, 'name', u.name, 'username', u.username, 'avatar_id',
 											   u.avatar_id, 'avatar_hex', u.avatar_hex, 'public_flags',
-											   u.public_flags)                                  AS "user!: Json<User>",
+											   u.public_flags)                        AS "user!: Json<User>",
 							 -- Tags
-							 COALESCE(ARRAY_AGG(DISTINCT ("s->story_tags->tag".id, "s->story_tags->tag".name))
-									  FILTER (WHERE "s->story_tags->tag".id IS NOT NULL), '{}') AS "tags!: Vec<Tag>",
+							 (
+								 COALESCE(ARRAY_AGG(DISTINCT ("s->main_tag->tag".id, "s->main_tag->tag".name))
+										  FILTER (WHERE "s->main_tag->tag".id IS NOT NULL), '{}')
+									 ||
+								 COALESCE(ARRAY_AGG(DISTINCT ("s->story_tags->tag".id, "s->story_tags->tag".name))
+										  FILTER (WHERE "s->story_tags->tag".id IS NOT NULL),
+										  '{}'))                                      AS "tags!: Vec<Tag>",
 							 -- Query score
-							 TS_RANK_CD(s.search_vec, (SELECT tsq FROM search_query))           AS "query_score",
+							 TS_RANK_CD(s.search_vec, (SELECT tsq FROM search_query)) AS "query_score",
 							 -- Weights
-							 s.published_at::DATE                                               AS "published_at_date_only"
+							 s.published_at::DATE                                     AS "published_at_date_only"
 						 FROM
 							 stories s
 								 INNER JOIN users u
@@ -40,13 +45,21 @@ WITH explore_stories AS (WITH search_query AS (SELECT PLAINTO_TSQUERY('english',
 												-- Skip stories from private users
 												AND u.is_private IS FALSE
 								 --
-								 -- Join story tags
-								 INNER JOIN (story_tags AS "s->story_tags"
+								 -- Join the main story tag
+								 INNER JOIN (story_tags AS "s->main_tag"
+								 -- Join tags
+								 INNER JOIN tags AS "s->main_tag->tag"
+											 ON "s->main_tag->tag".id = "s->main_tag".tag_id
+												 AND "s->main_tag->tag".name = $2)
+											ON "s->main_tag".story_id = s.id
+								 --
+								 -- Join other story tags
+								 LEFT OUTER JOIN (story_tags AS "s->story_tags"
 								 -- Join tags
 								 INNER JOIN tags AS "s->story_tags->tag"
-											 ON "s->story_tags->tag".id = "s->story_tags".tag_id
-												 AND "s->story_tags->tag".name = $2)
-											ON "s->story_tags".story_id = s.id
+												  ON "s->story_tags->tag".id = "s->story_tags".tag_id
+													  AND "s->story_tags->tag".name <> $2)
+												 ON "s->story_tags".story_id = s.id
 						 WHERE
 							   -- Public
 							   s.visibility = 2

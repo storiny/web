@@ -45,7 +45,8 @@ WITH explore_stories AS (SELECT
 						 WHERE
 							   -- Public
 							   s.visibility = 2
-						   AND s.category::TEXT = $1
+							   -- Include all the stories when the category is `others`
+						   AND CASE WHEN $1 = 'others' THEN TRUE ELSE s.category::TEXT = $1 END
 						   AND s.published_at IS NOT NULL
 						   AND s.deleted_at IS NULL
 						 GROUP BY
