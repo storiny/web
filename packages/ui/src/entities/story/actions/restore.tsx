@@ -6,7 +6,11 @@ import Button from "~/components/button";
 import { use_toast } from "~/components/toast";
 import { use_media_query } from "~/hooks/use-media-query";
 import RestoreIcon from "~/icons/restore";
-import { get_drafts_api, use_recover_draft_mutation } from "~/redux/features";
+import {
+  get_drafts_api,
+  use_recover_draft_mutation,
+  use_recover_story_mutation
+} from "~/redux/features";
 import { use_app_dispatch } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import { handle_api_error } from "~/utils/handle-api-error";
@@ -21,14 +25,17 @@ const RestoreAction = ({
   const toast = use_toast();
   const dispatch = use_app_dispatch();
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const [recover_draft, { isLoading: is_loading }] =
+  const [recover_story, { isLoading: is_recover_story_loading }] =
+    use_recover_story_mutation();
+  const [recover_draft, { isLoading: is_recover_draft_loading }] =
     use_recover_draft_mutation();
+  const is_loading = is_recover_draft_loading || is_recover_story_loading;
 
   /**
    * Deletes a draft
    */
   const handle_delete = (): void => {
-    recover_draft({ id: story.id })
+    (is_draft ? recover_draft : recover_story)({ id: story.id })
       .unwrap()
       .then(() => {
         toast(`${is_draft ? "Draft" : "Story"} recovered`, "success");

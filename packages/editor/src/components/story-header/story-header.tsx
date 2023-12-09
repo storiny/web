@@ -161,16 +161,24 @@ const StoryActions = (): React.ReactElement => {
 
 // Sub-header
 
-const Subheader = (): React.ReactElement => {
+const Subheader = (): React.ReactElement | null => {
   const dispatch = use_app_dispatch();
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const story = use_atom_value(story_metadata_atom);
-  const user = story.user!;
+  const current_user = use_app_selector(select_user);
+  const user = story.user;
   const follower_count =
-    use_app_selector((state) => state.entities.follower_counts[user.id]) || 0;
+    use_app_selector(
+      (state) => state.entities.follower_counts[user?.id || ""]
+    ) || 0;
   const is_following = use_app_selector(
-    (state) => state.entities.following[user.id]
+    (state) => state.entities.following[user?.id || ""]
   );
+  const is_self = current_user?.id === user?.id;
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className={css["flex-center"]}>
@@ -200,7 +208,7 @@ const Subheader = (): React.ReactElement => {
         size={"lg"}
       />
       <Spacer className={css["f-grow"]} size={2} />
-      {is_mobile ? (
+      {is_self ? null : is_mobile ? (
         <IconButton
           auto_size
           check_auth
@@ -281,7 +289,7 @@ const StoryHeader = (): React.ReactElement => {
           {get_read_time(story.word_count, user?.wpm)} min
         </Typography>
         <Spacer className={css["f-grow"]} />
-        <StoryActions />
+        {Boolean(story.published_at) && <StoryActions />}
       </div>
       <Spacer orientation={"vertical"} size={5} />
     </header>

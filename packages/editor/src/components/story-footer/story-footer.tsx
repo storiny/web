@@ -77,10 +77,14 @@ const Actions = (): React.ReactElement => {
   );
 };
 
-const StoryFooter = (): React.ReactElement => {
+const StoryFooter = (): React.ReactElement | null => {
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
   const story = use_atom_value(story_metadata_atom);
+
+  if (!story.published_at) {
+    return null;
+  }
 
   return (
     <footer className={css["flex-col"]}>

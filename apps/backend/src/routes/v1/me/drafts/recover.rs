@@ -47,7 +47,7 @@ SET deleted_at = NULL
 WHERE
     user_id = $1
     AND id = $2
-    AND published_at IS NULL
+    AND first_published_at IS NULL
     AND deleted_at IS NOT NULL
 "#,
     )

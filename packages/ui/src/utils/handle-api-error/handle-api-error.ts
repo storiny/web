@@ -1,5 +1,6 @@
 "use client";
 
+import { dev_console } from "@storiny/shared/src/utils/dev-log";
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
 import { use_toast } from "~/components/toast";
@@ -41,13 +42,16 @@ export const handle_api_error = <T extends FieldValues>(
   form: UseFormReturn<T> | null,
   default_message: string
 ): void => {
+  dev_console.error(error);
+
   if (form && is_form_error(error)) {
     handle_form_error<T>(error.data?.errors, form.setError);
   } else {
     toaster(
-      error?.data?.error || error?.status === "FETCH_ERROR"
-        ? "Storiny is currently unavailable. Check your network connection or try again later."
-        : default_message,
+      error?.data?.error ||
+        (error?.status === "FETCH_ERROR"
+          ? "Storiny is currently unavailable. Check your network connection or try again later."
+          : default_message),
       "error"
     );
   }

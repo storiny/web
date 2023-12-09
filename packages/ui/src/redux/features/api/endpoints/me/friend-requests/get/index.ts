@@ -29,6 +29,10 @@ export const get_friend_requests_api = api_slice.injectEndpoints({
         has_more: response.length === ITEMS_PER_PAGE
       }),
       merge: (current_cache, new_items) => {
+        current_cache.items = current_cache.items.filter(
+          (current_item) =>
+            !new_items.items.some((item) => current_item.id === item.id)
+        );
         current_cache.items.push(...new_items.items);
         current_cache.has_more = new_items.has_more;
       },
