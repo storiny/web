@@ -158,6 +158,14 @@ export interface GetUserIdResponse {
   id: string;
 }
 
+export interface GetUsernameRequest {
+  user_id: string;
+}
+
+export interface GetUsernameResponse {
+  username: string;
+}
+
 export interface GetUserRelationsInfoRequest {
   user_id: string;
 }
@@ -956,6 +964,120 @@ export const GetUserIdResponse = {
   fromPartial<I extends Exact<DeepPartial<GetUserIdResponse>, I>>(object: I): GetUserIdResponse {
     const message = createBaseGetUserIdResponse();
     message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseGetUsernameRequest(): GetUsernameRequest {
+  return { user_id: "" };
+}
+
+export const GetUsernameRequest = {
+  encode(message: GetUsernameRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.user_id !== "") {
+      writer.uint32(10).string(message.user_id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetUsernameRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetUsernameRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.user_id = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetUsernameRequest {
+    return { user_id: isSet(object.user_id) ? globalThis.String(object.user_id) : "" };
+  },
+
+  toJSON(message: GetUsernameRequest): unknown {
+    const obj: any = {};
+    if (message.user_id !== "") {
+      obj.user_id = message.user_id;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetUsernameRequest>, I>>(base?: I): GetUsernameRequest {
+    return GetUsernameRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetUsernameRequest>, I>>(object: I): GetUsernameRequest {
+    const message = createBaseGetUsernameRequest();
+    message.user_id = object.user_id ?? "";
+    return message;
+  },
+};
+
+function createBaseGetUsernameResponse(): GetUsernameResponse {
+  return { username: "" };
+}
+
+export const GetUsernameResponse = {
+  encode(message: GetUsernameResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.username !== "") {
+      writer.uint32(10).string(message.username);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetUsernameResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetUsernameResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.username = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetUsernameResponse {
+    return { username: isSet(object.username) ? globalThis.String(object.username) : "" };
+  },
+
+  toJSON(message: GetUsernameResponse): unknown {
+    const obj: any = {};
+    if (message.username !== "") {
+      obj.username = message.username;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetUsernameResponse>, I>>(base?: I): GetUsernameResponse {
+    return GetUsernameResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetUsernameResponse>, I>>(object: I): GetUsernameResponse {
+    const message = createBaseGetUsernameResponse();
+    message.username = object.username ?? "";
     return message;
   },
 };

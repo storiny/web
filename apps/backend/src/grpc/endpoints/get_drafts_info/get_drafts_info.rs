@@ -1,10 +1,13 @@
-use crate::grpc::{
-    defs::story_def::v1::{
-        Draft as DraftDef,
-        GetDraftsInfoRequest,
-        GetDraftsInfoResponse,
+use crate::{
+    grpc::{
+        defs::story_def::v1::{
+            Draft as DraftDef,
+            GetDraftsInfoRequest,
+            GetDraftsInfoResponse,
+        },
+        service::GrpcService,
     },
-    service::GrpcService,
+    utils::to_iso8601::to_iso8601,
 };
 use sqlx::{
     FromRow,
@@ -139,8 +142,8 @@ LIMIT 1
                 splash_id: draft.splash_id.and_then(|value| Some(value.to_string())),
                 splash_hex: draft.splash_hex,
                 word_count: draft.word_count as u32,
-                created_at: draft.created_at.to_string(),
-                edited_at: draft.edited_at.and_then(|value| Some(value.to_string())),
+                created_at: to_iso8601(&draft.created_at),
+                edited_at: draft.edited_at.and_then(|value| Some(to_iso8601(&value))),
             })
         }),
     }))

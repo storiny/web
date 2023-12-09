@@ -24,4 +24,5 @@ pub mod is_resource_locked;
 pub mod md_to_html;
 pub mod redis_async_transaction;
 pub mod reset_resource_lock;
+pub mod to_iso8601;
 pub mod truncate_str;

@@ -7,6 +7,9 @@
   border-radius: var(--radius-md);
   border: 3px dashed var(--divider);
   aspect-ratio: 1;
+  padding: 5px;
+  width: 100%;
+  max-width: calc(100% - 24px);
 }
 
 .image {

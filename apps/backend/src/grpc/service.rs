@@ -68,6 +68,8 @@ use crate::{
                 GetUserMuteCountResponse,
                 GetUserRelationsInfoRequest,
                 GetUserRelationsInfoResponse,
+                GetUsernameRequest,
+                GetUsernameResponse,
             },
         },
         endpoints,
@@ -102,6 +104,13 @@ impl ApiService for GrpcService {
         request: Request<GetUserIdRequest>,
     ) -> Result<Response<GetUserIdResponse>, Status> {
         endpoints::get_user_id::get_user_id(self, request).await
+    }
+
+    async fn get_username(
+        &self,
+        request: Request<GetUsernameRequest>,
+    ) -> Result<Response<GetUsernameResponse>, Status> {
+        endpoints::get_username::get_username(self, request).await
     }
 
     async fn get_profile(

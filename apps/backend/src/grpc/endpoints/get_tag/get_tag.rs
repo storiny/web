@@ -1,9 +1,12 @@
-use crate::grpc::{
-    defs::tag_def::v1::{
-        GetTagRequest,
-        GetTagResponse,
+use crate::{
+    grpc::{
+        defs::tag_def::v1::{
+            GetTagRequest,
+            GetTagResponse,
+        },
+        service::GrpcService,
     },
-    service::GrpcService,
+    utils::to_iso8601::to_iso8601,
 };
 use sqlx::{
     FromRow,
@@ -123,7 +126,7 @@ GROUP BY
         name: tag.name,
         story_count: tag.story_count as u32,
         follower_count: tag.follower_count as u32,
-        created_at: tag.created_at.to_string(),
+        created_at: to_iso8601(&tag.created_at),
         is_following: tag.is_following,
     }))
 }

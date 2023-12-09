@@ -1,12 +1,15 @@
-use crate::grpc::{
-    defs::{
-        comment_def::v1::{
-            GetCommentRequest,
-            GetCommentResponse,
+use crate::{
+    grpc::{
+        defs::{
+            comment_def::v1::{
+                GetCommentRequest,
+                GetCommentResponse,
+            },
+            user_def::v1::BareUser,
         },
-        user_def::v1::BareUser,
+        service::GrpcService,
     },
-    service::GrpcService,
+    utils::to_iso8601::to_iso8601,
 };
 use serde::Deserialize;
 use sqlx::{
@@ -195,8 +198,8 @@ GROUP BY
         story_slug: comment.story_slug,
         story_writer_username: comment.story_writer_username,
         hidden: comment.hidden,
-        edited_at: comment.edited_at.and_then(|value| Some(value.to_string())),
-        created_at: comment.created_at.to_string(),
+        edited_at: comment.edited_at.and_then(|value| Some(to_iso8601(&value))),
+        created_at: to_iso8601(&comment.created_at),
         like_count: comment.like_count as u32,
         reply_count: comment.reply_count as u32,
         user: Some(BareUser {

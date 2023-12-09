@@ -22,6 +22,10 @@ service ApiService {
    */
   rpc GetUserId(user_def.v1.GetUserIdRequest) returns (user_def.v1.GetUserIdResponse) {}
   /**
+   * Returns the username for a user by its ID
+   */
+  rpc GetUsername(user_def.v1.GetUsernameRequest) returns (user_def.v1.GetUsernameResponse) {}
+  /**
    * Returns the profile page data for a user
    */
   rpc GetProfile(profile_def.v1.GetProfileRequest) returns (profile_def.v1.GetProfileResponse) {}

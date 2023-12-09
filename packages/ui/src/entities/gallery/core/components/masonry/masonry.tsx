@@ -165,24 +165,28 @@ const Library = ({
       ) : !is_fetching && !items.length ? (
         <EmptyState tab={"library"} />
       ) : (
-        <Masonry<GetUserAssetsResponse[number]>
-          get_item_key={(data): string => String(data.id)}
-          gutter_width={12}
-          items={items}
-          min_cols={min_cols}
-          overscan_factor={2.8}
-          render_item={(args): React.ReactElement => (
-            <LibraryMasonryItem {...args} />
-          )}
-          scroll_container={(): HTMLElement => container_ref.current!}
-        />
+        <React.Fragment>
+          <Masonry<GetUserAssetsResponse[number]>
+            get_item_key={(data): string => data.id}
+            gutter_width={12}
+            items={items.filter((item) =>
+              items.some((other_item) => other_item.id !== item.id)
+            )}
+            min_cols={min_cols}
+            overscan_factor={2.8}
+            render_item={(args): React.ReactElement => (
+              <LibraryMasonryItem {...args} />
+            )}
+            scroll_container={(): HTMLElement => container_ref.current!}
+          />
+          <GalleryMasonryFooter
+            container_ref={container_ref}
+            has_more={Boolean(has_more)}
+            increment_page={increment_page}
+            is_fetching={is_fetching}
+          />
+        </React.Fragment>
       )}
-      <GalleryMasonryFooter
-        container_ref={container_ref}
-        has_more={Boolean(has_more)}
-        increment_page={increment_page}
-        is_fetching={is_fetching}
-      />
     </React.Fragment>
   );
 };

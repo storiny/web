@@ -2,27 +2,27 @@
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Connection {
-    #[prost(enumeration = "Provider", tag = "1")]
+    #[prost(enumeration="Provider", tag="1")]
     pub provider: i32,
-    #[prost(string, tag = "2")]
+    #[prost(string, tag="2")]
     pub url: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
+    #[prost(string, tag="3")]
     pub display_name: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ConnectionSetting {
-    #[prost(string, tag = "1")]
+    #[prost(string, tag="1")]
     pub id: ::prost::alloc::string::String,
-    #[prost(enumeration = "Provider", tag = "2")]
+    #[prost(enumeration="Provider", tag="2")]
     pub provider: i32,
-    #[prost(bool, tag = "3")]
+    #[prost(bool, tag="3")]
     pub hidden: bool,
-    #[prost(string, tag = "4")]
+    #[prost(string, tag="4")]
     pub display_name: ::prost::alloc::string::String,
-    #[prost(string, tag = "5")]
+    #[prost(string, tag="5")]
     pub url: ::prost::alloc::string::String,
-    #[prost(string, tag = "6")]
+    #[prost(string, tag="6")]
     pub created_at: ::prost::alloc::string::String,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]

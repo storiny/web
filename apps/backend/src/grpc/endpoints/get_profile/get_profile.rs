@@ -17,7 +17,10 @@ use crate::{
         },
         service::GrpcService,
     },
-    utils::generate_connection_url::generate_connection_url,
+    utils::{
+        generate_connection_url::generate_connection_url,
+        to_iso8601::to_iso8601,
+    },
 };
 use serde::Deserialize;
 use sqlx::FromRow;
@@ -137,7 +140,7 @@ pub async fn get_profile(
                 text: profile.status_text,
                 expires_at: profile
                     .status_expires_at
-                    .and_then(|value| Some(value.to_string())),
+                    .and_then(|value| Some(to_iso8601(&value))),
                 duration: profile
                     .status_duration
                     .unwrap_or(StatusDuration::Day1 as i16) as i32,
@@ -155,7 +158,7 @@ pub async fn get_profile(
         banner_id: profile.banner_id.and_then(|value| Some(value.to_string())),
         banner_hex: profile.banner_hex,
         location: profile.location,
-        created_at: profile.created_at.to_string(),
+        created_at: to_iso8601(&profile.created_at),
         public_flags: profile.public_flags as u32,
         story_count: profile.story_count as u32,
         follower_count: profile.follower_count as u32,

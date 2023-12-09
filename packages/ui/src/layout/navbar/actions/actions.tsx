@@ -126,6 +126,7 @@ const LoggedInMenu = ({
           modal_props={{
             modal: true
           }}
+          style={{ maxWidth: "200px" }}
           text={user?.status?.text}
         />
       </MenuItemUnstyled>

@@ -17,6 +17,7 @@ use crate::{
         },
         service::GrpcService,
     },
+    utils::to_iso8601::to_iso8601,
 };
 use redis::AsyncCommands;
 use sqlx::FromRow;
@@ -252,13 +253,15 @@ SET created_at = NOW()
         preview_image: story
             .preview_image
             .and_then(|value| Some(value.to_string())),
-        created_at: story.created_at.to_string(),
-        edited_at: story.edited_at.and_then(|value| Some(value.to_string())),
-        published_at: story.published_at.and_then(|value| Some(value.to_string())),
+        created_at: to_iso8601(&story.created_at),
+        edited_at: story.edited_at.and_then(|value| Some(to_iso8601(&value))),
+        published_at: story
+            .published_at
+            .and_then(|value| Some(to_iso8601(&value))),
         first_published_at: story
             .first_published_at
-            .and_then(|value| Some(value.to_string())),
-        deleted_at: story.deleted_at.and_then(|value| Some(value.to_string())),
+            .and_then(|value| Some(to_iso8601(&value))),
+        deleted_at: story.deleted_at.and_then(|value| Some(to_iso8601(&value))),
         user: Some(ExtendedUser {
             id: story.user_id.to_string(),
             name: story.user_name,
@@ -271,7 +274,7 @@ SET created_at = NOW()
             public_flags: story.user_public_flags as u32,
             is_private: story.user_is_private,
             location: story.user_location,
-            created_at: story.user_created_at.to_string(),
+            created_at: to_iso8601(&story.user_created_at),
             follower_count: story.user_follower_count as u32,
             status: if story.user_has_status {
                 Some(BareStatus {
@@ -279,7 +282,7 @@ SET created_at = NOW()
                     text: story.user_status_text,
                     expires_at: story
                         .user_status_expires_at
-                        .and_then(|value| Some(value.to_string())),
+                        .and_then(|value| Some(to_iso8601(&value))),
                 })
             } else {
                 None

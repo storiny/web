@@ -26,6 +26,7 @@ struct Status {
     duration: i16,
     emoji: Option<String>,
     text: Option<String>,
+    #[serde(with = "crate::iso8601::time::option")]
     expires_at: Option<OffsetDateTime>,
     visibility: i16,
 }

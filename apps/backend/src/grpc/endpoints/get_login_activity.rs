@@ -16,6 +16,7 @@ use crate::{
             get_user_sessions,
             UserSession,
         },
+        to_iso8601::to_iso8601,
     },
 };
 use cookie::Key;
@@ -77,9 +78,10 @@ fn convert_user_session_to_login(
             })
         }),
         is_active: is_active_login(session_secret_key, key, token),
-        created_at: OffsetDateTime::from_unix_timestamp(user_session.created_at)
-            .unwrap_or(OffsetDateTime::now_utc())
-            .to_string(),
+        created_at: to_iso8601(
+            &OffsetDateTime::from_unix_timestamp(user_session.created_at)
+                .unwrap_or(OffsetDateTime::now_utc()),
+        ),
     }
 }
 
