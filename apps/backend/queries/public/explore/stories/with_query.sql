@@ -50,7 +50,8 @@ WITH explore_stories AS (WITH search_query AS (SELECT PLAINTO_TSQUERY('english',
 							   -- Public
 							   s.visibility = 2
 						   AND s.search_vec @@ (SELECT tsq FROM search_query)
-						   AND s.category::TEXT = $2
+							   -- Include all the stories when the category is `others`
+						   AND CASE WHEN $2 = 'others' THEN TRUE ELSE s.category::TEXT = $2 END
 						   AND s.published_at IS NOT NULL
 						   AND s.deleted_at IS NULL
 						 GROUP BY

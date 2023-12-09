@@ -151,7 +151,8 @@ FROM
             AND "u->story".visibility = 2
             AND "u->story".published_at IS NOT NULL
             AND "u->story".deleted_at IS NULL
-            AND "u->story".category::TEXT = $1
+            -- Include all the stories when the category is `others`
+            AND CASE WHEN $1 = 'others' THEN TRUE ELSE "u->story".category::TEXT = $1 END
 "#,
     );
 
