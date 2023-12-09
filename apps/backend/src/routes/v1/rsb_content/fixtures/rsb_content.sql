@@ -4,7 +4,7 @@ WITH inserted_users AS (
 					   ),
 	 inserted_tags  AS (
 		 INSERT INTO tags (name) VALUES ('tag-1'), ('tag-2'), ('tag-3')
-	 )
+					   )
 INSERT
 INTO
 	stories (id, title, slug, user_id, published_at, first_published_at)

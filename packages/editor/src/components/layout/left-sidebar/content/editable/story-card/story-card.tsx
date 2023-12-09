@@ -13,7 +13,11 @@ import ImageIcon from "~/icons/image";
 import PhotoEditIcon from "~/icons/photo-edit";
 import css from "~/theme/main.module.scss";
 
-import { doc_status_atom, story_metadata_atom } from "../../../../../../atoms";
+import {
+  DOC_STATUS,
+  doc_status_atom,
+  story_metadata_atom
+} from "../../../../../../atoms";
 import StoryMetadataModal from "../../../../../metadata-modal";
 import styles from "./story-card.module.scss";
 import { EditorStoryCardProps } from "./story-card.props";
@@ -22,7 +26,7 @@ const EditorStoryCard = (props: EditorStoryCardProps): React.ReactElement => {
   const { className, status, ...rest } = props;
   const [story, set_story] = use_atom(story_metadata_atom);
   const doc_status = use_atom_value(doc_status_atom);
-  const publishing = doc_status === "publishing";
+  const publishing = doc_status === DOC_STATUS.publishing;
 
   return (
     <article {...rest} className={clsx(styles["story-card"], className)}>

@@ -213,9 +213,11 @@ AND (
         SELECT 1
         FROM friends
         WHERE
-                (transmitter_id = source_user.id AND receiver_id = $4)
-            OR 
-                (transmitter_id = $4 AND receiver_id = source_user.id)
+            (
+                    (transmitter_id = source_user.id AND receiver_id = $4)
+                OR 
+                    (transmitter_id = $4 AND receiver_id = source_user.id)
+            )
             AND accepted_at IS NOT NULL
     )
 )
@@ -230,9 +232,11 @@ AND (
                 SELECT 1
                 FROM friends
                 WHERE
-                        (transmitter_id = source_user.id AND receiver_id = $4)
-                    OR
-                        (transmitter_id = $4 AND receiver_id = source_user.id)
+                    (
+                            (transmitter_id = source_user.id AND receiver_id = $4)
+                        OR
+                            (transmitter_id = $4 AND receiver_id = source_user.id)
+                    )
                     AND accepted_at IS NOT NULL
             )
     )

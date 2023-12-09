@@ -7,12 +7,12 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import NoSsr from "~/components/no-ssr";
-import { capitalize } from "~/utils/capitalize";
 
-import { doc_status_atom } from "../../atoms";
+import { DOC_STATUS, doc_status_atom, DocStatus } from "../../atoms";
 import ReadOnlyPlugin from "../../plugins/read-only";
 import RichTextPlugin from "../../plugins/rich-text";
 import { use_sidebars_shortcut } from "../../shortcuts/shortcuts";
+import { is_doc_editable } from "../../utils/is-doc-editable";
 import EditorContentEditable from "../content-editable";
 import { EditorProps } from "../editor";
 import EditorErrorBoundary from "../error-boundary";
@@ -60,6 +60,28 @@ const HorizontalRulePlugin = dynamic(() =>
 );
 const RegisterTools = dynamic(() => import("../register-tools"));
 
+const DOC_STATUS_TO_LABEL_MAP: Partial<Record<DocStatus, string>> = {
+  [DOC_STATUS.connecting]: "Connecting…",
+  [DOC_STATUS.reconnecting]: "Reconnecting…",
+  [DOC_STATUS.publishing]: "Publishing…",
+  [DOC_STATUS.published]: "This story has been published.",
+  [DOC_STATUS.unpublished]: "This story has been unpublished.",
+  [DOC_STATUS.deleted]: "This story has been deleted.",
+  [DOC_STATUS.disconnected]: "Connection lost",
+  [DOC_STATUS.join_realm_full]:
+    "This story has reached the maximum number of editors.",
+  [DOC_STATUS.join_missing_story]: "This story does not exist",
+  [DOC_STATUS.join_unauthorized]:
+    "You are not authorized to access this story.",
+  [DOC_STATUS.doc_corrupted]: "This document has been corrupted",
+  [DOC_STATUS.lifetime_exceeded]:
+    "This document has been terminated due to inactivity. Reload this window to reconnect.",
+  [DOC_STATUS.internal]:
+    "This document has been terminated due to an internal cause.",
+  [DOC_STATUS.stale_peer]:
+    "You have been disconnected due to inactivity. Reload this window to reconnect."
+};
+
 const EditorBody = (props: EditorProps): React.ReactElement => {
   const { role, doc_id, initial_doc, read_only } = props;
   use_sidebars_shortcut();
@@ -71,7 +93,8 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
     <article
       className={clsx(styles.body, read_only && styles["read-only"])}
       data-testid={"editor-container"}
-      {...(!read_only && !["connected", "syncing"].includes(doc_status)
+      {...(!read_only &&
+      ![DOC_STATUS.connected, DOC_STATUS.syncing].includes(doc_status)
         ? // eslint-disable-next-line prefer-snakecase/prefer-snakecase
           { style: { pointerEvents: "none", userSelect: "none" } }
         : {})}
@@ -106,7 +129,7 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
           <ListMaxIndentLevelPlugin />
           <MaxLengthPlugin />
           <MarkdownPlugin />
-          {doc_status !== "publishing" && (
+          {is_doc_editable(doc_status) && (
             <React.Fragment>
               <TabFocusPlugin />
               <AutoFocusPlugin />
@@ -117,28 +140,20 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
         </React.Fragment>
       )}
       {!is_editable || read_only ? <ClickableLinkPlugin /> : null}
-      {!read_only && !["connected", "syncing"].includes(doc_status) && (
+      {!read_only &&
+      ![DOC_STATUS.connected, DOC_STATUS.syncing].includes(doc_status) ? (
         <EditorLoader
-          hide_progress={[
-            "disconnected",
-            "reconnecting",
-            "overloaded",
-            "forbidden"
-          ].includes(doc_status)}
-          label={
-            doc_status === "publishing"
-              ? "Publishing…"
-              : doc_status === "disconnected"
-              ? "Connection lost"
-              : doc_status === "overloaded"
-              ? "This story has reached the maximum number of editors."
-              : doc_status === "forbidden"
-              ? "You do not have the access to edit this story."
-              : `${capitalize(doc_status)}…`
+          hide_progress={
+            ![
+              DOC_STATUS.connecting,
+              DOC_STATUS.reconnecting,
+              DOC_STATUS.publishing
+            ].includes(doc_status)
           }
+          label={DOC_STATUS_TO_LABEL_MAP[doc_status] || "Internal error"}
           overlay
         />
-      )}
+      ) : null}
       {read_only && (
         <React.Fragment>
           <StoryFooter />

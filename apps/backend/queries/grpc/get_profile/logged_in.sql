@@ -17,12 +17,12 @@ SELECT u.id,
 	   CASE
 		   WHEN (
 			   -- Everyone
-					   u.following_list_visibility = 1
+			   u.following_list_visibility = 1
 				   -- Friends
 				   OR (
-								   u.following_list_visibility = 2
-							   AND "u->is_friend".transmitter_id IS NOT NULL
-						   )
+				   u.following_list_visibility = 2
+					   AND "u->is_friend".transmitter_id IS NOT NULL
+				   )
 			   )
 			   THEN u.following_count
 	   END                                                           AS "following_count",
@@ -30,12 +30,12 @@ SELECT u.id,
 	   CASE
 		   WHEN (
 			   -- Everyone
-					   u.friend_list_visibility = 1
+			   u.friend_list_visibility = 1
 				   -- Friends
 				   OR (
-								   u.friend_list_visibility = 2
-							   AND "u->is_friend".transmitter_id IS NOT NULL
-						   )
+				   u.friend_list_visibility = 2
+					   AND "u->is_friend".transmitter_id IS NOT NULL
+				   )
 			   )
 			   THEN u.friend_count
 	   END                                                           AS "friend_count",
@@ -54,7 +54,7 @@ SELECT u.id,
 	   CASE
 		   WHEN "u->status".user_id IS NOT NULL AND (
 			   -- Global
-					   "u->status".visibility = 1
+			   "u->status".visibility = 1
 				   -- Followers
 				   OR ("u->status".visibility = 2 AND "u->is_following".follower_id IS NOT NULL)
 				   -- Friends
@@ -96,9 +96,9 @@ FROM
 		-- Boolean friend flag
 		LEFT OUTER JOIN friends AS "u->is_friend"
 						ON (
-								   ("u->is_friend".transmitter_id = u.id AND "u->is_friend".receiver_id = $2)
+							   ("u->is_friend".transmitter_id = u.id AND "u->is_friend".receiver_id = $2)
 								   OR
-								   ("u->is_friend".receiver_id = u.id AND "u->is_friend".transmitter_id = $2)
+							   ("u->is_friend".receiver_id = u.id AND "u->is_friend".transmitter_id = $2)
 							   )
 							AND "u->is_friend".accepted_at IS NOT NULL
 							AND "u->is_friend".deleted_at IS NULL

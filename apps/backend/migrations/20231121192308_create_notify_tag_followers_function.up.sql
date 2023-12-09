@@ -28,7 +28,7 @@ BEGIN
 											   stories
 										   WHERE
 											   id = (SELECT story_id FROM story_tag_relation)
-				 ),
+										  ),
 				 inserted_notification AS (
 					 INSERT INTO notifications (entity_type, entity_id, notifier_id)
 						 SELECT entity_type_arg,
@@ -37,7 +37,7 @@ BEGIN
 						 WHERE
 							 EXISTS (SELECT 1 FROM published_story)
 						 RETURNING id
-				 )
+										  )
 			INSERT
 			INTO
 				notification_outs (notified_id, notification_id)

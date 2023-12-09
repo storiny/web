@@ -2,7 +2,7 @@ WITH incremented_view_count AS (
 	UPDATE stories
 		SET view_count = view_count + 1
 		WHERE
-					slug = $1
+			slug = $1
 				AND published_at IS NOT NULL
 				AND deleted_at IS NULL
 							   )

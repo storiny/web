@@ -4,7 +4,7 @@ WITH inserted_user    AS (
 						 ),
 	 inserted_tag     AS (
 		 INSERT INTO tags (name) VALUES ('tag-1') RETURNING id
-	 )
+						 )
 		,
 	 inserted_stories AS (
 		 INSERT
@@ -13,7 +13,7 @@ WITH inserted_user    AS (
 				 VALUES (2, 'one', 'sample-story-1', (SELECT id FROM inserted_user), 1, NOW(), NOW()),
 						(3, 'two', 'sample-story-2', (SELECT id FROM inserted_user), 3, NOW(), NOW()),
 						(4, 'three', 'sample-story-3', (SELECT id FROM inserted_user), 2, NOW(), NOW())
-	 )
+						 )
 INSERT
 INTO
 	story_tags (story_id, tag_id)

@@ -6,7 +6,7 @@ WITH inserted_user  AS (
 		 INSERT INTO stories (id, user_id, published_at)
 			 VALUES (2, (SELECT id FROM inserted_user), NOW())
 			 RETURNING id
-	 )
+					   )
 INSERT
 INTO
 	comments (id, hidden, content, user_id, story_id)

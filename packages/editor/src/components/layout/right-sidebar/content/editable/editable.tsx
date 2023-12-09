@@ -6,7 +6,7 @@ import React from "react";
 import Divider from "~/components/divider";
 import css from "~/theme/main.module.scss";
 
-import { doc_status_atom } from "../../../../../atoms";
+import { DOC_STATUS, doc_status_atom } from "../../../../../atoms";
 import Alignment from "./alignment";
 import Appearance from "./appearance";
 import History from "./history";
@@ -17,8 +17,11 @@ import TextStyle from "./text-style";
 
 const SuspendedEditorRightSidebarEditableContent = (): React.ReactElement => {
   const doc_status = use_atom_value(doc_status_atom);
-  const document_loading = ["connecting", "reconnecting"].includes(doc_status);
-  const publishing = doc_status === "publishing";
+  const document_loading = [
+    DOC_STATUS.connecting,
+    DOC_STATUS.reconnecting
+  ].includes(doc_status);
+  const publishing = doc_status === DOC_STATUS.publishing;
   const disabled = document_loading || publishing;
 
   return (

@@ -90,8 +90,8 @@ mod tests {
         // Insert a soft-deleted story.
         let result = sqlx::query(
             r#"
-INSERT INTO stories (id, user_id, deleted_at, published_at)
-VALUES ($1, $2, NOW(), NOW())
+INSERT INTO stories (id, user_id, deleted_at, published_at, first_published_at)
+VALUES ($1, $2, NOW(), NOW(), NOW())
 "#,
         )
         .bind(2_i64)
@@ -112,7 +112,10 @@ VALUES ($1, $2, NOW(), NOW())
         // Story should get updated in the database.
         let result = sqlx::query(
             r#"
-SELECT deleted_at FROM stories
+SELECT
+    first_published_at,
+    deleted_at
+FROM stories
 WHERE id = $1
 "#,
         )
@@ -123,6 +126,11 @@ WHERE id = $1
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("first_published_at")
                 .is_none()
         );
 

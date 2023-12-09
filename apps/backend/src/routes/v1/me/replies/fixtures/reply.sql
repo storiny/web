@@ -8,7 +8,7 @@ WITH inserted_user  AS (
 				 stories (slug, user_id, published_at)
 				 VALUES ('sample-story', (SELECT id FROM inserted_user), NOW())
 				 RETURNING id
-	 )
+					   )
 INSERT
 INTO
 	comments (id, content, user_id, story_id)

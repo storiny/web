@@ -2,7 +2,7 @@ WITH incremented_view_count AS (
 	UPDATE stories
 		SET view_count = view_count + 1
 		WHERE
-					slug = $1
+			slug = $1
 				AND published_at IS NOT NULL
 				AND deleted_at IS NULL
 							   )
@@ -63,7 +63,7 @@ SELECT s.id,
 	   CASE
 		   WHEN "s->user->status".user_id IS NOT NULL AND (
 			   -- Global
-					   "s->user->status".visibility = 1
+			   "s->user->status".visibility = 1
 				   -- Followers
 				   OR ("s->user->status".visibility = 2 AND "s->user->is_following".follower_id IS NOT NULL)
 				   -- Friends
@@ -123,11 +123,11 @@ FROM
 		-- Boolean user friend flag
 		LEFT OUTER JOIN friends AS "s->user->is_friend"
 						ON (
-								   ("s->user->is_friend".transmitter_id = "s->user".id AND
-									"s->user->is_friend".receiver_id = $2)
+							   ("s->user->is_friend".transmitter_id = "s->user".id AND
+								"s->user->is_friend".receiver_id = $2)
 								   OR
-								   ("s->user->is_friend".receiver_id = "s->user".id AND
-									"s->user->is_friend".transmitter_id = $2)
+							   ("s->user->is_friend".receiver_id = "s->user".id AND
+								"s->user->is_friend".transmitter_id = $2)
 							   )
 							AND "s->user->is_friend".accepted_at IS NOT NULL
 							AND "s->user->is_friend".deleted_at IS NULL

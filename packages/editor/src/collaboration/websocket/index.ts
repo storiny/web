@@ -12,6 +12,7 @@ import * as sync_protocol from "y-protocols/sync";
 import { Doc } from "yjs";
 
 export type ProviderEvent =
+  | "stale"
   | "status"
   | "synced"
   | "sync"
@@ -19,7 +20,8 @@ export type ProviderEvent =
   | "reload"
   | "connection-error"
   | "connection-close"
-  | "auth";
+  | "auth"
+  | "destroy";
 
 type AnyFunction = (...args: any) => any;
 
@@ -28,15 +30,29 @@ type ProviderEventHandle = <N extends ProviderEvent>(
   fn: N extends "sync" | "synced"
     ? (is_synced: boolean) => void
     : N extends "auth"
-    ? (reason: "forbidden" | "overloaded") => void
+    ? (reason: "forbidden") => void
+    : N extends "destroy"
+    ? (
+        reason:
+          | "story_published"
+          | "story_unpublished"
+          | "story_deleted"
+          | "doc_overload"
+          | "lifetime_exceeded"
+          | "internal"
+      ) => void
     : N extends "status"
     ? (arg: { status: "connecting" | "connected" | "disconnected" }) => void
     : N extends "update"
     ? (arg: unknown) => void
     : N extends "reload"
     ? (doc: Doc) => void
-    : N extends `connection-${"error" | "close"}`
+    : N extends "connection-error"
     ? (event: Event) => void
+    : N extends "connection-close"
+    ? (event: CloseEvent) => void
+    : N extends "stale"
+    ? () => void
     : AnyFunction
 ) => void;
 
@@ -135,16 +151,15 @@ MESSAGE_HANDLERS[Message.AUTH] = (_, decoder, provider): void => {
 
 /**
  * Internal event message sent by the server
- * @param encoder Encoder
+ * @param _
  * @param decoder Decoder
  * @param provider Websocket provider
  */
-MESSAGE_HANDLERS[Message.INTERNAL] = (encoder, decoder, provider): void => {
-  // Encoding.writeVarUint(encoder, Message.SYNC);
-  const event = decoding.readVarString(decoder);
-  console.log("custom!!!---", event);
-  // TODO: Handle server sent events here (published and deleted)
-  // provider.emit(event, []);
+MESSAGE_HANDLERS[Message.INTERNAL] = (_, decoder, provider): void => {
+  const event_message = decoding.readVarString(decoder);
+  const reason = event_message.split(":")[1] || event_message;
+  provider.emit("destroy", [reason]);
+  provider.destroy();
 };
 
 /**
@@ -161,8 +176,6 @@ const read_message = (
   const decoder = decoding.createDecoder(buf);
   const encoder = encoding.createEncoder();
   const message_type = decoding.readVarUint(decoder);
-  // This should return 5
-  console.error(message_type);
   const message_handler = provider.message_handlers[message_type];
 
   if (message_handler) {
@@ -189,8 +202,6 @@ const setup_ws = (provider: WebsocketProvider): void => {
     provider.synced = false;
 
     websocket.onmessage = (event): void => {
-      console.log(event);
-      // TODO: Check if this is a custom message
       provider.ws_last_message_received = Date.now();
       const encoder = read_message(provider, new Uint8Array(event.data), true);
 
@@ -491,10 +502,10 @@ export class WebsocketProvider {
         this.wsconnected &&
         MESSAGE_RECONNECT_TIMEOUT < Date.now() - this.ws_last_message_received
       ) {
-        // TODO: This is the culprit which is causing auto close of the WS.
         // Close the connection when no messages are received since a long
         // duration, Not even the client's own awareness updates (which are
         // updated every 15 seconds)
+        this.emit("stale", []);
         this.ws?.close();
       }
     }, MESSAGE_RECONNECT_TIMEOUT / 10);

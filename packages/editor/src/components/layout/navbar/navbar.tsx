@@ -34,7 +34,11 @@ import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 import { handle_api_error } from "~/utils/handle-api-error";
 
-import { doc_status_atom, story_metadata_atom } from "../../../atoms";
+import {
+  DOC_STATUS,
+  doc_status_atom,
+  story_metadata_atom
+} from "../../../atoms";
 import { $is_tk_node } from "../../../nodes/tk";
 import { $get_children_recursively } from "../../../utils/get-children-recursively";
 import { StoryStatus } from "../../editor";
@@ -103,6 +107,7 @@ const Publish = ({
   status: Exclude<StoryStatus, "deleted">;
 }): React.ReactElement => {
   const toast = use_toast();
+  const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const router = use_router();
   const story = use_atom_value(story_metadata_atom);
   const [editor] = use_lexical_composer_context();
@@ -114,21 +119,24 @@ const Publish = ({
    * Publishes the story
    */
   const handle_publish = React.useCallback(() => {
-    set_doc_status("publishing");
+    set_doc_status(DOC_STATUS.publishing);
+
     publish_story({ id: story.id, status })
       .unwrap()
-      .then(() => router.refresh())
+      .then(() =>
+        router.replace(`/${story.user?.username || "view"}/${story.id}`)
+      )
       .catch((error) => {
-        set_doc_status("connected");
+        set_doc_status(DOC_STATUS.connected);
         handle_api_error(error, toast, null, "Could not publish your story");
       });
-  }, [publish_story, router, set_doc_status, status, story.id, toast]);
+  }, [publish_story, router, set_doc_status, status, story, toast]);
 
   const [element] = use_confirmation(
     ({ open_confirmation }) => (
       <Button
         check_auth
-        disabled={disabled || doc_status === "publishing"}
+        disabled={disabled || doc_status === DOC_STATUS.publishing}
         onClick={(event): void => {
           event.preventDefault(); // Prevent opening the modal
 
@@ -152,7 +160,9 @@ const Publish = ({
             .catch(() => toast("Could not process your story", "error"));
         }}
       >
-        Publish
+        {story.published_at && !is_smaller_than_mobile
+          ? "Publish changes"
+          : "Publish"}
       </Button>
     ),
     {
@@ -233,7 +243,10 @@ const EditorNavbar = ({
   const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const doc_status = use_atom_value(doc_status_atom);
-  const document_loading = ["connecting", "reconnecting"].includes(doc_status);
+  const document_loading = [
+    DOC_STATUS.connecting,
+    DOC_STATUS.reconnecting
+  ].includes(doc_status);
 
   return (
     <header className={styles["editor-navbar"]} role={"banner"}>
@@ -245,6 +258,7 @@ const EditorNavbar = ({
               <IconButton
                 className={clsx(css["focus-invert"], styles.x, styles.button)}
                 // TODO: disabled={document_loading}
+                // Implement version history
                 disabled
                 size={"lg"}
                 variant={"ghost"}
@@ -283,7 +297,8 @@ const EditorNavbar = ({
           <React.Fragment>
             <Button
               disabled
-              // TODO: Fix on stable disabled={document_loading}
+              // TODO: disabled={document_loading}
+              // Share story
               variant={"hollow"}
             >
               Share

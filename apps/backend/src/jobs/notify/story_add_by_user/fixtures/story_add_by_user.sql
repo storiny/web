@@ -7,10 +7,10 @@ WITH inserted_users    AS (
 	 inserted_story    AS (
 		 INSERT INTO stories (id, user_id, slug, published_at)
 			 VALUES (4, 1, 'some-story', NOW())
-	 ),
+						  ),
 	 inserted_follower AS (
 		 INSERT INTO relations (follower_id, followed_id) VALUES (2, 1)
-	 )
+						  )
 INSERT
 INTO
 	friends (transmitter_id, receiver_id, accepted_at)

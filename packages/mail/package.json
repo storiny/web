@@ -11,6 +11,7 @@
     "@storiny/eslint-config": "*",
     "@storiny/prettier-config": "*",
     "@storiny/tsconfig": "*",
+    "@types/node": "^20.10.4",
     "eslint": "^8.51.0",
     "mjml": "^4.14.1",
     "prettier": "^3.0.3",

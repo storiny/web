@@ -9,8 +9,9 @@ BEGIN
 			   FROM
 				   stories
 			   WHERE
-					id = NEW.story_id AND deleted_at IS NOT NULL
-				 OR published_at IS NULL
+					 id = NEW.story_id
+				 AND (deleted_at IS NOT NULL
+				   OR published_at IS NULL)
 			  ) OR EXISTS(SELECT 1
 						  FROM
 							  users

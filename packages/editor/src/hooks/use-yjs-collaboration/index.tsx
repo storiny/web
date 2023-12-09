@@ -5,7 +5,7 @@ import React from "react";
 import { createPortal as create_portal } from "react-dom";
 import { Doc, Transaction, UndoManager, YEvent } from "yjs";
 
-import { awareness_atom, doc_status_atom } from "../../atoms";
+import { awareness_atom, DOC_STATUS, doc_status_atom } from "../../atoms";
 import { ExcludedProperties } from "../../collaboration/bindings";
 import { Binding, create_binding } from "../../collaboration/bindings";
 import {
@@ -17,6 +17,20 @@ import { initialize_editor } from "../../utils/initialize-editor";
 import { sync_cursor_positions } from "../../utils/sync-cursor-positions";
 import { sync_lexical_update_to_yjs } from "../../utils/sync-lexical-update-to-yjs";
 import { sync_yjs_changes_to_lexical } from "../../utils/sync-yjs-changes-to-lexical";
+
+// The websocket connection close code to document status map. Keep this in
+// sync with the `EnterRealmError` enum on the server.
+const ERROR_CODE_TO_DOC_STATUS_MAP: Record<
+  string,
+  (typeof DOC_STATUS)[keyof typeof DOC_STATUS]
+> = {
+  "3001": DOC_STATUS.join_missing_story,
+  "3002": DOC_STATUS.join_realm_full,
+  "3003": DOC_STATUS.join_unauthorized,
+  "3004": DOC_STATUS.join_unauthorized,
+  "3005": DOC_STATUS.doc_corrupted,
+  "4000": DOC_STATUS.internal
+};
 
 /**
  * Creates the editor (skipping collab)
@@ -68,7 +82,7 @@ const clear_editor_skip_collab = (
 };
 
 /**
- * Hook for using yjs collaboration
+ * Hook for using yjs collaboration.
  * @param name User name
  * @param doc_map Document map
  * @param should_bootstrap Whether to bootstrap
@@ -91,7 +105,7 @@ export const use_yjs_collaboration = ({
     Partial<Pick<CollabLocalState, "awareness_data">>;
   provider: Provider;
   should_bootstrap: boolean;
-}): [React.ReactElement, Binding] => {
+}): [React.ReactPortal, Binding] => {
   const [editor] = use_lexical_composer_context();
   const is_reloading_doc = React.useRef(false);
   const connected_once_ref = React.useRef<boolean>(false);
@@ -120,8 +134,8 @@ export const use_yjs_collaboration = ({
     const { awareness } = provider;
 
     /**
-     * Handles status updates
-     * @param status Status
+     * Handles the websocket connection status updates.
+     * @param status The next connection status.
      */
     const handle_status = ({
       status
@@ -129,9 +143,11 @@ export const use_yjs_collaboration = ({
       status: "connecting" | "connected" | "disconnected";
     }): void => {
       set_doc_status(
-        status === "connecting" && connected_once_ref.current
-          ? "reconnecting"
-          : status
+        status === "connecting"
+          ? connected_once_ref.current
+            ? DOC_STATUS.reconnecting
+            : DOC_STATUS.connecting
+          : DOC_STATUS.disconnected
       );
 
       if (status === "connected") {
@@ -140,16 +156,20 @@ export const use_yjs_collaboration = ({
     };
 
     /**
-     * Handles provider authentication
-     * @param reason Rejection reason
+     * Handles the peer authentication login.
+     *
+     * We currently do not use this method to authenticate the peer. The user
+     * authentication logic is handled during the handshake request and the
+     * rejection is catched by examining the event code of the websocket
+     * `connection-close` event.
      */
-    const handle_auth = (reason: "forbidden" | "overloaded"): void => {
-      set_doc_status(reason);
+    const handle_auth = (): void => {
+      set_doc_status(DOC_STATUS.join_unauthorized);
     };
 
     /**
-     * Handles sync event
-     * @param is_synced Synced flag
+     * Handles the sync event.
+     * @param is_synced The synced boolean flag.
      */
     const handle_sync = (is_synced: boolean): void => {
       if (
@@ -162,27 +182,81 @@ export const use_yjs_collaboration = ({
         initialize_editor(editor);
       }
 
-      set_doc_status("connected");
+      set_doc_status(DOC_STATUS.connected);
       is_reloading_doc.current = false;
     };
 
     /**
-     * Handles reload event
-     * @param next_doc YDoc
+     * Handles the reload event.
+     * @param next_doc The next document instance.
      */
     const handle_reload = (next_doc: Doc): void => {
       clear_editor_skip_collab(editor, binding);
       set_doc(next_doc);
+
       doc_map.set("main", next_doc);
-      set_doc_status("syncing");
+      set_doc_status(DOC_STATUS.syncing);
+
       is_reloading_doc.current = true;
     };
 
     /**
-     * Handles awareness update
+     * Handles an awareness update.
      */
     const handle_awareness_update = (): void => {
       sync_cursor_positions(binding, provider);
+    };
+
+    /**
+     * Handles an internal realm destroy event.
+     * @param reason The destroy reason.
+     */
+    const handle_destroy = (
+      reason:
+        | "story_published"
+        | "story_unpublished"
+        | "story_deleted"
+        | "doc_overload"
+        | "lifetime_exceeded"
+        | "internal"
+    ): void => {
+      set_doc_status(
+        reason === "story_published"
+          ? DOC_STATUS.published
+          : reason === "story_unpublished"
+          ? DOC_STATUS.unpublished
+          : reason === "story_deleted"
+          ? DOC_STATUS.deleted
+          : reason === "lifetime_exceeded"
+          ? DOC_STATUS.lifetime_exceeded
+          : DOC_STATUS.internal
+      );
+    };
+
+    /**
+     * Handles an event fired when the current peer has been disconnceted for
+     * being inactive for too long.
+     */
+    const handle_stale = (): void => {
+      set_doc_status(DOC_STATUS.stale_peer);
+    };
+
+    /**
+     * Handles errors received while joining the realm.
+     * @param event The connection close event from the handshake request.
+     */
+    const handle_connection_close = (event: CloseEvent): void => {
+      const error_code = event.code;
+      set_doc_status(
+        ERROR_CODE_TO_DOC_STATUS_MAP[error_code] || DOC_STATUS.internal
+      );
+    };
+
+    /**
+     * Handles the websocket connection errors.
+     */
+    const handle_connection_error = (): void => {
+      set_doc_status(DOC_STATUS.disconnected);
     };
 
     set_awareness(awareness);
@@ -197,10 +271,15 @@ export const use_yjs_collaboration = ({
     provider.on("status", handle_status);
     provider.on("sync", handle_sync);
     provider.on("auth", handle_auth);
+    provider.on("stale", handle_stale);
+    provider.on("destroy", handle_destroy);
+    provider.on("connection-close", handle_connection_close);
+    provider.on("connection-error", handle_connection_error);
+
     awareness.on("update", handle_awareness_update);
 
     const on_yjs_tree_changes = (
-      // The below `any` type is taken directly from the vendor types for yjs
+      // The below `any` type is taken directly from the vendor types for Yjs.
       events: Array<YEvent<any>>,
       transaction: Transaction
     ): void => {
@@ -216,7 +295,8 @@ export const use_yjs_collaboration = ({
       }
     };
 
-    // This updates the local editor state when we receive updates from other clients
+    // This updates the local editor state when we receive updates from other
+    // clients.
     root.get_shared_type().observeDeep(on_yjs_tree_changes);
 
     const remove_listener = editor.registerUpdateListener(
@@ -243,7 +323,7 @@ export const use_yjs_collaboration = ({
       }
     );
 
-    // Connect to server
+    // Connect to realm server.
     connect();
 
     return () => {
@@ -251,13 +331,21 @@ export const use_yjs_collaboration = ({
         disconnect();
       }
 
+      // Cleanup listeners.
       provider.off("reload", handle_reload);
       provider.off("status", handle_status);
       provider.off("sync", handle_sync);
       provider.off("auth", handle_auth);
+      provider.off("stale", handle_stale);
+      provider.off("destroy", handle_destroy);
+      provider.off("connection-close", handle_connection_close);
+      provider.off("connection-error", handle_connection_error);
+
       awareness.off("update", handle_awareness_update);
+
       root.get_shared_type().unobserveDeep(on_yjs_tree_changes);
       doc_map.delete("main");
+
       remove_listener();
     };
 
@@ -290,5 +378,5 @@ export const use_yjs_collaboration = ({
     [binding]
   );
 
-  return [cursors_container, binding];
+  return [cursors_container as React.ReactPortal, binding];
 };

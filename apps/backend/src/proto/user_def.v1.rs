@@ -2,25 +2,25 @@
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct BareStatus {
-    #[prost(string, optional, tag="1")]
+    #[prost(string, optional, tag = "1")]
     pub emoji: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="2")]
+    #[prost(string, optional, tag = "2")]
     pub text: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="3")]
+    #[prost(string, optional, tag = "3")]
     pub expires_at: ::core::option::Option<::prost::alloc::string::String>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ExtendedStatus {
-    #[prost(string, optional, tag="1")]
+    #[prost(string, optional, tag = "1")]
     pub emoji: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="2")]
+    #[prost(string, optional, tag = "2")]
     pub text: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="3")]
+    #[prost(string, optional, tag = "3")]
     pub expires_at: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(enumeration="StatusDuration", tag="4")]
+    #[prost(enumeration = "StatusDuration", tag = "4")]
     pub duration: i32,
-    #[prost(enumeration="StatusVisibility", tag="5")]
+    #[prost(enumeration = "StatusVisibility", tag = "5")]
     pub visibility: i32,
 }
 // User
@@ -28,56 +28,56 @@ pub struct ExtendedStatus {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct BareUser {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
-    #[prost(string, tag="2")]
+    #[prost(string, tag = "2")]
     pub name: ::prost::alloc::string::String,
-    #[prost(string, tag="3")]
+    #[prost(string, tag = "3")]
     pub username: ::prost::alloc::string::String,
-    #[prost(string, optional, tag="4")]
+    #[prost(string, optional, tag = "4")]
     pub avatar_id: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="5")]
+    #[prost(string, optional, tag = "5")]
     pub avatar_hex: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(uint32, tag="6")]
+    #[prost(uint32, tag = "6")]
     pub public_flags: u32,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ExtendedUser {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
-    #[prost(string, tag="2")]
+    #[prost(string, tag = "2")]
     pub name: ::prost::alloc::string::String,
-    #[prost(string, tag="3")]
+    #[prost(string, tag = "3")]
     pub username: ::prost::alloc::string::String,
-    #[prost(string, tag="4")]
+    #[prost(string, tag = "4")]
     pub rendered_bio: ::prost::alloc::string::String,
-    #[prost(string, optional, tag="5")]
+    #[prost(string, optional, tag = "5")]
     pub avatar_id: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="6")]
+    #[prost(string, optional, tag = "6")]
     pub avatar_hex: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(uint32, tag="7")]
+    #[prost(uint32, tag = "7")]
     pub public_flags: u32,
-    #[prost(bool, tag="8")]
+    #[prost(bool, tag = "8")]
     pub is_private: bool,
-    #[prost(string, tag="9")]
+    #[prost(string, tag = "9")]
     pub location: ::prost::alloc::string::String,
-    #[prost(string, tag="10")]
+    #[prost(string, tag = "10")]
     pub created_at: ::prost::alloc::string::String,
-    #[prost(uint32, tag="11")]
+    #[prost(uint32, tag = "11")]
     pub follower_count: u32,
-    #[prost(message, optional, tag="12")]
+    #[prost(message, optional, tag = "12")]
     pub status: ::core::option::Option<BareStatus>,
     /// User specific props
-    #[prost(bool, tag="13")]
+    #[prost(bool, tag = "13")]
     pub is_self: bool,
-    #[prost(bool, tag="14")]
+    #[prost(bool, tag = "14")]
     pub is_following: bool,
-    #[prost(bool, tag="15")]
+    #[prost(bool, tag = "15")]
     pub is_follower: bool,
-    #[prost(bool, tag="16")]
+    #[prost(bool, tag = "16")]
     pub is_friend: bool,
-    #[prost(bool, tag="17")]
+    #[prost(bool, tag = "17")]
     pub is_blocked_by_user: bool,
 }
 // Get user ID
@@ -86,13 +86,13 @@ pub struct ExtendedUser {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetUserIdRequest {
     /// Token from the session cookie
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub token: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetUserIdResponse {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
 }
 // Get username
@@ -100,13 +100,13 @@ pub struct GetUserIdResponse {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetUsernameRequest {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub user_id: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetUsernameResponse {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub username: ::prost::alloc::string::String,
 }
 // Get user relations info
@@ -114,19 +114,19 @@ pub struct GetUsernameResponse {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetUserRelationsInfoRequest {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub user_id: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetUserRelationsInfoResponse {
-    #[prost(uint32, tag="1")]
+    #[prost(uint32, tag = "1")]
     pub follower_count: u32,
-    #[prost(uint32, tag="2")]
+    #[prost(uint32, tag = "2")]
     pub following_count: u32,
-    #[prost(uint32, tag="3")]
+    #[prost(uint32, tag = "3")]
     pub friend_count: u32,
-    #[prost(uint32, tag="4")]
+    #[prost(uint32, tag = "4")]
     pub pending_friend_request_count: u32,
 }
 // Get user blocks count
@@ -134,13 +134,13 @@ pub struct GetUserRelationsInfoResponse {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetUserBlockCountRequest {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub user_id: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetUserBlockCountResponse {
-    #[prost(uint32, tag="1")]
+    #[prost(uint32, tag = "1")]
     pub block_count: u32,
 }
 // Get user mutes count
@@ -148,13 +148,13 @@ pub struct GetUserBlockCountResponse {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetUserMuteCountRequest {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub user_id: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetUserMuteCountResponse {
-    #[prost(uint32, tag="1")]
+    #[prost(uint32, tag = "1")]
     pub mute_count: u32,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
