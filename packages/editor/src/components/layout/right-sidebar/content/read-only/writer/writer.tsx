@@ -14,7 +14,7 @@ import Status from "~/entities/status";
 import MailPlusIcon from "~/icons/mail-plus";
 import UserCheckIcon from "~/icons/user-check";
 import UserPlusIcon from "~/icons/user-plus";
-import { boolean_action } from "~/redux/features";
+import { boolean_action, select_user } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
@@ -59,9 +59,11 @@ const StoryActions = ({ user }: { user: User }): React.ReactElement => {
 
 const StoryWriter = (): React.ReactElement => {
   const story = use_atom_value(story_metadata_atom);
+  const current_user = use_app_selector(select_user);
   const user = story.user!;
   const follower_count =
     use_app_selector((state) => state.entities.follower_counts[user.id]) || 0;
+  const is_self = user.id === current_user?.id;
 
   return (
     <div className={css["flex-col"]}>
@@ -109,8 +111,12 @@ const StoryWriter = (): React.ReactElement => {
           </Typography>
         </React.Fragment>
       ) : null}
-      <Spacer orientation={"vertical"} size={3} />
-      <StoryActions user={user} />
+      {!is_self && (
+        <>
+          <Spacer orientation={"vertical"} size={3} />
+          <StoryActions user={user} />
+        </>
+      )}
     </div>
   );
 };

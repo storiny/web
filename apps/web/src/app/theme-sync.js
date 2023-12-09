@@ -2,17 +2,16 @@
 
 (function () {
   try {
-    const { theme } = JSON.parse(localStorage.getItem("preferences") || "{}");
-    let final_theme = theme || "system";
+    let theme = localStorage.getItem("theme") || "system";
 
     if (theme === "system") {
       if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        final_theme = "dark";
+        theme = "dark";
       } else {
-        final_theme = "light";
+        theme = "light";
       }
     }
 
-    document.documentElement.setAttribute("data-theme", final_theme);
+    document.documentElement.setAttribute("data-theme", theme);
   } catch {}
 })();
