@@ -44,6 +44,8 @@ use crate::{
                 GetDraftsInfoResponse,
                 GetStoriesInfoRequest,
                 GetStoriesInfoResponse,
+                GetStoryMetadataRequest,
+                GetStoryMetadataResponse,
                 GetStoryRequest,
                 GetStoryResponse,
             },
@@ -237,6 +239,13 @@ impl ApiService for GrpcService {
         request: Request<GetStoryRequest>,
     ) -> Result<Response<GetStoryResponse>, Status> {
         endpoints::get_story::get_story(self, request).await
+    }
+
+    async fn get_story_metadata(
+        &self,
+        request: Request<GetStoryMetadataRequest>,
+    ) -> Result<Response<GetStoryMetadataResponse>, Status> {
+        endpoints::get_story_metadata::get_story_metadata(self, request).await
     }
 
     async fn get_comment(

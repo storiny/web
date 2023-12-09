@@ -98,6 +98,10 @@ service ApiService {
    */
   rpc GetStory(story_def.v1.GetStoryRequest) returns (story_def.v1.GetStoryResponse) {}
   /**
+   * Returns the story's metadata
+   */
+  rpc GetStoryMetadata(story_def.v1.GetStoryMetadataRequest) returns (story_def.v1.GetStoryMetadataResponse) {}
+  /**
    * Returns the comment's data
    */
   rpc GetComment(comment_def.v1.GetCommentRequest) returns (comment_def.v1.GetCommentResponse) {}

@@ -813,6 +813,655 @@ impl<'de> serde::Deserialize<'de> for GetStoriesInfoResponse {
         deserializer.deserialize_struct("story_def.v1.GetStoriesInfoResponse", FIELDS, GeneratedVisitor)
     }
 }
+impl serde::Serialize for GetStoryMetadataRequest {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if !self.id_or_slug.is_empty() {
+            len += 1;
+        }
+        if !self.user_id.is_empty() {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("story_def.v1.GetStoryMetadataRequest", len)?;
+        if !self.id_or_slug.is_empty() {
+            struct_ser.serialize_field("idOrSlug", &self.id_or_slug)?;
+        }
+        if !self.user_id.is_empty() {
+            struct_ser.serialize_field("userId", &self.user_id)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for GetStoryMetadataRequest {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "id_or_slug",
+            "idOrSlug",
+            "user_id",
+            "userId",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            IdOrSlug,
+            UserId,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "idOrSlug" | "id_or_slug" => Ok(GeneratedField::IdOrSlug),
+                            "userId" | "user_id" => Ok(GeneratedField::UserId),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = GetStoryMetadataRequest;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct story_def.v1.GetStoryMetadataRequest")
+            }
+
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetStoryMetadataRequest, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut id_or_slug__ = None;
+                let mut user_id__ = None;
+                while let Some(k) = map.next_key()? {
+                    match k {
+                        GeneratedField::IdOrSlug => {
+                            if id_or_slug__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("idOrSlug"));
+                            }
+                            id_or_slug__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::UserId => {
+                            if user_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("userId"));
+                            }
+                            user_id__ = Some(map.next_value()?);
+                        }
+                    }
+                }
+                Ok(GetStoryMetadataRequest {
+                    id_or_slug: id_or_slug__.unwrap_or_default(),
+                    user_id: user_id__.unwrap_or_default(),
+                })
+            }
+        }
+        deserializer.deserialize_struct("story_def.v1.GetStoryMetadataRequest", FIELDS, GeneratedVisitor)
+    }
+}
+impl serde::Serialize for GetStoryMetadataResponse {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if !self.id.is_empty() {
+            len += 1;
+        }
+        if !self.title.is_empty() {
+            len += 1;
+        }
+        if self.slug.is_some() {
+            len += 1;
+        }
+        if self.description.is_some() {
+            len += 1;
+        }
+        if self.splash_id.is_some() {
+            len += 1;
+        }
+        if self.splash_hex.is_some() {
+            len += 1;
+        }
+        if !self.doc_key.is_empty() {
+            len += 1;
+        }
+        if !self.category.is_empty() {
+            len += 1;
+        }
+        if !self.user_id.is_empty() {
+            len += 1;
+        }
+        if self.age_restriction != 0 {
+            len += 1;
+        }
+        if self.license != 0 {
+            len += 1;
+        }
+        if self.visibility != 0 {
+            len += 1;
+        }
+        if self.disable_comments {
+            len += 1;
+        }
+        if self.disable_public_revision_history {
+            len += 1;
+        }
+        if self.disable_toc {
+            len += 1;
+        }
+        if self.canonical_url.is_some() {
+            len += 1;
+        }
+        if self.seo_description.is_some() {
+            len += 1;
+        }
+        if self.seo_title.is_some() {
+            len += 1;
+        }
+        if self.preview_image.is_some() {
+            len += 1;
+        }
+        if !self.created_at.is_empty() {
+            len += 1;
+        }
+        if self.edited_at.is_some() {
+            len += 1;
+        }
+        if self.published_at.is_some() {
+            len += 1;
+        }
+        if self.first_published_at.is_some() {
+            len += 1;
+        }
+        if self.deleted_at.is_some() {
+            len += 1;
+        }
+        if self.user.is_some() {
+            len += 1;
+        }
+        if !self.tags.is_empty() {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("story_def.v1.GetStoryMetadataResponse", len)?;
+        if !self.id.is_empty() {
+            struct_ser.serialize_field("id", &self.id)?;
+        }
+        if !self.title.is_empty() {
+            struct_ser.serialize_field("title", &self.title)?;
+        }
+        if let Some(v) = self.slug.as_ref() {
+            struct_ser.serialize_field("slug", v)?;
+        }
+        if let Some(v) = self.description.as_ref() {
+            struct_ser.serialize_field("description", v)?;
+        }
+        if let Some(v) = self.splash_id.as_ref() {
+            struct_ser.serialize_field("splashId", v)?;
+        }
+        if let Some(v) = self.splash_hex.as_ref() {
+            struct_ser.serialize_field("splashHex", v)?;
+        }
+        if !self.doc_key.is_empty() {
+            struct_ser.serialize_field("docKey", &self.doc_key)?;
+        }
+        if !self.category.is_empty() {
+            struct_ser.serialize_field("category", &self.category)?;
+        }
+        if !self.user_id.is_empty() {
+            struct_ser.serialize_field("userId", &self.user_id)?;
+        }
+        if self.age_restriction != 0 {
+            let v = StoryAgeRestriction::from_i32(self.age_restriction)
+                .ok_or_else(|| serde::ser::Error::custom(format!("Invalid variant {}", self.age_restriction)))?;
+            struct_ser.serialize_field("ageRestriction", &v)?;
+        }
+        if self.license != 0 {
+            let v = StoryLicense::from_i32(self.license)
+                .ok_or_else(|| serde::ser::Error::custom(format!("Invalid variant {}", self.license)))?;
+            struct_ser.serialize_field("license", &v)?;
+        }
+        if self.visibility != 0 {
+            let v = StoryVisibility::from_i32(self.visibility)
+                .ok_or_else(|| serde::ser::Error::custom(format!("Invalid variant {}", self.visibility)))?;
+            struct_ser.serialize_field("visibility", &v)?;
+        }
+        if self.disable_comments {
+            struct_ser.serialize_field("disableComments", &self.disable_comments)?;
+        }
+        if self.disable_public_revision_history {
+            struct_ser.serialize_field("disablePublicRevisionHistory", &self.disable_public_revision_history)?;
+        }
+        if self.disable_toc {
+            struct_ser.serialize_field("disableToc", &self.disable_toc)?;
+        }
+        if let Some(v) = self.canonical_url.as_ref() {
+            struct_ser.serialize_field("canonicalUrl", v)?;
+        }
+        if let Some(v) = self.seo_description.as_ref() {
+            struct_ser.serialize_field("seoDescription", v)?;
+        }
+        if let Some(v) = self.seo_title.as_ref() {
+            struct_ser.serialize_field("seoTitle", v)?;
+        }
+        if let Some(v) = self.preview_image.as_ref() {
+            struct_ser.serialize_field("previewImage", v)?;
+        }
+        if !self.created_at.is_empty() {
+            struct_ser.serialize_field("createdAt", &self.created_at)?;
+        }
+        if let Some(v) = self.edited_at.as_ref() {
+            struct_ser.serialize_field("editedAt", v)?;
+        }
+        if let Some(v) = self.published_at.as_ref() {
+            struct_ser.serialize_field("publishedAt", v)?;
+        }
+        if let Some(v) = self.first_published_at.as_ref() {
+            struct_ser.serialize_field("firstPublishedAt", v)?;
+        }
+        if let Some(v) = self.deleted_at.as_ref() {
+            struct_ser.serialize_field("deletedAt", v)?;
+        }
+        if let Some(v) = self.user.as_ref() {
+            struct_ser.serialize_field("user", v)?;
+        }
+        if !self.tags.is_empty() {
+            struct_ser.serialize_field("tags", &self.tags)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for GetStoryMetadataResponse {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "id",
+            "title",
+            "slug",
+            "description",
+            "splash_id",
+            "splashId",
+            "splash_hex",
+            "splashHex",
+            "doc_key",
+            "docKey",
+            "category",
+            "user_id",
+            "userId",
+            "age_restriction",
+            "ageRestriction",
+            "license",
+            "visibility",
+            "disable_comments",
+            "disableComments",
+            "disable_public_revision_history",
+            "disablePublicRevisionHistory",
+            "disable_toc",
+            "disableToc",
+            "canonical_url",
+            "canonicalUrl",
+            "seo_description",
+            "seoDescription",
+            "seo_title",
+            "seoTitle",
+            "preview_image",
+            "previewImage",
+            "created_at",
+            "createdAt",
+            "edited_at",
+            "editedAt",
+            "published_at",
+            "publishedAt",
+            "first_published_at",
+            "firstPublishedAt",
+            "deleted_at",
+            "deletedAt",
+            "user",
+            "tags",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            Id,
+            Title,
+            Slug,
+            Description,
+            SplashId,
+            SplashHex,
+            DocKey,
+            Category,
+            UserId,
+            AgeRestriction,
+            License,
+            Visibility,
+            DisableComments,
+            DisablePublicRevisionHistory,
+            DisableToc,
+            CanonicalUrl,
+            SeoDescription,
+            SeoTitle,
+            PreviewImage,
+            CreatedAt,
+            EditedAt,
+            PublishedAt,
+            FirstPublishedAt,
+            DeletedAt,
+            User,
+            Tags,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "id" => Ok(GeneratedField::Id),
+                            "title" => Ok(GeneratedField::Title),
+                            "slug" => Ok(GeneratedField::Slug),
+                            "description" => Ok(GeneratedField::Description),
+                            "splashId" | "splash_id" => Ok(GeneratedField::SplashId),
+                            "splashHex" | "splash_hex" => Ok(GeneratedField::SplashHex),
+                            "docKey" | "doc_key" => Ok(GeneratedField::DocKey),
+                            "category" => Ok(GeneratedField::Category),
+                            "userId" | "user_id" => Ok(GeneratedField::UserId),
+                            "ageRestriction" | "age_restriction" => Ok(GeneratedField::AgeRestriction),
+                            "license" => Ok(GeneratedField::License),
+                            "visibility" => Ok(GeneratedField::Visibility),
+                            "disableComments" | "disable_comments" => Ok(GeneratedField::DisableComments),
+                            "disablePublicRevisionHistory" | "disable_public_revision_history" => Ok(GeneratedField::DisablePublicRevisionHistory),
+                            "disableToc" | "disable_toc" => Ok(GeneratedField::DisableToc),
+                            "canonicalUrl" | "canonical_url" => Ok(GeneratedField::CanonicalUrl),
+                            "seoDescription" | "seo_description" => Ok(GeneratedField::SeoDescription),
+                            "seoTitle" | "seo_title" => Ok(GeneratedField::SeoTitle),
+                            "previewImage" | "preview_image" => Ok(GeneratedField::PreviewImage),
+                            "createdAt" | "created_at" => Ok(GeneratedField::CreatedAt),
+                            "editedAt" | "edited_at" => Ok(GeneratedField::EditedAt),
+                            "publishedAt" | "published_at" => Ok(GeneratedField::PublishedAt),
+                            "firstPublishedAt" | "first_published_at" => Ok(GeneratedField::FirstPublishedAt),
+                            "deletedAt" | "deleted_at" => Ok(GeneratedField::DeletedAt),
+                            "user" => Ok(GeneratedField::User),
+                            "tags" => Ok(GeneratedField::Tags),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = GetStoryMetadataResponse;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct story_def.v1.GetStoryMetadataResponse")
+            }
+
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetStoryMetadataResponse, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut id__ = None;
+                let mut title__ = None;
+                let mut slug__ = None;
+                let mut description__ = None;
+                let mut splash_id__ = None;
+                let mut splash_hex__ = None;
+                let mut doc_key__ = None;
+                let mut category__ = None;
+                let mut user_id__ = None;
+                let mut age_restriction__ = None;
+                let mut license__ = None;
+                let mut visibility__ = None;
+                let mut disable_comments__ = None;
+                let mut disable_public_revision_history__ = None;
+                let mut disable_toc__ = None;
+                let mut canonical_url__ = None;
+                let mut seo_description__ = None;
+                let mut seo_title__ = None;
+                let mut preview_image__ = None;
+                let mut created_at__ = None;
+                let mut edited_at__ = None;
+                let mut published_at__ = None;
+                let mut first_published_at__ = None;
+                let mut deleted_at__ = None;
+                let mut user__ = None;
+                let mut tags__ = None;
+                while let Some(k) = map.next_key()? {
+                    match k {
+                        GeneratedField::Id => {
+                            if id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("id"));
+                            }
+                            id__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::Title => {
+                            if title__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("title"));
+                            }
+                            title__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::Slug => {
+                            if slug__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("slug"));
+                            }
+                            slug__ = map.next_value()?;
+                        }
+                        GeneratedField::Description => {
+                            if description__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("description"));
+                            }
+                            description__ = map.next_value()?;
+                        }
+                        GeneratedField::SplashId => {
+                            if splash_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("splashId"));
+                            }
+                            splash_id__ = map.next_value()?;
+                        }
+                        GeneratedField::SplashHex => {
+                            if splash_hex__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("splashHex"));
+                            }
+                            splash_hex__ = map.next_value()?;
+                        }
+                        GeneratedField::DocKey => {
+                            if doc_key__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("docKey"));
+                            }
+                            doc_key__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::Category => {
+                            if category__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("category"));
+                            }
+                            category__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::UserId => {
+                            if user_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("userId"));
+                            }
+                            user_id__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::AgeRestriction => {
+                            if age_restriction__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("ageRestriction"));
+                            }
+                            age_restriction__ = Some(map.next_value::<StoryAgeRestriction>()? as i32);
+                        }
+                        GeneratedField::License => {
+                            if license__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("license"));
+                            }
+                            license__ = Some(map.next_value::<StoryLicense>()? as i32);
+                        }
+                        GeneratedField::Visibility => {
+                            if visibility__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("visibility"));
+                            }
+                            visibility__ = Some(map.next_value::<StoryVisibility>()? as i32);
+                        }
+                        GeneratedField::DisableComments => {
+                            if disable_comments__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("disableComments"));
+                            }
+                            disable_comments__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::DisablePublicRevisionHistory => {
+                            if disable_public_revision_history__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("disablePublicRevisionHistory"));
+                            }
+                            disable_public_revision_history__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::DisableToc => {
+                            if disable_toc__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("disableToc"));
+                            }
+                            disable_toc__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::CanonicalUrl => {
+                            if canonical_url__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("canonicalUrl"));
+                            }
+                            canonical_url__ = map.next_value()?;
+                        }
+                        GeneratedField::SeoDescription => {
+                            if seo_description__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("seoDescription"));
+                            }
+                            seo_description__ = map.next_value()?;
+                        }
+                        GeneratedField::SeoTitle => {
+                            if seo_title__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("seoTitle"));
+                            }
+                            seo_title__ = map.next_value()?;
+                        }
+                        GeneratedField::PreviewImage => {
+                            if preview_image__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("previewImage"));
+                            }
+                            preview_image__ = map.next_value()?;
+                        }
+                        GeneratedField::CreatedAt => {
+                            if created_at__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("createdAt"));
+                            }
+                            created_at__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::EditedAt => {
+                            if edited_at__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("editedAt"));
+                            }
+                            edited_at__ = map.next_value()?;
+                        }
+                        GeneratedField::PublishedAt => {
+                            if published_at__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("publishedAt"));
+                            }
+                            published_at__ = map.next_value()?;
+                        }
+                        GeneratedField::FirstPublishedAt => {
+                            if first_published_at__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("firstPublishedAt"));
+                            }
+                            first_published_at__ = map.next_value()?;
+                        }
+                        GeneratedField::DeletedAt => {
+                            if deleted_at__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("deletedAt"));
+                            }
+                            deleted_at__ = map.next_value()?;
+                        }
+                        GeneratedField::User => {
+                            if user__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("user"));
+                            }
+                            user__ = map.next_value()?;
+                        }
+                        GeneratedField::Tags => {
+                            if tags__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("tags"));
+                            }
+                            tags__ = Some(map.next_value()?);
+                        }
+                    }
+                }
+                Ok(GetStoryMetadataResponse {
+                    id: id__.unwrap_or_default(),
+                    title: title__.unwrap_or_default(),
+                    slug: slug__,
+                    description: description__,
+                    splash_id: splash_id__,
+                    splash_hex: splash_hex__,
+                    doc_key: doc_key__.unwrap_or_default(),
+                    category: category__.unwrap_or_default(),
+                    user_id: user_id__.unwrap_or_default(),
+                    age_restriction: age_restriction__.unwrap_or_default(),
+                    license: license__.unwrap_or_default(),
+                    visibility: visibility__.unwrap_or_default(),
+                    disable_comments: disable_comments__.unwrap_or_default(),
+                    disable_public_revision_history: disable_public_revision_history__.unwrap_or_default(),
+                    disable_toc: disable_toc__.unwrap_or_default(),
+                    canonical_url: canonical_url__,
+                    seo_description: seo_description__,
+                    seo_title: seo_title__,
+                    preview_image: preview_image__,
+                    created_at: created_at__.unwrap_or_default(),
+                    edited_at: edited_at__,
+                    published_at: published_at__,
+                    first_published_at: first_published_at__,
+                    deleted_at: deleted_at__,
+                    user: user__,
+                    tags: tags__.unwrap_or_default(),
+                })
+            }
+        }
+        deserializer.deserialize_struct("story_def.v1.GetStoryMetadataResponse", FIELDS, GeneratedVisitor)
+    }
+}
 impl serde::Serialize for GetStoryRequest {
     #[allow(deprecated)]
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>

@@ -1,7 +1,7 @@
 /* eslint-disable */
 import _m0 from "protobufjs/minimal";
 import { Tag } from "../../tag_def/v1/def";
-import { ExtendedUser } from "../../user_def/v1/def";
+import { BareUser, ExtendedUser } from "../../user_def/v1/def";
 
 export const protobufPackage = "story_def.v1";
 
@@ -237,6 +237,44 @@ export interface GetStoryResponse {
   is_liked: boolean;
   /** Reading session token */
   reading_session_token: string;
+}
+
+export interface GetStoryMetadataRequest {
+  id_or_slug: string;
+  user_id: string;
+}
+
+export interface GetStoryMetadataResponse {
+  id: string;
+  title: string;
+  slug?: string | undefined;
+  description?: string | undefined;
+  splash_id?: string | undefined;
+  splash_hex?: string | undefined;
+  doc_key: string;
+  category: string;
+  user_id: string;
+  age_restriction: StoryAgeRestriction;
+  license: StoryLicense;
+  visibility: StoryVisibility;
+  disable_comments: boolean;
+  disable_public_revision_history: boolean;
+  disable_toc: boolean;
+  /** SEO */
+  canonical_url?: string | undefined;
+  seo_description?: string | undefined;
+  seo_title?: string | undefined;
+  preview_image?: string | undefined;
+  created_at: string;
+  edited_at?: string | undefined;
+  published_at?: string | undefined;
+  first_published_at?: string | undefined;
+  deleted_at?:
+    | string
+    | undefined;
+  /** Joins */
+  user: BareUser | undefined;
+  tags: Tag[];
 }
 
 function createBaseDraft(): Draft {
@@ -1436,6 +1474,543 @@ export const GetStoryResponse = {
     message.is_bookmarked = object.is_bookmarked ?? false;
     message.is_liked = object.is_liked ?? false;
     message.reading_session_token = object.reading_session_token ?? "";
+    return message;
+  },
+};
+
+function createBaseGetStoryMetadataRequest(): GetStoryMetadataRequest {
+  return { id_or_slug: "", user_id: "" };
+}
+
+export const GetStoryMetadataRequest = {
+  encode(message: GetStoryMetadataRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id_or_slug !== "") {
+      writer.uint32(10).string(message.id_or_slug);
+    }
+    if (message.user_id !== "") {
+      writer.uint32(18).string(message.user_id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetStoryMetadataRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetStoryMetadataRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id_or_slug = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.user_id = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetStoryMetadataRequest {
+    return {
+      id_or_slug: isSet(object.id_or_slug) ? globalThis.String(object.id_or_slug) : "",
+      user_id: isSet(object.user_id) ? globalThis.String(object.user_id) : "",
+    };
+  },
+
+  toJSON(message: GetStoryMetadataRequest): unknown {
+    const obj: any = {};
+    if (message.id_or_slug !== "") {
+      obj.id_or_slug = message.id_or_slug;
+    }
+    if (message.user_id !== "") {
+      obj.user_id = message.user_id;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetStoryMetadataRequest>, I>>(base?: I): GetStoryMetadataRequest {
+    return GetStoryMetadataRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetStoryMetadataRequest>, I>>(object: I): GetStoryMetadataRequest {
+    const message = createBaseGetStoryMetadataRequest();
+    message.id_or_slug = object.id_or_slug ?? "";
+    message.user_id = object.user_id ?? "";
+    return message;
+  },
+};
+
+function createBaseGetStoryMetadataResponse(): GetStoryMetadataResponse {
+  return {
+    id: "",
+    title: "",
+    slug: undefined,
+    description: undefined,
+    splash_id: undefined,
+    splash_hex: undefined,
+    doc_key: "",
+    category: "",
+    user_id: "",
+    age_restriction: 0,
+    license: 0,
+    visibility: 0,
+    disable_comments: false,
+    disable_public_revision_history: false,
+    disable_toc: false,
+    canonical_url: undefined,
+    seo_description: undefined,
+    seo_title: undefined,
+    preview_image: undefined,
+    created_at: "",
+    edited_at: undefined,
+    published_at: undefined,
+    first_published_at: undefined,
+    deleted_at: undefined,
+    user: undefined,
+    tags: [],
+  };
+}
+
+export const GetStoryMetadataResponse = {
+  encode(message: GetStoryMetadataResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.title !== "") {
+      writer.uint32(18).string(message.title);
+    }
+    if (message.slug !== undefined) {
+      writer.uint32(26).string(message.slug);
+    }
+    if (message.description !== undefined) {
+      writer.uint32(34).string(message.description);
+    }
+    if (message.splash_id !== undefined) {
+      writer.uint32(42).string(message.splash_id);
+    }
+    if (message.splash_hex !== undefined) {
+      writer.uint32(50).string(message.splash_hex);
+    }
+    if (message.doc_key !== "") {
+      writer.uint32(58).string(message.doc_key);
+    }
+    if (message.category !== "") {
+      writer.uint32(66).string(message.category);
+    }
+    if (message.user_id !== "") {
+      writer.uint32(74).string(message.user_id);
+    }
+    if (message.age_restriction !== 0) {
+      writer.uint32(80).int32(message.age_restriction);
+    }
+    if (message.license !== 0) {
+      writer.uint32(88).int32(message.license);
+    }
+    if (message.visibility !== 0) {
+      writer.uint32(96).int32(message.visibility);
+    }
+    if (message.disable_comments === true) {
+      writer.uint32(104).bool(message.disable_comments);
+    }
+    if (message.disable_public_revision_history === true) {
+      writer.uint32(112).bool(message.disable_public_revision_history);
+    }
+    if (message.disable_toc === true) {
+      writer.uint32(120).bool(message.disable_toc);
+    }
+    if (message.canonical_url !== undefined) {
+      writer.uint32(130).string(message.canonical_url);
+    }
+    if (message.seo_description !== undefined) {
+      writer.uint32(138).string(message.seo_description);
+    }
+    if (message.seo_title !== undefined) {
+      writer.uint32(146).string(message.seo_title);
+    }
+    if (message.preview_image !== undefined) {
+      writer.uint32(154).string(message.preview_image);
+    }
+    if (message.created_at !== "") {
+      writer.uint32(162).string(message.created_at);
+    }
+    if (message.edited_at !== undefined) {
+      writer.uint32(170).string(message.edited_at);
+    }
+    if (message.published_at !== undefined) {
+      writer.uint32(178).string(message.published_at);
+    }
+    if (message.first_published_at !== undefined) {
+      writer.uint32(186).string(message.first_published_at);
+    }
+    if (message.deleted_at !== undefined) {
+      writer.uint32(194).string(message.deleted_at);
+    }
+    if (message.user !== undefined) {
+      BareUser.encode(message.user, writer.uint32(202).fork()).ldelim();
+    }
+    for (const v of message.tags) {
+      Tag.encode(v!, writer.uint32(210).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetStoryMetadataResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetStoryMetadataResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.title = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.slug = reader.string();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.description = reader.string();
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.splash_id = reader.string();
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.splash_hex = reader.string();
+          continue;
+        case 7:
+          if (tag !== 58) {
+            break;
+          }
+
+          message.doc_key = reader.string();
+          continue;
+        case 8:
+          if (tag !== 66) {
+            break;
+          }
+
+          message.category = reader.string();
+          continue;
+        case 9:
+          if (tag !== 74) {
+            break;
+          }
+
+          message.user_id = reader.string();
+          continue;
+        case 10:
+          if (tag !== 80) {
+            break;
+          }
+
+          message.age_restriction = reader.int32() as any;
+          continue;
+        case 11:
+          if (tag !== 88) {
+            break;
+          }
+
+          message.license = reader.int32() as any;
+          continue;
+        case 12:
+          if (tag !== 96) {
+            break;
+          }
+
+          message.visibility = reader.int32() as any;
+          continue;
+        case 13:
+          if (tag !== 104) {
+            break;
+          }
+
+          message.disable_comments = reader.bool();
+          continue;
+        case 14:
+          if (tag !== 112) {
+            break;
+          }
+
+          message.disable_public_revision_history = reader.bool();
+          continue;
+        case 15:
+          if (tag !== 120) {
+            break;
+          }
+
+          message.disable_toc = reader.bool();
+          continue;
+        case 16:
+          if (tag !== 130) {
+            break;
+          }
+
+          message.canonical_url = reader.string();
+          continue;
+        case 17:
+          if (tag !== 138) {
+            break;
+          }
+
+          message.seo_description = reader.string();
+          continue;
+        case 18:
+          if (tag !== 146) {
+            break;
+          }
+
+          message.seo_title = reader.string();
+          continue;
+        case 19:
+          if (tag !== 154) {
+            break;
+          }
+
+          message.preview_image = reader.string();
+          continue;
+        case 20:
+          if (tag !== 162) {
+            break;
+          }
+
+          message.created_at = reader.string();
+          continue;
+        case 21:
+          if (tag !== 170) {
+            break;
+          }
+
+          message.edited_at = reader.string();
+          continue;
+        case 22:
+          if (tag !== 178) {
+            break;
+          }
+
+          message.published_at = reader.string();
+          continue;
+        case 23:
+          if (tag !== 186) {
+            break;
+          }
+
+          message.first_published_at = reader.string();
+          continue;
+        case 24:
+          if (tag !== 194) {
+            break;
+          }
+
+          message.deleted_at = reader.string();
+          continue;
+        case 25:
+          if (tag !== 202) {
+            break;
+          }
+
+          message.user = BareUser.decode(reader, reader.uint32());
+          continue;
+        case 26:
+          if (tag !== 210) {
+            break;
+          }
+
+          message.tags.push(Tag.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetStoryMetadataResponse {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      title: isSet(object.title) ? globalThis.String(object.title) : "",
+      slug: isSet(object.slug) ? globalThis.String(object.slug) : undefined,
+      description: isSet(object.description) ? globalThis.String(object.description) : undefined,
+      splash_id: isSet(object.splash_id) ? globalThis.String(object.splash_id) : undefined,
+      splash_hex: isSet(object.splash_hex) ? globalThis.String(object.splash_hex) : undefined,
+      doc_key: isSet(object.doc_key) ? globalThis.String(object.doc_key) : "",
+      category: isSet(object.category) ? globalThis.String(object.category) : "",
+      user_id: isSet(object.user_id) ? globalThis.String(object.user_id) : "",
+      age_restriction: isSet(object.age_restriction) ? storyAgeRestrictionFromJSON(object.age_restriction) : 0,
+      license: isSet(object.license) ? storyLicenseFromJSON(object.license) : 0,
+      visibility: isSet(object.visibility) ? storyVisibilityFromJSON(object.visibility) : 0,
+      disable_comments: isSet(object.disable_comments) ? globalThis.Boolean(object.disable_comments) : false,
+      disable_public_revision_history: isSet(object.disable_public_revision_history)
+        ? globalThis.Boolean(object.disable_public_revision_history)
+        : false,
+      disable_toc: isSet(object.disable_toc) ? globalThis.Boolean(object.disable_toc) : false,
+      canonical_url: isSet(object.canonical_url) ? globalThis.String(object.canonical_url) : undefined,
+      seo_description: isSet(object.seo_description) ? globalThis.String(object.seo_description) : undefined,
+      seo_title: isSet(object.seo_title) ? globalThis.String(object.seo_title) : undefined,
+      preview_image: isSet(object.preview_image) ? globalThis.String(object.preview_image) : undefined,
+      created_at: isSet(object.created_at) ? globalThis.String(object.created_at) : "",
+      edited_at: isSet(object.edited_at) ? globalThis.String(object.edited_at) : undefined,
+      published_at: isSet(object.published_at) ? globalThis.String(object.published_at) : undefined,
+      first_published_at: isSet(object.first_published_at) ? globalThis.String(object.first_published_at) : undefined,
+      deleted_at: isSet(object.deleted_at) ? globalThis.String(object.deleted_at) : undefined,
+      user: isSet(object.user) ? BareUser.fromJSON(object.user) : undefined,
+      tags: globalThis.Array.isArray(object?.tags) ? object.tags.map((e: any) => Tag.fromJSON(e)) : [],
+    };
+  },
+
+  toJSON(message: GetStoryMetadataResponse): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.title !== "") {
+      obj.title = message.title;
+    }
+    if (message.slug !== undefined) {
+      obj.slug = message.slug;
+    }
+    if (message.description !== undefined) {
+      obj.description = message.description;
+    }
+    if (message.splash_id !== undefined) {
+      obj.splash_id = message.splash_id;
+    }
+    if (message.splash_hex !== undefined) {
+      obj.splash_hex = message.splash_hex;
+    }
+    if (message.doc_key !== "") {
+      obj.doc_key = message.doc_key;
+    }
+    if (message.category !== "") {
+      obj.category = message.category;
+    }
+    if (message.user_id !== "") {
+      obj.user_id = message.user_id;
+    }
+    if (message.age_restriction !== 0) {
+      obj.age_restriction = storyAgeRestrictionToJSON(message.age_restriction);
+    }
+    if (message.license !== 0) {
+      obj.license = storyLicenseToJSON(message.license);
+    }
+    if (message.visibility !== 0) {
+      obj.visibility = storyVisibilityToJSON(message.visibility);
+    }
+    if (message.disable_comments === true) {
+      obj.disable_comments = message.disable_comments;
+    }
+    if (message.disable_public_revision_history === true) {
+      obj.disable_public_revision_history = message.disable_public_revision_history;
+    }
+    if (message.disable_toc === true) {
+      obj.disable_toc = message.disable_toc;
+    }
+    if (message.canonical_url !== undefined) {
+      obj.canonical_url = message.canonical_url;
+    }
+    if (message.seo_description !== undefined) {
+      obj.seo_description = message.seo_description;
+    }
+    if (message.seo_title !== undefined) {
+      obj.seo_title = message.seo_title;
+    }
+    if (message.preview_image !== undefined) {
+      obj.preview_image = message.preview_image;
+    }
+    if (message.created_at !== "") {
+      obj.created_at = message.created_at;
+    }
+    if (message.edited_at !== undefined) {
+      obj.edited_at = message.edited_at;
+    }
+    if (message.published_at !== undefined) {
+      obj.published_at = message.published_at;
+    }
+    if (message.first_published_at !== undefined) {
+      obj.first_published_at = message.first_published_at;
+    }
+    if (message.deleted_at !== undefined) {
+      obj.deleted_at = message.deleted_at;
+    }
+    if (message.user !== undefined) {
+      obj.user = BareUser.toJSON(message.user);
+    }
+    if (message.tags?.length) {
+      obj.tags = message.tags.map((e) => Tag.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetStoryMetadataResponse>, I>>(base?: I): GetStoryMetadataResponse {
+    return GetStoryMetadataResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetStoryMetadataResponse>, I>>(object: I): GetStoryMetadataResponse {
+    const message = createBaseGetStoryMetadataResponse();
+    message.id = object.id ?? "";
+    message.title = object.title ?? "";
+    message.slug = object.slug ?? undefined;
+    message.description = object.description ?? undefined;
+    message.splash_id = object.splash_id ?? undefined;
+    message.splash_hex = object.splash_hex ?? undefined;
+    message.doc_key = object.doc_key ?? "";
+    message.category = object.category ?? "";
+    message.user_id = object.user_id ?? "";
+    message.age_restriction = object.age_restriction ?? 0;
+    message.license = object.license ?? 0;
+    message.visibility = object.visibility ?? 0;
+    message.disable_comments = object.disable_comments ?? false;
+    message.disable_public_revision_history = object.disable_public_revision_history ?? false;
+    message.disable_toc = object.disable_toc ?? false;
+    message.canonical_url = object.canonical_url ?? undefined;
+    message.seo_description = object.seo_description ?? undefined;
+    message.seo_title = object.seo_title ?? undefined;
+    message.preview_image = object.preview_image ?? undefined;
+    message.created_at = object.created_at ?? "";
+    message.edited_at = object.edited_at ?? undefined;
+    message.published_at = object.published_at ?? undefined;
+    message.first_published_at = object.first_published_at ?? undefined;
+    message.deleted_at = object.deleted_at ?? undefined;
+    message.user = (object.user !== undefined && object.user !== null) ? BareUser.fromPartial(object.user) : undefined;
+    message.tags = object.tags?.map((e) => Tag.fromPartial(e)) || [];
     return message;
   },
 };

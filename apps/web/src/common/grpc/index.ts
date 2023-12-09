@@ -43,6 +43,8 @@ import {
   GetDraftsInfoResponse,
   GetStoriesInfoRequest,
   GetStoriesInfoResponse,
+  GetStoryMetadataRequest,
+  GetStoryMetadataResponse,
   GetStoryRequest,
   GetStoryResponse
 } from "@storiny/proto/dist/story_def/v1/def";
@@ -116,6 +118,7 @@ export {
   GetProfileResponse,
   GetResponsesInfoResponse,
   GetStoriesInfoResponse,
+  GetStoryMetadataResponse,
   GetStoryResponse,
   GetStoryResponsesInfoResponse,
   GetTagResponse,
@@ -238,6 +241,12 @@ export const verify_email = cache(
 
 export const get_story = cache(
   promisify<GetStoryRequest, GetStoryResponse>(global.grpc_client.getStory)
+);
+
+export const get_story_metadata = cache(
+  promisify<GetStoryMetadataRequest, GetStoryMetadataResponse>(
+    global.grpc_client.getStoryMetadata
+  )
 );
 
 export const get_comment = cache(

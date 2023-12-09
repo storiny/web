@@ -1,0 +1,82 @@
+SELECT s.id,
+	   s.title,
+	   s.slug,
+	   s.description,
+	   s.splash_id,
+	   s.splash_hex,
+	   s.category::TEXT       AS "category!",
+	   s.age_restriction,
+	   s.visibility,
+	   s.license,
+	   s.user_id,
+	   s.disable_comments,
+	   s.disable_public_revision_history,
+	   s.disable_toc,
+	   s.canonical_url,
+	   s.seo_description,
+	   s.seo_title,
+	   s.preview_image,
+	   -- Timestamps
+	   s.created_at,
+	   s.edited_at,
+	   s.deleted_at,
+	   s.published_at,
+	   s.first_published_at,
+	   -- Joins
+	   "s->document".key      AS "doc_key",
+	   -- User
+	   "s->user".name         AS user_name,
+	   "s->user".username     AS user_username,
+	   "s->user".avatar_id    AS user_avatar_id,
+	   "s->user".avatar_hex   AS user_avatar_hex,
+	   "s->user".public_flags AS user_public_flags,
+	   -- Tags
+	   (
+		   -- Draft tags
+		   COALESCE(
+						   ARRAY_AGG(
+						   ("s->draft_tags".name, "s->draft_tags".name)
+									) FILTER (
+							   WHERE "s->draft_tags".name IS NOT NULL
+							   ), '{}'
+		   ) ||
+			   -- Story tags
+		   COALESCE(
+						   ARRAY_AGG(
+					   -- We need to cast the BIGINT id to string
+						   ("s->story_tags->tag".id::TEXT, "s->story_tags->tag".name)
+									) FILTER (
+							   WHERE "s->story_tags->tag".id IS NOT NULL
+							   ), '{}'
+		   ))                 AS "tags!: Vec<Tag>"
+FROM
+	stories s
+		-- Join document
+		INNER JOIN documents AS "s->document"
+				   ON s.id = "s->document".story_id
+					   AND "s->document".is_editable IS FALSE
+		-- Join user
+		INNER JOIN users "s->user"
+				   ON "s->user".id = s.user_id
+		-- Join draft tags
+		LEFT OUTER JOIN draft_tags AS "s->draft_tags"
+						ON "s->draft_tags".story_id = s.id
+		--
+		-- Join story tags
+		LEFT OUTER JOIN (story_tags AS "s->story_tags"
+		-- Join tags
+		INNER JOIN tags AS "s->story_tags->tag"
+						 ON "s->story_tags->tag".id = "s->story_tags".tag_id)
+						ON "s->story_tags".story_id = s.id
+WHERE
+	  s.id = $1
+  AND s.user_id = $2
+GROUP BY
+	s.id,
+	doc_key,
+	user_name,
+	user_username,
+	user_avatar_id,
+	user_avatar_hex,
+	user_public_flags
+LIMIT 1

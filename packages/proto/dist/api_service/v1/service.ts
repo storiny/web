@@ -32,6 +32,8 @@ import {
   GetDraftsInfoResponse,
   GetStoriesInfoRequest,
   GetStoriesInfoResponse,
+  GetStoryMetadataRequest,
+  GetStoryMetadataResponse,
   GetStoryRequest,
   GetStoryResponse,
 } from "../../story_def/v1/def";
@@ -325,6 +327,17 @@ export const ApiServiceService = {
     responseSerialize: (value: GetStoryResponse) => Buffer.from(GetStoryResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetStoryResponse.decode(value),
   },
+  /** Returns the story's metadata */
+  getStoryMetadata: {
+    path: "/api_service.v1.ApiService/GetStoryMetadata",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetStoryMetadataRequest) => Buffer.from(GetStoryMetadataRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetStoryMetadataRequest.decode(value),
+    responseSerialize: (value: GetStoryMetadataResponse) =>
+      Buffer.from(GetStoryMetadataResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetStoryMetadataResponse.decode(value),
+  },
   /** Returns the comment's data */
   getComment: {
     path: "/api_service.v1.ApiService/GetComment",
@@ -388,6 +401,8 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getUserMuteCount: handleUnaryCall<GetUserMuteCountRequest, GetUserMuteCountResponse>;
   /** Returns the story's data */
   getStory: handleUnaryCall<GetStoryRequest, GetStoryResponse>;
+  /** Returns the story's metadata */
+  getStoryMetadata: handleUnaryCall<GetStoryMetadataRequest, GetStoryMetadataResponse>;
   /** Returns the comment's data */
   getComment: handleUnaryCall<GetCommentRequest, GetCommentResponse>;
   /** Creates a new draft */
@@ -714,6 +729,22 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetStoryResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the story's metadata */
+  getStoryMetadata(
+    request: GetStoryMetadataRequest,
+    callback: (error: ServiceError | null, response: GetStoryMetadataResponse) => void,
+  ): ClientUnaryCall;
+  getStoryMetadata(
+    request: GetStoryMetadataRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetStoryMetadataResponse) => void,
+  ): ClientUnaryCall;
+  getStoryMetadata(
+    request: GetStoryMetadataRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetStoryMetadataResponse) => void,
   ): ClientUnaryCall;
   /** Returns the comment's data */
   getComment(

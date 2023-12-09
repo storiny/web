@@ -150,6 +150,74 @@ pub struct GetStoryResponse {
     #[prost(string, tag="33")]
     pub reading_session_token: ::prost::alloc::string::String,
 }
+// Story metadata request
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetStoryMetadataRequest {
+    #[prost(string, tag="1")]
+    pub id_or_slug: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub user_id: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetStoryMetadataResponse {
+    #[prost(string, tag="1")]
+    pub id: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="3")]
+    pub slug: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="4")]
+    pub description: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="5")]
+    pub splash_id: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="6")]
+    pub splash_hex: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, tag="7")]
+    pub doc_key: ::prost::alloc::string::String,
+    #[prost(string, tag="8")]
+    pub category: ::prost::alloc::string::String,
+    #[prost(string, tag="9")]
+    pub user_id: ::prost::alloc::string::String,
+    #[prost(enumeration="StoryAgeRestriction", tag="10")]
+    pub age_restriction: i32,
+    #[prost(enumeration="StoryLicense", tag="11")]
+    pub license: i32,
+    #[prost(enumeration="StoryVisibility", tag="12")]
+    pub visibility: i32,
+    #[prost(bool, tag="13")]
+    pub disable_comments: bool,
+    #[prost(bool, tag="14")]
+    pub disable_public_revision_history: bool,
+    #[prost(bool, tag="15")]
+    pub disable_toc: bool,
+    /// SEO
+    #[prost(string, optional, tag="16")]
+    pub canonical_url: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="17")]
+    pub seo_description: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="18")]
+    pub seo_title: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="19")]
+    pub preview_image: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, tag="20")]
+    pub created_at: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="21")]
+    pub edited_at: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="22")]
+    pub published_at: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="23")]
+    pub first_published_at: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="24")]
+    pub deleted_at: ::core::option::Option<::prost::alloc::string::String>,
+    /// Joins
+    #[prost(message, optional, tag="25")]
+    pub user: ::core::option::Option<super::super::user_def::v1::BareUser>,
+    #[prost(message, repeated, tag="26")]
+    pub tags: ::prost::alloc::vec::Vec<super::super::tag_def::v1::Tag>,
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum StoryAgeRestriction {

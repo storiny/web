@@ -5,6 +5,7 @@ import Link from "~/components/link";
 import Separator from "~/components/separator";
 import Skeleton from "~/components/skeleton";
 import Typography, { TypographyProps } from "~/components/typography";
+import CustomState from "~/entities/custom-state";
 import ErrorState from "~/entities/error-state";
 import TagChip from "~/entities/tag-chip";
 import ChevronIcon from "~/icons/chevron";
@@ -56,6 +57,11 @@ const RightSidebarDefaultContent = ({
     error,
     refetch
   } = use_get_right_sidebar_content_query();
+  const is_empty =
+    !is_loading &&
+    !data?.stories?.length &&
+    !data?.users?.length &&
+    !data?.tags?.length;
 
   return is_error ? (
     <ErrorState
@@ -68,9 +74,14 @@ const RightSidebarDefaultContent = ({
       size={"sm"}
       type={get_query_error_type(error)}
     />
+  ) : is_empty ? (
+    <Typography color={"minor"} level={"body2"}>
+      Not enough data to populate your sidebar.
+    </Typography>
   ) : (
     <>
-      {!hide_popular_stories && (
+      {hide_popular_stories ||
+      (!is_loading && !data?.stories?.length) ? null : (
         <>
           <TitleWithIcon icon={<StoriesIcon />}>Popular stories</TitleWithIcon>
           <div className={clsx(css["flex-col"], styles["popular-stories"])}>
@@ -85,63 +96,71 @@ const RightSidebarDefaultContent = ({
           <Separator />
         </>
       )}
-      <TitleWithIcon icon={<UsersIcon />}>Who to follow</TitleWithIcon>
-      {is_loading
-        ? [...Array(5)].map((_, index) => (
-            <UserWithActionSkeleton key={index} />
-          ))
-        : data?.users.map((user) => (
-            <UserWithAction key={user.id} user={user} />
-          ))}
-      {data && (
-        <div className={styles["show-more-wrapper"]}>
-          <Link
-            className={clsx(
-              css["flex-center"],
-              css["t-bold"],
-              styles["show-more"]
-            )}
-            href={"/explore/users"}
-            level={"body3"}
-          >
-            Show more
-            <ChevronIcon rotation={90} />
-          </Link>
-        </div>
+      {!is_loading && !data?.users?.length ? null : (
+        <>
+          <TitleWithIcon icon={<UsersIcon />}>Who to follow</TitleWithIcon>
+          {is_loading
+            ? [...Array(5)].map((_, index) => (
+                <UserWithActionSkeleton key={index} />
+              ))
+            : data?.users.map((user) => (
+                <UserWithAction key={user.id} user={user} />
+              ))}
+          {data && (
+            <div className={styles["show-more-wrapper"]}>
+              <Link
+                className={clsx(
+                  css["flex-center"],
+                  css["t-bold"],
+                  styles["show-more"]
+                )}
+                href={"/explore/users"}
+                level={"body3"}
+              >
+                Show more
+                <ChevronIcon rotation={90} />
+              </Link>
+            </div>
+          )}
+          <Separator />
+        </>
       )}
-      <Separator />
-      <TitleWithIcon icon={<TagsIcon />}>Popular tags</TitleWithIcon>
-      <div className={clsx(css["flex-col"], styles["tags-container"])}>
-        {is_loading
-          ? [...Array(8)].map((_, index) => (
-              <Skeleton height={28} key={index} />
-            ))
-          : data?.tags.map((tag) => (
-              <TagChip
-                follower_count={tag.follower_count}
-                key={tag.id}
-                size={"lg"}
-                story_count={tag.story_count}
-                value={tag.name}
-                with_decorator
-              />
-            ))}
-      </div>
-      {data && (
-        <div className={styles["show-more-wrapper"]}>
-          <Link
-            className={clsx(
-              css["flex-center"],
-              css["t-bold"],
-              styles["show-more"]
-            )}
-            href={"/explore/tags"}
-            level={"body3"}
-          >
-            Show more
-            <ChevronIcon rotation={90} />
-          </Link>
-        </div>
+      {!is_loading && !data?.users?.length ? null : (
+        <>
+          <TitleWithIcon icon={<TagsIcon />}>Popular tags</TitleWithIcon>
+          <div className={clsx(css["flex-col"], styles["tags-container"])}>
+            {is_loading
+              ? [...Array(8)].map((_, index) => (
+                  <Skeleton height={28} key={index} />
+                ))
+              : data?.tags.map((tag) => (
+                  <TagChip
+                    follower_count={tag.follower_count}
+                    key={tag.id}
+                    size={"lg"}
+                    story_count={tag.story_count}
+                    value={tag.name}
+                    with_decorator
+                  />
+                ))}
+          </div>
+          {data && (
+            <div className={styles["show-more-wrapper"]}>
+              <Link
+                className={clsx(
+                  css["flex-center"],
+                  css["t-bold"],
+                  styles["show-more"]
+                )}
+                href={"/explore/tags"}
+                level={"body3"}
+              >
+                Show more
+                <ChevronIcon rotation={90} />
+              </Link>
+            </div>
+          )}
+        </>
       )}
     </>
   );
