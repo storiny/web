@@ -49,6 +49,8 @@ import {
   GetUserIdResponse,
   GetUserMuteCountRequest,
   GetUserMuteCountResponse,
+  GetUsernameRequest,
+  GetUsernameResponse,
   GetUserRelationsInfoRequest,
   GetUserRelationsInfoResponse,
 } from "../../user_def/v1/def";
@@ -114,6 +116,16 @@ export const ApiServiceService = {
     requestDeserialize: (value: Buffer) => GetUserIdRequest.decode(value),
     responseSerialize: (value: GetUserIdResponse) => Buffer.from(GetUserIdResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetUserIdResponse.decode(value),
+  },
+  /** Returns the username for a user by its ID */
+  getUsername: {
+    path: "/api_service.v1.ApiService/GetUsername",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetUsernameRequest) => Buffer.from(GetUsernameRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetUsernameRequest.decode(value),
+    responseSerialize: (value: GetUsernameResponse) => Buffer.from(GetUsernameResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetUsernameResponse.decode(value),
   },
   /** Returns the profile page data for a user */
   getProfile: {
@@ -338,6 +350,8 @@ export const ApiServiceService = {
 export interface ApiServiceServer extends UntypedServiceImplementation {
   /** Checks whether the user is authenticated using the token from the session cookie */
   getUserId: handleUnaryCall<GetUserIdRequest, GetUserIdResponse>;
+  /** Returns the username for a user by its ID */
+  getUsername: handleUnaryCall<GetUsernameRequest, GetUsernameResponse>;
   /** Returns the profile page data for a user */
   getProfile: handleUnaryCall<GetProfileRequest, GetProfileResponse>;
   /** Returns the tag page data for a tag */
@@ -396,6 +410,22 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetUserIdResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the username for a user by its ID */
+  getUsername(
+    request: GetUsernameRequest,
+    callback: (error: ServiceError | null, response: GetUsernameResponse) => void,
+  ): ClientUnaryCall;
+  getUsername(
+    request: GetUsernameRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetUsernameResponse) => void,
+  ): ClientUnaryCall;
+  getUsername(
+    request: GetUsernameRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetUsernameResponse) => void,
   ): ClientUnaryCall;
   /** Returns the profile page data for a user */
   getProfile(

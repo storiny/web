@@ -2,6 +2,7 @@ import "server-only";
 
 import { ServiceError } from "@grpc/grpc-js";
 import { Status } from "@grpc/grpc-js/build/src/constants";
+import { isRedirectError as is_redirect_error } from "next/dist/client/components/redirect";
 import { notFound as not_found, redirect } from "next/navigation";
 
 /**
@@ -9,6 +10,11 @@ import { notFound as not_found, redirect } from "next/navigation";
  * @param err `ServiceError` object
  */
 export const handle_exception = (err: ServiceError): void => {
+  // Throw non-service errors.
+  if (is_redirect_error(err)) {
+    throw err;
+  }
+
   const err_code = err?.code;
 
   // 404 page

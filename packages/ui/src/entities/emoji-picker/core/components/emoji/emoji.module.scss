@@ -1,6 +1,5 @@
 $emoji-size: 24px;
 $preview-size: 18px;
-$sprite-url: url("https://cdn.storiny.com/web-assets/raw/spritesheets/emoji-sprite.png");
 
 .emoji,
 .fake-emoji {
@@ -46,7 +45,7 @@ $sprite-url: url("https://cdn.storiny.com/web-assets/raw/spritesheets/emoji-spri
     width: $emoji-size;
     height: $emoji-size;
     transform: translate(-50%, -50%);
-    background-image: $sprite-url;
+    background-image: var(--spritesheet);
     background-size: var(--sprite-size);
     background-position: var(--sprite-x) var(--sprite-y);
 

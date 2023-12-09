@@ -44,7 +44,12 @@ export const handle_api_error = <T extends FieldValues>(
   if (form && is_form_error(error)) {
     handle_form_error<T>(error.data?.errors, form.setError);
   } else {
-    toaster(error?.data?.error || default_message, "error");
+    toaster(
+      error?.data?.error || error?.status === "FETCH_ERROR"
+        ? "Storiny is currently unavailable. Check your network connection or try again later."
+        : default_message,
+      "error"
+    );
   }
 };
 

@@ -65,6 +65,8 @@ import {
   GetUserIdResponse,
   GetUserMuteCountRequest,
   GetUserMuteCountResponse,
+  GetUsernameRequest,
+  GetUsernameResponse,
   GetUserRelationsInfoRequest,
   GetUserRelationsInfoResponse
 } from "@storiny/proto/dist/user_def/v1/def";
@@ -121,12 +123,19 @@ export {
   GetUserBlockCountResponse,
   GetUserIdResponse,
   GetUserMuteCountResponse,
+  GetUsernameResponse,
   GetUserRelationsInfoResponse,
   VerifyEmailResponse
 };
 
 export const get_user_id = cache(
   promisify<GetUserIdRequest, GetUserIdResponse>(global.grpc_client.getUserId)
+);
+
+export const get_username = cache(
+  promisify<GetUsernameRequest, GetUsernameResponse>(
+    global.grpc_client.getUsername
+  )
 );
 
 export const get_credential_settings = cache(

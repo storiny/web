@@ -74,6 +74,16 @@ message GetUserIdResponse {
   string id = 1;
 }
 
+// Get username
+
+message GetUsernameRequest {
+  string user_id = 1;
+}
+
+message GetUsernameResponse {
+  string username = 1;
+}
+
 // Get user relations info
 
 message GetUserRelationsInfoRequest {

@@ -18,4 +18,5 @@ pub mod get_user_block_count;
 pub mod get_user_id;
 pub mod get_user_mute_count;
 pub mod get_user_relations_info;
+pub mod get_username;
 pub mod verify_email;

@@ -234,7 +234,15 @@ const EmojiList = React.forwardRef<
   );
 
   return (
-    <Root className={clsx(css["flex-center"], styles.list)} type={"auto"}>
+    <Root
+      className={clsx(css["flex-center"], styles.list)}
+      style={
+        {
+          "--spritesheet": `url("${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/raw/spritesheets/emoji-sprite.png")`
+        } as React.CSSProperties
+      }
+      type={"auto"}
+    >
       {Boolean(query) && !has_search_results ? (
         <div
           className={clsx(css["flex-col"], styles.empty)}

@@ -9,7 +9,6 @@ import RestoreIcon from "~/icons/restore";
 import { get_drafts_api, use_recover_draft_mutation } from "~/redux/features";
 import { use_app_dispatch } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
-import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
 
 const RestoreAction = ({

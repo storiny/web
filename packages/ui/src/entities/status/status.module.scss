@@ -3,7 +3,6 @@
 }
 
 .status {
-  all: unset;
   background-color: var(--bg-elevation-sm);
   border: 1px solid var(--divider);
   border-radius: var(--radius-md);
@@ -34,6 +33,7 @@
   &.has-emoji {
     width: 14px;
     height: 14px;
+    min-width: 14px;
     background: var(--emoji) center / 100% no-repeat;
   }
 }

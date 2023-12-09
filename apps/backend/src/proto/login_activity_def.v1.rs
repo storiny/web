@@ -2,51 +2,51 @@
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Device {
-    #[prost(string, tag = "1")]
+    #[prost(string, tag="1")]
     pub display_name: ::prost::alloc::string::String,
-    #[prost(enumeration = "DeviceType", tag = "2")]
+    #[prost(enumeration="DeviceType", tag="2")]
     pub r#type: i32,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Location {
-    #[prost(string, tag = "1")]
+    #[prost(string, tag="1")]
     pub display_name: ::prost::alloc::string::String,
-    #[prost(double, optional, tag = "2")]
+    #[prost(double, optional, tag="2")]
     pub lat: ::core::option::Option<f64>,
-    #[prost(double, optional, tag = "3")]
+    #[prost(double, optional, tag="3")]
     pub lng: ::core::option::Option<f64>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Login {
-    #[prost(string, tag = "1")]
+    #[prost(string, tag="1")]
     pub id: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "2")]
+    #[prost(message, optional, tag="2")]
     pub device: ::core::option::Option<Device>,
-    #[prost(message, optional, tag = "3")]
+    #[prost(message, optional, tag="3")]
     pub location: ::core::option::Option<Location>,
-    #[prost(bool, tag = "4")]
+    #[prost(bool, tag="4")]
     pub is_active: bool,
-    #[prost(string, tag = "5")]
+    #[prost(string, tag="5")]
     pub created_at: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetLoginActivityRequest {
     /// Token from the session cookie (used to determine if the current device is active)
-    #[prost(string, tag = "1")]
+    #[prost(string, tag="1")]
     pub token: ::prost::alloc::string::String,
     /// User ID
-    #[prost(string, tag = "2")]
+    #[prost(string, tag="2")]
     pub user_id: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetLoginActivityResponse {
-    #[prost(message, optional, tag = "1")]
+    #[prost(message, optional, tag="1")]
     pub recent: ::core::option::Option<Login>,
-    #[prost(message, repeated, tag = "2")]
+    #[prost(message, repeated, tag="2")]
     pub logins: ::prost::alloc::vec::Vec<Login>,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
