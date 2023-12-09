@@ -7,7 +7,7 @@ WITH inserted_user    AS (
 		 INSERT INTO tags (id, name)
 			 VALUES (4, 'one'),
 					(5, 'two')
-	 ),
+						 ),
 	 inserted_stories AS (
 		 INSERT
 			 INTO
@@ -15,7 +15,7 @@ WITH inserted_user    AS (
 				 VALUES (6, 'diy'::story_category, 1, NOW(), NOW()),
 						(7, 'diy'::story_category, 2, NOW(), NOW()),
 						(8, 'diy'::story_category, 3, NOW(), NOW())
-	 )
+						 )
 INSERT
 INTO
 	story_tags (story_id, tag_id)

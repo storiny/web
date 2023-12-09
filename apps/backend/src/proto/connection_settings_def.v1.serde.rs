@@ -10,7 +10,10 @@ impl serde::Serialize for GetConnectionSettingsRequest {
         if !self.user_id.is_empty() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("connection_settings_def.v1.GetConnectionSettingsRequest", len)?;
+        let mut struct_ser = serializer.serialize_struct(
+            "connection_settings_def.v1.GetConnectionSettingsRequest",
+            len,
+        )?;
         if !self.user_id.is_empty() {
             struct_ser.serialize_field("userId", &self.user_id)?;
         }
@@ -23,10 +26,7 @@ impl<'de> serde::Deserialize<'de> for GetConnectionSettingsRequest {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &[
-            "user_id",
-            "userId",
-        ];
+        const FIELDS: &[&str] = &["user_id", "userId"];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -42,7 +42,10 @@ impl<'de> serde::Deserialize<'de> for GetConnectionSettingsRequest {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -65,12 +68,16 @@ impl<'de> serde::Deserialize<'de> for GetConnectionSettingsRequest {
             type Value = GetConnectionSettingsRequest;
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                formatter.write_str("struct connection_settings_def.v1.GetConnectionSettingsRequest")
+                formatter
+                    .write_str("struct connection_settings_def.v1.GetConnectionSettingsRequest")
             }
 
-            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetConnectionSettingsRequest, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(
+                self,
+                mut map: V,
+            ) -> std::result::Result<GetConnectionSettingsRequest, V::Error>
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut user_id__ = None;
                 while let Some(k) = map.next_key()? {
@@ -88,7 +95,11 @@ impl<'de> serde::Deserialize<'de> for GetConnectionSettingsRequest {
                 })
             }
         }
-        deserializer.deserialize_struct("connection_settings_def.v1.GetConnectionSettingsRequest", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "connection_settings_def.v1.GetConnectionSettingsRequest",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for GetConnectionSettingsResponse {
@@ -102,7 +113,10 @@ impl serde::Serialize for GetConnectionSettingsResponse {
         if !self.connections.is_empty() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("connection_settings_def.v1.GetConnectionSettingsResponse", len)?;
+        let mut struct_ser = serializer.serialize_struct(
+            "connection_settings_def.v1.GetConnectionSettingsResponse",
+            len,
+        )?;
         if !self.connections.is_empty() {
             struct_ser.serialize_field("connections", &self.connections)?;
         }
@@ -115,9 +129,7 @@ impl<'de> serde::Deserialize<'de> for GetConnectionSettingsResponse {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &[
-            "connections",
-        ];
+        const FIELDS: &[&str] = &["connections"];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -133,7 +145,10 @@ impl<'de> serde::Deserialize<'de> for GetConnectionSettingsResponse {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -156,12 +171,16 @@ impl<'de> serde::Deserialize<'de> for GetConnectionSettingsResponse {
             type Value = GetConnectionSettingsResponse;
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                formatter.write_str("struct connection_settings_def.v1.GetConnectionSettingsResponse")
+                formatter
+                    .write_str("struct connection_settings_def.v1.GetConnectionSettingsResponse")
             }
 
-            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetConnectionSettingsResponse, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(
+                self,
+                mut map: V,
+            ) -> std::result::Result<GetConnectionSettingsResponse, V::Error>
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut connections__ = None;
                 while let Some(k) = map.next_key()? {
@@ -179,6 +198,10 @@ impl<'de> serde::Deserialize<'de> for GetConnectionSettingsResponse {
                 })
             }
         }
-        deserializer.deserialize_struct("connection_settings_def.v1.GetConnectionSettingsResponse", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "connection_settings_def.v1.GetConnectionSettingsResponse",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }

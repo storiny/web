@@ -52,9 +52,9 @@ WITH explore_stories AS (WITH search_query AS (SELECT PLAINTO_TSQUERY('english',
 														   FROM
 															   friends
 														   WHERE
-																(transmitter_id = u.id AND receiver_id = $5)
-															 OR (transmitter_id = $5 AND receiver_id = u.id)
-																	AND accepted_at IS NOT NULL
+																 ((transmitter_id = u.id AND receiver_id = $5)
+																	 OR (transmitter_id = $5 AND receiver_id = u.id))
+															 AND accepted_at IS NOT NULL
 														  )
 												   )
 												-- Filter out stories from blocked and muted users

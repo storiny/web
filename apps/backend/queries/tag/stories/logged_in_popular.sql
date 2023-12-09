@@ -48,9 +48,9 @@ WITH explore_stories AS (SELECT
 														   FROM
 															   friends
 														   WHERE
-																(transmitter_id = u.id AND receiver_id = $4)
-															 OR (transmitter_id = $4 AND receiver_id = u.id)
-																	AND accepted_at IS NOT NULL
+																 ((transmitter_id = u.id AND receiver_id = $4)
+																	 OR (transmitter_id = $4 AND receiver_id = u.id))
+															 AND accepted_at IS NOT NULL
 														  )
 												   )
 												-- Filter out stories from blocked and muted users

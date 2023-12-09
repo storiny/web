@@ -2,18 +2,18 @@
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetTokenRequest {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub identifier: ::prost::alloc::string::String,
-    #[prost(enumeration="TokenType", tag="2")]
+    #[prost(enumeration = "TokenType", tag = "2")]
     pub r#type: i32,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetTokenResponse {
     /// Base props
-    #[prost(bool, tag="1")]
+    #[prost(bool, tag = "1")]
     pub is_valid: bool,
-    #[prost(bool, tag="2")]
+    #[prost(bool, tag = "2")]
     pub is_expired: bool,
 }
 // E-mail verification
@@ -21,13 +21,12 @@ pub struct GetTokenResponse {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct VerifyEmailRequest {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub identifier: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct VerifyEmailResponse {
-}
+pub struct VerifyEmailResponse {}
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum TokenType {

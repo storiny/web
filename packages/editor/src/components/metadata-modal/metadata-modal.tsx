@@ -22,6 +22,7 @@ import { use_story_metadata_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
+import { is_form_error } from "~/utils/is-form-error";
 
 import {
   nav_segment_atom,
@@ -102,14 +103,47 @@ const StoryMetadataModalImpl = (
         reset(values);
         toast("Story metadata updated", "success");
       })
-      .catch((error) =>
+      .catch((error) => {
+        if (is_form_error(error)) {
+          const error_fields = error.data?.errors.map((item) => item[0]);
+
+          if (
+            (
+              [
+                "canonical_url",
+                "seo_title",
+                "seo_description"
+              ] as (keyof StoryMetadataSchema)[]
+            ).some((field) => error_fields.includes(field))
+          ) {
+            set_nav_segment("seo");
+          } else if (
+            error_fields.includes("license" as keyof StoryMetadataSchema)
+          ) {
+            set_nav_segment("license");
+          } else if (
+            (
+              [
+                "visibility",
+                "disable_comments",
+                "disable_toc",
+                "disable_public_revision_history"
+              ] as (keyof StoryMetadataSchema)[]
+            ).some((field) => error_fields.includes(field))
+          ) {
+            set_nav_segment("settings");
+          } else {
+            set_nav_segment("general");
+          }
+        }
+
         handle_api_error(
           error,
           toast,
           form,
           "Could not modify the story metadata"
-        )
-      );
+        );
+      });
   };
 
   return (

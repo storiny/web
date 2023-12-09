@@ -11,8 +11,8 @@ UPDATE
 SET
 	accepted_at = NOW()
 WHERE
-			transmitter_id = 1
-		AND receiver_id = 3
-  OR        transmitter_id = 2
-				AND receiver_id = 3;
+	 (transmitter_id = 1
+		 AND receiver_id = 3)
+  OR (transmitter_id = 2
+	AND receiver_id = 3);
 

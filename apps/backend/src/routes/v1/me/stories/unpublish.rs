@@ -81,7 +81,7 @@ WHERE
                 debug!("realm is present in the map, destroying");
 
                 realm_inner
-                    .destroy(RealmDestroyReason::StoryPublished)
+                    .destroy(RealmDestroyReason::StoryUnpublished)
                     .await;
             }
 

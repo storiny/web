@@ -31,7 +31,7 @@ BEGIN
 											 found_tag
 										)
 						 RETURNING id
-				 )
+								 )
 			INSERT
 			INTO
 				story_tags (story_id, tag_id)

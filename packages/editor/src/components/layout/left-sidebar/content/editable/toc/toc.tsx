@@ -9,7 +9,11 @@ import Typography from "~/components/typography";
 import { use_story_metadata_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 
-import { doc_status_atom, story_metadata_atom } from "../../../../../../atoms";
+import {
+  DOC_STATUS,
+  doc_status_atom,
+  story_metadata_atom
+} from "../../../../../../atoms";
 import TableOfContentsPlugin from "../../../../../../plugins/toc";
 import styles from "./toc.module.scss";
 
@@ -23,7 +27,7 @@ const EditorToc = ({
   const [story, set_story] = use_atom(story_metadata_atom);
   const [loading, set_loading] = React.useState<boolean>(false);
   const doc_status = use_atom_value(doc_status_atom);
-  const publishing = doc_status === "publishing";
+  const publishing = doc_status === DOC_STATUS.publishing;
   const [mutate_story_metadata] = use_story_metadata_mutation();
   const on_change = React.useCallback(
     (next_value: boolean): void => {

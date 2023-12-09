@@ -14,11 +14,14 @@ import RightSidebarFooter from "~/layout/right-sidebar/footer";
 import css from "~/theme/main.module.scss";
 
 import {
+  DOC_STATUS,
   doc_status_atom,
+  DocStatus,
   overflowing_figures_atom,
   sidebars_collapsed_atom
 } from "../../../../atoms";
 import { SPRING_CONFIG } from "../../../../constants";
+import { is_doc_editable } from "../../../../utils/is-doc-editable";
 import common_styles from "../../common/sidebar.module.scss";
 import styles from "../right-sidebar.module.scss";
 import { EditorRightSidebarProps } from "../right-sidebar.props";
@@ -48,8 +51,9 @@ const SuspendedEditorRightSidebarContent = (
     immediate: Boolean(read_only) && !mounted_ref.current
   });
   const document_loading =
-    !read_only && ["connecting", "reconnecting"].includes(doc_status);
-  const publishing = doc_status === "publishing";
+    !read_only &&
+    [DOC_STATUS.connecting, DOC_STATUS.reconnecting].includes(doc_status);
+  const publishing = doc_status === DOC_STATUS.publishing;
   const disabled = document_loading || publishing;
 
   React.useEffect(() => {
@@ -59,12 +63,7 @@ const SuspendedEditorRightSidebarContent = (
     };
   }, []);
 
-  if (
-    !read_only &&
-    (doc_status === "disconnected" ||
-      doc_status === "forbidden" ||
-      doc_status === "overloaded")
-  ) {
+  if (!read_only && !is_doc_editable(doc_status)) {
     return null;
   }
 

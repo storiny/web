@@ -1,7 +1,11 @@
 use actix_web::{
-    dev::{ServiceRequest, ServiceResponse},
+    dev::{
+        ServiceRequest,
+        ServiceResponse,
+    },
     guard::GuardContext,
-    HttpMessage, HttpRequest,
+    HttpMessage,
+    HttpRequest,
 };
 
 use crate::Session;

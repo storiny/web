@@ -35,7 +35,7 @@ $$
 BEGIN
 	-- Check whether the username is on a cooldown period (modified within the last 30 days)
 	IF (
-			OLD.username_modified_at IS NOT NULL
+		OLD.username_modified_at IS NOT NULL
 			AND OLD.username_modified_at > NOW() - INTERVAL '30 days'
 		) THEN
 		RAISE 'Username is on a cooldown period'

@@ -87,9 +87,11 @@ AND (
     EXISTS (
         SELECT 1 FROM friends
         WHERE
-                (transmitter_id = u.id AND receiver_id = $1)
-            OR
-                (transmitter_id = $1 AND receiver_id = u.id)
+            (
+                    (transmitter_id = u.id AND receiver_id = $1)
+                OR
+                    (transmitter_id = $1 AND receiver_id = u.id)
+            )
             AND accepted_at IS NOT NULL
     )
 )

@@ -190,7 +190,7 @@ LEFT OUTER JOIN relations AS "fu->is_follower"
 LEFT OUTER JOIN friends AS "fu->is_friend"
     ON (
         ("fu->is_friend".transmitter_id = fu.id AND "fu->is_friend".receiver_id = $4)
-    OR
+        OR
         ("fu->is_friend".receiver_id = fu.id AND "fu->is_friend".transmitter_id = $4)
     )
     AND "fu->is_friend".accepted_at IS NOT NULL
@@ -216,9 +216,11 @@ AND (
         SELECT 1
         FROM friends
         WHERE
-                (transmitter_id = source_user.id AND receiver_id = $4)
-            OR
-                (transmitter_id = $4 AND receiver_id = source_user.id)
+            (
+                    (transmitter_id = source_user.id AND receiver_id = $4)
+                OR
+                    (transmitter_id = $4 AND receiver_id = source_user.id)
+            )
             AND accepted_at IS NOT NULL
     )
 )
@@ -233,9 +235,11 @@ AND (
             SELECT 1
             FROM friends
             WHERE
-                    (transmitter_id = source_user.id AND receiver_id = $4)
-                OR
-                    (transmitter_id = $4 AND receiver_id = source_user.id)
+                (
+                        (transmitter_id = source_user.id AND receiver_id = $4)
+                    OR
+                        (transmitter_id = $4 AND receiver_id = source_user.id)
+                )
                 AND accepted_at IS NOT NULL
         )
     )

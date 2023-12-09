@@ -67,6 +67,47 @@ VALUES ($1, $2)
     }
 
     #[sqlx::test(fixtures("user", "story", "tag"))]
+    async fn can_reject_story_tag_for_unpublished_story(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Unpublish the story
+        sqlx::query(
+            r#"
+UPDATE stories
+SET published_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let result = sqlx::query(
+            r#"
+INSERT INTO story_tags (tag_id, story_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(4_i64)
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await;
+
+        // Should reject with the correct SQLSTATE.
+        assert_eq!(
+            result
+                .unwrap_err()
+                .into_database_error()
+                .unwrap()
+                .code()
+                .unwrap(),
+            SqlState::EntityUnavailable.to_string()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user", "story", "tag"))]
     async fn can_increment_story_count_on_tag_when_inserting_story_tag(
         pool: PgPool,
     ) -> sqlx::Result<()> {

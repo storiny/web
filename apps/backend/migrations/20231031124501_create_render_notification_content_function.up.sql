@@ -20,21 +20,21 @@ BEGIN
 												   )
 						  SELECT (
 									 FORMAT(
-														 'There was a successful login attempt to your account using'
-														 || ' <b>%s</b>'
-													 || CASE
-															 -- Insert client location if exist
-															WHEN CHAR_LENGTH(
-																		 SPLIT_PART((SELECT rendered_content FROM notification_out), ':', 2)
-																 ) = 0
-																THEN ''
-															ELSE ' near <b>' ||
-																 SPLIT_PART((SELECT rendered_content FROM notification_out), ':', 2) ||
-																 '</b>'
-														END
+											 'There was a successful login attempt to your account using'
+												 || ' <b>%s</b>'
+												 || CASE
+												 -- Insert client location if exist
+														WHEN CHAR_LENGTH(
+																	 SPLIT_PART((SELECT rendered_content FROM notification_out), ':', 2)
+															 ) = 0
+															THEN ''
+														ELSE ' near <b>' ||
+															 SPLIT_PART((SELECT rendered_content FROM notification_out), ':', 2) ||
+															 '</b>'
+													END
 												 ||
-														 '. <a data-underline href="/me/account/login-activity">Click to review</a>',
-														 SPLIT_PART((SELECT rendered_content FROM notification_out), ':', 1)
+											 '. <a data-underline href="/me/account/login-activity">Click to review</a>',
+											 SPLIT_PART((SELECT rendered_content FROM notification_out), ':', 1)
 									 )
 									 )
 				)
@@ -144,13 +144,13 @@ BEGIN
 										  )
 						  SELECT (
 									 FORMAT(
-													 '<a data-fw-bold href="/%s">%s</a>'
-													 || ' commented: '
+											 '<a data-fw-bold href="/%s">%s</a>'
+												 || ' commented: '
 												 || '<a data-fw-medium href="/%s">%s</a>',
-													 (SELECT username FROM comment),
-													 (SELECT public.truncate_str(name, 32) FROM comment),
-													 (SELECT url FROM comment),
-													 (SELECT public.truncate_str(content, 96) FROM comment)
+											 (SELECT username FROM comment),
+											 (SELECT public.truncate_str(name, 32) FROM comment),
+											 (SELECT url FROM comment),
+											 (SELECT public.truncate_str(content, 96) FROM comment)
 									 )
 									 )
 				)
@@ -191,13 +191,13 @@ BEGIN
 										)
 						  SELECT (
 									 FORMAT(
-													 '<a data-fw-bold href="/%s">%s</a>'
-													 || ' replied: '
+											 '<a data-fw-bold href="/%s">%s</a>'
+												 || ' replied: '
 												 || '<a data-fw-medium href="/%s">%s</a>',
-													 (SELECT username FROM reply),
-													 (SELECT public.truncate_str(name, 32) FROM reply),
-													 (SELECT url FROM reply),
-													 (SELECT public.truncate_str(content, 96) FROM reply)
+											 (SELECT username FROM reply),
+											 (SELECT public.truncate_str(name, 32) FROM reply),
+											 (SELECT url FROM reply),
+											 (SELECT public.truncate_str(content, 96) FROM reply)
 									 )
 									 )
 				)
@@ -229,13 +229,13 @@ BEGIN
 										)
 						  SELECT (
 									 FORMAT(
-													 '<a data-fw-bold href="/%s">%s</a>'
-													 || ' liked your story: '
+											 '<a data-fw-bold href="/%s">%s</a>'
+												 || ' liked your story: '
 												 || '<a data-fw-medium href="/%s">%s</a>',
-													 (SELECT username FROM story),
-													 (SELECT public.truncate_str(name, 32) FROM story),
-													 (SELECT url FROM story),
-													 (SELECT public.truncate_str(title, 96) FROM story)
+											 (SELECT username FROM story),
+											 (SELECT public.truncate_str(name, 32) FROM story),
+											 (SELECT url FROM story),
+											 (SELECT public.truncate_str(title, 96) FROM story)
 									 )
 									 )
 				)
@@ -266,13 +266,13 @@ BEGIN
 										)
 						  SELECT (
 									 FORMAT(
-													 '<a data-fw-bold href="/%s">%s</a>'
-													 || ' published a new story: '
+											 '<a data-fw-bold href="/%s">%s</a>'
+												 || ' published a new story: '
 												 || '<a data-fw-medium href="/%s">%s</a>',
-													 (SELECT username FROM story),
-													 (SELECT public.truncate_str(name, 32) FROM story),
-													 (SELECT url FROM story),
-													 (SELECT public.truncate_str(title, 96) FROM story)
+											 (SELECT username FROM story),
+											 (SELECT public.truncate_str(name, 32) FROM story),
+											 (SELECT url FROM story),
+											 (SELECT public.truncate_str(title, 96) FROM story)
 									 )
 									 )
 				)
@@ -305,14 +305,14 @@ BEGIN
 										)
 						  SELECT (
 									 FORMAT(
-														 'New story published in ' ||
-														 '<a data-fw-bold href="/tag/%s">#%s</a>'
-													 || ': '
+											 'New story published in ' ||
+											 '<a data-fw-bold href="/tag/%s">#%s</a>'
+												 || ': '
 												 || '<a data-fw-medium href="/%s">%s</a>',
-														 (SELECT tag_name FROM story),
-														 (SELECT tag_name FROM story),
-														 (SELECT url FROM story),
-														 (SELECT public.truncate_str(title, 96) FROM story)
+											 (SELECT tag_name FROM story),
+											 (SELECT tag_name FROM story),
+											 (SELECT url FROM story),
+											 (SELECT public.truncate_str(title, 96) FROM story)
 									 )
 									 )
 				)

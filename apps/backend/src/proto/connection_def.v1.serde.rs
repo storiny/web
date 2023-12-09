@@ -18,8 +18,9 @@ impl serde::Serialize for Connection {
         }
         let mut struct_ser = serializer.serialize_struct("connection_def.v1.Connection", len)?;
         if self.provider != 0 {
-            let v = Provider::from_i32(self.provider)
-                .ok_or_else(|| serde::ser::Error::custom(format!("Invalid variant {}", self.provider)))?;
+            let v = Provider::from_i32(self.provider).ok_or_else(|| {
+                serde::ser::Error::custom(format!("Invalid variant {}", self.provider))
+            })?;
             struct_ser.serialize_field("provider", &v)?;
         }
         if !self.url.is_empty() {
@@ -37,12 +38,7 @@ impl<'de> serde::Deserialize<'de> for Connection {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &[
-            "provider",
-            "url",
-            "display_name",
-            "displayName",
-        ];
+        const FIELDS: &[&str] = &["provider", "url", "display_name", "displayName"];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -60,7 +56,10 @@ impl<'de> serde::Deserialize<'de> for Connection {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -89,8 +88,8 @@ impl<'de> serde::Deserialize<'de> for Connection {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<Connection, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut provider__ = None;
                 let mut url__ = None;
@@ -153,13 +152,15 @@ impl serde::Serialize for ConnectionSetting {
         if !self.created_at.is_empty() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("connection_def.v1.ConnectionSetting", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("connection_def.v1.ConnectionSetting", len)?;
         if !self.id.is_empty() {
             struct_ser.serialize_field("id", &self.id)?;
         }
         if self.provider != 0 {
-            let v = Provider::from_i32(self.provider)
-                .ok_or_else(|| serde::ser::Error::custom(format!("Invalid variant {}", self.provider)))?;
+            let v = Provider::from_i32(self.provider).ok_or_else(|| {
+                serde::ser::Error::custom(format!("Invalid variant {}", self.provider))
+            })?;
             struct_ser.serialize_field("provider", &v)?;
         }
         if self.hidden {
@@ -213,7 +214,10 @@ impl<'de> serde::Deserialize<'de> for ConnectionSetting {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -245,8 +249,8 @@ impl<'de> serde::Deserialize<'de> for ConnectionSetting {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<ConnectionSetting, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut id__ = None;
                 let mut provider__ = None;
@@ -304,7 +308,11 @@ impl<'de> serde::Deserialize<'de> for ConnectionSetting {
                 })
             }
         }
-        deserializer.deserialize_struct("connection_def.v1.ConnectionSetting", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "connection_def.v1.ConnectionSetting",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for Provider {

@@ -40,15 +40,16 @@ WITH recommended_stories AS (SELECT
 													AND u.deactivated_at IS NULL
 													-- Make sure to handle stories from private users
 													AND (
-														   NOT u.is_private OR
-														   EXISTS (SELECT 1
-																   FROM
-																	   friends
-																   WHERE
-																		(transmitter_id = u.id AND receiver_id = $4)
-																	 OR (transmitter_id = $4 AND receiver_id = u.id)
-																			AND accepted_at IS NOT NULL
-																  )
+													   NOT u.is_private OR
+													   EXISTS (SELECT 1
+															   FROM
+																   friends
+															   WHERE
+																	 ((transmitter_id = u.id AND receiver_id = $4)
+																		 OR
+																	  (transmitter_id = $4 AND receiver_id = u.id))
+																 AND accepted_at IS NOT NULL
+															  )
 													   )
 													-- Filter out stories from blocked and muted users
 													AND u.id NOT IN (SELECT b.blocked_id

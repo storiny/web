@@ -54,7 +54,7 @@ use yrs::{
     updates::encoder::{
         Encode,
         Encoder,
-        EncoderV2,
+        EncoderV1,
     },
     ReadTxn,
     StateVector,
@@ -104,6 +104,9 @@ pub enum RealmDestroyReason {
     /// The story was published while the realm was active.
     #[strum(serialize = "destroy:story_published")]
     StoryPublished,
+    /// The story was unpublished while the realm was active.
+    #[strum(serialize = "destroy:story_unpublished")]
+    StoryUnpublished,
     /// The story was deleted while the realm was active.
     #[strum(serialize = "destroy:story_deleted")]
     StoryDeleted,
@@ -369,7 +372,7 @@ impl Realm {
 
         // Broadcast a realm destroy message to the peers with the reason.
         if self.has_peers().await {
-            let mut encoder = EncoderV2::new();
+            let mut encoder = EncoderV1::new();
             encoder.write_var(MSG_INTERNAL);
             encoder.write_string(&reason.to_string());
 
@@ -632,7 +635,7 @@ mod tests {
             Cursor,
             Read,
         },
-        updates::decoder::DecoderV2,
+        updates::decoder::DecoderV1,
         Doc,
     };
 
@@ -748,7 +751,7 @@ mod tests {
                 assert!(message.is_binary());
 
                 let message_data = message.into_data();
-                let mut decoder = DecoderV2::new(Cursor::new(&message_data)).unwrap();
+                let mut decoder = DecoderV1::new(Cursor::new(&message_data)).unwrap();
 
                 assert_eq!(decoder.read_var::<u8>().unwrap(), MSG_INTERNAL);
                 assert_eq!(

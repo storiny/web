@@ -53,58 +53,58 @@ BEGIN
 	--
 	IF (
 		-- None
-				incoming_friend_requests_value = 4 OR
+		incoming_friend_requests_value = 4 OR
 			--
 			-- Following
-				incoming_friend_requests_value = 2 AND NOT EXISTS (SELECT 1
-																   FROM
-																	   relations
-																   WHERE
-																		 followed_id = NEW.transmitter_id
-																	 AND follower_id = NEW.receiver_id
-																	 AND deleted_at IS NULL
-																  ) OR
+		(incoming_friend_requests_value = 2 AND NOT EXISTS (SELECT 1
+															FROM
+																relations
+															WHERE
+																  followed_id = NEW.transmitter_id
+															  AND follower_id = NEW.receiver_id
+															  AND deleted_at IS NULL
+														   )) OR
 			--
 			-- Friend of friends
-				incoming_friend_requests_value = 3 AND
-				NOT EXISTS (WITH receiver_friends AS (SELECT transmitter_id AS user_id
-													  FROM
-														  friends
-													  WHERE
-															(transmitter_id = NEW.receiver_id OR receiver_id = NEW.receiver_id)
-														AND accepted_at IS NOT NULL
-														AND deleted_at IS NULL
-													  UNION
-													  SELECT receiver_id AS user_id
-													  FROM
-														  friends
-													  WHERE
-															(transmitter_id = NEW.receiver_id OR receiver_id = NEW.receiver_id)
-														AND accepted_at IS NOT NULL
-														AND deleted_at IS NULL
-													 )
-							SELECT 1
-							FROM
-								friends
-							WHERE
-								  (
-												  transmitter_id =
-												  NEW.transmitter_id AND
-												  receiver_id IN
-												  (SELECT user_id
-												   FROM
-													   receiver_friends
-												  )
-										  OR receiver_id = NEW.transmitter_id AND
-											 transmitter_id IN
-											 (SELECT user_id
-											  FROM
-												  receiver_friends
-											 ))
-							  AND accepted_at IS NOT NULL
-							  AND deleted_at IS NULL
-							LIMIT 1
-						   )
+		(incoming_friend_requests_value = 3 AND
+		 NOT EXISTS (WITH receiver_friends AS (SELECT transmitter_id AS user_id
+											   FROM
+												   friends
+											   WHERE
+													 (transmitter_id = NEW.receiver_id OR receiver_id = NEW.receiver_id)
+												 AND accepted_at IS NOT NULL
+												 AND deleted_at IS NULL
+											   UNION
+											   SELECT receiver_id AS user_id
+											   FROM
+												   friends
+											   WHERE
+													 (transmitter_id = NEW.receiver_id OR receiver_id = NEW.receiver_id)
+												 AND accepted_at IS NOT NULL
+												 AND deleted_at IS NULL
+											  )
+					 SELECT 1
+					 FROM
+						 friends
+					 WHERE
+						   (
+							   (transmitter_id =
+								NEW.transmitter_id AND
+								receiver_id IN
+								(SELECT user_id
+								 FROM
+									 receiver_friends
+								))
+								   OR (receiver_id = NEW.transmitter_id AND
+									   transmitter_id IN
+									   (SELECT user_id
+										FROM
+											receiver_friends
+									   )))
+					   AND accepted_at IS NOT NULL
+					   AND deleted_at IS NULL
+					 LIMIT 1
+					))
 		) THEN
 		RAISE 'Target user is not accepting friend requests from the source user'
 			USING ERRCODE = '51000';

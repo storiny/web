@@ -8,47 +8,44 @@ import CloudOffIcon from "~/icons/cloud-off";
 import CloudSyncingIcon from "~/icons/cloud-syncing";
 import css from "~/theme/main.module.scss";
 
-import { doc_status_atom, DocStatus as TDocStatus } from "../../../../atoms";
+import { DOC_STATUS, doc_status_atom, DocStatus } from "../../../../atoms";
 import styles from "./doc-status.module.scss";
 
-type LocalDocStatus = Exclude<
-  TDocStatus,
-  "connected" | "overloaded" | "forbidden" | "publishing" | "corrupted"
->;
-
-const DOC_STATUS_TOOLTIP_MAP: Record<LocalDocStatus, string> = {
-  connecting /*  */: "Connecting…",
-  reconnecting /**/: "Reconnecting…",
-  syncing /*     */: "Syncing…",
-  disconnected /**/: "Disconnected"
+const DOC_STATUS_TOOLTIP_MAP: Partial<Record<DocStatus, string>> = {
+  [DOC_STATUS.connecting /*   */]: "Connecting…",
+  [DOC_STATUS.reconnecting /* */]: "Reconnecting…",
+  [DOC_STATUS.syncing /*      */]: "Syncing…",
+  [DOC_STATUS.doc_corrupted /**/]: "Document corrupted",
+  [DOC_STATUS.disconnected ||
+  DOC_STATUS.lifetime_exceeded ||
+  DOC_STATUS.deleted ||
+  DOC_STATUS.published ||
+  DOC_STATUS.internal /*      */]: "Disconnected"
 };
 
-const DOC_STATUS_ICON_MAP: Record<LocalDocStatus, React.ReactElement> = {
-  connecting /*  */: <CloudIcon />,
-  reconnecting /**/: <CloudSyncingIcon />,
-  syncing /*     */: <CloudSyncingIcon />,
-  disconnected /**/: <CloudOffIcon />
+const DOC_STATUS_ICON_MAP: Partial<Record<DocStatus, React.ReactElement>> = {
+  [DOC_STATUS.connecting /*  */]: <CloudIcon />,
+  [DOC_STATUS.reconnecting /**/]: <CloudSyncingIcon />,
+  [DOC_STATUS.syncing /*     */]: <CloudSyncingIcon />,
+  [DOC_STATUS.disconnected ||
+  DOC_STATUS.doc_corrupted ||
+  DOC_STATUS.lifetime_exceeded ||
+  DOC_STATUS.deleted ||
+  DOC_STATUS.published ||
+  DOC_STATUS.internal /*      */]: <CloudOffIcon />
 };
 
 const DocStatus = (): React.ReactElement | null => {
   const doc_status = use_atom_value(doc_status_atom);
 
-  if (
-    [
-      "publishing",
-      "connected",
-      "overloaded",
-      "forbidden",
-      "corrupted"
-    ].includes(doc_status)
-  ) {
+  if (!DOC_STATUS_ICON_MAP[doc_status]) {
     return null;
   }
 
   return (
-    <Tooltip content={DOC_STATUS_TOOLTIP_MAP[doc_status as LocalDocStatus]}>
+    <Tooltip content={DOC_STATUS_TOOLTIP_MAP[doc_status]}>
       <span className={clsx(css["flex-center"], styles.icon)}>
-        {DOC_STATUS_ICON_MAP[doc_status as LocalDocStatus]}
+        {DOC_STATUS_ICON_MAP[doc_status]}
       </span>
     </Tooltip>
   );

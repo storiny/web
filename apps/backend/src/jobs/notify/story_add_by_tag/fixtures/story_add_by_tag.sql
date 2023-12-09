@@ -6,15 +6,15 @@ WITH inserted_users     AS (
 						   ),
 	 inserted_tag       AS (
 		 INSERT INTO tags (id, name, story_count) VALUES (4, 'tag-1', 1)
-	 ),
+						   ),
 	 inserted_story     AS (
 		 INSERT INTO stories (id, user_id, slug, published_at)
 			 VALUES (5, 1, 'some-story', NOW())
-	 ),
+						   ),
 	 inserted_story_tag AS (
 		 INSERT INTO story_tags (id, story_id, tag_id)
 			 VALUES (6, 5, 4)
-	 )
+						   )
 INSERT
 INTO
 	tag_followers (user_id, tag_id)

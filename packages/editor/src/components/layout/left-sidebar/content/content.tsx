@@ -11,11 +11,13 @@ import LeftSidebarDefaultContent from "~/layout/left-sidebar/default-content";
 import css from "~/theme/main.module.scss";
 
 import {
+  DOC_STATUS,
   doc_status_atom,
   overflowing_figures_atom,
   sidebars_collapsed_atom
 } from "../../../../atoms";
 import { SPRING_CONFIG } from "../../../../constants";
+import { is_doc_editable } from "../../../../utils/is-doc-editable";
 import common_styles from "../../common/sidebar.module.scss";
 import styles from "../left-sidebar.module.scss";
 import { EditorLeftSidebarProps } from "../left-sidebar.props";
@@ -45,7 +47,7 @@ const SuspendedEditorLeftSidebarContent = (
   const document_loading =
     !read_only &&
     status !== "deleted" &&
-    ["connecting", "reconnecting"].includes(doc_status);
+    [DOC_STATUS.connecting, DOC_STATUS.reconnecting].includes(doc_status);
 
   React.useEffect(() => {
     mounted_ref.current = true;
@@ -54,12 +56,7 @@ const SuspendedEditorLeftSidebarContent = (
     };
   }, []);
 
-  if (
-    !read_only &&
-    (doc_status === "disconnected" ||
-      doc_status === "forbidden" ||
-      doc_status === "overloaded")
-  ) {
+  if (!read_only && !is_doc_editable(doc_status)) {
     return null;
   }
 

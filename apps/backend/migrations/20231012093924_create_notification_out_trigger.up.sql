@@ -48,17 +48,17 @@ BEGIN
 					 ns.user_id = NEW.notified_id
 				 AND (
 						 -- 3 = Friend request accept, 4 = Friend request received
-							 (ns.push_friend_requests IS FALSE AND n.entity_type IN (3, 4)) OR
+						 (ns.push_friend_requests IS FALSE AND n.entity_type IN (3, 4)) OR
 							 -- 5 = Follower add
-							 (ns.push_followers IS FALSE AND n.entity_type = 5) OR
+						 (ns.push_followers IS FALSE AND n.entity_type = 5) OR
 							 -- 6 = Comment add
-							 (ns.push_comments IS FALSE AND n.entity_type = 6) OR
+						 (ns.push_comments IS FALSE AND n.entity_type = 6) OR
 							 -- 7 = Reply add
-							 (ns.push_replies IS FALSE AND n.entity_type = 7) OR
+						 (ns.push_replies IS FALSE AND n.entity_type = 7) OR
 							 -- 10 = Story add by user, 11 = Story add by tag
-							 (ns.push_stories IS FALSE AND n.entity_type IN (10, 11)) OR
+						 (ns.push_stories IS FALSE AND n.entity_type IN (10, 11)) OR
 							 -- 9 = Story like
-							 (ns.push_story_likes IS FALSE AND n.entity_type = 9))
+						 (ns.push_story_likes IS FALSE AND n.entity_type = 9))
 			  )) THEN
 		-- Skip inserting the row
 		RETURN NULL;
