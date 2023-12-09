@@ -49,7 +49,7 @@ SELECT (
     FROM stories
     WHERE
         user_id = $1
-        AND published_at IS NOT NULL    
+        AND first_published_at IS NOT NULL    
         AND deleted_at IS NOT NULL
     ) AS "deleted_story_count"
 "#,

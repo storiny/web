@@ -51,11 +51,13 @@ use y_sync::{
 };
 use yrs::{
     encoding::write::Write,
+    types::ToJson,
     updates::encoder::{
         Encode,
         Encoder,
         EncoderV1,
     },
+    GetString,
     ReadTxn,
     StateVector,
     Transact,

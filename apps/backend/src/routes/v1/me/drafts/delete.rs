@@ -4,6 +4,10 @@ use crate::{
         ToastErrorResponse,
     },
     middlewares::identity::identity::Identity,
+    realms::realm::{
+        RealmData,
+        RealmDestroyReason,
+    },
     AppState,
 };
 use actix_web::{
@@ -11,7 +15,9 @@ use actix_web::{
     web,
     HttpResponse,
 };
+use lockable::AsyncLimit;
 use serde::Deserialize;
+use tracing::debug;
 use validator::Validate;
 
 #[derive(Deserialize, Validate)]
@@ -33,12 +39,23 @@ async fn delete(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
+    realm_map: RealmData,
 ) -> Result<HttpResponse, AppError> {
     let user_id = user.id()?;
     let draft_id = path
         .draft_id
         .parse::<i64>()
         .map_err(|_| AppError::from("Invalid draft ID"))?;
+
+    let mut realm = realm_map
+        .async_lock(draft_id, AsyncLimit::no_limit())
+        .await
+        .map_err(|error| {
+            AppError::InternalError(format!("unable to acquire a lock on the realm: {error:?}"))
+        })?;
+
+    let pg_pool = &data.db_pool;
+    let mut txn = pg_pool.begin().await?;
 
     match sqlx::query(
         r#"
@@ -53,12 +70,25 @@ WHERE
     )
     .bind(&user_id)
     .bind(&draft_id)
-    .execute(&data.db_pool)
+    .execute(&mut *txn)
     .await?
     .rows_affected()
     {
         0 => Err(ToastErrorResponse::new(None, "Draft not found").into()),
-        _ => Ok(HttpResponse::NoContent().finish()),
+        _ => {
+            // Drop the realm.
+            if let Some(realm_inner) = realm.value() {
+                debug!("realm is present in the map, destroying");
+
+                realm_inner.destroy(RealmDestroyReason::StoryDeleted).await;
+            }
+
+            realm.remove();
+
+            txn.commit().await?;
+
+            Ok(HttpResponse::NoContent().finish())
+        }
     }
 }
 

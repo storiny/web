@@ -394,7 +394,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
           </Typography>
           {is_extended && (
             <React.Fragment>
-              {story.like_count && (
+              {story.like_count ? (
                 <React.Fragment>
                   <Typography
                     aria-hidden
@@ -420,8 +420,8 @@ const Footer = (props: StoryProps): React.ReactElement => {
                     {abbreviate_number(story.like_count)}
                   </Typography>
                 </React.Fragment>
-              )}
-              {story.comment_count && (
+              ) : null}
+              {story.comment_count ? (
                 <React.Fragment>
                   <Typography
                     aria-hidden
@@ -447,7 +447,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
                     {abbreviate_number(story.comment_count)}
                   </Typography>
                 </React.Fragment>
-              )}
+              ) : null}
             </React.Fragment>
           )}
         </React.Fragment>

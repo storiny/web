@@ -131,21 +131,18 @@ BEGIN
 		--
 	END IF;
 	--
-	-- Story recovered or published
-	IF ((OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL) OR
-		(OLD.published_at IS NULL AND NEW.published_at IS NOT NULL)) THEN
+	-- Story published
+	IF (OLD.published_at IS NULL AND NEW.published_at IS NOT NULL) THEN
 		-- Update `first_published_at` and `story_count` on publishing the story
-		IF (OLD.published_at IS NULL AND NEW.published_at IS NOT NULL) THEN
-			NEW.first_published_at := NEW.published_at;
-			--
-			-- Increment `story_count` on user
-			UPDATE
-				users
-			SET
-				story_count = story_count + 1
-			WHERE
-				id = NEW.user_id;
-		END IF;
+		NEW.first_published_at := NEW.published_at;
+		--
+		-- Increment `story_count` on user
+		UPDATE
+			users
+		SET
+			story_count = story_count + 1
+		WHERE
+			id = NEW.user_id;
 		--
 	END IF;
 	--

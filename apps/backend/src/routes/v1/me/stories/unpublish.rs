@@ -60,7 +60,9 @@ async fn post(
     match sqlx::query(
         r#"
 UPDATE stories
-SET published_at = NULL
+SET
+    published_at = NULL,
+    first_published_at = NULL
 WHERE
     user_id = $1
     AND id = $2
@@ -142,7 +144,10 @@ VALUES ($1, $2, NOW())
         // Story should get updated in the database.
         let result = sqlx::query(
             r#"
-SELECT published_at FROM stories
+SELECT
+    published_at,
+    first_published_at
+FROM stories
 WHERE id = $1
 "#,
         )
@@ -153,6 +158,11 @@ WHERE id = $1
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("published_at")
+                .is_none()
+        );
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("first_published_at")
                 .is_none()
         );
 

@@ -27,6 +27,7 @@ import QuestionMarkIcon from "~/icons/question-mark";
 import VersionHistoryIcon from "~/icons/version-history";
 import {
   use_publish_story_mutation,
+  use_recover_draft_mutation,
   use_recover_story_mutation
 } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
@@ -201,27 +202,35 @@ const Publish = ({
 
 // Recover
 
-const Recover = (): React.ReactElement => {
+const Recover = ({ is_draft }: { is_draft: boolean }): React.ReactElement => {
   const toast = use_toast();
+  const router = use_router();
   const story = use_atom_value(story_metadata_atom);
   const [loading, set_loading] = React.useState<boolean>(false);
   const [recover_story] = use_recover_story_mutation();
+  const [recover_draft] = use_recover_draft_mutation();
 
   /**
    * Publishes the story
    */
   const handle_recover = React.useCallback(() => {
     set_loading(true);
-    recover_story({ id: story.id })
+
+    (is_draft ? recover_draft : recover_story)({ id: story.id })
       .unwrap()
       .then(() => {
-        redirect(`/doc/${story.id}`, RedirectType.replace);
+        router.refresh();
       })
       .catch((error) => {
         set_loading(false);
-        handle_api_error(error, toast, null, "Could not recover your story");
+        handle_api_error(
+          error,
+          toast,
+          null,
+          `Could not recover your ${is_draft ? "draft" : "story"}`
+        );
       });
-  }, [recover_story, story.id, toast]);
+  }, [is_draft, recover_draft, recover_story, story.id, toast]);
 
   return (
     <Button
@@ -242,6 +251,7 @@ const EditorNavbar = ({
 }): React.ReactElement => {
   const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const story = use_atom_value(story_metadata_atom);
   const doc_status = use_atom_value(doc_status_atom);
   const document_loading = [
     DOC_STATUS.connecting,
@@ -307,7 +317,7 @@ const EditorNavbar = ({
           </React.Fragment>
         ) : null}
         {status === "deleted" ? (
-          <Recover />
+          <Recover is_draft={!story.published_at} />
         ) : (
           <Publish disabled={document_loading} status={status} />
         )}

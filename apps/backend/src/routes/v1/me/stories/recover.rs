@@ -49,7 +49,7 @@ SET
 WHERE
     user_id = $1
     AND id = $2
-    AND published_at IS NOT NULL
+    AND first_published_at IS NOT NULL
     AND deleted_at IS NOT NULL
 "#,
     )
