@@ -236,7 +236,7 @@ const CommentList = (props: {
   return (
     <React.Fragment>
       <ControlBar
-        disabled={!items.length}
+        disabled={!query && !items.length}
         on_query_change={handle_query_change}
         on_sort_change={handle_sort_change}
         query={query}
@@ -314,7 +314,7 @@ const ReplyList = (props: {
   return (
     <React.Fragment>
       <ControlBar
-        disabled={!items.length}
+        disabled={!query && !items.length}
         on_query_change={handle_query_change}
         on_sort_change={handle_sort_change}
         query={query}

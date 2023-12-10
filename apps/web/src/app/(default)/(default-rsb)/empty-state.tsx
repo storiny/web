@@ -16,7 +16,7 @@ const IndexEmptyState = ({
     description={
       value === "suggested"
         ? "We were unable to find enough relevant stories to populate your feed. Perhaps you could follow some writers or tags?"
-        : "Stories published by your friends and the writers you follow will appear here."
+        : "Stories published by your friends and the writers you follow will show up here."
     }
     title={
       value === "suggested"

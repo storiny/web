@@ -132,7 +132,7 @@ const Page = ({ tag }: Props): React.ReactElement => {
     <>
       {is_smaller_than_tablet && <SuspendedContent tag={tag} />}
       <PageHeader
-        disabled={!items.length}
+        disabled={!query && !items.length}
         on_query_change={handle_query_change}
         on_sort_change={handle_change}
         query={query}

@@ -10,9 +10,11 @@ const TagEmptyState = ({ query }: TagEmptyStateProps): React.ReactElement => (
   <CustomState
     auto_size
     description={
-      "Your search criteria did not match anything, make sure you've spelled it correctly or try again by being more specific."
+      query
+        ? "Your search criteria did not match anything, make sure you've spelled it correctly or try again by being more specific."
+        : "There are no public stories that feature this tag."
     }
-    title={`Could not find any story for "${query}"`}
+    title={query ? `Could not find any story for "${query}"` : "No stories"}
   />
 );
 

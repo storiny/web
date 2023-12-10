@@ -211,7 +211,7 @@ mod tests {
                                     lat: Some(0.0),
                                     lng: Some(0.0),
                                 }),
-                                ..Default::default()
+                                ack: false,
                             })
                             .unwrap(),
                         )
@@ -227,9 +227,8 @@ mod tests {
                         .unwrap()
                         .into_inner();
 
-                    assert!(response.recent.is_some());
                     assert_eq!(response.logins.len(), 1);
-                    assert!(response.recent.unwrap().is_active); // The only session should be active.
+                    assert!(response.logins[0].is_active); // The only session should be active.
                 }),
             )
             .await;

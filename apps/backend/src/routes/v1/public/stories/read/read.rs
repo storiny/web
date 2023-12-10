@@ -381,7 +381,7 @@ WHERE story_id = $1
 
             // Wait for `MINIMUM_READ_DURATION`.
             tokio::time::sleep(tokio::time::Duration::from_secs(
-                MINIMUM_READ_DURATION as u64,
+                (MINIMUM_READ_DURATION as u64) + 15,
             ))
             .await;
 
@@ -418,7 +418,9 @@ WHERE story_id = $1
             .await?;
 
             // Duration should in the expected range.
-            assert!(result.get::<i16, _>("duration") > 4 && result.get::<i16, _>("duration") < 10);
+            assert!(
+                result.get::<i16, _>("duration") > 40 && result.get::<i16, _>("duration") < 100
+            );
             assert_eq!(
                 result.get::<Option<String>, _>("hostname"),
                 Some("example.com".to_string())
@@ -479,7 +481,7 @@ WHERE story_id = $1
             .fetch_all(&mut *conn)
             .await?;
 
-            assert_eq!(result.is_empty());
+            assert!(result.is_empty());
 
             Ok(())
         }
@@ -547,6 +549,12 @@ WHERE story_id = $1
                 .await
                 .unwrap();
 
+            // Wait for `MINIMUM_READ_DURATION`.
+            tokio::time::sleep(tokio::time::Duration::from_secs(
+                MINIMUM_READ_DURATION as u64,
+            ))
+            .await;
+
             // Soft-delete the story.
             let result = sqlx::query(
                 r#"
@@ -562,7 +570,7 @@ WHERE id = $1
             assert_eq!(result.rows_affected(), 1);
 
             let req = test::TestRequest::post()
-                .uri(&format!("/v1/public/stories/{story_id}/read",))
+                .uri(&format!("/v1/public/stories/{story_id}/read"))
                 .set_json(Request {
                     referrer: None,
                     token: session_token.to_string(),
@@ -599,6 +607,12 @@ WHERE id = $1
                 .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
                 .await
                 .unwrap();
+
+            // Wait for `MINIMUM_READ_DURATION`.
+            tokio::time::sleep(tokio::time::Duration::from_secs(
+                MINIMUM_READ_DURATION as u64,
+            ))
+            .await;
 
             // Unpublish the story.
             let result = sqlx::query(

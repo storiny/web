@@ -131,11 +131,14 @@ BEGIN
 		--
 	END IF;
 	--
-	-- Story (that was already published) recovered or published
+	-- Story (that was already published) recovered or a draft is published
 	IF ((OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL AND OLD.published_at IS NOT NULL) OR
 		(OLD.published_at IS NULL AND NEW.published_at IS NOT NULL)) THEN
-		-- Update `first_published_at` and `story_count` on publishing the story
-		NEW.first_published_at := NEW.published_at;
+		--
+		IF (OLD.published_at IS NULL AND NEW.published_at IS NOT NULL) THEN
+			-- Update `first_published_at` on publishing the story
+			NEW.first_published_at := NEW.published_at;
+		END IF;
 		--
 		-- Increment `story_count` on user
 		UPDATE

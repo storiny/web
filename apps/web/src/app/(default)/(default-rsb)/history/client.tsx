@@ -100,7 +100,7 @@ const Client = (): React.ReactElement => {
     <>
       <PageTitle>History</PageTitle>
       <PageHeader
-        disabled={!items.length}
+        disabled={!query && !items.length}
         on_query_change={handle_query_change}
         query={query}
       />

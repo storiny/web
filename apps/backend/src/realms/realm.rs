@@ -751,7 +751,7 @@ mod tests {
                 assert!(message.is_binary());
 
                 let message_data = message.into_data();
-                let mut decoder = DecoderV1::new(Cursor::new(&message_data)).unwrap();
+                let mut decoder = DecoderV1::new(Cursor::new(&message_data));
 
                 assert_eq!(decoder.read_var::<u8>().unwrap(), MSG_INTERNAL);
                 assert_eq!(

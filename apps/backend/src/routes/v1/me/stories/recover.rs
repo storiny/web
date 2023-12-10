@@ -87,11 +87,68 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Insert a soft-deleted story.
+        // Insert a soft-deleted story. The `published_at` field is not set to NULL when the story
+        // is deleted due to a cascade action.
         let result = sqlx::query(
             r#"
 INSERT INTO stories (id, user_id, deleted_at, published_at, first_published_at)
 VALUES ($1, $2, NOW(), NOW(), NOW())
+"#,
+        )
+        .bind(2_i64)
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/stories/{}/recover", 2))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        // Story should get updated in the database.
+        let result = sqlx::query(
+            r#"
+SELECT
+    first_published_at,
+    deleted_at
+FROM stories
+WHERE id = $1
+"#,
+        )
+        .bind(2_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("first_published_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_recover_a_story_deleted_by_the_user(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
+        // Insert a soft-deleted story. The `published_at` column is set to NULL when a user deletes
+        // the story.
+        let result = sqlx::query(
+            r#"
+INSERT INTO stories (id, user_id, deleted_at, published_at, first_published_at)
+VALUES ($1, $2, NOW(), NULL, NOW())
 "#,
         )
         .bind(2_i64)

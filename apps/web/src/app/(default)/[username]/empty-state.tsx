@@ -50,8 +50,7 @@ const get_entity_description_map = (
   stories: (
     <>
       Public stories posted by{" "}
-      <span className={css["t-medium"]}>@{username}</span> will appear here as
-      soon as they are published.
+      <span className={css["t-medium"]}>@{username}</span> will show up here.
     </>
   )
 });

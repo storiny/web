@@ -15,7 +15,7 @@ const BookmarksEmptyState = ({
     description={
       query
         ? "Your search criteria did not match anything, make sure you've spelled it correctly or try again by being more specific."
-        : "The stories that receive a like from you will appear here."
+        : "When you like stories, they will show up here."
     }
     icon={query ? undefined : <StoryHeartIcon />}
     title={

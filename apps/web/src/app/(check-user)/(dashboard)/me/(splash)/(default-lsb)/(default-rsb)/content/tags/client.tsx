@@ -169,7 +169,7 @@ const ContentTagsClient = (props: TagsProps): React.ReactElement => {
       <DashboardTitle>Followed tags</DashboardTitle>
       <StatusHeader {...props} />
       <ControlBar
-        disabled={!items.length}
+        disabled={!query && !items.length}
         on_query_change={handle_query_change}
         on_sort_change={handle_sort_change}
         query={query}

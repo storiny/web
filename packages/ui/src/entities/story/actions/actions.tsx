@@ -29,6 +29,7 @@ import {
   boolean_action,
   get_drafts_api,
   get_stories_api,
+  select_user,
   use_delete_draft_mutation,
   use_delete_story_mutation,
   use_unpublish_story_mutation
@@ -53,15 +54,19 @@ const StoryActions = ({
   const dispatch = use_app_dispatch();
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const logged_in = use_app_selector(select_is_logged_in);
+  const current_user = use_app_selector(select_user);
   const is_blocking = use_app_selector(
     (state) => state.entities.blocks[story.user?.id || ""]
   );
   const is_muted = use_app_selector(
     (state) => state.entities.mutes[story.user?.id || ""]
   );
+  const is_self = current_user?.id === story.user?.id;
+
   const [delete_draft] = use_delete_draft_mutation();
   const [delete_story] = use_delete_story_mutation();
   const [unpublish_story] = use_unpublish_story_mutation();
+
   const [block_element] = use_confirmation(
     ({ open_confirmation }) => (
       <MenuItem
@@ -291,7 +296,7 @@ const StoryActions = ({
               {unpublish_story_element}
               {delete_story_element}
             </React.Fragment>
-          ) : (
+          ) : is_self ? null : (
             <React.Fragment>
               <ReportModal
                 entity_id={story.id}
