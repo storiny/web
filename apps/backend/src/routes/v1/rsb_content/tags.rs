@@ -18,6 +18,7 @@ pub struct Tag {
     story_count: i32,
 }
 
+#[tracing::instrument(skip_all, fields(user_id), err)]
 pub async fn get_rsb_content_tags(
     user_id: Option<i64>,
     pg_pool: &Pool<Postgres>,
@@ -56,7 +57,7 @@ FROM
             r#"
 LEFT OUTER JOIN story_tags AS st
     ON st.tag_id = t.id
-    AND st.story_id = (
+    AND st.story_id = ANY (
         SELECT story_id
         FROM histories h
         WHERE

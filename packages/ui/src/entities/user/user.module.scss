@@ -20,6 +20,10 @@
   gap: 24px;
 }
 
+.details {
+  gap: 4px;
+}
+
 .meta {
   gap: 10px;
 }
@@ -43,6 +47,7 @@
 
 .bio {
   gap: 8px; // Gap for skeleton
+  margin-top: 4px;
 
   @include breakpoints.media(">mobile") {
     padding-left: 58px;

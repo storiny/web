@@ -99,7 +99,7 @@ const StoryFooter = (): React.ReactElement | null => {
           <Spacer orientation={"vertical"} size={3} />
         </React.Fragment>
       )}
-      {story.category !== StoryCategory.OTHERS || story.edited_at !== null ? (
+      {story.category !== StoryCategory.OTHERS || Boolean(story.edited_at) ? (
         <div className={clsx(css["flex"], styles["footer-row"])}>
           {story.category !== StoryCategory.OTHERS && (
             <Typography
@@ -115,7 +115,7 @@ const StoryFooter = (): React.ReactElement | null => {
               {CATEGORY_LABEL_MAP[story.category]}
             </Typography>
           )}
-          {story.edited_at !== null && (
+          {Boolean(story.edited_at) && (
             <Typography
               as={"time"}
               className={clsx(
@@ -124,12 +124,12 @@ const StoryFooter = (): React.ReactElement | null => {
                 styles.x,
                 styles.stat
               )}
-              dateTime={story.edited_at}
+              dateTime={story.edited_at!}
               level={"body2"}
-              title={format_date(story.edited_at, DateFormat.LONG)}
+              title={format_date(story.edited_at!, DateFormat.LONG)}
             >
               <EditIcon />
-              Edited on {format_date(story.edited_at)}
+              Edited on {format_date(story.edited_at!)}
             </Typography>
           )}
         </div>
@@ -137,7 +137,7 @@ const StoryFooter = (): React.ReactElement | null => {
       <Spacer orientation={"vertical"} />
       <License />
       <Spacer orientation={"vertical"} size={2} />
-      {story.tags.length ? (
+      {(story.tags || []).length ? (
         <React.Fragment>
           <div className={clsx(css["flex"], styles["tag-row"])}>
             {story.tags.map((tag) => (

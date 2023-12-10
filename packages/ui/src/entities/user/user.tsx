@@ -14,7 +14,7 @@ import StoryIcon from "~/icons/story";
 import UserCheckIcon from "~/icons/user-check";
 import UserPlusIcon from "~/icons/user-plus";
 import UsersIcon from "~/icons/users";
-import { boolean_action } from "~/redux/features";
+import { boolean_action, select_user, sync_with_user } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
@@ -34,13 +34,19 @@ const User = (props: UserProps): React.ReactElement => {
     ...rest
   } = props;
   const dispatch = use_app_dispatch();
+  const current_user = use_app_selector(select_user);
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const is_following = use_app_selector(
     (state) => state.entities.following[user.id]
   );
+  const follower_count =
+    use_app_selector((state) => state.entities.follower_counts[user.id]) || 0;
   const user_url = `/${user.username}`;
+  const is_self = current_user?.id === user.id;
 
-  // User-specific props are synced in `Actions`
+  React.useEffect(() => {
+    dispatch(sync_with_user(user));
+  }, [dispatch, user]);
 
   return (
     <div
@@ -61,7 +67,7 @@ const User = (props: UserProps): React.ReactElement => {
             label={user.name}
             size={"lg"}
           />
-          <div className={css["flex-col"]}>
+          <div className={clsx(css["flex-col"], styles.details)}>
             <Typography ellipsis>
               <span className={css[is_mobile ? "t-medium" : "t-bold"]}>
                 {user.name}
@@ -78,7 +84,9 @@ const User = (props: UserProps): React.ReactElement => {
                   <Typography
                     className={clsx(css["flex-center"], styles.stat)}
                     level={"body2"}
-                    title={`${user.story_count.toLocaleString()} stories`}
+                    title={`${user.story_count.toLocaleString()} ${
+                      user.story_count === 1 ? "story" : "stories"
+                    }`}
                   >
                     <span
                       className={clsx(css["flex-center"], styles["stat-icon"])}
@@ -87,14 +95,18 @@ const User = (props: UserProps): React.ReactElement => {
                     </span>
                     <span>
                       {abbreviate_number(user.story_count)}{" "}
-                      <span className={css["t-minor"]}>stories</span>
+                      <span className={css["t-minor"]}>
+                        {user.story_count === 1 ? "story" : "stories"}
+                      </span>
                     </span>
                   </Typography>
                 )}
                 <Typography
                   className={clsx(css["flex-center"], styles.stat)}
                   level={"body2"}
-                  title={`${user.follower_count.toLocaleString()} followers`}
+                  title={`${follower_count.toLocaleString()} ${
+                    follower_count === 1 ? "follower" : "followers"
+                  }`}
                 >
                   <span
                     className={clsx(css["flex-center"], styles["stat-icon"])}
@@ -102,8 +114,10 @@ const User = (props: UserProps): React.ReactElement => {
                     <UsersIcon />
                   </span>
                   <span>
-                    {abbreviate_number(user.follower_count)}{" "}
-                    <span className={css["t-minor"]}>followers</span>
+                    {abbreviate_number(follower_count)}{" "}
+                    <span className={css["t-minor"]}>
+                      {follower_count === 1 ? "follower" : "followers"}
+                    </span>
                   </span>
                 </Typography>
               </div>
@@ -112,7 +126,7 @@ const User = (props: UserProps): React.ReactElement => {
         </NextLink>
         <Grow />
         <div className={clsx(css["flex"], styles.actions)}>
-          {action_type === "default" && (
+          {!is_self && action_type === "default" ? (
             <Button
               auto_size
               check_auth
@@ -124,7 +138,7 @@ const User = (props: UserProps): React.ReactElement => {
             >
               {is_following ? "Following" : "Follow"}
             </Button>
-          )}
+          ) : null}
           {!hide_action && (
             <UserActions action_type={action_type} user={user} />
           )}

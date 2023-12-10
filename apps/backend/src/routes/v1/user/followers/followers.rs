@@ -51,6 +51,10 @@ struct Follower {
     avatar_id: Option<Uuid>,
     avatar_hex: Option<String>,
     public_flags: i32,
+    rendered_bio: String,
+    // Stats
+    story_count: i32,
+    follower_count: i32,
     // Boolean flags
     is_follower: bool,
     is_following: bool,
@@ -126,6 +130,10 @@ SELECT
     ru.avatar_id,
     ru.avatar_hex,
     ru.public_flags,
+    ru.rendered_bio,
+    -- Stats
+    ru.story_count,
+    ru.follower_count,
 "#,
     );
 
@@ -249,6 +257,10 @@ SELECT
     avatar_id,
     avatar_hex,
     public_flags,
+    rendered_bio,
+    -- Stats
+    story_count,
+    follower_count,
     -- Boolean flags
     is_follower,
     is_following,

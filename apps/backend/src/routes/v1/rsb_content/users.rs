@@ -23,6 +23,7 @@ pub struct User {
     is_following: bool,
 }
 
+#[tracing::instrument(skip_all, fields(user_id), err)]
 pub async fn get_rsb_content_users(
     user_id: Option<i64>,
     pg_pool: &Pool<Postgres>,
