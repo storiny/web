@@ -1,4 +1,3 @@
-import NextLink from "next/link";
 import React from "react";
 
 import Button from "~/components/button";
@@ -18,7 +17,7 @@ import ReportIcon from "~/icons/report";
 import ShareIcon from "~/icons/share";
 import UserBlockIcon from "~/icons/user-block";
 import UserXIcon from "~/icons/user-x";
-import { boolean_action } from "~/redux/features";
+import { boolean_action, select_user } from "~/redux/features";
 import { select_is_logged_in } from "~/redux/features/auth/selectors";
 import { sync_with_user } from "~/redux/features/entities/slice";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
@@ -33,6 +32,7 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
   const dispatch = use_app_dispatch();
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const logged_in = use_app_selector(select_is_logged_in);
+  const current_user = use_app_selector(select_user);
   const is_blocking = use_app_selector(
     (state) => state.entities.blocks[user.id]
   );
@@ -40,6 +40,8 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
   const is_follower = use_app_selector(
     (state) => state.entities.followers[user.id]
   );
+  const is_self = current_user?.id === user.id;
+
   const [element] = use_confirmation(
     ({ open_confirmation }) => (
       <MenuItem
@@ -62,10 +64,6 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
         : `Your feed will not include their content, and they will not be able to follow you or interact with your profile.`
     }
   );
-
-  React.useEffect(() => {
-    dispatch(sync_with_user(user));
-  }, [dispatch, user]);
 
   if (is_mobile && action_type === "default") {
     return null;
@@ -117,34 +115,38 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
           </MenuItem>
         </>
       )}
-      <Separator />
-      {logged_in && (
+      {!is_self && (
         <>
-          <MenuItem
-            check_auth
-            decorator={<MuteIcon />}
-            onClick={(): void => {
-              dispatch(boolean_action("mutes", user.id));
-            }}
-          >
-            {is_muted ? "Unmute" : "Mute"} this user
-          </MenuItem>
-          {element}
+          <Separator />
+          {logged_in && (
+            <>
+              <MenuItem
+                check_auth
+                decorator={<MuteIcon />}
+                onClick={(): void => {
+                  dispatch(boolean_action("mutes", user.id));
+                }}
+              >
+                {is_muted ? "Unmute" : "Mute"} this user
+              </MenuItem>
+              {element}
+            </>
+          )}
+          <ReportModal
+            entity_id={user.id}
+            entity_type={"user"}
+            trigger={({ open_modal }): React.ReactElement => (
+              <MenuItem
+                decorator={<ReportIcon />}
+                onClick={open_modal}
+                onSelect={(event): void => event.preventDefault()}
+              >
+                Report this user
+              </MenuItem>
+            )}
+          />
         </>
       )}
-      <ReportModal
-        entity_id={user.id}
-        entity_type={"user"}
-        trigger={({ open_modal }): React.ReactElement => (
-          <MenuItem
-            decorator={<ReportIcon />}
-            onClick={open_modal}
-            onSelect={(event): void => event.preventDefault()}
-          >
-            Report this user
-          </MenuItem>
-        )}
-      />
     </Menu>
   ) : (
     <Button

@@ -452,7 +452,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
           )}
         </React.Fragment>
       )}
-      {show_tags && story.tags.length ? (
+      {show_tags && (story.tags || []).length ? (
         <>
           {is_mobile ? (
             <Grow />
