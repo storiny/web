@@ -4,6 +4,7 @@ import React from "react";
 import Divider from "~/components/divider";
 
 import { doc_status_atom } from "../../../../../atoms";
+import { is_doc_loading } from "../../../../../utils/is-doc-loading";
 import { StoryStatus } from "../../../../editor";
 import styles from "../../left-sidebar.module.scss";
 import EditorLeftSidebarEditableContentSkeleton from "./skeleton";
@@ -16,8 +17,7 @@ const SuspendedEditorLeftSidebarEditableContent = ({
   status: StoryStatus;
 }): React.ReactElement => {
   const doc_status = use_atom_value(doc_status_atom);
-  const document_loading =
-    status !== "deleted" && ["connecting", "reconnecting"].includes(doc_status);
+  const document_loading = status !== "deleted" && is_doc_loading(doc_status);
 
   if (document_loading) {
     return <EditorLeftSidebarEditableContentSkeleton />;

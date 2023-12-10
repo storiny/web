@@ -95,7 +95,7 @@ const TagsPreview = ({
               styles.x,
               styles["show-more"]
             )}
-            href={"#"}
+            href={"/explore/tags"}
             level={"body3"}
           >
             Show more

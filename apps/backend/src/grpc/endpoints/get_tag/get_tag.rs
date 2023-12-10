@@ -105,10 +105,10 @@ GROUP BY
 
     let mut db_query = query_builder.build_query_as::<Tag>().bind(tag_name);
 
-    if let Some(user_id) = current_user_id {
-        tracing::Span::current().record("user_id", &user_id);
+    if let Some(current_user_id) = current_user_id {
+        tracing::Span::current().record("user_id", &current_user_id);
 
-        db_query = db_query.bind(user_id);
+        db_query = db_query.bind(current_user_id);
     }
 
     let tag = db_query.fetch_one(&client.db_pool).await.map_err(|error| {

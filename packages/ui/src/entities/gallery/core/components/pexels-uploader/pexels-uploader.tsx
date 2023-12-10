@@ -21,18 +21,28 @@ const PexelsUploader = (props: PexelsUploaderProps): React.ReactElement => {
   const [pending_image, set_pending_image] = use_atom(pending_image_atom);
   const set_uploading = use_set_atom(uploading_atom);
   const [upload_image, result] = use_upload_gallery_mutation();
+  const started_uploading_ref = React.useRef<boolean>(false);
 
   /**
    * Handles the uploading of the image
    */
   const handle_upload = React.useCallback(() => {
+    if (started_uploading_ref.current) {
+      return;
+    }
+
+    started_uploading_ref.current = true;
     set_uploading(true);
+
     upload_image({ id: pending_image || "" })
       .unwrap()
       .then(on_upload_finish)
       .then(() => set_pending_image(null))
-      .catch(() => undefined)
-      .finally(() => set_uploading(false));
+      .catch((): void => undefined)
+      .finally(() => {
+        started_uploading_ref.current = false;
+        set_uploading(false);
+      });
   }, [
     on_upload_finish,
     pending_image,
@@ -66,14 +76,22 @@ const PexelsUploader = (props: PexelsUploaderProps): React.ReactElement => {
             className={clsx(css["t-minor"], css["t-center"])}
             level={"body2"}
           >
-            Failed to upload the pexels image
+            {"data" in result.error &&
+            typeof (result.error?.data as any)?.error === "string"
+              ? (result.error.data as any).error
+              : "Failed to upload the pexels image"}
           </Typography>
-          <Spacer orientation={"vertical"} size={2.25} />
-          <div className={css["flex-center"]}>
-            <Button variant={"hollow"}>Cancel</Button>
-            <Spacer />
-            <Button onClick={handle_upload}>Try again</Button>
-          </div>
+          {/* Do not allow to retry the upload if the daily upload limit has been reached */}
+          {(result.error as any)?.status === 429 ? null : (
+            <>
+              <Spacer orientation={"vertical"} size={2.25} />
+              <div className={css["flex-center"]}>
+                <Button variant={"hollow"}>Cancel</Button>
+                <Spacer />
+                <Button onClick={handle_upload}>Try again</Button>
+              </div>
+            </>
+          )}
         </React.Fragment>
       ) : null}
     </div>

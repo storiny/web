@@ -11,6 +11,7 @@ import { useIntersectionObserver as use_intersection_observer } from "react-inte
 
 import { dynamic_loader } from "~/common/dynamic";
 import Divider from "~/components/divider";
+import NoSsr from "~/components/no-ssr";
 import Option from "~/components/option";
 import Select from "~/components/select";
 import Spacer from "~/components/spacer";
@@ -106,7 +107,7 @@ const Content = (): React.ReactElement => {
   }, [is_smaller_than_desktop]);
 
   return (
-    <React.Fragment>
+    <NoSsr>
       <header className={clsx(css["flex-col"], styles.header)}>
         {is_smaller_than_desktop && (
           <HeaderTabs on_change={set_value} value={value} />
@@ -174,7 +175,7 @@ const Content = (): React.ReactElement => {
           sort={sort}
         />
       )}
-    </React.Fragment>
+    </NoSsr>
   );
 };
 

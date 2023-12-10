@@ -7,7 +7,8 @@ import React from "react";
 import MenubarItem from "~/components/menubar-item";
 import Separator from "~/components/separator";
 
-import { doc_status_atom } from "../../../../atoms";
+import { doc_status_atom, story_metadata_atom } from "../../../../atoms";
+import { is_doc_editable } from "../../../../utils/is-doc-editable";
 import AlignItem from "./align";
 import EditItem from "./edit";
 import FileItem from "./file";
@@ -21,14 +22,16 @@ const EditorMenubarItems = ({
 }: {
   disabled?: boolean;
 }): React.ReactElement => {
+  const story = use_atom_value(story_metadata_atom);
   const doc_status = use_atom_value(doc_status_atom);
-  const disabled = ["connecting", "reconnecting", "publishing"].includes(
-    doc_status
-  );
+  const disabled = !is_doc_editable(doc_status);
 
   return (
     <React.Fragment>
-      <MenubarItem as={NextLink} href={"/me/account/stories"}>
+      <MenubarItem
+        as={NextLink}
+        href={`/me/content/${story.published_at ? "stories" : "drafts"}`}
+      >
         Dashboard
       </MenubarItem>
       <MenubarItem as={NextLink} href={"/"}>

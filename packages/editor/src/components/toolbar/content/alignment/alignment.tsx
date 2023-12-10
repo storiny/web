@@ -13,6 +13,7 @@ import {
   ALIGNMENT_ICON_MAP
 } from "../../../../constants";
 import { use_alignment } from "../../../../hooks/use-alignment";
+import { is_doc_loading } from "../../../../utils/is-doc-loading";
 import toolbar_styles from "../../toolbar.module.scss";
 
 // Item
@@ -32,7 +33,7 @@ const Item = ({
 const ToolbarAlignmentItem = (): React.ReactElement => {
   const doc_status = use_atom_value(doc_status_atom);
   const [alignment, set_alignment, disabled] = use_alignment();
-  const document_loading = ["connecting", "reconnecting"].includes(doc_status);
+  const document_loading = is_doc_loading(doc_status);
 
   return (
     <Select

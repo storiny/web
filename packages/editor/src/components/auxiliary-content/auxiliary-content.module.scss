@@ -16,7 +16,7 @@
 
 .header-spacer {
   @include breakpoints.media(">=desktop") {
-    display: none;
+    display: none !important;
   }
 }
 

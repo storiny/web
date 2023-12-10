@@ -24,7 +24,6 @@ const VirtualizedAccountActivityItem = React.memo(
         account_activity={item}
         className={clsx(styles["list-item"], account_activity_props?.className)}
         data-last-item={rest["data-item-index"] === item_count - 1}
-        key={item.id}
       />
     );
   }

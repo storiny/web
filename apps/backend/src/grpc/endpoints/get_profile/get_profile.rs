@@ -103,14 +103,14 @@ pub async fn get_profile(
         .and_then(|user_id| user_id.parse::<i64>().ok());
 
     let profile = {
-        if let Some(user_id) = current_user_id {
-            tracing::Span::current().record("user_id", &user_id);
+        if let Some(current_user_id) = current_user_id {
+            tracing::Span::current().record("user_id", &current_user_id);
 
             sqlx::query_file_as!(
                 Profile,
                 "queries/grpc/get_profile/logged_in.sql",
                 username,
-                user_id
+                current_user_id
             )
             .fetch_one(&client.db_pool)
             .await

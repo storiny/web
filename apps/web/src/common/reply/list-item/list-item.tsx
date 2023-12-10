@@ -17,11 +17,7 @@ const VirtualizedReplyItem = React.memo(
     // Props from context
     const { reply_props } = React.useContext(VirtualizedReplyListContext);
     return (
-      <div
-        {...rest}
-        className={clsx(css["flex-col"], styles["list-item"])}
-        key={item.id}
-      >
+      <div {...rest} className={clsx(css["flex-col"], styles["list-item"])}>
         <Reply {...reply_props} reply={item} virtual />
         {!reply_props.nested && (
           <Divider style={{ marginInline: "var(--grid-compensation)" }} />

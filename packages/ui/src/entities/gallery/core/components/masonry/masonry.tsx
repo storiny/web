@@ -175,7 +175,7 @@ const Library = ({
             min_cols={min_cols}
             overscan_factor={2.8}
             render_item={(args): React.ReactElement => (
-              <LibraryMasonryItem {...args} />
+              <LibraryMasonryItem page={page} {...args} />
             )}
             scroll_container={(): HTMLElement => container_ref.current!}
           />

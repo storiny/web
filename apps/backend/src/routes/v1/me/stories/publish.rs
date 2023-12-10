@@ -23,11 +23,15 @@ use actix_web::{
     web,
     HttpResponse,
 };
+use actix_web_validator::Json;
 use apalis::prelude::Storage;
 use futures::future;
 use lockable::AsyncLimit;
 use nanoid::nanoid;
-use serde::Deserialize;
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use slugify::slugify;
 use sqlx::{
     Postgres,
@@ -44,6 +48,12 @@ const MAX_SLUG_GENERATE_ATTEMPTS: u8 = 10;
 #[derive(Deserialize, Validate)]
 struct Fragments {
     story_id: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Validate)]
+struct Request {
+    #[validate(range(min = 1, max = 12_000, message = "Invalid word count"))]
+    word_count: u16,
 }
 
 /// Generates a unique slug for the story.
@@ -107,13 +117,15 @@ WHERE slug = $1
     skip_all,
     fields(
         user_id = user.id().ok(),
-        story_id = %path.story_id
+        story_id = %path.story_id,
+        word_count = %payload.word_count
     ),
     err
 )]
 async fn post(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
+    payload: Json<Request>,
     user: Identity,
     realm_map: RealmData,
     notify_story_add_by_user_job_storage: web::Data<JobStorage<NotifyStoryAddByUserJob>>,
@@ -165,7 +177,8 @@ WHERE
 UPDATE stories
 SET
     published_at = NOW(),
-    slug = $3
+    slug = $3,
+    word_count = $4
 WHERE
     user_id = $1
     AND id = $2
@@ -173,9 +186,10 @@ WHERE
     AND deleted_at IS NULL
 "#,
     )
-    .bind(user_id)
-    .bind(story_id)
-    .bind(story_slug)
+    .bind(&user_id)
+    .bind(&story_id)
+    .bind(&story_slug)
+    .bind(&(payload.word_count as i16))
     .execute(&mut *txn)
     .await?
     .rows_affected()
@@ -222,13 +236,15 @@ WHERE
     skip_all,
     fields(
         user_id = user.id().ok(),
-        story_id = %path.story_id
+        story_id = %path.story_id,
+        word_count = %payload.word_count
     ),
     err
 )]
 async fn put(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
+    payload: Json<Request>,
     user: Identity,
     realm_map: RealmData,
 ) -> Result<HttpResponse, AppError> {
@@ -287,7 +303,9 @@ WITH updated_document AS (
     WHERE story_id = $2
 )
 UPDATE stories
-SET edited_at = NOW()
+SET
+    edited_at = NOW(),
+    word_count = $3
 WHERE
     user_id = $1
     AND id = $2
@@ -297,6 +315,7 @@ WHERE
     )
     .bind(&user_id)
     .bind(&story_id)
+    .bind(&(payload.word_count as i16))
     .execute(&mut *txn)
     .await?
     .rows_affected()
@@ -377,6 +396,7 @@ VALUES ($1, $2)
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .uri(&format!("/v1/me/stories/{}/publish", 2))
+            .set_json(Request { word_count: 25_u16 })
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -385,7 +405,11 @@ VALUES ($1, $2)
         // Story should get updated in the database.
         let result = sqlx::query(
             r#"
-SELECT slug, published_at FROM stories
+SELECT
+    slug,
+    published_at,
+    word_count
+FROM stories
 WHERE id = $1
 "#,
         )
@@ -399,6 +423,7 @@ WHERE id = $1
                 .get::<Option<OffsetDateTime>, _>("published_at")
                 .is_some()
         );
+        assert_eq!(result.get::<i16, _>("word_count"), 25_i16);
 
         // Should insert push notification jobs.
 
@@ -467,6 +492,7 @@ VALUES ($1, $2, NOW())
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .uri(&format!("/v1/me/stories/{}/publish", 2))
+            .set_json(Request { word_count: 25_u16 })
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -499,6 +525,7 @@ VALUES ($1, $2, NOW())
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .uri(&format!("/v1/me/stories/{}/publish", 2))
+            .set_json(Request { word_count: 25_u16 })
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -516,6 +543,7 @@ VALUES ($1, $2, NOW())
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .uri(&format!("/v1/me/stories/{}/publish", 12345))
+            .set_json(Request { word_count: 25_u16 })
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -555,6 +583,7 @@ VALUES ($1, TRUE)
         let req = test::TestRequest::put()
             .cookie(cookie.unwrap())
             .uri(&format!("/v1/me/stories/{}/publish", 2))
+            .set_json(Request { word_count: 25_u16 })
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -563,7 +592,7 @@ VALUES ($1, TRUE)
         // Story should get updated in the database.
         let result = sqlx::query(
             r#"
-SELECT edited_at FROM stories
+SELECT word_count, edited_at FROM stories
 WHERE id = $1
 "#,
         )
@@ -571,6 +600,7 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
+        assert_eq!(result.get::<i16, _>("word_count"), 25_i16);
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("edited_at")
@@ -605,6 +635,7 @@ VALUES ($1, $2, NOW())
         let req = test::TestRequest::put()
             .cookie(cookie.unwrap())
             .uri(&format!("/v1/me/stories/{}/publish", 2))
+            .set_json(Request { word_count: 25_u16 })
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -637,6 +668,7 @@ VALUES ($1, $2)
         let req = test::TestRequest::put()
             .cookie(cookie.unwrap())
             .uri(&format!("/v1/me/stories/{}/publish", 2))
+            .set_json(Request { word_count: 25_u16 })
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -669,6 +701,7 @@ VALUES ($1, $2, NOW(), NOW())
         let req = test::TestRequest::put()
             .cookie(cookie.unwrap())
             .uri(&format!("/v1/me/stories/{}/publish", 2))
+            .set_json(Request { word_count: 25_u16 })
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -686,6 +719,7 @@ VALUES ($1, $2, NOW(), NOW())
         let req = test::TestRequest::put()
             .cookie(cookie.unwrap())
             .uri(&format!("/v1/me/stories/{}/publish", 12345))
+            .set_json(Request { word_count: 25_u16 })
             .to_request();
         let res = test::call_service(&app, req).await;
 

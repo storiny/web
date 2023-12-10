@@ -233,7 +233,8 @@ export class CollabElementNode {
 
             deletion_size -= del_count;
           } else {
-            // Can occur due to the deletion from the dangling text heuristic below
+            // Can occur due to the deletion from the dangling text heuristic
+            // below
             break;
           }
         }
@@ -250,8 +251,8 @@ export class CollabElementNode {
           } else {
             /**
              * TODO: Maybe we can improve this by keeping around a redundant
-             *   text node map, rather than removing all the text nodes, so there
-             *   never can be dangling text.
+             *   text node map, rather than removing all the text nodes, so
+             *   there never can be dangling text.
              *
              * We have a conflict where there was likely a `CollabTextNode` and
              * a Lexical TextNode too, but they were removed in a merge. So
@@ -289,7 +290,8 @@ export class CollabElementNode {
    * @param binding Binding
    */
   public sync_children_from_yjs(binding: Binding): void {
-    // Diff the children of the collab node with that of our existing Lexical node
+    // Diff the children of the collab node with that of our existing Lexical
+    // node
     const lexical_node = this.get_node();
 
     if (lexical_node === null) {

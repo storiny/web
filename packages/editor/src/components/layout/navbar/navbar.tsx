@@ -4,11 +4,10 @@ import { useLexicalComposerContext as use_lexical_composer_context } from "@lexi
 import SuspenseLoader from "@storiny/web/src/common/suspense-loader";
 import clsx from "clsx";
 import { useAtom as use_atom, useAtomValue as use_atom_value } from "jotai";
-import { $getRoot as $get_root } from "lexical";
-import { RedirectType } from "next/dist/client/components/redirect";
+import { $getRoot as $get_root, $isTextNode as $is_text_node } from "lexical";
 import dynamic from "next/dynamic";
 import NextLink from "next/link";
-import { redirect, useRouter as use_router } from "next/navigation";
+import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
 import Logo from "~/brand/logo";
@@ -42,6 +41,7 @@ import {
 } from "../../../atoms";
 import { $is_tk_node } from "../../../nodes/tk";
 import { $get_children_recursively } from "../../../utils/get-children-recursively";
+import { is_doc_editable } from "../../../utils/is-doc-editable";
 import { StoryStatus } from "../../editor";
 import DocStatus from "./doc-status";
 import MusicItem from "./music-item";
@@ -112,7 +112,8 @@ const Publish = ({
   const router = use_router();
   const story = use_atom_value(story_metadata_atom);
   const [editor] = use_lexical_composer_context();
-  const [tk_count, set_tk_count] = React.useState<number>(0);
+  const tk_count_ref = React.useRef<number>(0);
+  const word_count_ref = React.useRef<number>(1);
   const [doc_status, set_doc_status] = use_atom(doc_status_atom);
   const [publish_story] = use_publish_story_mutation();
 
@@ -122,7 +123,7 @@ const Publish = ({
   const handle_publish = React.useCallback(() => {
     set_doc_status(DOC_STATUS.publishing);
 
-    publish_story({ id: story.id, status })
+    publish_story({ id: story.id, status, word_count: word_count_ref.current })
       .unwrap()
       .then(() =>
         router.replace(`/${story.user?.username || "view"}/${story.id}`)
@@ -137,20 +138,28 @@ const Publish = ({
     ({ open_confirmation }) => (
       <Button
         check_auth
-        disabled={disabled || doc_status === DOC_STATUS.publishing}
+        disabled={disabled || !is_doc_editable(doc_status)}
         onClick={(event): void => {
           event.preventDefault(); // Prevent opening the modal
 
-          new Promise<number>((resolve) => {
+          new Promise<[number, number]>((resolve) => {
             editor.getEditorState().read(() => {
-              resolve(
-                $get_children_recursively($get_root()).filter($is_tk_node)
-                  .length
-              );
+              const children = $get_children_recursively($get_root());
+              const next_word_count = children
+                .filter($is_text_node)
+                .reduce(
+                  (prev_value, next_value) =>
+                    prev_value +
+                    next_value.getTextContent().trim().split(/\s+/).length,
+                  1
+                );
+
+              resolve([children.filter($is_tk_node).length, next_word_count]);
             });
           })
-            .then((tk_count) => {
-              set_tk_count(tk_count);
+            .then(([tk_count, word_count]) => {
+              tk_count_ref.current = tk_count;
+              word_count_ref.current = word_count;
 
               if (tk_count > 0) {
                 open_confirmation();
@@ -174,14 +183,17 @@ const Publish = ({
       description: (
         <>
           You still have{" "}
-          <span className={css["t-medium"]}>{abbreviate_number(tk_count)}</span>{" "}
+          <span className={css["t-medium"]}>
+            {abbreviate_number(tk_count_ref.current)}
+          </span>{" "}
           <span
             className={css["t-medium"]}
             style={{ color: "var(--plum-300)" }}
           >
             TK
           </span>{" "}
-          {tk_count === 1 ? "placeholder" : "placeholders"} in your story.{" "}
+          {tk_count_ref.current === 1 ? "placeholder" : "placeholders"} in your
+          story.{" "}
           <Link
             // TODO(future): Get rid of notion
             href={
@@ -230,7 +242,7 @@ const Recover = ({ is_draft }: { is_draft: boolean }): React.ReactElement => {
           `Could not recover your ${is_draft ? "draft" : "story"}`
         );
       });
-  }, [is_draft, recover_draft, recover_story, story.id, toast]);
+  }, [is_draft, recover_draft, recover_story, router, story.id, toast]);
 
   return (
     <Button

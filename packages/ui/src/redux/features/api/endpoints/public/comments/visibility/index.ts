@@ -1,3 +1,5 @@
+import { ContentType } from "@storiny/shared";
+
 import { number_action } from "~/redux/features";
 import { api_slice } from "~/redux/features/api/slice";
 
@@ -16,7 +18,11 @@ export const { useCommentVisibilityMutation: use_comment_visibility_mutation } =
       commentVisibility: builder.mutation<void, CommentVisibilityPayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,
-          method: "POST"
+          body: { hidden: body.hidden },
+          method: "POST",
+          headers: {
+            "Content-type": ContentType.JSON
+          }
         }),
         invalidatesTags: (result, error, arg) => [
           { type: "Comment", id: arg.id }

@@ -1,5 +1,5 @@
 import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
-import { useSetAtom as use_set_atom } from "jotai";
+import { useAtom as use_atom, useSetAtom as use_set_atom } from "jotai";
 import { $getRoot as $get_root, LexicalEditor } from "lexical";
 import React from "react";
 import { createPortal as create_portal } from "react-dom";
@@ -109,7 +109,7 @@ export const use_yjs_collaboration = ({
   const [editor] = use_lexical_composer_context();
   const is_reloading_doc = React.useRef(false);
   const connected_once_ref = React.useRef<boolean>(false);
-  const set_doc_status = use_set_atom(doc_status_atom);
+  const [doc_status, set_doc_status] = use_atom(doc_status_atom);
   const set_awareness = use_set_atom(awareness_atom);
   const [doc, set_doc] = React.useState(doc_map.get("main"));
   const binding = React.useMemo(
@@ -142,12 +142,19 @@ export const use_yjs_collaboration = ({
     }: {
       status: "connecting" | "connected" | "disconnected";
     }): void => {
-      set_doc_status(
+      set_doc_status((prev_value) =>
         status === "connecting"
           ? connected_once_ref.current
             ? DOC_STATUS.reconnecting
             : DOC_STATUS.connecting
-          : DOC_STATUS.disconnected
+          : [
+              DOC_STATUS.connecting,
+              DOC_STATUS.connected,
+              DOC_STATUS.reconnecting,
+              DOC_STATUS.syncing
+            ].includes(prev_value)
+          ? DOC_STATUS.disconnected
+          : prev_value
       );
 
       if (status === "connected") {
@@ -256,7 +263,16 @@ export const use_yjs_collaboration = ({
      * Handles the websocket connection errors.
      */
     const handle_connection_error = (): void => {
-      set_doc_status(DOC_STATUS.disconnected);
+      if (
+        [
+          DOC_STATUS.connecting,
+          DOC_STATUS.connected,
+          DOC_STATUS.reconnecting,
+          DOC_STATUS.syncing
+        ].includes(doc_status)
+      ) {
+        set_doc_status(DOC_STATUS.disconnected);
+      }
     };
 
     set_awareness(awareness);

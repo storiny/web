@@ -19,11 +19,7 @@ const VirtualizedNotificationItem = React.memo(
       VirtualizedNotificationListContext
     );
     return (
-      <div
-        {...rest}
-        className={clsx(css["flex-col"], styles["list-item"])}
-        key={item.id}
-      >
+      <div {...rest} className={clsx(css["flex-col"], styles["list-item"])}>
         <Notification {...notification_props} notification={item} virtual />
         <Divider style={{ marginInline: "var(--grid-compensation)" }} />
       </div>

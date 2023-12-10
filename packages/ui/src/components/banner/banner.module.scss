@@ -59,7 +59,12 @@
 .close {
   --icon-size: 16px;
 
-  all: unset;
+  appearance: none;
+  border: none;
+  outline: none;
+  text-decoration: none;
+  user-select: none;
+  background: none;
   cursor: pointer;
   border-radius: var(--radius-md); // Focus outline radius
   width: var(--icon-size);

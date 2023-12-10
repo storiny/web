@@ -126,7 +126,7 @@ async fn get(
     let search_query = query.query.clone().unwrap_or_default();
     let has_search_query = !search_query.trim().is_empty();
 
-    if let Some(user_id) = current_user_id {
+    if let Some(current_user_id) = current_user_id {
         if has_search_query {
             let result = sqlx::query_file_as!(
                 Story,

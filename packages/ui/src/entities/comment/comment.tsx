@@ -212,7 +212,10 @@ const Comment = (props: CommentProps): React.ReactElement => {
                 className={css["t-medium"]}
                 fixed_color
                 href={"#"}
-                onClick={(): void => set_hidden(false)}
+                onClick={(event): void => {
+                  event.preventDefault();
+                  set_hidden(false);
+                }}
                 underline={"always"}
               >
                 View comment

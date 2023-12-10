@@ -127,15 +127,15 @@ pub async fn get_story(
     })?;
 
     let story = {
-        if let Some(user_id) = current_user_id {
-            tracing::Span::current().record("user_id", &user_id);
+        if let Some(current_user_id) = current_user_id {
+            tracing::Span::current().record("user_id", &current_user_id);
 
             if let Some(story_id) = maybe_story_id {
                 sqlx::query_file_as!(
                     Story,
                     "queries/grpc/get_story/logged_in_by_id.sql",
                     story_id,
-                    user_id
+                    current_user_id
                 )
                 .fetch_one(&mut *txn)
                 .await
@@ -144,7 +144,7 @@ pub async fn get_story(
                     Story,
                     "queries/grpc/get_story/logged_in_by_slug.sql",
                     maybe_story_slug,
-                    user_id
+                    current_user_id
                 )
                 .fetch_one(&mut *txn)
                 .await
@@ -176,7 +176,7 @@ pub async fn get_story(
     })?;
 
     // Insert a history record for the current user.
-    if let Some(user_id) = current_user_id {
+    if let Some(current_user_id) = current_user_id {
         if story.published_at.is_some() && story.deleted_at.is_none() {
             sqlx::query(
                 r#"
@@ -187,7 +187,7 @@ ON CONFLICT (user_id, story_id) DO UPDATE
 SET created_at = NOW()
 "#,
             )
-            .bind(&user_id)
+            .bind(&current_user_id)
             .bind(&story.id)
             .execute(&mut *txn)
             .await

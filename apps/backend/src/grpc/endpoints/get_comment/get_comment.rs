@@ -170,10 +170,10 @@ GROUP BY
 
     let mut query_result = query_builder.build_query_as::<Comment>().bind(comment_id);
 
-    if let Some(user_id) = current_user_id {
-        tracing::Span::current().record("user_id", &user_id);
+    if let Some(current_user_id) = current_user_id {
+        tracing::Span::current().record("user_id", &current_user_id);
 
-        query_result = query_result.bind(user_id);
+        query_result = query_result.bind(current_user_id);
     }
 
     let comment = query_result

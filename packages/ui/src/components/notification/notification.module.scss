@@ -71,7 +71,12 @@
 }
 
 .button {
-  all: unset;
+  appearance: none;
+  border: none;
+  outline: none;
+  text-decoration: none;
+  user-select: none;
+  background: none;
   flex-grow: 1;
   height: 100%;
   min-height: 31.5px;

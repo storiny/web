@@ -25,9 +25,15 @@
   outline-offset: -3px;
 }
 
-.preview {
-  max-height: calc(100% - 32px);
+.preview-wrapper {
+  max-height: 100%;
   max-width: 100%;
+  overflow: hidden;
+}
+
+.preview {
+  height: 100%;
+  width: 100%;
   object-fit: cover;
   border: 1px solid var(--divider);
   border-radius: var(--radius-sm);

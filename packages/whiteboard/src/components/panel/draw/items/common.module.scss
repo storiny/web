@@ -1,5 +1,8 @@
 .indicator {
-  all: unset;
+  appearance: none;
+  outline: none;
+  text-decoration: none;
+  user-select: none;
   cursor: pointer;
   display: block;
   height: 14px;

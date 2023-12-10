@@ -176,7 +176,10 @@ const RecoveryCodesModal = (): React.ReactElement => {
                 className={css["t-center"]}
                 href={"#"}
                 level={"body3"}
-                onClick={generate_new_codes}
+                onClick={(event): void => {
+                  event.preventDefault();
+                  generate_new_codes();
+                }}
                 underline={"always"}
               >
                 Generate new recovery codes

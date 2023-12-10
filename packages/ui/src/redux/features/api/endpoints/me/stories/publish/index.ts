@@ -1,3 +1,5 @@
+import { ContentType } from "@storiny/shared";
+
 import { self_action } from "~/redux/features";
 import { api_slice } from "~/redux/features/api/slice";
 
@@ -6,6 +8,7 @@ const SEGMENT = (id: string): string => `me/stories/${id}/publish`;
 export interface StoryPublishPayload {
   id: string;
   status: "draft" | "published";
+  word_count: number;
 }
 
 export const { usePublishStoryMutation: use_publish_story_mutation } =
@@ -15,6 +18,12 @@ export const { usePublishStoryMutation: use_publish_story_mutation } =
       publishStory: builder.mutation<void, StoryPublishPayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,
+          body: {
+            word_count: body.word_count
+          },
+          headers: {
+            "Content-type": ContentType.JSON
+          },
           method: body.status === "draft" ? "POST" : "PUT"
         }),
         invalidatesTags: (result, error, arg) => [

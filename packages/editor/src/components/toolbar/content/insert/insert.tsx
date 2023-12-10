@@ -8,6 +8,8 @@ import PlusIcon from "~/icons/plus";
 import css from "~/theme/main.module.scss";
 
 import { doc_status_atom } from "../../../../atoms";
+import { is_doc_editable } from "../../../../utils/is-doc-editable";
+import { is_doc_loading } from "../../../../utils/is-doc-loading";
 import toolbar_styles from "../../toolbar.module.scss";
 import CodeBlockMenuItem from "./code-block";
 import EmbedMenuItem from "./embed";
@@ -18,7 +20,7 @@ import SymbolMenuItem from "./symbol";
 
 const ToolbarInsertItem = (): React.ReactElement => {
   const doc_status = use_atom_value(doc_status_atom);
-  const document_loading = ["connecting", "reconnecting"].includes(doc_status);
+  const document_loading = is_doc_loading(doc_status);
 
   return (
     <Menu

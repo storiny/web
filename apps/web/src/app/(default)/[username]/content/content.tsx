@@ -348,6 +348,7 @@ const ProfileContent = ({
                     styles.x,
                     !is_inside_sidebar && styles.status
                   )}
+                  editable={profile.is_self}
                   emoji={profile.status.emoji}
                   expires_at={profile.status.expires_at}
                   text={profile.status.text}

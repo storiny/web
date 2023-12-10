@@ -6,6 +6,7 @@ import React from "react";
 
 import ProgressBar, { ProgressBarProps } from "~/components/progress-bar";
 import Typography from "~/components/typography";
+import ConnectionCloseIcon from "~/icons/connection-close";
 import css from "~/theme/main.module.scss";
 
 import styles from "./loader.module.scss";
@@ -13,11 +14,13 @@ import styles from "./loader.module.scss";
 const EditorLoader = ({
   label = "Loading document…",
   overlay,
-  hide_progress
+  hide_progress,
+  show_icon
 }: {
   hide_progress?: boolean;
   label?: React.ReactNode;
   overlay?: boolean;
+  show_icon?: boolean;
 }): React.ReactElement => {
   const [loading, set_loading] = React.useState<boolean>(true);
   const {
@@ -35,7 +38,7 @@ const EditorLoader = ({
 
   return (
     <div
-      aria-label={"Loading…"}
+      aria-label={typeof label === "string" ? label : "Loading…"}
       className={clsx(
         css["flex-col"],
         css["flex-center"],
@@ -44,6 +47,7 @@ const EditorLoader = ({
       )}
       data-testid={"overlay"}
     >
+      {show_icon && <ConnectionCloseIcon />}
       <Typography className={css["t-minor"]} level={"body2"}>
         {label}
       </Typography>

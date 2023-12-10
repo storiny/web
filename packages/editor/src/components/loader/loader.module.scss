@@ -5,6 +5,10 @@
   background-color: var(--bg-body);
 
   &.overlay {
+    --icon-size: 64px;
+    --icon-stroke: var(--fg-minor);
+    --icon-stroke-width: 0.35px;
+
     position: fixed;
     top: 0;
     left: 0;

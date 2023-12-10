@@ -26,11 +26,13 @@ import ExplicitIcon from "~/icons/explicit";
 import StarIcon from "~/icons/star";
 import TrashIcon from "~/icons/trash";
 import {
+  get_assets_api,
   use_asset_alt_mutation,
   use_asset_rating_mutation,
   use_delete_asset_mutation,
   use_favourite_asset_mutation
 } from "~/redux/features";
+import { use_app_dispatch } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
@@ -81,7 +83,8 @@ const RatingModal = ({
 );
 
 const LibraryMasonryItem = React.memo(
-  ({ data }: LibraryItemProps): React.ReactElement => {
+  ({ data, page }: LibraryItemProps): React.ReactElement => {
+    const dispatch = use_app_dispatch();
     const [selected, set_selected] = use_atom(selected_atom);
     const [editing_mode, set_editing_mode] = React.useState<boolean>(false);
     const [is_favourite, set_is_favourite] = React.useState<boolean>(
@@ -89,7 +92,6 @@ const LibraryMasonryItem = React.memo(
     );
     const [alt_text, set_alt_text] = React.useState<string>(data.alt);
     const [rating, set_rating] = React.useState<AssetRating>(data.rating);
-    const [deleted, set_deleted] = React.useState<boolean>(false);
     const [mutate_favourite_asset] = use_favourite_asset_mutation();
     const [mutate_asset_alt] = use_asset_alt_mutation();
     const [mutate_asset_rating] = use_asset_rating_mutation();
@@ -108,18 +110,16 @@ const LibraryMasonryItem = React.memo(
      * Handles selection
      */
     const handle_select = (): void => {
-      if (!deleted) {
-        set_selected({
-          src: get_cdn_url(data.key, ImageSize.W_320),
-          alt: data.alt,
-          key: data.key,
-          hex: data.hex,
-          rating: data.rating,
-          width: data.width,
-          height: data.height,
-          source: "native"
-        });
-      }
+      set_selected({
+        src: get_cdn_url(data.key, ImageSize.W_320),
+        alt: data.alt,
+        key: data.key,
+        hex: data.hex,
+        rating: data.rating,
+        width: data.width,
+        height: data.height,
+        source: "native"
+      });
     };
 
     /**
@@ -134,13 +134,17 @@ const LibraryMasonryItem = React.memo(
      */
     const handle_delete = React.useCallback(() => {
       delete_asset({ id: data.id });
-      set_deleted(true);
+      dispatch(
+        get_assets_api.util.updateQueryData("getAssets", { page }, (assets) => {
+          assets.items = assets.items.filter((item) => item.id !== data.id);
+        })
+      );
 
       // Reset selection
       if (is_selected) {
         set_selected(null);
       }
-    }, [data.id, delete_asset, is_selected, set_selected]);
+    }, [data.id, delete_asset, dispatch, is_selected, page, set_selected]);
 
     /**
      * Marks the item as favourite
@@ -236,13 +240,7 @@ const LibraryMasonryItem = React.memo(
     );
 
     return (
-      <div
-        className={clsx(
-          css["flex-col"],
-          styles.item,
-          deleted && styles.deleted
-        )}
-      >
+      <div className={clsx(css["flex-col"], styles.item)}>
         <div
           className={clsx(
             css["focusable"],
@@ -260,14 +258,6 @@ const LibraryMasonryItem = React.memo(
           role={"button"}
           tabIndex={0}
         >
-          {deleted && (
-            <div
-              aria-hidden
-              className={clsx(css["flex-center"], styles["deleted-overlay"])}
-            >
-              <TrashIcon />
-            </div>
-          )}
           <AspectRatio
             className={common_styles.image}
             ratio={data.width / data.height}
@@ -351,8 +341,6 @@ const LibraryMasonryItem = React.memo(
               {alt_text.trim() ? alt_text : "Add an alt text"}
             </Typography>
             <Menu
-              // Force close menu when deleted
-              open={deleted ? false : undefined}
               slot_props={{
                 content: {
                   style: {

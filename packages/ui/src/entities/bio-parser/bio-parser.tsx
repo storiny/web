@@ -36,6 +36,7 @@ const BioParser = ({
   <Interweave
     {...rest}
     allowList={["a", "b", "em", "p"]}
+    containerTagName={"div"}
     content={content}
     transform={transform}
   />

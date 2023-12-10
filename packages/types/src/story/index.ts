@@ -53,6 +53,8 @@ export type Story = {
   license: StoryLicense;
   preview_image: string | null;
   published_at: string | null;
+  // Received from the server only when reading the story
+  reading_session_token?: string;
   slug: string;
   splash_hex: string | null;
   splash_id: string | null;
