@@ -63,7 +63,7 @@ const Actions = ({ tag }: Props): React.ReactElement => {
         as={NextLink}
         check_auth
         decorator={<PencilPlusIcon />}
-        href={`/new?tag=${tag.name}`}
+        href={"/new"}
         variant={"hollow"}
       >
         Write a story

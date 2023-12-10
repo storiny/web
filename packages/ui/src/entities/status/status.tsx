@@ -7,6 +7,8 @@ import React from "react";
 import Grow from "~/components/grow";
 import Typography from "~/components/typography";
 import MoodSmile from "~/icons/mood-smile";
+import { select_user } from "~/redux/features";
+import { use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 import { DateFormat, format_date } from "~/utils/format-date";
 import { forward_ref } from "~/utils/forward-ref";
@@ -54,12 +56,20 @@ const Entity = forward_ref<StatusProps, "span">((props, ref) => {
   const {
     editable,
     as: Component = editable ? "button" : "span",
-    text,
-    emoji,
-    expires_at,
+    text: text_prop,
+    emoji: emoji_prop,
+    expires_at: expires_at_prop,
     className,
     ...rest
   } = props;
+  const user = use_app_selector(select_user);
+
+  // Use the status from the cache if the status is editable.
+  const text = editable && user ? user.status?.text : text_prop;
+  const emoji = editable && user ? user.status?.emoji : emoji_prop;
+  const expires_at =
+    editable && user ? user.status?.expires_at : expires_at_prop;
+
   const has_emoji = typeof emoji !== "undefined";
   const has_text = Boolean(text);
 

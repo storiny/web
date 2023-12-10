@@ -39,6 +39,7 @@ import { use_subscript } from "../../../../hooks/use-subscript";
 import { use_superscript } from "../../../../hooks/use-superscript";
 import { use_text_style } from "../../../../hooks/use-text-style";
 import { use_underline } from "../../../../hooks/use-underline";
+import { is_doc_loading } from "../../../../utils/is-doc-loading";
 import toolbar_styles from "../../toolbar.module.scss";
 import styles from "./text-style.module.scss";
 
@@ -66,7 +67,7 @@ const TextStyleGroup = (): React.ReactElement => {
   const [superscript, toggle_superscript] = use_superscript();
   const [code, toggle_code] = use_code();
   const [link, insert_link] = use_link();
-  const document_loading = ["connecting", "reconnecting"].includes(doc_status);
+  const document_loading = is_doc_loading(doc_status);
 
   const value = React.useMemo(
     () =>
@@ -208,7 +209,7 @@ const TextStyleSelect = (): React.ReactElement => {
     format_quote,
     format_heading
   } = use_text_style();
-  const document_loading = ["connecting", "reconnecting"].includes(doc_status);
+  const document_loading = is_doc_loading(doc_status);
 
   /**
    * Handles select value change

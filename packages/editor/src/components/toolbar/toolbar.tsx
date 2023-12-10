@@ -14,6 +14,7 @@ import css from "~/theme/main.module.scss";
 
 import { doc_status_atom, sidebars_collapsed_atom } from "../../atoms";
 import { SPRING_CONFIG } from "../../constants";
+import { is_doc_editable } from "../../utils/is-doc-editable";
 import styles from "./toolbar.module.scss";
 
 const SuspendedEditorToolbarContent = dynamic(() => import("./content"), {
@@ -44,7 +45,7 @@ const EditorToolbar = (): React.ReactElement | null => {
     }
   );
 
-  if (["disconnected", "publishing"].includes(doc_status)) {
+  if (!is_doc_editable(doc_status)) {
     return null;
   }
 

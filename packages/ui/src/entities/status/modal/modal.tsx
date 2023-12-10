@@ -24,8 +24,12 @@ import {
 import { use_media_query } from "~/hooks/use-media-query";
 import MoodSmileIcon from "~/icons/mood-smile";
 import MoodSmile from "~/icons/mood-smile";
-import { select_user, use_set_status_mutation } from "~/redux/features";
-import { use_app_selector } from "~/redux/hooks";
+import {
+  mutate_user,
+  select_user,
+  use_set_status_mutation
+} from "~/redux/features";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
@@ -151,6 +155,7 @@ const StatusModal = ({
   trigger: Parameters<typeof use_modal>[0];
 }): React.ReactElement => {
   const toast = use_toast();
+  const dispatch = use_app_dispatch();
   const [open, set_open] = React.useState<boolean>(false);
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const user = use_app_selector(select_user)!;
@@ -172,8 +177,10 @@ const StatusModal = ({
   const handle_submit: SubmitHandler<SetStatusSchema> = (values) => {
     set_status(values)
       .unwrap()
-      .then(() => {
+      .then((status) => {
         form.reset(values);
+        dispatch(mutate_user({ status }));
+
         set_open(false);
         toast("Status updated", "success");
       })

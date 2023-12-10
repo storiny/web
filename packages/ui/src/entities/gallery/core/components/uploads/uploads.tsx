@@ -46,8 +46,7 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
       "image/apng": [],
       "image/png": [],
       "image/gif": [],
-      "image/webp": [],
-      "image/avif": []
+      "image/webp": []
     },
     onError: () => toast("Unable to import the image file", "error"),
     /* eslint-enable prefer-snakecase/prefer-snakecase */
@@ -151,23 +150,33 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
             className={clsx(css["t-minor"], css["t-center"])}
             level={"body2"}
           >
-            Failed to upload your image
+            {"data" in result.error &&
+            typeof (result.error?.data as any)?.error === "string"
+              ? (result.error.data as any).error
+              : "Failed to upload your image"}
           </Typography>
-          <Spacer orientation={"vertical"} size={2.25} />
-          <div className={css["flex-center"]}>
-            <Button onClick={handle_upload}>Try again</Button>
-          </div>
+          {/* Do not allow to retry the upload if the daily upload limit has been reached */}
+          {(result.error as any)?.status === 429 ? null : (
+            <>
+              <Spacer orientation={"vertical"} size={2.25} />
+              <div className={css["flex-center"]}>
+                <Button onClick={handle_upload}>Try again</Button>
+              </div>
+            </>
+          )}
         </React.Fragment>
       ) : result.isSuccess && file ? (
         // Upload success area
         <React.Fragment>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            alt={""}
-            className={styles.preview}
-            onLoad={(): void => URL.revokeObjectURL(file.preview)}
-            src={file.preview}
-          />
+          <div className={styles["preview-wrapper"]}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              alt={""}
+              className={styles.preview}
+              onLoad={(): void => URL.revokeObjectURL(file.preview)}
+              src={file.preview}
+            />
+          </div>
           <Spacer
             className={css["f-grow"]}
             orientation={"vertical"}
@@ -189,8 +198,10 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
       ) : file ? (
         // File preview and actions area
         <React.Fragment>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt={""} className={styles.preview} src={file.preview} />
+          <div className={styles["preview-wrapper"]}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img alt={""} className={styles.preview} src={file.preview} />
+          </div>
           <Spacer className={css["f-grow"]} orientation={"vertical"} size={3} />
           <Input
             aria-label={"Alt text for the image"}

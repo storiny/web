@@ -88,8 +88,8 @@ const IconButton = forward_ref<IconButtonProps, "button">((props, ref) => {
         `variant-${variant}`,
         `color-${input_color || color}`,
         styles["icon-button"],
-        loading && [styles.loading, css["loading"]],
-        disabled && [styles.disabled, css["disabled"]],
+        loading && [styles.loading, "loading"],
+        disabled && [styles.disabled, "disabled"],
         styles[input_size || size],
         className
       )}

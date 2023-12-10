@@ -103,7 +103,14 @@ const EmojiPicker = (props: EmojiPickerProps): React.ReactElement => {
     >
       <Provider>
         <div className={clsx(css["flex-center"], styles.header)}>
-          <span className={clsx(css["flex-center"], styles.icon)}>
+          <span
+            className={clsx(css["flex-center"], styles.icon)}
+            style={
+              {
+                "--spritesheet": `url("${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/raw/spritesheets/emoji-sprite.png")`
+              } as React.CSSProperties
+            }
+          >
             <HoveredEmoji />
           </span>
           <Typography className={css["t-bold"]} level={"body2"}>

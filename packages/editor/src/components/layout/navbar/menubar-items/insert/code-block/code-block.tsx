@@ -8,7 +8,12 @@ const CodeBlockMenubarItem = ({
 }: {
   disabled?: boolean;
 }): React.ReactElement => (
-  <MenubarItem decorator={<CodeBlockIcon />} disabled={disabled}>
+  <MenubarItem
+    decorator={<CodeBlockIcon />}
+    disabled
+    // TODO: Uncomment once implemented
+    // disabled={disabled}
+  >
     Code block
   </MenubarItem>
 );

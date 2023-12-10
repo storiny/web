@@ -13,7 +13,8 @@ const NoSsr = (props: NoSsrProps): React.ReactElement => {
     set_mounted_state(true);
   }, []);
 
-  // Fragment is required here to force react-docgen to recognise NoSsr as a component.
+  // Fragment is required here to force react-docgen to recognise NoSsr as a
+  // component.
   return (
     <React.Fragment>
       {mounted_state || disabled ? children : fallback}

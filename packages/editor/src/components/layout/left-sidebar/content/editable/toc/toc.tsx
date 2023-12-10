@@ -60,7 +60,9 @@ const EditorToc = ({
             disabled={publishing}
             href={"#"}
             level={"body2"}
-            onClick={(): void => {
+            onClick={(event): void => {
+              event.preventDefault();
+
               const next_value = !story.disable_toc;
               set_story((prev) => ({ ...prev, disable_toc: next_value }));
               on_change(next_value);

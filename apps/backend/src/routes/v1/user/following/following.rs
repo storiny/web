@@ -314,8 +314,8 @@ FROM user_following
         .bind(10_i16)
         .bind((page * 10) as i16);
 
-    if let Some(user_id) = current_user_id {
-        db_query = db_query.bind(user_id);
+    if let Some(current_user_id) = current_user_id {
+        db_query = db_query.bind(current_user_id);
     }
 
     if has_search_query {

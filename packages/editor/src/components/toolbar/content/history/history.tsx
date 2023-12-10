@@ -10,12 +10,13 @@ import css from "~/theme/main.module.scss";
 
 import { doc_status_atom } from "../../../../atoms";
 import { use_history } from "../../../../hooks/use-history";
+import { is_doc_loading } from "../../../../utils/is-doc-loading";
 import toolbar_styles from "../../toolbar.module.scss";
 
 const ToolbarHistoryItem = (): React.ReactElement => {
   const { undo, can_undo, can_redo, redo } = use_history();
   const doc_status = use_atom_value(doc_status_atom);
-  const document_loading = ["connecting", "reconnecting"].includes(doc_status);
+  const document_loading = is_doc_loading(doc_status);
 
   return (
     <div className={css["flex-center"]}>

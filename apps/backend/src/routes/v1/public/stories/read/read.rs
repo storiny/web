@@ -27,6 +27,10 @@ use serde::{
 use std::net::IpAddr;
 use validator::Validate;
 
+// The minimum duration (in seconds) that the client needs to read the story before the `read_count`
+// is incremented.
+const MINIMUM_READ_DURATION: i16 = 30; // 30 seconds
+
 #[derive(Deserialize, Validate)]
 struct Fragments {
     story_id: String,
@@ -100,6 +104,11 @@ async fn post(
         return Err(AppError::InternalError(format!(
             "unexpected negative value for session duration: {elapsed_reading_duration}"
         )));
+    }
+
+    // We only proceed if the client reads the story for at-least `MINIMUM_READ_DURATION` seconds.
+    if elapsed_reading_duration < MINIMUM_READ_DURATION {
+        return Ok(HttpResponse::Ok().finish());
     }
 
     let mut country_code: Option<String> = None;
@@ -241,6 +250,12 @@ mod tests {
                 .await
                 .unwrap();
 
+            // Wait for `MINIMUM_READ_DURATION`.
+            tokio::time::sleep(tokio::time::Duration::from_secs(
+                MINIMUM_READ_DURATION as u64,
+            ))
+            .await;
+
             let req = test::TestRequest::post()
                 .uri(&format!("/v1/public/stories/{story_id}/read"))
                 .set_json(Request {
@@ -296,6 +311,12 @@ WHERE story_id = $1
                 .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
                 .await
                 .unwrap();
+
+            // Wait for `MINIMUM_READ_DURATION`.
+            tokio::time::sleep(tokio::time::Duration::from_secs(
+                MINIMUM_READ_DURATION as u64,
+            ))
+            .await;
 
             let req = test::TestRequest::post()
                 .cookie(cookie.unwrap())
@@ -358,8 +379,11 @@ WHERE story_id = $1
                 .await
                 .unwrap();
 
-            // Hold the reading session for 5 seconds.
-            tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+            // Wait for `MINIMUM_READ_DURATION`.
+            tokio::time::sleep(tokio::time::Duration::from_secs(
+                MINIMUM_READ_DURATION as u64,
+            ))
+            .await;
 
             let req = test::TestRequest::post()
                 .peer_addr(SocketAddr::from(SocketAddrV4::new(
@@ -404,6 +428,58 @@ WHERE story_id = $1
                 result.get::<Option<String>, _>("country_code"),
                 Some("US".to_string())
             );
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_reject_a_session_with_short_reading_duration(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let redis_pool = &ctx.redis_pool;
+            let mut redis_conn = redis_pool.get().await.unwrap();
+            let mut conn = pool.acquire().await?;
+            let (app, _, _) = init_app_for_test(post, pool, false, false, None).await;
+
+            let story_id = 3_i64;
+            let session_token = Uuid::new_v4();
+            let cache_key = format!(
+                "{}:{story_id}:{session_token}",
+                RedisNamespace::ReadingSession.to_string(),
+            );
+
+            // Start a reading session.
+            redis_conn
+                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
+                .await
+                .unwrap();
+
+            // Read immediately.
+            let req = test::TestRequest::post()
+                .uri(&format!("/v1/public/stories/{story_id}/read"))
+                .set_json(Request {
+                    referrer: None,
+                    token: session_token.to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_success());
+
+            // Story read row should not be present in the database.
+            let result = sqlx::query(
+                r#"
+SELECT 1 FROM story_reads
+WHERE story_id = $1
+"#,
+            )
+            .bind(story_id)
+            .fetch_all(&mut *conn)
+            .await?;
+
+            assert_eq!(result.is_empty());
 
             Ok(())
         }

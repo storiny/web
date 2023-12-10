@@ -69,7 +69,12 @@
 .close {
   --icon-size: 14px;
 
-  all: unset;
+  appearance: none;
+  border: none;
+  outline: none;
+  text-decoration: none;
+  user-select: none;
+  background: none;
   padding: 9px;
   border-left: 1px solid var(--divider);
 

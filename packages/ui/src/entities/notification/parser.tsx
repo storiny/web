@@ -42,6 +42,7 @@ const NotificationParser = ({
   <Interweave
     {...rest}
     allowList={["a", "b", "em", "p", "span", "div"]}
+    containerTagName={"div"}
     content={content}
     transform={transform}
   />

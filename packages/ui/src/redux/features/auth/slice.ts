@@ -45,8 +45,8 @@ export const fetch_user = create_async_thunk<User>(
       // This environment variable is not present in production.
       const is_storybook = process.env.STORYBOOK_FLAG === "1";
 
-      // Requests are not sent to the server when running inside Storybook as the user data is
-      // usually provided through Storybook arguments.
+      // Requests are not sent to the server when running inside Storybook as
+      // the user data is usually provided through Storybook arguments.
       if (is_storybook || !logged_in || status === "loading") {
         // Do not send a request if logged out or the status is `loading`.
         return false;

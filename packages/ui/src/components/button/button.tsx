@@ -87,8 +87,8 @@ const Button = forward_ref<ButtonProps, "button">((props, ref) => {
         `variant-${variant}`,
         `color-${color}`,
         styles.button,
-        loading && [styles.loading, css["loading"]],
-        disabled && [styles.disabled, css["disabled"]],
+        loading && [styles.loading, "loading"],
+        disabled && [styles.disabled, "disabled"],
         styles[size],
         className
       )}

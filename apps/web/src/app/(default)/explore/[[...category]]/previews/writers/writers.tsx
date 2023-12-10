@@ -120,7 +120,7 @@ const WritersPreview = ({
               styles.x,
               styles["show-more"]
             )}
-            href={"#"}
+            href={"/explore/writers"}
             level={"body3"}
           >
             Show more

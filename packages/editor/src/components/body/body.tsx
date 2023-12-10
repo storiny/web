@@ -77,7 +77,7 @@ const DOC_STATUS_TO_LABEL_MAP: Partial<Record<DocStatus, string>> = {
   [DOC_STATUS.lifetime_exceeded]:
     "This document has been terminated due to inactivity. Reload this window to reconnect.",
   [DOC_STATUS.internal]:
-    "This document has been terminated due to an internal cause.",
+    "This document has been terminated due to an internal reason.",
   [DOC_STATUS.stale_peer]:
     "You have been disconnected due to inactivity. Reload this window to reconnect."
 };
@@ -95,9 +95,18 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
       data-testid={"editor-container"}
       {...(!read_only &&
       ![DOC_STATUS.connected, DOC_STATUS.syncing].includes(doc_status)
-        ? // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-          { style: { pointerEvents: "none", userSelect: "none" } }
-        : {})}
+        ? /* eslint-disable prefer-snakecase/prefer-snakecase */
+          {
+            style: {
+              pointerEvents: "none",
+              userSelect: "none",
+              overflowY: "hidden",
+              minHeight: "0px",
+              maxHeight: "calc(100vh - calc(2 * var(--header-height)))"
+            }
+          }
+        : /* eslint-enable prefer-snakecase/prefer-snakecase */
+          {})}
     >
       {read_only && <StoryHeader />}
       <RichTextPlugin
@@ -106,7 +115,11 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
         placeholder={<EditorPlaceholder />}
       />
       {read_only ? (
-        <ReadOnlyPlugin initial_doc={initial_doc!} />
+        <ReadOnlyPlugin
+          initial_doc={initial_doc!}
+          reading_session_token={props.story.reading_session_token || ""}
+          story_id={props.story.id}
+        />
       ) : (
         <React.Fragment>
           <RegisterTools />
@@ -152,6 +165,13 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
           }
           label={DOC_STATUS_TO_LABEL_MAP[doc_status] || "Internal error"}
           overlay
+          show_icon={
+            ![
+              DOC_STATUS.connecting,
+              DOC_STATUS.reconnecting,
+              DOC_STATUS.publishing
+            ].includes(doc_status)
+          }
         />
       ) : null}
       {read_only && (

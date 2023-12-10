@@ -123,9 +123,8 @@ const Reply = (props: ReplyProps): React.ReactElement => {
                 is_static && is_self ? (
                   <Link
                     ellipsis
-                    href={`/${reply.comment?.user?.username || "story"}/${
-                      reply.comment?.story?.slug
-                    }/comments/${reply.comment_id}`}
+                    href={`/${reply.comment?.user?.username || "story"}/${reply
+                      .comment?.story?.slug}/comments/${reply.comment_id}`}
                     title={reply.comment?.content}
                   >
                     {reply.comment?.content || "Empty comment"}
@@ -185,7 +184,10 @@ const Reply = (props: ReplyProps): React.ReactElement => {
                 className={css["t-medium"]}
                 fixed_color
                 href={"#"}
-                onClick={(): void => set_hidden(false)}
+                onClick={(event): void => {
+                  event.preventDefault();
+                  set_hidden(false);
+                }}
                 underline={"always"}
               >
                 View reply

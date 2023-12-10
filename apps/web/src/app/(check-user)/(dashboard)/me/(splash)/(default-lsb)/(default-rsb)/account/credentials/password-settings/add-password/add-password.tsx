@@ -91,6 +91,7 @@ const AddPasswordModal = (): React.ReactElement => {
           <Spacer orientation={"vertical"} size={3} />
           <Link
             className={css["t-center"]}
+            event={(event): void => event.preventDefault()}
             href={"#"}
             level={"body2"}
             onClick={(): void => set_screen("verification-code")}

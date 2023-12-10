@@ -29,6 +29,7 @@ const AccountActivityParser = ({
   <Interweave
     {...rest}
     allowList={["m"]}
+    containerTagName={"div"}
     content={content}
     transform={transform}
   />

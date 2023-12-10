@@ -3,7 +3,12 @@ $preview-size: 18px;
 
 .emoji,
 .fake-emoji {
-  all: unset;
+  appearance: none;
+  border: none;
+  outline: none;
+  text-decoration: none;
+  user-select: none;
+  background: none;
   display: block;
   position: relative;
   width: calc($emoji-size + 10px);

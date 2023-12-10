@@ -2,7 +2,12 @@ $symbol-size: 26px;
 
 .symbol,
 .fake-symbol {
-  all: unset;
+  appearance: none;
+  border: none;
+  outline: none;
+  text-decoration: none;
+  user-select: none;
+  background: none;
   position: relative;
   width: calc($symbol-size + 10px);
   height: calc($symbol-size + 10px);

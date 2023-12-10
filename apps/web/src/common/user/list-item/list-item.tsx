@@ -17,11 +17,7 @@ const VirtualizedUserItem = React.memo(
     // Props from context
     const user_props = React.useContext(VirtualizedUserListContext);
     return (
-      <div
-        {...rest}
-        className={clsx(css["flex-col"], styles["list-item"])}
-        key={item.id}
-      >
+      <div {...rest} className={clsx(css["flex-col"], styles["list-item"])}>
         <User {...user_props} user={item} virtual />
         <Divider style={{ marginInline: "var(--grid-compensation)" }} />
       </div>

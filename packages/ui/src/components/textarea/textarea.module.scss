@@ -74,8 +74,8 @@
   --radius: var(--radius-md);
   --size: 26px;
   --min-height: 64px;
-  --font-size: var(--font-size-xs);
-  --line-height: var(--line-height-xs);
+  --font-size: calc(var(--font-size-xs) + 2px);
+  --line-height: calc(var(--line-height-xs) + 2px);
 }
 
 /* Colors */
