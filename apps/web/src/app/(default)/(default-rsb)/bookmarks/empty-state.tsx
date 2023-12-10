@@ -15,14 +15,10 @@ const BookmarksEmptyState = ({
     description={
       query
         ? "Your search criteria did not match anything, make sure you've spelled it correctly or try again by being more specific."
-        : "This is where you will find the stories you have bookmarked."
+        : "Bookmark stories to read them later."
     }
     icon={query ? undefined : <BookmarksIcon />}
-    title={
-      query
-        ? `Could not find any story for "${query}"`
-        : "Bookmark stories to read them later"
-    }
+    title={query ? `Could not find any story for "${query}"` : "No bookmarks"}
   />
 );
 

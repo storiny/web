@@ -247,7 +247,7 @@ const Page = ({
                 </>
               ) : profile.is_blocked_by_user ? (
                 <>
-                  There is no way for you to follow{" "}
+                  You cannot follow{" "}
                   <span className={css["t-medium"]}>@{profile.username}</span>{" "}
                   or interact with their account.{" "}
                   <Link

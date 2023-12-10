@@ -18,11 +18,11 @@ const HistoryEmptyState = ({
         "Your search criteria did not match anything, make sure you've spelled it correctly or try again by being more specific."
       ) : (
         <>
-          All the stories you read will appear here, unless you{" "}
-          <Link href={"/me/privacy"} underline={"always"}>
-            disable reading history
-          </Link>{" "}
-          in the settings.
+          Stories you read will show up here. You can disable this in your{" "}
+          <Link href={"/me/account/privacy"} underline={"always"}>
+            privacy settings.
+          </Link>
+          .
         </>
       )
     }

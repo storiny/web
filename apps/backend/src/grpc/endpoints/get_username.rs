@@ -119,7 +119,7 @@ RETURNING id
             Box::new(|mut client, _, _, _| async move {
                 let response = client
                     .get_username(Request::new(GetUsernameRequest {
-                        user_id: "12345".to_strign(),
+                        user_id: "12345".to_string(),
                     }))
                     .await;
 

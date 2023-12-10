@@ -302,14 +302,14 @@ const ContentStoriesClient = (props: StoriesProps): React.ReactElement => {
         <PageHeader on_change={handle_change} value={value} />
         <StatusHeader
           {...props}
-          disabled={!items.length}
+          disabled={!query && !items.length}
           on_sort_change={handle_sort_change}
           sort={sort}
           tab={value}
         />
         {value === "published" && (
           <ControlBar
-            disabled={!items.length}
+            disabled={!query && !items.length}
             on_query_change={handle_query_change}
             on_sort_change={handle_sort_change}
             query={query}

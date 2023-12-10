@@ -135,8 +135,9 @@ WHERE id = $1
         // Insert a published and deleted draft.
         let result = sqlx::query(
             r#"
-INSERT INTO stories (id, user_id, published_at, deleted_at)
-VALUES ($1, $2, NOW(), NOW())
+INSERT INTO stories
+    (id, user_id, published_at, first_published_at, deleted_at)
+VALUES ($1, $2, NOW(), NOW(), NOW())
 "#,
         )
         .bind(2_i64)

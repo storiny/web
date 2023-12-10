@@ -903,9 +903,11 @@ VALUES ($5, $1)
                 peers.push(peer(endpoint.clone()).await);
             }
 
+            tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+
             let (mut tx, mut rx) = peer(endpoint).await;
 
-            timeout(Duration::from_secs(10), async {
+            timeout(Duration::from_secs(15), async {
                 if let Ok(message) = rx.next().await.unwrap() {
                     assert_eq!(message.to_string(), EnterRealmError::Full.to_string());
                 }

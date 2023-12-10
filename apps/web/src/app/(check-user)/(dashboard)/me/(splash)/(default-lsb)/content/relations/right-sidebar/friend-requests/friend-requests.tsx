@@ -111,7 +111,7 @@ const FriendRequestsModal = (): React.ReactElement => {
         <Input
           autoFocus
           decorator={<SearchIcon />}
-          disabled={!items.length}
+          disabled={!query && !items.length}
           onChange={(event): void => set_query(event.target.value)}
           placeholder={"Search"}
           slot_props={{
@@ -124,7 +124,7 @@ const FriendRequestsModal = (): React.ReactElement => {
         />
         <Divider orientation={"vertical"} />
         <Select
-          disabled={!items.length}
+          disabled={!query && !items.length}
           onValueChange={handle_sort_change}
           slot_props={{
             trigger: {

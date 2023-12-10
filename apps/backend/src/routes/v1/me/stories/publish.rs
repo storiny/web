@@ -423,7 +423,7 @@ WHERE id = $1
                 .get::<Option<OffsetDateTime>, _>("published_at")
                 .is_some()
         );
-        assert_eq!(result.get::<i16, _>("word_count"), 25_i16);
+        assert_eq!(result.get::<i32, _>("word_count"), 25);
 
         // Should insert push notification jobs.
 
@@ -600,7 +600,7 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i16, _>("word_count"), 25_i16);
+        assert_eq!(result.get::<i32, _>("word_count"), 25);
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("edited_at")
