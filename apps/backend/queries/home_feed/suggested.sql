@@ -51,19 +51,22 @@ WITH suggested_stories AS (SELECT
 															   AND accepted_at IS NOT NULL
 															)
 													 )
-												  -- Filter out stories from blocked and muted users
-												  AND u.id NOT IN (SELECT b.blocked_id
-																   FROM
-																	   blocks b
-																   WHERE
-																	   b.blocker_id = $1
-																   UNION
-																   SELECT m.muted_id
-																   FROM
-																	   mutes m
-																   WHERE
-																	   m.muter_id = $1
-																  )
+												  -- Filter out stories from blocked users
+												  AND NOT EXISTS (SELECT 1
+																  FROM
+																	  blocks b
+																  WHERE
+																		b.blocker_id = $1
+																	AND b.blocked_id = u.id
+																 )
+												  -- Filter out stories from muted users
+												  AND NOT EXISTS (SELECT 1
+																  FROM
+																	  mutes m
+																  WHERE
+																		m.muter_id = $1
+																	AND m.muted_id = u.id
+																 )
 								   -- Boolean bookmark flag
 								   LEFT OUTER JOIN bookmarks AS "s->is_bookmarked"
 												   ON "s->is_bookmarked".story_id = s.id

@@ -92,4 +92,49 @@ WHERE notification_id = (SELECT id FROM notification)
 
         Ok(())
     }
+
+    #[sqlx::test(fixtures("story_add_by_tag"))]
+    async fn should_not_notify_the_publisher_of_the_story(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Update the writer of the story.
+        let result = sqlx::query(
+            r#"
+UPDATE stories
+SET user_id = $1
+WHERE id = $2
+"#,
+        )
+        .bind(2_i64)
+        .bind(5_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let ctx = get_job_ctx_for_test(pool, None).await;
+        let result = notify_story_add_by_tag(NotifyStoryAddByTagJob { story_id: 5_i64 }, ctx).await;
+
+        assert!(result.is_ok());
+
+        let result = sqlx::query(
+            r#"
+WITH notification AS (
+    SELECT id FROM notifications
+    WHERE entity_id = $1 AND entity_type = $2
+)
+SELECT 1 FROM notification_outs
+WHERE notification_id = (SELECT id FROM notification)
+"#,
+        )
+        .bind(6_i64)
+        .bind(NotificationEntityType::StoryAddByTag as i16)
+        .fetch_all(&mut *conn)
+        .await?;
+
+        // Should only insert a notification for the user with ID = `3`.
+        assert_eq!(result.len(), 1);
+
+        Ok(())
+    }
 }

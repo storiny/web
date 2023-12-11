@@ -72,6 +72,16 @@ $$
 BEGIN
 	-- Story like soft-deleted
 	IF (OLD.deleted_at IS NULL AND NEW.deleted_at IS NOT NULL) THEN
+		-- Delete the notification
+		DELETE
+		FROM
+			notifications n USING notification_outs nu
+		WHERE
+			  nu.notification_id = n.id
+			  -- Story like
+		  AND n.entity_type = 9
+		  AND n.entity_id = NEW.story_id
+		  AND nu.notified_id = NEW.user_id;
 		-- Decrement `like_count` on story
 		UPDATE
 			stories
@@ -117,6 +127,16 @@ CREATE OR REPLACE FUNCTION story_like_delete_trigger_proc(
 AS
 $$
 BEGIN
+	-- Delete the notification
+	DELETE
+	FROM
+		notifications n USING notification_outs nu
+	WHERE
+		  nu.notification_id = n.id
+	  -- Story like
+	  AND n.entity_type = 9
+	  AND n.entity_id = OLD.story_id
+	  AND nu.notified_id = OLD.user_id;
 	-- Decrement `like_count` on story
 	UPDATE
 		stories

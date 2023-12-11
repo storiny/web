@@ -49,6 +49,8 @@ BEGIN
 					 tag_followers tf
 				 WHERE
 					   tf.tag_id = (SELECT tf.tag_id FROM story_tag_relation)
+				   -- Do not notify the publisher of the story (if they follow the tag).
+				   AND tf.user_id <> (SELECT user_id FROM published_story)
 				   AND tf.deleted_at IS NULL
 				) AS followers
 			WHERE

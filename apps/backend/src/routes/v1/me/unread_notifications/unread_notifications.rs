@@ -109,7 +109,7 @@ VALUES ($1, $2), ($1, $3)
         assert_eq!(insert_result.rows_affected(), 2);
 
         let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
+            .cookie(cookie.clone().unwrap())
             .uri("/v1/me/unread-notifications")
             .to_request();
         let res = test::call_service(&app, req).await;

@@ -265,7 +265,7 @@ const StoryActions = ({
           >
             Copy link to story
           </MenuItem>
-          <Separator />
+          {!is_self && <Separator />}
           {is_extended ? (
             <React.Fragment>
               <MenuItem
