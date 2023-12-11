@@ -4,6 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
 import RectangleIcon from "~/icons/rectangle";
+import css from "~/theme/main.module.scss";
 
 import Button from "../button";
 import TabPanel from "../tab-panel";

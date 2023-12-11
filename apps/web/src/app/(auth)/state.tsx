@@ -44,7 +44,8 @@ create_store(
       password: "",
       username: "",
       wpm: null
-    }
+    },
+    signup_errors: {}
   },
   {
     persist: "none"

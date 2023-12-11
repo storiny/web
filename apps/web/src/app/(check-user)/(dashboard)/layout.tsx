@@ -11,7 +11,7 @@ const DashboardLayout = ({
   children: React.ReactNode;
 }): React.ReactElement => (
   <div className={clsx(css["grid"], css["grid-container"], css["dashboard"])}>
-    <Navbar />
+    <Navbar is_dashboard />
     <Sidenav is_dashboard />
     {children}
   </div>

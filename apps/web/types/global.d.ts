@@ -21,10 +21,10 @@ declare module "little-state-machine" {
       username: string;
       wpm: null | number;
     };
-    signup_errors: {
+    signup_errors: Partial<{
       base: any;
       username: any;
       wpm_manual: any;
-    };
+    }>;
   }
 }

@@ -1,4 +1,3 @@
-import "normalize.css/normalize.css";
 import "~/theme/global.scss";
 import "~/theme/main.module.scss";
 import "~/theme/storybook.scss";

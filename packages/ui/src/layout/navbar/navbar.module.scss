@@ -24,6 +24,20 @@
     border-bottom: 1px solid var(--divider);
   }
 
+  &.dashboard {
+    @include breakpoints.media("<desktop") {
+      & .wordmark {
+        display: none;
+      }
+
+      & .search {
+        position: relative;
+        left: 0;
+        transform: none;
+      }
+    }
+  }
+
   &:not(.minimal) {
     @include breakpoints.media("<=tablet") {
       & .wordmark {
