@@ -101,16 +101,17 @@ const ConnectionSettingsClient = ({
       <DashboardGroup>
         <Typography className={css["t-minor"]} level={"body2"}>
           Link your social media accounts to display them on your public
-          profile. We use this data for display purposes only and comply with
-          our{" "}
+          profile. Data provided by your selected provider is used for display
+          purposes only and is never shared outside of Storiny. Read our{" "}
           <Link href={"/privacy"} target={"_blank"} underline={"always"}>
             Privacy Policy
           </Link>{" "}
-          by not sharing it outside of Storiny.
+          for more details about how we regulate your data.
           <br />
           <br />
-          Note that social media providers operate independently and linking to
-          Storiny implies agreeing to their terms and privacy policy.
+          Note that social media providers operate independent of us, and
+          linking your external account to Storiny implies agreeing to their
+          terms and privacy policy.
           <br />
           <br />
           To delete all your social media data, disconnect your social account

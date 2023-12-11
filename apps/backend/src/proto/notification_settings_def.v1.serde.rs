@@ -10,10 +10,7 @@ impl serde::Serialize for GetNotificationSettingsRequest {
         if !self.user_id.is_empty() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct(
-            "notification_settings_def.v1.GetNotificationSettingsRequest",
-            len,
-        )?;
+        let mut struct_ser = serializer.serialize_struct("notification_settings_def.v1.GetNotificationSettingsRequest", len)?;
         if !self.user_id.is_empty() {
             struct_ser.serialize_field("userId", &self.user_id)?;
         }
@@ -26,7 +23,10 @@ impl<'de> serde::Deserialize<'de> for GetNotificationSettingsRequest {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &["user_id", "userId"];
+        const FIELDS: &[&str] = &[
+            "user_id",
+            "userId",
+        ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -42,10 +42,7 @@ impl<'de> serde::Deserialize<'de> for GetNotificationSettingsRequest {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(
-                        &self,
-                        formatter: &mut std::fmt::Formatter<'_>,
-                    ) -> std::fmt::Result {
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -68,16 +65,12 @@ impl<'de> serde::Deserialize<'de> for GetNotificationSettingsRequest {
             type Value = GetNotificationSettingsRequest;
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                formatter
-                    .write_str("struct notification_settings_def.v1.GetNotificationSettingsRequest")
+                formatter.write_str("struct notification_settings_def.v1.GetNotificationSettingsRequest")
             }
 
-            fn visit_map<V>(
-                self,
-                mut map: V,
-            ) -> std::result::Result<GetNotificationSettingsRequest, V::Error>
-            where
-                V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetNotificationSettingsRequest, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
             {
                 let mut user_id__ = None;
                 while let Some(k) = map.next_key()? {
@@ -95,11 +88,7 @@ impl<'de> serde::Deserialize<'de> for GetNotificationSettingsRequest {
                 })
             }
         }
-        deserializer.deserialize_struct(
-            "notification_settings_def.v1.GetNotificationSettingsRequest",
-            FIELDS,
-            GeneratedVisitor,
-        )
+        deserializer.deserialize_struct("notification_settings_def.v1.GetNotificationSettingsRequest", FIELDS, GeneratedVisitor)
     }
 }
 impl serde::Serialize for GetNotificationSettingsResponse {
@@ -146,10 +135,7 @@ impl serde::Serialize for GetNotificationSettingsResponse {
         if self.mail_digest {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct(
-            "notification_settings_def.v1.GetNotificationSettingsResponse",
-            len,
-        )?;
+        let mut struct_ser = serializer.serialize_struct("notification_settings_def.v1.GetNotificationSettingsResponse", len)?;
         if self.features_and_updates {
             struct_ser.serialize_field("featuresAndUpdates", &self.features_and_updates)?;
         }
@@ -178,8 +164,7 @@ impl serde::Serialize for GetNotificationSettingsResponse {
             struct_ser.serialize_field("mailLoginActivity", &self.mail_login_activity)?;
         }
         if self.mail_features_and_updates {
-            struct_ser
-                .serialize_field("mailFeaturesAndUpdates", &self.mail_features_and_updates)?;
+            struct_ser.serialize_field("mailFeaturesAndUpdates", &self.mail_features_and_updates)?;
         }
         if self.mail_newsletters {
             struct_ser.serialize_field("mailNewsletters", &self.mail_newsletters)?;
@@ -244,10 +229,7 @@ impl<'de> serde::Deserialize<'de> for GetNotificationSettingsResponse {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(
-                        &self,
-                        formatter: &mut std::fmt::Formatter<'_>,
-                    ) -> std::fmt::Result {
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -257,27 +239,17 @@ impl<'de> serde::Deserialize<'de> for GetNotificationSettingsResponse {
                         E: serde::de::Error,
                     {
                         match value {
-                            "featuresAndUpdates" | "features_and_updates" => {
-                                Ok(GeneratedField::FeaturesAndUpdates)
-                            }
+                            "featuresAndUpdates" | "features_and_updates" => Ok(GeneratedField::FeaturesAndUpdates),
                             "stories" => Ok(GeneratedField::Stories),
                             "storyLikes" | "story_likes" => Ok(GeneratedField::StoryLikes),
                             "tags" => Ok(GeneratedField::Tags),
                             "comments" => Ok(GeneratedField::Comments),
                             "replies" => Ok(GeneratedField::Replies),
                             "newFollowers" | "new_followers" => Ok(GeneratedField::NewFollowers),
-                            "friendRequests" | "friend_requests" => {
-                                Ok(GeneratedField::FriendRequests)
-                            }
-                            "mailLoginActivity" | "mail_login_activity" => {
-                                Ok(GeneratedField::MailLoginActivity)
-                            }
-                            "mailFeaturesAndUpdates" | "mail_features_and_updates" => {
-                                Ok(GeneratedField::MailFeaturesAndUpdates)
-                            }
-                            "mailNewsletters" | "mail_newsletters" => {
-                                Ok(GeneratedField::MailNewsletters)
-                            }
+                            "friendRequests" | "friend_requests" => Ok(GeneratedField::FriendRequests),
+                            "mailLoginActivity" | "mail_login_activity" => Ok(GeneratedField::MailLoginActivity),
+                            "mailFeaturesAndUpdates" | "mail_features_and_updates" => Ok(GeneratedField::MailFeaturesAndUpdates),
+                            "mailNewsletters" | "mail_newsletters" => Ok(GeneratedField::MailNewsletters),
                             "mailDigest" | "mail_digest" => Ok(GeneratedField::MailDigest),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
@@ -291,17 +263,12 @@ impl<'de> serde::Deserialize<'de> for GetNotificationSettingsResponse {
             type Value = GetNotificationSettingsResponse;
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                formatter.write_str(
-                    "struct notification_settings_def.v1.GetNotificationSettingsResponse",
-                )
+                formatter.write_str("struct notification_settings_def.v1.GetNotificationSettingsResponse")
             }
 
-            fn visit_map<V>(
-                self,
-                mut map: V,
-            ) -> std::result::Result<GetNotificationSettingsResponse, V::Error>
-            where
-                V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetNotificationSettingsResponse, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
             {
                 let mut features_and_updates__ = None;
                 let mut stories__ = None;
@@ -319,9 +286,7 @@ impl<'de> serde::Deserialize<'de> for GetNotificationSettingsResponse {
                     match k {
                         GeneratedField::FeaturesAndUpdates => {
                             if features_and_updates__.is_some() {
-                                return Err(serde::de::Error::duplicate_field(
-                                    "featuresAndUpdates",
-                                ));
+                                return Err(serde::de::Error::duplicate_field("featuresAndUpdates"));
                             }
                             features_and_updates__ = Some(map.next_value()?);
                         }
@@ -375,9 +340,7 @@ impl<'de> serde::Deserialize<'de> for GetNotificationSettingsResponse {
                         }
                         GeneratedField::MailFeaturesAndUpdates => {
                             if mail_features_and_updates__.is_some() {
-                                return Err(serde::de::Error::duplicate_field(
-                                    "mailFeaturesAndUpdates",
-                                ));
+                                return Err(serde::de::Error::duplicate_field("mailFeaturesAndUpdates"));
                             }
                             mail_features_and_updates__ = Some(map.next_value()?);
                         }
@@ -411,10 +374,6 @@ impl<'de> serde::Deserialize<'de> for GetNotificationSettingsResponse {
                 })
             }
         }
-        deserializer.deserialize_struct(
-            "notification_settings_def.v1.GetNotificationSettingsResponse",
-            FIELDS,
-            GeneratedVisitor,
-        )
+        deserializer.deserialize_struct("notification_settings_def.v1.GetNotificationSettingsResponse", FIELDS, GeneratedVisitor)
     }
 }

@@ -84,7 +84,7 @@ const ConnectionButton = ({
       as={NextLink}
       auto_size
       check_auth
-      href={`/api/oauth/${PROVIDER_KEY_MAP[provider]}`}
+      href={`${process.env.NEXT_PUBLIC_API_URL}/oauth/${PROVIDER_KEY_MAP[provider]}`}
     >
       Connect
     </Button>

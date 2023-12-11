@@ -86,7 +86,7 @@ const preferences_schema = z.object({
       z.literal("lora"),
       z.literal("erode"),
       z.literal("recia"),
-      z.literal("merriweather")
+      z.literal("source-serif")
     ])
     .catch("satoshi"),
   code_font: /*                      */ z

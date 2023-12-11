@@ -7,8 +7,6 @@ import { NextMiddleware, NextResponse } from "next/server";
  */
 export const middleware: NextMiddleware = (request) => {
   switch (request.nextUrl.pathname) {
-    case "/me":
-      return NextResponse.redirect(new URL("/me/account/profile", request.url));
     case "/login":
       return NextResponse.redirect(new URL("/auth?segment=login", request.url));
     case "/signup":
@@ -43,7 +41,6 @@ export const middleware: NextMiddleware = (request) => {
  */
 export const config = {
   matcher: [
-    "/me",
     "/login",
     "/signup",
     "/sign-up",

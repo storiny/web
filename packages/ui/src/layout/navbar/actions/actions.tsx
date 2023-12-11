@@ -163,11 +163,7 @@ const LoggedInMenu = ({
     <ThemeToggleItem />
     {/* TODO(future): <MenuItem decorator={<ExplicitIcon />}>Safe mode</MenuItem>*/}
     <Separator />
-    <MenuItemWithLink
-      check_auth
-      decorator={<SettingsIcon />}
-      href={"/me/account/profile"}
-    >
+    <MenuItemWithLink check_auth decorator={<SettingsIcon />} href={"/me"}>
       Settings
     </MenuItemWithLink>
     <MenuItem decorator={<QuestionMarkIcon />}>Help</MenuItem>

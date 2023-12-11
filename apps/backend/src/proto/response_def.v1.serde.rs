@@ -10,8 +10,7 @@ impl serde::Serialize for GetResponsesInfoRequest {
         if !self.user_id.is_empty() {
             len += 1;
         }
-        let mut struct_ser =
-            serializer.serialize_struct("response_def.v1.GetResponsesInfoRequest", len)?;
+        let mut struct_ser = serializer.serialize_struct("response_def.v1.GetResponsesInfoRequest", len)?;
         if !self.user_id.is_empty() {
             struct_ser.serialize_field("userId", &self.user_id)?;
         }
@@ -24,7 +23,10 @@ impl<'de> serde::Deserialize<'de> for GetResponsesInfoRequest {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &["user_id", "userId"];
+        const FIELDS: &[&str] = &[
+            "user_id",
+            "userId",
+        ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -40,10 +42,7 @@ impl<'de> serde::Deserialize<'de> for GetResponsesInfoRequest {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(
-                        &self,
-                        formatter: &mut std::fmt::Formatter<'_>,
-                    ) -> std::fmt::Result {
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -69,12 +68,9 @@ impl<'de> serde::Deserialize<'de> for GetResponsesInfoRequest {
                 formatter.write_str("struct response_def.v1.GetResponsesInfoRequest")
             }
 
-            fn visit_map<V>(
-                self,
-                mut map: V,
-            ) -> std::result::Result<GetResponsesInfoRequest, V::Error>
-            where
-                V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetResponsesInfoRequest, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
             {
                 let mut user_id__ = None;
                 while let Some(k) = map.next_key()? {
@@ -92,11 +88,7 @@ impl<'de> serde::Deserialize<'de> for GetResponsesInfoRequest {
                 })
             }
         }
-        deserializer.deserialize_struct(
-            "response_def.v1.GetResponsesInfoRequest",
-            FIELDS,
-            GeneratedVisitor,
-        )
+        deserializer.deserialize_struct("response_def.v1.GetResponsesInfoRequest", FIELDS, GeneratedVisitor)
     }
 }
 impl serde::Serialize for GetResponsesInfoResponse {
@@ -113,8 +105,7 @@ impl serde::Serialize for GetResponsesInfoResponse {
         if self.reply_count != 0 {
             len += 1;
         }
-        let mut struct_ser =
-            serializer.serialize_struct("response_def.v1.GetResponsesInfoResponse", len)?;
+        let mut struct_ser = serializer.serialize_struct("response_def.v1.GetResponsesInfoResponse", len)?;
         if self.comment_count != 0 {
             struct_ser.serialize_field("commentCount", &self.comment_count)?;
         }
@@ -130,7 +121,12 @@ impl<'de> serde::Deserialize<'de> for GetResponsesInfoResponse {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &["comment_count", "commentCount", "reply_count", "replyCount"];
+        const FIELDS: &[&str] = &[
+            "comment_count",
+            "commentCount",
+            "reply_count",
+            "replyCount",
+        ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -147,10 +143,7 @@ impl<'de> serde::Deserialize<'de> for GetResponsesInfoResponse {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(
-                        &self,
-                        formatter: &mut std::fmt::Formatter<'_>,
-                    ) -> std::fmt::Result {
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -177,12 +170,9 @@ impl<'de> serde::Deserialize<'de> for GetResponsesInfoResponse {
                 formatter.write_str("struct response_def.v1.GetResponsesInfoResponse")
             }
 
-            fn visit_map<V>(
-                self,
-                mut map: V,
-            ) -> std::result::Result<GetResponsesInfoResponse, V::Error>
-            where
-                V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetResponsesInfoResponse, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
             {
                 let mut comment_count__ = None;
                 let mut reply_count__ = None;
@@ -192,19 +182,17 @@ impl<'de> serde::Deserialize<'de> for GetResponsesInfoResponse {
                             if comment_count__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("commentCount"));
                             }
-                            comment_count__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
-                                    .0,
-                            );
+                            comment_count__ = 
+                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
+                            ;
                         }
                         GeneratedField::ReplyCount => {
                             if reply_count__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("replyCount"));
                             }
-                            reply_count__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
-                                    .0,
-                            );
+                            reply_count__ = 
+                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
+                            ;
                         }
                     }
                 }
@@ -214,11 +202,7 @@ impl<'de> serde::Deserialize<'de> for GetResponsesInfoResponse {
                 })
             }
         }
-        deserializer.deserialize_struct(
-            "response_def.v1.GetResponsesInfoResponse",
-            FIELDS,
-            GeneratedVisitor,
-        )
+        deserializer.deserialize_struct("response_def.v1.GetResponsesInfoResponse", FIELDS, GeneratedVisitor)
     }
 }
 impl serde::Serialize for GetStoryResponsesInfoRequest {
@@ -235,8 +219,7 @@ impl serde::Serialize for GetStoryResponsesInfoRequest {
         if !self.story_id.is_empty() {
             len += 1;
         }
-        let mut struct_ser =
-            serializer.serialize_struct("response_def.v1.GetStoryResponsesInfoRequest", len)?;
+        let mut struct_ser = serializer.serialize_struct("response_def.v1.GetStoryResponsesInfoRequest", len)?;
         if !self.user_id.is_empty() {
             struct_ser.serialize_field("userId", &self.user_id)?;
         }
@@ -252,7 +235,12 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponsesInfoRequest {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &["user_id", "userId", "story_id", "storyId"];
+        const FIELDS: &[&str] = &[
+            "user_id",
+            "userId",
+            "story_id",
+            "storyId",
+        ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -269,10 +257,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponsesInfoRequest {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(
-                        &self,
-                        formatter: &mut std::fmt::Formatter<'_>,
-                    ) -> std::fmt::Result {
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -299,12 +284,9 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponsesInfoRequest {
                 formatter.write_str("struct response_def.v1.GetStoryResponsesInfoRequest")
             }
 
-            fn visit_map<V>(
-                self,
-                mut map: V,
-            ) -> std::result::Result<GetStoryResponsesInfoRequest, V::Error>
-            where
-                V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetStoryResponsesInfoRequest, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
             {
                 let mut user_id__ = None;
                 let mut story_id__ = None;
@@ -330,11 +312,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponsesInfoRequest {
                 })
             }
         }
-        deserializer.deserialize_struct(
-            "response_def.v1.GetStoryResponsesInfoRequest",
-            FIELDS,
-            GeneratedVisitor,
-        )
+        deserializer.deserialize_struct("response_def.v1.GetStoryResponsesInfoRequest", FIELDS, GeneratedVisitor)
     }
 }
 impl serde::Serialize for GetStoryResponsesInfoResponse {
@@ -351,8 +329,7 @@ impl serde::Serialize for GetStoryResponsesInfoResponse {
         if self.hidden_count != 0 {
             len += 1;
         }
-        let mut struct_ser =
-            serializer.serialize_struct("response_def.v1.GetStoryResponsesInfoResponse", len)?;
+        let mut struct_ser = serializer.serialize_struct("response_def.v1.GetStoryResponsesInfoResponse", len)?;
         if self.total_count != 0 {
             struct_ser.serialize_field("totalCount", &self.total_count)?;
         }
@@ -368,7 +345,12 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponsesInfoResponse {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &["total_count", "totalCount", "hidden_count", "hiddenCount"];
+        const FIELDS: &[&str] = &[
+            "total_count",
+            "totalCount",
+            "hidden_count",
+            "hiddenCount",
+        ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -385,10 +367,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponsesInfoResponse {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(
-                        &self,
-                        formatter: &mut std::fmt::Formatter<'_>,
-                    ) -> std::fmt::Result {
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -415,12 +394,9 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponsesInfoResponse {
                 formatter.write_str("struct response_def.v1.GetStoryResponsesInfoResponse")
             }
 
-            fn visit_map<V>(
-                self,
-                mut map: V,
-            ) -> std::result::Result<GetStoryResponsesInfoResponse, V::Error>
-            where
-                V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetStoryResponsesInfoResponse, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
             {
                 let mut total_count__ = None;
                 let mut hidden_count__ = None;
@@ -430,19 +406,17 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponsesInfoResponse {
                             if total_count__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("totalCount"));
                             }
-                            total_count__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
-                                    .0,
-                            );
+                            total_count__ = 
+                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
+                            ;
                         }
                         GeneratedField::HiddenCount => {
                             if hidden_count__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("hiddenCount"));
                             }
-                            hidden_count__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
-                                    .0,
-                            );
+                            hidden_count__ = 
+                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
+                            ;
                         }
                     }
                 }
@@ -452,10 +426,6 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponsesInfoResponse {
                 })
             }
         }
-        deserializer.deserialize_struct(
-            "response_def.v1.GetStoryResponsesInfoResponse",
-            FIELDS,
-            GeneratedVisitor,
-        )
+        deserializer.deserialize_struct("response_def.v1.GetStoryResponsesInfoResponse", FIELDS, GeneratedVisitor)
     }
 }

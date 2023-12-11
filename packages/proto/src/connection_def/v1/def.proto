@@ -4,19 +4,18 @@ package connection_def.v1;
 
 enum Provider {
   PROVIDER_UNSPECIFIED /**/ = 0;
-  PROVIDER_TWITTER /*    */ = 1;
-  PROVIDER_GITHUB /*     */ = 2;
-  PROVIDER_TWITCH /*     */ = 3;
-  PROVIDER_SPOTIFY /*    */ = 4;
-  PROVIDER_REDDIT /*     */ = 5;
-  PROVIDER_FACEBOOK /*   */ = 6;
-  PROVIDER_INSTAGRAM /*  */ = 7;
-  PROVIDER_DISCORD /*    */ = 8;
-  PROVIDER_YOUTUBE /*    */ = 9;
-  PROVIDER_LINKED_IN /*  */ = 10;
-  PROVIDER_FIGMA /*      */ = 11;
-  PROVIDER_DRIBBBLE /*   */ = 12;
-  PROVIDER_SNAPCHAT /*   */ = 13;
+  PROVIDER_GITHUB /*     */ = 1;
+  PROVIDER_TWITCH /*     */ = 2;
+  PROVIDER_SPOTIFY /*    */ = 3;
+  PROVIDER_REDDIT /*     */ = 4;
+  PROVIDER_FACEBOOK /*   */ = 5;
+  PROVIDER_INSTAGRAM /*  */ = 6;
+  PROVIDER_DISCORD /*    */ = 7;
+  PROVIDER_YOUTUBE /*    */ = 8;
+  PROVIDER_LINKED_IN /*  */ = 9;
+  PROVIDER_FIGMA /*      */ = 10;
+  PROVIDER_DRIBBBLE /*   */ = 11;
+  PROVIDER_SNAPCHAT /*   */ = 12;
 }
 
 message Connection {

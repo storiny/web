@@ -38,7 +38,10 @@ const RestoreAction = ({
     (is_draft ? recover_draft : recover_story)({ id: story.id })
       .unwrap()
       .then(() => {
-        toast(`${is_draft ? "Draft" : "Story"} recovered`, "success");
+        toast(
+          is_draft ? "Draft recovered" : "Story moved to drafts",
+          "success"
+        );
         dispatch(get_drafts_api.util.resetApiState());
       })
       .catch((error) =>

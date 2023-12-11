@@ -46,7 +46,8 @@
 }
 
 .story-splash {
-  width: 64px;
+  width: 100%;
+  max-width: 64px;
   min-width: 64px;
   border: 1px solid var(--divider);
   border-radius: var(--radius-xs);

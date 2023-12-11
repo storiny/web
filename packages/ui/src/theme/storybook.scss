@@ -96,21 +96,21 @@
   src: url("../static/fonts/recia/recia-bold.woff2") format("woff2");
 }
 
-// Merriweather
+// Source Serif
 
 @font-face {
-  font-family: merriweather;
+  font-family: source-serif;
   font-weight: 400;
   font-style: normal;
-  src: url("../static/fonts/merriweather/merriweather-regular.woff2")
+  src: url("../static/fonts/source-serif/source-serif-regular.woff2")
     format("woff2");
 }
 
 @font-face {
-  font-family: merriweather;
+  font-family: source-serif;
   font-weight: 700;
   font-style: normal;
-  src: url("../static/fonts/merriweather/merriweather-bold.woff2")
+  src: url("../static/fonts/source-serif/source-serif-bold.woff2")
     format("woff2");
 }
 
@@ -172,7 +172,7 @@
   --font-lora: lora;
   --font-erode: erode;
   --font-recia: recia;
-  --font-merriweather: merriweather;
+  --font-source-serif: source-serif;
   --font-plex-mono: plex-mono;
   --font-plex-mono-lig: plex-mono-ligatures;
   --font-source-code-pro: source-code-pro;

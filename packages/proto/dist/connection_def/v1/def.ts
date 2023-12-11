@@ -5,19 +5,18 @@ export const protobufPackage = "connection_def.v1";
 
 export const Provider = {
   UNSPECIFIED: 0,
-  TWITTER: 1,
-  GITHUB: 2,
-  TWITCH: 3,
-  SPOTIFY: 4,
-  REDDIT: 5,
-  FACEBOOK: 6,
-  INSTAGRAM: 7,
-  DISCORD: 8,
-  YOUTUBE: 9,
-  LINKED_IN: 10,
-  FIGMA: 11,
-  DRIBBBLE: 12,
-  SNAPCHAT: 13,
+  GITHUB: 1,
+  TWITCH: 2,
+  SPOTIFY: 3,
+  REDDIT: 4,
+  FACEBOOK: 5,
+  INSTAGRAM: 6,
+  DISCORD: 7,
+  YOUTUBE: 8,
+  LINKED_IN: 9,
+  FIGMA: 10,
+  DRIBBBLE: 11,
+  SNAPCHAT: 12,
   UNRECOGNIZED: -1,
 } as const;
 
@@ -29,42 +28,39 @@ export function providerFromJSON(object: any): Provider {
     case "PROVIDER_UNSPECIFIED":
       return Provider.UNSPECIFIED;
     case 1:
-    case "PROVIDER_TWITTER":
-      return Provider.TWITTER;
-    case 2:
     case "PROVIDER_GITHUB":
       return Provider.GITHUB;
-    case 3:
+    case 2:
     case "PROVIDER_TWITCH":
       return Provider.TWITCH;
-    case 4:
+    case 3:
     case "PROVIDER_SPOTIFY":
       return Provider.SPOTIFY;
-    case 5:
+    case 4:
     case "PROVIDER_REDDIT":
       return Provider.REDDIT;
-    case 6:
+    case 5:
     case "PROVIDER_FACEBOOK":
       return Provider.FACEBOOK;
-    case 7:
+    case 6:
     case "PROVIDER_INSTAGRAM":
       return Provider.INSTAGRAM;
-    case 8:
+    case 7:
     case "PROVIDER_DISCORD":
       return Provider.DISCORD;
-    case 9:
+    case 8:
     case "PROVIDER_YOUTUBE":
       return Provider.YOUTUBE;
-    case 10:
+    case 9:
     case "PROVIDER_LINKED_IN":
       return Provider.LINKED_IN;
-    case 11:
+    case 10:
     case "PROVIDER_FIGMA":
       return Provider.FIGMA;
-    case 12:
+    case 11:
     case "PROVIDER_DRIBBBLE":
       return Provider.DRIBBBLE;
-    case 13:
+    case 12:
     case "PROVIDER_SNAPCHAT":
       return Provider.SNAPCHAT;
     case -1:
@@ -78,8 +74,6 @@ export function providerToJSON(object: Provider): string {
   switch (object) {
     case Provider.UNSPECIFIED:
       return "PROVIDER_UNSPECIFIED";
-    case Provider.TWITTER:
-      return "PROVIDER_TWITTER";
     case Provider.GITHUB:
       return "PROVIDER_GITHUB";
     case Provider.TWITCH:

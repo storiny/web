@@ -17,10 +17,12 @@ impl<'de> serde::Deserialize<'de> for Placeholder {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &[];
+        const FIELDS: &[&str] = &[
+        ];
 
         #[allow(clippy::enum_variant_names)]
-        enum GeneratedField {}
+        enum GeneratedField {
+        }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
             where
@@ -31,10 +33,7 @@ impl<'de> serde::Deserialize<'de> for Placeholder {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(
-                        &self,
-                        formatter: &mut std::fmt::Formatter<'_>,
-                    ) -> std::fmt::Result {
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -43,7 +42,7 @@ impl<'de> serde::Deserialize<'de> for Placeholder {
                     where
                         E: serde::de::Error,
                     {
-                        Err(serde::de::Error::unknown_field(value, FIELDS))
+                            Err(serde::de::Error::unknown_field(value, FIELDS))
                     }
                 }
                 deserializer.deserialize_identifier(GeneratedVisitor)
@@ -58,13 +57,14 @@ impl<'de> serde::Deserialize<'de> for Placeholder {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<Placeholder, V::Error>
-            where
-                V: serde::de::MapAccess<'de>,
+                where
+                    V: serde::de::MapAccess<'de>,
             {
                 while map.next_key::<GeneratedField>()?.is_some() {
                     let _ = map.next_value::<serde::de::IgnoredAny>()?;
                 }
-                Ok(Placeholder {})
+                Ok(Placeholder {
+                })
             }
         }
         deserializer.deserialize_struct("api_service.v1.Placeholder", FIELDS, GeneratedVisitor)

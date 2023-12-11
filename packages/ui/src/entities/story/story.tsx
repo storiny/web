@@ -485,7 +485,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
       {!is_mobile && (
         <>
           <Grow />
-          <div className={clsx(css["flex"], styles.actions)}>
+          <div className={clsx(css["flex"])}>
             {show_interactive_buttons && (
               <React.Fragment>
                 {show_unlike_button && is_liked ? (

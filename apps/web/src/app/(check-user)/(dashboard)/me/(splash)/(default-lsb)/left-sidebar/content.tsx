@@ -90,16 +90,17 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
   const [results, set_results] = React.useState<Group[]>([]);
   const segments = use_selected_layout_segments();
   const user = use_app_selector(select_user)!;
-  // TODO: Check if the segments are computed correctly
+
   const current_segment = React.useMemo(() => {
     const next_segments = segments;
-    next_segments.shift();
 
     // Remove (default-rsb) layout chunk
     const index = next_segments.indexOf("(default-rsb)");
+
     if (index > -1) {
       next_segments.splice(index, 1);
     }
+
     return next_segments.join("/");
   }, [segments]);
 

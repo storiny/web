@@ -20,9 +20,9 @@ const EmbedModalContent = (): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
       <Typography className={css["t-minor"]} level={"body2"}>
-        You can embed content from sites like Twitter and YouTube. If embedding
-        from a specific site is not supported, a website preview will be
-        displayed instead.{" "}
+        You can embed content from external sites directly inside your story. If
+        embeds from your provided site are not supported, a website preview will
+        be displayed instead.{" "}
         <Link
           // TODO(future): Get rid of notion
           href={

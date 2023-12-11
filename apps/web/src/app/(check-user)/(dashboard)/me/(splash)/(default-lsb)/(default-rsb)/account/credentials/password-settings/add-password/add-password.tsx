@@ -91,10 +91,12 @@ const AddPasswordModal = (): React.ReactElement => {
           <Spacer orientation={"vertical"} size={3} />
           <Link
             className={css["t-center"]}
-            event={(event): void => event.preventDefault()}
             href={"#"}
             level={"body2"}
-            onClick={(): void => set_screen("verification-code")}
+            onClick={(event): void => {
+              event.preventDefault();
+              set_screen("verification-code");
+            }}
             underline={"always"}
           >
             Change verification code
@@ -175,7 +177,6 @@ const Component = ({ on_submit }: AddPasswordProps): React.ReactElement => {
         check_auth
         className={css["fit-w"]}
         onClick={open_modal}
-        variant={"hollow"}
       >
         Add a password
       </Button>

@@ -10,10 +10,7 @@ impl serde::Serialize for GetCredentialSettingsRequest {
         if !self.user_id.is_empty() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct(
-            "credential_settings_def.v1.GetCredentialSettingsRequest",
-            len,
-        )?;
+        let mut struct_ser = serializer.serialize_struct("credential_settings_def.v1.GetCredentialSettingsRequest", len)?;
         if !self.user_id.is_empty() {
             struct_ser.serialize_field("userId", &self.user_id)?;
         }
@@ -26,7 +23,10 @@ impl<'de> serde::Deserialize<'de> for GetCredentialSettingsRequest {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &["user_id", "userId"];
+        const FIELDS: &[&str] = &[
+            "user_id",
+            "userId",
+        ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -42,10 +42,7 @@ impl<'de> serde::Deserialize<'de> for GetCredentialSettingsRequest {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(
-                        &self,
-                        formatter: &mut std::fmt::Formatter<'_>,
-                    ) -> std::fmt::Result {
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -68,16 +65,12 @@ impl<'de> serde::Deserialize<'de> for GetCredentialSettingsRequest {
             type Value = GetCredentialSettingsRequest;
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                formatter
-                    .write_str("struct credential_settings_def.v1.GetCredentialSettingsRequest")
+                formatter.write_str("struct credential_settings_def.v1.GetCredentialSettingsRequest")
             }
 
-            fn visit_map<V>(
-                self,
-                mut map: V,
-            ) -> std::result::Result<GetCredentialSettingsRequest, V::Error>
-            where
-                V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetCredentialSettingsRequest, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
             {
                 let mut user_id__ = None;
                 while let Some(k) = map.next_key()? {
@@ -95,11 +88,7 @@ impl<'de> serde::Deserialize<'de> for GetCredentialSettingsRequest {
                 })
             }
         }
-        deserializer.deserialize_struct(
-            "credential_settings_def.v1.GetCredentialSettingsRequest",
-            FIELDS,
-            GeneratedVisitor,
-        )
+        deserializer.deserialize_struct("credential_settings_def.v1.GetCredentialSettingsRequest", FIELDS, GeneratedVisitor)
     }
 }
 impl serde::Serialize for GetCredentialSettingsResponse {
@@ -122,10 +111,7 @@ impl serde::Serialize for GetCredentialSettingsResponse {
         if self.login_google_id.is_some() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct(
-            "credential_settings_def.v1.GetCredentialSettingsResponse",
-            len,
-        )?;
+        let mut struct_ser = serializer.serialize_struct("credential_settings_def.v1.GetCredentialSettingsResponse", len)?;
         if self.has_password {
             struct_ser.serialize_field("hasPassword", &self.has_password)?;
         }
@@ -175,10 +161,7 @@ impl<'de> serde::Deserialize<'de> for GetCredentialSettingsResponse {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(
-                        &self,
-                        formatter: &mut std::fmt::Formatter<'_>,
-                    ) -> std::fmt::Result {
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -191,9 +174,7 @@ impl<'de> serde::Deserialize<'de> for GetCredentialSettingsResponse {
                             "hasPassword" | "has_password" => Ok(GeneratedField::HasPassword),
                             "mfaEnabled" | "mfa_enabled" => Ok(GeneratedField::MfaEnabled),
                             "loginAppleId" | "login_apple_id" => Ok(GeneratedField::LoginAppleId),
-                            "loginGoogleId" | "login_google_id" => {
-                                Ok(GeneratedField::LoginGoogleId)
-                            }
+                            "loginGoogleId" | "login_google_id" => Ok(GeneratedField::LoginGoogleId),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -206,16 +187,12 @@ impl<'de> serde::Deserialize<'de> for GetCredentialSettingsResponse {
             type Value = GetCredentialSettingsResponse;
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                formatter
-                    .write_str("struct credential_settings_def.v1.GetCredentialSettingsResponse")
+                formatter.write_str("struct credential_settings_def.v1.GetCredentialSettingsResponse")
             }
 
-            fn visit_map<V>(
-                self,
-                mut map: V,
-            ) -> std::result::Result<GetCredentialSettingsResponse, V::Error>
-            where
-                V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetCredentialSettingsResponse, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
             {
                 let mut has_password__ = None;
                 let mut mfa_enabled__ = None;
@@ -257,10 +234,6 @@ impl<'de> serde::Deserialize<'de> for GetCredentialSettingsResponse {
                 })
             }
         }
-        deserializer.deserialize_struct(
-            "credential_settings_def.v1.GetCredentialSettingsResponse",
-            FIELDS,
-            GeneratedVisitor,
-        )
+        deserializer.deserialize_struct("credential_settings_def.v1.GetCredentialSettingsResponse", FIELDS, GeneratedVisitor)
     }
 }

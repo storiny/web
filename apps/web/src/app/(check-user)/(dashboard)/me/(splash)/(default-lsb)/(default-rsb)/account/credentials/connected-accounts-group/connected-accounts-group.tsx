@@ -1,4 +1,5 @@
 import { clsx } from "clsx";
+import NextLink from "next/link";
 import React from "react";
 
 import Button from "~/components/button";
@@ -20,7 +21,7 @@ const AppleIcon = (): React.ReactElement => (
   <svg fill="none" height={32} width={32} xmlns="http://www.w3.org/2000/svg">
     <path
       d="M28.37 24.57a16.68 16.68 0 0 1-1.64 2.96 15.06 15.06 0 0 1-2.13 2.57 4.12 4.12 0 0 1-2.73 1.2c-.7 0-1.54-.2-2.52-.6-.98-.4-1.89-.6-2.71-.6-.87 0-1.8.2-2.8.6-1 .4-1.8.61-2.4.63-.94.04-1.87-.37-2.8-1.23-.6-.52-1.33-1.4-2.22-2.66a18.38 18.38 0 0 1-2.35-4.67 17.08 17.08 0 0 1-.99-5.56c0-2.05.45-3.83 1.34-5.31A7.82 7.82 0 0 1 10.99 8c.74 0 1.71.24 2.92.69 1.2.45 1.97.68 2.31.68.26 0 1.12-.27 2.57-.8a8.5 8.5 0 0 1 3.5-.62c2.57.2 4.51 1.22 5.8 3.05-2.3 1.4-3.45 3.36-3.42 5.87a6.47 6.47 0 0 0 2.12 4.88c.63.6 1.34 1.06 2.13 1.4-.18.49-.36.96-.55 1.42ZM22.46 1.28c0 1.53-.56 2.97-1.68 4.3-1.35 1.57-2.98 2.48-4.75 2.33a4.78 4.78 0 0 1-.03-.58c0-1.47.64-3.05 1.78-4.33.57-.66 1.29-1.2 2.16-1.63.88-.43 1.7-.66 2.48-.7.03.2.04.4.04.61Z"
-      fill="var(--inverted-_negative)"
+      fill="var(--inverted-negative)"
     />
   </svg>
 );
@@ -89,7 +90,6 @@ const Account = ({
 // Apple account
 
 const AppleAccount = ({
-  has_password,
   login_apple_id
 }: Pick<
   ConnectedAccountsGroupProps,
@@ -111,7 +111,9 @@ const AppleAccount = ({
           <Button
             auto_size
             check_auth
-            disabled={Boolean(login_apple_id) && !has_password}
+            // TODO: Uncomment when we support Apple as a login provider.
+            disabled
+            // Disabled={Boolean(login_apple_id) && !has_password}
             variant={"hollow"}
           >
             Connect
@@ -148,9 +150,11 @@ const GoogleAccount = ({
           />
         ) : (
           <Button
+            as={NextLink}
             auto_size
             check_auth
             disabled={Boolean(login_google_id) && !has_password}
+            href={`${process.env.NEXT_PUBLIC_API_URL}/v1/auth/external/google`}
             variant={"hollow"}
           >
             Connect
@@ -172,9 +176,14 @@ const CredentialsConnectedAccountsGroup = (
     <DashboardGroup>
       <TitleBlock title={"Connected accounts"}>
         These are the social media accounts that you linked to your Storiny
-        account for logging in. To revoke access to any of these accounts, you
-        need to add a password to your Storiny account, so that you don&apos;t
-        lose access to it.
+        account for logging in.
+        {!has_password && (
+          <>
+            To revoke access to any of these accounts, you need to add a
+            password to your Storiny account, so that you don&apos;t lose access
+            to it.
+          </>
+        )}
       </TitleBlock>
       <Spacer orientation={"vertical"} size={4.5} />
       <div className={css["flex-col"]}>

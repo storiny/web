@@ -23,6 +23,8 @@ SELECT u.id,
 				   u.following_list_visibility = 2
 					   AND "u->is_friend".transmitter_id IS NOT NULL
 				   )
+				   -- Self
+				   OR u.id = $2
 			   )
 			   THEN u.following_count
 	   END                                                           AS "following_count",
@@ -36,6 +38,8 @@ SELECT u.id,
 				   u.friend_list_visibility = 2
 					   AND "u->is_friend".transmitter_id IS NOT NULL
 				   )
+				   -- Self
+				   OR u.id = $2
 			   )
 			   THEN u.friend_count
 	   END                                                           AS "friend_count",
@@ -59,6 +63,8 @@ SELECT u.id,
 				   OR ("u->status".visibility = 2 AND "u->is_following".follower_id IS NOT NULL)
 				   -- Friends
 				   OR ("u->status".visibility = 3 AND "u->is_friend".transmitter_id IS NOT NULL)
+				   -- Self
+				   OR u.id = $2
 			   )
 			   THEN TRUE
 		   ELSE FALSE
