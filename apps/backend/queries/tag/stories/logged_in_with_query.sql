@@ -57,19 +57,22 @@ WITH explore_stories AS (WITH search_query AS (SELECT PLAINTO_TSQUERY('english',
 															 AND accepted_at IS NOT NULL
 														  )
 												   )
-												-- Filter out stories from blocked and muted users
-												AND u.id NOT IN (SELECT b.blocked_id
-																 FROM
-																	 blocks b
-																 WHERE
-																	 b.blocker_id = $5
-																 UNION
-																 SELECT m.muted_id
-																 FROM
-																	 mutes m
-																 WHERE
-																	 m.muter_id = $5
-																)
+												-- Filter out stories from blocked users
+												AND NOT EXISTS (SELECT 1
+																FROM
+																	blocks b
+																WHERE
+																	  b.blocker_id = $5
+																  AND b.blocked_id = u.id
+															   )
+												-- Filter out stories from muted users
+												AND NOT EXISTS (SELECT 1
+																FROM
+																	mutes m
+																WHERE
+																	  m.muter_id = $5
+																  AND m.muted_id = u.id
+															   )
 								 --
 								 -- Join the main story tag
 								 INNER JOIN (story_tags AS "s->main_tag"

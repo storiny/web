@@ -192,6 +192,7 @@ BEGIN
 		WHERE
 			 notifier_id = NEW.id
 		  OR entity_id = NEW.id;
+		--
 		DELETE
 		FROM
 			notification_outs

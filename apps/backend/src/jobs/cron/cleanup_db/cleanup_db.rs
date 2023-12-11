@@ -34,6 +34,7 @@ impl Job for DatabaseCleanupJob {
 /// Cleans the `users` table based on the conditions specified in [cleanup_db].
 ///
 /// * `db_pool` - The Postgres connection pool.
+#[tracing::instrument(skip_all, err)]
 async fn clean_users(db_pool: &Pool<Postgres>) -> Result<(), JobError> {
     trace!("attempting to clean the `users` table...");
 
@@ -61,6 +62,7 @@ WHERE
 /// Cleans the `stories` table based on the conditions specified in [cleanup_db].
 ///
 /// * `db_pool` - The Postgres connection pool.
+#[tracing::instrument(skip_all, err)]
 async fn clean_stories(db_pool: &Pool<Postgres>) -> Result<(), JobError> {
     trace!("attempting to clean the `stories` table...");
 
@@ -69,7 +71,7 @@ async fn clean_stories(db_pool: &Pool<Postgres>) -> Result<(), JobError> {
 DELETE
 FROM
     stories s
-    USING users u
+USING users u
 WHERE
       s.user_id = u.id
   AND s.deleted_at IS NOT NULL
@@ -95,6 +97,7 @@ WHERE
 /// Cleans the `tokens` table based on the conditions specified in [cleanup_db].
 ///
 /// * `db_pool` - The Postgres connection pool.
+#[tracing::instrument(skip_all, err)]
 async fn clean_tokens(db_pool: &Pool<Postgres>) -> Result<(), JobError> {
     trace!("attempting to clean the `tokens` table...");
 
@@ -120,6 +123,7 @@ WHERE expires_at < NOW()
 /// Cleans the `user_statuses` table based on the conditions specified in [cleanup_db].
 ///
 /// * `db_pool` - The Postgres connection pool.
+#[tracing::instrument(skip_all, err)]
 async fn clean_user_statuses(db_pool: &Pool<Postgres>) -> Result<(), JobError> {
     trace!("attempting to clean the `user_statuses` table...");
 
@@ -144,6 +148,36 @@ WHERE
     Ok(())
 }
 
+/// Cleans the `notifications` table based on the conditions specified in [cleanup_db].
+///
+/// * `db_pool` - The Postgres connection pool.
+#[tracing::instrument(skip_all, err)]
+async fn clean_notifications(db_pool: &Pool<Postgres>) -> Result<(), JobError> {
+    trace!("attempting to clean the `notifications` table...");
+
+    let delete_notifications_result = sqlx::query(
+        r#"
+DELETE FROM notifications n
+WHERE NOT EXISTS (
+    SELECT 1 FROM notification_outs nu
+    WHERE nu.notification_id = n.id
+    LIMIT 1
+)
+"#,
+    )
+    .execute(db_pool)
+    .await
+    .map_err(|err| Box::from(err.to_string()))
+    .map_err(|err| JobError::Failed(err))?;
+
+    debug!(
+        "deleted {} rows from the `notifications` table",
+        delete_notifications_result.rows_affected()
+    );
+
+    Ok(())
+}
+
 /// Deletes stale rows from the database based on the following procedure:
 ///
 /// - Users who have been marked as deleted for more than 30 days will be permanently deleted. All
@@ -156,6 +190,9 @@ WHERE
 ///
 /// - Expired tokens and user statuses (based on the `expires_at` column) will be permanently
 ///   deleted.
+///
+/// - Notifications that do not have any related row in `notification_outs` table will be
+///   permanently deleted.
 #[tracing::instrument(name = "JOB cleanup_db", skip_all, ret, err)]
 pub async fn cleanup_db(_: DatabaseCleanupJob, ctx: JobContext) -> Result<(), JobError> {
     info!("starting database cleanup");
@@ -173,6 +210,9 @@ pub async fn cleanup_db(_: DatabaseCleanupJob, ctx: JobContext) -> Result<(), Jo
         clean_user_statuses(db_pool),
     )
     .await?;
+
+    // The `notifications` table must be cleaned at the end.
+    clean_notifications(db_pool).await?;
 
     info!("finished database cleanup");
 
@@ -631,6 +671,79 @@ WHERE user_id = (SELECT user_id FROM selected_user_status)
 
         // Exactly one row should be present in the database.
         let result = sqlx::query(r#"SELECT 1 FROM user_statuses"#)
+            .fetch_all(&mut *conn)
+            .await?;
+
+        assert_eq!(result.len(), 1);
+
+        Ok(())
+    }
+
+    // Notifications
+
+    #[sqlx::test(fixtures("notifications"))]
+    async fn can_clean_notifications_table(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Rows should be present initially.
+        let result = sqlx::query(r#"SELECT 1 FROM notifications"#)
+            .fetch_all(&mut *conn)
+            .await?;
+
+        assert!(!result.is_empty());
+
+        let ctx = get_job_ctx_for_test(pool, None).await;
+        let result = cleanup_db(DatabaseCleanupJob { 0: Utc::now() }, ctx).await;
+
+        assert!(result.is_ok());
+
+        // Rows should get deleted from the database.
+        let result = sqlx::query(r#"SELECT 1 FROM notifications"#)
+            .fetch_all(&mut *conn)
+            .await?;
+
+        assert!(result.is_empty());
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("notifications"))]
+    async fn should_not_delete_notifications_with_notification_outs(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Rows should be present initially.
+        let result = sqlx::query(r#"SELECT 1 FROM notifications"#)
+            .fetch_all(&mut *conn)
+            .await?;
+
+        assert!(!result.is_empty());
+
+        // Insert a row in `notification_outs` for a single notification.
+        let result = sqlx::query(
+            r#"
+WITH selected_notification AS (
+    SELECT id FROM notifications
+    LIMIT 1
+)
+INSERT INTO
+	notification_outs (notified_id, notification_id)
+VALUES (1, (SELECT id FROM selected_notification))
+"#,
+        )
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let ctx = get_job_ctx_for_test(pool, None).await;
+        let result = cleanup_db(DatabaseCleanupJob { 0: Utc::now() }, ctx).await;
+
+        assert!(result.is_ok());
+
+        // Exactly one row should be present in the database.
+        let result = sqlx::query(r#"SELECT 1 FROM notifications"#)
             .fetch_all(&mut *conn)
             .await?;
 

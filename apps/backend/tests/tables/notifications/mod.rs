@@ -1,1 +1,1 @@
-pub mod connections;
+pub mod notifications;

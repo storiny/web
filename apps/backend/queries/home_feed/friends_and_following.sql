@@ -36,19 +36,22 @@ WITH friends_and_following_stories AS (SELECT
 														  ON u.id = s.user_id
 															  AND u.deleted_at IS NULL
 															  AND u.deactivated_at IS NULL
-															  -- Filter out stories from blocked and muted users
-															  AND u.id NOT IN (SELECT b.blocked_id
-																			   FROM
-																				   blocks b
-																			   WHERE
-																				   b.blocker_id = $1
-																			   UNION
-																			   SELECT m.muted_id
-																			   FROM
-																				   mutes m
-																			   WHERE
-																				   m.muter_id = $1
-																			  )
+															  -- Filter out stories from blocked users
+															  AND NOT EXISTS (SELECT 1
+																			  FROM
+																				  blocks b
+																			  WHERE
+																					b.blocker_id = $1
+																				AND b.blocked_id = u.id
+																			 )
+															  -- Filter out stories from muted users
+															  AND NOT EXISTS (SELECT 1
+																			  FROM
+																				  mutes m
+																			  WHERE
+																					m.muter_id = $1
+																				AND m.muted_id = u.id
+																			 )
 											   --
 											   -- Join story tags
 											   LEFT OUTER JOIN (story_tags AS "s->story_tags"

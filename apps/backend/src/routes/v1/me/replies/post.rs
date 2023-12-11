@@ -97,7 +97,10 @@ WITH inserted_reply AS (
             $5,
             (SELECT id FROM inserted_reply),
             (SELECT user_id FROM inserted_reply)
-        WHERE EXISTS (SELECT 1 FROM reply_comment)
+        WHERE
+            EXISTS (SELECT 1 FROM reply_comment)
+            -- Do not insert the notification if the user replies to its own comment.
+            AND $3 <> (SELECT user_id FROM reply_comment)
         RETURNING id
     )
 INSERT INTO
@@ -105,7 +108,9 @@ INSERT INTO
 SELECT
     (SELECT user_id FROM reply_comment),
     (SELECT id FROM inserted_notification)
-WHERE EXISTS (SELECT 1 FROM reply_comment)
+WHERE
+    EXISTS (SELECT 1 FROM reply_comment)
+    AND EXISTS (SELECT 1 FROM inserted_notification)
 "#,
     )
     .bind(&content)
@@ -363,6 +368,77 @@ SELECT EXISTS (
             let res = test::call_service(&app, req).await;
 
             assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("reply"))]
+        async fn should_not_insert_a_notification_when_the_user_replies_to_its_own_comment(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let mut conn = pool.acquire().await?;
+            let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
+            // Update the writer of the comment.
+            let result = sqlx::query(
+                r#"
+UPDATE comments
+SET user_id = $1
+WHERE id = $2
+"#,
+            )
+            .bind(user_id.unwrap())
+            .bind(3_i64)
+            .execute(&mut *conn)
+            .await?;
+
+            assert_eq!(result.rows_affected(), 1);
+
+            let req = test::TestRequest::post()
+                .cookie(cookie.unwrap())
+                .uri("/v1/me/replies")
+                .set_json(Request {
+                    content: "Sample **reply** content!".to_string(),
+                    comment_id: "3".to_string(),
+                })
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_success());
+
+            // Reply should be present in the database, with rendered markdown.
+            let result = sqlx::query(
+                r#"
+SELECT id, rendered_content FROM replies
+WHERE user_id = $1 AND comment_id = $2
+"#,
+            )
+            .bind(user_id.unwrap())
+            .bind(3_i64)
+            .fetch_one(&mut *conn)
+            .await?;
+
+            assert_eq!(
+                result.get::<String, _>("rendered_content"),
+                md_to_html(MarkdownSource::Response("Sample **reply** content!"))
+            );
+
+            // Should not insert a notification.
+            let notification_result = sqlx::query(
+                r#"
+SELECT EXISTS (
+    SELECT 1 FROM notifications
+    WHERE entity_id = $1
+)
+"#,
+            )
+            .bind(result.get::<i64, _>("id"))
+            .fetch_one(&mut *conn)
+            .await?;
+
+            assert!(!notification_result.get::<bool, _>("exists"));
 
             Ok(())
         }

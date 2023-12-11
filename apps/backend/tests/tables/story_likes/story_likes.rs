@@ -4,7 +4,10 @@ mod tests {
         PgPool,
         Row,
     };
-    use storiny::constants::sql_states::SqlState;
+    use storiny::constants::{
+        notification_entity_type::NotificationEntityType,
+        sql_states::SqlState,
+    };
 
     #[sqlx::test(fixtures("user", "story"))]
     async fn can_like_a_story(pool: PgPool) -> sqlx::Result<()> {
@@ -469,6 +472,151 @@ WHERE id = $1
         .await?;
 
         assert_eq!(result.get::<i32, _>("like_count"), 1);
+
+        Ok(())
+    }
+
+    // Notifications
+
+    #[sqlx::test(fixtures("user", "story"))]
+    async fn can_delete_notifications_when_the_story_like_is_soft_deleted(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Like the story.
+        let result = sqlx::query(
+            r#"
+INSERT INTO story_likes (user_id, story_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(1_i64)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Insert a notification.
+        let insert_result = sqlx::query(
+            r#"
+WITH inserted_notification AS (
+    INSERT INTO notifications (entity_id, entity_type, notifier_id)
+    VALUES ($1, $2, $3)
+    RETURNING id
+)
+INSERT INTO notification_outs (notified_id, notification_id)
+VALUES ($3, (SELECT id FROM inserted_notification))
+RETURNING notification_id
+"#,
+        )
+        .bind(3_i64)
+        .bind(NotificationEntityType::StoryLike as i16)
+        .bind(1_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(insert_result.try_get::<i64, _>("notification_id").is_ok());
+
+        // Soft-delete the story like.
+        let result = sqlx::query(
+            r#"
+UPDATE story_likes
+SET deleted_at = NOW()
+WHERE story_id = $1
+"#,
+        )
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Notification should get deleted
+        let result = sqlx::query(
+            r#"
+SELECT EXISTS (
+    SELECT 1 FROM notifications
+    WHERE id = $1
+)
+"#,
+        )
+        .bind(insert_result.get::<i64, _>("notification_id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user", "story"))]
+    async fn can_delete_notification_on_story_like_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Like the story.
+        let result = sqlx::query(
+            r#"
+INSERT INTO story_likes (user_id, story_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(1_i64)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Insert a notification.
+        let insert_result = sqlx::query(
+            r#"
+WITH inserted_notification AS (
+    INSERT INTO notifications (entity_id, entity_type, notifier_id)
+    VALUES ($1, $2, $3)
+    RETURNING id
+)
+INSERT INTO notification_outs (notified_id, notification_id)
+VALUES ($3, (SELECT id FROM inserted_notification))
+RETURNING notification_id
+"#,
+        )
+        .bind(3_i64)
+        .bind(NotificationEntityType::StoryLike as i16)
+        .bind(1_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(insert_result.try_get::<i64, _>("notification_id").is_ok());
+
+        // Delete the story like.
+        let result = sqlx::query(
+            r#"
+DELETE FROM story_likes
+WHERE story_id = $1
+"#,
+        )
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Notification should get deleted.
+        let result = sqlx::query(
+            r#"
+SELECT EXISTS (
+    SELECT 1 FROM notifications
+    WHERE id = $1
+)
+"#,
+        )
+        .bind(insert_result.get::<i64, _>("notification_id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
