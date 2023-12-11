@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS mfa_recovery_codes
 (
-	code       CHAR(12)    NOT NULL,
+	code     TEXT   NOT NULL
+		CONSTRAINT code_length CHECK (CHAR_LENGTH(code) = 12),
 	user_id    BIGINT      NOT NULL
 		REFERENCES users (id)
 			ON DELETE CASCADE,

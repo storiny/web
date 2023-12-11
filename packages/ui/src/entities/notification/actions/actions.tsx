@@ -1,3 +1,4 @@
+import { NotificationType } from "@storiny/shared";
 import { Notification } from "@storiny/types";
 import clsx from "clsx";
 import React from "react";
@@ -28,6 +29,10 @@ const Actions = ({
     unsubscribe,
     { isLoading: is_loading, isError: is_error, isSuccess: is_success }
   ] = use_unsubscribe_notification_mutation();
+  const can_unsubscribe = ![
+    NotificationType.SYSTEM,
+    NotificationType.LOGIN_ATTEMPT
+  ].includes(notification.type);
 
   React.useEffect(() => {
     dispatch(sync_with_notification(notification));
@@ -54,7 +59,7 @@ const Actions = ({
       >
         <CheckIcon />
       </IconButton>
-      {!is_success && (
+      {notification.is_subscribed && can_unsubscribe && !is_success ? (
         <IconButton
           aria-label={
             "Unsubscribe from this type of notification in the future"
@@ -68,7 +73,7 @@ const Actions = ({
         >
           <BellOffIcon />
         </IconButton>
-      )}
+      ) : null}
     </div>
   );
 };

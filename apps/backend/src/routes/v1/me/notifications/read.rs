@@ -93,7 +93,7 @@ RETURNING read_at
         .fetch_one(&mut *conn)
         .await?;
 
-        // `read_at` should be NULL initially
+        // `read_at` should be NULL initially.
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("read_at")
@@ -162,7 +162,7 @@ RETURNING read_at
         .fetch_one(&mut *conn)
         .await?;
 
-        // `read_at` should be NULL initially
+        // `read_at` should be NULL initially.
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("read_at")

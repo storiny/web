@@ -6,9 +6,9 @@ CREATE TABLE IF NOT EXISTS story_reads
 		CONSTRAINT hostname_length CHECK (CHAR_LENGTH(hostname) <= 512),
 	-- `Unknown` by default
 	device       SMALLINT    NOT NULL DEFAULT 0,
-	-- Using varchar allows us to store both the ISO 3166-1 alpha-2 and ISO 3166-1 alpha-3 formats
-	country_code VARCHAR(3)
-		CONSTRAINT country_code_length CHECK (CHAR_LENGTH(country_code) >= 2),
+	-- We can store both the ISO 3166-1 alpha-2 and ISO 3166-1 alpha-3 formats
+	country_code TEXT
+		CONSTRAINT country_code_length CHECK (CHAR_LENGTH(country_code) BETWEEN 2 AND 3),
 	-- The read session duration (in seconds)
 	duration     SMALLINT    NOT NULL DEFAULT 0,
 	user_id      BIGINT      REFERENCES users (id) ON DELETE SET NULL,

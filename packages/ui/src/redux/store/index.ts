@@ -65,7 +65,7 @@ export const setup_store = (
       }
     },
     // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-    devTools: !["production", "test"].includes(process.env.NODE_ENV || ""),
+    devTools: process.env.NODE_ENV === "development",
     middleware: (get_default_middleware) =>
       get_default_middleware().concat([
         api_slice.middleware,
@@ -79,7 +79,7 @@ export const setup_store = (
                   "preferences/sync_to_browser",
                   "entities/set_rate_limit"
                 ],
-                predicate: (action) => !/api\//.test(action.type),
+                predicate: (action) => !/(api|toast)\//.test(action.type),
                 // eslint-disable-next-line prefer-snakecase/prefer-snakecase
                 prepareState: (state: AppState) => ({
                   ...state,

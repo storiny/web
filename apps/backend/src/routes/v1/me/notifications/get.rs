@@ -60,6 +60,8 @@ struct Notification {
     created_at: OffsetDateTime,
     #[serde(with = "crate::iso8601::time::option")]
     read_at: Option<OffsetDateTime>,
+    // Boolean flags
+    is_subscribed: bool,
     // Joins
     actor: Option<Json<Actor>>,
 }
@@ -103,6 +105,32 @@ SELECT
         ELSE nu.rendered_content
     END AS "rendered_content",
     "nu->notification".entity_type AS "type",
+    -- Boolean flags
+    CASE WHEN (
+                -- 3 = Friend request accept, 4 = Friend request received
+                (ns.push_friend_requests AND ("nu->notification".entity_type = 3 OR "nu->notification".entity_type = 4))
+            OR
+                -- 5 = Follower add
+                (ns.push_followers AND "nu->notification".entity_type = 5)
+            OR
+                -- 6 = Comment add
+                (ns.push_comments AND "nu->notification".entity_type = 6)
+            OR
+                -- 7 = Reply add
+                (ns.push_replies AND "nu->notification".entity_type = 7)
+            OR
+                -- 9 = Story like
+                (ns.push_story_likes AND "nu->notification".entity_type = 9)
+            OR
+                -- 10 = Story add by user
+                (ns.push_stories AND "nu->notification".entity_type = 10)
+            OR
+                -- 11 = Story add by tag
+                (ns.push_tags AND "nu->notification".entity_type = 11)
+            )
+        THEN TRUE
+        ELSE FALSE
+    END AS "is_subscribed",
     -- Actor
     CASE
         WHEN notifier.id IS NOT NULL
@@ -124,6 +152,9 @@ FROM
         -- Join notification user
         LEFT OUTER JOIN users AS notifier
             ON "nu->notification".notifier_id = notifier.id
+        -- Join notification settings of the current user
+        INNER JOIN notification_settings ns
+            ON ns.user_id = $1
 "#,
     );
 
@@ -230,6 +261,63 @@ VALUES ($1, $2), ($1, $3)
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("notification"))]
+    async fn can_return_is_subscribed_flag_for_notifications(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Receive a notifications.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO notification_outs (notified_id, notification_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(4_i64)
+        .bind(5_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/notifications")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be true initially as users are subscribed to all the notifications by default.
+        let json = serde_json::from_str::<Vec<Notification>>(&res_to_string(res).await).unwrap();
+        assert!(json.iter().all(|notification| notification.is_subscribed));
+
+        // Update notification settings for the current user.
+        let insert_result = sqlx::query(
+            r#"
+UPDATE notification_settings
+SET push_followers = FALSE
+WHERE user_id = $1
+"#,
+        )
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/notifications")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be false.
+        let json = serde_json::from_str::<Vec<Notification>>(&res_to_string(res).await).unwrap();
+        assert!(json.iter().all(|notification| !notification.is_subscribed));
 
         Ok(())
     }

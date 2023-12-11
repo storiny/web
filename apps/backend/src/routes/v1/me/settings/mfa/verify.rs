@@ -134,7 +134,7 @@ WITH removed_recovery_codes AS (
 INSERT INTO
     mfa_recovery_codes (code, user_id)
 SELECT
-    UNNEST($2::CHAR(12)[]), $1
+    UNNEST($2::TEXT[]), $1
 "#,
     )
     .bind(&user_id)

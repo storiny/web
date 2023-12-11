@@ -17,6 +17,7 @@ import Skeleton from "~/components/skeleton";
 import Tab from "~/components/tab";
 import Tabs from "~/components/tabs";
 import TabsList from "~/components/tabs-list";
+import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import ErrorState from "~/entities/error-state";
 import { use_media_query } from "~/hooks/use-media-query";
@@ -27,12 +28,14 @@ import {
   mark_all_as_read,
   select_notifications_status,
   select_unread_notification_count,
-  use_get_notifications_query
+  use_get_notifications_query,
+  use_read_all_notifications_mutation
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import styles from "./styles.module.scss";
 
@@ -87,10 +90,27 @@ const StatusHeader = ({
 }: {
   tab: NotificationsTabValue;
 }): React.ReactElement => {
+  const toast = use_toast();
   const dispatch = use_app_dispatch();
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const unread_count = use_app_selector(select_unread_notification_count);
   const status = use_app_selector(select_notifications_status);
+  const [read_all_notifications, { isLoading: is_loading }] =
+    use_read_all_notifications_mutation();
+
+  const handle_read_all_notifications = (): void => {
+    read_all_notifications()
+      .unwrap()
+      .then(() => dispatch(mark_all_as_read()))
+      .catch((error) =>
+        handle_api_error(
+          error,
+          toast,
+          null,
+          "Could not mark all notifications as read"
+        )
+      );
+  };
 
   return (
     <div
@@ -122,9 +142,8 @@ const StatusHeader = ({
             aria-label={"Mark all as read"}
             check_auth
             disabled={unread_count === 0}
-            onClick={(): void => {
-              dispatch(mark_all_as_read());
-            }}
+            loading={is_loading}
+            onClick={handle_read_all_notifications}
             size={"lg"}
             title={"Mark all as read"}
             variant={"ghost"}
@@ -137,9 +156,8 @@ const StatusHeader = ({
             check_auth
             decorator={<ChecksIcon />}
             disabled={unread_count === 0}
-            onClick={(): void => {
-              dispatch(mark_all_as_read());
-            }}
+            loading={is_loading}
+            onClick={handle_read_all_notifications}
             variant={"hollow"}
           >
             Mark all as read
