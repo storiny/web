@@ -8,6 +8,12 @@ import Link from "~/components/link";
 import css from "~/theme/main.module.scss";
 
 /**
+ * Predicate function for determining non-undefined values.
+ * @param value The value to test.
+ */
+const is_defined = (value: unknown): boolean => typeof value !== "undefined";
+
+/**
  * Node transformer
  * @param node HTML element
  * @param children Element children
@@ -19,15 +25,15 @@ const transform = (node: HTMLElement, children: Node[]): React.ReactNode => {
         <Link
           className={clsx(
             node.className,
-            node.getAttribute("data-fw-bold")
+            is_defined(node.dataset.fwBold)
               ? css["t-bold"]
-              : node.getAttribute("data-fw-medium")
+              : is_defined(node.dataset.fwMedium)
               ? css["t-medium"]
               : null
           )}
           href={node.getAttribute("href") || "/"}
           style={{ color: "var(--fg-major)" }}
-          underline={node.getAttribute("data-underline") ? "always" : "hover"}
+          underline={is_defined(node.dataset.underline) ? "always" : "hover"}
         >
           {children}
         </Link>

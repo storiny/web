@@ -24,13 +24,13 @@ const DashboardSplashLayout = ({
   const dispatch = use_app_dispatch();
   const auth_status = use_app_selector(select_auth_status);
   const user = use_app_selector(select_user);
-  const loading = auth_status === "loading";
+  const loading = ["idle", "loading"].includes(auth_status);
 
   React.useEffect(() => {
     set_visible(false);
   }, []);
 
-  if (visible || loading || ["idle", "error"].includes(auth_status)) {
+  if (visible || loading || auth_status === "error") {
     return (
       <SplashScreen force_mount>
         {auth_status === "error" ? (

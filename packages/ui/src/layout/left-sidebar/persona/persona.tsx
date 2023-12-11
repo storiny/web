@@ -26,7 +26,7 @@ const LeftSidebarPersona = (): React.ReactElement => {
   const dispatch = use_app_dispatch();
   const auth_state = use_app_selector(select_auth_status);
   const user = use_app_selector(select_user);
-  const loading = auth_state === "loading";
+  const loading = ["loading", "idle"].includes(auth_state);
 
   if (auth_state === "error") {
     return (
@@ -133,13 +133,13 @@ const LeftSidebarPersona = (): React.ReactElement => {
         )}
       </div>
       {loading ? (
-        <Skeleton height={30} />
+        <Skeleton height={30} style={{ marginTop: "4px" }} />
       ) : (
         <Status
-          editable
           emoji={user?.status?.emoji}
           expires_at={user?.status?.expires_at}
           text={user?.status?.text}
+          user_id={user?.id || ""}
         />
       )}
     </>

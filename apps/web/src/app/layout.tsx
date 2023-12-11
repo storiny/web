@@ -28,10 +28,7 @@ const RootLayout = ({
   const logged_in = Boolean(session_token);
 
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning={process.env.NODE_ENV !== "development"}
-    >
+    <html lang="en" suppressHydrationWarning>
       <head>
         <PreloadResources />
         {/* Apply theme from localStorage as soon as possible */}

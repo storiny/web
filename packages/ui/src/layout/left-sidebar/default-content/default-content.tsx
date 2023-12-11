@@ -147,7 +147,7 @@ const LeftSidebarDefaultContent = (): React.ReactElement => {
                   as={NextLink}
                   check_auth
                   decorator={<StoryHeartIcon />}
-                  href={"/liked"}
+                  href={"/liked-stories"}
                 >
                   Liked stories
                 </MenuItem>

@@ -5,32 +5,30 @@ import React from "react";
 import { render_test_with_provider } from "~/redux/test-utils";
 
 import Status from "./status";
-import styles from "./status.module.scss";
 
 describe("<Status />", () => {
   it("renders", () => {
-    render_test_with_provider(<Status />);
+    render_test_with_provider(<Status user_id={""} />);
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = render_test_with_provider(<Status disable_modal />);
+    const { container } = render_test_with_provider(
+      <Status disable_modal user_id={""} />
+    );
 
     await wait_for(async () =>
       expect(await axe(container)).toHaveNoViolations()
     );
   });
 
-  it("renders as editable", () => {
-    const { getByTestId } = render_test_with_provider(
-      <Status data-testid={"status"} disable_modal editable />
-    );
-
-    expect(getByTestId("status")).toHaveClass(styles.editable);
-  });
-
   it("renders with emoji", () => {
     const { getByRole } = render_test_with_provider(
-      <Status data-testid={"status"} disable_modal emoji={"1f33f"} />
+      <Status
+        data-testid={"status"}
+        disable_modal
+        emoji={"1f33f"}
+        user_id={""}
+      />
     );
 
     expect(getByRole("img")).toBeInTheDocument();

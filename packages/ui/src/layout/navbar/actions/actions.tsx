@@ -120,14 +120,14 @@ const LoggedInMenu = ({
       >
         <Status
           className={clsx(styles["menu-item"])}
-          editable
           emoji={user?.status?.emoji}
           expires_at={user?.status?.expires_at}
           modal_props={{
             modal: true
           }}
-          style={{ maxWidth: "200px" }}
+          style={{ maxWidth: "196px" }}
           text={user?.status?.text}
+          user_id={user?.id || ""}
         />
       </MenuItemUnstyled>
     </div>
@@ -135,7 +135,11 @@ const LoggedInMenu = ({
     <MenuItemWithLink check_auth decorator={<UserIcon />} href={"/profile"}>
       Your profile
     </MenuItemWithLink>
-    <MenuItemWithLink check_auth decorator={<StoryIcon />} href={"/me/stories"}>
+    <MenuItemWithLink
+      check_auth
+      decorator={<StoryIcon />}
+      href={"/me/content/stories"}
+    >
       Your stories
     </MenuItemWithLink>
     <MenuItemWithLink
@@ -145,7 +149,11 @@ const LoggedInMenu = ({
     >
       Bookmarks
     </MenuItemWithLink>
-    <MenuItemWithLink check_auth decorator={<StoryHeartIcon />} href={"/liked"}>
+    <MenuItemWithLink
+      check_auth
+      decorator={<StoryHeartIcon />}
+      href={"/liked-stories"}
+    >
       Liked stories
     </MenuItemWithLink>
     <MenuItemWithLink check_auth decorator={<HistoryIcon />} href={"/history"}>
@@ -155,7 +163,11 @@ const LoggedInMenu = ({
     <ThemeToggleItem />
     {/* TODO(future): <MenuItem decorator={<ExplicitIcon />}>Safe mode</MenuItem>*/}
     <Separator />
-    <MenuItemWithLink check_auth decorator={<SettingsIcon />} href={"/me"}>
+    <MenuItemWithLink
+      check_auth
+      decorator={<SettingsIcon />}
+      href={"/me/account/profile"}
+    >
       Settings
     </MenuItemWithLink>
     <MenuItem decorator={<QuestionMarkIcon />}>Help</MenuItem>
@@ -185,14 +197,14 @@ const Actions = (): React.ReactElement => {
   return (
     <div className={clsx(css["flex-center"], styles.actions)}>
       {logged_in ? (
-        ["loading", "error"].includes(auth_status) ? (
+        ["idle", "loading", "error"].includes(auth_status) ? (
           <LoggedOutMenu
             trigger={
               <div
                 aria-busy
                 className={clsx(css["flex-center"], styles.trigger)}
               >
-                {auth_status === "loading" ? (
+                {["idle", "loading"].includes(auth_status) ? (
                   <Skeleton height={32} shape={"circular"} width={32} />
                 ) : (
                   <Avatar className={styles["error-avatar"]}>

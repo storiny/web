@@ -52,10 +52,13 @@ const ExpiryTime = ({
   );
 };
 
-const Entity = forward_ref<StatusProps, "span">((props, ref) => {
+const Entity = forward_ref<
+  Omit<StatusProps, "user_id"> & { is_editable: boolean },
+  "span"
+>((props, ref) => {
   const {
-    editable,
-    as: Component = editable ? "button" : "span",
+    is_editable,
+    as: Component = is_editable ? "button" : "span",
     text: text_prop,
     emoji: emoji_prop,
     expires_at: expires_at_prop,
@@ -65,10 +68,10 @@ const Entity = forward_ref<StatusProps, "span">((props, ref) => {
   const user = use_app_selector(select_user);
 
   // Use the status from the cache if the status is editable.
-  const text = editable && user ? user.status?.text : text_prop;
-  const emoji = editable && user ? user.status?.emoji : emoji_prop;
+  const text = is_editable && user ? user.status?.text : text_prop;
+  const emoji = is_editable && user ? user.status?.emoji : emoji_prop;
   const expires_at =
-    editable && user ? user.status?.expires_at : expires_at_prop;
+    is_editable && user ? user.status?.expires_at : expires_at_prop;
 
   const has_emoji = typeof emoji !== "undefined";
   const has_text = Boolean(text);
@@ -81,13 +84,13 @@ const Entity = forward_ref<StatusProps, "span">((props, ref) => {
         css["focusable"],
         button_styles.reset,
         styles.status,
-        editable && styles.editable,
+        is_editable && styles.editable,
         has_text && styles["has-text"],
         className
       )}
       ref={ref}
     >
-      {has_emoji || editable ? (
+      {has_emoji || is_editable ? (
         <span
           className={clsx(
             css["flex-center"],
@@ -109,7 +112,7 @@ const Entity = forward_ref<StatusProps, "span">((props, ref) => {
           {!has_emoji && <MoodSmile />}
         </span>
       ) : null}
-      {has_text || editable ? (
+      {has_text || is_editable ? (
         <Typography
           as={"span"}
           className={clsx(css["ellipsis"], styles.text)}
@@ -126,16 +129,18 @@ const Entity = forward_ref<StatusProps, "span">((props, ref) => {
 });
 
 const Status = forward_ref<StatusProps, "span">((props, ref) => {
-  const { editable, modal_props, disable_modal, ...rest } = props;
+  const { user_id, modal_props, disable_modal, ...rest } = props;
+  const current_user = use_app_selector(select_user);
+  const is_editable = user_id === current_user?.id;
 
-  if (editable && !disable_modal) {
+  if (is_editable && !disable_modal) {
     return (
       <StatusModal
         modal_props={modal_props}
         trigger={({ open_modal }): React.ReactElement => (
           <Entity
-            editable={editable}
             {...rest}
+            is_editable={is_editable}
             onClick={(event): void => {
               open_modal();
               rest.onClick?.(event);
@@ -147,7 +152,7 @@ const Status = forward_ref<StatusProps, "span">((props, ref) => {
     );
   }
 
-  return <Entity editable={editable} {...rest} ref={ref} />;
+  return <Entity is_editable={is_editable} {...rest} ref={ref} />;
 });
 
 Status.displayName = "Status";
