@@ -1,5 +1,7 @@
 .banner,
 .banner-placeholder {
+  --icon-stroke: var(--fg-minor);
+
   border-radius: var(--radius-md);
   border: 1px solid var(--divider);
   width: 100%;

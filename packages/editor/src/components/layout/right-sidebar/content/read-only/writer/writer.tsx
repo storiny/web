@@ -100,6 +100,7 @@ const StoryWriter = (): React.ReactElement => {
             emoji={user.status.emoji ?? undefined}
             expires_at={user.status.expires_at ?? undefined}
             text={user.status.text ?? undefined}
+            user_id={user.id}
           />
         </React.Fragment>
       )}

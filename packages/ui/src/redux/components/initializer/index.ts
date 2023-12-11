@@ -9,7 +9,7 @@ import {
 } from "~/redux/features";
 import { use_app_dispatch } from "~/redux/hooks";
 
-const USER_POLL_DURATION = 3_00_000; // 5 minutes
+const POLL_DURATION = 3_00_000; // 5 minutes
 
 /*
  * Initializes the state of the app on initial mount.
@@ -19,12 +19,19 @@ const Initializer = (): null => {
 
   React.useEffect(() => {
     dispatch(sync_to_browser());
-    dispatch(fetch_user());
-    dispatch(fetch_unread_notifications_count());
 
-    // Keep polling the user with fixed interval
-    const poll_user = setInterval(fetch_user, USER_POLL_DURATION);
-    return () => clearInterval(poll_user);
+    const fetch_data = (): void => {
+      dispatch(fetch_user());
+      dispatch(fetch_unread_notifications_count());
+    };
+
+    // Keep polling the user and the undread notifications endpoint with fixed
+    // interval.
+    const poll_data = setInterval(fetch_data, POLL_DURATION);
+
+    fetch_data();
+
+    return () => clearInterval(poll_data);
   }, [dispatch]);
 
   return null;

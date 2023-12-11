@@ -44,15 +44,11 @@ export const fetch_unread_notifications_count = create_async_thunk(
   {
     condition: (_, { getState: get_state }) => {
       const {
-        auth: { logged_in, status: auth_status },
+        auth: { logged_in },
         notifications: { status: notifications_status }
       } = get_state() as AppState;
 
-      if (
-        !logged_in ||
-        auth_status === "loading" ||
-        notifications_status === "loading"
-      ) {
+      if (!logged_in || notifications_status === "loading") {
         // Do not send a request if logged out or status is `loading`
         return false;
       }

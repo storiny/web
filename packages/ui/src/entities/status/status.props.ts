@@ -7,11 +7,6 @@ export interface StatusProps extends PolymorphicProps<"span"> {
    */
   disable_modal?: boolean;
   /**
-   * If set to `true`, the status can be modified by the user. It will render a `button`
-   * internally, or a `span` otherwise.
-   */
-  editable?: boolean;
-  /**
    * The emoji place before the status text.
    */
   emoji?: string | null;
@@ -27,4 +22,8 @@ export interface StatusProps extends PolymorphicProps<"span"> {
    * The status text.
    */
   text?: string | null;
+  /**
+   * The ID of the user.
+   */
+  user_id: string;
 }
