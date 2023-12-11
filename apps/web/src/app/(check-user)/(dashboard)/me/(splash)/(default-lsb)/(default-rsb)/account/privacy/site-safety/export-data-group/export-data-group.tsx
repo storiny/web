@@ -150,14 +150,15 @@ export const ExportData = ({
 const ExportDataGroup = (): React.ReactElement => (
   <DashboardGroup>
     <TitleBlock title={"Export your data"}>
-      Request a copy of all your data, including your profile information and
-      published stories. Processing may take up to 14 days, and you will receive
-      an e-mail with a download link. Your exported data will be available for 7
-      days after processing is complete.
+      You can request a copy of all your data, including your profile
+      information and published stories. You will receive an e-mail with a link
+      to download your content. Please note that processing your data may take
+      up to 14 days.
       <br />
       <br />
-      Please note that changing your e-mail during the export process will not
-      deliver your data to your new e-mail address.
+      Changing your e-mail during the export process will not deliver your data
+      to your new e-mail address. Your exported data will be available for 7
+      days for you to download after the processing is complete.
     </TitleBlock>
     <Spacer orientation={"vertical"} size={4.5} />
     <ExportData />

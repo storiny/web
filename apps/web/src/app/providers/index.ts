@@ -6,7 +6,6 @@ import React from "react";
 const NullComponent = (): null => null;
 
 export const PROVIDER_ICON_MAP: Record<TProvider, React.ComponentType> = {
-  [Provider.TWITTER /*     */]: dynamic(() => import("~/icons/twitter")),
   [Provider.DISCORD /*     */]: dynamic(() => import("~/icons/discord")),
   [Provider.DRIBBBLE /*    */]: dynamic(() => import("~/icons/dribbble")),
   [Provider.FIGMA /*       */]: dynamic(() => import("~/icons/figma")),
@@ -23,26 +22,25 @@ export const PROVIDER_ICON_MAP: Record<TProvider, React.ComponentType> = {
   [Provider.UNRECOGNIZED /**/]: NullComponent
 };
 
-export const PROVIDER_KEY_MAP: Record<Provider, string> = {
+// TODO: Uncomment when we support the individual providers.
+export const PROVIDER_KEY_MAP: Partial<Record<Provider, string>> = {
   [Provider.GITHUB /*      */]: "github",
   [Provider.DISCORD /*     */]: "discord",
-  [Provider.FIGMA /*       */]: "figma",
+  // [Provider.FIGMA /*       */]: "figma",
   [Provider.DRIBBBLE /*    */]: "dribbble",
-  [Provider.FACEBOOK /*    */]: "facebook",
-  [Provider.INSTAGRAM /*   */]: "instagram",
-  [Provider.LINKED_IN /*   */]: "linkedin",
-  [Provider.REDDIT /*      */]: "reddit",
-  [Provider.SNAPCHAT /*    */]: "snapchat",
+  // [Provider.FACEBOOK /*    */]: "facebook",
+  // [Provider.INSTAGRAM /*   */]: "instagram",
+  // [Provider.LINKED_IN /*   */]: "linkedin",
+  // [Provider.REDDIT /*      */]: "reddit",
+  // [Provider.SNAPCHAT /*    */]: "snapchat",
   [Provider.SPOTIFY /*     */]: "spotify",
-  [Provider.TWITCH /*      */]: "twitch",
-  [Provider.TWITTER /*     */]: "twitter",
+  // [Provider.TWITCH /*      */]: "twitch",
   [Provider.YOUTUBE /*     */]: "youtube",
   [Provider.UNSPECIFIED /* */]: "",
   [Provider.UNRECOGNIZED /**/]: ""
 };
 
 export const PROVIDER_DISPLAY_NAME_MAP: Record<TProvider, string> = {
-  [Provider.TWITTER /*     */]: "Twitter",
   [Provider.DISCORD /*     */]: "Discord",
   [Provider.DRIBBBLE /*    */]: "Dribbble",
   [Provider.FIGMA /*       */]: "Figma",

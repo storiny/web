@@ -174,10 +174,9 @@ const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
           </DashboardGroup>
           <Divider />
           <DashboardGroup>
-            <TitleBlock title={"Log out of other devices"}>
-              You will remain logged in on the current device, but will be
-              logged out from all other devices and will need to log in to them
-              again.
+            <TitleBlock title={"Log out of all devices"}>
+              You will be logged out from all the active devices (including this
+              device) and will need to log in to them again.
             </TitleBlock>
             <Spacer orientation={"vertical"} size={4} />
             <DestroySessions

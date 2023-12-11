@@ -73,19 +73,17 @@ const PrivateAccount = ({
         <FormSwitch
           helper_text={
             <React.Fragment>
-              When your account is set to public, your profile is viewable by
-              everyone, and anyone can read your stories, even without logging
-              in to Storiny.
+              When your account is set to public, anyone can view your profile
+              and read your stories, even without logging in to Storiny.
               <br />
               <br />
               Switching to a private account gives you complete control over the
-              content you share since it limits access to your profile, stories,
-              and relation lists to your friends.
+              content you share by restricting your profile, stories, and other
+              public content to your friends.
               <br />
               <br />
-              Furthermore, your stories will not be visible in search results,
-              and any current contributors you have invited will have their
-              access downgraded to view-only, except for your friends.{" "}
+              When you switch to a private account, your stories will no longer
+              be included in the search results.{" "}
               <Link href={"/guide/private-accounts"} underline={"always"}>
                 Learn more about private accounts
               </Link>

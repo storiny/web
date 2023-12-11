@@ -68,8 +68,8 @@ const AccountHistory = ({
           helper_text={
             <React.Fragment>
               You can disable read history to enjoy a more discreet and
-              anonymous browsing experience. Please note that this will affect
-              your recommendations and home feed, and you might encounter more
+              anonymous reading experience. Disabling this will affect your
+              recommendations and home feed, and you might see more
               unpersonalized content.
             </React.Fragment>
           }

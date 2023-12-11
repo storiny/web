@@ -14,15 +14,13 @@ const AccountRemovalGroup = (): React.ReactElement => (
   <DashboardGroup>
     <TitleBlock title={"Account removal"}>
       If you&apos;re feeling overwhelmed or simply need a break, you can
-      temporarily disable your account. This option will hide your account and
-      stories, and suspend all activities related to your account until you log
-      back in.
+      temporarily disable your account. This will hide your account and stories,
+      and suspend all activities related to your account until you log back in.
       <br />
       <br />
-      Alternatively, you can choose to permanently delete your account. Please
-      note that after you request deletion, you have 30 days to log back in to
-      recover your account. After this period, your account will be permanently
-      deleted, and there is no way to recover it.
+      If you choose to permanently delete your account, you will have 30 days to
+      log back in to recover your account. After this period, your account will
+      be permanently deleted, and there is no way to recover it.
       <br />
       <br />
       If you wish to reclaim your username or email associated with the deleted

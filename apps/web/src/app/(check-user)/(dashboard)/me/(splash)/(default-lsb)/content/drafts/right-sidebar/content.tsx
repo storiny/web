@@ -26,8 +26,7 @@ const ContentDraftsRightSidebarContent = (
       ) : (
         <Typography className={css["t-minor"]} level={"body2"}>
           Drafts that you delete will remain here for up to 30 days, allowing
-          you to restore them before they are permanently deleted. Please note
-          that restoring a draft will not restore any previous contributors.
+          you to restore them before they are permanently deleted.
         </Typography>
       )}
     </React.Fragment>

@@ -37,11 +37,11 @@ const DashboardSplashLayout = ({
           <React.Fragment>
             <Typography
               className={clsx(css["t-minor"], css["t-center"])}
-              level={"body3"}
+              level={"body2"}
               style={{ maxWidth: "320px" }}
             >
-              We are currently experiencing difficulties retrieving your account
-              data from the server
+              We are having some issues getting your account data from the
+              server right now.
             </Typography>
             <Spacer orientation={"vertical"} size={2} />
             <Button

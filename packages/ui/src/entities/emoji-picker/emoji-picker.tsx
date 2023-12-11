@@ -93,6 +93,11 @@ const EmojiPicker = (props: EmojiPickerProps): React.ReactElement => {
   return (
     <Popover
       slot_props={{
+        content: {
+          // Move the focus to the search input instead of the close button.
+          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+          onOpenAutoFocus: (event) => event.preventDefault()
+        },
         trigger: { "aria-label": "Pick an emoji" }
       }}
       {...popover_props}
@@ -118,7 +123,7 @@ const EmojiPicker = (props: EmojiPickerProps): React.ReactElement => {
           </Typography>
           <Grow />
           <div className={clsx(css["flex-center"], styles.close)}>
-            <Close aria-label={"Close"} asChild title={"Close"}>
+            <Close aria-label={"Close"} asChild tabIndex={-1} title={"Close"}>
               <IconButton variant={"ghost"}>
                 <XIcon />
               </IconButton>

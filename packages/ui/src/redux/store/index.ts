@@ -7,7 +7,6 @@ import {
 } from "@reduxjs/toolkit";
 import {
   createStateSyncMiddleware as create_state_sync_middleware,
-  initStateWithPrevTab as init_state_with_prev_tab,
   withReduxStateSync as with_redux_state_sync
 } from "redux-state-sync";
 
@@ -99,10 +98,6 @@ export const setup_store = (
   });
 
 export const store = setup_store();
-
-if (process.env.NODE_ENV !== "test" && typeof window !== "undefined") {
-  init_state_with_prev_tab(store);
-}
 
 export type AppState = ReturnType<typeof root_reducer>;
 export type AppStore = ReturnType<typeof setup_store>;

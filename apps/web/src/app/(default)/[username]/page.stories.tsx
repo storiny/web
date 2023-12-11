@@ -25,11 +25,8 @@ const MOCK_RESPONSE = {
   connections: [
     {
       url: "https://github.com/storiny",
-      provider: Provider.GITHUB
-    },
-    {
-      url: "https://twitter.com/storiny_intl",
-      provider: Provider.TWITTER
+      provider: Provider.GITHUB,
+      display_name: "Some user"
     }
   ]
 } as GetProfileResponse;
