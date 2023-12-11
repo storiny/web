@@ -16,11 +16,7 @@ const VirtualizedTagItem = React.memo(({ item, ...rest }: ItemProps<TTag>) => {
   // Props from context
   const tag_props = React.useContext(VirtualizedTagListContext);
   return (
-    <div
-      {...rest}
-      className={clsx(css["flex-col"], styles["list-item"])}
-      key={item.id}
-    >
+    <div {...rest} className={clsx(css["flex-col"], styles["list-item"])}>
       <Tag {...tag_props} tag={item} virtual />
       <Divider style={{ marginInline: "var(--grid-compensation)" }} />
     </div>

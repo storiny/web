@@ -125,7 +125,7 @@ const StatusHeader = ({
       <Typography ellipsis level={"body2"}>
         {count_param === 0 ? (
           tab === "followers" ? (
-            "You do not have any followers."
+            "You do not have any followers yet."
           ) : tab === "following" ? (
             "You do not follow anyone yet."
           ) : (

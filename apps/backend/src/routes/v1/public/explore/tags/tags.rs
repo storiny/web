@@ -43,7 +43,7 @@ struct Tag {
     #[serde(with = "crate::iso8601::time")]
     created_at: OffsetDateTime,
     // Boolean flags
-    is_followed: bool,
+    is_following: bool,
 }
 
 #[get("/v1/public/explore/tags")]
@@ -118,10 +118,10 @@ SELECT
     query_builder.push(if user_id.is_some() {
         r#"
 -- Boolean flags
-"st->is_followed".tag_id IS NOT NULL AS "is_followed"
+"st->is_following".tag_id IS NOT NULL AS "is_following"
 "#
     } else {
-        r#"FALSE as "is_followed""#
+        r#"FALSE as "is_following""#
     });
 
     if has_search_query {
@@ -156,10 +156,10 @@ FROM
         query_builder.push(
             r#"
 -- Boolean following flag
-LEFT OUTER JOIN tag_followers AS "st->is_followed"
-    ON "st->is_followed".tag_id = t.id
-    AND "st->is_followed".user_id = $4
-    AND "st->is_followed".deleted_at IS NULL
+LEFT OUTER JOIN tag_followers AS "st->is_following"
+    ON "st->is_following".tag_id = t.id
+    AND "st->is_following".user_id = $4
+    AND "st->is_following".deleted_at IS NULL
 "#,
         );
     }
@@ -182,7 +182,7 @@ GROUP BY
 
     if user_id.is_some() {
         query_builder.push(",");
-        query_builder.push(r#" "st->is_followed".tag_id "#);
+        query_builder.push(r#" "st->is_following".tag_id "#);
     }
 
     query_builder.push(r#" ORDER BY "#);
@@ -205,7 +205,7 @@ SELECT
     follower_count,
     created_at,
     -- Boolean flags
-    is_followed
+    is_following
 FROM explore_tags
 "#,
     );
@@ -280,7 +280,7 @@ mod tests {
         let tags = json.unwrap();
 
         assert_eq!(tags.len(), 2);
-        assert!(tags.iter().all(|tag| !tag.is_followed));
+        assert!(tags.iter().all(|tag| !tag.is_following));
 
         Ok(())
     }
@@ -330,7 +330,7 @@ mod tests {
     }
 
     #[sqlx::test(fixtures("tag"))]
-    async fn can_return_is_followed_flag_for_explore_tags_when_logged_in(
+    async fn can_return_is_following_flag_for_explore_tags_when_logged_in(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -346,7 +346,7 @@ mod tests {
 
         // Should be false initially.
         assert_eq!(tags.len(), 2);
-        assert!(tags.iter().all(|tag| !tag.is_followed));
+        assert!(tags.iter().all(|tag| !tag.is_following));
 
         // Follow the tags.
         let result = sqlx::query(
@@ -373,7 +373,7 @@ VALUES ($2, $1), ($3, $1)
 
         // Should be true.
         assert_eq!(tags.len(), 2);
-        assert!(tags.iter().all(|tag| tag.is_followed));
+        assert!(tags.iter().all(|tag| tag.is_following));
 
         Ok(())
     }

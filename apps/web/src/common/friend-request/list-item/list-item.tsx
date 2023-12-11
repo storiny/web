@@ -17,7 +17,7 @@ const VirtualizedFriendRequestItem = React.memo(
       VirtualizedFriendRequestListContext
     );
     return (
-      <div {...rest} className={css["flex-col"]} key={item.id}>
+      <div {...rest} className={css["flex-col"]}>
         <FriendRequest {...friend_request_props} friend_request={item} />
         <Divider style={{ marginInline: "var(--grid-compensation)" }} />
       </div>

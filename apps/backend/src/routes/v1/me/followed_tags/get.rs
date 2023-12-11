@@ -48,7 +48,7 @@ struct Tag {
     #[serde(with = "crate::iso8601::time")]
     created_at: OffsetDateTime,
     // Boolean flags
-    is_followed: bool,
+    is_following: bool,
 }
 
 #[get("/v1/me/followed-tags")]
@@ -101,7 +101,7 @@ SELECT
     "tf->tag".follower_count as "follower_count",
     "tf->tag".created_at as "created_at",
     -- Boolean flags
-    TRUE as "is_followed"
+    TRUE as "is_following"
 "#,
     );
 
@@ -161,7 +161,7 @@ SELECT
     follower_count,
     created_at,
     -- Boolean flags
-    is_followed
+    is_following
 FROM followed_tags
 "#,
     );
@@ -231,7 +231,7 @@ VALUES ($1, $2), ($1, $3)
         let followed_tags = json.unwrap();
 
         assert_eq!(followed_tags.len(), 2);
-        assert!(followed_tags.iter().all(|tag| tag.is_followed));
+        assert!(followed_tags.iter().all(|tag| tag.is_following));
 
         Ok(())
     }

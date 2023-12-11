@@ -367,7 +367,11 @@ const ProfileContent = ({
             {Boolean((profile.rendered_bio || "").trim()) && (
               <div className={clsx(css["flex-col"], styles.container)}>
                 <Title>About</Title>
-                <Typography className={css["t-minor"]} level={"body2"}>
+                <Typography
+                  as={"div"}
+                  className={css["t-minor"]}
+                  level={"body2"}
+                >
                   <BioParser content={profile.rendered_bio} />
                 </Typography>
               </div>

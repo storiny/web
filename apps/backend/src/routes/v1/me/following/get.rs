@@ -46,6 +46,9 @@ struct Following {
     avatar_id: Option<Uuid>,
     avatar_hex: Option<String>,
     public_flags: i32,
+    follower_count: i32,
+    story_count: i32,
+    rendered_bio: String,
     // Boolean flags
     is_follower: bool,
     is_following: bool,
@@ -102,6 +105,9 @@ SELECT
     ru.avatar_id,
     ru.avatar_hex,
     ru.public_flags,
+    ru.story_count,
+    ru.follower_count,
+    ru.rendered_bio,
     -- Boolean flags
     "ru->is_follower".follower_id IS NOT NULL AS "is_follower",
     "ru->is_friend".transmitter_id IS NOT NULL AS "is_friend"
@@ -183,6 +189,9 @@ SELECT
     avatar_id,
     avatar_hex,
     public_flags,
+    story_count,
+    follower_count,
+    rendered_bio,
     -- Boolean flags
     is_follower,
     TRUE AS "is_following",
