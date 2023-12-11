@@ -122,6 +122,7 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     // Me - Notifications
     v1::me::notifications::get::init_routes(cfg);
     v1::me::notifications::read::init_routes(cfg);
+    v1::me::notifications::read_all::init_routes(cfg);
     // Me - Settings - Accounts
     v1::me::settings::accounts::remove::init_routes(cfg);
     // Me - Settings - Avatar

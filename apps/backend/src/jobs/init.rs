@@ -3,6 +3,7 @@ use crate::{
     config::get_app_config,
     jobs::{
         cron::{
+            cleanup_cache::cleanup_cache,
             cleanup_db::cleanup_db,
             cleanup_s3::cleanup_s3,
             sitemap::refresh_sitemap,
@@ -126,6 +127,21 @@ pub async fn start_jobs(
                     .build_fn(send_templated_email)
             })
             // Cron
+            .register(
+                WorkerBuilder::new("cache-cleanup-worker")
+                    .layer(TraceLayer::new())
+                    .layer(Extension(state.clone()))
+                    .stream(
+                        CronStream::new(
+                            // Run every night at 2 AM
+                            Schedule::from_str("0 0 02 * * *")
+                                .expect("Unable to parse the cron schedule"),
+                        )
+                        .timer(TokioTimer)
+                        .to_stream(),
+                    )
+                    .build_fn(cleanup_cache),
+            )
             .register(
                 WorkerBuilder::new("sitemap-worker")
                     .layer(TraceLayer::new())

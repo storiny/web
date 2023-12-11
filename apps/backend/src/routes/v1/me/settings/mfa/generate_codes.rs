@@ -71,7 +71,7 @@ WITH removed_recovery_codes AS (
     DELETE FROM mfa_recovery_codes WHERE user_id = $1
 )
 INSERT INTO mfa_recovery_codes (code, user_id)
-SELECT UNNEST($2::CHAR(12)[]), $1
+SELECT UNNEST($2::TEXT[]), $1
 "#,
     )
     .bind(user_id)

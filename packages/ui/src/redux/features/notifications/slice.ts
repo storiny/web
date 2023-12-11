@@ -6,11 +6,7 @@ import {
 import { API_VERSION } from "@storiny/shared";
 import { Notification } from "@storiny/types";
 
-import { set_entity_record_value } from "~/redux/features";
-import {
-  debounce_effect,
-  fetch_api
-} from "~/redux/features/entities/listener/utils";
+import { fetch_api } from "~/redux/features/entities/listener/utils";
 import { AppStartListening } from "~/redux/listener-middleware";
 import { AppState } from "~/redux/store";
 import { clamp } from "~/utils/clamp";
@@ -153,11 +149,6 @@ export const add_notifications_listeners = (
       const [notification_id, has_read] = payload;
 
       if (has_read) {
-        await debounce_effect(
-          `read_notifications:${notification_id}`,
-          listener_api
-        );
-
         await fetch_api(
           `me/notifications/${notification_id}/read`,
           listener_api,

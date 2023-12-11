@@ -112,7 +112,7 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
       <RichTextPlugin
         ErrorBoundary={EditorErrorBoundary}
         content_editable={<EditorContentEditable editable={!read_only} />}
-        placeholder={<EditorPlaceholder />}
+        placeholder={read_only ? null : <EditorPlaceholder />}
       />
       {read_only ? (
         <ReadOnlyPlugin

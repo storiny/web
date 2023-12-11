@@ -21,6 +21,7 @@ const PrivacyClient = ({
   friend_requests,
   tags,
   stories,
+  story_likes,
   comments,
   new_followers
 }: NotificationsProps): React.ReactElement => (
@@ -34,6 +35,7 @@ const PrivacyClient = ({
           friend_requests,
           tags,
           stories,
+          story_likes,
           comments,
           new_followers
         }}
