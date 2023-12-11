@@ -31,6 +31,10 @@ const Actions = ({ tag }: Props): React.ReactElement => {
     (state) => state.entities.followed_tags[tag.id]
   );
 
+  React.useEffect(() => {
+    dispatch(sync_with_tag(tag));
+  }, [dispatch, tag]);
+
   return (
     <div className={clsx(css["flex"], styles.actions)}>
       <Button
@@ -59,14 +63,9 @@ const Actions = ({ tag }: Props): React.ReactElement => {
 };
 
 const SuspendedTagContent = ({ tag }: Props): React.ReactElement => {
-  const dispatch = use_app_dispatch();
   const follower_count =
     use_app_selector((state) => state.entities.tag_follower_counts[tag.id]) ||
     0;
-
-  React.useEffect(() => {
-    dispatch(sync_with_tag(tag));
-  }, [dispatch, tag]);
 
   return (
     <div className={clsx(css["flex-col"], styles.content)}>

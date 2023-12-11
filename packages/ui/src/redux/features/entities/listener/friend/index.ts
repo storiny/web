@@ -26,6 +26,8 @@ export const add_friend_listener = (
             method: "POST"
           })
             .then((res) => {
+              console.log("--", res, res?.json());
+              res?.json().then(console.log);
               if (res) {
                 if (res.ok) {
                   listener_api.dispatch(
@@ -50,7 +52,14 @@ export const add_friend_listener = (
                 }
               }
             })
-            .catch(() => undefined);
+            .catch((error) => {
+              listener_api.dispatch(
+                render_toast({
+                  message: error?.error || "Could not send your friend request",
+                  severity: "error"
+                })
+              );
+            });
         }
       }
     }
@@ -58,7 +67,8 @@ export const add_friend_listener = (
 
   /**
    * Increment and decrement friend count. The client can only remove a friend,
-   * and to add a friend, the friend request needs to be accepted by the recipient
+   * and to add a friend, the friend request needs to be accepted by the
+   * recipient
    */
   start_listening({
     actionCreator: set_entity_record_value,

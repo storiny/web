@@ -77,7 +77,9 @@ const Tag = (props: TagProps): React.ReactElement => {
         <Typography
           className={clsx(css["flex-center"], styles.stat)}
           level={"body2"}
-          title={`${tag.story_count.toLocaleString()} stories`}
+          title={`${tag.story_count.toLocaleString()} ${
+            tag.story_count === 1 ? "story" : "stories"
+          }`}
         >
           <span className={clsx(css["flex-center"], styles["stat-icon"])}>
             <StoryIcon />
@@ -87,7 +89,9 @@ const Tag = (props: TagProps): React.ReactElement => {
             {!is_mobile && (
               <>
                 {" "}
-                <span className={css["t-minor"]}>stories</span>
+                <span className={css["t-minor"]}>
+                  {tag.story_count === 1 ? "story" : "stories"}
+                </span>
               </>
             )}
           </span>
@@ -95,7 +99,9 @@ const Tag = (props: TagProps): React.ReactElement => {
         <Typography
           className={clsx(css["flex-center"], styles.stat)}
           level={"body2"}
-          title={`${follower_count.toLocaleString()} followers`}
+          title={`${follower_count.toLocaleString()} ${
+            follower_count === 1 ? "follower" : "followers"
+          }`}
         >
           <span className={clsx(css["flex-center"], styles["stat-icon"])}>
             <UsersIcon />
@@ -105,7 +111,9 @@ const Tag = (props: TagProps): React.ReactElement => {
             {!is_mobile && (
               <>
                 {" "}
-                <span className={css["t-minor"]}>followers</span>
+                <span className={css["t-minor"]}>
+                  {follower_count === 1 ? "follower" : "followers"}
+                </span>
               </>
             )}
           </span>

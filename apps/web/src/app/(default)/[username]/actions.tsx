@@ -14,6 +14,7 @@ import BellFilledIcon from "~/icons/bell-filled";
 import BellPlusIcon from "~/icons/bell-plus";
 import CopyIcon from "~/icons/copy";
 import DotsIcon from "~/icons/dots";
+import HeartOffIcon from "~/icons/heart-off";
 import HeartPlusIcon from "~/icons/heart-plus";
 import MuteIcon from "~/icons/mute";
 import ReportIcon from "~/icons/report";
@@ -81,6 +82,27 @@ const Actions = ({ profile, is_inside_sidebar }: Props): React.ReactElement => {
     }
   );
 
+  const [remove_friend_element] = use_confirmation(
+    ({ open_confirmation }) => (
+      <MenuItem
+        check_auth
+        decorator={<HeartOffIcon />}
+        onSelect={(event): void => {
+          event.preventDefault(); // Do not auto-close the menu
+          open_confirmation();
+        }}
+      >
+        Remove friend
+      </MenuItem>
+    ),
+    {
+      color: "ruby",
+      on_confirm: () => dispatch(boolean_action("friends", profile.id, false)),
+      title: `Unfriend @${profile.username}?`,
+      description: "Are you sure you want to remove this user as friend?"
+    }
+  );
+
   React.useEffect(() => {
     dispatch(
       sync_with_user({
@@ -119,15 +141,7 @@ const Actions = ({ profile, is_inside_sidebar }: Props): React.ReactElement => {
               Cancel request
             </MenuItem>
           ) : is_friend ? (
-            <MenuItem
-              check_auth
-              decorator={<HeartPlusIcon />}
-              onClick={(): void => {
-                dispatch(boolean_action("friends", profile.id, false));
-              }}
-            >
-              Remove friend
-            </MenuItem>
+            remove_friend_element
           ) : (
             <MenuItem
               check_auth
