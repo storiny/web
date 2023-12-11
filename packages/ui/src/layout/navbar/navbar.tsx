@@ -16,8 +16,15 @@ import styles from "./navbar.module.scss";
 import { NavbarProps } from "./navbar.props";
 
 const Navbar = (props: NavbarProps): React.ReactElement => {
-  const { variant = "default", className, children, ...rest } = props;
+  const {
+    variant = "default",
+    is_dashboard,
+    className,
+    children,
+    ...rest
+  } = props;
   const logged_in = use_app_selector(select_is_logged_in);
+
   return (
     <header
       {...rest}
@@ -25,6 +32,7 @@ const Navbar = (props: NavbarProps): React.ReactElement => {
         styles.navbar,
         logged_in && styles["logged-in"],
         variant === "minimal" && styles.minimal,
+        is_dashboard && styles.dashboard,
         className
       )}
       role={"banner"}

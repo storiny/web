@@ -12,13 +12,15 @@ import Typography from "~/components/typography";
 import css from "~/theme/main.module.scss";
 
 import { use_auth_state } from "../../../actions";
+import { use_signup } from "../../../use-signup";
 
 const Page = (): React.ReactElement => {
   const { actions } = use_auth_state();
+  const { handle_signup, is_loading } = use_signup();
 
   const on_skip = (): void => {
     actions.set_signup_state({ wpm: DEFAULT_WPM });
-    actions.switch_segment("email_confirmation");
+    handle_signup();
   };
 
   return (
@@ -35,7 +37,12 @@ const Page = (): React.ReactElement => {
       </Typography>
       <Spacer orientation={"vertical"} size={5} />
       <div className={css["flex-col"]}>
-        <Button onClick={on_skip} size={"lg"} variant={"hollow"}>
+        <Button
+          loading={is_loading}
+          onClick={on_skip}
+          size={"lg"}
+          variant={"hollow"}
+        >
           Skip
         </Button>
         <Spacer orientation={"vertical"} size={1.75} />

@@ -78,7 +78,11 @@ const EditorToc = ({
       </div>
       <Spacer orientation={"vertical"} size={2} />
       <ScrollArea
-        className={clsx(read_only && css["full-h"])}
+        className={clsx(
+          read_only && css["full-h"],
+          styles.x,
+          styles["scroll-area"]
+        )}
         slot_props={
           {
             viewport: {

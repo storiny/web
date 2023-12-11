@@ -1,7 +1,6 @@
 // noinspection HtmlRequiredTitleElement
 
 import "server-only";
-import "normalize.css/normalize.css";
 import "~/theme/global.scss";
 import "~/theme/main.module.scss"; // Import the global css styles so that they have the lowest style priority
 

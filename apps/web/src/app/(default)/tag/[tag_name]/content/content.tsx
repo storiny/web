@@ -11,7 +11,7 @@ import CheckIcon from "~/icons/check";
 import PencilPlusIcon from "~/icons/pencil-plus";
 import PlusIcon from "~/icons/plus";
 import TagIcon from "~/icons/tag";
-import { boolean_action } from "~/redux/features";
+import { boolean_action, sync_with_tag } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
@@ -30,12 +30,6 @@ const Actions = ({ tag }: Props): React.ReactElement => {
   const is_following = use_app_selector(
     (state) => state.entities.followed_tags[tag.id]
   );
-
-  React.useEffect(() => {
-    dispatch(
-      boolean_action("followed_tags", tag.id, Boolean(tag.is_following))
-    );
-  }, [dispatch, tag.is_following, tag.id]);
 
   return (
     <div className={clsx(css["flex"], styles.actions)}>
@@ -64,37 +58,48 @@ const Actions = ({ tag }: Props): React.ReactElement => {
   );
 };
 
-const SuspendedTagContent = ({ tag }: Props): React.ReactElement => (
-  <div className={clsx(css["flex-col"], styles.content)}>
-    <div className={clsx(css["flex-center"], styles.meta)}>
-      <TagIcon className={clsx(styles.x, styles["meta-icon"])} />
-      <Typography level={"h1"}>{tag.name}</Typography>
-      <Grow />
-      <TagActions tag={tag} />
+const SuspendedTagContent = ({ tag }: Props): React.ReactElement => {
+  const dispatch = use_app_dispatch();
+  const follower_count =
+    use_app_selector((state) => state.entities.tag_follower_counts[tag.id]) ||
+    0;
+
+  React.useEffect(() => {
+    dispatch(sync_with_tag(tag));
+  }, [dispatch, tag]);
+
+  return (
+    <div className={clsx(css["flex-col"], styles.content)}>
+      <div className={clsx(css["flex-center"], styles.meta)}>
+        <TagIcon className={clsx(styles.x, styles["meta-icon"])} />
+        <Typography level={"h1"}>{tag.name}</Typography>
+        <Grow />
+        <TagActions tag={tag} />
+      </div>
+      <div className={clsx(css["flex"], styles.stats)}>
+        <Typography
+          className={clsx(css["t-medium"], css["t-minor"])}
+          level={"body2"}
+        >
+          <span className={clsx(css["t-bold"], css["t-major"])}>
+            {abbreviate_number(tag.story_count)}
+          </span>{" "}
+          {tag.story_count === 1 ? "story" : "stories"}
+        </Typography>
+        <Typography
+          className={clsx(css["t-medium"], css["t-minor"])}
+          level={"body2"}
+        >
+          <span className={clsx(css["t-bold"], css["t-major"])}>
+            {abbreviate_number(follower_count)}
+          </span>{" "}
+          {follower_count === 1 ? "follower" : "followers"}
+        </Typography>
+      </div>
+      <Spacer orientation={"vertical"} size={0.5} />
+      <Actions tag={tag} />
     </div>
-    <div className={clsx(css["flex"], styles.stats)}>
-      <Typography
-        className={clsx(css["t-medium"], css["t-minor"])}
-        level={"body2"}
-      >
-        <span className={clsx(css["t-bold"], css["t-major"])}>
-          {abbreviate_number(tag.story_count)}
-        </span>{" "}
-        {tag.story_count === 1 ? "story" : "stories"}
-      </Typography>
-      <Typography
-        className={clsx(css["t-medium"], css["t-minor"])}
-        level={"body2"}
-      >
-        <span className={clsx(css["t-bold"], css["t-major"])}>
-          {abbreviate_number(tag.follower_count)}
-        </span>{" "}
-        {tag.follower_count === 1 ? "follower" : "followers"}
-      </Typography>
-    </div>
-    <Spacer orientation={"vertical"} size={0.5} />
-    <Actions tag={tag} />
-  </div>
-);
+  );
+};
 
 export default SuspendedTagContent;

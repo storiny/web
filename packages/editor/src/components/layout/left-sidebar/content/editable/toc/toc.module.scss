@@ -1,9 +1,12 @@
 .x {
+  &.scroll-area {
+    max-height: 300px;
+    min-height: 180px;
+  }
+
   &.viewport {
     display: flex;
     align-items: stretch;
-    min-height: 180px;
-    max-height: 300px;
     border: 1px solid var(--divider);
     border-radius: var(--radius-md);
   }
