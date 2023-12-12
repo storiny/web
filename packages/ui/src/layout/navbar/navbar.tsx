@@ -2,6 +2,7 @@
 
 import clsx from "clsx";
 import NextLink from "next/link";
+import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
 import Wordmark from "~/brand/wordmark";
@@ -23,6 +24,7 @@ const Navbar = (props: NavbarProps): React.ReactElement => {
     children,
     ...rest
   } = props;
+  const router = use_router();
   const logged_in = use_app_selector(select_is_logged_in);
 
   return (
@@ -70,6 +72,13 @@ const Navbar = (props: NavbarProps): React.ReactElement => {
             <Input
               decorator={<SearchIcon />}
               name={"navbar-search"}
+              onKeyUp={(event): void => {
+                if (event.key === "Enter") {
+                  router.push(
+                    `/explore?query=${event.currentTarget.value || ""}`
+                  );
+                }
+              }}
               placeholder={"Search Storiny"}
               results={5}
               slot_props={{

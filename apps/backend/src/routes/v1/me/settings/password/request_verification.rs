@@ -10,6 +10,7 @@ use crate::{
         storage::JobStorage,
     },
     middlewares::identity::identity::Identity,
+    models::email_templates::password_add_verification::PasswordAddVerificationEmailTemplateData,
     AppState,
 };
 use actix_web::{
@@ -33,11 +34,6 @@ use time::{
     Duration,
     OffsetDateTime,
 };
-
-#[derive(Debug, Serialize)]
-struct PasswordAddVerificationEmailTemplateData {
-    verification_code: String,
-}
 
 /// Generates a random 6-digit numeric verification code.
 fn generate_verification_code() -> String {
@@ -223,7 +219,7 @@ VALUES ($1, $2, $3, $4, $5)
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         // Insert a password-add verification token.
-        let prev_result = sqlx::query(
+        let result = sqlx::query(
             r#"
 INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
@@ -236,7 +232,7 @@ VALUES ($1, $2, $3, $4)
         .execute(&mut *conn)
         .await?;
 
-        assert_eq!(prev_result.rows_affected(), 1);
+        assert_eq!(result.rows_affected(), 1);
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())

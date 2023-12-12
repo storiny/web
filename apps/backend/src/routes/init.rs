@@ -41,6 +41,7 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::auth::signup::init_routes(cfg);
     v1::auth::reset_password::init_routes(cfg);
     v1::auth::recovery::init_routes(cfg);
+    v1::auth::resend_verification_email::init_routes(cfg);
     v1::auth::external::google::init_routes(cfg);
     v1::auth::external::google::callback::init_routes(cfg);
     // Feed

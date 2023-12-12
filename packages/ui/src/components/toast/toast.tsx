@@ -4,11 +4,10 @@ import { Close, Description, Root } from "@radix-ui/react-toast";
 import clsx from "clsx";
 import React from "react";
 
-import AlertSquareIcon from "~/icons/alert-square";
-import CheckSquareIcon from "~/icons/check-square";
+import CheckIcon from "~/icons/check";
+import ExclamationIcon from "~/icons/exclamation";
 import InfoIcon from "~/icons/info";
 import XIcon from "~/icons/x";
-import XSquareIcon from "~/icons/x-square";
 import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
@@ -18,10 +17,10 @@ import { ToastProps, ToastSeverity } from "./toast.props";
 
 const SEVERITY_ICON_MAP: Record<ToastSeverity, React.ReactNode> = {
   blank: null,
-  error: <XSquareIcon />,
+  error: <XIcon />,
   info: <InfoIcon />,
-  success: <CheckSquareIcon />,
-  warning: <AlertSquareIcon />
+  success: <CheckIcon />,
+  warning: <ExclamationIcon />
 };
 
 const Toast = forward_ref<ToastProps, "li">((props, ref) => {
@@ -53,7 +52,6 @@ const Toast = forward_ref<ToastProps, "li">((props, ref) => {
               {...slot_props?.decorator}
               className={clsx(
                 styles.decorator,
-                styles[severity],
                 slot_props?.decorator?.className
               )}
             >

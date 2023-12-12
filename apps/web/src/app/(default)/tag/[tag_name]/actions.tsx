@@ -5,6 +5,7 @@ import IconButton from "~/components/icon-button";
 import Menu from "~/components/menu";
 import MenuItem from "~/components/menu-item";
 import Separator from "~/components/separator";
+import { use_toast } from "~/components/toast";
 import ReportModal from "~/entities/report-modal";
 import { use_clipboard } from "~/hooks/use-clipboard";
 import { use_web_share } from "~/hooks/use-web-share";
@@ -18,7 +19,8 @@ interface Props {
 }
 
 const Actions = ({ tag }: Props): React.ReactElement => {
-  const share = use_web_share();
+  const toast = use_toast();
+  const share = use_web_share(toast);
   const copy = use_clipboard();
 
   return (

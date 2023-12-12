@@ -3,6 +3,7 @@
 import { StoryCategory } from "@storiny/shared";
 import { clsx } from "clsx";
 import dynamic from "next/dynamic";
+import { useSearchParams as use_search_params } from "next/navigation";
 import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
@@ -102,7 +103,10 @@ const PageInputHeader = ({
 
 const Client = ({ category }: Props): React.ReactElement => {
   const [value, set_value] = React.useState<ExploreTabValue>("all");
-  const [query, set_query] = React.useState<string>("");
+  const search_params = use_search_params();
+  const [query, set_query] = React.useState<string>(
+    search_params.get("query") || ""
+  );
   const debounced_query = use_debounce(query);
   const normalized_category = normalize_category(category);
   const is_typing = query !== debounced_query;

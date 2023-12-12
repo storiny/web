@@ -2,13 +2,14 @@
 
 import { dev_console } from "@storiny/shared/src/utils/dev-log";
 
+import { use_toast } from "~/components/toast";
 import { web_share } from "~/utils/web-share";
 
 /**
  * Hook to share data using the web share API
  */
 export const use_web_share =
-  () =>
+  (toaster: ReturnType<typeof use_toast>) =>
   (
     text: string,
     url: string | null = null,
@@ -25,8 +26,14 @@ export const use_web_share =
       web_share({
         text,
         url
-      }).then(() => {
+      }).then((is_success) => {
         on_share_end?.();
+
+        // Clipboad fallback if the web share API is not supported by the
+        // client.
+        if (!is_success) {
+          toaster("Copied to clipboard");
+        }
       });
     } catch (e) {
       dev_console.error(e);

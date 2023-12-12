@@ -6,6 +6,7 @@ import IconButton from "~/components/icon-button";
 import Menu from "~/components/menu";
 import MenuItem from "~/components/menu-item";
 import Separator from "~/components/separator";
+import { use_toast } from "~/components/toast";
 import ReportModal from "~/entities/report-modal";
 import { use_clipboard } from "~/hooks/use-clipboard";
 import { use_media_query } from "~/hooks/use-media-query";
@@ -26,7 +27,8 @@ import { UserActionsProps } from "./actions.props";
 
 const UserActions = (props: UserActionsProps): React.ReactElement | null => {
   const { user, action_type } = props;
-  const share = use_web_share();
+  const toast = use_toast();
+  const share = use_web_share(toast);
   const copy = use_clipboard();
   const dispatch = use_app_dispatch();
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));

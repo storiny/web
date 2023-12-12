@@ -14,6 +14,7 @@ use crate::{
         storage::JobStorage,
     },
     middlewares::identity::identity::Identity,
+    models::email_templates::new_email_verification::NewEmailVerificationEmailTemplateData,
     utils::clear_user_sessions::clear_user_sessions,
     AppState,
 };
@@ -54,13 +55,6 @@ struct Request {
     new_email: String,
     #[validate(length(min = 6, max = 64, message = "Invalid password length"))]
     current_password: String,
-}
-
-/// The data for new email verification template.
-#[derive(Debug, Serialize)]
-struct NewEmailVerificationEmailTemplateData {
-    /// The e-mail verification link for the user.
-    link: String,
 }
 
 #[patch("/v1/me/settings/email")]

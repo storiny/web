@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import InfoIcon from "~/icons/info";
+import InfoSquareIcon from "~/icons/info-square";
 import XIcon from "~/icons/x";
 import css from "~/theme/main.module.scss";
 
@@ -15,7 +15,7 @@ const SettingsAlert = (
   return (
     <div {...rest} className={clsx(styles.alert, className)} role={"alert"}>
       <span className={clsx(css["flex-center"], styles.decorator)}>
-        <InfoIcon />
+        <InfoSquareIcon />
       </span>
       <span className={styles.description}>{children}</span>
       <span

@@ -13,7 +13,7 @@ export const web_share = async ({
 }: {
   text: string;
   url: string | null;
-}): Promise<void> => {
+}): Promise<boolean> => {
   const data = {
     text,
     title: "Storiny",
@@ -22,7 +22,9 @@ export const web_share = async ({
 
   if (navigator.share) {
     await navigator.share(data);
-  } else {
-    await copy_to_clipboard(url || text);
+    return true;
   }
+
+  await copy_to_clipboard(url || text);
+  return false;
 };

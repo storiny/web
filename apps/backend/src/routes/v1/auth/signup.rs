@@ -16,6 +16,7 @@ use crate::{
         storage::JobStorage,
     },
     middlewares::identity::identity::Identity,
+    models::email_templates::email_verification::EmailVerificationEmailTemplateData,
     utils::{
         incr_resource_lock_attempts::incr_resource_lock_attempts,
         is_resource_locked::is_resource_locked,
@@ -66,17 +67,6 @@ struct Request {
     password: String,
     #[validate(range(min = 18, max = 320, message = "Invalid WPM range"))]
     wpm: u16,
-}
-
-/// The data for email verification template.
-#[derive(Debug, Serialize)]
-struct EmailVerificationEmailTemplateData {
-    /// The display name of the user.
-    name: String,
-    /// The e-mail address of the user.
-    email: String,
-    /// The e-mail verification link for the user.
-    link: String,
 }
 
 #[post("/v1/auth/signup")]

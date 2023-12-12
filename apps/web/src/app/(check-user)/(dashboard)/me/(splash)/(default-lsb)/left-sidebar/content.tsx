@@ -18,6 +18,7 @@ import SearchIcon from "~/icons/search";
 import { select_user } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
+import { capitalize } from "~/utils/capitalize";
 
 import {
   DASHBOARD_GROUPS,
@@ -27,18 +28,9 @@ import {
 import { DashboardSegment } from "../../../types";
 import styles from "./left-sidebar.module.scss";
 
-const APP_STATUS = process.env.NEXT_PUBLIC_APP_STATUS; // Stable / beta
+const APP_STATUS = process.env.NEXT_PUBLIC_APP_STATUS;
 const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION;
 const APP_BUILD_HASH = process.env.NEXT_PUBLIC_BUILD_HASH;
-
-/**
- * Returns formatted the app version
- */
-const get_version = (): string => {
-  const parts = (APP_VERSION || "").split(".");
-  parts.pop(); // Remove patch version
-  return parts.join(".");
-};
 
 // Anchor tab
 
@@ -215,8 +207,7 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
           <Separator />
           <div className={css["flex-col"]}>
             <Typography className={css["t-muted"]} ellipsis level={"body3"}>
-              {process.env.NODE_ENV === "development" ? "Dev" : APP_STATUS}{" "}
-              {get_version()}
+              {capitalize(APP_STATUS || "")} {APP_VERSION}
               {APP_BUILD_HASH ? ` (${APP_BUILD_HASH})` : ""}
             </Typography>
           </div>

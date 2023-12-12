@@ -116,7 +116,8 @@ const CancelFriendRequestItem = ({
 };
 
 const Actions = ({ profile, is_inside_sidebar }: Props): React.ReactElement => {
-  const share = use_web_share();
+  const toast = use_toast();
+  const share = use_web_share(toast);
   const copy = use_clipboard();
   const dispatch = use_app_dispatch();
   const logged_in = use_app_selector(select_is_logged_in);

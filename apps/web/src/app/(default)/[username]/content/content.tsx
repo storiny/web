@@ -22,7 +22,7 @@ import { use_media_query } from "~/hooks/use-media-query";
 import CalendarIcon from "~/icons/calendar";
 import EditIcon from "~/icons/edit";
 import ForbidIcon from "~/icons/forbid";
-import InfoIcon from "~/icons/info";
+import InfoSquareIcon from "~/icons/info-square";
 import LockIcon from "~/icons/lock";
 import MapPinIcon from "~/icons/map-pin";
 import UserCheckIcon from "~/icons/user-check";
@@ -167,7 +167,7 @@ const Badges = ({
           }
           delayDuration={0}
         >
-          <InfoIcon className={clsx(styles.x, styles["badge-hint"])} />
+          <InfoSquareIcon className={clsx(styles.x, styles["badge-hint"])} />
         </Tooltip>
       </Title>
       <div className={clsx(css["flex"], styles["badges-container"])}>

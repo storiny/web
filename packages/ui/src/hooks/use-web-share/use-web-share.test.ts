@@ -1,5 +1,6 @@
 import { act } from "@testing-library/react";
 
+import { use_toast } from "~/components/toast";
 import { render_hook_with_provider } from "~/redux/test-utils";
 
 import { use_web_share } from "./use-web-share";
@@ -21,10 +22,13 @@ describe("use_web_share", () => {
 
   it("calls the web share api", async () => {
     const data = { text: "test", url: "https://storiny.com" };
-    const { result } = render_hook_with_provider(() => use_web_share());
+    const { result } = render_hook_with_provider(() => {
+      const toast = use_toast();
+      return use_web_share(toast);
+    });
 
-    await act(async () => {
-      await result.current(data.text, data.url);
+    act(() => {
+      result.current(data.text, data.url);
     });
 
     expect(navigator.share).toHaveBeenCalledTimes(1);
