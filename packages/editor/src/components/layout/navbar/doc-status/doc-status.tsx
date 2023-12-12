@@ -8,10 +8,14 @@ import CloudOffIcon from "~/icons/cloud-off";
 import CloudSyncingIcon from "~/icons/cloud-syncing";
 import css from "~/theme/main.module.scss";
 
-import { DOC_STATUS, doc_status_atom, DocStatus } from "../../../../atoms";
+import {
+  DOC_STATUS,
+  doc_status_atom,
+  DocStatus as TDocStatus
+} from "../../../../atoms";
 import styles from "./doc-status.module.scss";
 
-const DOC_STATUS_TOOLTIP_MAP: Partial<Record<DocStatus, string>> = {
+const DOC_STATUS_TOOLTIP_MAP: Partial<Record<TDocStatus, string>> = {
   [DOC_STATUS.connecting /*   */]: "Connecting…",
   [DOC_STATUS.reconnecting /* */]: "Reconnecting…",
   [DOC_STATUS.syncing /*      */]: "Syncing…",
@@ -23,7 +27,7 @@ const DOC_STATUS_TOOLTIP_MAP: Partial<Record<DocStatus, string>> = {
   DOC_STATUS.internal /*      */]: "Disconnected"
 };
 
-const DOC_STATUS_ICON_MAP: Partial<Record<DocStatus, React.ReactElement>> = {
+const DOC_STATUS_ICON_MAP: Partial<Record<TDocStatus, React.ReactElement>> = {
   [DOC_STATUS.connecting /*  */]: <CloudIcon />,
   [DOC_STATUS.reconnecting /**/]: <CloudSyncingIcon />,
   [DOC_STATUS.syncing /*     */]: <CloudSyncingIcon />,

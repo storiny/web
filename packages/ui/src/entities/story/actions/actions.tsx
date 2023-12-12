@@ -48,9 +48,9 @@ const StoryActions = ({
   is_extended?: boolean;
   story: Story;
 }): React.ReactElement => {
-  const share = use_web_share();
-  const copy = use_clipboard();
   const toast = use_toast();
+  const share = use_web_share(toast);
+  const copy = use_clipboard();
   const dispatch = use_app_dispatch();
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const logged_in = use_app_selector(select_is_logged_in);

@@ -13,6 +13,7 @@ import CriticalStyles from "~/theme/critical";
 import CriticalFonts from "./fonts/critical";
 import ObserverErrorHandler from "./observer";
 import { PreloadResources } from "./preload-resources";
+import SelfXSSWarning from "./selfxss-warning";
 import StateProvider from "./state-provider";
 // @ts-expect-error text file import
 import theme_sync from "./theme-sync.txt";
@@ -60,6 +61,7 @@ const RootLayout = ({
         <StateProvider logged_in={logged_in}>{children}</StateProvider>
       </body>
       <ObserverErrorHandler />
+      <SelfXSSWarning />
     </html>
   );
 };

@@ -25,38 +25,15 @@
 }
 
 .decorator {
-  --icon-size: 14px;
-  --fg: var(--fg-major);
+  --icon-size: 18px;
+  --fg: var(--inverted-negative);
 
-  margin-right: 10px;
-  padding: 2px;
+  padding-right: 12px;
   display: inline-flex;
-  border-radius: var(--radius-md);
-  background-color: var(--bg, transparent);
-
-  &.info {
-    --fg: var(--snow);
-    --bg: var(--plum-200);
-  }
-
-  &.success {
-    --fg: var(--snow);
-    --bg: var(--beryl-200);
-  }
-
-  &.error {
-    --fg: var(--snow);
-    --bg: var(--ruby-500);
-  }
-
-  &.warning {
-    --fg: var(--obsidian);
-    --bg: var(--lemon-200);
-  }
 }
 
 .description {
-  margin: 8px 10px;
+  margin: 8px 12px;
   flex-grow: 1;
   max-width: 100%;
   display: flex;

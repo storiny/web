@@ -13,6 +13,7 @@ use crate::{
         email::templated_email::TemplatedEmailJob,
         storage::JobStorage,
     },
+    models::email_templates::reset_password::ResetPasswordEmailTemplateData,
     utils::{
         incr_resource_lock_attempts::incr_resource_lock_attempts,
         is_resource_locked::is_resource_locked,
@@ -52,11 +53,6 @@ struct Request {
     #[validate(email(message = "Invalid e-mail"))]
     #[validate(length(min = 3, max = 300, message = "Invalid e-mail length"))]
     email: String,
-}
-
-#[derive(Debug, Serialize)]
-struct ResetPasswordEmailTemplateData {
-    link: String,
 }
 
 #[post("/v1/auth/recovery")]
@@ -295,7 +291,7 @@ SELECT EXISTS (
             let app = init_app_for_test(post, pool, false, false, None).await.0;
 
             // Insert a password reset token.
-            let prev_result = sqlx::query(
+            let result = sqlx::query(
                 r#"
 INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
@@ -308,7 +304,7 @@ VALUES ($1, $2, $3, $4)
             .execute(&mut *conn)
             .await?;
 
-            assert_eq!(prev_result.rows_affected(), 1);
+            assert_eq!(result.rows_affected(), 1);
 
             let req = test::TestRequest::post()
                 .uri("/v1/auth/recovery")

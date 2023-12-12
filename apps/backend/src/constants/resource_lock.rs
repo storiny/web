@@ -24,6 +24,10 @@ pub enum ResourceLock {
     /// for a single account.
     #[strum(serialize = "l:rcv")]
     Recovery,
+    /// The account verification resource lock. This occurs when there are too many e-mail
+    /// verification requests for a single account.
+    #[strum(serialize = "l:vfy")]
+    Verification,
 }
 
 impl ResourceLock {
@@ -35,6 +39,7 @@ impl ResourceLock {
             ResourceLock::Signup => 30,
             ResourceLock::Recovery => 10,
             ResourceLock::ResetPassword => 10,
+            ResourceLock::Verification => 5,
         }
     }
 }

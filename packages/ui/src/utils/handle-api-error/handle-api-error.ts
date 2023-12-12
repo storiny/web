@@ -52,7 +52,9 @@ export const handle_api_error = <T extends FieldValues>(
         (error?.status === "FETCH_ERROR"
           ? "Storiny is currently unavailable. Check your network connection or try again later."
           : default_message),
-      "error"
+      !error?.data?.error && error?.status === "FETCH_ERROR"
+        ? "warning"
+        : "error"
     );
   }
 };

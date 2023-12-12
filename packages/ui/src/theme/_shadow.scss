@@ -1,5 +1,5 @@
 @mixin ridge-light {
-  --ridge-md: inset 0px 1px 3px #bfbfbf;
+  --ridge-md: inset 0px -1px 1px -1px #858585, inset 0px 1px 2.5px #bfbfbf;
   --ridge-sm: inset 0px 1px 3px rgba(219 219 219 / 60%);
   --ridge-xs: inset 0px 0px 1px rgba(163 163 163 / 32%),
     inset 0px 1px 0px rgba(128 128 128 / 10%);
@@ -7,7 +7,7 @@
 }
 
 @mixin ridge-dark {
-  --ridge-md: inset 0px -1px 1px -1px #55575b, inset 0px 1.5px 4px #646e81;
+  --ridge-md: inset 0px -1px 1px -1px #55575b, inset 0px 1.5px 2px #646e81;
   --ridge-sm: inset 0px -1px 1px -1px rgba(85 87 91 / 50%),
     inset 0px 1px 3px rgba(100 110 129 / 80%);
   --ridge-xs: inset 0px 0px 1px rgba(255 255 255 / 32%),

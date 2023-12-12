@@ -9,6 +9,7 @@ import Menu from "~/components/menu";
 import MenuItem from "~/components/menu-item";
 import Separator from "~/components/separator";
 import Spacer from "~/components/spacer";
+import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import Persona from "~/entities/persona";
 import ReportModal from "~/entities/report-modal";
@@ -43,12 +44,13 @@ import styles from "./story-header.module.scss";
 
 const StoryActions = (): React.ReactElement => {
   const is_larger_than_desktop = use_media_query(BREAKPOINTS.up("desktop"));
+  const toast = use_toast();
   const story = use_atom_value(story_metadata_atom);
   const user = use_app_selector(select_user);
   const [sidebars_collapsed, set_sidebars_collapsed] = use_atom(
     sidebars_collapsed_atom
   );
-  const share = use_web_share();
+  const share = use_web_share(toast);
   const copy = use_clipboard();
   const dispatch = use_app_dispatch();
   const is_bookmarked = use_app_selector(
