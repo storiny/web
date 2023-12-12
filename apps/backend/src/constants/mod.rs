@@ -2,7 +2,6 @@ pub mod account_activity_type;
 pub mod buckets;
 pub mod email_source;
 pub mod email_template;
-mod email_template_data;
 pub mod image_size;
 pub mod notification_entity_type;
 pub mod pexels;

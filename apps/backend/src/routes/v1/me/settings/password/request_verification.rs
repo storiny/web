@@ -28,7 +28,6 @@ use argon2::{
     PasswordHasher,
 };
 use nanoid::nanoid;
-use serde::Serialize;
 use sqlx::Row;
 use time::{
     Duration,

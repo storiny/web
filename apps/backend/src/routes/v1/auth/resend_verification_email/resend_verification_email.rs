@@ -112,7 +112,7 @@ WHERE email = $1
         }
     })?;
 
-    let user_id = user.get::<i64>("id");
+    let user_id = user.get::<i64, _>("id");
 
     // Check if the email-change token exists if this is not a new user.
     if user
@@ -183,14 +183,13 @@ VALUES ($1, $2, $3, $4)
     // Increment the verification attempts.
     incr_resource_lock_attempts(&data.redis, ResourceLock::Verification, &payload.email).await?;
 
-    let mut template: EmailTemplate;
+    let template: EmailTemplate;
+    let verification_link = format!("https://storiny.com/auth/verify-email/{}", token_id);
 
     let template_data = match user.get::<Option<OffsetDateTime>, _>("last_login_at") {
         // Email verification request for an existing user.
         Some(_) => {
             template = EmailTemplate::NewEmailVerification;
-
-            let verification_link = format!("https://storiny.com/auth/verify-email/{}", token_id);
 
             serde_json::to_string(&NewEmailVerificationEmailTemplateData {
                 link: verification_link,
@@ -206,7 +205,6 @@ VALUES ($1, $2, $3, $4)
 
             let full_name = user.get::<String, _>("name");
             let first_name = full_name.split(" ").collect::<Vec<_>>()[0];
-            let verification_link = format!("https://storiny.com/auth/verify-email/{}", token_id);
 
             serde_json::to_string(&EmailVerificationEmailTemplateData {
                 email: (&payload.email).to_string(),
