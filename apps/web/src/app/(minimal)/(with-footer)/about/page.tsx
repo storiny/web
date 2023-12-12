@@ -40,9 +40,9 @@ const Page = (): React.ReactElement => (
       />
       <div className={clsx(css["flex-col"], css["t-center"], styles.container)}>
         <Typography level={"display1"}>Your voice matters.</Typography>
-        <div className={css["flex-col"]}>
+        <div className={clsx(css["flex-col"], styles.x, styles.tagline)}>
           <Typography as={"p"} className={css["t-minor"]} level={"h4"}>
-            <span className={css["t-major"]}>Storiny</span> is the platform for
+            <span className={css["t-major"]}>Storiny</span> is the place for
           </Typography>
           <Typography as={"p"} className={css["t-muted"]} level={"h2"}>
             the <span className={css["t-major"]}>stor</span>y with
@@ -62,24 +62,19 @@ const Page = (): React.ReactElement => (
         </Typography>
         <div className={clsx(css["flex-col"], styles["section-content"])}>
           <Typography level={"legible"}>
-            Storiny is where you and your ideas belong! (Yes, we made up that
-            line. We like to be creative here.) At our core, we believe that
-            every person has a unique and valuable story that deserves to be
-            shared with the world. We&apos;re not just saying that to sound
-            fancy and inspirational; we really mean it.
+            Storiny is where you and your ideas belong, serving a space for
+            like-minded individuals to connect, share experiences, and valuable
+            knowledge without the hassle of managing stuff that happens behind
+            the scenes on the vast internet.
             <br />
             <br />
-            Whether your story is about personal growth, overcoming adversity,
-            or finally getting your cat to stop scratching the couch, we want to
-            hear it. We believe that by sharing our stories, we can inspire
-            others to share theirs too, and, in turn, create a ripple effect of
-            positivity and empowerment.
+            Unlike a personal blog, publishing on Storiny is like sharing your
+            ideas in a giant, welcoming room filled with diverse readers,
+            creating opportunities for learning, growth, and meaningful
+            connections.
             <br />
             <br />
-            If you have a story within you that is yet to be told, we invite you
-            to join us and share it with the world. Your story has the power to
-            inspire, heal, and create change. And if it&apos;s about your cat,
-            we&apos;ll probably laugh too.
+            You own your ideas, and they are never restricted behind a paywall.
           </Typography>
         </div>
       </section>
@@ -94,21 +89,15 @@ const Page = (): React.ReactElement => (
         </Typography>
         <div className={clsx(css["flex-col"], styles["section-content"])}>
           <Typography level={"legible"}>
-            The principle that knowledge should be accessible to everyone,
-            without any barriers or restrictions holding them back, is one that
-            we firmly stand by.
-            <br />
-            <br />
-            We want to assure you that your stories will never be fenced behind
-            paywalls because that’s just not how we roll. Our main objective is
-            to foster a community where individuals can freely contribute and
-            learn from one another without any impediments.
-            <br />
-            <br />
-            Speaking of collaborative writing, you can invite users to hop on
-            board and contribute to your stories. It&apos;s like having a team
-            of co-authors, but without the arguments over who gets to be the
-            protagonist. More power to you!
+            Storiny fosters a community where every individual is welcomed to
+            share their ideas without any strings attached. We firmly believe
+            that knowledge should be accessible to everyone, without any
+            barriers or restrictions.
+          </Typography>
+          <Typography level={"quote"}>
+            &quot;Information should be free. It&apos;s an ethical imperative.
+            Only information tied to a physical product should have a monetary
+            cost attached to it.&quot; — Aaron Swartz
           </Typography>
         </div>
       </section>
@@ -123,24 +112,23 @@ const Page = (): React.ReactElement => (
         </Typography>
         <div className={clsx(css["flex-col"], styles["section-content"])}>
           <Typography level={"legible"}>
-            In a world where knowledge is the ultimate power move, why should
-            anyone be left behind? That&apos;s the question we posed to
-            ourselves way back in 2021 when we noticed the conspicuous absence
-            of a public blogging community without any paywalls or restrictions.
-            And let&apos;s face it, who doesn&apos;t love nice things? So, we
-            took it upon ourselves to build a platform where everyone could
-            share their ideas without any strings attached.
-          </Typography>
-          <Typography level={"quote"}>
-            &quot;Information should be free. It&apos;s an ethical imperative.
-            Only information tied to a physical product should have a monetary
-            cost attached to it.&quot; — Aaron Swartz
-          </Typography>
-          <Typography level={"legible"}>
-            Consider it as a grandiose potluck celebration, where instead of
-            bringing your preferred dish, you are offering your most ingenious
-            ideas to the group. What&apos;s more, it is an unlimited buffet, and
-            there are no undisclosed expenses or charges.
+            It was in 2021 when we noticed the absence of freely accessible
+            public blogging communities in a world where knowledge is the
+            ultimate power.
+            <br />
+            <br />
+            The internet is filled with personal blogs, and a majority of them
+            are inaccessible, misinformative, unverifiable, or do not feature a
+            reaction system. Information that is deemed accurate is often locked
+            behind a paywall, or a dozen of advertisements fill up your screen
+            the moment you start reading. Finding the right information in the
+            massive pool of internet is no easy task.
+            <br />
+            <br />
+            However, this is not the case with Storiny. Here, posts are
+            regulated on the basis of collective community reviews and ratings,
+            increasing your changes of finding the accurate information that you
+            are looking for.
           </Typography>
         </div>
       </section>
@@ -155,17 +143,19 @@ const Page = (): React.ReactElement => (
         </Typography>
         <div className={clsx(css["flex-col"], styles["section-content"])}>
           <Typography level={"legible"}>
-            We want to establish an all-inclusive platform, enabling individuals
-            from diverse backgrounds to share their innovative ideas, that have
-            the power to shape the way we think, live, and interact with one
-            another.
+            Your ideas have the power to shape and manipulate the way we think,
+            live, and interact with one another. Our vision is to manifest a
+            space allowing individuals from various diversities and professions
+            to share and express their ideas.
             <br />
             <br />
-            Our objective is to nurture a culture of creativity, empathy, and
-            collaboration, where every idea is valued and celebrated. Regardless
-            of whether you are an artist, entrepreneur, scientist, or just
-            someone with a distinctive perspective, Storiny is tailor-made to
-            amplify your voice and create a tangible impact on society.
+            Our primary objective is to nurture a culture of creativity,
+            empathy, and collaboration, where every idea is deeply valued and
+            celebrated.
+            <br />
+            <br />
+            Storiny is crafted to amplify your voice and ideas that have the
+            potential to create a substantial impact on society.
           </Typography>
         </div>
       </section>
@@ -180,8 +170,8 @@ const Page = (): React.ReactElement => (
         </Typography>
         <div className={clsx(css["flex-col"], styles["section-content"])}>
           <Typography level={"legible"}>
-            Please do not hesitate to reach out to us using any of the suitable
-            means of contact listed below.
+            We are always available to provide any assistance you might need.
+            Reach out to us using any of the methods below.
           </Typography>
           <div className={clsx(css["flex-center"], styles.actions)}>
             <Button

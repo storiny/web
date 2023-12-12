@@ -68,7 +68,9 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
                 .unwrap()
                 .then((res) => {
                   if (res.result === "success") {
-                    router.replace("/"); // Home page
+                    router.replace(
+                      res.is_first_login ? `/?onboarding=true` : "/"
+                    ); // Home page
                   } else {
                     actions.switch_segment(
                       res.result === "suspended"

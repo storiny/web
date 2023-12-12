@@ -1,3 +1,5 @@
+"use client";
+
 import { User } from "@storiny/types";
 import { clsx } from "clsx";
 import React from "react";
@@ -15,6 +17,7 @@ type Props = GetCommentResponse;
 
 const Page = (props: Props): React.ReactElement => {
   const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
+
   return (
     <React.Fragment>
       {is_smaller_than_tablet && (

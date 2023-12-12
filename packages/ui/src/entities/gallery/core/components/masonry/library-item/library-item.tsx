@@ -60,8 +60,8 @@ const RatingModal = ({
   <React.Fragment>
     <Description asChild>
       <Typography className={css["t-minor"]} level={"body2"}>
-        Assign a rating to this image to enable us to provide appropriate
-        warning, helping people avoid the content they wish to abstain from.
+        Assigning a rating to this image will help us give suitable warnings to
+        users who may prefer not to view it.
       </Typography>
     </Description>
     <Spacer orientation={"vertical"} size={3} />

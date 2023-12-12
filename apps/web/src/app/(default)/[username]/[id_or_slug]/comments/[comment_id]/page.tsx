@@ -28,7 +28,7 @@ const Page = async ({
 
     const user_id = await get_user();
     const comment_response = await get_comment({
-      id: id_or_slug,
+      id: comment_id,
       current_user_id: user_id || undefined
     });
 

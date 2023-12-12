@@ -6,6 +6,7 @@ import { api_slice } from "~/redux/features/api/slice";
 const SEGMENT = "auth/login";
 
 export interface LoginResponse {
+  is_first_login: boolean;
   result:
     | "success" // Login success
     | "suspended" // Account suspended

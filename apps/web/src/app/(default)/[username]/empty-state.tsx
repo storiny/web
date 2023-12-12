@@ -32,19 +32,19 @@ const get_entity_description_map = (
   following: (
     <>
       Users followed by <span className={css["t-medium"]}>@{username}</span>{" "}
-      will appear here.
+      will show up here.
     </>
   ),
   followers: (
     <>
       <span className={css["t-medium"]}>@{username}</span>&apos;s followers will
-      appear here.
+      show up here.
     </>
   ),
   friends: (
     <>
       <span className={css["t-medium"]}>@{username}</span>&apos;s friends will
-      appear here.
+      show up here.
     </>
   ),
   stories: (

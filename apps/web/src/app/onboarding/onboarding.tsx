@@ -35,6 +35,8 @@ import css from "~/theme/main.module.scss";
 
 import styles from "./onboarding.module.scss";
 
+type OnBoardingSegment = "categories" | "tags" | "writers";
+
 // Segment block
 
 const Segment = ({
@@ -139,9 +141,11 @@ const Tag = ({
 // Tags segment
 
 const TagsSegment = ({
-  encoded_categories
+  encoded_categories,
+  set_segment
 }: {
   encoded_categories: string;
+  set_segment: React.Dispatch<React.SetStateAction<OnBoardingSegment>>;
 }): React.ReactElement => {
   const {
     data,
@@ -151,6 +155,14 @@ const TagsSegment = ({
     error,
     refetch
   } = use_get_onboarding_tags_query(encoded_categories);
+  const chunks = Object.entries(data || ({} as GetOnboardingTagsResponse));
+
+  React.useEffect(() => {
+    // Switch segments if no tags are returned.
+    if (!is_loading && !is_error && !chunks.length) {
+      set_segment("writers");
+    }
+  }, [chunks.length, is_error, is_loading, set_segment]);
 
   return (
     <Segment
@@ -185,39 +197,37 @@ const TagsSegment = ({
           />
         ) : (
           <div className={css["flex-col"]}>
-            {Object.entries(data || ({} as GetOnboardingTagsResponse)).map(
-              ([category, tags]) => (
-                <React.Fragment key={category}>
+            {chunks.map(([category, tags]) => (
+              <React.Fragment key={category}>
+                <div
+                  className={clsx(
+                    css["flex-col"],
+                    styles["category-tags-container"]
+                  )}
+                >
+                  <div className={styles["category-tags-label"]}>
+                    {CATEGORY_ICON_MAP[category]}
+                    <Typography
+                      className={clsx(css["t-minor"], css["t-medium"])}
+                      level={"body2"}
+                    >
+                      {CATEGORY_LABEL_MAP[category]}
+                    </Typography>
+                  </div>
                   <div
                     className={clsx(
-                      css["flex-col"],
-                      styles["category-tags-container"]
+                      css["flex-center"],
+                      styles["category-tags-content"]
                     )}
                   >
-                    <div className={styles["category-tags-label"]}>
-                      {CATEGORY_ICON_MAP[category]}
-                      <Typography
-                        className={clsx(css["t-minor"], css["t-medium"])}
-                        level={"body2"}
-                      >
-                        {CATEGORY_LABEL_MAP[category]}
-                      </Typography>
-                    </div>
-                    <div
-                      className={clsx(
-                        css["flex-center"],
-                        styles["category-tags-content"]
-                      )}
-                    >
-                      {tags.map((tag) => (
-                        <Tag key={tag.id} tag_id={tag.id} tag_name={tag.name} />
-                      ))}
-                    </div>
+                    {tags.map((tag) => (
+                      <Tag key={tag.id} tag_id={tag.id} tag_name={tag.name} />
+                    ))}
                   </div>
-                  <Divider className={css["hide-last"]} />
-                </React.Fragment>
-              )
-            )}
+                </div>
+                <Divider className={css["hide-last"]} />
+              </React.Fragment>
+            ))}
           </div>
         )}
       </ScrollArea>
@@ -228,9 +238,11 @@ const TagsSegment = ({
 // Writers segment
 
 const WritersSegment = ({
-  encoded_categories
+  encoded_categories,
+  set_open
 }: {
   encoded_categories: string;
+  set_open: React.Dispatch<React.SetStateAction<boolean>>;
 }): React.ReactElement => {
   const {
     data = [],
@@ -240,6 +252,13 @@ const WritersSegment = ({
     error,
     refetch
   } = use_get_onboarding_writers_query(encoded_categories);
+
+  React.useEffect(() => {
+    // Close the modal if no writers are returned.
+    if (!is_loading && !is_error && !data.length) {
+      set_open(false);
+    }
+  }, [data.length, is_error, is_loading, set_open]);
 
   return (
     <Segment
@@ -294,9 +313,8 @@ const WritersSegment = ({
 const Onboarding = (): React.ReactElement => {
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const [open, set_open] = React.useState<boolean>(true);
-  const [segment, set_segment] = React.useState<
-    "categories" | "tags" | "writers"
-  >("categories");
+  const [segment, set_segment] =
+    React.useState<OnBoardingSegment>("categories");
   const [selected_categories, set_selected_categories] = React.useState<
     Set<StoryCategory>
   >(new Set([]));
@@ -381,8 +399,18 @@ const Onboarding = (): React.ReactElement => {
               set_selected_categories={set_selected_categories_impl}
             />
           ),
-          tags: <TagsSegment encoded_categories={encoded_categories} />,
-          writers: <WritersSegment encoded_categories={encoded_categories} />
+          tags: (
+            <TagsSegment
+              encoded_categories={encoded_categories}
+              set_segment={set_segment}
+            />
+          ),
+          writers: (
+            <WritersSegment
+              encoded_categories={encoded_categories}
+              set_open={set_open}
+            />
+          )
         }[segment]
       }
       <Stepper
