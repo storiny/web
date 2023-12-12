@@ -1,5 +1,6 @@
 "use client";
 
+import { clsx } from "clsx";
 import React from "react";
 
 import Button from "~/components/button";
@@ -14,7 +15,10 @@ const RootErrorBoundary = ({
   reset: () => void;
 }): React.ReactElement => (
   <SplashScreen force_mount>
-    <Typography className={css["t-legible-fg"]} level={"body2"}>
+    <Typography
+      className={clsx(css["t-legible-fg"], css["t-center"])}
+      level={"body2"}
+    >
       Something went wrong—let&apos;s give it another try.
     </Typography>
     <Spacer orientation={"vertical"} size={2.5} />

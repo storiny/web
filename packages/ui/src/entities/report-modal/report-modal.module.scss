@@ -1,8 +1,18 @@
+.icon-wrapper {
+  --icon-size: 64px;
+  --icon-stroke: var(--fg-minor);
+
+  padding-block: 12px 24px;
+}
+
 .x {
   &.body {
     min-height: 0;
     padding: 0;
-    height: 35vh;
+
+    &:not(.posted) {
+      height: 35vh;
+    }
   }
 
   &.radio-group {
