@@ -87,6 +87,7 @@ async fn post(
         r#"
 SELECT
     id,
+    name,
     last_login_at
 FROM users
 WHERE email = $1
@@ -121,10 +122,7 @@ WHERE email = $1
     {
         match sqlx::query(
             r#"
-SELECT
-    id,
-    name
-FROM tokens
+SELECT 1 FROM tokens
 WHERE
     type = $1
     AND user_id = $2
