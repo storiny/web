@@ -51,7 +51,7 @@ SELECT u.id,
 	   FALSE                                                         AS "is_subscribed!",
 	   FALSE                                                         AS "is_friend_request_sent!",
 	   FALSE                                                         AS "is_blocked_by_user!",
-	   FALSE                                                         AS "is_blocking!",
+	   FALSE                                                         AS "is_blocked!",
 	   FALSE                                                         AS "is_muted!"
 FROM
 	users u

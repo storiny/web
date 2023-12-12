@@ -36,7 +36,7 @@ struct BlockedUser {
     follower_count: i32,
     story_count: i32,
     rendered_bio: String,
-    is_blocking: bool,
+    is_blocked: bool,
 }
 
 #[get("/v1/me/blocked-users")]
@@ -69,7 +69,7 @@ SELECT
     u.follower_count,
     u.story_count,
     u.rendered_bio,
-    TRUE AS "is_blocking"
+    TRUE AS "is_blocked"
 FROM
     blocks b
         INNER JOIN users u ON b.blocked_id = u.id
@@ -154,7 +154,7 @@ VALUES ($1, $2)
 
         assert_eq!(json_data.len(), 1);
         assert_eq!(json_data[0].id, 2_i64);
-        assert!(json_data[0].is_blocking);
+        assert!(json_data[0].is_blocked);
 
         Ok(())
     }

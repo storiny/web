@@ -157,10 +157,10 @@ const Page = ({
   const [query, set_query] = React.useState<string>("");
   // Hide the content initially when the target user is being blocked
   const [content_hidden, set_content_hidden] = React.useState<boolean>(
-    Boolean(profile.is_blocking)
+    Boolean(profile.is_blocked)
   );
   const has_banner = Boolean(profile.banner_id);
-  const is_blocking = use_app_selector(
+  const is_blocked = use_app_selector(
     (state) => state.entities.blocks[profile.id]
   );
 
@@ -175,13 +175,13 @@ const Page = ({
   );
 
   React.useEffect(() => {
-    // `is_blocking` is false on first render due to `use_app_selector`
-    if (!is_blocking && !first_render_ref.current) {
+    // `is_blocked` is false on first render due to `use_app_selector`
+    if (!is_blocked && !first_render_ref.current) {
       set_content_hidden(false);
     } else {
       first_render_ref.current = false;
     }
-  }, [is_blocking]);
+  }, [is_blocked]);
 
   return (
     <>
@@ -232,7 +232,7 @@ const Page = ({
       {is_private ||
       is_suspended ||
       Boolean(profile.is_blocked_by_user) ||
-      (is_blocking && content_hidden) ? (
+      (is_blocked && content_hidden) ? (
         <div className={clsx(css["flex-col"], css["full-w"])}>
           <CustomState
             auto_size
@@ -258,7 +258,7 @@ const Page = ({
                     Learn more
                   </Link>
                 </>
-              ) : is_blocking ? (
+              ) : is_blocked ? (
                 <>
                   Would you like to view content from{" "}
                   <span className={css["t-medium"]}>@{profile.username}</span>?
@@ -275,7 +275,7 @@ const Page = ({
             icon={
               is_suspended ? (
                 <ForbidIcon />
-              ) : Boolean(profile.is_blocked_by_user) || is_blocking ? (
+              ) : Boolean(profile.is_blocked_by_user) || is_blocked ? (
                 <BanIcon />
               ) : (
                 <LockIcon />
@@ -286,7 +286,7 @@ const Page = ({
                 ? "Account suspended"
                 : profile.is_blocked_by_user
                 ? "This user has blocked you"
-                : is_blocking
+                : is_blocked
                 ? "You have blocked this user"
                 : "This account is private"
             }

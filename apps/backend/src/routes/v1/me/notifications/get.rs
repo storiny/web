@@ -108,25 +108,25 @@ SELECT
     -- Boolean flags
     CASE WHEN (
                 -- 3 = Friend request accept, 4 = Friend request received
-                (ns.push_friend_requests AND ("nu->notification".entity_type = 3 OR "nu->notification".entity_type = 4))
+                (ns.push_friend_requests IS TRUE AND ("nu->notification".entity_type = 3 OR "nu->notification".entity_type = 4))
             OR
                 -- 5 = Follower add
-                (ns.push_followers AND "nu->notification".entity_type = 5)
+                (ns.push_followers IS TRUE AND "nu->notification".entity_type = 5)
             OR
                 -- 6 = Comment add
-                (ns.push_comments AND "nu->notification".entity_type = 6)
+                (ns.push_comments IS TRUE AND "nu->notification".entity_type = 6)
             OR
                 -- 7 = Reply add
-                (ns.push_replies AND "nu->notification".entity_type = 7)
+                (ns.push_replies IS TRUE AND "nu->notification".entity_type = 7)
             OR
                 -- 9 = Story like
-                (ns.push_story_likes AND "nu->notification".entity_type = 9)
+                (ns.push_story_likes IS TRUE AND "nu->notification".entity_type = 9)
             OR
                 -- 10 = Story add by user
-                (ns.push_stories AND "nu->notification".entity_type = 10)
+                (ns.push_stories IS TRUE AND "nu->notification".entity_type = 10)
             OR
                 -- 11 = Story add by tag
-                (ns.push_tags AND "nu->notification".entity_type = 11)
+                (ns.push_tags IS TRUE AND "nu->notification".entity_type = 11)
             )
         THEN TRUE
         ELSE FALSE
@@ -153,7 +153,7 @@ FROM
         LEFT OUTER JOIN users AS notifier
             ON "nu->notification".notifier_id = notifier.id
         -- Join notification settings of the current user
-        INNER JOIN notification_settings ns
+        INNER JOIN notification_settings AS ns
             ON ns.user_id = $1
 "#,
     );
@@ -278,7 +278,6 @@ VALUES ($1, $2)
 "#,
         )
         .bind(user_id.unwrap())
-        .bind(4_i64)
         .bind(5_i64)
         .execute(&mut *conn)
         .await?;
@@ -286,7 +285,7 @@ VALUES ($1, $2)
         assert_eq!(insert_result.rows_affected(), 1);
 
         let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
+            .cookie(cookie.clone().unwrap())
             .uri("/v1/me/notifications")
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -296,7 +295,7 @@ VALUES ($1, $2)
         assert!(json.iter().all(|notification| notification.is_subscribed));
 
         // Update notification settings for the current user.
-        let insert_result = sqlx::query(
+        let result = sqlx::query(
             r#"
 UPDATE notification_settings
 SET push_followers = FALSE
@@ -307,7 +306,7 @@ WHERE user_id = $1
         .execute(&mut *conn)
         .await?;
 
-        assert_eq!(insert_result.rows_affected(), 1);
+        assert_eq!(result.rows_affected(), 1);
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())

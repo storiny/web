@@ -55,7 +55,7 @@ const StoryActions = ({
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const logged_in = use_app_selector(select_is_logged_in);
   const current_user = use_app_selector(select_user);
-  const is_blocking = use_app_selector(
+  const is_blocked = use_app_selector(
     (state) => state.entities.blocks[story.user?.id || ""]
   );
   const is_muted = use_app_selector(
@@ -77,17 +77,17 @@ const StoryActions = ({
           open_confirmation();
         }}
       >
-        {is_blocking ? "Unblock" : "Block"} this writer
+        {is_blocked ? "Unblock" : "Block"} this writer
       </MenuItem>
     ),
     {
-      color: is_blocking ? "inverted" : "ruby",
+      color: is_blocked ? "inverted" : "ruby",
       on_confirm: () =>
         dispatch(boolean_action("blocks", story.user?.id || "")),
-      title: `${is_blocking ? "Unblock" : "Block"} @${
+      title: `${is_blocked ? "Unblock" : "Block"} @${
         story.user?.username || ""
       }?`,
-      description: is_blocking
+      description: is_blocked
         ? `The public content you publish will be available to them as well as the ability to follow you.`
         : `Your feed will not include their content, and they will not be able to follow you or interact with your profile.`
     }

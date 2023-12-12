@@ -53,6 +53,7 @@ struct Following {
     is_follower: bool,
     is_following: bool,
     is_friend: bool,
+    is_muted: bool,
 }
 
 #[get("/v1/me/following")]
@@ -110,7 +111,8 @@ SELECT
     ru.rendered_bio,
     -- Boolean flags
     "ru->is_follower".follower_id IS NOT NULL AS "is_follower",
-    "ru->is_friend".transmitter_id IS NOT NULL AS "is_friend"
+    "ru->is_friend".transmitter_id IS NOT NULL AS "is_friend",
+    "ru->is_muted".muter_id IS NOT NULL AS "is_muted"
 "#,
     );
 
@@ -131,11 +133,13 @@ FROM
         -- Join followed user
         INNER JOIN users AS ru
             ON r.followed_id = ru.id
+        --
         -- Boolean follower flag
         LEFT OUTER JOIN relations AS "ru->is_follower"
             ON "ru->is_follower".follower_id = ru.id
             AND "ru->is_follower".followed_id = $1
             AND "ru->is_follower".deleted_at IS NULL
+        --
         -- Boolean friend flag
         LEFT OUTER JOIN friends AS "ru->is_friend"
             ON (
@@ -145,6 +149,12 @@ FROM
             )
             AND "ru->is_friend".accepted_at IS NOT NULL
             AND "ru->is_friend".deleted_at IS NULL
+        --
+        -- Boolean muted flag
+        LEFT OUTER JOIN mutes AS "ru->is_muted"
+            ON "ru->is_muted".muted_id = ru.id
+            AND "ru->is_muted".muter_id = $1
+            AND "ru->is_muted".deleted_at IS NULL
 WHERE
     r.follower_id = $1
     AND r.deleted_at IS NULL
@@ -161,6 +171,7 @@ GROUP BY
     ru.id,
     "ru->is_follower".follower_id,
     "ru->is_friend".transmitter_id,
+    "ru->is_muted".muter_id,
     r.created_at
 ORDER BY 
 "#,
@@ -195,7 +206,8 @@ SELECT
     -- Boolean flags
     is_follower,
     TRUE AS "is_following",
-    is_friend
+    is_friend,
+    is_muted
 FROM following_result
 "#,
     );
@@ -407,6 +419,64 @@ WHERE transmitter_id = $1
         let json = serde_json::from_str::<Vec<Following>>(&res_to_string(res).await).unwrap();
         let followed_user = &json[0];
         assert!(followed_user.is_friend);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("following"))]
+    async fn can_return_is_muted_flag_for_followed_users(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Follow a user.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/following")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be false initially.
+        let json = serde_json::from_str::<Vec<Following>>(&res_to_string(res).await).unwrap();
+        let followed_user = &json[0];
+        assert!(!followed_user.is_muted);
+
+        // Mute the follower.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO mutes (muter_id, muted_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/following")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be true.
+        let json = serde_json::from_str::<Vec<Following>>(&res_to_string(res).await).unwrap();
+        let followed_user = &json[0];
+        assert!(followed_user.is_muted);
 
         Ok(())
     }

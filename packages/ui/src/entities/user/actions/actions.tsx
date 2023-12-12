@@ -19,7 +19,6 @@ import UserBlockIcon from "~/icons/user-block";
 import UserXIcon from "~/icons/user-x";
 import { boolean_action, select_user } from "~/redux/features";
 import { select_is_logged_in } from "~/redux/features/auth/selectors";
-import { sync_with_user } from "~/redux/features/entities/slice";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
@@ -33,7 +32,7 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const logged_in = use_app_selector(select_is_logged_in);
   const current_user = use_app_selector(select_user);
-  const is_blocking = use_app_selector(
+  const is_blocked = use_app_selector(
     (state) => state.entities.blocks[user.id]
   );
   const is_muted = use_app_selector((state) => state.entities.mutes[user.id]);
@@ -52,14 +51,14 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
           open_confirmation();
         }}
       >
-        {is_blocking ? "Unblock" : "Block"} this user
+        {is_blocked ? "Unblock" : "Block"} this user
       </MenuItem>
     ),
     {
-      color: is_blocking ? "inverted" : "ruby",
+      color: is_blocked ? "inverted" : "ruby",
       on_confirm: () => dispatch(boolean_action("blocks", user.id)),
-      title: `${is_blocking ? "Unblock" : "Block"} @${user.username}?`,
-      description: is_blocking
+      title: `${is_blocked ? "Unblock" : "Block"} @${user.username}?`,
+      description: is_blocked
         ? `The public content you publish will be available to them as well as the ability to follow you.`
         : `Your feed will not include their content, and they will not be able to follow you or interact with your profile.`
     }
@@ -158,11 +157,11 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
         );
       }}
       variant={
-        (action_type === "block" ? is_blocking : is_muted) ? "rigid" : "hollow"
+        (action_type === "block" ? is_blocked : is_muted) ? "rigid" : "hollow"
       }
     >
       {action_type === "block"
-        ? is_blocking
+        ? is_blocked
           ? "Unblock"
           : "Block"
         : is_muted

@@ -1,6 +1,5 @@
 import {
   number_action,
-  render_toast,
   set_entity_record_value,
   set_self_friend_count
 } from "~/redux/features";
@@ -11,60 +10,6 @@ import { debounce_effect, fetch_api } from "../utils";
 export const add_friend_listener = (
   start_listening: AppStartListening
 ): void => {
-  /**
-   * Send friend request to the server
-   */
-  start_listening({
-    actionCreator: set_entity_record_value,
-    effect: async ({ payload }, listener_api) => {
-      if (payload[0] === "sent_requests") {
-        const [, user_id, has_sent_friend_request] = payload;
-        await debounce_effect(`sent_requests:${user_id}`, listener_api);
-
-        if (has_sent_friend_request) {
-          await fetch_api(`me/friends/${user_id}`, listener_api, {
-            method: "POST"
-          })
-            .then((res) => {
-              console.log("--", res, res?.json());
-              res?.json().then(console.log);
-              if (res) {
-                if (res.ok) {
-                  listener_api.dispatch(
-                    render_toast({
-                      message: "Friend request sent",
-                      severity: "success"
-                    })
-                  );
-                } else {
-                  res
-                    .json()
-                    .then((json) => {
-                      listener_api.dispatch(
-                        render_toast({
-                          message:
-                            json?.error || "Could not send your friend request",
-                          severity: "error"
-                        })
-                      );
-                    })
-                    .catch(() => undefined);
-                }
-              }
-            })
-            .catch((error) => {
-              listener_api.dispatch(
-                render_toast({
-                  message: error?.error || "Could not send your friend request",
-                  severity: "error"
-                })
-              );
-            });
-        }
-      }
-    }
-  });
-
   /**
    * Increment and decrement friend count. The client can only remove a friend,
    * and to add a friend, the friend request needs to be accepted by the

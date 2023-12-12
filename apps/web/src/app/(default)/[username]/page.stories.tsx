@@ -16,7 +16,7 @@ const MOCK_RESPONSE = {
   ...USER,
   is_following: false,
   is_subscribed: false,
-  is_blocking: false,
+  is_blocked: false,
   is_muted: false,
   is_blocked_by_user: false,
   is_self: false,
@@ -105,7 +105,7 @@ export const Private: Story = {
 
 export const Blocking: Story = {
   args: {
-    profile: { ...MOCK_RESPONSE, is_blocking: true }
+    profile: { ...MOCK_RESPONSE, is_blocked: true }
   },
   decorators: [
     (Story): React.ReactElement =>

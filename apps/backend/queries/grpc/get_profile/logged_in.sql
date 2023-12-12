@@ -76,7 +76,7 @@ SELECT u.id,
 	   "u->is_subscribed".follower_id IS NOT NULL                    AS "is_subscribed!",
 	   "u->is_friend_request_sent".transmitter_id IS NOT NULL        AS "is_friend_request_sent!",
 	   "u->is_blocked_by_user".blocker_id IS NOT NULL                AS "is_blocked_by_user!",
-	   "u->is_blocking".blocker_id IS NOT NULL                       AS "is_blocking!",
+	   "u->is_blocked".blocker_id IS NOT NULL                       AS "is_blocked!",
 	   "u->is_muted".muter_id IS NOT NULL                            AS "is_muted!"
 FROM
 	users u
@@ -125,11 +125,11 @@ FROM
 						ON "u->is_blocked_by_user".blocker_id = u.id
 							AND "u->is_blocked_by_user".blocked_id = $2
 							AND "u->is_blocked_by_user".deleted_at IS NULL
-		-- Boolean blocking flag
-		LEFT OUTER JOIN blocks AS "u->is_blocking"
-						ON "u->is_blocking".blocked_id = u.id
-							AND "u->is_blocking".blocker_id = $2
-							AND "u->is_blocking".deleted_at IS NULL
+		-- Boolean blocked flag
+		LEFT OUTER JOIN blocks AS "u->is_blocked"
+						ON "u->is_blocked".blocked_id = u.id
+							AND "u->is_blocked".blocker_id = $2
+							AND "u->is_blocked".deleted_at IS NULL
 		-- Boolean muted flag
 		LEFT OUTER JOIN mutes AS "u->is_muted"
 						ON "u->is_muted".muted_id = u.id
@@ -153,6 +153,6 @@ GROUP BY
 	"u->is_subscribed".follower_id,
 	"u->is_friend_request_sent".transmitter_id,
 	"u->is_blocked_by_user".blocker_id,
-	"u->is_blocking".blocker_id,
+	"u->is_blocked".blocker_id,
 	"u->is_muted".muter_id
 LIMIT 1

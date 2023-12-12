@@ -59,7 +59,7 @@ const Actions = ({
   const is_following = use_app_selector(
     (state) => state.entities.following[profile.id]
   );
-  const is_blocking = use_app_selector(
+  const is_blocked = use_app_selector(
     (state) => state.entities.blocks[profile.id]
   );
   const is_self = Boolean(profile.is_self);
@@ -77,11 +77,11 @@ const Actions = ({
       {!profile.is_blocked_by_user && (
         <Button
           check_auth
-          color={is_blocking ? "ruby" : "inverted"}
+          color={is_blocked ? "ruby" : "inverted"}
           decorator={
             is_self ? (
               <EditIcon />
-            ) : is_blocking ? (
+            ) : is_blocked ? (
               <UserXIcon />
             ) : is_following ? (
               <UserCheckIcon />
@@ -91,7 +91,7 @@ const Actions = ({
           }
           onClick={(): void => {
             dispatch(
-              boolean_action(is_blocking ? "blocks" : "following", profile.id)
+              boolean_action(is_blocked ? "blocks" : "following", profile.id)
             );
           }}
           size={is_inside_sidebar ? "md" : "lg"}
@@ -100,7 +100,7 @@ const Actions = ({
         >
           {is_self
             ? "Edit"
-            : is_blocking
+            : is_blocked
             ? "Unblock"
             : is_following
             ? "Following"
