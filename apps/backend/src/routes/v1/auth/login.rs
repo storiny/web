@@ -153,7 +153,7 @@ WHERE email = $1
 
     let is_first_login = user
         .get::<Option<OffsetDateTime>, _>("last_login_at")
-        .is_some();
+        .is_none();
     let user_id = user.get::<i64, _>("id");
 
     // MFA check
