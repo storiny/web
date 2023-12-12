@@ -77,6 +77,7 @@ struct Request {
 #[derive(Debug, Clone, Serialize)]
 struct Response {
     result: String,
+    is_first_login: bool,
 }
 
 #[derive(Deserialize, Validate)]
@@ -130,7 +131,8 @@ SELECT
     deactivated_at,
     deleted_at,
     mfa_enabled,
-    mfa_secret
+    mfa_secret,
+    last_login_at
 FROM users
 WHERE email = $1
 "#,
@@ -149,6 +151,9 @@ WHERE email = $1
         }
     })?;
 
+    let is_first_login = user
+        .get::<Option<OffsetDateTime>, _>("last_login_at")
+        .is_some();
     let user_id = user.get::<i64, _>("id");
 
     // MFA check
@@ -306,6 +311,7 @@ WHERE code = $1 AND user_id = $2
 
             return Ok(HttpResponse::Ok().json(Response {
                 result: "suspended".to_string(),
+                is_first_login,
             }));
         }
     }
@@ -333,6 +339,7 @@ WHERE id = $1
             } else {
                 return Ok(HttpResponse::Ok().json(Response {
                     result: "held_for_deletion".to_string(),
+                    is_first_login,
                 }));
             }
         }
@@ -361,6 +368,7 @@ WHERE id = $1
             } else {
                 return Ok(HttpResponse::Ok().json(Response {
                     result: "deactivated".to_string(),
+                    is_first_login,
                 }));
             }
         }
@@ -375,6 +383,7 @@ WHERE id = $1
 
             return Ok(HttpResponse::Ok().json(Response {
                 result: "email_confirmation".to_string(),
+                is_first_login,
             }));
         }
     }
@@ -408,10 +417,15 @@ WHERE id = $1
         }
     }
 
-    // Insert a login notification for the user.
+    // Update the `last_login_at` and insert a login notification for the user.
     sqlx::query(
         r#"
-WITH inserted_notification AS (
+WITH updated_user AS (
+    UPDATE users
+    SET last_login_at = NOW()
+    WHERE id = $2
+),
+inserted_notification AS (
     INSERT INTO notifications (entity_type)
     VALUES ($1)
     RETURNING id
@@ -481,6 +495,7 @@ SELECT $2, (SELECT id FROM inserted_notification), $3
 
             Ok(HttpResponse::Ok().json(Response {
                 result: "success".to_string(),
+                is_first_login,
             }))
         }
         Err(error) => Err(AppError::InternalError(format!(
@@ -602,6 +617,7 @@ VALUES ($1, $2, $3, $4, TRUE)
             res,
             &serde_json::to_string(&Response {
                 result: "success".to_string(),
+                is_first_login: true, // Should be true.
             })
             .unwrap_or_default(),
         )
@@ -628,6 +644,23 @@ SELECT EXISTS (
         .await?;
 
         assert!(result.get::<bool, _>("exists"));
+
+        // Should also update the `last_login_at` column.
+        let result = sqlx::query(
+            r#"
+SELECT last_login_at FROM users
+WHERE username = $1
+"#,
+        )
+        .bind("sample_user")
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("last_login_at")
+                .is_some()
+        );
 
         Ok(())
     }
@@ -682,6 +715,7 @@ VALUES ($1, $2)
             res,
             &serde_json::to_string(&Response {
                 result: "success".to_string(),
+                is_first_login: true,
             })
             .unwrap_or_default(),
         )
@@ -754,6 +788,53 @@ VALUES ($1, $2, $3, $4, TRUE, TRUE, $5)
             res,
             &serde_json::to_string(&Response {
                 result: "success".to_string(),
+                is_first_login: true,
+            })
+            .unwrap_or_default(),
+        )
+        .await;
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_return_is_first_login_flag(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let app = init_app_for_test(post, pool, false, false, None).await.0;
+
+        let (email, password_hash, password) = get_sample_email_and_password();
+
+        // Insert the user with a non-empty `last_login_at`.
+        sqlx::query(
+            r#"
+INSERT INTO users (name, username, email, password, email_verified, last_login_at)
+VALUES ($1, $2, $3, $4, TRUE, NOW())
+"#,
+        )
+        .bind("Sample user".to_string())
+        .bind("sample_user".to_string())
+        .bind((&email).to_string())
+        .bind(password_hash)
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::post()
+            .uri("/v1/auth/login")
+            .set_json(Request {
+                email: email.to_string(),
+                password: password.to_string(),
+                remember_me: true,
+                code: None,
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+        assert_response_body_text(
+            res,
+            &serde_json::to_string(&Response {
+                result: "success".to_string(),
+                is_first_login: false, // Should be false.
             })
             .unwrap_or_default(),
         )
@@ -878,6 +959,7 @@ VALUES ($1, $2, $3, $4, $5)
             res,
             &serde_json::to_string(&Response {
                 result: "suspended".to_string(),
+                is_first_login: true,
             })
             .unwrap(),
         )
@@ -928,6 +1010,7 @@ VALUES ($1, $2, $3, $4, $5)
             res,
             &serde_json::to_string(&Response {
                 result: "suspended".to_string(),
+                is_first_login: true,
             })
             .unwrap(),
         )
@@ -987,6 +1070,7 @@ WHERE email = $1
             res,
             &serde_json::to_string(&Response {
                 result: "deactivated".to_string(),
+                is_first_login: true,
             })
             .unwrap(),
         )
@@ -1046,6 +1130,7 @@ WHERE email = $1
             res,
             &serde_json::to_string(&Response {
                 result: "held_for_deletion".to_string(),
+                is_first_login: true,
             })
             .unwrap(),
         )
@@ -1093,6 +1178,7 @@ VALUES ($1, $2, $3, $4)
             res,
             &serde_json::to_string(&Response {
                 result: "email_confirmation".to_string(),
+                is_first_login: true,
             })
             .unwrap(),
         )
@@ -1328,6 +1414,7 @@ WHERE email = $1
             res,
             &serde_json::to_string(&Response {
                 result: "success".to_string(),
+                is_first_login: true,
             })
             .unwrap_or_default(),
         )
@@ -1406,6 +1493,7 @@ WHERE email = $1
             res,
             &serde_json::to_string(&Response {
                 result: "success".to_string(),
+                is_first_login: true,
             })
             .unwrap_or_default(),
         )
@@ -1801,6 +1889,7 @@ VALUES ($1, $2, $3, $4, $5, TRUE)
                 res,
                 &serde_json::to_string(&Response {
                     result: "success".to_string(),
+                    is_first_login,
                 })
                 .unwrap_or_default(),
             )

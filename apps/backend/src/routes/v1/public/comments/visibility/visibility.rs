@@ -53,21 +53,19 @@ async fn post(
 
     match sqlx::query(
         r#"
-WITH story AS (
-    SELECT id
-    FROM stories
-    WHERE
-        user_id = $1
-    AND published_at IS NOT NULL
-    AND deleted_at IS NULL
-)
-UPDATE comments
-SET
-    hidden = $3
+UPDATE comments c
+SET hidden = $3
 WHERE
-      id = $2
-  AND story_id = (SELECT id FROM story)
-  AND deleted_at IS NULL
+    c.id = $2
+    AND EXISTS (
+        SELECT 1 FROM stories s
+        WHERE
+            s.id = c.story_id
+            AND s.user_id = $1
+            AND s.published_at IS NOT NULL
+            AND s.deleted_at IS NULL
+    )
+    AND c.deleted_at IS NULL
 "#,
     )
     .bind(&user_id)

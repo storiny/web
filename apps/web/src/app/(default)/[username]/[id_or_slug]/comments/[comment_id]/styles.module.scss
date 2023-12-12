@@ -2,6 +2,7 @@
 
 .x {
   &.comment {
+    margin-top: 12px;
     padding-inline: 20px;
 
     @include breakpoints.media("<=mobile") {

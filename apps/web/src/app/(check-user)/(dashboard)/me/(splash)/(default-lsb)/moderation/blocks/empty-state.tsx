@@ -9,8 +9,8 @@ const BlocksEmptyState = (): React.ReactElement => (
     auto_size
     description={
       <React.Fragment>
-        If you block someone, they will appear here. Blocking someone prevents
-        them from following you or reading your stories.{" "}
+        When you block someone, they will show up here. Blocking someone
+        prevents them from following you or reading your stories.{" "}
         <Link
           // TODO(future): Get rid of notion
           href={

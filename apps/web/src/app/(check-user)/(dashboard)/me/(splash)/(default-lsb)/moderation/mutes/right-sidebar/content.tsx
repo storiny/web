@@ -14,8 +14,8 @@ const ModerationMutesRightSidebarContent = (): React.ReactElement => (
       About muted accounts
     </Typography>
     <Typography className={css["t-minor"]} level={"body2"}>
-      The stories from muted accounts will not appear in your home feed, and you
-      will not receive any notifications from them.{" "}
+      When you mute someone, their stories will not show up in your home feed,
+      and you will not receive any notifications from them.{" "}
       <Link
         // TODO(future): Get rid of notion
         href={

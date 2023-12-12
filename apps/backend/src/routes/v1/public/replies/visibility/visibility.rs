@@ -53,20 +53,18 @@ async fn post(
 
     match sqlx::query(
         r#"
-WITH comment AS (
-    SELECT id
-    FROM comments
-    WHERE
-        user_id = $1
-    AND deleted_at IS NULL
-)
-UPDATE replies
-SET
-    hidden = $3
+UPDATE replies r
+SET hidden = $3
 WHERE
-      id = $2
-  AND comment_id = (SELECT id FROM comment)
-  AND deleted_at IS NULL
+    r.id = $2
+    AND EXISTS (
+        SELECT 1 FROM comments c
+        WHERE
+            c.id = r.comment_id
+            AND c.user_id = $1
+            AND c.deleted_at IS NULL
+    )
+    AND r.deleted_at IS NULL
 "#,
     )
     .bind(&user_id)

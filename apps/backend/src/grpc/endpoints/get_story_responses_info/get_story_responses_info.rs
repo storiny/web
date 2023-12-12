@@ -46,16 +46,28 @@ SELECT (
     SELECT COUNT(*)
     FROM comments
     WHERE
-        user_id = $1
-        AND story_id = $2
+        story_id = (
+            SELECT id FROM stories s
+            WHERE
+                s.id = $2
+                AND s.user_id = $1
+                AND s.published_at IS NOT NULL
+                AND s.deleted_at IS NULL
+        )
         AND deleted_at IS NULL
     ) AS "total_count",
     (
     SELECT COUNT(*)
     FROM comments
     WHERE
-        user_id = $1
-        AND story_id = $2
+        story_id = (
+            SELECT id FROM stories s
+            WHERE
+                s.id = $2
+                AND s.user_id = $1
+                AND s.published_at IS NOT NULL
+                AND s.deleted_at IS NULL
+        )
         AND hidden IS TRUE
         AND deleted_at IS NULL
     ) AS "hidden_count"    

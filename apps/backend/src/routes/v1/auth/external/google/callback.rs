@@ -82,7 +82,7 @@ async fn handle_oauth_request(
     params: Option<&QsQuery<AuthRequest>>,
     access_token_param: Option<String>,
     user_password: Option<String>,
-) -> Result<(), ExternalAuthError> {
+) -> Result<bool, ExternalAuthError> {
     let mut access_token = access_token_param.clone().unwrap_or_default();
     let reqwest_client = &data.reqwest_client;
 
@@ -179,7 +179,7 @@ async fn handle_google_profile_data(
     session: &Session,
     access_token: String,
     user_password: Option<String>,
-) -> Result<(), ExternalAuthError> {
+) -> Result<bool, ExternalAuthError> {
     if let Some(provided_password) = user_password {
         // Verify the password sent by the user.
         match sqlx::query(
@@ -244,6 +244,7 @@ WHERE
         .map_err(|err| ExternalAuthError::Other(err.to_string()))?;
     // The upsert type (`insert` or `update`)
     let mut upsert_type: Option<&str> = None;
+    let mut is_first_login = false;
 
     let user_data = match sqlx::query(
         r#"
@@ -272,8 +273,8 @@ WHERE login_google_id = $1
                 let upsert_result = sqlx::query(
                     r#"
 WITH inserted_user AS (
-    INSERT INTO users (name, username, email, login_google_id)
-    VALUES ($1, $2, $3, $4)
+    INSERT INTO users (name, username, email, login_google_id, last_login_at)
+    VALUES ($1, $2, $3, $4, NOW())
     ON CONFLICT (email) DO NOTHING
     RETURNING
         id,
@@ -283,7 +284,9 @@ WITH inserted_user AS (
 ),
 updated_user AS (
     UPDATE users
-    SET login_google_id = $4
+    SET
+        login_google_id = $4,
+        last_login_at = NOW()
     WHERE
         email = $3
         AND NOT EXISTS (SELECT 1 FROM inserted_user)
@@ -337,6 +340,8 @@ SELECT
                 if upsert_result.get::<bool, _>("has_updated") {
                     upsert_type = Some("update");
                 } else {
+                    is_first_login = true;
+
                     upsert_type = Some("insert")
                 }
 
@@ -417,12 +422,17 @@ VALUES ($2, 'You added <m>Google</m> as a third-party login method.', $1)
         .execute(&mut *txn)
         .await?;
     }
-    // Do not insert a login notification when a new user is created
+    // Do not insert a login notification when a new user is created. `is_none` signifies that the
+    // user was neither updated nor inserted.
     else if upsert_type.is_none() {
-        // Insert a login notification for the user.
+        // Update the `last_login_at` column and insert a login notification for the user.
         sqlx::query(
             r#"
-WITH inserted_notification AS (
+WITH updated_user AS (
+    UPDATE users
+    SET last_login_at = NOW()
+    WHERE id = $2
+), inserted_notification AS (
     INSERT INTO notifications (entity_type)
     VALUES ($1)
     RETURNING id
@@ -480,7 +490,9 @@ SELECT
 
     Identity::login(&req.extensions(), user_id)
         .and_then(|_| Ok(()))
-        .map_err(|err| ExternalAuthError::Other(err.to_string()))
+        .map_err(|err| ExternalAuthError::Other(err.to_string()))?;
+
+    Ok(is_first_login)
 }
 
 #[tracing::instrument(name = "GET /v1/auth/external/google/callback", skip_all, err)]
@@ -501,8 +513,15 @@ async fn get(
 
     match handle_oauth_request(req, &data, &session, Some(&params), None, None).await {
         // Redirect to the web server location on successful login.
-        Ok(_) => Ok(HttpResponse::Found()
-            .append_header((header::LOCATION, data.config.web_server_url.to_string()))
+        Ok(is_first_login) => Ok(HttpResponse::Found()
+            .append_header((
+                header::LOCATION,
+                if is_first_login {
+                    format!("{}?onboarding=true", data.config.web_server_url.to_string())
+                } else {
+                    data.config.web_server_url.to_string()
+                },
+            ))
             .finish()),
         Err(error) => Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
             ExternalAuthTemplate {
@@ -727,6 +746,24 @@ SELECT EXISTS (
 
         assert!(!result.get::<bool, _>("exists"));
 
+        // Should set `last_login_at` for the new user.
+        let result = sqlx::query(
+            r#"
+SELECT last_login_at
+FROM users
+WHERE login_google_id = $1
+"#,
+        )
+        .bind("1")
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("last_login_at")
+                .is_some()
+        );
+
         Ok(())
     }
 
@@ -784,6 +821,24 @@ EXISTS (
         .await?;
 
         assert!(result.get::<bool, _>("exists"));
+
+        // Should update `last_login_at` for the user.
+        let result = sqlx::query(
+            r#"
+SELECT last_login_at
+FROM users
+WHERE id = $1
+"#,
+        )
+        .bind(user_id.unwrap())
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("last_login_at")
+                .is_some()
+        );
 
         Ok(())
     }

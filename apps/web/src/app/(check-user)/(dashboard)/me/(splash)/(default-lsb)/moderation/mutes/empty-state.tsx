@@ -9,7 +9,7 @@ const MutesEmptyState = (): React.ReactElement => (
     auto_size
     description={
       <React.Fragment>
-        If you mute someone, they will appear here.{" "}
+        When you mute someone, they will show up here.{" "}
         <Link
           // TODO(future): Get rid of notion
           href={

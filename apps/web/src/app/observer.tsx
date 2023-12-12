@@ -5,7 +5,7 @@ import React from "react";
 const ObserverErrorHandler = (): null => {
   React.useEffect(() => {
     // Virtuoso's resize observer can throw this error,
-    // which is caught by DnD and aborts dragging
+    // which is caught by DnD and aborts dragging.
     const error_handler = (event: ErrorEvent): void => {
       if (
         [

@@ -14,14 +14,13 @@ const ModerationBlocksRightSidebarContent = (): React.ReactElement => (
       About blocked accounts
     </Typography>
     <Typography className={css["t-minor"]} level={"body2"}>
-      When you block a user, they are prevented from following you or reacting
+      When you block someone, they are prevented from following you or reacting
       to your stories, and their content will not appear in your home feed or
       search results.
       <br />
       <br />
-      However, please note that they may still be able to access your profile
-      and stories through a different account or if they are not logged into
-      Storiny.{" "}
+      However, they may still be able to access your profile and stories through
+      a different account or if they are not logged into Storiny.{" "}
       <Link
         // TODO(future): Get rid of notion
         href={

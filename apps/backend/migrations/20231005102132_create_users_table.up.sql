@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS users
 	mfa_secret                TEXT,
 	-- Timestamps
 	created_at                TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
+	last_login_at TIMESTAMPTZ ,
 	username_modified_at      TIMESTAMPTZ,
 	deactivated_at            TIMESTAMPTZ,
 	deleted_at                TIMESTAMPTZ,

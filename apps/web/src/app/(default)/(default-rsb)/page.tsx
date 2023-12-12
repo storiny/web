@@ -2,6 +2,10 @@
 
 import { clsx } from "clsx";
 import dynamic from "next/dynamic";
+import {
+  useRouter as use_router,
+  useSearchParams as use_search_params
+} from "next/navigation";
 import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
@@ -23,6 +27,8 @@ import styles from "./styles.module.scss";
 const EmptyState = dynamic(() => import("./empty-state"), {
   loading: dynamic_loader()
 });
+
+const Onboarding = dynamic(() => import("../../onboarding"));
 
 export type IndexTabValue = "suggested" | "friends-and-following";
 
@@ -58,6 +64,8 @@ const PageHeader = ({
 
 const Page = (): React.ReactElement => {
   const is_logged_in = use_app_selector(select_is_logged_in);
+  const search_params = use_search_params();
+  const router = use_router();
   const [value, set_value] = React.useState<IndexTabValue>("suggested");
   const [page, set_page] = React.useState<number>(1);
   const {
@@ -72,6 +80,8 @@ const Page = (): React.ReactElement => {
     type: value
   });
   const { items = [], has_more } = data || {};
+  const show_onboarding =
+    is_logged_in && search_params.get("onboarding") === "true";
 
   const load_more = React.useCallback(
     () => set_page((prev_state) => prev_state + 1),
@@ -82,6 +92,13 @@ const Page = (): React.ReactElement => {
     set_page(1);
     set_value(next_value);
   }, []);
+
+  React.useEffect(() => {
+    if (show_onboarding) {
+      // Remove the `onboarding` search parameter.
+      window.history.replaceState({}, "", "/");
+    }
+  }, [router, show_onboarding]);
 
   return (
     <>
@@ -106,6 +123,7 @@ const Page = (): React.ReactElement => {
           stories={items}
         />
       )}
+      {show_onboarding ? <Onboarding /> : null}
     </>
   );
 };

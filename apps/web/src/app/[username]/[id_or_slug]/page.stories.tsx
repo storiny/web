@@ -91,7 +91,6 @@ const READ_ONLY_DATA = [
 const STORY_USER: NonNullable<GetStoryResponse["user"]> = {
   id: MOCK_USERS[5].id,
   username: MOCK_USERS[5].username,
-  bio: MOCK_USERS[5].bio,
   rendered_bio: MOCK_USERS[5].rendered_bio,
   name: MOCK_USERS[5].name,
   avatar_id: MOCK_USERS[5].avatar_id || undefined,
@@ -100,7 +99,13 @@ const STORY_USER: NonNullable<GetStoryResponse["user"]> = {
   is_private: MOCK_USERS[5].is_private,
   created_at: MOCK_USERS[5].created_at,
   follower_count: MOCK_USERS[5].follower_count,
-  location: MOCK_USERS[5].location
+  location: MOCK_USERS[5].location,
+  is_blocked_by_user: false,
+  is_follower: false,
+  is_following: false,
+  is_friend: false,
+  is_self: false,
+  status: undefined
 };
 
 const meta: Meta<typeof StoryComponent> = {

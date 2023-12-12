@@ -48,6 +48,9 @@ const next_config = {
     version: pkg?.default?.version,
     buildHash: nanoid()
   },
+  experimental: {
+    windowHistorySupport: true
+  },
   poweredByHeader: false,
   reactStrictMode: true,
   transpilePackages: ["@storiny/ui"],

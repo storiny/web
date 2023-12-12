@@ -137,7 +137,7 @@ const StatusHeader = ({
             <span className={css["t-bold"]}>
               {abbreviate_number(count_param)}
             </span>{" "}
-            people.
+            {count_param === 1 ? "person" : "people"}.
           </>
         ) : (
           <>
