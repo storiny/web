@@ -61,7 +61,7 @@ const StoryActions = ({
   const is_muted = use_app_selector(
     (state) => state.entities.mutes[story.user?.id || ""]
   );
-  const is_self = current_user?.id === story.user_id || story.user?.id;
+  const is_self = current_user?.id === (story.user_id || story.user?.id);
 
   const [delete_draft] = use_delete_draft_mutation();
   const [delete_story] = use_delete_story_mutation();
