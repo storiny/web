@@ -7,7 +7,7 @@ use crate::{
     AppState,
 };
 use actix_web::{
-    delete,
+    post,
     web,
     HttpResponse,
 };
@@ -16,27 +16,27 @@ use validator::Validate;
 
 #[derive(Deserialize, Validate)]
 struct Fragments {
-    transmitter_id: String,
+    receiver_id: String,
 }
 
-#[delete("/v1/me/friend-requests/{transmitter_id}")]
+#[post("/v1/me/friend-requests/{receiver_id}/cancel")]
 #[tracing::instrument(
-    name = "DELETE /v1/me/friend-requests/{transmitter_id}",
+    name = "POST /v1/me/friend-requests/{receiver_id}/cancel",
     skip_all,
     fields(
-        receiver_id = user.id().ok(),
-        transmitter_id = %path.transmitter_id
+        transmitter_id = user.id().ok(),
+        receiver_id = %path.receiver_id
     ),
     err
 )]
-async fn delete(
+async fn post(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    let receiver_id = user.id()?;
-    let transmitter_id = path
-        .transmitter_id
+    let transmitter_id = user.id()?;
+    let receiver_id = path
+        .receiver_id
         .parse::<i64>()
         .map_err(|_| AppError::from("Invalid user ID"))?;
 
@@ -61,7 +61,7 @@ WHERE
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
-    cfg.service(delete);
+    cfg.service(post);
 }
 
 #[cfg(test)]
@@ -78,27 +78,27 @@ mod tests {
     };
 
     #[sqlx::test(fixtures("friend_request"))]
-    async fn can_reject_a_friend_request(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_cancel_a_friend_request(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Receive a friend request.
+        // Send a friend request.
         let insert_result = sqlx::query(
             r#"
 INSERT INTO friends (transmitter_id, receiver_id)
 VALUES ($1, $2)
 "#,
         )
-        .bind(2_i64)
         .bind(user_id.unwrap())
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
         assert_eq!(insert_result.rows_affected(), 1);
 
-        let req = test::TestRequest::delete()
+        let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/friend-requests/{}", 2))
+            .uri(&format!("/v1/me/friend-requests/{}/cancel", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -113,8 +113,8 @@ SELECT EXISTS (
 )
 "#,
         )
-        .bind(user_id.unwrap())
         .bind(2_i64)
+        .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
         .await?;
 
@@ -124,14 +124,14 @@ SELECT EXISTS (
     }
 
     #[sqlx::test]
-    async fn can_return_an_error_response_when_trying_to_reject_an_unknown_friend_request(
+    async fn can_return_an_error_response_when_trying_to_cancel_an_unknown_friend_request(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(delete, pool, true, false, None).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
-        let req = test::TestRequest::delete()
+        let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/friend-requests/{}", 12345))
+            .uri(&format!("/v1/me/friend-requests/{}/cancel", 12345))
             .to_request();
         let res = test::call_service(&app, req).await;
 

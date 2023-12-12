@@ -7,6 +7,7 @@ import { add_liked_comment_listener } from "~/redux/features/entities/listener/l
 import { add_liked_reply_listener } from "~/redux/features/entities/listener/liked-reply";
 import { add_liked_story_listener } from "~/redux/features/entities/listener/liked-story";
 import { add_mute_listener } from "~/redux/features/entities/listener/mute";
+import { add_subscription_listener } from "~/redux/features/entities/listener/subscription";
 import { AppStartListening } from "~/redux/listener-middleware";
 
 import { add_block_listener } from "./block";
@@ -24,6 +25,7 @@ export const add_entities_listeners = (
     add_liked_reply_listener,
     add_liked_story_listener,
     add_mute_listener,
-    add_bookmark_listener
+    add_bookmark_listener,
+    add_subscription_listener
   ].forEach((bind) => bind(start_listening));
 };

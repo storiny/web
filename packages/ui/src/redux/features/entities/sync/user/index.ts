@@ -14,7 +14,7 @@ export type SyncableUser = Pick<User, "id"> &
       | "is_subscribed"
       | "is_friend_request_sent"
       | "is_muted"
-      | "is_blocking"
+      | "is_blocked"
       | "follower_count"
       | "following_count"
       | "friend_count"
@@ -47,8 +47,8 @@ export const sync_with_user_impl = (
     state.mutes[user.id] = user.is_muted;
   }
 
-  if (is_bool(user.is_blocking)) {
-    state.blocks[user.id] = user.is_blocking;
+  if (is_bool(user.is_blocked)) {
+    state.blocks[user.id] = user.is_blocked;
   }
 
   if (is_bool(user.is_subscribed)) {

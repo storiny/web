@@ -96,6 +96,7 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::friend_requests::get::init_routes(cfg);
     v1::me::friend_requests::post::init_routes(cfg);
     v1::me::friend_requests::delete::init_routes(cfg);
+    v1::me::friend_requests::cancel::init_routes(cfg);
     // Me - Friends
     v1::me::friends::get::init_routes(cfg);
     v1::me::friends::post::init_routes(cfg);
@@ -175,6 +176,9 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::stories::recover::init_routes(cfg);
     v1::me::stories::unpublish::init_routes(cfg);
     v1::me::stories::delete::init_routes(cfg);
+    // Me - Subscriptions
+    v1::me::subscriptions::post::init_routes(cfg);
+    v1::me::subscriptions::delete::init_routes(cfg);
     // Me - Unread notifications
     v1::me::unread_notifications::init_routes(cfg);
     // Public - Comments

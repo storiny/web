@@ -35,8 +35,8 @@ interface UserOptionalProps {
 }
 
 interface UserSpecificUserProps {
+  is_blocked?: boolean;
   is_blocked_by_user?: boolean;
-  is_blocking?: boolean;
   is_follower?: boolean;
   is_following?: boolean;
   is_friend?: boolean;

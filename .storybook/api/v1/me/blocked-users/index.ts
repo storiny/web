@@ -13,25 +13,25 @@ worker.use(
           MOCK_USERS.slice(0, 10).map((user) => ({
             ...user,
             id: nanoid(),
-            is_blocking: true,
-          }))
-        )
-      )
-  )
+            is_blocked: true,
+          })),
+        ),
+      ),
+  ),
 );
 
 worker.use(
   rest.post(
     `${process.env.NEXT_PUBLIC_API_URL}/v1/me/blocked-users/:user_id`,
-    (_, res, ctx) => res(ctx.delay(750), ctx.status(201))
-  )
+    (_, res, ctx) => res(ctx.delay(750), ctx.status(201)),
+  ),
 );
 
 worker.use(
   rest.delete(
     `${process.env.NEXT_PUBLIC_API_URL}/v1/me/blocked-users/:user_id`,
-    (_, res, ctx) => res(ctx.delay(750), ctx.status(204))
-  )
+    (_, res, ctx) => res(ctx.delay(750), ctx.status(204)),
+  ),
 );
 
 export {};

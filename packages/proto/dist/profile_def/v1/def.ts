@@ -39,7 +39,7 @@ export interface GetProfileResponse {
   is_subscribed: boolean;
   is_friend_request_sent: boolean;
   is_blocked_by_user: boolean;
-  is_blocking: boolean;
+  is_blocked: boolean;
   is_muted: boolean;
   is_self: boolean;
 }
@@ -49,7 +49,10 @@ function createBaseGetProfileRequest(): GetProfileRequest {
 }
 
 export const GetProfileRequest = {
-  encode(message: GetProfileRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: GetProfileRequest,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     if (message.username !== "") {
       writer.uint32(10).string(message.username);
     }
@@ -60,7 +63,8 @@ export const GetProfileRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): GetProfileRequest {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetProfileRequest();
     while (reader.pos < end) {
@@ -91,8 +95,12 @@ export const GetProfileRequest = {
 
   fromJSON(object: any): GetProfileRequest {
     return {
-      username: isSet(object.username) ? globalThis.String(object.username) : "",
-      current_user_id: isSet(object.current_user_id) ? globalThis.String(object.current_user_id) : undefined,
+      username: isSet(object.username)
+        ? globalThis.String(object.username)
+        : "",
+      current_user_id: isSet(object.current_user_id)
+        ? globalThis.String(object.current_user_id)
+        : undefined,
     };
   },
 
@@ -107,10 +115,14 @@ export const GetProfileRequest = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetProfileRequest>, I>>(base?: I): GetProfileRequest {
+  create<I extends Exact<DeepPartial<GetProfileRequest>, I>>(
+    base?: I,
+  ): GetProfileRequest {
     return GetProfileRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<GetProfileRequest>, I>>(object: I): GetProfileRequest {
+  fromPartial<I extends Exact<DeepPartial<GetProfileRequest>, I>>(
+    object: I,
+  ): GetProfileRequest {
     const message = createBaseGetProfileRequest();
     message.username = object.username ?? "";
     message.current_user_id = object.current_user_id ?? undefined;
@@ -145,14 +157,17 @@ function createBaseGetProfileResponse(): GetProfileResponse {
     is_subscribed: false,
     is_friend_request_sent: false,
     is_blocked_by_user: false,
-    is_blocking: false,
+    is_blocked: false,
     is_muted: false,
     is_self: false,
   };
 }
 
 export const GetProfileResponse = {
-  encode(message: GetProfileResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: GetProfileResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
@@ -228,8 +243,8 @@ export const GetProfileResponse = {
     if (message.is_blocked_by_user === true) {
       writer.uint32(200).bool(message.is_blocked_by_user);
     }
-    if (message.is_blocking === true) {
-      writer.uint32(208).bool(message.is_blocking);
+    if (message.is_blocked === true) {
+      writer.uint32(208).bool(message.is_blocked);
     }
     if (message.is_muted === true) {
       writer.uint32(216).bool(message.is_muted);
@@ -241,7 +256,8 @@ export const GetProfileResponse = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): GetProfileResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetProfileResponse();
     while (reader.pos < end) {
@@ -427,7 +443,7 @@ export const GetProfileResponse = {
             break;
           }
 
-          message.is_blocking = reader.bool();
+          message.is_blocked = reader.bool();
           continue;
         case 27:
           if (tag !== 216) {
@@ -456,36 +472,82 @@ export const GetProfileResponse = {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
-      username: isSet(object.username) ? globalThis.String(object.username) : "",
-      status: isSet(object.status) ? ExtendedStatus.fromJSON(object.status) : undefined,
+      username: isSet(object.username)
+        ? globalThis.String(object.username)
+        : "",
+      status: isSet(object.status)
+        ? ExtendedStatus.fromJSON(object.status)
+        : undefined,
       bio: isSet(object.bio) ? globalThis.String(object.bio) : undefined,
-      rendered_bio: isSet(object.rendered_bio) ? globalThis.String(object.rendered_bio) : undefined,
-      avatar_id: isSet(object.avatar_id) ? globalThis.String(object.avatar_id) : undefined,
-      avatar_hex: isSet(object.avatar_hex) ? globalThis.String(object.avatar_hex) : undefined,
-      banner_id: isSet(object.banner_id) ? globalThis.String(object.banner_id) : undefined,
-      banner_hex: isSet(object.banner_hex) ? globalThis.String(object.banner_hex) : undefined,
-      location: isSet(object.location) ? globalThis.String(object.location) : "",
-      created_at: isSet(object.created_at) ? globalThis.String(object.created_at) : "",
-      public_flags: isSet(object.public_flags) ? globalThis.Number(object.public_flags) : 0,
-      story_count: isSet(object.story_count) ? globalThis.Number(object.story_count) : 0,
-      follower_count: isSet(object.follower_count) ? globalThis.Number(object.follower_count) : 0,
-      following_count: isSet(object.following_count) ? globalThis.Number(object.following_count) : undefined,
-      friend_count: isSet(object.friend_count) ? globalThis.Number(object.friend_count) : undefined,
-      is_private: isSet(object.is_private) ? globalThis.Boolean(object.is_private) : false,
+      rendered_bio: isSet(object.rendered_bio)
+        ? globalThis.String(object.rendered_bio)
+        : undefined,
+      avatar_id: isSet(object.avatar_id)
+        ? globalThis.String(object.avatar_id)
+        : undefined,
+      avatar_hex: isSet(object.avatar_hex)
+        ? globalThis.String(object.avatar_hex)
+        : undefined,
+      banner_id: isSet(object.banner_id)
+        ? globalThis.String(object.banner_id)
+        : undefined,
+      banner_hex: isSet(object.banner_hex)
+        ? globalThis.String(object.banner_hex)
+        : undefined,
+      location: isSet(object.location)
+        ? globalThis.String(object.location)
+        : "",
+      created_at: isSet(object.created_at)
+        ? globalThis.String(object.created_at)
+        : "",
+      public_flags: isSet(object.public_flags)
+        ? globalThis.Number(object.public_flags)
+        : 0,
+      story_count: isSet(object.story_count)
+        ? globalThis.Number(object.story_count)
+        : 0,
+      follower_count: isSet(object.follower_count)
+        ? globalThis.Number(object.follower_count)
+        : 0,
+      following_count: isSet(object.following_count)
+        ? globalThis.Number(object.following_count)
+        : undefined,
+      friend_count: isSet(object.friend_count)
+        ? globalThis.Number(object.friend_count)
+        : undefined,
+      is_private: isSet(object.is_private)
+        ? globalThis.Boolean(object.is_private)
+        : false,
       connections: globalThis.Array.isArray(object?.connections)
         ? object.connections.map((e: any) => Connection.fromJSON(e))
         : [],
-      is_following: isSet(object.is_following) ? globalThis.Boolean(object.is_following) : false,
-      is_follower: isSet(object.is_follower) ? globalThis.Boolean(object.is_follower) : false,
-      is_friend: isSet(object.is_friend) ? globalThis.Boolean(object.is_friend) : false,
-      is_subscribed: isSet(object.is_subscribed) ? globalThis.Boolean(object.is_subscribed) : false,
+      is_following: isSet(object.is_following)
+        ? globalThis.Boolean(object.is_following)
+        : false,
+      is_follower: isSet(object.is_follower)
+        ? globalThis.Boolean(object.is_follower)
+        : false,
+      is_friend: isSet(object.is_friend)
+        ? globalThis.Boolean(object.is_friend)
+        : false,
+      is_subscribed: isSet(object.is_subscribed)
+        ? globalThis.Boolean(object.is_subscribed)
+        : false,
       is_friend_request_sent: isSet(object.is_friend_request_sent)
         ? globalThis.Boolean(object.is_friend_request_sent)
         : false,
-      is_blocked_by_user: isSet(object.is_blocked_by_user) ? globalThis.Boolean(object.is_blocked_by_user) : false,
-      is_blocking: isSet(object.is_blocking) ? globalThis.Boolean(object.is_blocking) : false,
-      is_muted: isSet(object.is_muted) ? globalThis.Boolean(object.is_muted) : false,
-      is_self: isSet(object.is_self) ? globalThis.Boolean(object.is_self) : false,
+      is_blocked_by_user: isSet(object.is_blocked_by_user)
+        ? globalThis.Boolean(object.is_blocked_by_user)
+        : false,
+      is_blocked: isSet(object.is_blocked)
+        ? globalThis.Boolean(object.is_blocked)
+        : false,
+      is_muted: isSet(object.is_muted)
+        ? globalThis.Boolean(object.is_muted)
+        : false,
+      is_self: isSet(object.is_self)
+        ? globalThis.Boolean(object.is_self)
+        : false,
     };
   },
 
@@ -566,8 +628,8 @@ export const GetProfileResponse = {
     if (message.is_blocked_by_user === true) {
       obj.is_blocked_by_user = message.is_blocked_by_user;
     }
-    if (message.is_blocking === true) {
-      obj.is_blocking = message.is_blocking;
+    if (message.is_blocked === true) {
+      obj.is_blocked = message.is_blocked;
     }
     if (message.is_muted === true) {
       obj.is_muted = message.is_muted;
@@ -578,17 +640,22 @@ export const GetProfileResponse = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetProfileResponse>, I>>(base?: I): GetProfileResponse {
+  create<I extends Exact<DeepPartial<GetProfileResponse>, I>>(
+    base?: I,
+  ): GetProfileResponse {
     return GetProfileResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<GetProfileResponse>, I>>(object: I): GetProfileResponse {
+  fromPartial<I extends Exact<DeepPartial<GetProfileResponse>, I>>(
+    object: I,
+  ): GetProfileResponse {
     const message = createBaseGetProfileResponse();
     message.id = object.id ?? "";
     message.name = object.name ?? "";
     message.username = object.username ?? "";
-    message.status = (object.status !== undefined && object.status !== null)
-      ? ExtendedStatus.fromPartial(object.status)
-      : undefined;
+    message.status =
+      object.status !== undefined && object.status !== null
+        ? ExtendedStatus.fromPartial(object.status)
+        : undefined;
     message.bio = object.bio ?? undefined;
     message.rendered_bio = object.rendered_bio ?? undefined;
     message.avatar_id = object.avatar_id ?? undefined;
@@ -603,31 +670,46 @@ export const GetProfileResponse = {
     message.following_count = object.following_count ?? undefined;
     message.friend_count = object.friend_count ?? undefined;
     message.is_private = object.is_private ?? false;
-    message.connections = object.connections?.map((e) => Connection.fromPartial(e)) || [];
+    message.connections =
+      object.connections?.map((e) => Connection.fromPartial(e)) || [];
     message.is_following = object.is_following ?? false;
     message.is_follower = object.is_follower ?? false;
     message.is_friend = object.is_friend ?? false;
     message.is_subscribed = object.is_subscribed ?? false;
     message.is_friend_request_sent = object.is_friend_request_sent ?? false;
     message.is_blocked_by_user = object.is_blocked_by_user ?? false;
-    message.is_blocking = object.is_blocking ?? false;
+    message.is_blocked = object.is_blocked ?? false;
     message.is_muted = object.is_muted ?? false;
     message.is_self = object.is_self ?? false;
     return message;
   },
 };
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends globalThis.Array<infer U>
+  ? globalThis.Array<DeepPartial<U>>
+  : T extends ReadonlyArray<infer U>
+  ? ReadonlyArray<DeepPartial<U>>
+  : T extends {}
+  ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

@@ -111,7 +111,9 @@ export const entities_slice = create_slice({
               : never;
           }[keyof EntitiesState],
           string,
-          number | boolean
+          number | boolean,
+          // Tags is the additional metadata attached to the action.
+          tags?: Record<string, string | number | boolean>
         ]
       >
     ) => {

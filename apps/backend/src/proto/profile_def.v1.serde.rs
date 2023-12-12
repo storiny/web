@@ -191,7 +191,7 @@ impl serde::Serialize for GetProfileResponse {
         if self.is_blocked_by_user {
             len += 1;
         }
-        if self.is_blocking {
+        if self.is_blocked {
             len += 1;
         }
         if self.is_muted {
@@ -276,8 +276,8 @@ impl serde::Serialize for GetProfileResponse {
         if self.is_blocked_by_user {
             struct_ser.serialize_field("isBlockedByUser", &self.is_blocked_by_user)?;
         }
-        if self.is_blocking {
-            struct_ser.serialize_field("isBlocking", &self.is_blocking)?;
+        if self.is_blocked {
+            struct_ser.serialize_field("isBlocking", &self.is_blocked)?;
         }
         if self.is_muted {
             struct_ser.serialize_field("isMuted", &self.is_muted)?;
@@ -338,7 +338,7 @@ impl<'de> serde::Deserialize<'de> for GetProfileResponse {
             "isFriendRequestSent",
             "is_blocked_by_user",
             "isBlockedByUser",
-            "is_blocking",
+            "is_blocked",
             "isBlocking",
             "is_muted",
             "isMuted",
@@ -422,7 +422,7 @@ impl<'de> serde::Deserialize<'de> for GetProfileResponse {
                             "isSubscribed" | "is_subscribed" => Ok(GeneratedField::IsSubscribed),
                             "isFriendRequestSent" | "is_friend_request_sent" => Ok(GeneratedField::IsFriendRequestSent),
                             "isBlockedByUser" | "is_blocked_by_user" => Ok(GeneratedField::IsBlockedByUser),
-                            "isBlocking" | "is_blocking" => Ok(GeneratedField::IsBlocking),
+                            "isBlocking" | "is_blocked" => Ok(GeneratedField::IsBlocking),
                             "isMuted" | "is_muted" => Ok(GeneratedField::IsMuted),
                             "isSelf" | "is_self" => Ok(GeneratedField::IsSelf),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
@@ -469,7 +469,7 @@ impl<'de> serde::Deserialize<'de> for GetProfileResponse {
                 let mut is_subscribed__ = None;
                 let mut is_friend_request_sent__ = None;
                 let mut is_blocked_by_user__ = None;
-                let mut is_blocking__ = None;
+                let mut is_blocked__ = None;
                 let mut is_muted__ = None;
                 let mut is_self__ = None;
                 while let Some(k) = map.next_key()? {
@@ -635,10 +635,10 @@ impl<'de> serde::Deserialize<'de> for GetProfileResponse {
                             is_blocked_by_user__ = Some(map.next_value()?);
                         }
                         GeneratedField::IsBlocking => {
-                            if is_blocking__.is_some() {
+                            if is_blocked__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isBlocking"));
                             }
-                            is_blocking__ = Some(map.next_value()?);
+                            is_blocked__ = Some(map.next_value()?);
                         }
                         GeneratedField::IsMuted => {
                             if is_muted__.is_some() {
@@ -680,7 +680,7 @@ impl<'de> serde::Deserialize<'de> for GetProfileResponse {
                     is_subscribed: is_subscribed__.unwrap_or_default(),
                     is_friend_request_sent: is_friend_request_sent__.unwrap_or_default(),
                     is_blocked_by_user: is_blocked_by_user__.unwrap_or_default(),
-                    is_blocking: is_blocking__.unwrap_or_default(),
+                    is_blocked: is_blocked__.unwrap_or_default(),
                     is_muted: is_muted__.unwrap_or_default(),
                     is_self: is_self__.unwrap_or_default(),
                 })

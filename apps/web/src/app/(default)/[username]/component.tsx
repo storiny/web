@@ -4,6 +4,7 @@ import { Graph } from "schema-dts";
 
 import { Flag } from "~/common/flags";
 import { GetProfileResponse } from "~/common/grpc";
+import Spacer from "~/components/spacer";
 import LeftSidebar from "~/layout/left-sidebar";
 import SplashScreen from "~/layout/splash-screen";
 import { get_cdn_url } from "~/utils/get-cdn-url";
@@ -112,6 +113,7 @@ const Component = ({ profile }: Props): React.ReactElement => {
           is_suspended={is_suspended}
           profile={profile}
         />
+        <Spacer orientation={"vertical"} size={25} />
       </main>
       <ProfileRightSidebar
         is_private={is_private}

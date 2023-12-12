@@ -7,6 +7,7 @@ export * from "./drafts";
 export * from "./flow";
 export * from "./followed-tags";
 export * from "./friend-requests";
+export * from "./friends";
 export * from "./gallery";
 export * from "./history";
 export * from "./liked-stories";

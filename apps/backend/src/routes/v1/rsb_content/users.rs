@@ -21,6 +21,7 @@ pub struct User {
     public_flags: i32,
     // Bool
     is_following: bool,
+    is_muted: bool,
 }
 
 #[tracing::instrument(skip_all, fields(user_id), err)]
@@ -45,12 +46,14 @@ WITH rsb_users AS (
         r#"
 -- Boolean flags
 "u->is_following".follower_id IS NOT NULL AS "is_following",
+"u->is_muted".muter_id IS NOT NULL AS "is_muted",
 -- Weights
 COUNT("u->follower_relations") AS "relation_weight"
 "#
     } else {
         r#"
-FALSE AS "is_following"
+FALSE AS "is_following",
+FALSE AS "is_muted"
 "#
     });
 
@@ -81,6 +84,12 @@ LEFT OUTER JOIN relations AS "u->is_following"
       ON "u->is_following".followed_id = u.id
       AND "u->is_following".follower_id = $1
       AND "u->is_following".deleted_at IS NULL
+--
+-- Boolean muted flag
+LEFT OUTER JOIN mutes AS "u->is_muted"
+    ON "u->is_muted".muted_id = u.id
+    AND "u->is_muted".muter_id = $1
+    AND "u->is_muted".deleted_at IS NULL
 "#,
         );
     }
@@ -110,13 +119,13 @@ AND (
             AND accepted_at IS NOT NULL
     )
 )
--- Filter out stories from blocked users
+-- Filter out blocked users
 AND NOT EXISTS (
     SELECT 1 FROM blocks b
     WHERE b.blocker_id = $1
         AND b.blocked_id = u.id
 )
--- Filter out stories from muted users
+-- Filter out muted users
 AND NOT EXISTS (
     SELECT 1 FROM mutes m
     WHERE m.muter_id = $1
@@ -143,7 +152,12 @@ GROUP BY
 
     if user_id.is_some() {
         query_builder.push(",");
-        query_builder.push(r#""u->is_following".follower_id "#);
+        query_builder.push(
+            r#"
+"u->is_following".follower_id,
+"u->is_muted".muter_id
+"#,
+        );
     }
 
     query_builder.push(r#" ORDER BY "#);
@@ -166,7 +180,8 @@ SELECT
     avatar_id,
     avatar_hex,
     public_flags,
-    is_following
+    is_following,
+    is_muted
 FROM
     rsb_users
 "#,
@@ -328,6 +343,38 @@ VALUES ($1, $2)
 
         // Should be true.
         assert!(result.iter().all(|user| user.is_following));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("rsb_content"))]
+    async fn can_return_is_muted_flag_for_rsb_content_users_when_logged_in(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let result = get_rsb_content_users(Some(1_i64), &pool).await?;
+
+        // Should be false initially.
+        assert!(result.iter().all(|user| !user.is_muted));
+
+        // Mute the user.
+        let result = sqlx::query(
+            r#"
+INSERT INTO mutes (muter_id, muted_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(1_i64)
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let result = get_rsb_content_users(Some(1_i64), &pool).await?;
+
+        // Should be true.
+        assert!(result.iter().all(|user| user.is_muted));
 
         Ok(())
     }

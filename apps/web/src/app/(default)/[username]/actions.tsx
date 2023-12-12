@@ -7,6 +7,7 @@ import IconButton from "~/components/icon-button";
 import Menu from "~/components/menu";
 import MenuItem from "~/components/menu-item";
 import Separator from "~/components/separator";
+import { use_toast } from "~/components/toast";
 import ReportModal from "~/entities/report-modal";
 import { use_clipboard } from "~/hooks/use-clipboard";
 import { use_web_share } from "~/hooks/use-web-share";
@@ -24,14 +25,95 @@ import XIcon from "~/icons/x";
 import {
   boolean_action,
   select_is_logged_in,
-  sync_with_user
+  sync_with_user,
+  use_cancel_friend_request_mutation,
+  use_send_friend_request_mutation
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 interface Props {
   is_inside_sidebar?: boolean;
   profile: GetProfileResponse;
 }
+
+const SendFriendRequestItem = ({
+  user_id
+}: {
+  user_id: string;
+}): React.ReactElement => {
+  const toast = use_toast();
+  const [send_friend_request, { isLoading: is_loading }] =
+    use_send_friend_request_mutation();
+
+  const handle_send_friend_request = (): void => {
+    send_friend_request({ id: user_id })
+      .unwrap()
+      .then(() => {
+        toast("Your friend request was sent", "success");
+      })
+      .catch((error) =>
+        handle_api_error(
+          error,
+          toast,
+          null,
+          "Could not send your friend request"
+        )
+      );
+  };
+
+  return (
+    <MenuItem
+      check_auth
+      decorator={<HeartPlusIcon />}
+      disabled={is_loading}
+      onClick={handle_send_friend_request}
+      // Do not auto close the menu
+      onSelect={(event): void => event.preventDefault()}
+    >
+      Send friend request
+    </MenuItem>
+  );
+};
+
+const CancelFriendRequestItem = ({
+  user_id
+}: {
+  user_id: string;
+}): React.ReactElement => {
+  const toast = use_toast();
+  const [cancel_friend_request, { isLoading: is_loading }] =
+    use_cancel_friend_request_mutation();
+
+  const handle_cancel_friend_request = (): void => {
+    cancel_friend_request({ id: user_id })
+      .unwrap()
+      .then(() => {
+        toast("Cancelled your friend request", "success");
+      })
+      .catch((error) =>
+        handle_api_error(
+          error,
+          toast,
+          null,
+          "Could not cancel your friend request"
+        )
+      );
+  };
+
+  return (
+    <MenuItem
+      check_auth
+      decorator={<XIcon />}
+      disabled={is_loading}
+      onClick={handle_cancel_friend_request}
+      // Do not auto close the menu
+      onSelect={(event): void => event.preventDefault()}
+    >
+      Cancel request
+    </MenuItem>
+  );
+};
 
 const Actions = ({ profile, is_inside_sidebar }: Props): React.ReactElement => {
   const share = use_web_share();
@@ -41,7 +123,7 @@ const Actions = ({ profile, is_inside_sidebar }: Props): React.ReactElement => {
   const is_following = use_app_selector(
     (state) => state.entities.following[profile.id]
   );
-  const is_blocking = use_app_selector(
+  const is_blocked = use_app_selector(
     (state) => state.entities.blocks[profile.id]
   );
   const is_muted = use_app_selector(
@@ -69,14 +151,14 @@ const Actions = ({ profile, is_inside_sidebar }: Props): React.ReactElement => {
           open_confirmation();
         }}
       >
-        {is_blocking ? "Unblock" : "Block"} this user
+        {is_blocked ? "Unblock" : "Block"} this user
       </MenuItem>
     ),
     {
-      color: is_blocking ? "inverted" : "ruby",
+      color: is_blocked ? "inverted" : "ruby",
       on_confirm: () => dispatch(boolean_action("blocks", profile.id)),
-      title: `${is_blocking ? "Unblock" : "Block"} @${profile.username}?`,
-      description: is_blocking
+      title: `${is_blocked ? "Unblock" : "Block"} @${profile.username}?`,
+      description: is_blocked
         ? `The public content you publish will be available to them as well as the ability to follow you.`
         : `Your feed will not include their content, and they will not be able to follow you or interact with your profile.`
     }
@@ -128,37 +210,26 @@ const Actions = ({ profile, is_inside_sidebar }: Props): React.ReactElement => {
         </IconButton>
       }
     >
-      {!is_self && !is_blocked_by_user && !is_blocking && logged_in ? (
+      {!is_self && !is_blocked_by_user && !is_blocked && logged_in ? (
         <>
           {is_friend_request_sent ? (
-            <MenuItem
-              check_auth
-              decorator={<XIcon />}
-              onClick={(): void => {
-                dispatch(boolean_action("sent_requests", profile.id));
-              }}
-            >
-              Cancel request
-            </MenuItem>
+            <CancelFriendRequestItem user_id={profile.id} />
           ) : is_friend ? (
             remove_friend_element
           ) : (
-            <MenuItem
-              check_auth
-              decorator={<HeartPlusIcon />}
-              onClick={(): void => {
-                dispatch(boolean_action("sent_requests", profile.id));
-              }}
-            >
-              Send friend request
-            </MenuItem>
+            <SendFriendRequestItem user_id={profile.id} />
           )}
           {is_following && (
             <MenuItem
               check_auth
               decorator={is_subscribed ? <BellFilledIcon /> : <BellPlusIcon />}
               onClick={(): void => {
-                dispatch(boolean_action("subscriptions", profile.id));
+                dispatch(
+                  boolean_action("subscriptions", profile.id, undefined, {
+                    // This forces a request to the server.
+                    source: "user"
+                  })
+                );
               }}
             >
               {is_subscribed ? "Unsubscribe" : "Subscribe"}

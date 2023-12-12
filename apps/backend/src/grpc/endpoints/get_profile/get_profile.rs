@@ -79,7 +79,7 @@ struct Profile {
     is_subscribed: bool,
     is_friend_request_sent: bool,
     is_blocked_by_user: bool,
-    is_blocking: bool,
+    is_blocked: bool,
     is_muted: bool,
 }
 
@@ -183,7 +183,7 @@ pub async fn get_profile(
         is_subscribed: profile.is_subscribed,
         is_friend_request_sent: profile.is_friend_request_sent,
         is_blocked_by_user: profile.is_blocked_by_user,
-        is_blocking: profile.is_blocking,
+        is_blocked: profile.is_blocked,
         is_muted: profile.is_muted,
         is_self: current_user_id.is_some_and(|user_id| user_id == profile.id),
     }))
@@ -226,7 +226,7 @@ mod tests {
                 assert!(!response.is_subscribed);
                 assert!(!response.is_friend_request_sent);
                 assert!(!response.is_blocked_by_user);
-                assert!(!response.is_blocking);
+                assert!(!response.is_blocked);
                 assert!(!response.is_muted);
             }),
         )
@@ -617,7 +617,7 @@ VALUES ($2, $1)
     }
 
     #[sqlx::test(fixtures("get_profile"))]
-    async fn can_return_is_blocking_flag_for_profile_when_logged_in(pool: PgPool) {
+    async fn can_return_is_blocked_flag_for_profile_when_logged_in(pool: PgPool) {
         test_grpc_service(
             pool,
             true,
@@ -632,7 +632,7 @@ VALUES ($2, $1)
                     .into_inner();
 
                 // Should be false initially.
-                assert!(!response.is_blocking);
+                assert!(!response.is_blocked);
 
                 // Block the user.
                 let result = sqlx::query(
@@ -659,7 +659,7 @@ VALUES ($1, $2)
                     .into_inner();
 
                 // Should be true.
-                assert!(response.is_blocking);
+                assert!(response.is_blocked);
             }),
         )
         .await;

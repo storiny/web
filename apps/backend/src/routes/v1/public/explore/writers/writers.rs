@@ -46,6 +46,7 @@ struct Writer {
     rendered_bio: String,
     // Boolean flags
     is_following: bool,
+    is_muted: bool,
 }
 
 #[get("/v1/public/explore/writers")]
@@ -125,10 +126,14 @@ SELECT
     query_builder.push(if user_id.is_some() {
         r#"
 -- Boolean flags
-"u->is_following".follower_id IS NOT NULL AS "is_following"
+"u->is_following".follower_id IS NOT NULL AS "is_following",
+"u->is_muted".muter_id IS NOT NULL AS "is_muted"
 "#
     } else {
-        r#"FALSE as "is_following""#
+        r#"
+FALSE AS "is_following",
+FALSE AS "is_muted"
+"#
     });
 
     if has_search_query {
@@ -164,6 +169,12 @@ LEFT OUTER JOIN relations AS "u->is_following"
     ON "u->is_following".followed_id = u.id
     AND "u->is_following".follower_id = $4
     AND "u->is_following".deleted_at IS NULL
+--
+-- Boolean muted flag
+LEFT OUTER JOIN mutes AS "u->is_muted"
+    ON "u->is_muted".muted_id = u.id
+    AND "u->is_muted".muter_id = $4
+    AND "u->is_muted".deleted_at IS NULL
 "#,
         );
     }
@@ -173,9 +184,39 @@ LEFT OUTER JOIN relations AS "u->is_following"
 WHERE
     u.deactivated_at IS NULL
     AND u.deleted_at IS NULL
-    AND u.is_private IS FALSE
 "#,
     );
+
+    query_builder.push(if user_id.is_some() {
+        r#"
+-- Make sure to handle private users
+AND (
+    NOT u.is_private OR
+    EXISTS (
+        SELECT 1
+        FROM friends
+        WHERE
+            (
+                (transmitter_id = u.id AND receiver_id = $4)
+            OR
+                (transmitter_id = $4 AND receiver_id = u.id)
+            )
+            AND accepted_at IS NOT NULL
+    )
+)
+-- Filter out blocked users
+AND NOT EXISTS (
+    SELECT 1 FROM blocks b
+    WHERE b.blocker_id = $4
+        AND b.blocked_id = u.id
+)
+"#
+    } else {
+        r#"
+-- Ignore private users
+AND u.is_private IS FALSE
+"#
+    });
 
     if has_search_query {
         query_builder.push(r#"AND u.search_vec @@ (SELECT tsq FROM search_query)"#);
@@ -190,7 +231,12 @@ GROUP BY
 
     if user_id.is_some() {
         query_builder.push(",");
-        query_builder.push(r#" "u->is_following".follower_id "#);
+        query_builder.push(
+            r#"
+"u->is_following".follower_id,
+"u->is_muted".muter_id
+"#,
+        );
     }
 
     query_builder.push(r#" ORDER BY "#);
@@ -217,7 +263,8 @@ SELECT
     story_count,
     rendered_bio,
     -- Boolean flags
-    is_following
+    is_following,
+    is_muted
 FROM explore_writers
 "#,
     );
@@ -537,6 +584,52 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
         // Should be true.
         let writers = serde_json::from_str::<Vec<Writer>>(&res_to_string(res).await).unwrap();
         assert!(writers.iter().all(|writer| writer.is_following));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("writer"))]
+    async fn can_return_is_muted_flag_for_explore_writers_when_logged_in(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/public/explore/writers?category=diy")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be false initially.
+        let writers = serde_json::from_str::<Vec<Writer>>(&res_to_string(res).await).unwrap();
+        assert!(writers.iter().all(|writer| !writer.is_muted));
+
+        // Mute the writers.
+        let result = sqlx::query(
+            r#"
+INSERT INTO mutes (muter_id, muted_id)
+VALUES ($1, $2), ($1, $3), ($1, $4)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(1_i64)
+        .bind(2_i64)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 3);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/public/explore/writers?category=diy")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be true.
+        let writers = serde_json::from_str::<Vec<Writer>>(&res_to_string(res).await).unwrap();
+        assert!(writers.iter().all(|writer| writer.is_muted));
 
         Ok(())
     }

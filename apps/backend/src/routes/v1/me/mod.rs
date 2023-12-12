@@ -22,4 +22,5 @@ pub mod replies;
 pub mod settings;
 pub mod status;
 pub mod stories;
+pub mod subscriptions;
 pub mod unread_notifications;

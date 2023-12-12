@@ -59,6 +59,8 @@ struct Friend {
     is_follower: bool,
     is_following: bool,
     is_friend: bool,
+    is_muted: bool,
+    is_blocked: bool,
 }
 
 #[get("/v1/user/{user_id}/friends")]
@@ -142,14 +144,18 @@ SELECT
 -- Boolean flags
 "fu->is_follower".follower_id IS NOT NULL AS "is_follower",
 "fu->is_following".follower_id IS NOT NULL AS "is_following",
-"fu->is_friend".transmitter_id IS NOT NULL AS "is_friend"
+"fu->is_friend".transmitter_id IS NOT NULL AS "is_friend",
+"fu->is_muted".muter_id IS NOT NULL AS "is_muted",
+"fu->is_blocked".blocker_id IS NOT NULL AS "is_blocked"
 "#
     } else {
         r#"
 -- Boolean flags
 FALSE AS "is_follower",
 FALSE AS "is_following",
-FALSE AS "is_friend"
+FALSE AS "is_friend",
+FALSE AS "is_muted",
+FALSE AS "is_blocked"
 "#
     });
 
@@ -203,6 +209,18 @@ LEFT OUTER JOIN friends AS "fu->is_friend"
     )
     AND "fu->is_friend".accepted_at IS NOT NULL
     AND "fu->is_friend".deleted_at IS NULL
+--
+-- Boolean blocked flag
+LEFT OUTER JOIN blocks AS "fu->is_blocked"
+    ON "fu->is_blocked".blocked_id = fu.id
+    AND "fu->is_blocked".blocker_id = $4
+    AND "fu->is_blocked".deleted_at IS NULL
+--
+-- Boolean muted flag
+LEFT OUTER JOIN mutes AS "fu->is_muted"
+    ON "fu->is_muted".muted_id = fu.id
+    AND "fu->is_muted".muter_id = $4
+    AND "fu->is_muted".deleted_at IS NULL
 "#,
         );
     }
@@ -281,7 +299,9 @@ GROUP BY
             r#"
 "fu->is_follower".follower_id,
 "fu->is_following".follower_id,
-"fu->is_friend".transmitter_id
+"fu->is_friend".transmitter_id,
+"fu->is_muted".muter_id,
+"fu->is_blocked".blocker_id
 "#,
         );
     }
@@ -318,7 +338,9 @@ SELECT
     -- Boolean flags
     is_follower,
     is_following,
-    is_friend
+    is_friend,
+    is_muted,
+    is_blocked
 FROM user_friends
 "#,
     );
@@ -1045,6 +1067,122 @@ WHERE
         // Should be true.
         let friends = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
         assert!(friends.iter().all(|friend| friend.is_friend));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("friend"))]
+    async fn can_return_is_muted_flag_for_user_friends_when_logged_in(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Add a friend.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
+        )
+        .bind(2_i64)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/user/{}/friends", 3))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be false initially.
+        let friends = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
+        assert!(friends.iter().all(|friend| !friend.is_muted));
+
+        // Mute the user.
+        let result = sqlx::query(
+            r#"
+INSERT INTO mutes (muter_id, muted_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/user/{}/friends", 3))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be true.
+        let friends = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
+        assert!(friends.iter().all(|friend| friend.is_muted));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("friend"))]
+    async fn can_return_is_blocked_flag_for_user_friends_when_logged_in(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Add a friend.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
+        )
+        .bind(2_i64)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/user/{}/friends", 3))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be false initially.
+        let friends = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
+        assert!(friends.iter().all(|friend| !friend.is_blocked));
+
+        // Block the user.
+        let result = sqlx::query(
+            r#"
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/user/{}/friends", 3))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        // Should be true.
+        let friends = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
+        assert!(friends.iter().all(|friend| friend.is_blocked));
 
         Ok(())
     }
