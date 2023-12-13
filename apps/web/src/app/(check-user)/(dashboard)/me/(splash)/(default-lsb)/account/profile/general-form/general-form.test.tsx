@@ -1,5 +1,5 @@
 import { user_event } from "@storiny/test-utils";
-import { act, screen, waitFor as wait_for } from "@testing-library/react";
+import { screen, waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -14,10 +14,8 @@ describe("<AccountGeneralForm />", () => {
       logged_in: true
     });
 
-    await act(async () => {
-      await user.clear(screen.getByTestId("name-input"));
-      await user.click(screen.getByRole("button", { name: /save profile/i }));
-    });
+    await user.clear(screen.getByTestId("name-input"));
+    await user.click(screen.getByRole("button", { name: /save profile/i }));
 
     await wait_for(() => {
       expect(screen.getByRole("alert")).toBeInTheDocument();
@@ -32,17 +30,15 @@ describe("<AccountGeneralForm />", () => {
       logged_in: true
     });
 
-    await act(async () => {
-      // Clear
-      await user.clear(screen.getByTestId("name-input"));
-      await user.clear(screen.getByTestId("location-input"));
-      await user.clear(screen.getByTestId("bio-textarea"));
-      // Type
-      await user.type(screen.getByTestId("name-input"), "Test name");
-      await user.type(screen.getByTestId("location-input"), "Test location");
-      await user.type(screen.getByTestId("bio-textarea"), "Test bio");
-      await user.click(screen.getByRole("button", { name: /save profile/i }));
-    });
+    // Clear
+    await user.clear(screen.getByTestId("name-input"));
+    await user.clear(screen.getByTestId("location-input"));
+    await user.clear(screen.getByTestId("bio-textarea"));
+    // Type
+    await user.type(screen.getByTestId("name-input"), "Test name");
+    await user.type(screen.getByTestId("location-input"), "Test location");
+    await user.type(screen.getByTestId("bio-textarea"), "Test bio");
+    await user.click(screen.getByRole("button", { name: /save profile/i }));
 
     await wait_for(() => {
       expect(mock_submit).toHaveBeenCalledWith({

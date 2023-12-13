@@ -35,9 +35,7 @@ describe("use_clipboard", () => {
   it("copies text to the clipboard", async () => {
     const { result } = render_hook_with_provider(() => use_clipboard());
 
-    await act(async () => {
-      await result.current("test");
-    });
+    await result.current("test");
 
     expect(navigator.clipboard.writeText).toHaveBeenCalledTimes(1);
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith("test");
