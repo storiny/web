@@ -1,5 +1,5 @@
 import { user_event } from "@storiny/test-utils";
-import { screen, waitFor as wait_for } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -19,10 +19,8 @@ describe("<AccountHistory />", () => {
 
     await user.click(screen.getByRole("switch"));
 
-    await wait_for(() => {
-      expect(mock_submit).toHaveBeenCalledWith({
-        read_history: false
-      });
+    expect(mock_submit).toHaveBeenCalledWith({
+      read_history: false
     });
   });
 });

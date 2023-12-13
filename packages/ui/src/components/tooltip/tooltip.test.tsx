@@ -1,6 +1,5 @@
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { axe, wait_for_position } from "@storiny/test-utils";
-import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -31,15 +30,13 @@ describe("<Tooltip />", () => {
       </TooltipProvider>
     );
 
-    await wait_for(async () =>
-      expect(
-        await axe(baseElement, {
-          rules: {
-            region: { enabled: false }
-          }
-        })
-      ).toHaveNoViolations()
-    );
+    expect(
+      await axe(baseElement, {
+        rules: {
+          region: { enabled: false }
+        }
+      })
+    ).toHaveNoViolations();
   });
 
   it("renders as a polymorphic element", async () => {

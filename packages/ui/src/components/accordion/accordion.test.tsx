@@ -1,5 +1,4 @@
 import { axe } from "@storiny/test-utils";
-import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -51,9 +50,7 @@ describe("<Accordion />", () => {
       </Accordion>
     );
 
-    await wait_for(async () =>
-      expect(await axe(container)).toHaveNoViolations()
-    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("does not have any accessibility violations for `multiple` type", async () => {
@@ -66,9 +63,7 @@ describe("<Accordion />", () => {
       </Accordion>
     );
 
-    await wait_for(async () =>
-      expect(await axe(container)).toHaveNoViolations()
-    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("renders as a polymorphic element", () => {

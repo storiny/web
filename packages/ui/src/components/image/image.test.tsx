@@ -1,6 +1,6 @@
 import { AssetRating } from "@storiny/shared";
 import { axe } from "@storiny/test-utils";
-import { screen, waitFor as wait_for } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -32,9 +32,7 @@ describe("<Image />", () => {
       <Image alt={"Test image"} src={""} />
     );
 
-    await wait_for(async () =>
-      expect(await axe(container)).toHaveNoViolations()
-    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("renders as a polymorphic element", () => {

@@ -1,5 +1,4 @@
 import { axe } from "@storiny/test-utils";
-import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -29,16 +28,14 @@ describe("<Notification />", () => {
       </NotificationProvider>
     );
 
-    await wait_for(async () =>
-      expect(
-        await axe(baseElement, {
-          rules: {
-            list: { enabled: false },
-            "aria-allowed-role": { enabled: false }
-          }
-        })
-      ).toHaveNoViolations()
-    );
+    expect(
+      await axe(baseElement, {
+        rules: {
+          list: { enabled: false },
+          "aria-allowed-role": { enabled: false }
+        }
+      })
+    ).toHaveNoViolations();
   });
 
   it("renders as a polymorphic element", () => {

@@ -1,5 +1,4 @@
 import { axe } from "@storiny/test-utils";
-import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
 import { ModalSidebarItemProps } from "~/components/modal";
@@ -31,9 +30,7 @@ describe("<ModalSidebarItem />", () => {
       </Tabs>
     );
 
-    await wait_for(async () =>
-      expect(await axe(container)).toHaveNoViolations()
-    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("renders children", () => {

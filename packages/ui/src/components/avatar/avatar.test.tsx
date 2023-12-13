@@ -1,5 +1,5 @@
 import { axe } from "@storiny/test-utils";
-import { screen, waitFor as wait_for } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -33,9 +33,7 @@ describe("<Avatar />", () => {
       <Avatar alt={"Test avatar"} src={"/some-img.png"} />
     );
 
-    await wait_for(async () =>
-      expect(await axe(container)).toHaveNoViolations()
-    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("renders as a polymorphic element", () => {
@@ -51,7 +49,8 @@ describe("<Avatar />", () => {
       <Avatar alt={"Test avatar"} data-testid={"avatar"} />
     );
 
-    // The Default size is explicitly specified in the `avatar` class to allow the Avatar component infer size from the AvatarGroup component.
+    // The Default size is explicitly specified in the `avatar` class to allow
+    // the Avatar component infer size from the AvatarGroup component.
     expect(getByTestId("avatar")).toHaveClass(
       ...[styles.avatar, styles.border]
     );
@@ -236,8 +235,6 @@ describe("<Avatar />", () => {
       <Avatar alt={"Test avatar"}>AB</Avatar>
     );
 
-    await wait_for(() => {
-      expect(container.querySelector("img")).toBeNull();
-    });
+    expect(container.querySelector("img")).toBeNull();
   });
 });

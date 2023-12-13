@@ -1,5 +1,5 @@
 import { user_event } from "@storiny/test-utils";
-import { screen, waitFor as wait_for } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -19,10 +19,8 @@ describe("<ResetForm />", () => {
 
     await user.click(screen.getByRole("button", { name: /continue/i }));
 
-    await wait_for(() => {
-      expect(screen.getAllByRole("alert")).toHaveLength(2);
-      expect(mock_submit).not.toBeCalled();
-    });
+    expect(await screen.findAllByRole("alert")).toHaveLength(2);
+    expect(mock_submit).not.toHaveBeenCalled();
   });
 
   it("submits correct form data", async () => {
@@ -42,13 +40,11 @@ describe("<ResetForm />", () => {
     await user.click(screen.getByTestId("logout-checkbox"));
     await user.click(screen.getByRole("button", { name: /continue/i }));
 
-    await wait_for(() => {
-      expect(mock_submit).toHaveBeenCalledWith({
-        email: "someone@example.com",
-        password: "test-password",
-        logout_of_all_devices: true
-      });
-      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(mock_submit).toHaveBeenCalledWith({
+      email: "someone@example.com",
+      password: "test-password",
+      logout_of_all_devices: true
     });
   });
 });

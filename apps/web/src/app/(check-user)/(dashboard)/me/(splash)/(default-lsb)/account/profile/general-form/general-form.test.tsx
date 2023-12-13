@@ -1,5 +1,5 @@
 import { user_event } from "@storiny/test-utils";
-import { screen, waitFor as wait_for } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -17,10 +17,8 @@ describe("<AccountGeneralForm />", () => {
     await user.clear(screen.getByTestId("name-input"));
     await user.click(screen.getByRole("button", { name: /save profile/i }));
 
-    await wait_for(() => {
-      expect(screen.getByRole("alert")).toBeInTheDocument();
-      expect(mock_submit).not.toBeCalled();
-    });
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(mock_submit).not.toHaveBeenCalled();
   });
 
   it("submits correct form data", async () => {
@@ -40,13 +38,11 @@ describe("<AccountGeneralForm />", () => {
     await user.type(screen.getByTestId("bio-textarea"), "Test bio");
     await user.click(screen.getByRole("button", { name: /save profile/i }));
 
-    await wait_for(() => {
-      expect(mock_submit).toHaveBeenCalledWith({
-        name: "Test name",
-        location: "Test location",
-        bio: "Test bio"
-      });
-      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(mock_submit).toHaveBeenCalledWith({
+      name: "Test name",
+      location: "Test location",
+      bio: "Test bio"
     });
   });
 });

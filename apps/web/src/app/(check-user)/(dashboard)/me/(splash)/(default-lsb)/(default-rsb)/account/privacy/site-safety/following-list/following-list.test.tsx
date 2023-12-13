@@ -1,6 +1,6 @@
 import { RelationVisibility } from "@storiny/shared";
 import { user_event } from "@storiny/test-utils";
-import { screen, waitFor as wait_for } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -23,10 +23,8 @@ describe("<FollowingList />", () => {
 
     await user.click(screen.getByLabelText(/no one/i));
 
-    await wait_for(() => {
-      expect(mock_submit).toHaveBeenCalledWith({
-        following_list: `${RelationVisibility.NONE}`
-      });
+    expect(mock_submit).toHaveBeenCalledWith({
+      following_list: `${RelationVisibility.NONE}`
     });
   });
 });

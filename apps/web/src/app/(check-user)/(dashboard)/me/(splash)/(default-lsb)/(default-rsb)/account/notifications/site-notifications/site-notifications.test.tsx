@@ -1,5 +1,5 @@
 import { user_event } from "@storiny/test-utils";
-import { screen, waitFor as wait_for } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -29,17 +29,15 @@ describe("<SiteNotifications />", () => {
 
     await user.click(screen.getByLabelText(/features & updates/i));
 
-    await wait_for(() => {
-      expect(mock_submit).toHaveBeenCalledWith({
-        friend_requests: true,
-        features_and_updates: false,
-        new_followers: true,
-        story_likes: true,
-        replies: true,
-        comments: true,
-        tags: true,
-        stories: true
-      });
+    expect(mock_submit).toHaveBeenCalledWith({
+      friend_requests: true,
+      features_and_updates: false,
+      new_followers: true,
+      story_likes: true,
+      replies: true,
+      comments: true,
+      tags: true,
+      stories: true
     });
   });
 });
