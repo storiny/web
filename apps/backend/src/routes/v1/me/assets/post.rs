@@ -314,6 +314,8 @@ async fn handle_upload(
             .bucket(S3_UPLOADS_BUCKET)
             .key(object_key.to_string())
             .content_type(IMAGE_GIF.to_string())
+            // User ID
+            .metadata("uid", user_id.to_string())
             .body(img_bytes.into())
             .send()
             .await
@@ -345,6 +347,8 @@ async fn handle_upload(
             .bucket(S3_UPLOADS_BUCKET)
             .key(object_key.to_string())
             .content_type(output_mime)
+            // User ID
+            .metadata("uid", user_id.to_string())
             .body(bytes.into())
             .send()
             .await

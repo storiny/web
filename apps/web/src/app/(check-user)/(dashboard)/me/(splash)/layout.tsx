@@ -40,8 +40,8 @@ const DashboardSplashLayout = ({
               level={"body2"}
               style={{ maxWidth: "320px" }}
             >
-              We are having some issues getting your account data from the
-              server right now.
+              We are facing some issues getting your account data from the
+              server at the moment.
             </Typography>
             <Spacer orientation={"vertical"} size={2} />
             <Button

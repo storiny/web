@@ -4,6 +4,7 @@ import React from "react";
 import Input from "~/components/input";
 import AngleIcon from "~/icons/angle";
 import CornerRadiusIcon from "~/icons/corner-radius";
+import css from "~/theme/main.module.scss";
 import { clamp } from "~/utils/clamp";
 
 import { MAX_ANGLE, MIN_ANGLE } from "../../../../../constants";
@@ -58,6 +59,11 @@ const AngleControl = ({
       }}
       placeholder={"Angle"}
       size={"sm"}
+      slot_props={{
+        container: {
+          style: { flex: 1 }
+        }
+      }}
       title={"Angle"}
       type={"number"}
       value={Math.round(active_object.angle)}
@@ -103,6 +109,11 @@ const CornerRadiusControl = ({
       }}
       placeholder={"Corner radius"}
       size={"sm"}
+      slot_props={{
+        container: {
+          style: { flex: 1 }
+        }
+      }}
       title={"Corner radius"}
       type={"number"}
     />

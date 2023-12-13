@@ -237,13 +237,14 @@ const setup_ws = (provider: WebsocketProvider): void => {
             status: "disconnected"
           }
         ]);
-        // Codes > 3000 indicate a client or internal error sent by the server.
-      } else if (event.code < 3000) {
+        // Codes > 3000 or 1006 indicate a client or internal error sent by the
+        // server.
+      } else if (event.code < 3000 && event.code !== 1006) {
         provider.ws_unsuccessful_reconnects++;
       }
 
       // Do not reconnect for client or internal server sent errors.
-      if (event.code < 3000) {
+      if (event.code < 3000 && event.code !== 1006) {
         // Start with no reconnect timeout and increase the timeout by
         // Using exponential backoff starting with 100ms
         setTimeout(

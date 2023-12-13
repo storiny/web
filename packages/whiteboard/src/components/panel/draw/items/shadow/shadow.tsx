@@ -198,6 +198,11 @@ const ShadowBlurControl = ({
       }}
       placeholder={"Shadow blur"}
       size={"sm"}
+      slot_props={{
+        container: {
+          className: css["full-w"]
+        }
+      }}
       title={"Shadow blur"}
       type={"number"}
     />
