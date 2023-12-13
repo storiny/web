@@ -1,5 +1,5 @@
 import { user_event } from "@storiny/test-utils";
-import { act, screen, waitFor as wait_for } from "@testing-library/react";
+import { screen, waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -17,9 +17,7 @@ describe("<LoginForm />", () => {
       </AuthState>
     );
 
-    await act(async () => {
-      await user.click(screen.getByRole("button", { name: /log in/i }));
-    });
+    await user.click(screen.getByRole("button", { name: /log in/i }));
 
     await wait_for(() => {
       expect(screen.getAllByRole("alert")).toHaveLength(2);
@@ -36,12 +34,10 @@ describe("<LoginForm />", () => {
       </AuthState>
     );
 
-    await act(async () => {
-      await user.type(screen.getByTestId("email-input"), "someone@example.com");
-      await user.type(screen.getByTestId("password-input"), "test-password");
-      await user.click(screen.getByTestId("remember-me-checkbox"));
-      await user.click(screen.getByRole("button", { name: /log in/i }));
-    });
+    await user.type(screen.getByTestId("email-input"), "someone@example.com");
+    await user.type(screen.getByTestId("password-input"), "test-password");
+    await user.click(screen.getByTestId("remember-me-checkbox"));
+    await user.click(screen.getByRole("button", { name: /log in/i }));
 
     await wait_for(() => {
       expect(mock_submit).toHaveBeenCalledWith({

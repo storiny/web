@@ -1,5 +1,5 @@
 import { user_event } from "@storiny/test-utils";
-import { act, screen, waitFor as wait_for } from "@testing-library/react";
+import { screen, waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -17,9 +17,7 @@ describe("<SignupWPMForm />", () => {
       </AuthState>
     );
 
-    await act(async () => {
-      await user.click(screen.getByRole("button", { name: /continue/i }));
-    });
+    await user.click(screen.getByRole("button", { name: /continue/i }));
 
     await wait_for(() => {
       expect(mock_submit).toHaveBeenCalledWith({

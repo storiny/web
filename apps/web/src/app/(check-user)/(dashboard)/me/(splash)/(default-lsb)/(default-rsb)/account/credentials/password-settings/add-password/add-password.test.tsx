@@ -1,5 +1,5 @@
 import { user_event } from "@storiny/test-utils";
-import { act, screen, waitFor as wait_for } from "@testing-library/react";
+import { screen, waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -14,25 +14,17 @@ describe("<AddPassword />", () => {
       logged_in: true
     });
 
-    await act(async () => {
-      await user.click(
-        screen.getByRole("button", { name: /add a password/i }) // Open modal
-      );
-    });
+    await user.click(
+      screen.getByRole("button", { name: /add a password/i }) // Open modal
+    );
 
-    await act(async () => {
-      await user.click(screen.getByRole("button", { name: /continue/i })); // Enter verification code screen
-    });
+    await user.click(screen.getByRole("button", { name: /continue/i })); // Enter verification code screen
 
-    await act(async () => {
-      await user.click(screen.getByRole("button", { name: /continue/i })); // Enter password screen
-    });
+    await user.click(screen.getByRole("button", { name: /continue/i })); // Enter password screen
 
-    await act(async () => {
-      await screen.findByTestId("new-password-input");
-      await user.type(screen.getByTestId("new-password-input"), " "); // The button is disabled until the form is dirty
-      await user.click(screen.getByRole("button", { name: /continue/i })); // Finish
-    });
+    await screen.findByTestId("new-password-input");
+    await user.type(screen.getByTestId("new-password-input"), " "); // The button is disabled until the form is dirty
+    await user.click(screen.getByRole("button", { name: /continue/i })); // Finish
 
     await wait_for(() => {
       expect(screen.queryAllByRole("alert").length).not.toEqual(0);
@@ -47,28 +39,18 @@ describe("<AddPassword />", () => {
       logged_in: true
     });
 
-    await act(async () => {
-      await user.click(
-        screen.getByRole("button", { name: /add a password/i }) // Open modal
-      );
-    });
+    await user.click(
+      screen.getByRole("button", { name: /add a password/i }) // Open modal
+    );
 
-    await act(async () => {
-      await user.click(screen.getByRole("button", { name: /continue/i })); // Enter verification code screen
-    });
+    await user.click(screen.getByRole("button", { name: /continue/i })); // Enter verification code screen
 
-    await act(async () => {
-      await user.type(screen.getByTestId("verification-code-input"), "000000");
-      await user.click(screen.getByRole("button", { name: /continue/i })); // Enter password screen
-    });
+    await user.type(screen.getByTestId("verification-code-input"), "000000");
+    await user.click(screen.getByRole("button", { name: /continue/i })); // Enter password screen
 
-    await act(async () => {
-      await user.type(
-        screen.getByTestId("new-password-input"),
-        "test-password"
-      );
-      await user.click(screen.getByRole("button", { name: /continue/i }));
-    });
+    await user.type(screen.getByTestId("new-password-input"), "test-password");
+
+    await user.click(screen.getByRole("button", { name: /continue/i }));
 
     await wait_for(() => {
       expect(mock_submit).toHaveBeenCalledWith({
