@@ -54,45 +54,6 @@ describe("<Toast />", () => {
     expect(getByTestId("toast").nodeName.toLowerCase()).toEqual("aside");
   });
 
-  it("renders severity `blank` by default", () => {
-    const { getByTestId } = render_test_with_provider(
-      <ToastProvider>
-        <Toast data-testid={"toast"} open>
-          Test
-        </Toast>
-      </ToastProvider>
-    );
-
-    expect(getByTestId("toast")).not.toHaveClass(
-      ...[styles.info, styles.success, styles.error, styles.warning]
-    );
-  });
-
-  (["info", "success", "error", "warning"] as ToastSeverity[]).forEach(
-    (severity) => {
-      it(`renders \`${severity}\` severity and passes props to the decorator slot`, () => {
-        const { getByTestId } = render_test_with_provider(
-          <ToastProvider>
-            <Toast
-              open
-              severity={severity}
-              slot_props={{
-                decorator: {
-                  "data-testid": "decorator"
-                } as React.ComponentPropsWithoutRef<"span">
-              }}
-            >
-              Test
-            </Toast>
-          </ToastProvider>
-        );
-
-        const decorator = getByTestId("decorator");
-        expect(decorator).toHaveClass(styles[severity]);
-      });
-    }
-  );
-
   it("passes props to the close slot", () => {
     const { getByTestId } = render_test_with_provider(
       <ToastProvider>

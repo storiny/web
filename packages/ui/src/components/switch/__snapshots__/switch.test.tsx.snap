@@ -3,7 +3,7 @@
 exports[`<Switch /> matches snapshot 1`] = `
 <button
   aria-checked="false"
-  class="unset focusable switch inverted md"
+  class="focusable switch inverted md"
   data-state="unchecked"
   role="switch"
   type="button"

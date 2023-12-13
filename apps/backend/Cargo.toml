@@ -59,13 +59,13 @@ serde = { version = "1.0.188", features = ["derive"] }
 serde_json = "1.0.105"
 sitemap-rs = "0.2.0"
 slugify = "0.1.0"
-sqlx = { version = "0.7.2", features = ["postgres", "time", "macros", "json", "migrate", "runtime-tokio", "sqlx-postgres", "uuid"] }
+sqlx = { version = "0.7.2", features = ["postgres", "time", "macros", "json", "migrate", "runtime-tokio", "sqlx-postgres", "uuid", "tls-rustls"] }
 strum = { version = "0.25.0", features = ["derive"] }
 strum_macros = "0.25.3"
 thiserror = "1.0.48"
 time = { version = "0.3.29", features = ["formatting", "macros", "serde"] }
 tokio = "1.32.0"
-tonic = { version = "0.10.2", features = ["gzip"] }
+tonic = { version = "0.10.2", features = ["gzip", "transport", "tls"] }
 tonic-health = "0.10.2"
 totp-rs = { version = "5.4.0", features = ["qr", "gen_secret", "otpauth"] }
 tracing-actix-web = "0.7.9"

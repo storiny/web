@@ -17,7 +17,8 @@ import { get_user_color } from "../../utils/get-user-color";
 import { use_collaboration_context } from "./context";
 
 interface Props {
-  // `awareness_data` parameter allows arbitrary data to be added to the awareness
+  // `awareness_data` parameter allows arbitrary data to be added to the
+  // awareness
   awareness_data?: object;
   excluded_properties?: ExcludedProperties;
   id: string;
@@ -81,7 +82,8 @@ const CollaborationPlugin = ({
     collab_context.is_collab_active = true;
 
     return () => {
-      // Reset the flag only when unmounting the top level editor collaboration plugin.
+      // Reset the flag only when unmounting the top level editor collaboration
+      // plugin.
       if (editor._parentEditor == null) {
         collab_context.is_collab_active = false;
       }

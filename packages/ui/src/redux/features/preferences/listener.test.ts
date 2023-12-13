@@ -85,7 +85,7 @@ describe("preferences_listener", () => {
 
   it("serializes state to localStorage", () => {
     const store = setup_store(undefined, true);
-    store.dispatch(set_theme("system"));
+    store.dispatch(set_reading_font("satoshi"));
 
     expect(localStorage.setItem).toHaveBeenCalledWith(
       PREFERENCES_STORAGE_KEY,

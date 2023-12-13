@@ -6,8 +6,7 @@
   "scripts": {
     "lint": "buf lint src --config buf.yaml",
     "build": "yarn lint && yarn format && buf generate src --config buf.yaml --template buf.gen.yaml",
-    "format": "buf format src -w",
-    "gen-certs": "make certs"
+    "format": "buf format src -w"
   },
   "devDependencies": {
     "@bufbuild/buf": "^1.21.0-1",

@@ -28,6 +28,7 @@ exports[`<FormMultiSelect /> matches snapshot 1`] = `
         aria-live="polite"
         aria-relevant="additions text"
         class="css-1f43avz-a11yText-A11yText"
+        role="log"
       />
       <div
         class="control css-cp01gg-control"
@@ -46,13 +47,13 @@ exports[`<FormMultiSelect /> matches snapshot 1`] = `
             data-value=""
           >
             <input
+              aria-activedescendant=""
               aria-autocomplete="list"
               aria-controls="react-select-2-listbox"
               aria-describedby="react-select-2-placeholder"
               aria-expanded="true"
               aria-haspopup="true"
               aria-invalid="false"
-              aria-owns="react-select-2-listbox"
               autocapitalize="none"
               autocomplete="off"
               autocorrect="off"
@@ -94,10 +95,12 @@ exports[`<FormMultiSelect /> matches snapshot 1`] = `
       </div>
       <div
         class="menu css-100ebu3-menu"
-        id="react-select-2-listbox"
       >
         <div
+          aria-multiselectable="true"
           class=" css-1fv7cpv-MenuList"
+          id="react-select-2-listbox"
+          role="listbox"
         >
           <div
             class="t-body-2 t-minor css-fjjn8d-NoOptionsMessage"

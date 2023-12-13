@@ -408,7 +408,10 @@ export const add_preferences_listeners = (
     effect: (_, listener_api) => {
       try {
         const serialized_state = compress_to_utf16(
-          JSON.stringify(listener_api.getState().preferences)
+          JSON.stringify({
+            ...listener_api.getState().preferences,
+            theme: undefined
+          })
         );
         localStorage.setItem(PREFERENCES_STORAGE_KEY, serialized_state);
       } catch (e) {

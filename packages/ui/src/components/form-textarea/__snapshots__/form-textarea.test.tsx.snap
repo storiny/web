@@ -22,7 +22,7 @@ exports[`<FormTextarea /> matches snapshot 1`] = `
       <textarea
         aria-describedby=":r0:-helper-text"
         aria-invalid="false"
-        class="unset textarea"
+        class="textarea"
         id=":r0:-item"
         name="textarea"
       />

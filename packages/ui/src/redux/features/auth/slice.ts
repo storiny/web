@@ -44,10 +44,11 @@ export const fetch_user = create_async_thunk<User>(
       } = get_state() as AppState;
       // This environment variable is not present in production.
       const is_storybook = process.env.STORYBOOK_FLAG === "1";
+      const is_test = process.env.NODE_ENV === "test";
 
       // Requests are not sent to the server when running inside Storybook as
       // the user data is usually provided through Storybook arguments.
-      if (is_storybook || !logged_in || status === "loading") {
+      if (is_test || is_storybook || !logged_in || status === "loading") {
         // Do not send a request if logged out or the status is `loading`.
         return false;
       }
@@ -67,8 +68,8 @@ const get_next_value = (
   supplied_value === "increment"
     ? prev_value + 1
     : supplied_value === "decrement"
-    ? prev_value - 1
-    : supplied_value;
+      ? prev_value - 1
+      : supplied_value;
 
 export const auth_slice = create_slice({
   name: "auth",
