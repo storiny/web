@@ -6,7 +6,7 @@ exports[`<Textarea /> matches snapshot 1`] = `
   data-focused="false"
 >
   <textarea
-    class="unset textarea"
+    class="textarea"
     placeholder="Test"
   />
 </div>

@@ -32,6 +32,8 @@ pub struct Config {
     pub redis_host: String,
     /// Redis port
     pub redis_port: String,
+    /// GRPC authentication secret token
+    pub grpc_secret_token: String,
     /// Pexels API key
     pub pexels_api_key: String,
     /// Session cookie secret key

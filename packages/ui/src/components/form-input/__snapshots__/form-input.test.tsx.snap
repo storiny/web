@@ -23,7 +23,7 @@ exports[`<FormInput /> matches snapshot 1`] = `
       <input
         aria-describedby=":r0:-helper-text"
         aria-invalid="false"
-        class="unset input"
+        class="input"
         id=":r0:-item"
         name="input"
         type="text"

@@ -3,4 +3,4 @@
  * @param code The authentication code.
  */
 export const sanitize_authentication_code = (code: string): string =>
-  code.replace(/\W/g, "");
+  code.replace(/[\W_]+/g, "");

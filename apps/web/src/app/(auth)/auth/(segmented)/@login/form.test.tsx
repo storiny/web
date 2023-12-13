@@ -47,7 +47,7 @@ describe("<LoginForm />", () => {
       expect(mock_submit).toHaveBeenCalledWith({
         email: "someone@example.com",
         password: "test-password",
-        remember_me: true
+        remember_me: false // The checkbox is checked by default.
       });
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });

@@ -1,6 +1,11 @@
 import "server-only";
 
-import { credentials, ServiceError } from "@grpc/grpc-js";
+import {
+  ChannelCredentials,
+  credentials,
+  Metadata,
+  ServiceError
+} from "@grpc/grpc-js";
 import { ApiServiceClient } from "@storiny/proto/dist/api_service/v1/service";
 import {
   GetCommentRequest,
@@ -81,9 +86,32 @@ declare global {
   /* eslint-enable no-var */
 }
 
+const grpc_creds =
+  process.env.NODE_ENV === "development"
+    ? credentials.createInsecure()
+    : ((): ChannelCredentials => {
+        const channel_creds = credentials.createSsl(
+          Buffer.from(process.env.GRPC_SSL_CA as string, "base64"),
+          Buffer.from(process.env.GRPC_SSL_KEY as string, "base64")
+        );
+
+        const call_creds = credentials.createFromMetadataGenerator(
+          (_, callback) => {
+            const metadata = new Metadata();
+            metadata.add(
+              "authorization",
+              `Bearer ${process.env.GRPC_SECRET_TOKEN}`
+            );
+            callback(null, metadata);
+          }
+        );
+
+        return credentials.combineChannelCredentials(channel_creds, call_creds);
+      })();
+
 global.grpc_client = new ApiServiceClient(
   process.env.GRPC_ENDPOINT as string,
-  credentials.createInsecure()
+  grpc_creds
 );
 
 /**

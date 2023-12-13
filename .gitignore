@@ -20,7 +20,7 @@ apps/cdn/docker/tmp/nginx/*
 !docker/tmp/redis/.gitkeep
 !apps/cdn/docker/tmp/nginx/.gitkeep
 
-# certificates
+# test certificates
 packages/proto/certs/*
 !packages/proto/certs/gen.sh
 

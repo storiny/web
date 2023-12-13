@@ -7,7 +7,7 @@ exports[`<Input /> matches snapshot 1`] = `
   data-input-container="true"
 >
   <input
-    class="unset input"
+    class="input"
     placeholder="Test"
     type="text"
   />
@@ -21,7 +21,7 @@ exports[`<Input /> spinner renders spinner and matches snapshot 1`] = `
   data-input-container="true"
 >
   <input
-    class="unset input"
+    class="input"
     placeholder="Test"
     type="number"
   />
@@ -31,7 +31,7 @@ exports[`<Input /> spinner renders spinner and matches snapshot 1`] = `
   >
     <button
       aria-label="decrement-value"
-      class="unset focusable focus-invert spinner"
+      class="focusable focus-invert spinner"
       type="button"
     >
       <svg
@@ -50,7 +50,7 @@ exports[`<Input /> spinner renders spinner and matches snapshot 1`] = `
     />
     <button
       aria-label="Increment value"
-      class="unset focusable focus-invert spinner"
+      class="focusable focus-invert spinner"
       type="button"
     >
       <svg

@@ -37,7 +37,7 @@ exports[`<Toast /> renders and matches snapshot 1`] = `
           </div>
           <button
             aria-label="Dismiss"
-            class="unset close"
+            class="close"
             data-radix-toast-announce-exclude=""
             title="Dismiss"
             type="button"
