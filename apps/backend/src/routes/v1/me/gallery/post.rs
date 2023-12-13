@@ -330,6 +330,8 @@ async fn post(
         .bucket(S3_UPLOADS_BUCKET)
         .key(object_key.to_string())
         .content_type(IMAGE_JPEG.to_string())
+        // User ID
+        .metadata("uid", user_id.to_string())
         .body(bytes.into())
         .send()
         .await

@@ -1,3 +1,4 @@
+import { dev_console } from "@storiny/shared/src/utils/dev-log";
 import { download_as_file } from "@storiny/shared/src/utils/download-as-file";
 import clsx from "clsx";
 import { StaticCanvas } from "fabric";
@@ -101,27 +102,32 @@ const ExportImageModal = React.forwardRef<
     /**
      * Clones the main canvas to an export canvas
      */
-    const get_export_canvas = (): Promise<StaticCanvas> => {
+    const get_export_canvas = (): Promise<StaticCanvas> | undefined => {
       const data = canvas.current.toObject(RECOVERY_KEYS);
 
       delete data.width;
       delete data.height;
 
-      return new StaticCanvas(export_canvas_ref.current!).loadFromJSON(
-        data,
-        (prop, object) => {
-          recover_object(object, prop);
-          object.set({
-            id: prop.id,
-            name: prop.name,
-            seed: prop.seed,
-            objectCaching: true // Caching is required for exporting
-          });
-        }
-      );
+      try {
+        return new StaticCanvas(export_canvas_ref.current!).loadFromJSON(
+          data,
+          (prop, object) => {
+            recover_object(object, prop);
+            object.set({
+              id: prop.id,
+              name: prop.name,
+              seed: prop.seed,
+              objectCaching: true // Caching is required for exporting
+            });
+          }
+        );
+      } catch (e) {
+        // Throws in React strict mode due to the effect running twice.
+        dev_console.error(e);
+      }
     };
 
-    get_export_canvas().then((next_canvas) => {
+    get_export_canvas()?.then((next_canvas) => {
       zoom_to_objects(next_canvas);
       next_canvas.renderAll();
 

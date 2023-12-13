@@ -283,6 +283,11 @@ const FillStyleControl = ({
           }}
           placeholder={"Hachure gap"}
           size={"sm"}
+          slot_props={{
+            container: {
+              className: css["full-w"]
+            }
+          }}
           step={0.1}
           title={"Hachure gap"}
           type={"number"}

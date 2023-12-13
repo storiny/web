@@ -6,6 +6,7 @@ import Input from "~/components/input";
 import EyeIcon from "~/icons/eye";
 import EyeClosedIcon from "~/icons/eye-closed";
 import RoughnessIcon from "~/icons/roughness";
+import css from "~/theme/main.module.scss";
 import { clamp } from "~/utils/clamp";
 
 import { MAX_OPACITY, MIN_OPACITY } from "../../../../../constants";
@@ -70,6 +71,11 @@ const OpacityControl = ({
       }}
       placeholder={"Opacity"}
       size={"sm"}
+      slot_props={{
+        container: {
+          className: css["full-w"]
+        }
+      }}
       title={"Opacity"}
       type={"number"}
     />
@@ -110,6 +116,11 @@ const RoughnessControl = ({
       }
       placeholder={"Roughness"}
       size={"sm"}
+      slot_props={{
+        container: {
+          className: css["full-w"]
+        }
+      }}
       step={0.1}
       title={"Roughness"}
       type={"number"}

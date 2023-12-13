@@ -20,4 +20,10 @@
   &.progress {
     width: 176px;
   }
+
+  &.label {
+    max-width: 360px;
+    padding-inline: 16px;
+    text-align: center;
+  }
 }

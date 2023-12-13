@@ -189,6 +189,11 @@ const PenWidthControl = ({
       }}
       placeholder={"Pen width"}
       size={"sm"}
+      slot_props={{
+        container: {
+          className: css["full-w"]
+        }
+      }}
       title={"Pen width"}
       type={"number"}
     />

@@ -88,7 +88,7 @@ const MAX_DOCUMENT_SIZE: u32 = 80_00_000; // 8 megabytes
 const MAX_AWARENESS_PAYLOAD_SIZE: usize = 10_00_000; // 1 megabyte
 
 /// The timeout (in seconds) for uploading a document to the object storage.
-const DOC_UPLOAD_TIMEOUT: u64 = 10; // 15 seconds
+const DOC_UPLOAD_TIMEOUT: u64 = 25; // 25 seconds
 
 /// The maximum duration (in seconds) after which the realm will get destroyed and the peers would
 /// need to subscribe again. This can happen when the peer leaves the connection open for an
@@ -487,6 +487,8 @@ impl Realm {
                     .key(&self.doc_key)
                     .content_type("application/gzip")
                     .content_encoding("gzip")
+                    // Story ID
+                    .metadata("sid", self.doc_id.to_string())
                     .body(compressed_bytes.into())
                     .send(),
             )

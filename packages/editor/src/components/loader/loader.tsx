@@ -48,7 +48,10 @@ const EditorLoader = ({
       data-testid={"overlay"}
     >
       {show_icon && <ConnectionCloseIcon />}
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography
+        className={clsx(css["t-minor"], styles.x, styles.label)}
+        level={"body2"}
+      >
         {label}
       </Typography>
       {!hide_progress && (

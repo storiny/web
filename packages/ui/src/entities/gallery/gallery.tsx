@@ -208,6 +208,8 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
           onValueChange: (next_value): void => {
             set_value(next_value as GallerySidebarTabsValue);
             set_query("");
+            set_whiteboard_uploading(false);
+            set_uploader_props(null);
           }
         },
         sidebar: {

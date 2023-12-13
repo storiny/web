@@ -24,11 +24,18 @@ const WhiteboardUploader = (
   const set_selected = use_set_atom(selected_atom);
   const toast = use_toast();
   const [upload_image, result] = use_upload_asset_mutation();
+  const started_uploading_ref = React.useRef<boolean>(false);
 
   /**
    * Handles the uploading of the image
    */
   const handle_upload = React.useCallback(() => {
+    if (started_uploading_ref.current) {
+      return;
+    }
+
+    started_uploading_ref.current = true;
+
     upload_image({ file, alt })
       .unwrap()
       .then((res) => {
@@ -45,6 +52,9 @@ const WhiteboardUploader = (
       })
       .catch((error) => {
         handle_api_error(error, toast, null, "Could not upload your sketch");
+      })
+      .finally(() => {
+        started_uploading_ref.current = false;
       });
   }, [alt, file, set_selected, toast, upload_image]);
 
@@ -58,8 +68,9 @@ const WhiteboardUploader = (
     }
   }, [on_reset, set_selected]);
 
+  // Upload on mount.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  React.useEffect(() => handle_upload(), []);
+  React.useEffect(handle_upload, []);
 
   return (
     <div
@@ -117,7 +128,7 @@ const WhiteboardUploader = (
           <Spacer orientation={"vertical"} size={2.25} />
           <div className={css["flex-center"]}>
             <Button onClick={reset} variant={"hollow"}>
-              Sketch another
+              Create another sketch
             </Button>
           </div>
         </React.Fragment>

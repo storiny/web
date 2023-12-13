@@ -82,8 +82,9 @@ LIMIT $2 OFFSET $3
 "#,
     )
     .bind(&user_id)
-    .bind(10_i16)
-    .bind((page * 10) as i16)
+    // This route returns 15 items per call.
+    .bind(15_i16)
+    .bind((page * 15) as i16)
     .fetch_all(&data.db_pool)
     .await?;
 
