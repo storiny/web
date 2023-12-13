@@ -1,5 +1,5 @@
 import { user_event } from "@storiny/test-utils";
-import { screen, waitFor as wait_for } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -19,10 +19,8 @@ describe("<RecoveryForm />", () => {
 
     await user.click(screen.getByRole("button", { name: /continue/i }));
 
-    await wait_for(() => {
-      expect(screen.getByRole("alert")).toBeInTheDocument();
-      expect(mock_submit).not.toBeCalled();
-    });
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(mock_submit).not.toHaveBeenCalled();
   });
 
   it("submits correct form data", async () => {
@@ -37,11 +35,9 @@ describe("<RecoveryForm />", () => {
     await user.type(screen.getByTestId("email-input"), "someone@example.com");
     await user.click(screen.getByRole("button", { name: /continue/i }));
 
-    await wait_for(() => {
-      expect(mock_submit).toHaveBeenCalledWith({
-        email: "someone@example.com"
-      });
-      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(mock_submit).toHaveBeenCalledWith({
+      email: "someone@example.com"
     });
   });
 });

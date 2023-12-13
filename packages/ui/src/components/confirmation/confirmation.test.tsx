@@ -1,5 +1,4 @@
 import { axe, user_event } from "@storiny/test-utils";
-import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -21,9 +20,7 @@ describe("<Confirmation />", () => {
       <Confirmation description={"test"} open title={"test"} />
     );
 
-    await wait_for(async () =>
-      expect(await axe(baseElement)).toHaveNoViolations()
-    );
+    expect(await axe(baseElement)).toHaveNoViolations();
   });
 
   it("renders as a polymorphic element", () => {

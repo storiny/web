@@ -1,6 +1,5 @@
 import { axe } from "@storiny/test-utils";
 import { FriendRequest as TFriendRequest } from "@storiny/types";
-import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -26,8 +25,6 @@ describe("<FriendRequest />", () => {
       <FriendRequest friend_request={TEST_FRIEND_REQUEST} />
     );
 
-    await wait_for(async () =>
-      expect(await axe(container)).toHaveNoViolations()
-    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 });

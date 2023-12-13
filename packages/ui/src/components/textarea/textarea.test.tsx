@@ -1,5 +1,4 @@
 import { axe } from "@storiny/test-utils";
-import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -22,9 +21,7 @@ describe("<Textarea />", () => {
       <Textarea placeholder={"Test"} />
     );
 
-    await wait_for(async () =>
-      expect(await axe(container)).toHaveNoViolations()
-    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("renders as a polymorphic element", () => {

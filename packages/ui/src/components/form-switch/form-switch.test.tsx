@@ -1,5 +1,4 @@
 import { axe } from "@storiny/test-utils";
-import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 import { z } from "zod";
 
@@ -63,9 +62,7 @@ describe("<FormSwitch />", () => {
       </Component>
     );
 
-    await wait_for(async () =>
-      expect(await axe(container)).toHaveNoViolations()
-    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("consumes disabled prop from `FormContext`", () => {

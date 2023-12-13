@@ -1,5 +1,4 @@
 import { axe } from "@storiny/test-utils";
-import { waitFor as wait_for } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import React from "react";
 
@@ -15,9 +14,7 @@ describe("<Navbar />", () => {
   it("does not have any accessibility violations", async () => {
     const { container } = render_test_with_provider(<Navbar />);
     await screen.findByRole("button", { name: /log in/i });
-    await wait_for(async () =>
-      expect(await axe(container)).toHaveNoViolations()
-    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("does not have any accessibility violations when logged in", async () => {
@@ -25,9 +22,7 @@ describe("<Navbar />", () => {
       logged_in: true
     });
 
-    await wait_for(async () =>
-      expect(await axe(container)).toHaveNoViolations()
-    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("renders logged out state", () => {

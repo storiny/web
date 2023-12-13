@@ -1,5 +1,4 @@
 import { axe } from "@storiny/test-utils";
-import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -24,9 +23,7 @@ describe("<Modal />", () => {
       />
     );
 
-    await wait_for(async () =>
-      expect(await axe(baseElement)).toHaveNoViolations()
-    );
+    expect(await axe(baseElement)).toHaveNoViolations();
   });
 
   it("renders as a polymorphic element", () => {
@@ -202,7 +199,8 @@ describe("<Modal />", () => {
       expect(getByTestId(element)).toBeInTheDocument();
     });
 
-    // Passing data-testid to tabs slot overwrites the test id passed to container slot.
+    // Passing data-testid to tabs slot overwrites the test id passed to
+    // container slot.
     expect(baseElement.querySelector("[data-tabs]")).not.toBeNull();
   });
 });

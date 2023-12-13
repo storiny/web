@@ -1,5 +1,5 @@
 import { axe } from "@storiny/test-utils";
-import { screen, waitFor as wait_for } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -17,9 +17,7 @@ describe("<LeftSidebar />", () => {
       <LeftSidebar force_mount />
     );
     await screen.findByRole("button", { name: /log in/i });
-    await wait_for(async () =>
-      expect(await axe(container)).toHaveNoViolations()
-    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("does not have any accessibility violations when logged in", async () => {
@@ -31,9 +29,7 @@ describe("<LeftSidebar />", () => {
     );
 
     await screen.findByRole("button", { name: /write/i });
-    await wait_for(async () =>
-      expect(await axe(container)).toHaveNoViolations()
-    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("renders logged out state with default content", () => {
