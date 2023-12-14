@@ -1,1 +1,1 @@
-export const SESSION_COOKIE_ID = "__storiny.auth.v1";
+export const SESSION_COOKIE_ID = "__storiny.auth.v0-alpha";
