@@ -136,7 +136,6 @@ VALUES ($1)
     async fn can_reject_an_invite_code_preflight_request_for_an_invalid_code(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
 
         let req = test::TestRequest::post()

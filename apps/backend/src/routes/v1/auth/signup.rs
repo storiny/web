@@ -345,7 +345,6 @@ VALUES ($1, $2, $3)
     async fn can_reject_a_signup_request_for_an_invalid_alpha_invite_code(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
 
         let req = test::TestRequest::post()
@@ -455,7 +454,7 @@ VALUES ($1, $2, $3)
                 )))
                 .uri("/v1/auth/signup")
                 .set_json(Request {
-                    alpha_invite_code,
+                    alpha_invite_code: alpha_invite_code.clone(),
                     email: "someone@example.com".to_string(),
                     name: "Some user".to_string(),
                     username: "some_user".to_string(),
@@ -502,6 +501,22 @@ SELECT EXISTS (
             .await?;
 
             assert!(token.get::<bool, _>("exists"));
+
+            // TODO: (alpha)
+            // Should delete the invite code.
+            let invite_code = sqlx::query(
+                r#"
+SELECT EXISTS (
+    SELECT 1 FROM alpha_invite_codes
+    WHERE code = $1
+)
+"#,
+            )
+            .bind(&alpha_invite_code)
+            .fetch_one(&mut *conn)
+            .await?;
+
+            assert!(!invite_code.get::<bool, _>("exists"));
 
             // Should increment the signup attempts.
             let result =
