@@ -1,0 +1,1 @@
+drop TABLE  if EXISTS alpha_invite_codes CASCADE ;

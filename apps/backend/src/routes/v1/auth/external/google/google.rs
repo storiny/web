@@ -1,5 +1,6 @@
 use crate::{
     error::AppError,
+    middlewares::identity::identity::Identity,
     AppState,
 };
 use actix_web::{
@@ -16,7 +17,12 @@ use serde_json::Value;
 use storiny_session::Session;
 
 #[get("/v1/auth/external/google")]
-async fn get(data: web::Data<AppState>, session: Session) -> Result<HttpResponse, AppError> {
+async fn get(
+    data: web::Data<AppState>,
+    session: Session,
+    // TODO: (alpha) Remove identity guard in beta
+    _user: Identity,
+) -> Result<HttpResponse, AppError> {
     let (authorize_url, csrf_token) = &data
         .oauth_client_map
         .google

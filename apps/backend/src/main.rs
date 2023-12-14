@@ -333,7 +333,13 @@ async fn main() -> io::Result<()> {
                     // Routes
                     .configure(routes::init::init_common_routes)
                     .configure(routes::init::init_oauth_routes)
-                    .configure(routes::init::init_v1_routes)
+                    // TODO: (alpha)
+                    .configure(routes::init::init_v1_auth_routes)
+                    .service(
+                        web::scope("")
+                            .wrap(alpha_identity::AlphaIdentity)
+                            .configure(routes::init::init_v1_routes),
+                    )
                     .service(fs::Files::new("/", "./static"))
                     .default_service(web::route().to(not_found))
             })

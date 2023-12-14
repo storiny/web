@@ -1,5 +1,3 @@
-import { act } from "@testing-library/react";
-
 import { render_hook_with_provider } from "~/redux/test-utils";
 
 import { use_clipboard } from "./use-clipboard";
