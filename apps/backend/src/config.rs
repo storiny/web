@@ -38,6 +38,8 @@ pub struct Config {
     pub pexels_api_key: String,
     /// Session cookie secret key
     pub session_secret_key: String,
+    /// The Base64-encoded salt string for hashing tokens
+    pub token_salt: String,
     /// AWS access key ID
     pub aws_access_key_id: String,
     /// AWS secret access key

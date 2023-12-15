@@ -1,6 +1,7 @@
 use crate::{
     error::{
         AppError,
+        FormErrorResponse,
         ToastErrorResponse,
     },
     middlewares::identity::identity::Identity,
@@ -63,9 +64,9 @@ WHERE code = $1
     .await
     .map_err(|error| {
         if matches!(error, sqlx::Error::RowNotFound) {
-            AppError::ToastError(ToastErrorResponse::new(
+            AppError::FormError(FormErrorResponse::new(
                 Some(StatusCode::UNAUTHORIZED),
-                "Invalid or expired invite code",
+                vec![("alpha_invite_code", "Invalid or expired invite code")],
             ))
         } else {
             AppError::SqlxError(error)
@@ -83,7 +84,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::test_utils::{
-        assert_toast_error_response,
+        assert_form_error_response,
         init_app_for_test,
         res_to_string,
     };
@@ -147,7 +148,11 @@ VALUES ($1)
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Invalid or expired invite code").await;
+        assert_form_error_response(
+            res,
+            vec![("alpha_invite_code", "Invalid or expired invite code")],
+        )
+        .await;
 
         Ok(())
     }

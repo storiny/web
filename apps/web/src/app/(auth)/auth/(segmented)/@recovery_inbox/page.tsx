@@ -31,7 +31,14 @@ const Page = (): React.ReactElement => {
         <br />
         <br />
         Did not receive an e-mail from us? Try checking the spam folder or{" "}
-        <Link href={"/auth"} underline={"always"}>
+        <Link
+          href={"#"}
+          onClick={(event): void => {
+            event.preventDefault();
+            actions.switch_segment("recovery_base");
+          }}
+          underline={"always"}
+        >
           request a new e-mail to reset password
         </Link>
         .

@@ -20,10 +20,7 @@ use actix_web::{
 };
 use apalis::prelude::Storage;
 use argon2::{
-    password_hash::{
-        rand_core::OsRng,
-        SaltString,
-    },
+    password_hash::SaltString,
     Argon2,
     PasswordHasher,
 };
@@ -77,7 +74,10 @@ WHERE id = $1
     }
 
     let verification_code = generate_verification_code();
-    let salt = SaltString::generate(&mut OsRng);
+
+    let salt = SaltString::from_b64(&data.config.token_salt)
+        .map_err(|error| AppError::InternalError(error.to_string()))?;
+
     let hashed_verification_code = Argon2::default()
         .hash_password(&verification_code.as_bytes(), &salt)
         .map_err(|error| {
@@ -133,9 +133,13 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{
-        assert_toast_error_response,
-        init_app_for_test,
+    use crate::{
+        config::get_app_config,
+        constants::token::TOKEN_LENGTH,
+        test_utils::{
+            assert_toast_error_response,
+            init_app_for_test,
+        },
     };
     use actix_web::test;
     use sqlx::{
@@ -216,6 +220,13 @@ VALUES ($1, $2, $3, $4, $5)
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+        let config = get_app_config().unwrap();
+
+        let token_id = nanoid!(TOKEN_LENGTH);
+        let salt = SaltString::from_b64(&config.token_salt).unwrap();
+        let hashed_token = Argon2::default()
+            .hash_password(&token_id.as_bytes(), &salt)
+            .unwrap();
 
         // Insert a password-add verification token.
         let result = sqlx::query(
@@ -224,7 +235,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
         )
-        .bind("sample")
+        .bind(hashed_token.to_string())
         .bind(TokenType::PasswordAdd as i16)
         .bind(user_id.unwrap())
         .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
@@ -250,7 +261,7 @@ SELECT EXISTS (
 )
 "#,
         )
-        .bind("sample")
+        .bind(hashed_token.to_string())
         .fetch_one(&mut *conn)
         .await?;
 

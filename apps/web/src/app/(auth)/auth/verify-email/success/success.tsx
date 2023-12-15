@@ -23,8 +23,13 @@ const Page = (): React.ReactElement => (
     <Spacer orientation={"vertical"} size={5} />
     <Grow />
     <div className={clsx(css["flex-col"], css["flex-center"])}>
-      <Button as={NextLink} className={css["full-w"]} href={"/"} size={"lg"}>
-        Home
+      <Button
+        as={NextLink}
+        className={css["full-w"]}
+        href={"/login"}
+        size={"lg"}
+      >
+        Log in
       </Button>
     </div>
   </>

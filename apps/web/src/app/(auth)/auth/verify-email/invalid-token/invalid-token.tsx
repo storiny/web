@@ -22,7 +22,14 @@ const Page = (): React.ReactElement => (
     <Spacer orientation={"vertical"} size={5} />
     <Grow />
     <div className={clsx(css["flex-col"], css["flex-center"])}>
-      <Button as={NextLink} className={css["full-w"]} href={"/"} size={"lg"}>
+      <Button
+        as={NextLink}
+        className={css["full-w"]}
+        // TODO: Enable after alpha
+        disabled
+        href={"/"}
+        size={"lg"}
+      >
         Home
       </Button>
     </div>

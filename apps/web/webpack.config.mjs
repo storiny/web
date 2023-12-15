@@ -1,5 +1,7 @@
+import * as path from "node:path";
+
 import loader_utils from "loader-utils";
-import * as path from "path";
+import webpack from "webpack";
 
 /**
  * Classname hashing config to ignore file names from classname hashes in production
@@ -38,6 +40,19 @@ export const webpack_config = (config, { dev }) => {
     ]
   );
 
+  /**
+   * Sentry
+   */
+  config.plugins.push(
+    new webpack.DefinePlugin({
+      __SENTRY_DEBUG__: false,
+      __SENTRY_TRACING__: false,
+      __RRWEB_EXCLUDE_IFRAME__: true,
+      __RRWEB_EXCLUDE_SHADOW_DOM__: true,
+      __SENTRY_EXCLUDE_REPLAY_WORKER__: true
+    })
+  );
+
   const rules = config.module.rules
     .find((rule) => typeof rule.oneOf === "object")
     .oneOf.filter((rule) => Array.isArray(rule.use));
@@ -49,7 +64,7 @@ export const webpack_config = (config, { dev }) => {
           module_loader.loader?.includes("css-loader") &&
           !module_loader.loader?.includes("postcss-loader")
         ) {
-          // TODO: This is not working on the current version of Next.js
+          // TODO:
           // module_loader.options.modules.getLocalIdent = hash_only_ident;
         }
       });

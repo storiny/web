@@ -2,6 +2,7 @@ use crate::{
     constants::{
         email_template::EmailTemplate,
         resource_lock::ResourceLock,
+        token::TOKEN_LENGTH,
     },
     error::{
         AppError,
@@ -32,10 +33,7 @@ use actix_web::{
 use actix_web_validator::Json;
 use apalis::prelude::Storage;
 use argon2::{
-    password_hash::{
-        rand_core::OsRng,
-        SaltString,
-    },
+    password_hash::SaltString,
     Argon2,
     PasswordHasher,
 };
@@ -155,8 +153,10 @@ WHERE
 
     // Generate a new verification token.
 
-    let token_id = nanoid!(48);
-    let salt = SaltString::generate(&mut OsRng);
+    let token_id = nanoid!(TOKEN_LENGTH);
+    let salt = SaltString::from_b64(&data.config.token_salt)
+        .map_err(|error| AppError::InternalError(error.to_string()))?;
+
     let hashed_token = Argon2::default()
         .hash_password(&token_id.as_bytes(), &salt)
         .map_err(|error| AppError::InternalError(error.to_string()))?;
@@ -182,7 +182,10 @@ VALUES ($1, $2, $3, $4)
     incr_resource_lock_attempts(&data.redis, ResourceLock::Verification, &payload.email).await?;
 
     let template: EmailTemplate;
-    let verification_link = format!("https://storiny.com/auth/verify-email/{}", token_id);
+    let verification_link = format!(
+        "{}/auth/verify-email/{}",
+        data.config.web_server_url, token_id
+    );
 
     let template_data = match user.get::<Option<OffsetDateTime>, _>("last_login_at") {
         // Email verification request for an existing user.
@@ -278,7 +281,10 @@ mod tests {
 
     mod serial {
         use super::*;
-        use crate::test_utils::assert_toast_error_response;
+        use crate::{
+            config::get_app_config,
+            test_utils::assert_toast_error_response,
+        };
 
         #[test_context(RedisTestContext)]
         #[sqlx::test(fixtures("user"))]
@@ -334,6 +340,7 @@ SELECT EXISTS (
             ctx: &mut RedisTestContext,
             pool: PgPool,
         ) -> sqlx::Result<()> {
+            let config = get_app_config().unwrap();
             let mut conn = pool.acquire().await?;
             let app = init_app_for_test(post, pool, false, false, None).await.0;
 
@@ -351,6 +358,12 @@ WHERE id = $1
 
             assert_eq!(result.rows_affected(), 1);
 
+            let token_id = nanoid!(TOKEN_LENGTH);
+            let salt = SaltString::from_b64(&config.token_salt).unwrap();
+            let hashed_token = Argon2::default()
+                .hash_password(&token_id.as_bytes(), &salt)
+                .unwrap();
+
             // Insert a verification token for the user.
             let result = sqlx::query(
                 r#"
@@ -358,7 +371,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
             )
-            .bind("sample")
+            .bind(hashed_token.to_string())
             .bind(TokenType::EmailVerification as i16)
             .bind(1_i64)
             .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
@@ -386,7 +399,7 @@ SELECT EXISTS (
 )
 "#,
             )
-            .bind("sample")
+            .bind(hashed_token.to_string())
             .fetch_one(&mut *conn)
             .await?;
 
@@ -505,6 +518,13 @@ WHERE id = $1
         ) -> sqlx::Result<()> {
             let mut conn = pool.acquire().await?;
             let app = init_app_for_test(post, pool, false, false, None).await.0;
+            let config = get_app_config().unwrap();
+
+            let token_id = nanoid!(TOKEN_LENGTH);
+            let salt = SaltString::from_b64(&config.token_salt).unwrap();
+            let hashed_token = Argon2::default()
+                .hash_password(&token_id.as_bytes(), &salt)
+                .unwrap();
 
             // Insert a verification token.
             let result = sqlx::query(
@@ -513,7 +533,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
             )
-            .bind("sample")
+            .bind(hashed_token.to_string())
             .bind(TokenType::EmailVerification as i16)
             .bind(1_i64)
             .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
@@ -541,7 +561,7 @@ SELECT EXISTS (
 )
 "#,
             )
-            .bind("sample")
+            .bind(hashed_token.to_string())
             .fetch_one(&mut *conn)
             .await?;
 

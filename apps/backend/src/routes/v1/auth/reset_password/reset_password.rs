@@ -212,7 +212,11 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::{
-        constants::redis_namespaces::RedisNamespace,
+        config::get_app_config,
+        constants::{
+            redis_namespaces::RedisNamespace,
+            token::TOKEN_LENGTH,
+        },
         test_utils::{
             assert_form_error_response,
             assert_toast_error_response,
@@ -240,11 +244,12 @@ mod tests {
 
     #[sqlx::test(fixtures("user"))]
     async fn can_reset_password(pool: PgPool) -> sqlx::Result<()> {
+        let config = get_app_config().unwrap();
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
 
-        let token_id = nanoid!(48);
-        let salt = SaltString::generate(&mut OsRng);
+        let token_id = nanoid!(TOKEN_LENGTH);
+        let salt = SaltString::from_b64(&config.token_salt).unwrap();
         let hashed_token = Argon2::default()
             .hash_password(&token_id.as_bytes(), &salt)
             .unwrap();
@@ -320,10 +325,15 @@ SELECT EXISTS (
     async fn can_reject_a_reset_password_request_for_an_invalid_email(
         pool: PgPool,
     ) -> sqlx::Result<()> {
+        let config = get_app_config().unwrap();
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
 
-        let token_id = nanoid!(48);
+        let token_id = nanoid!(TOKEN_LENGTH);
+        let salt = SaltString::from_b64(&config.token_salt).unwrap();
+        let hashed_token = Argon2::default()
+            .hash_password(&token_id.as_bytes(), &salt)
+            .unwrap();
 
         // Insert the reset password token.
         let result = sqlx::query(
@@ -332,7 +342,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
         )
-        .bind(token_id.clone())
+        .bind(hashed_token.to_string())
         .bind(TokenType::PasswordReset as i16)
         .bind(1_i64)
         .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
@@ -369,11 +379,12 @@ VALUES ($1, $2, $3, $4)
     async fn can_reject_a_reset_password_request_for_an_expired_token(
         pool: PgPool,
     ) -> sqlx::Result<()> {
+        let config = get_app_config().unwrap();
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
 
-        let token_id = nanoid!(48);
-        let salt = SaltString::generate(&mut OsRng);
+        let token_id = nanoid!(TOKEN_LENGTH);
+        let salt = SaltString::from_b64(&config.token_salt).unwrap();
         let hashed_token = Argon2::default()
             .hash_password(&token_id.as_bytes(), &salt)
             .unwrap();
@@ -428,7 +439,7 @@ VALUES ($1, $2, $3, $4)
                     email: "someone@example.com".to_string(),
                     password: "new_password".to_string(),
                     logout_of_all_devices: false,
-                    token: nanoid!(48).to_string(),
+                    token: nanoid!(TOKEN_LENGTH).to_string(),
                 })
                 .to_request();
             let res = test::call_service(&app, req).await;
@@ -471,7 +482,7 @@ VALUES ($1, $2, $3, $4)
                     email: "someone@example.com".to_string(),
                     password: "new_password".to_string(),
                     logout_of_all_devices: false,
-                    token: nanoid!(48).to_string(),
+                    token: nanoid!(TOKEN_LENGTH).to_string(),
                 })
                 .to_request();
             let res = test::call_service(&app, req).await;
@@ -487,6 +498,7 @@ VALUES ($1, $2, $3, $4)
             ctx: &mut RedisTestContext,
             pool: PgPool,
         ) -> sqlx::Result<()> {
+            let config = get_app_config().unwrap();
             let mut conn = pool.acquire().await?;
             let app = init_app_for_test(post, pool, false, false, None).await.0;
 
@@ -509,8 +521,8 @@ VALUES ($1, $2, $3, $4)
 
             assert_eq!(result, 1);
 
-            let token_id = nanoid!(48);
-            let salt = SaltString::generate(&mut OsRng);
+            let token_id = nanoid!(TOKEN_LENGTH);
+            let salt = SaltString::from_b64(&config.token_salt).unwrap();
             let hashed_token = Argon2::default()
                 .hash_password(&token_id.as_bytes(), &salt)
                 .unwrap();
@@ -564,13 +576,14 @@ VALUES ($1, $2, $3, $4)
             pool: PgPool,
         ) -> sqlx::Result<()> {
             let redis_pool = &ctx.redis_pool;
+            let config = get_app_config().unwrap();
             let mut conn = pool.acquire().await?;
             let (app, _, _) = init_app_for_test(post, pool, false, false, None).await;
 
             let user_id = 1_i64;
 
-            let token_id = nanoid!(48);
-            let salt = SaltString::generate(&mut OsRng);
+            let token_id = nanoid!(TOKEN_LENGTH);
+            let salt = SaltString::from_b64(&config.token_salt).unwrap();
             let hashed_token = Argon2::default()
                 .hash_password(&token_id.as_bytes(), &salt)
                 .unwrap();

@@ -41,8 +41,7 @@ services:
       retries: 3
     environment:
       IMGPROXY_USER_AGENT: "storiny-img-proxy/1.0"
-      IMGPROXY_MAX_SRC_FILE_SIZE: 8388608 # 8MB
-      # IMGPROXY_SECRET: "local_secret"
+      IMGPROXY_MAX_SRC_FILE_SIZE: 26214400 # 25MB
       IMGPROXY_MAX_ANIMATION_FRAMES: 250
       IMGPROXY_IGNORE_SSL_VERIFICATION: true
       IMGPROXY_DEVELOPMENT_ERRORS_MODE: true
@@ -53,6 +52,8 @@ services:
       IMGPROXY_S3_ENDPOINT: "${PROXY_SOURCE_ENDPOINT:-http://storiny-minio:9000}"
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID:-minio_user}"
       AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY:-minio_pass}"
+      # Monitoring
+      IMGPROXY_SENTRY_DSN: https://b3ea082ef28dd9731e23cec91be91efe@o4506393718554624.ingest.sentry.io/4506394135756800
     networks:
       - common-internal
 

@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  discovery:
+    container_name: "storiny_discovery"
+    image: 992532056584.dkr.ecr.us-east-1.amazonaws.com/storiny_discovery
+    environment:
+      IS_DEV: false
+      HOST: localhost
+      PORT: 8080
+      CDN_SERVER_URL: https://cdn.storiny.com
+      WEB_SERVER_URL: https://staging.storiny.com
+      PROXY_KEY_SECRET: "${PROXY_KEY_SECRET}"
+      REDIS_HOST: "${REDIS_HOST}"
+      REDIS_PORT: "${REDIS_PORT}"
+      OAUTH_FACEBOOK_CLIENT_ID: "0"
+      OAUTH_FACEBOOK_CLIENT_SECRET: "0"
+    ports:
+      - "9091:8080"

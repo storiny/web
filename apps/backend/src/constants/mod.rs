@@ -15,5 +15,6 @@ pub mod session_cookie;
 pub mod sql_states;
 pub mod story_category;
 pub mod tag_regex;
+pub mod token;
 pub mod user_flag;
 pub mod username_regex;

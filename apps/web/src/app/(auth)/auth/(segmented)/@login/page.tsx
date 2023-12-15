@@ -30,31 +30,41 @@ const Page = (): React.ReactElement => {
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
       <Typography className={css["t-minor"]} level={"body2"}>
-        Need an account?{" "}
+        Need an account? {/* TODO: Uncomment after alpha */}
+        {/*<Link*/}
+        {/*  ClassName={css["t-medium"]}*/}
+        {/*  Href={"/auth"}*/}
+        {/*  Level={"body2"}*/}
+        {/*  OnClick={(): void => actions.switch_segment("signup_base")}*/}
+        {/*  Underline={"always"}*/}
+        {/*>*/}
+        {/*  Sign up*/}
+        {/*</Link>*/}
         <Link
           className={css["t-medium"]}
           href={"/auth"}
           level={"body2"}
-          onClick={(): void => actions.switch_segment("signup_base")}
+          onClick={(): void => actions.switch_segment("alpha")}
           underline={"always"}
         >
-          Sign up
+          Join using an invite code
         </Link>
       </Typography>
       <Spacer orientation={"vertical"} size={5} />
       <LoginForm />
-      <Spacer orientation={"vertical"} size={2} />
-      <div className={css["flex-center"]}>
-        <Link
-          className={css["t-medium"]}
-          href={"/auth"}
-          level={"body2"}
-          onClick={(): void => actions.switch_segment("base")}
-          underline={"always"}
-        >
-          Show other options to log in
-        </Link>
-      </div>
+      {/* TODO: Uncomment after alpha  */}
+      {/*<Spacer orientation={"vertical"} size={2} />*/}
+      {/*<div className={css["flex-center"]}>*/}
+      {/*  <Link*/}
+      {/*    ClassName={css["t-medium"]}*/}
+      {/*    Href={"/auth"}*/}
+      {/*    Level={"body2"}*/}
+      {/*    OnClick={(): void => actions.switch_segment("base")}*/}
+      {/*    Underline={"always"}*/}
+      {/*  >*/}
+      {/*    Show other options to log in*/}
+      {/*  </Link>*/}
+      {/*</div>*/}
     </>
   );
 };

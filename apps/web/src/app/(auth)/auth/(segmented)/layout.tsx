@@ -13,21 +13,26 @@ const SegmentedLayout = (
   props: Record<AuthSegment, React.ReactNode>
 ): React.ReactNode => {
   const params = use_search_params();
-  const { state, actions } = use_auth_state();
+  const { state } = use_auth_state();
+  // TODO: clean after alpha
   const segment = params.get("segment") || "";
   const token = params.get("token") || "";
 
   if (segment === "reset-password" && token) {
-    actions.set_reset_password_token(token);
     return props.reset_base;
   }
 
-  if (["login", "signup", "recover"].includes(segment)) {
-    return segment === "login"
-      ? props.login
-      : segment === "recover"
-      ? props.recovery_base
-      : props.signup_base;
+  // TODO: Uncomment after alpha
+  // if (["login", "signup", "recover"].includes(segment)) {
+  //   return segment === "login"
+  //     ? props.login
+  //     : segment === "recover"
+  //     ? props.recovery_base
+  //     : props.signup_base;
+  // }
+
+  if (["login", "recover"].includes(segment)) {
+    return segment === "login" ? props.login : props.recovery_base;
   }
 
   return props[state.auth.segment];

@@ -3,6 +3,7 @@ use crate::{
         email_template::EmailTemplate,
         reserved_usernames::RESERVED_USERNAMES,
         resource_lock::ResourceLock,
+        token::TOKEN_LENGTH,
         username_regex::USERNAME_REGEX,
     },
     error::{
@@ -180,9 +181,10 @@ SELECT EXISTS (
         .hash_password(&payload.password.as_bytes(), &salt)
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
-    let token_id = nanoid!(48);
+    let token_id = nanoid!(TOKEN_LENGTH);
+    let salt = SaltString::from_b64(&data.config.token_salt)
+        .map_err(|error| AppError::InternalError(error.to_string()))?;
 
-    let salt = SaltString::generate(&mut OsRng);
     let hashed_token = Argon2::default()
         .hash_password(&token_id.as_bytes(), &salt)
         .map_err(|error| AppError::InternalError(error.to_string()))?;
@@ -226,7 +228,10 @@ SELECT $6, $7, (SELECT id FROM inserted_user), $8
 
     let full_name = payload.name.clone();
     let first_name = full_name.split(" ").collect::<Vec<_>>()[0];
-    let verification_link = format!("https://storiny.com/auth/verify-email/{}", token_id);
+    let verification_link = format!(
+        "{}/auth/verify-email/{}",
+        data.config.web_server_url, token_id
+    );
 
     let template_data = serde_json::to_string(&EmailVerificationEmailTemplateData {
         email: (&payload.email).to_string(),

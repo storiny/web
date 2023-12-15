@@ -54,18 +54,19 @@ const Page = (): React.ReactElement => {
       <Spacer orientation={"vertical"} size={5} />
       <SignupBaseForm on_submit={on_submit} />
       <Spacer orientation={"vertical"} size={5} />
-      <div className={css["flex-center"]}>
-        <Link
-          className={css["t-medium"]}
-          href={"/auth"}
-          level={"body2"}
-          onClick={(): void => actions.switch_segment("base")}
-          underline={"always"}
-        >
-          Show other options to sign up
-        </Link>
-      </div>
-      <Spacer orientation={"vertical"} size={2} />
+      {/* TODO: Uncomment after alpha */}
+      {/*<div className={css["flex-center"]}>*/}
+      {/*  <Link*/}
+      {/*    ClassName={css["t-medium"]}*/}
+      {/*    Href={"/auth"}*/}
+      {/*    Level={"body2"}*/}
+      {/*    OnClick={(): void => actions.switch_segment("base")}*/}
+      {/*    Underline={"always"}*/}
+      {/*  >*/}
+      {/*    Show other options to sign up*/}
+      {/*  </Link>*/}
+      {/*</div>*/}
+      {/*<Spacer orientation={"vertical"} size={2} />*/}
       <Stepper active_steps={1} total_steps={3} />
     </>
   );

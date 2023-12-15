@@ -2,7 +2,7 @@
     <ShortName>Storiny</ShortName>
     <Description>Search Storiny</Description>
     <InputEncoding>UTF-8</InputEncoding>
-    <Url type="text/html" method="get" template="https://storiny.com/search?q={searchTerms}"/>
+    <Url type="text/html" method="get" template="https://storiny.com/explore?query={searchTerms}"/>
     <Image width="16" height="16">https://storiny.com/favicon-16.ico</Image>
-    <moz:SearchForm>https://storiny.com/search</moz:SearchForm>
+    <moz:SearchForm>https://storiny.com/explore</moz:SearchForm>
 </OpenSearchDescription>

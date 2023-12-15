@@ -71,15 +71,16 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
                     router.replace(
                       res.is_first_login ? `/?onboarding=true` : "/"
                     ); // Home page
+                    router.refresh(); // Refresh the state
                   } else {
                     actions.switch_segment(
                       res.result === "suspended"
                         ? "suspended"
                         : res.result === "held_for_deletion"
-                        ? "deletion"
-                        : res.result === "deactivated"
-                        ? "deactivated"
-                        : "email_confirmation"
+                          ? "deletion"
+                          : res.result === "deactivated"
+                            ? "deactivated"
+                            : "email_confirmation"
                     );
                   }
                 })

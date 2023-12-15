@@ -13,7 +13,7 @@ import {
   PROVIDER_DISPLAY_NAME_MAP,
   PROVIDER_ICON_MAP,
   PROVIDER_KEY_MAP
-} from "../../../../../../../../providers";
+} from "../../../../../../../../(alpha)/providers";
 import DashboardGroup from "../../../dashboard-group";
 import DashboardTitle from "../../../dashboard-title";
 import DashboardWrapper from "../../../dashboard-wrapper";

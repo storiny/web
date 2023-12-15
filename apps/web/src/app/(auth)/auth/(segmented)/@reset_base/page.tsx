@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams as use_search_params } from "next/dist/client/components/navigation";
 import React from "react";
 
 import Link from "~/components/link";
@@ -11,8 +12,13 @@ import { use_auth_state } from "../../../actions";
 import ResetForm from "./form";
 
 const Page = (): React.ReactElement => {
-  const { actions, state } = use_auth_state();
-  const token = state.reset_password.token || "";
+  const params = use_search_params();
+  const { actions } = use_auth_state();
+  const token = params.get("token") || "";
+
+  React.useEffect(() => {
+    actions.set_reset_password_token(token);
+  }, [actions, token]);
 
   return (
     <>
