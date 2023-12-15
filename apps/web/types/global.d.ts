@@ -15,6 +15,8 @@ declare module "little-state-machine" {
     };
     reset_password: { token: null | string };
     signup: {
+      // TODO: remove after alpha
+      alpha_invite_code: string;
       email: string;
       name: string;
       password: string;

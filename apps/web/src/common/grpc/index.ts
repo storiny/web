@@ -92,7 +92,8 @@ const grpc_creds =
     : ((): ChannelCredentials => {
         const channel_creds = credentials.createSsl(
           Buffer.from(process.env.GRPC_SSL_CA as string, "base64"),
-          Buffer.from(process.env.GRPC_SSL_KEY as string, "base64")
+          Buffer.from(process.env.GRPC_SSL_KEY as string, "base64"),
+          Buffer.from(process.env.GRPC_SSL_CA as string, "base64")
         );
 
         const call_creds = credentials.createFromMetadataGenerator(

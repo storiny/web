@@ -3,9 +3,6 @@ name = "storiny"
 version = "0.1.0"
 edition = "2021"
 
-[profile.release]
-lto = true
-
 [dependencies]
 storiny_session = { version = "0.1.0", path = "session" }
 actix-cors = "0.6.4"
@@ -82,6 +79,8 @@ tracing = { version = "0.1.40", features = ["attributes"] }
 tracing-bunyan-formatter = "0.3.9"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 rmp-serde = "1.1.2"
+tower = "0.4.13"
+sentry = { version = "0.32.0", features = ["tracing"] }
 
 [dev-dependencies]
 storiny_macros = { version = "0.1.0", path = "macros" }
@@ -90,5 +89,4 @@ tempfile = "3.8.1"
 tokio = { version = "1.32.0", features = ["time"] }
 tokio-stream = { version = "0.1.14", features = ["net"] }
 tokio-util = { version = "0.7.9", features = ["codec"] }
-tower = "0.4.13"
 tokio-tungstenite = "0.21.0"

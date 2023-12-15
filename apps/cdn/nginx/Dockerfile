@@ -1,13 +1,5 @@
 FROM nginx:mainline-alpine as builder
 
-ARG ENABLED_MODULES
-
-RUN set -ex \
-    && if [ "$ENABLED_MODULES" = "" ]; then \
-        echo "No additional modules enabled, exiting"; \
-        exit 1; \
-    fi
-
 COPY ./ /modules/
 
 RUN set -ex \
@@ -21,7 +13,7 @@ RUN set -ex \
     && hg clone -r ${NGINX_VERSION}-${PKG_RELEASE} https://hg.nginx.org/pkg-oss/ \
     && cd pkg-oss \
     && mkdir /tmp/packages \
-    && for module in $ENABLED_MODULES; do \
+    && for module in "njs"; do \
         echo "Building $module for nginx-$NGINX_VERSION"; \
         if [ -d /modules/$module ]; then \
             echo "Building $module from user-supplied sources"; \

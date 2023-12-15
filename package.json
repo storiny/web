@@ -46,7 +46,7 @@
     "msw": "^1.2.1",
     "msw-storybook-addon": "^1.8.0",
     "nanoid": "3",
-    "next": "^14.0.3",
+    "next": "^14.0.4",
     "nodemon": "^2.0.22",
     "pexels": "^1.4.0",
     "prettier": "^3.0.3",

@@ -1,10 +1,12 @@
 /* eslint-disable prefer-snakecase/prefer-snakecase */
 
+import * as path from "node:path";
+
 import bundle_analyzer from "@next/bundle-analyzer";
 import mdx from "@next/mdx";
+import { withSentryConfig as with_sentry_config } from "@sentry/nextjs";
 import { polyfill } from "interweave-ssr";
 import { customAlphabet as custom_alphabet } from "nanoid";
-import * as path from "path";
 import { fileURLToPath as file_url_to_path } from "url";
 
 import { mdxConfig } from "./mdx.config.mjs";
@@ -26,6 +28,8 @@ const with_bundle_analyzer = bundle_analyzer({
 
 /** @type {import('next').NextConfig} */
 const next_config = {
+  trailingSlash: false,
+  productionBrowserSourceMaps: false,
   images: {
     loader: "custom",
     loaderFile: "./img.loader.js",
@@ -53,8 +57,12 @@ const next_config = {
   },
   poweredByHeader: false,
   reactStrictMode: true,
-  transpilePackages: ["@storiny/ui"],
-  webpack: webpack_config
+  webpack: webpack_config,
+  sentry: {
+    disableServerWebpackPlugin: true,
+    disableClientWebpackPlugin: true,
+    autoInstrumentServerFunctions: false
+  }
 };
 
-export default with_bundle_analyzer(with_mdx(next_config));
+export default with_sentry_config(with_bundle_analyzer(with_mdx(next_config)));

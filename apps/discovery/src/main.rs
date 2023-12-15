@@ -32,6 +32,10 @@ use storiny_discovery::{
 };
 use tracing::info;
 use tracing_actix_web::TracingLogger;
+use tracing_subscriber::{
+    layer::SubscriberExt,
+    util::SubscriberInitExt,
+};
 
 mod middlewares;
 
@@ -42,8 +46,7 @@ async fn not_found() -> impl Responder {
         .body("Not found")
 }
 
-#[actix_web::main]
-async fn main() -> io::Result<()> {
+fn main() -> io::Result<()> {
     dotenv().ok();
 
     match get_app_config() {
@@ -51,75 +54,90 @@ async fn main() -> io::Result<()> {
             if config.is_dev {
                 let subscriber = get_subscriber("dev".to_string(), "info".to_string(), io::stdout);
                 init_subscriber(subscriber);
+            } else {
+                tracing_subscriber::Registry::default()
+                    .with(sentry::integrations::tracing::layer())
+                    .init();
             }
 
-            let host = config.host.to_string();
-            let port = config.port.clone().parse::<u16>().unwrap();
-            let redis_connection_string =
-                format!("redis://{}:{}", &config.redis_host, &config.redis_port);
+            let _guard = sentry::init((
+                "https://45513635ba55be14c66d9c8bf8fefa91@o4506393718554624.ingest.sentry.io/4506394094796800",
+                sentry::ClientOptions {
+                    release: sentry::release_name!(),
+                    traces_sample_rate: 0.8,
+                    ..Default::default()
+                },
+            ));
 
-            info!(
-                "{}",
-                format!(
-                    "Starting discovery HTTP server in {} mode at {}:{}",
-                    if config.is_dev {
-                        "development"
-                    } else {
-                        "production"
-                    },
-                    &host,
-                    &port
-                )
-            );
+            actix_web::rt::System::new().block_on(async {
+                let host = config.host.to_string();
+                let port = config.port.clone().parse::<u16>().unwrap();
+                let redis_connection_string =
+                    format!("redis://{}:{}", &config.redis_host, &config.redis_port);
 
-            // Rate-limit
-            let redis_client = redis::Client::open(redis_connection_string.clone())
-                .expect("Cannot build Redis client");
-            let redis_connection_manager = ConnectionManager::new(redis_client)
+                info!(
+                    "{}",
+                    format!(
+                        "Starting discovery HTTP server in {} mode at {}:{}",
+                        if config.is_dev {
+                            "development"
+                        } else {
+                            "production"
+                        },
+                        &host,
+                        &port
+                    )
+                );
+
+                // Rate-limit
+                let redis_client = redis::Client::open(redis_connection_string.clone())
+                    .expect("Cannot build Redis client");
+                let redis_connection_manager = ConnectionManager::new(redis_client)
+                    .await
+                    .expect("Cannot build Redis connection manager");
+                let rate_limit_backend =
+                    middlewares::rate_limiter::RedisBackend::builder(redis_connection_manager)
+                        .key_prefix(Some(&format!("{}:", RedisNamespace::RateLimit.to_string()))) // Add prefix to avoid collisions with other servicse
+                        .build();
+
+                let web_config = web::Data::new(config.clone());
+
+                HttpServer::new(move || {
+                    let input = SimpleInputFunctionBuilder::new(Duration::from_secs(5), 25) // 25 requests / 5s
+                        .real_ip_key()
+                        .build();
+
+                    App::new()
+                        .wrap(
+                            RateLimiter::builder(rate_limit_backend.clone(), input)
+                                .add_headers()
+                                .build(),
+                        )
+                        .wrap(if config.is_dev {
+                            Cors::permissive()
+                        } else {
+                            Cors::default()
+                                .allowed_origin(&(&config).web_server_url)
+                                .allowed_methods(vec!["HEAD", "GET"])
+                                .allowed_headers(vec![header::CONTENT_TYPE, header::ACCEPT])
+                                .max_age(3600)
+                        })
+                        .wrap(
+                            actix_web::middleware::DefaultHeaders::new()
+                                .add(("x-storiny-discovery-version", "1")),
+                        )
+                        .wrap(TracingLogger::default())
+                        .wrap(actix_web::middleware::Compress::default())
+                        .wrap(actix_web::middleware::NormalizePath::trim())
+                        .app_data(web_config.clone())
+                        .configure(routes::init_routes)
+                        .service(fs::Files::new("/", "./static"))
+                        .default_service(web::route().to(not_found))
+                })
+                .bind((host, port))?
+                .run()
                 .await
-                .expect("Cannot build Redis connection manager");
-            let rate_limit_backend =
-                middlewares::rate_limiter::RedisBackend::builder(redis_connection_manager)
-                    .key_prefix(Some(&format!("{}:", RedisNamespace::RateLimit.to_string()))) // Add prefix to avoid collisions with other servicse
-                    .build();
-
-            let web_config = web::Data::new(config.clone());
-
-            HttpServer::new(move || {
-                let input = SimpleInputFunctionBuilder::new(Duration::from_secs(5), 25) // 25 requests / 5s
-                    .real_ip_key()
-                    .build();
-
-                App::new()
-                    .wrap(
-                        RateLimiter::builder(rate_limit_backend.clone(), input)
-                            .add_headers()
-                            .build(),
-                    )
-                    .wrap(if config.is_dev {
-                        Cors::permissive()
-                    } else {
-                        Cors::default()
-                            .allowed_origin(&(&config).web_server_url)
-                            .allowed_methods(vec!["HEAD", "GET"])
-                            .allowed_headers(vec![header::CONTENT_TYPE, header::ACCEPT])
-                            .max_age(3600)
-                    })
-                    .wrap(
-                        actix_web::middleware::DefaultHeaders::new()
-                            .add(("x-storiny-discovery-version", "1")),
-                    )
-                    .wrap(TracingLogger::default())
-                    .wrap(actix_web::middleware::Compress::default())
-                    .wrap(actix_web::middleware::NormalizePath::trim())
-                    .app_data(web_config.clone())
-                    .configure(routes::init_routes)
-                    .service(fs::Files::new("/", "./static"))
-                    .default_service(web::route().to(not_found))
             })
-            .bind((host, port))?
-            .run()
-            .await
         }
         Err(error) => {
             eprintln!("Environment configuration error: {:#?}", error);

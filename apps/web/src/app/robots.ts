@@ -7,28 +7,30 @@ import { MetadataRoute } from "next";
 const robots = (): MetadataRoute.Robots => ({
   rules: {
     userAgent: "*",
-    allow: "/",
-    disallow: [
-      "/search/",
-      "/user/",
-      "/logout$",
-      "/scripts/",
-      "/static/",
-      "/vendor/",
-      "/api/",
-      "/doc/",
-      "/profile$",
-      "/new$",
-      "/handler$",
-      "/*/stories",
-      "/*/friends",
-      "/*/followers",
-      "/*/following",
-      "/*/*/revisions/*",
-      "/*/*/comments/*"
-    ]
+    disallow: "/"
+    // TODO: Uncomment after alpha
+    // allow: "/",
+    // disallow: [
+    //   "/search/",
+    //   "/user/",
+    //   "/logout$",
+    //   "/scripts/",
+    //   "/static/",
+    //   "/vendor/",
+    //   "/api/",
+    //   "/doc/",
+    //   "/profile$",
+    //   "/new$",
+    //   "/handler$",
+    //   "/*/stories",
+    //   "/*/friends",
+    //   "/*/followers",
+    //   "/*/following",
+    //   "/*/*/revisions/*",
+    //   "/*/*/comments/*"
+    // ]
   },
-  sitemap: "https://cdn.storiny.com/sitemaps/sitemap-index.xml"
+  sitemap: "https://cdn.storiny.com/sitemaps/index.xml.gz"
 });
 
 export default robots;

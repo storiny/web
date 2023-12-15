@@ -10,7 +10,10 @@ use sqlx::{
     Pool,
     Postgres,
 };
-use std::io;
+use std::{
+    io,
+    time::Duration,
+};
 use tonic::{
     codec::CompressionEncoding,
     metadata::{
@@ -63,16 +66,23 @@ pub async fn start_grpc_server(
             if is_dev { "development" } else { "production" }
         );
 
+        // FUTURE: Should we add a rate limit layer?
+        let layer = tower::ServiceBuilder::new()
+            .timeout(Duration::from_secs(30))
+            .into_inner();
+
         let builder = if is_dev {
-            tonic::transport::Server::builder().add_service(
-                ApiServiceServer::new(GrpcService {
-                    redis_pool,
-                    config,
-                    db_pool,
-                })
-                .send_compressed(CompressionEncoding::Gzip)
-                .accept_compressed(CompressionEncoding::Gzip),
-            )
+            tonic::transport::Server::builder()
+                .layer(layer)
+                .add_service(
+                    ApiServiceServer::new(GrpcService {
+                        redis_pool,
+                        config,
+                        db_pool,
+                    })
+                    .send_compressed(CompressionEncoding::Gzip)
+                    .accept_compressed(CompressionEncoding::Gzip),
+                )
         } else {
             let cert = std::fs::read_to_string("certs/grpc-server.pem")
                 .expect("cannot read `certs/grpc-server.pem`");
@@ -96,6 +106,7 @@ pub async fn start_grpc_server(
             );
 
             tonic::transport::Server::builder()
+                .layer(layer)
                 .tls_config(ServerTlsConfig::new().identity(Identity::from_pem(&cert, &key)))
                 .expect("unable to apply the tls config")
                 .add_service(api_service)

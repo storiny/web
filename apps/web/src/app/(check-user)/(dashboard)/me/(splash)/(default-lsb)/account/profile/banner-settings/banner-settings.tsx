@@ -84,7 +84,7 @@ const BannerSettings = (): React.ReactElement => {
           handle_api_error(error, toast, null, "Could not update your banner")
         );
     },
-    [banner_id, mutate_banner_settings, dispatch, toast]
+    [mutate_banner_settings, dispatch, toast]
   );
 
   return (

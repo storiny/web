@@ -9,7 +9,10 @@ mod tests {
         Postgres,
         Row,
     };
-    use storiny::constants::sql_states::SqlState;
+    use storiny::constants::{
+        sql_states::SqlState,
+        token::TOKEN_LENGTH,
+    };
     use time::OffsetDateTime;
     use uuid::Uuid;
 
@@ -3518,7 +3521,7 @@ SELECT EXISTS (
     #[sqlx::test(fixtures("user"))]
     async fn can_delete_token_on_user_soft_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let token_id = nanoid!(48);
+        let token_id = nanoid!(TOKEN_LENGTH);
 
         // Insert a token
         let insert_result = sqlx::query(
@@ -9659,7 +9662,7 @@ SELECT EXISTS (
     #[sqlx::test(fixtures("user"))]
     async fn can_delete_token_on_user_hard_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let token_id = nanoid!(48);
+        let token_id = nanoid!(TOKEN_LENGTH);
 
         // Insert a token
         let insert_result = sqlx::query(
