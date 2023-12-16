@@ -6,8 +6,7 @@ CREATE OR REPLACE FUNCTION "public"."next_snowflake"(
 AS
 $$
 DECLARE
-	-- alpha
-	storiny_epoch BIGINT := 1696561864000;
+	storiny_epoch BIGINT := 1702707209000;
 	seq_id        BIGINT;
 	now_millis    BIGINT;
 	shard_id      INT    := 1;

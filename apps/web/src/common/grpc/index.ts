@@ -90,11 +90,7 @@ const grpc_creds =
   process.env.NODE_ENV === "development"
     ? credentials.createInsecure()
     : ((): ChannelCredentials => {
-        const channel_creds = credentials.createSsl(
-          Buffer.from(process.env.GRPC_SSL_CA as string, "base64"),
-          Buffer.from(process.env.GRPC_SSL_KEY as string, "base64"),
-          Buffer.from(process.env.GRPC_SSL_CA as string, "base64")
-        );
+        const channel_creds = credentials.createSsl();
 
         const call_creds = credentials.createFromMetadataGenerator(
           (_, callback) => {

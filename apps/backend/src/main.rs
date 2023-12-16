@@ -3,16 +3,13 @@ use actix_extensible_rate_limit::{
     backend::SimpleInputFunctionBuilder,
     RateLimiter,
 };
-use actix_files as fs;
+// use actix_files as fs;
 use actix_web::{
     cookie::{
         Key,
         SameSite,
     },
-    http::{
-        header,
-        header::ContentType,
-    },
+    http::header::ContentType,
     web,
     App,
     HttpResponse,
@@ -70,13 +67,16 @@ use storiny_session::{
     storage::RedisSessionStore,
     SessionMiddleware,
 };
-use tracing::info;
+use tracing::error;
 use tracing_actix_web::TracingLogger;
 use tracing_subscriber::{
     layer::SubscriberExt,
     util::SubscriberInitExt,
 };
 use user_agent_parser::UserAgentParser;
+
+const GEOLITE_CITY: &'static [u8] = include_bytes!("../geo/db/GeoLite2-City.mmdb");
+const UA_PARSER_DATA: &'static str = include_str!("../data/ua_parser/regexes.yaml");
 
 /// 404 response
 async fn not_found() -> impl Responder {
@@ -114,7 +114,7 @@ fn main() -> io::Result<()> {
                 let redis_connection_string =
                     format!("redis://{}:{}", &config.redis_host, &config.redis_port);
 
-                info!(
+                println!(
                     "{}",
                     format!(
                         "Starting API HTTP server in {} mode at {}:{}",
@@ -131,9 +131,17 @@ fn main() -> io::Result<()> {
                 // Rate-limit
                 let redis_client = redis::Client::open(redis_connection_string.clone())
                     .expect("Cannot build Redis client");
-                let redis_connection_manager = ConnectionManager::new(redis_client)
-                    .await
-                    .expect("Cannot build Redis connection manager");
+                let redis_connection_manager = match ConnectionManager::new(redis_client).await {
+                    Ok(manager) => {
+                        println!("Connected to Redis");
+                        manager
+                    }
+                    Err(error) => {
+                        error!("Unable to connect to Redis: {error:?}");
+                        std::process::exit(1);
+                    }
+                };
+
                 let rate_limit_backend = middlewares::rate_limiter::RedisBackend::builder(
                     redis_connection_manager.clone(),
                 )
@@ -149,7 +157,7 @@ fn main() -> io::Result<()> {
                 {
                     Ok(store) => store,
                     Err(err) => {
-                        println!("Failed to create the session store: {:?}", err);
+                        error!("Failed to create the session store: {:?}", err);
                         std::process::exit(1);
                     }
                 };
@@ -160,9 +168,12 @@ fn main() -> io::Result<()> {
                     .connect(&config.database_url)
                     .await
                 {
-                    Ok(pool) => pool,
+                    Ok(pool) => {
+                        println!("Connected to Postgres");
+                        pool
+                    }
                     Err(err) => {
-                        println!("Failed to connect to Postgres: {:?}", err);
+                        error!("Failed to connect to Postgres: {:?}", err);
                         std::process::exit(1);
                     }
                 };
@@ -171,9 +182,12 @@ fn main() -> io::Result<()> {
                 let redis_pool = match deadpool_redis::Config::from_url(redis_connection_string)
                     .create_pool(Some(deadpool_redis::Runtime::Tokio1))
                 {
-                    Ok(pool) => pool,
+                    Ok(pool) => {
+                        println!("Created Redis pool");
+                        pool
+                    }
                     Err(err) => {
-                        println!("Failed to create a Redis pool: {:?}", err);
+                        error!("Failed to create a Redis pool: {:?}", err);
                         std::process::exit(1);
                     }
                 };
@@ -223,10 +237,10 @@ fn main() -> io::Result<()> {
 
                 // GeoIP service. This is kept in the memory for the entire lifecycle of the program
                 // to ensure fast loopups.
-                let geo_db = maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();
+                let geo_db = maxminddb::Reader::from_source(GEOLITE_CITY.to_vec()).unwrap();
 
                 // User-agent parser
-                let ua_parser = UserAgentParser::from_path("./data/ua_parser/regexes.yaml")
+                let ua_parser = UserAgentParser::from_str(UA_PARSER_DATA)
                     .expect("Cannot build user-agent parser");
 
                 // Shared application state
@@ -320,13 +334,8 @@ fn main() -> io::Result<()> {
                         } else {
                             Cors::default()
                                 .allowed_origin(&config.web_server_url)
-                                .allowed_headers(vec![
-                                    header::CONTENT_TYPE,
-                                    header::AUTHORIZATION,
-                                    header::ACCEPT,
-                                    header::COOKIE,
-                                    header::SET_COOKIE,
-                                ])
+                                .allow_any_header()
+                                .allow_any_method()
                                 .supports_credentials()
                                 .max_age(3600)
                         })
@@ -359,7 +368,8 @@ fn main() -> io::Result<()> {
                                 .wrap(alpha_identity::AlphaIdentity)
                                 .configure(routes::init::init_v1_routes),
                         )
-                        .service(fs::Files::new("/", "./static"))
+                        // TODO:
+                        // .service(fs::Files::new("/", "./static"))
                         .default_service(web::route().to(not_found))
                 })
                 .bind((host, port))?

@@ -11,6 +11,6 @@ export const S3_CLIENT = new S3Client({
     process.env.NODE_ENV === "development"
       ? "http://localhost:9000"
       : undefined,
-  forcePathStyle: true,
+  forcePathStyle: process.env.NODE_ENV === "development",
   region: process.env.AWS_REGION
 });

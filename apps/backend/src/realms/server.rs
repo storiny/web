@@ -61,7 +61,6 @@ use tokio::{
 use tracing::{
     debug,
     error,
-    info,
     trace,
     warn,
 };
@@ -541,7 +540,7 @@ pub async fn start_realms_server(
     .parse()
     .expect("unable to parse the socket address");
 
-    info!(
+    println!(
         "{}",
         format!("Starting realms server at http://{}:{}", &host, &port)
     );

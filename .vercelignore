@@ -1,0 +1,17 @@
+.idea
+.storybook
+.yarnrc
+
+apps/backend
+apps/discovery
+apps/cdn
+
+docker-compose.prod.yaml
+docker-compose.yaml
+docker
+
+packages/mail
+packages/proto
+packages/test-utils
+
+test-results

@@ -3,12 +3,9 @@ use actix_extensible_rate_limit::{
     backend::SimpleInputFunctionBuilder,
     RateLimiter,
 };
-use actix_files as fs;
+// use actix_files as fs;
 use actix_web::{
-    http::{
-        header,
-        header::ContentType,
-    },
+    http::header::ContentType,
     web,
     App,
     HttpResponse,
@@ -30,7 +27,7 @@ use storiny_discovery::{
         init_subscriber,
     },
 };
-use tracing::info;
+use tracing::error;
 use tracing_actix_web::TracingLogger;
 use tracing_subscriber::{
     layer::SubscriberExt,
@@ -75,7 +72,7 @@ fn main() -> io::Result<()> {
                 let redis_connection_string =
                     format!("redis://{}:{}", &config.redis_host, &config.redis_port);
 
-                info!(
+                println!(
                     "{}",
                     format!(
                         "Starting discovery HTTP server in {} mode at {}:{}",
@@ -92,9 +89,17 @@ fn main() -> io::Result<()> {
                 // Rate-limit
                 let redis_client = redis::Client::open(redis_connection_string.clone())
                     .expect("Cannot build Redis client");
-                let redis_connection_manager = ConnectionManager::new(redis_client)
-                    .await
-                    .expect("Cannot build Redis connection manager");
+                let redis_connection_manager = match ConnectionManager::new(redis_client).await {
+                    Ok(manager) => {
+                        println!("Connected to Redis");
+                        manager
+                    }
+                    Err(error) => {
+                        error!("unable to connect to Redis: {error:?}");
+                        std::process::exit(1);
+                    }
+                };
+
                 let rate_limit_backend =
                     middlewares::rate_limiter::RedisBackend::builder(redis_connection_manager)
                         .key_prefix(Some(&format!("{}:", RedisNamespace::RateLimit.to_string()))) // Add prefix to avoid collisions with other servicse
@@ -118,8 +123,8 @@ fn main() -> io::Result<()> {
                         } else {
                             Cors::default()
                                 .allowed_origin(&(&config).web_server_url)
-                                .allowed_methods(vec!["HEAD", "GET"])
-                                .allowed_headers(vec![header::CONTENT_TYPE, header::ACCEPT])
+                                .allow_any_header()
+                                .allow_any_method()
                                 .max_age(3600)
                         })
                         .wrap(
@@ -131,7 +136,8 @@ fn main() -> io::Result<()> {
                         .wrap(actix_web::middleware::NormalizePath::trim())
                         .app_data(web_config.clone())
                         .configure(routes::init_routes)
-                        .service(fs::Files::new("/", "./static"))
+                        // TODO:
+                        // .service(fs::Files::new("/", "./static"))
                         .default_service(web::route().to(not_found))
                 })
                 .bind((host, port))?

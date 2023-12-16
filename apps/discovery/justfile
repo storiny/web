@@ -7,6 +7,9 @@ dev_raw:
 build:
     cargo build --release
 
+build_img:
+    docker build --platform linux/amd64 -t storiny_discovery .
+
 fmt:
     cargo +nightly fmt
 

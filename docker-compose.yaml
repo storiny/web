@@ -27,14 +27,14 @@ services:
     entrypoint: >
       /bin/sh -c "
       /usr/bin/mc config host add objstore http://storiny-minio:9000 minio_user minio_pass;
-      /usr/bin/mc mb objstore/base;
-      /usr/bin/mc mb objstore/docs;
-      /usr/bin/mc mb objstore/uploads;
-      /usr/bin/mc mb objstore/sitemaps;
-      /usr/bin/mc anonymous set public objstore/base;
-      /usr/bin/mc anonymous set public objstore/docs;
-      /usr/bin/mc anonymous set public objstore/uploads;
-      /usr/bin/mc anonymous set public objstore/sitemaps;
+      /usr/bin/mc mb objstore/base-3939361a;
+      /usr/bin/mc mb objstore/docs-84b42278;
+      /usr/bin/mc mb objstore/uploads-ec0f63c5;
+      /usr/bin/mc mb objstore/sitemaps-1fbc3def;
+      /usr/bin/mc anonymous set public objstore/base-3939361a;
+      /usr/bin/mc anonymous set public objstore/docs-84b42278;
+      /usr/bin/mc anonymous set public objstore/uploads-ec0f63c5;
+      /usr/bin/mc anonymous set public objstore/sitemaps-1fbc3def;
       exit 0;
       "
 

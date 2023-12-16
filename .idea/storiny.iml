@@ -17,6 +17,8 @@
       <excludeFolder url="file://$MODULE_DIR$/apps/backend/target" />
       <excludeFolder url="file://$MODULE_DIR$/apps/backend/macros/target" />
       <excludeFolder url="file://$MODULE_DIR$/apps/backend/session/target" />
+      <excludeFolder url="file://$MODULE_DIR$/.vercel" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/web/.vercel" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

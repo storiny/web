@@ -25,6 +25,7 @@ packages/proto/certs/*
 !packages/proto/certs/gen.sh
 
 # next.js
+**/.vercel
 **/.next/
 **/out/
 **/build
