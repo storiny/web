@@ -62,10 +62,10 @@ export const webpack_config = (config, { dev }) => {
       rule.use.forEach((module_loader) => {
         if (
           module_loader.loader?.includes("css-loader") &&
-          !module_loader.loader?.includes("postcss-loader")
+          !module_loader.loader?.includes("postcss-loader") &&
+          module_loader.options.modules
         ) {
-          // TODO:
-          // module_loader.options.modules.getLocalIdent = hash_only_ident;
+          module_loader.options.modules.getLocalIdent = hash_only_ident;
         }
       });
     });

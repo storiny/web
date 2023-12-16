@@ -2,6 +2,8 @@ FROM nginx:mainline-alpine as builder
 
 COPY ./ /modules/
 
+ARG modules="njs"
+
 RUN set -ex \
     && apk update \
     && apk add linux-headers openssl-dev pcre2-dev zlib-dev openssl abuild \
@@ -13,7 +15,7 @@ RUN set -ex \
     && hg clone -r ${NGINX_VERSION}-${PKG_RELEASE} https://hg.nginx.org/pkg-oss/ \
     && cd pkg-oss \
     && mkdir /tmp/packages \
-    && for module in "njs"; do \
+    && for module in ${modules}; do \
         echo "Building $module for nginx-$NGINX_VERSION"; \
         if [ -d /modules/$module ]; then \
             echo "Building $module from user-supplied sources"; \

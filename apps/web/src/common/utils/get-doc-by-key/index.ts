@@ -11,7 +11,7 @@ export const get_doc_by_key = async (key: string): Promise<Uint8Array> => {
   const response = await S3_CLIENT.send(
     new GetObjectCommand({
       Key: key,
-      Bucket: "docs"
+      Bucket: "docs-84b42278"
     })
   );
 

@@ -4,8 +4,8 @@ import { decode_hex } from "../utils/decode-hex";
 import { get_width } from "../utils/get-width";
 import { verify } from "../utils/verify";
 
-export const BASE_BUCKET = "s3://base";
-export const UPLOADS_BUCKET = "s3://uploads";
+export const BASE_BUCKET = "s3://base-3939361a";
+export const UPLOADS_BUCKET = "s3://uploads-ec0f63c5";
 
 type Request = NginxHTTPRequest;
 

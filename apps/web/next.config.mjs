@@ -58,6 +58,7 @@ const next_config = {
   poweredByHeader: false,
   reactStrictMode: true,
   webpack: webpack_config,
+  transpilePackages: ["@storiny/ui", "@storiny/editor", "@storiny/shared"],
   sentry: {
     disableServerWebpackPlugin: true,
     disableClientWebpackPlugin: true,

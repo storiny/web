@@ -17,6 +17,9 @@
     "apps/*",
     "packages/*"
   ],
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
   "devDependencies": {
     "@dotenv-run/cli": "^1.1.0",
     "@grpc/grpc-js": "^1.8.15",

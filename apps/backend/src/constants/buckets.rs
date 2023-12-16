@@ -1,11 +1,11 @@
 /// Bucket containing private and site-specific files.
-pub static S3_BASE_BUCKET: &'static str = "base";
+pub static S3_BASE_BUCKET: &'static str = "base-3939361a";
 
 /// Bucket containing public media uploaded by users.
-pub static S3_UPLOADS_BUCKET: &'static str = "uploads";
+pub static S3_UPLOADS_BUCKET: &'static str = "uploads-ec0f63c5";
 
 /// Bucket containing binary story documents.
-pub static S3_DOCS_BUCKET: &'static str = "docs";
+pub static S3_DOCS_BUCKET: &'static str = "docs-84b42278";
 
 /// Bucket containing the XML sitemaps.
-pub static S3_SITEMAPS_BUCKET: &'static str = "sitemaps";
+pub static S3_SITEMAPS_BUCKET: &'static str = "sitemaps-1fbc3def";

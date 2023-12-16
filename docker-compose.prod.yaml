@@ -1,19 +1,107 @@
 version: "3.8"
 
 services:
-  discovery:
-    container_name: "storiny_discovery"
-    image: 992532056584.dkr.ecr.us-east-1.amazonaws.com/storiny_discovery
+  # Nginx
+  nginx:
+    image: 992532056584.dkr.ecr.us-east-1.amazonaws.com/storiny-nginx
+    container_name: "storiny-nginx"
+    restart: always
+    network_mode: "host"
+    volumes:
+      - "./nginx/nginx.conf:/etc/nginx/nginx.conf"
+      - "./nginx/njs-files:/etc/nginx/njs"
+      - "/etc/pki/nginx:/etc/pki/nginx"
+      - "./logs/nginx:/var/log/nginx"
+    environment:
+      PROXY_KEY: "${PROXY_KEY_SECRET}"
+
+  # API Server
+  api:
+    container_name: "storiny_api"
+    network_mode: "host"
+    image: 992532056584.dkr.ecr.us-east-1.amazonaws.com/storiny_api
+    restart: always
     environment:
       IS_DEV: false
-      HOST: localhost
-      PORT: 8080
+      HOST: 127.0.0.1
+      PORT: 8081
+      REALMS_HOST: 127.0.0.1
+      REALMS_PORT: 8082
+      GRPC_ENDPOINT: 127.0.0.1:50051
+      MINIO_ENDPOINT: "-"
+      API_SERVER_URL: https://api.storiny.com
+      WEB_SERVER_URL: https://storiny.com
       CDN_SERVER_URL: https://cdn.storiny.com
-      WEB_SERVER_URL: https://staging.storiny.com
+      REALMS_SERVER_URL: wss://realms.storiny.com
+      TOKEN_SALT: "${TOKEN_SALT}"
+      GRPC_SECRET_TOKEN: "${GRPC_SECRET_TOKEN}"
+      DATABASE_URL: "${DB_URL}"
+      REDIS_HOST: "${REDIS_HOST}"
+      REDIS_PORT: "${REDIS_PORT}"
+      PEXELS_API_KEY: "${PEXELS_API_KEY}"
+      SESSION_SECRET_KEY: "${SESSION_SECRET_KEY}"
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      # OAuth
+      GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID}"
+      GOOGLE_CLIENT_SECRET: "${GOOGLE_CLIENT_SECRET}"
+      YOUTUBE_DATA_API_KEY: "${YOUTUBE_DATA_API_KEY}"
+      # GitHub
+      GITHUB_CLIENT_ID: "${GITHUB_CLIENT_ID}"
+      GITHUB_CLIENT_SECRET: "${GITHUB_CLIENT_SECRET}"
+      # Spotify
+      SPOTIFY_CLIENT_ID: "${SPOTIFY_CLIENT_ID}"
+      SPOTIFY_CLIENT_SECRET: "${SPOTIFY_CLIENT_SECRET}"
+      # Discord
+      DISCORD_CLIENT_ID: "${DISCORD_CLIENT_ID}"
+      DISCORD_CLIENT_SECRET: "${DISCORD_CLIENT_SECRET}"
+      # Dribbble
+      DRIBBBLE_CLIENT_ID: "${DRIBBBLE_CLIENT_ID}"
+      DRIBBBLE_CLIENT_SECRET: "${DRIBBBLE_CLIENT_SECRET}"
+    volumes:
+      - "./certs:/certs"
+
+  # Discovery server
+  discovery:
+    container_name: "storiny_discovery"
+    network_mode: "host"
+    image: 992532056584.dkr.ecr.us-east-1.amazonaws.com/storiny_discovery
+    restart: always
+    environment:
+      IS_DEV: false
+      HOST: 127.0.0.1
+      PORT: 8083
+      CDN_SERVER_URL: https://cdn.storiny.com
+      WEB_SERVER_URL: https://storiny.com
       PROXY_KEY_SECRET: "${PROXY_KEY_SECRET}"
       REDIS_HOST: "${REDIS_HOST}"
       REDIS_PORT: "${REDIS_PORT}"
       OAUTH_FACEBOOK_CLIENT_ID: "0"
       OAUTH_FACEBOOK_CLIENT_SECRET: "0"
+
+  # Image proxy server
+  imgproxy:
+    image: darthsim/imgproxy
+    container_name: "storiny-imgproxy"
+    restart: always
     ports:
-      - "9091:8080"
+      - "8080:8080"
+    healthcheck:
+      test: [ "CMD", "imgproxy", "health" ]
+      timeout: 10s
+      interval: 10s
+      retries: 3
+    environment:
+      IMGPROXY_USER_AGENT: "storiny-img-proxy/1.0"
+      IMGPROXY_MAX_SRC_FILE_SIZE: 26214400 # 25MB
+      IMGPROXY_MAX_ANIMATION_FRAMES: 250
+      IMGPROXY_IGNORE_SSL_VERIFICATION: true
+      IMGPROXY_DEVELOPMENT_ERRORS_MODE: true
+      IMGPROXY_ENABLE_WEBP_DETECTION: true
+      IMGPROXY_ENABLE_AVIF_DETECTION: false
+      IMGPROXY_USE_S3: "true"
+      IMGPROXY_S3_REGION: "us-east-1"
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      # Monitoring
+      IMGPROXY_SENTRY_DSN: https://b3ea082ef28dd9731e23cec91be91efe@o4506393718554624.ingest.sentry.io/4506394135756800
