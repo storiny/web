@@ -32,7 +32,7 @@ const EditorContentEditable = ({
   }, [editor]);
 
   return (
-    <main
+    <section
       {...rest}
       aria-activedescendant={
         !is_editable ? undefined : rest["aria-activedescendant"]
@@ -43,8 +43,8 @@ const EditorContentEditable = ({
         !is_editable
           ? undefined
           : role === "combobox"
-          ? !!rest["aria-expanded"]
-          : undefined
+            ? !!rest["aria-expanded"]
+            : undefined
       }
       aria-owns={!is_editable ? undefined : rest["aria-owns"]}
       aria-readonly={!is_editable ? true : undefined}

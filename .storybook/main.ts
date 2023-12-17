@@ -24,7 +24,6 @@ const config: StorybookConfig = {
         sass: {
           implementation: require("sass"),
           includePaths: [path.join(__dirname, "../packages/ui/src/theme")],
-          prependData: `$cdn: "${process.env.NEXT_PUBLIC_CDN_URL}";`,
         },
       },
     },
@@ -47,7 +46,7 @@ const config: StorybookConfig = {
       "~/components": path.resolve(__dirname, "../packages/ui/src/components"),
       "~/illustrations": path.resolve(
         __dirname,
-        "../packages/ui/src/illustrations"
+        "../packages/ui/src/illustrations",
       ),
       "~/entities": path.resolve(__dirname, "../packages/ui/src/entities"),
       "~/types": path.resolve(__dirname, "../packages/ui/src/types"),

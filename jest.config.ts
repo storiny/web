@@ -14,6 +14,7 @@ const config: Config = {
         "<rootDir>/apps/web/**/*.test.ts",
         "<rootDir>/apps/web/**/*.test.tsx",
       ],
+      modulePathIgnorePatterns: ["<rootDir>/.vercel/"],
       moduleNameMapper: {
         // Typescript absolute paths
         "~/common/(.*)": `<rootDir>/apps/web/src/common/$1`,
@@ -32,6 +33,7 @@ const config: Config = {
         "<rootDir>/packages/editor/**/*.test.ts",
         "<rootDir>/packages/editor/**/*.test.tsx",
       ],
+      modulePathIgnorePatterns: ["<rootDir>/.vercel/"],
       moduleNameMapper: {
         // Typescript absolute paths
         "~/common/(.*)": `<rootDir>/apps/web/src/common/$1`,
@@ -50,6 +52,7 @@ const config: Config = {
         "<rootDir>/packages/ui/**/*.test.ts",
         "<rootDir>/packages/ui/**/*.test.tsx",
       ],
+      modulePathIgnorePatterns: ["<rootDir>/.vercel/"],
       moduleNameMapper: {
         // Typescript absolute paths
         "~/common/(.*)": `<rootDir>/apps/web/src/common/$1`,

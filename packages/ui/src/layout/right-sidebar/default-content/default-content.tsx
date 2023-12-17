@@ -112,7 +112,7 @@ const RightSidebarDefaultContent = ({
                   css["t-bold"],
                   styles["show-more"]
                 )}
-                href={"/explore/users"}
+                href={"/explore?tab=users"}
                 level={"body3"}
               >
                 Show more
@@ -150,7 +150,7 @@ const RightSidebarDefaultContent = ({
                   css["t-bold"],
                   styles["show-more"]
                 )}
-                href={"/explore/tags"}
+                href={"/explore?tab=tags"}
                 level={"body3"}
               >
                 Show more

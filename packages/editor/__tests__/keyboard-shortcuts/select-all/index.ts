@@ -17,7 +17,7 @@ export const select_all = async (page: Page): Promise<void> => {
   if (E2E_BROWSER === "firefox" && IS_LINUX) {
     await evaluate(page, () => {
       const root_element = document.querySelector(
-        'main[contenteditable="true"]'
+        'section[contenteditable="true"]'
       );
 
       if (root_element) {

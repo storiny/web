@@ -16,6 +16,7 @@ use dotenv::dotenv;
 use redis::aio::ConnectionManager;
 use std::{
     io,
+    sync::Arc,
     time::Duration,
 };
 use storiny_discovery::{
@@ -62,6 +63,20 @@ fn main() -> io::Result<()> {
                 sentry::ClientOptions {
                     release: sentry::release_name!(),
                     traces_sample_rate: 0.8,
+                    before_send: Some(Arc::new(|event| {
+                        if let Some(ref message) = event.message {
+                            if
+                            // Do not send client error response.
+                            message.starts_with("ClientError") ||
+                            // Do not send URL parse error response.
+                            message.starts_with("UrlParse")
+                            {
+                                return None;
+                            }
+                        }
+
+                        Some(event)
+                    })),
                     ..Default::default()
                 },
             ));

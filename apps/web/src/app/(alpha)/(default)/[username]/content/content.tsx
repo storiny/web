@@ -89,11 +89,16 @@ const Actions = ({
               <UserPlusIcon />
             )
           }
-          onClick={(): void => {
-            dispatch(
-              boolean_action(is_blocked ? "blocks" : "following", profile.id)
-            );
-          }}
+          onClick={(): void =>
+            is_self
+              ? undefined
+              : dispatch(
+                  boolean_action(
+                    is_blocked ? "blocks" : "following",
+                    profile.id
+                  )
+                )
+          }
           size={is_inside_sidebar ? "md" : "lg"}
           variant={is_self || is_following ? "hollow" : "rigid"}
           {...(is_self && { as: NextLink, href: "/me" })}
@@ -101,10 +106,10 @@ const Actions = ({
           {is_self
             ? "Edit"
             : is_blocked
-            ? "Unblock"
-            : is_following
-            ? "Following"
-            : "Follow"}
+              ? "Unblock"
+              : is_following
+                ? "Following"
+                : "Follow"}
         </Button>
       )}
       <ProfileActions is_inside_sidebar={is_inside_sidebar} profile={profile} />

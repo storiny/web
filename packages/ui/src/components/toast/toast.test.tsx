@@ -5,8 +5,7 @@ import { render_test_with_provider } from "~/redux/test-utils";
 
 import ToastProvider from "./provider";
 import Toast from "./toast";
-import styles from "./toast.module.scss";
-import { ToastProps, ToastSeverity } from "./toast.props";
+import { ToastProps } from "./toast.props";
 
 describe("<Toast />", () => {
   it("renders and matches snapshot", () => {

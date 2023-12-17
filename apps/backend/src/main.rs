@@ -104,6 +104,24 @@ fn main() -> io::Result<()> {
                 sentry::ClientOptions {
                     release: sentry::release_name!(),
                     traces_sample_rate: 0.8,
+                    before_send: Some(Arc::new(|event| {
+                        if let Some(ref message) = event.message {
+                            if
+                            // Do not send client error response.
+                            message.starts_with("ClientError") ||
+                            // Do not send toast error response.
+                            message.starts_with("ToastError") ||
+                            // Do not send form error response.
+                            message.starts_with("FormError") ||
+                            // Do not send `NotFound` response inside a GRPC service.
+                            message.starts_with("status: NotFound")
+                            {
+                                return None;
+                            }
+                        }
+
+                        Some(event)
+                    })),
                     ..Default::default()
                 },
             ));

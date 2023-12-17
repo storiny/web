@@ -3,7 +3,11 @@
 import { StoryCategory } from "@storiny/shared";
 import { clsx } from "clsx";
 import dynamic from "next/dynamic";
-import { useSearchParams as use_search_params } from "next/navigation";
+import {
+  usePathname as use_pathname,
+  useRouter as use_router,
+  useSearchParams as use_search_params
+} from "next/navigation";
 import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
@@ -43,8 +47,8 @@ const normalize_category = (category: Props["category"]): string =>
   category === "all"
     ? "all categories"
     : category === "diy"
-    ? "DIY"
-    : category.replace(/-/g, " ");
+      ? "DIY"
+      : category.replace(/-/g, " ");
 
 // Page header tabs
 
@@ -102,8 +106,17 @@ const PageInputHeader = ({
 );
 
 const Client = ({ category }: Props): React.ReactElement => {
-  const [value, set_value] = React.useState<ExploreTabValue>("all");
   const search_params = use_search_params();
+  const pathname = use_pathname();
+  const router = use_router();
+  const tab = search_params.get("tab") || "all";
+  const [value, set_value] = React.useState<ExploreTabValue>(
+    (["all", "stories", "writers", "tags"] as ExploreTabValue[]).includes(
+      tab as ExploreTabValue
+    )
+      ? (tab as ExploreTabValue)
+      : "all"
+  );
   const [query, set_query] = React.useState<string>(
     search_params.get("query") || ""
   );
@@ -120,6 +133,24 @@ const Client = ({ category }: Props): React.ReactElement => {
     (next_query: string) => set_query(next_query),
     []
   );
+
+  React.useEffect(() => {
+    set_value(
+      (["all", "stories", "writers", "tags"] as ExploreTabValue[]).includes(
+        tab as ExploreTabValue
+      )
+        ? (tab as ExploreTabValue)
+        : "all"
+    );
+  }, [tab]);
+
+  React.useEffect(() => {
+    if (value === "all") {
+      router.push(pathname);
+    } else {
+      router.push(`${pathname}?tab=${value}`);
+    }
+  }, [pathname, router, value]);
 
   return (
     <Tabs

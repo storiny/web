@@ -1,13 +1,14 @@
+use crate::error::AppError;
 use actix_web::{
     get,
     web,
     HttpResponse,
-    Responder,
 };
 
 #[get("/health")]
-async fn get() -> impl Responder {
-    HttpResponse::Ok().body("OK")
+#[tracing::instrument(name = "GET /health", skip_all, err)]
+async fn get() -> Result<HttpResponse, AppError> {
+    Ok(HttpResponse::Ok().body("OK"))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {

@@ -70,13 +70,14 @@ pub async fn cleanup_cache(_: CacheCleanupJob, ctx: JobContext) -> Result<(), Jo
 
             let iter = iter.unwrap();
 
-            let keys: Vec<String> = iter.collect().await;
+            let collected_keys: Vec<String> = iter.collect().await;
+            let keys = collected_keys.iter().filter(|key| !key.is_empty());
 
             for key in keys {
                 let result = redis::cmd("EXPIRE")
                     .arg(key)
                     .arg(EXPIRY_DURATION)
-                    .arg("NX") // NX: only set if the key does not already has an expiry
+                    .arg("NX") // NX: only set if the key does not have an expiry
                     .query_async::<_, ()>(&mut *conn)
                     .await;
 

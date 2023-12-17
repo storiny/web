@@ -46,7 +46,7 @@ const Toast = forward_ref<ToastProps, "li">((props, ref) => {
       ref={ref}
     >
       <Component>
-        <Description className={clsx(css["ellipsis"], styles.description)}>
+        <Description className={styles.description}>
           {severity !== "blank" && (
             <span
               {...slot_props?.decorator}
@@ -58,7 +58,7 @@ const Toast = forward_ref<ToastProps, "li">((props, ref) => {
               {SEVERITY_ICON_MAP[severity]}
             </span>
           )}
-          {children}
+          <div className={clsx(css["ellipsis"], styles.child)}>{children}</div>
         </Description>
         <Close
           aria-label="Dismiss"
