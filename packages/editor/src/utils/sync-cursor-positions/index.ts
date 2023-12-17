@@ -171,7 +171,9 @@ const update_cursor = (
   const root_element = editor.getRootElement();
   const cursors_container = binding.cursors_container;
   const cursors_container_offset_parent = cursors_container?.offsetParent;
-  const main_rect = document.querySelector("main")?.getBoundingClientRect();
+  const section_rect = document
+    .querySelector("section")
+    ?.getBoundingClientRect();
 
   if (
     cursors_container === null ||
@@ -214,8 +216,10 @@ const update_cursor = (
 
   let selection_rects: Array<DOMRect>;
 
-  // In the case of a collapsed selection on a linebreak, we need to improvise as the browser will return nothing here as <br> apparantly takes up no visual space.
-  // This won't work in all cases, but it's better than just showing nothing all the time.
+  // In the case of a collapsed selection on a linebreak, we need to improvise
+  // as the browser will return nothing here as <br> apparantly takes up no
+  // visual space. This won't work in all cases, but it's better than just
+  // showing nothing all the time.
   if (anchor_node === focus_node && $is_line_break_node(anchor_node)) {
     const br_rect = (
       editor.getElementByKey(anchor_key) as HTMLElement
@@ -266,7 +270,7 @@ const update_cursor = (
     selection.style.width = `${selection_rect.width}px`;
 
     if (i === selection_rects_length - 1) {
-      if (presence_child && main_rect) {
+      if (presence_child && section_rect) {
         const presence_rect = presence_child.getBoundingClientRect();
         // Flip horizontally
         presence_child.classList.toggle(
@@ -275,7 +279,7 @@ const update_cursor = (
             (presence_child.classList.contains(styles.flipped)
               ? presence_rect.width + 18 // Compensate 12px transform with 6px offset
               : 0) -
-            main_rect.right >
+            section_rect.right >
             0
         );
       }

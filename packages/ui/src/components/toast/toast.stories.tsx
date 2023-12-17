@@ -38,7 +38,10 @@ const ToastComponent = (props?: ToastProps): React.ReactElement => {
   return (
     <Button
       onClick={(): void =>
-        toast("This is a toast notification", props?.severity)
+        toast(
+          (props?.children as string) || "This is a toast notification",
+          props?.severity
+        )
       }
     >
       Show toast

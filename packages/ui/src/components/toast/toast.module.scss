@@ -22,6 +22,10 @@
   user-select: none;
   display: flex;
   align-items: center;
+  
+  @media (max-width: 750px) {
+    max-width: 100%;
+  }
 }
 
 .decorator {
@@ -37,10 +41,7 @@
   flex-grow: 1;
   max-width: 100%;
   display: flex;
-  color: var(--fg-major);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-sm);
+  overflow: hidden;
 }
 
 .close {
@@ -71,4 +72,12 @@
       outline: var(--focus-thickness) solid var(--focus);
     }
   }
+}
+
+.child {
+  min-width: 0;
+  color: var(--fg-major);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-sm);
 }

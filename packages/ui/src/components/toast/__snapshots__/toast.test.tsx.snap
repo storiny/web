@@ -31,9 +31,13 @@ exports[`<Toast /> renders and matches snapshot 1`] = `
           tabindex="0"
         >
           <div
-            class="ellipsis description"
+            class="description"
           >
-            Test
+            <div
+              class="ellipsis child"
+            >
+              Test
+            </div>
           </div>
           <button
             aria-label="Dismiss"

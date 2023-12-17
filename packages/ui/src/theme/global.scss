@@ -9,7 +9,6 @@
 @use "variants";
 @use "z-index";
 
-
 $dark-theme-selector: 'html[data-theme="dark"]';
 
 :root,
@@ -53,4 +52,9 @@ main[data-root="true"] {
   flex-direction: column;
   padding-block: 12px;
   grid-area: main;
+}
+
+#nprogress {
+  position: relative;
+  z-index: 9999;
 }

@@ -95,7 +95,7 @@ const TagsPreview = ({
               styles.x,
               styles["show-more"]
             )}
-            href={"/explore/tags"}
+            href={`/explore/${category === "all" ? "" : category}?tab=tags`}
             level={"body3"}
           >
             Show more

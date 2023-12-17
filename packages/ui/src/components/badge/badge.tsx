@@ -98,7 +98,7 @@ const Badge = forward_ref<BadgeProps, "span">((props, ref) => {
     get_translation_props(anchor_origin);
 
   return (
-    <div
+    <span
       {...slot_props?.container}
       className={clsx(styles.container, slot_props?.container?.className)}
     >
@@ -131,7 +131,7 @@ const Badge = forward_ref<BadgeProps, "span">((props, ref) => {
       >
         {badge_content}
       </Component>
-    </div>
+    </span>
   );
 });
 

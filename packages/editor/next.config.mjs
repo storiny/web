@@ -11,8 +11,7 @@ const nextConfig = {
     ignoreBuildErrors: true
   },
   sassOptions: {
-    includePaths: [path.join(__dirname, "../ui/src/theme")],
-    prependData: `$cdn: "${process.env.NEXT_PUBLIC_CDN_URL}";`
+    includePaths: [path.join(__dirname, "../ui/src/theme")]
   },
   poweredByHeader: false,
   reactStrictMode: true,

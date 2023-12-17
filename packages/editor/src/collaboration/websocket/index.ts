@@ -30,30 +30,32 @@ type ProviderEventHandle = <N extends ProviderEvent>(
   fn: N extends "sync" | "synced"
     ? (is_synced: boolean) => void
     : N extends "auth"
-    ? (reason: "forbidden") => void
-    : N extends "destroy"
-    ? (
-        reason:
-          | "story_published"
-          | "story_unpublished"
-          | "story_deleted"
-          | "doc_overload"
-          | "lifetime_exceeded"
-          | "internal"
-      ) => void
-    : N extends "status"
-    ? (arg: { status: "connecting" | "connected" | "disconnected" }) => void
-    : N extends "update"
-    ? (arg: unknown) => void
-    : N extends "reload"
-    ? (doc: Doc) => void
-    : N extends "connection-error"
-    ? (event: Event) => void
-    : N extends "connection-close"
-    ? (event: CloseEvent) => void
-    : N extends "stale"
-    ? () => void
-    : AnyFunction
+      ? (reason: "forbidden") => void
+      : N extends "destroy"
+        ? (
+            reason:
+              | "story_published"
+              | "story_unpublished"
+              | "story_deleted"
+              | "doc_overload"
+              | "lifetime_exceeded"
+              | "internal"
+          ) => void
+        : N extends "status"
+          ? (arg: {
+              status: "connecting" | "connected" | "disconnected";
+            }) => void
+          : N extends "update"
+            ? (arg: unknown) => void
+            : N extends "reload"
+              ? (doc: Doc) => void
+              : N extends "connection-error"
+                ? (event: Event) => void
+                : N extends "connection-close"
+                  ? (event: CloseEvent) => void
+                  : N extends "stale"
+                    ? () => void
+                    : AnyFunction
 ) => void;
 
 type MessageHandler = (
@@ -707,10 +709,10 @@ export class WebsocketProvider {
    */
   public destroy(): void {
     if (this.resync_interval !== 0) {
-      clearInterval(this.resync_interval);
+      clearInterval(this.resync_interval as number);
     }
 
-    clearInterval(this.check_interval);
+    clearInterval(this.check_interval as unknown as number);
     this.disconnect();
 
     if (typeof window !== "undefined") {

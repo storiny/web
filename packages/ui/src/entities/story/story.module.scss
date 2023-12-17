@@ -30,8 +30,8 @@
     }
 
     & .title {
-      font-size: 18px;
-      line-height: 22px;
+      font-size: 18px !important;
+      line-height: 22px !important;
     }
 
     & .persona {
@@ -49,13 +49,13 @@
 }
 
 .title {
-  font-size: 22px;
-  line-height: 24px;
+  font-size: 22px !important;
+  line-height: 24px !important;
   border-radius: var(--radius-xs); // Focus outline radius
   outline-offset: 3px;
 
   &.small {
-    font-size: 20px;
+    font-size: 20px !important;
   }
 }
 

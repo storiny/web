@@ -5,6 +5,7 @@ import "~/theme/global.scss";
 import "~/theme/main.module.scss"; // Import the global css styles so that they have the lowest style priority
 
 import dynamic from "next/dynamic";
+import NextTopLoader from "nextjs-toploader";
 import React from "react";
 
 import { get_session_token } from "~/common/utils/get-session-token";
@@ -58,6 +59,20 @@ const RootLayout = ({
         <LazyFonts />
       </head>
       <body dir={"ltr"}>
+        <NextTopLoader
+          color="var(--inverted-400)"
+          crawl={true}
+          crawlSpeed={150}
+          easing="linear"
+          height={1.75}
+          initialPosition={0.1}
+          shadow="none"
+          showAtBottom={false}
+          showSpinner={false}
+          speed={250}
+          template={'<div class="bar" role="bar"><div class="peg"></div></div>'}
+          zIndex={1560}
+        />
         <StateProvider logged_in={logged_in}>{children}</StateProvider>
       </body>
       <ObserverErrorHandler />
