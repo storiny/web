@@ -39,6 +39,10 @@
   z-index: 0;
   width: 100%;
 
+  & figcaption {
+    padding-inline: 16px;
+  }
+
   &.with-background {
     background-color: var(--bg-elevation-sm);
     border: 1px solid var(--divider);
