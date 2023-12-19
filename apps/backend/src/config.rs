@@ -26,6 +26,8 @@ pub struct Config {
     pub cdn_server_url: String,
     /// Public URL of the font-end web server
     pub web_server_url: String,
+    /// Public URL of the sitemaps server
+    pub sitemaps_server_url: String,
     /// Postgres URL
     pub database_url: String,
     /// Redis host

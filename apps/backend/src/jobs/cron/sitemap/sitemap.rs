@@ -136,15 +136,15 @@ pub async fn refresh_sitemap(
     // Generate a sitemap index file.
 
     let mut sitemaps: Vec<Sitemap> = vec![Sitemap::new(
-        format!("{}/sitemaps/presets.xml.gz", &state.config.cdn_server_url),
+        format!("{}/presets.xml", &state.config.sitemaps_server_url),
         Some(Utc::now().fixed_offset()),
     )];
 
     for file_index in 0..story_sitemap_result.file_count {
         sitemaps.push(Sitemap::new(
             format!(
-                "{}/sitemaps/stories-{}.xml.gz",
-                &state.config.cdn_server_url, file_index
+                "{}/stories-{}.xml",
+                &state.config.sitemaps_server_url, file_index
             ),
             Some(Utc::now().fixed_offset()),
         ));
@@ -153,8 +153,8 @@ pub async fn refresh_sitemap(
     for file_index in 0..user_sitemap_result.file_count {
         sitemaps.push(Sitemap::new(
             format!(
-                "{}/sitemaps/users-{}.xml.gz",
-                &state.config.cdn_server_url, file_index
+                "{}/users-{}.xml",
+                &state.config.sitemaps_server_url, file_index
             ),
             Some(Utc::now().fixed_offset()),
         ));
@@ -163,8 +163,8 @@ pub async fn refresh_sitemap(
     for file_index in 0..tag_sitemap_result.file_count {
         sitemaps.push(Sitemap::new(
             format!(
-                "{}/sitemaps/tags-{}.xml.gz",
-                &state.config.cdn_server_url, file_index
+                "{}/tags-{}.xml",
+                &state.config.sitemaps_server_url, file_index
             ),
             Some(Utc::now().fixed_offset()),
         ));
@@ -197,10 +197,10 @@ pub async fn refresh_sitemap(
     s3_client
         .put_object()
         .bucket(S3_SITEMAPS_BUCKET)
-        .key("index.xml.gz")
-        .content_type("application/gzip")
+        .key("index.xml")
+        .content_type("application/xml")
         .content_encoding("gzip")
-        .content_disposition(r#"attachment; filename="index.xml.gz""#)
+        .content_disposition(r#"attachment; filename="index.xml""#)
         .body(compressed_bytes.into())
         .send()
         .await
