@@ -485,7 +485,7 @@ impl Realm {
                     .put_object()
                     .bucket(S3_DOCS_BUCKET)
                     .key(&self.doc_key)
-                    .content_type("application/gzip")
+                    .content_type("application/octet-stream")
                     .content_encoding("gzip")
                     // Story ID
                     .metadata("sid", self.doc_id.to_string())

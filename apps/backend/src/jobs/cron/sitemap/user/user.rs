@@ -69,20 +69,20 @@ pub async fn generate_user_sitemap(
 
     let mut result = sqlx::query_as::<_, User>(
         r#"
-        SELECT
-            u.username,
-            u.avatar_id,
-            u.banner_id
-        FROM
-            users u
-        WHERE
-              u.is_private IS FALSE
-          AND u.deactivated_at IS NULL
-          AND u.deleted_at IS NULL
-        ORDER BY
-            u.follower_count DESC
-        LIMIT $1 OFFSET $2
-        "#,
+SELECT
+    u.username,
+    u.avatar_id,
+    u.banner_id
+FROM
+    users u
+WHERE
+      u.is_private IS FALSE
+  AND u.deactivated_at IS NULL
+  AND u.deleted_at IS NULL
+ORDER BY
+    u.follower_count DESC
+LIMIT $1 OFFSET $2
+"#,
     )
     // Return a maximum of 50,000 rows for a single sitemap file. (+1) is added to determine whether
     // there are more rows to return.
@@ -165,11 +165,11 @@ pub async fn generate_user_sitemap(
         s3_client
             .put_object()
             .bucket(S3_SITEMAPS_BUCKET)
-            .key(format!("users-{}.xml.gz", index.unwrap_or_default()))
-            .content_type("application/gzip")
+            .key(format!("users-{}.xml", index.unwrap_or_default()))
+            .content_type("application/xml")
             .content_encoding("gzip")
             .content_disposition(format!(
-                r#"attachment; filename="users-{}.xml.gz""#,
+                r#"attachment; filename="users-{}.xml""#,
                 index.unwrap_or_default()
             ))
             .body(compressed_bytes.into())

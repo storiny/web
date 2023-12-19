@@ -80,10 +80,10 @@ pub async fn generate_preset_sitemap(
     s3_client
         .put_object()
         .bucket(S3_SITEMAPS_BUCKET)
-        .key("presets.xml.gz")
-        .content_type("application/gzip")
+        .key("presets.xml")
+        .content_type("application/xml")
         .content_encoding("gzip")
-        .content_disposition(r#"attachment; filename="presets.xml.gz""#)
+        .content_disposition(r#"attachment; filename="presets.xml""#)
         .body(compressed_bytes.into())
         .send()
         .await
@@ -126,7 +126,7 @@ mod tests {
                 .s3_client
                 .delete_object()
                 .bucket(S3_SITEMAPS_BUCKET)
-                .key("presets.xml.gz")
+                .key("presets.xml")
                 .send()
                 .await
                 .unwrap();
@@ -149,7 +149,7 @@ mod tests {
             let sitemap_count = count_s3_objects(
                 &s3_client,
                 S3_SITEMAPS_BUCKET,
-                Some("presets.xml.gz".to_string()),
+                Some("presets.xml".to_string()),
                 None,
             )
             .await

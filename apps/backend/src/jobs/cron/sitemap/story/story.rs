@@ -149,11 +149,11 @@ LIMIT $1 OFFSET $2
         s3_client
             .put_object()
             .bucket(S3_SITEMAPS_BUCKET)
-            .key(format!("stories-{}.xml.gz", index.unwrap_or_default()))
-            .content_type("application/gzip")
+            .key(format!("stories-{}.xml", index.unwrap_or_default()))
+            .content_type("application/xml")
             .content_encoding("gzip")
             .content_disposition(format!(
-                r#"attachment; filename="stories-{}.xml.gz""#,
+                r#"attachment; filename="stories-{}.xml""#,
                 index.unwrap_or_default()
             ))
             .body(compressed_bytes.into())
