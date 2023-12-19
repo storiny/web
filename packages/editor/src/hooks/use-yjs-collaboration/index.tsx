@@ -129,253 +129,262 @@ export const use_yjs_collaboration = ({
     }
   }, [provider]);
 
-  React.useEffect(() => {
-    const { root } = binding;
-    const { awareness } = provider;
+  React.useEffect(
+    () => {
+      const { root } = binding;
+      const { awareness } = provider;
 
-    /**
-     * Handles the websocket connection status updates.
-     * @param status The next connection status.
-     */
-    const handle_status = ({
-      status
-    }: {
-      status: "connecting" | "connected" | "disconnected";
-    }): void => {
-      set_doc_status((prev_value) =>
-        status === "connecting"
-          ? connected_once_ref.current
-            ? DOC_STATUS.reconnecting
-            : DOC_STATUS.connecting
-          : [
-              DOC_STATUS.connecting,
-              DOC_STATUS.connected,
-              DOC_STATUS.reconnecting,
-              DOC_STATUS.syncing
-            ].includes(prev_value)
-          ? DOC_STATUS.disconnected
-          : prev_value
-      );
+      /**
+       * Handles the websocket connection status updates.
+       * @param status The next connection status.
+       */
+      const handle_status = ({
+        status
+      }: {
+        status: "connecting" | "connected" | "disconnected";
+      }): void => {
+        set_doc_status((prev_value) =>
+          status === "connecting"
+            ? connected_once_ref.current
+              ? DOC_STATUS.reconnecting
+              : DOC_STATUS.connecting
+            : status === "connected"
+              ? DOC_STATUS.connected
+              : [
+                    DOC_STATUS.connecting,
+                    DOC_STATUS.connected,
+                    DOC_STATUS.reconnecting,
+                    DOC_STATUS.syncing
+                  ].includes(prev_value)
+                ? DOC_STATUS.disconnected
+                : prev_value
+        );
 
-      if (status === "connected") {
-        connected_once_ref.current = true;
-      }
-    };
+        if (status === "connected") {
+          connected_once_ref.current = true;
+        }
+      };
 
-    /**
-     * Handles the peer authentication login.
-     *
-     * We currently do not use this method to authenticate the peer. The user
-     * authentication logic is handled during the handshake request and the
-     * rejection is catched by examining the event code of the websocket
-     * `connection-close` event.
-     */
-    const handle_auth = (): void => {
-      set_doc_status(DOC_STATUS.join_unauthorized);
-    };
+      /**
+       * Handles the peer authentication login.
+       *
+       * We currently do not use this method to authenticate the peer. The user
+       * authentication logic is handled during the handshake request and the
+       * rejection is catched by examining the event code of the websocket
+       * `connection-close` event.
+       */
+      const handle_auth = (): void => {
+        set_doc_status(DOC_STATUS.join_unauthorized);
+      };
 
-    /**
-     * Handles the sync event.
-     * @param is_synced The synced boolean flag.
-     */
-    const handle_sync = (is_synced: boolean): void => {
-      if (
-        should_bootstrap &&
-        is_synced &&
-        root.is_empty() &&
-        root._xml_text._length === 0 &&
-        !is_reloading_doc.current
-      ) {
-        initialize_editor(editor);
-      }
+      /**
+       * Handles the sync event.
+       * @param is_synced The synced boolean flag.
+       */
+      const handle_sync = (is_synced: boolean): void => {
+        if (
+          should_bootstrap &&
+          is_synced &&
+          root.is_empty() &&
+          root._xml_text._length === 0 &&
+          !is_reloading_doc.current
+        ) {
+          initialize_editor(editor);
+        }
 
-      set_doc_status(DOC_STATUS.connected);
-      is_reloading_doc.current = false;
-    };
+        set_doc_status(DOC_STATUS.connected);
+        is_reloading_doc.current = false;
+      };
 
-    /**
-     * Handles the reload event.
-     * @param next_doc The next document instance.
-     */
-    const handle_reload = (next_doc: Doc): void => {
-      clear_editor_skip_collab(editor, binding);
-      set_doc(next_doc);
+      /**
+       * Handles the reload event.
+       * @param next_doc The next document instance.
+       */
+      const handle_reload = (next_doc: Doc): void => {
+        clear_editor_skip_collab(editor, binding);
+        set_doc(next_doc);
 
-      doc_map.set("main", next_doc);
-      set_doc_status(DOC_STATUS.syncing);
+        doc_map.set("main", next_doc);
+        set_doc_status(DOC_STATUS.syncing);
 
-      is_reloading_doc.current = true;
-    };
+        is_reloading_doc.current = true;
+      };
 
-    /**
-     * Handles an awareness update.
-     */
-    const handle_awareness_update = (): void => {
-      sync_cursor_positions(binding, provider);
-    };
+      /**
+       * Handles an awareness update.
+       */
+      const handle_awareness_update = (): void => {
+        sync_cursor_positions(binding, provider);
+      };
 
-    /**
-     * Handles an internal realm destroy event.
-     * @param reason The destroy reason.
-     */
-    const handle_destroy = (
-      reason:
-        | "story_published"
-        | "story_unpublished"
-        | "story_deleted"
-        | "doc_overload"
-        | "lifetime_exceeded"
-        | "internal"
-    ): void => {
-      set_doc_status(
-        reason === "story_published"
-          ? DOC_STATUS.published
-          : reason === "story_unpublished"
-          ? DOC_STATUS.unpublished
-          : reason === "story_deleted"
-          ? DOC_STATUS.deleted
-          : reason === "lifetime_exceeded"
-          ? DOC_STATUS.lifetime_exceeded
-          : DOC_STATUS.internal
-      );
-    };
+      /**
+       * Handles an internal realm destroy event.
+       * @param reason The destroy reason.
+       */
+      const handle_destroy = (
+        reason:
+          | "story_published"
+          | "story_unpublished"
+          | "story_deleted"
+          | "doc_overload"
+          | "lifetime_exceeded"
+          | "internal"
+      ): void => {
+        set_doc_status(
+          reason === "story_published"
+            ? DOC_STATUS.published
+            : reason === "story_unpublished"
+              ? DOC_STATUS.unpublished
+              : reason === "story_deleted"
+                ? DOC_STATUS.deleted
+                : reason === "lifetime_exceeded"
+                  ? DOC_STATUS.lifetime_exceeded
+                  : DOC_STATUS.internal
+        );
+      };
 
-    /**
-     * Handles an event fired when the current peer has been disconnceted for
-     * being inactive for too long.
-     */
-    const handle_stale = (): void => {
-      set_doc_status(DOC_STATUS.stale_peer);
-    };
+      /**
+       * Handles an event fired when the current peer has been disconnceted for
+       * being inactive for too long.
+       */
+      const handle_stale = (): void => {
+        set_doc_status(DOC_STATUS.stale_peer);
+      };
 
-    /**
-     * Handles errors received while joining the realm.
-     * @param event The connection close event from the handshake request.
-     */
-    const handle_connection_close = (event: CloseEvent): void => {
-      const error_code = event.code;
-      set_doc_status(
-        ERROR_CODE_TO_DOC_STATUS_MAP[error_code] || DOC_STATUS.internal
-      );
-    };
+      /**
+       * Handles errors received while joining the realm.
+       * @param event The connection close event from the handshake request.
+       */
+      const handle_connection_close = (event: CloseEvent): void => {
+        const error_code = event.code;
+        set_doc_status(
+          ERROR_CODE_TO_DOC_STATUS_MAP[error_code] || DOC_STATUS.internal
+        );
+      };
 
-    /**
-     * Handles the websocket connection errors.
-     */
-    const handle_connection_error = (): void => {
-      if (
-        [
-          DOC_STATUS.connecting,
-          DOC_STATUS.connected,
-          DOC_STATUS.reconnecting,
-          DOC_STATUS.syncing
-        ].includes(doc_status)
-      ) {
-        set_doc_status(DOC_STATUS.disconnected);
-      }
-    };
+      /**
+       * Handles the websocket connection errors.
+       */
+      const handle_connection_error = (): void => {
+        if (
+          [
+            DOC_STATUS.connecting,
+            DOC_STATUS.connected,
+            DOC_STATUS.reconnecting,
+            DOC_STATUS.syncing
+          ].includes(doc_status)
+        ) {
+          set_doc_status(DOC_STATUS.disconnected);
+        }
+      };
 
-    set_awareness(awareness);
-    init_local_state({
-      ...local_state,
-      provider,
-      focusing: document.activeElement === editor.getRootElement(),
-      awareness_data: local_state.awareness_data || {}
-    });
+      set_awareness(awareness);
+      init_local_state({
+        ...local_state,
+        provider,
+        focusing: document.activeElement === editor.getRootElement(),
+        awareness_data: local_state.awareness_data || {}
+      });
 
-    provider.on("reload", handle_reload);
-    provider.on("status", handle_status);
-    provider.on("sync", handle_sync);
-    provider.on("auth", handle_auth);
-    provider.on("stale", handle_stale);
-    provider.on("destroy", handle_destroy);
-    provider.on("connection-close", handle_connection_close);
-    provider.on("connection-error", handle_connection_error);
+      provider.on("reload", handle_reload);
+      provider.on("status", handle_status);
+      provider.on("sync", handle_sync);
+      provider.on("auth", handle_auth);
+      provider.on("stale", handle_stale);
+      provider.on("destroy", handle_destroy);
+      provider.on("connection-close", handle_connection_close);
+      provider.on("connection-error", handle_connection_error);
 
-    awareness.on("update", handle_awareness_update);
+      awareness.on("update", handle_awareness_update);
 
-    const on_yjs_tree_changes = (
-      // The below `any` type is taken directly from the vendor types for Yjs.
-      events: Array<YEvent<any>>,
-      transaction: Transaction
-    ): void => {
-      const origin = transaction.origin;
-      if (origin !== binding) {
-        const is_from_undo_manager = origin instanceof UndoManager;
-        sync_yjs_changes_to_lexical({
-          binding,
-          provider,
-          events,
-          is_from_undo_manager
-        });
-      }
-    };
-
-    // This updates the local editor state when we receive updates from other
-    // clients.
-    root.get_shared_type().observeDeep(on_yjs_tree_changes);
-
-    const remove_listener = editor.registerUpdateListener(
-      ({
-        prevEditorState: prev_editor_state,
-        editorState: curr_editor_state,
-        dirtyLeaves: dirty_leaves,
-        dirtyElements: dirty_elements,
-        normalizedNodes: normalized_nodes,
-        tags
-      }) => {
-        if (!tags.has("skip-collab")) {
-          sync_lexical_update_to_yjs({
+      const on_yjs_tree_changes = (
+        // The below `any` type is taken directly from the vendor types for Yjs.
+        events: Array<YEvent<any>>,
+        transaction: Transaction
+      ): void => {
+        const origin = transaction.origin;
+        if (origin !== binding) {
+          const is_from_undo_manager = origin instanceof UndoManager;
+          sync_yjs_changes_to_lexical({
             binding,
             provider,
-            dirty_elements,
-            dirty_leaves,
-            tags,
-            normalized_nodes,
-            prev_editor_state,
-            curr_editor_state
+            events,
+            is_from_undo_manager
           });
         }
-      }
-    );
+      };
 
-    // Connect to realm server.
-    connect();
+      // This updates the local editor state when we receive updates from other
+      // clients.
+      root.get_shared_type().observeDeep(on_yjs_tree_changes);
 
-    return () => {
-      if (!is_reloading_doc.current) {
-        disconnect();
-      }
+      const remove_listener = editor.registerUpdateListener(
+        ({
+          prevEditorState: prev_editor_state,
+          editorState: curr_editor_state,
+          dirtyLeaves: dirty_leaves,
+          dirtyElements: dirty_elements,
+          normalizedNodes: normalized_nodes,
+          tags
+        }) => {
+          if (!tags.has("skip-collab")) {
+            sync_lexical_update_to_yjs({
+              binding,
+              provider,
+              dirty_elements,
+              dirty_leaves,
+              tags,
+              normalized_nodes,
+              prev_editor_state,
+              curr_editor_state
+            });
+          }
+        }
+      );
 
-      // Cleanup listeners.
-      provider.off("reload", handle_reload);
-      provider.off("status", handle_status);
-      provider.off("sync", handle_sync);
-      provider.off("auth", handle_auth);
-      provider.off("stale", handle_stale);
-      provider.off("destroy", handle_destroy);
-      provider.off("connection-close", handle_connection_close);
-      provider.off("connection-error", handle_connection_error);
+      // Connect to realm server.
+      connect();
 
-      awareness.off("update", handle_awareness_update);
+      return () => {
+        if (!is_reloading_doc.current) {
+          disconnect();
+        }
 
-      root.get_shared_type().unobserveDeep(on_yjs_tree_changes);
-      doc_map.delete("main");
+        // Cleanup listeners.
+        provider.off("reload", handle_reload);
+        provider.off("status", handle_status);
+        provider.off("sync", handle_sync);
+        provider.off("auth", handle_auth);
+        provider.off("stale", handle_stale);
+        provider.off("destroy", handle_destroy);
+        provider.off("connection-close", handle_connection_close);
+        provider.off("connection-error", handle_connection_error);
 
-      remove_listener();
-    };
+        awareness.off("update", handle_awareness_update);
 
+        root.get_shared_type().unobserveDeep(on_yjs_tree_changes);
+        doc_map.delete("main");
+
+        remove_listener();
+      };
+    },
+    // `useEffect` fires twice on development due to strict mode. These deps
+    // are required to reconnect to the websocket after it disconnects for
+    // the first connection.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    binding,
-    connect,
-    disconnect,
-    doc_map,
-    editor,
-    provider,
-    local_state,
-    should_bootstrap
-  ]);
+    process.env.NODE_ENV === "development"
+      ? [
+          binding,
+          connect,
+          disconnect,
+          doc_map,
+          editor,
+          provider,
+          local_state,
+          should_bootstrap
+        ]
+      : []
+  );
 
   /**
    * Cursors container

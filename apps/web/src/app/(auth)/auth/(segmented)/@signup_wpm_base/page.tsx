@@ -60,9 +60,12 @@ const Page = (): React.ReactElement => {
       <div className={css["flex-center"]}>
         <Link
           className={css["t-medium"]}
-          href={"/auth"}
+          href={"#"}
           level={"body2"}
-          onClick={(): void => actions.switch_segment("signup_username")}
+          onClick={(event): void => {
+            event.preventDefault();
+            actions.switch_segment("signup_username");
+          }}
           underline={"always"}
         >
           Return to the previous screen

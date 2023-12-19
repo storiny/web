@@ -34,11 +34,12 @@ const Page = (): React.ReactElement => {
       <div className={css["flex-center"]}>
         <Link
           className={css["t-medium"]}
-          href={"/auth"}
+          href={"#"}
           level={"body2"}
-          onClick={(): void =>
-            actions.switch_segment("signup_wpm_confirmation")
-          }
+          onClick={(event): void => {
+            event.preventDefault();
+            actions.switch_segment("signup_wpm_confirmation");
+          }}
           underline={"always"}
         >
           Return to the previous screen

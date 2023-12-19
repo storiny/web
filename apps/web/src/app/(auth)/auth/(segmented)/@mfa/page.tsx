@@ -39,9 +39,12 @@ const Page = (): React.ReactElement => {
       <div className={css["flex-center"]}>
         <Link
           className={css["t-medium"]}
-          href={"/auth"}
+          href={"#"}
           level={"body2"}
-          onClick={(): void => actions.switch_segment("base")}
+          onClick={(event): void => {
+            event.preventDefault();
+            actions.switch_segment("base");
+          }}
           underline={"always"}
         >
           Show other options to log in

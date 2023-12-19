@@ -33,18 +33,21 @@ const Page = (): React.ReactElement => {
         Need an account? {/* TODO: Uncomment after alpha */}
         {/*<Link*/}
         {/*  ClassName={css["t-medium"]}*/}
-        {/*  Href={"/auth"}*/}
+        {/*  Href={"#"}*/}
         {/*  Level={"body2"}*/}
-        {/*  OnClick={(): void => actions.switch_segment("signup_base")}*/}
+        {/*  OnClick={(event): void => {event.preventDefault();actions.switch_segment("signup_base")}}*/}
         {/*  Underline={"always"}*/}
         {/*>*/}
         {/*  Sign up*/}
         {/*</Link>*/}
         <Link
           className={css["t-medium"]}
-          href={"/auth"}
+          href={"#"}
           level={"body2"}
-          onClick={(): void => actions.switch_segment("alpha")}
+          onClick={(event): void => {
+            event.preventDefault();
+            actions.switch_segment("alpha");
+          }}
           underline={"always"}
         >
           Join using an invite code
@@ -57,9 +60,9 @@ const Page = (): React.ReactElement => {
       {/*<div className={css["flex-center"]}>*/}
       {/*  <Link*/}
       {/*    ClassName={css["t-medium"]}*/}
-      {/*    Href={"/auth"}*/}
+      {/*    Href={"#"}*/}
       {/*    Level={"body2"}*/}
-      {/*    OnClick={(): void => actions.switch_segment("base")}*/}
+      {/*    OnClick={(event): void => {event.preventDefault();actions.switch_segment("base")}}*/}
       {/*    Underline={"always"}*/}
       {/*  >*/}
       {/*    Show other options to log in*/}

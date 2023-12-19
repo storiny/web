@@ -810,6 +810,7 @@ export class WebsocketProvider {
 
     if (this.ws !== null) {
       this.ws.close();
+      this.ws = null;
     }
   }
 
@@ -818,6 +819,7 @@ export class WebsocketProvider {
    */
   public connect(): void {
     this.should_connect = true;
+
     if (!this.wsconnected && this.ws === null) {
       setup_ws(this);
       this.connect_bc();

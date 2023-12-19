@@ -2,6 +2,7 @@
 
 import clsx from "clsx";
 import NextLink from "next/link";
+import { usePathname as use_pathname } from "next/navigation";
 import React from "react";
 
 import Badge from "~/components/badge";
@@ -15,7 +16,10 @@ import HomeIcon from "~/icons/home";
 import PencilPlusIcon from "~/icons/pencil-plus";
 import SearchIcon from "~/icons/search";
 import UserIcon from "~/icons/user";
-import { select_unread_notification_count } from "~/redux/features";
+import {
+  select_unread_notification_count,
+  select_user
+} from "~/redux/features";
 import { select_is_logged_in } from "~/redux/features/auth/selectors";
 import { use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
@@ -40,8 +44,10 @@ const BottomNavigation = (
   props: BottomNavigationProps
 ): React.ReactElement | null => {
   const { className, force_mount, ...rest } = props;
+  const pathname = use_pathname();
   const should_render = use_media_query(BREAKPOINTS.down("mobile"));
   const logged_in = use_app_selector(select_is_logged_in);
+  const user = use_app_selector(select_user);
   const unread_notification_count = use_app_selector(
     select_unread_notification_count
   );
@@ -66,8 +72,16 @@ const BottomNavigation = (
       <Tabs
         activationMode={"manual"}
         className={css["full-w"]}
-        defaultValue={"home"}
         role={undefined}
+        value={
+          pathname === "/"
+            ? "home"
+            : (pathname || "").startsWith("/explore")
+              ? "explore"
+              : user && (pathname || "").startsWith(`/${user?.username}`)
+                ? "profile"
+                : (pathname || "").substring(1)
+        }
       >
         <TabsList
           aria-orientation={undefined}

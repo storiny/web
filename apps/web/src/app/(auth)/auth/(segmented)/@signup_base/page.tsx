@@ -44,8 +44,11 @@ const Page = (): React.ReactElement => {
         Already have an account?{" "}
         <Link
           className={css["t-medium"]}
-          href={"/auth"}
-          onClick={(): void => actions.switch_segment("login")}
+          href={"#"}
+          onClick={(event): void => {
+            event.preventDefault();
+            actions.switch_segment("login");
+          }}
           underline={"always"}
         >
           Log in
@@ -58,9 +61,10 @@ const Page = (): React.ReactElement => {
       {/*<div className={css["flex-center"]}>*/}
       {/*  <Link*/}
       {/*    ClassName={css["t-medium"]}*/}
-      {/*    Href={"/auth"}*/}
+      {/*    Href={"#"}*/}
       {/*    Level={"body2"}*/}
-      {/*    OnClick={(): void => actions.switch_segment("base")}*/}
+      {/*    OnClick={(event): void =>{    event.preventDefault();
+           actions.switch_segment("base")}}*/}
       {/*    Underline={"always"}*/}
       {/*  >*/}
       {/*    Show other options to sign up*/}

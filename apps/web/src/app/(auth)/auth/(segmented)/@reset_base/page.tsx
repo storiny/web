@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams as use_search_params } from "next/dist/client/components/navigation";
+import { useSearchParams as use_search_params } from "next/navigation";
 import React from "react";
 
 import Link from "~/components/link";
@@ -35,9 +35,12 @@ const Page = (): React.ReactElement => {
       <div className={css["flex-center"]}>
         <Link
           className={css["t-medium"]}
-          href={"/auth"}
+          href={"#"}
           level={"body2"}
-          onClick={(): void => actions.switch_segment("login")}
+          onClick={(event): void => {
+            event.preventDefault();
+            actions.switch_segment("login");
+          }}
           underline={"always"}
         >
           Log in instead

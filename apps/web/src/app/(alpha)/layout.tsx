@@ -1,5 +1,6 @@
 import "server-only";
 
+import { Status } from "@grpc/grpc-js/build/src/constants";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import React from "react";
@@ -35,8 +36,15 @@ const AlphaLayout = async ({
       }
 
       return <React.Fragment>{children}</React.Fragment>;
-    } catch (e) {
-      handle_exception(e);
+    } catch (err) {
+      const err_code = err?.code;
+
+      // Session not found
+      if (err_code === Status.NOT_FOUND) {
+        redirect("/logout");
+      } else {
+        handle_exception(err);
+      }
     }
   } else {
     redirect("/auth");
