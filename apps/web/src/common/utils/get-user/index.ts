@@ -32,7 +32,7 @@ export const get_user = async (): Promise<string | null> => {
       // Not found error is thrown if the token is stale or invalid
       const err_code = e?.code;
 
-      // User not found
+      // Session not found
       if (err_code === Status.NOT_FOUND) {
         redirect("/logout");
       }

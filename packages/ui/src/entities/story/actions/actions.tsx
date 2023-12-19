@@ -229,6 +229,7 @@ const StoryActions = ({
           aria-label={"More options"}
           auto_size
           className={clsx(is_mobile && "force-light-mode")}
+          onClick={(event): void => event.stopPropagation()}
           title={"More options"}
           variant={is_mobile ? "rigid" : "ghost"}
         >

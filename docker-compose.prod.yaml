@@ -15,6 +15,30 @@ services:
     environment:
       PROXY_KEY: "${PROXY_KEY_SECRET}"
 
+  # Web Server
+  web:
+    container_name: "storiny_web"
+    network_mode: "host"
+    image: 992532056584.dkr.ecr.us-east-1.amazonaws.com/storiny_web
+    restart: always
+    environment:
+      HOSTNAME: 0.0.0.0
+      PORT: 3000
+      NEXT_PUBLIC_WEB_URL: https://storiny.com
+      NEXT_PUBLIC_CDN_URL: https://cdn.storiny.com
+      NEXT_PUBLIC_API_URL: https://api.storiny.com
+      NEXT_PUBLIC_DISCOVERY_URL: https://discovery.storiny.com
+      NEXT_PUBLIC_REALMS_ENDPOINT: wss://realms.storiny.com
+      NEXT_PUBLIC_APP_STATUS: alpha
+      NEXT_PUBLIC_APP_VERSION: 0.1
+      NEXT_PUBLIC_BUILD_HASH: 92je8a
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
+      AWS_SECRET_ACCESS_KEY: "${WEB_AWS_SECRET_ACCESS_KEY}"
+      AWS_ACCESS_KEY_ID: "${WEB_AWS_ACCESS_KEY_ID}"
+      AWS_REGION: us-east-1
+      GRPC_ENDPOINT: localhost:50051
+      GRPC_SECRET_TOKEN: "${GRPC_SECRET_TOKEN}"
+
   # API Server
   api:
     container_name: "storiny_api"

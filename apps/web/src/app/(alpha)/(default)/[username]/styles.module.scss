@@ -9,6 +9,10 @@
     border-top: 1px solid var(--divider);
   }
 
+  @include breakpoints.media("<=tablet") {
+    border-top: 1px solid var(--divider);
+  }
+
   @include breakpoints.media("<=mobile") {
     padding-inline: 16px;
   }

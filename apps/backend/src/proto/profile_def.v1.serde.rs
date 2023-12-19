@@ -277,7 +277,7 @@ impl serde::Serialize for GetProfileResponse {
             struct_ser.serialize_field("isBlockedByUser", &self.is_blocked_by_user)?;
         }
         if self.is_blocked {
-            struct_ser.serialize_field("isBlocking", &self.is_blocked)?;
+            struct_ser.serialize_field("isBlocked", &self.is_blocked)?;
         }
         if self.is_muted {
             struct_ser.serialize_field("isMuted", &self.is_muted)?;
@@ -339,7 +339,7 @@ impl<'de> serde::Deserialize<'de> for GetProfileResponse {
             "is_blocked_by_user",
             "isBlockedByUser",
             "is_blocked",
-            "isBlocking",
+            "isBlocked",
             "is_muted",
             "isMuted",
             "is_self",
@@ -373,7 +373,7 @@ impl<'de> serde::Deserialize<'de> for GetProfileResponse {
             IsSubscribed,
             IsFriendRequestSent,
             IsBlockedByUser,
-            IsBlocking,
+            IsBlocked,
             IsMuted,
             IsSelf,
         }
@@ -422,7 +422,7 @@ impl<'de> serde::Deserialize<'de> for GetProfileResponse {
                             "isSubscribed" | "is_subscribed" => Ok(GeneratedField::IsSubscribed),
                             "isFriendRequestSent" | "is_friend_request_sent" => Ok(GeneratedField::IsFriendRequestSent),
                             "isBlockedByUser" | "is_blocked_by_user" => Ok(GeneratedField::IsBlockedByUser),
-                            "isBlocking" | "is_blocked" => Ok(GeneratedField::IsBlocking),
+                            "isBlocked" | "is_blocked" => Ok(GeneratedField::IsBlocked),
                             "isMuted" | "is_muted" => Ok(GeneratedField::IsMuted),
                             "isSelf" | "is_self" => Ok(GeneratedField::IsSelf),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
@@ -634,9 +634,9 @@ impl<'de> serde::Deserialize<'de> for GetProfileResponse {
                             }
                             is_blocked_by_user__ = Some(map.next_value()?);
                         }
-                        GeneratedField::IsBlocking => {
+                        GeneratedField::IsBlocked => {
                             if is_blocked__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("isBlocking"));
+                                return Err(serde::de::Error::duplicate_field("isBlocked"));
                             }
                             is_blocked__ = Some(map.next_value()?);
                         }

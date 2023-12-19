@@ -24,8 +24,11 @@ const Page = (): React.ReactElement => {
       <Typography className={css["t-minor"]} level={"body2"}>
         This token has expired. Kindly{" "}
         <Link
-          href={"/auth"}
-          onClick={(): void => actions.switch_segment("recovery_base")}
+          href={"#"}
+          onClick={(event): void => {
+            event.preventDefault();
+            actions.switch_segment("recovery_base");
+          }}
           underline={"always"}
         >
           submit a new request to reset your password

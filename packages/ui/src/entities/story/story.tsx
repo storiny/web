@@ -228,7 +228,8 @@ const Splash = (props: StoryProps): React.ReactElement => {
                   aria-label={"Unlike this story"}
                   check_auth
                   className={"force-light-mode"}
-                  onClick={(): void => {
+                  onClick={(event): void => {
+                    event.stopPropagation();
                     dispatch(boolean_action("liked_stories", story.id, false));
                   }}
                   size={"lg"}
@@ -243,7 +244,8 @@ const Splash = (props: StoryProps): React.ReactElement => {
                   } this story`}
                   check_auth
                   className={"force-light-mode"}
-                  onClick={(): void => {
+                  onClick={(event): void => {
+                    event.stopPropagation();
                     dispatch(boolean_action("bookmarks", story.id));
                   }}
                   size={"lg"}

@@ -135,9 +135,12 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
             <span className={css["f-grow"]}>Password</span>
             <Link
               className={css["t-medium"]}
-              href={"/auth"}
+              href={"#"}
               level={"body3"}
-              onClick={(): void => actions.switch_segment("recovery_base")}
+              onClick={(event): void => {
+                event.preventDefault();
+                actions.switch_segment("recovery_base");
+              }}
               underline={"always"}
             >
               Forgot password?

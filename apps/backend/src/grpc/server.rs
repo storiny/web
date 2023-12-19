@@ -20,6 +20,10 @@ use tonic::{
         Ascii,
         MetadataValue,
     },
+    transport::{
+        Identity,
+        ServerTlsConfig,
+    },
     Request,
     Status,
 };
@@ -79,6 +83,11 @@ pub async fn start_grpc_server(
                     .accept_compressed(CompressionEncoding::Gzip),
                 )
         } else {
+            let cert = std::fs::read_to_string("certs/grpc-server.pem")
+                .expect("cannot read `certs/grpc-server.pem`");
+            let key = std::fs::read_to_string("certs/grpc-server.key")
+                .expect("cannot read `certs/grpc-server.key`");
+
             // TODO: Add compression after https://github.com/hyperium/tonic/issues/1553 is resolved.
             let api_service = ApiServiceServer::with_interceptor(
                 GrpcService {
@@ -97,6 +106,8 @@ pub async fn start_grpc_server(
 
             tonic::transport::Server::builder()
                 .layer(layer)
+                .tls_config(ServerTlsConfig::new().identity(Identity::from_pem(&cert, &key)))
+                .expect("unable to apply the tls config")
                 .add_service(api_service)
         };
 

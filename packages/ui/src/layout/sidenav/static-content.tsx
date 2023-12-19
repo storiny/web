@@ -2,6 +2,7 @@
 
 import clsx from "clsx";
 import NextLink from "next/link";
+import { usePathname as use_pathname } from "next/navigation";
 import React from "react";
 
 import Logo from "~/brand/logo";
@@ -39,6 +40,7 @@ const SidenavStatic = (
   props: Omit<SidenavProps, "force_mount">
 ): React.ReactElement | null => {
   const { className, ...rest } = props;
+  const pathname = use_pathname();
   const logged_in = use_app_selector(select_is_logged_in);
   const user = use_app_selector(select_user);
   const unread_notification_count = use_app_selector(
@@ -59,9 +61,17 @@ const SidenavStatic = (
       </NextLink>
       <Tabs
         activationMode={"manual"}
-        defaultValue={"home"}
         orientation={"vertical"}
         role={undefined}
+        value={
+          pathname === "/"
+            ? "home"
+            : (pathname || "").startsWith("/explore")
+              ? "explore"
+              : user && (pathname || "").startsWith(`/${user?.username}`)
+                ? "profile"
+                : (pathname || "").substring(1)
+        }
       >
         <TabsList
           as={"nav"}

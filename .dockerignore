@@ -1,0 +1,24 @@
+.git
+.docker
+.yarn
+**/.next
+**/build
+**/dist
+**/node_modules
+**/.DS_Store
+**/.turbo
+Dockerfile
+*.log
+**/__tests__
+npm-debug.log
+
+# Ignore apps other than web
+apps/backend
+apps/cdn
+apps/discovery
+
+# Ignore packages that are not used by web
+packages/mail
+
+# Include generated proto files
+!packages/proto/dist

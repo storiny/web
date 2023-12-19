@@ -11,6 +11,9 @@
       "outputs": [".next/**", "!.next/cache/**", "dist/**"],
       "dependsOn": ["^build"]
     },
+    "build:prod": {
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+    },
     "test": {},
     "multiplayer:test": {},
     "deploy": {

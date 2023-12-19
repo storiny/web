@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter as use_router } from "next/dist/client/components/navigation";
+import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
 import Button from "~/components/button";

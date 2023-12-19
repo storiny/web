@@ -6648,6 +6648,7 @@ __metadata:
     "@storiny/test-utils": "*"
     "@storiny/tsconfig": "*"
     "@storiny/ui": "*"
+    "@storiny/whiteboard": "*"
     "@types/mdx": ^2.0.5
     "@types/node": ^17.0.12
     "@types/react": ^18.2.45
@@ -6679,7 +6680,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@storiny/whiteboard@workspace:packages/whiteboard":
+"@storiny/whiteboard@*, @storiny/whiteboard@workspace:packages/whiteboard":
   version: 0.0.0-use.local
   resolution: "@storiny/whiteboard@workspace:packages/whiteboard"
   dependencies:

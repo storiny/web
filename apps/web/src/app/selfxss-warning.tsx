@@ -10,6 +10,10 @@ const APP_BUILD_HASH = process.env.NEXT_PUBLIC_BUILD_HASH;
 
 const SelfXSSWarning = (): null => {
   React.useEffect(() => {
+    if (process.env.NODE_ENV !== "production") {
+      return;
+    }
+
     const primary_message = [
       `%cStoriny — ${capitalize(APP_STATUS || "")} ${APP_VERSION || ""} (${
         APP_BUILD_HASH || "-"
