@@ -6651,6 +6651,7 @@ __metadata:
     "@storiny/whiteboard": "*"
     "@types/mdx": ^2.0.5
     "@types/node": ^17.0.12
+    "@types/nprogress": ^0.2.3
     "@types/react": ^18.2.45
     "@types/react-dom": ^18.2.17
     client-only: ^0.0.1
@@ -6663,7 +6664,7 @@ __metadata:
     maplibre-gl: ^3.3.0
     nanoid: ^4.0.2
     next: ^14.0.4
-    nextjs-toploader: ^1.6.4
+    nprogress: ^0.2.0
     raw-loader: ^4.0.2
     react: ^18.2.0
     react-dom: ^18.2.0
@@ -8753,7 +8754,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/nprogress@npm:^0.2.1":
+"@types/nprogress@npm:^0.2.3":
   version: 0.2.3
   resolution: "@types/nprogress@npm:0.2.3"
   checksum: 2bd96ba1167f548e8f898ae8a790b6501a5422217621c9b8ea75962f3e8473f0e371058b79d83e04e80a6bfee2d66fc6612cdb28296648007b35d3c2a6d64e5c
@@ -18912,21 +18913,6 @@ __metadata:
   bin:
     next: dist/bin/next
   checksum: 879842979d3c7e2d2e2cd3edad3e715d408060a286bb12299089e08d7142af9effceee877e6d18aad359983119d025298ec5c63dd6317443027b47dc5167ac40
-  languageName: node
-  linkType: hard
-
-"nextjs-toploader@npm:^1.6.4":
-  version: 1.6.4
-  resolution: "nextjs-toploader@npm:1.6.4"
-  dependencies:
-    "@types/nprogress": ^0.2.1
-    nprogress: ^0.2.0
-    prop-types: ^15.8.1
-  peerDependencies:
-    next: ">= 6.0.0"
-    react: ">= 16.0.0"
-    react-dom: ">= 16.0.0"
-  checksum: 43801c844494f508b31a02e202dc3f063e9ded5968edff0ed298118b2c5ad3f2bc200712ca3c693fe27fe5acb5363646c10e937710e3a27ba2fe284fd31a0665
   languageName: node
   linkType: hard
 

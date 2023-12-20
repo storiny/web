@@ -75,14 +75,15 @@ export const auth_slice = create_slice({
   name: "auth",
   initialState: auth_initial_state,
   reducers: {
-    /**
-     * Mutates the user
-     */
     mutate_user: (state, action: PayloadAction<Partial<User>>) => {
       if (state.user !== null) {
         state.user = { ...state.user, ...action.payload };
         return state;
       }
+    },
+    logout_user: (state) => {
+      state.user = null;
+      state.logged_in = false;
     },
     set_self_follower_count: (
       state,
@@ -140,6 +141,7 @@ export const auth_slice = create_slice({
 });
 
 const {
+  logout_user,
   mutate_user,
   set_self_following_count,
   set_self_follower_count,
@@ -147,6 +149,7 @@ const {
 } = auth_slice.actions;
 
 export {
+  logout_user,
   mutate_user,
   set_self_follower_count,
   set_self_following_count,

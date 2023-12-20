@@ -8,6 +8,7 @@
 @use "easing";
 @use "variants";
 @use "z-index";
+@use "progress";
 
 $dark-theme-selector: 'html[data-theme="dark"]';
 
@@ -54,7 +55,3 @@ main[data-root="true"] {
   grid-area: main;
 }
 
-#nprogress {
-  position: relative;
-  z-index: 9999;
-}
