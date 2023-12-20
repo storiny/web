@@ -35,7 +35,7 @@ WITH history_result AS (WITH search_query AS (SELECT PLAINTO_TSQUERY('english', 
 							-- Tags
 							COALESCE(
 											ARRAY_AGG(
-											("s->story_tags->tag".id, "s->story_tags->tag".name)
+											DISTINCT ("s->story_tags->tag".id, "s->story_tags->tag".name)
 													 ) FILTER (
 												WHERE "s->story_tags->tag".id IS NOT NULL
 												), '{}'

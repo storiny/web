@@ -28,7 +28,8 @@ SELECT u.id,
 	   -- Timestamps
 	   u.created_at,
 	   -- Connections
-	   COALESCE(ARRAY_AGG(("u->connection".provider, "u->connection".provider_identifier, "u->connection".display_name))
+	   COALESCE(ARRAY_AGG(DISTINCT
+				("u->connection".provider, "u->connection".provider_identifier, "u->connection".display_name))
 				FILTER (WHERE "u->connection".id IS NOT NULL), '{}') AS "connections!: Vec<ProfileConnection>",
 	   -- Status
 	   -- Use a discrete column to deserialize it into `OffsetDateTime`.

@@ -1,1 +1,1 @@
-drop TABLE  if EXISTS alpha_invite_codes CASCADE ;
+DROP TABLE IF EXISTS alpha_invite_codes CASCADE;

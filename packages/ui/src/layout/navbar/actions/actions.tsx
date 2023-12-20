@@ -196,7 +196,7 @@ const Actions = (): React.ReactElement => {
         ["idle", "loading", "error"].includes(auth_status) ? (
           <LoggedOutMenu
             trigger={
-              <div
+              <button
                 aria-busy
                 className={clsx(css["flex-center"], styles.trigger)}
               >
@@ -208,7 +208,7 @@ const Actions = (): React.ReactElement => {
                   </Avatar>
                 )}
                 <ChevronIcon rotation={180} />
-              </div>
+              </button>
             }
           />
         ) : (

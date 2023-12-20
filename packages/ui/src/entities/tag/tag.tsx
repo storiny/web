@@ -131,7 +131,9 @@ const Tag = (props: TagProps): React.ReactElement => {
               <span className={clsx(css["flex-center"], styles["stat-icon"])}>
                 <CalendarIcon />
               </span>
-              <span>{format_date(tag.created_at, DateFormat.RELATIVE)}</span>
+              <span>
+                {format_date(tag.created_at, DateFormat.RELATIVE_CAPITALIZED)}
+              </span>
             </>
           ) : (
             `Created ${format_date(tag.created_at, DateFormat.RELATIVE)}`

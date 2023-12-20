@@ -53,7 +53,7 @@ const BottomNavigation = (
   );
 
   // Adds `padding-bottom` to the body to compensate the height of the component
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (force_mount || (should_render && logged_in)) {
       document.body.classList.add("bottom-navigation");
     } else {

@@ -6,8 +6,8 @@ import {
   CATEGORY_LABEL_MAP
 } from "@storiny/shared/src/constants/category-icon-map";
 import {
-  useRouter as use_router,
-  useSelectedLayoutSegment as use_selected_layout_segment
+  usePathname as use_pathname,
+  useRouter as use_router
 } from "next/navigation";
 import React from "react";
 
@@ -34,7 +34,8 @@ const AnchorOption = ({
 const DropdownClient = (): React.ReactElement => {
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const router = use_router();
-  const segment = use_selected_layout_segment();
+  const pathname = use_pathname();
+  const value = pathname.split("/")[2] || "all";
 
   return (
     <>
@@ -49,10 +50,8 @@ const DropdownClient = (): React.ReactElement => {
             "aria-label": "Category"
           }
         }}
-        value={segment || "all"}
-        value_children={
-          is_mobile ? CATEGORY_ICON_MAP[segment || "all"] : undefined
-        }
+        value={value}
+        value_children={is_mobile ? CATEGORY_ICON_MAP[value] : undefined}
       >
         {(
           [

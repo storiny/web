@@ -137,10 +137,21 @@ body {
 
   // Fixed banner height compensation
   padding-top: var(--banner-height, 0);
-  padding-bottom: var(--global-bottom-gutter, 0);
 
   &::backdrop {
     background-color: var(--bg-backdrop);
+  }
+
+  &:not(.footer) {
+    & main[data-root="true"] {
+      padding-bottom: calc(var(--global-bottom-gutter, 0) + 124px);
+    }
+  }
+
+  &.footer {
+    & footer[data-global-footer="true"] {
+      padding-bottom: calc(var(--global-bottom-gutter, 0) + 32px);
+    }
   }
 
   // Fixed bottom navigation height compensation

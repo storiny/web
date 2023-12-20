@@ -35,7 +35,7 @@ SELECT s.id,
 		   -- Draft tags
 		   COALESCE(
 						   ARRAY_AGG(
-						   ("s->draft_tags".name, "s->draft_tags".name)
+						   DISTINCT ("s->draft_tags".name, "s->draft_tags".name)
 									) FILTER (
 							   WHERE "s->draft_tags".name IS NOT NULL
 							   ), '{}'
@@ -44,7 +44,7 @@ SELECT s.id,
 		   COALESCE(
 						   ARRAY_AGG(
 					   -- We need to cast the BIGINT id to string
-						   ("s->story_tags->tag".id::TEXT, "s->story_tags->tag".name)
+						   DISTINCT ("s->story_tags->tag".id::TEXT, "s->story_tags->tag".name)
 									) FILTER (
 							   WHERE "s->story_tags->tag".id IS NOT NULL
 							   ), '{}'

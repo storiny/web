@@ -46,7 +46,8 @@ SELECT u.id,
 	   -- Timestamps
 	   u.created_at,
 	   -- Connections
-	   COALESCE(ARRAY_AGG(("u->connection".provider, "u->connection".provider_identifier, "u->connection".display_name))
+	   COALESCE(ARRAY_AGG(DISTINCT
+				("u->connection".provider, "u->connection".provider_identifier, "u->connection".display_name))
 				FILTER (WHERE "u->connection".id IS NOT NULL), '{}') AS "connections!: Vec<ProfileConnection>",
 	   -- Status
 	   -- Use a discrete column to deserialize it into `OffsetDateTime`.
@@ -76,7 +77,7 @@ SELECT u.id,
 	   "u->is_subscribed".follower_id IS NOT NULL                    AS "is_subscribed!",
 	   "u->is_friend_request_sent".transmitter_id IS NOT NULL        AS "is_friend_request_sent!",
 	   "u->is_blocked_by_user".blocker_id IS NOT NULL                AS "is_blocked_by_user!",
-	   "u->is_blocked".blocker_id IS NOT NULL                       AS "is_blocked!",
+	   "u->is_blocked".blocker_id IS NOT NULL                        AS "is_blocked!",
 	   "u->is_muted".muter_id IS NOT NULL                            AS "is_muted!"
 FROM
 	users u
