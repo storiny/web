@@ -26,7 +26,7 @@ WITH suggested_stories AS (SELECT
 												 u.avatar_id, 'avatar_hex', u.avatar_hex, 'public_flags',
 												 u.public_flags)                                  AS "user!: Json<User>",
 							   -- Tags
-							   COALESCE(ARRAY_AGG(("s->story_tags->tag".id, "s->story_tags->tag".name))
+							   COALESCE(ARRAY_AGG(DISTINCT ("s->story_tags->tag".id, "s->story_tags->tag".name))
 										FILTER (WHERE "s->story_tags->tag".id IS NOT NULL), '{}') AS "tags!: Vec<Tag>",
 							   -- Weights
 							   COUNT(DISTINCT "s->story_tags->follower")                          AS "followed_tags_weight",

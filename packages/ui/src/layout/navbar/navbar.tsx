@@ -80,7 +80,6 @@ const Navbar = (props: NavbarProps): React.ReactElement => {
                 }
               }}
               placeholder={"Search Storiny"}
-              results={5}
               slot_props={{
                 container: { className: styles.search }
               }}

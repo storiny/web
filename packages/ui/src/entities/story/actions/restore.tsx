@@ -60,7 +60,10 @@ const RestoreAction = ({
       className={clsx(is_mobile && "force-light-mode")}
       decorator={<RestoreIcon />}
       loading={is_loading}
-      onClick={handle_delete}
+      onClick={(event): void => {
+        event.stopPropagation();
+        handle_delete();
+      }}
       variant={is_mobile ? "rigid" : "hollow"}
     >
       Restore

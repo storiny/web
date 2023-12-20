@@ -27,7 +27,8 @@ WITH friends_and_following_stories AS (SELECT
 															 'public_flags',
 															 u.public_flags)       AS "user!: Json<User>",
 										   -- Tags
-										   COALESCE(ARRAY_AGG(("s->story_tags->tag".id, "s->story_tags->tag".name))
+										   COALESCE(ARRAY_AGG(DISTINCT
+													("s->story_tags->tag".id, "s->story_tags->tag".name))
 													FILTER (WHERE "s->story_tags->tag".id IS NOT NULL),
 													'{}')                          AS "tags!: Vec<Tag>"
 									   FROM

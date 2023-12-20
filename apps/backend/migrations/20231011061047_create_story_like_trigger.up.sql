@@ -133,7 +133,7 @@ BEGIN
 		notifications n USING notification_outs nu
 	WHERE
 		  nu.notification_id = n.id
-	  -- Story like
+		  -- Story like
 	  AND n.entity_type = 9
 	  AND n.entity_id = OLD.story_id
 	  AND nu.notified_id = OLD.user_id;

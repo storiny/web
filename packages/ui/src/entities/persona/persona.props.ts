@@ -10,7 +10,8 @@ type AvatarPropsWithoutSize = Omit<AvatarProps, "size">;
 
 export interface PersonaProps extends React.ComponentPropsWithRef<"div"> {
   /**
-   * The props for the Avatar component. Pass an array of props to render an AvatarGroup component.
+   * The props for the Avatar component. Pass an array of props to render an
+   * AvatarGroup component.
    */
   avatar: AvatarPropsWithoutSize | AvatarPropsWithoutSize[];
   /**

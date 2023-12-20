@@ -3,6 +3,7 @@
 import {
   Fallback,
   Image as ImagePrimitive,
+  ImageLoadingStatus,
   Root
 } from "@radix-ui/react-avatar";
 import { AssetRating } from "@storiny/shared";
@@ -51,7 +52,7 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
     ...rest
   } = props;
   const user = use_app_selector(select_user);
-  const [loaded, set_loaded] = React.useState<boolean>(false);
+  const [status, set_status] = React.useState<ImageLoadingStatus>("loading");
   const [show_overlay, set_show_overlay] = React.useState<boolean>(
     typeof rating !== "undefined" &&
       [
@@ -76,7 +77,11 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
     <Root
       {...rest}
       asChild
-      className={clsx(styles.image, loaded && styles.loaded, className)}
+      className={clsx(
+        styles.image,
+        status === "loaded" && styles.loaded,
+        className
+      )}
       ref={ref}
       style={
         {
@@ -96,26 +101,26 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
               styles["native-image"],
               slot_props?.image?.className
             )}
-            onLoadingStatusChange={(status): void =>
-              set_loaded(status === "loaded")
-            }
+            onLoadingStatusChange={set_status}
             ref={img_ref}
             src={final_src}
           />
         )}
-        <Fallback
-          delayMs={500}
-          {...slot_props?.fallback}
-          className={clsx(
-            css["flex-center"],
-            styles.fallback,
-            slot_props?.fallback?.className
-          )}
-        >
-          <Typography className={css["t-minor"]} level={"body2"}>
-            Image not available
-          </Typography>
-        </Fallback>
+        {status === "error" && (
+          <Fallback
+            delayMs={500}
+            {...slot_props?.fallback}
+            className={clsx(
+              css["flex-center"],
+              styles.fallback,
+              slot_props?.fallback?.className
+            )}
+          >
+            <Typography className={css["t-minor"]} level={"body2"}>
+              Image not available
+            </Typography>
+          </Fallback>
+        )}
         {show_overlay && (
           <div
             {...slot_props?.overlay}

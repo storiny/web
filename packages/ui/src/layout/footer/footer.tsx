@@ -38,8 +38,18 @@ const ListItem = ({ children, ...rest }: LinkProps): React.ReactElement => (
 
 const Footer = (props: FooterProps): React.ReactElement => {
   const { className, ...rest } = props;
+
+  React.useLayoutEffect(() => {
+    document.body.classList.add("footer");
+    return () => document.body.classList.remove("footer");
+  }, []);
+
   return (
-    <footer {...rest} className={clsx(styles.footer, className)}>
+    <footer
+      {...rest}
+      className={clsx(styles.footer, className)}
+      data-global-footer={"true"}
+    >
       <div className={clsx(css["flex-col"], styles.container)}>
         <div className={clsx(styles.content)}>
           <div className={clsx(css["flex-col"], styles.branding)}>

@@ -7,7 +7,7 @@
     "build": "rollup -c && docker build --platform linux/amd64 -t storiny-nginx nginx",
     "rollup": "rollup -c",
     "sync": "aws s3 sync buckets/base s3://base-3939361a --delete",
-    "sync:local": "cross-env AWS_ACCESS_KEY_ID=minio_user AWS_SECRET_ACCESS_KEY=minio_pass aws --endpoint-url=http://localhost:9000 s3 sync buckets/base s3://base --delete",
+    "sync:local": "cross-env AWS_ACCESS_KEY_ID=minio_user AWS_SECRET_ACCESS_KEY=minio_pass aws --endpoint-url=http://localhost:9000 s3 sync buckets/base s3://base-3939361a --delete",
     "lint": "eslint \"**/*.{js,ts}\"",
     "test": "rollup -c && jest",
     "clean": "rm -rf nginx/njs-files"

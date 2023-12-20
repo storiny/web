@@ -125,7 +125,8 @@ const Meta = (props: StoryProps): React.ReactElement | null => {
         // @ts-expect-error polymorphic prop
         href: `/${story.user.username}`,
         title: `View ${story.user?.name}'s profile`,
-        as: NextLink
+        as: NextLink,
+        label: story.user?.name || ""
       }}
       className={styles.persona}
       primary_text={

@@ -74,6 +74,7 @@ const StoryActions = ({
         decorator={<UserBlockIcon />}
         onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
+          event.stopPropagation();
           open_confirmation();
         }}
       >
@@ -115,6 +116,7 @@ const StoryActions = ({
         decorator={<TrashIcon />}
         onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
+          event.stopPropagation();
           open_confirmation();
         }}
       >
@@ -153,6 +155,7 @@ const StoryActions = ({
         decorator={<TrashIcon />}
         onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
+          event.stopPropagation();
           open_confirmation();
         }}
       >
@@ -192,6 +195,7 @@ const StoryActions = ({
         decorator={<EyeOffIcon />}
         onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
+          event.stopPropagation();
           open_confirmation();
         }}
       >
@@ -243,7 +247,8 @@ const StoryActions = ({
         <React.Fragment>
           <MenuItem
             decorator={<ShareIcon />}
-            onClick={(): void =>
+            onClick={(event): void => {
+              event.stopPropagation();
               share(
                 story.title,
                 `${process.env.NEXT_PUBLIC_WEB_URL}/${
@@ -251,22 +256,23 @@ const StoryActions = ({
                     ? current_user.username
                     : story.user?.username || "view"
                 }/${story.slug || story.id}`
-              )
-            }
+              );
+            }}
           >
             Share this story
           </MenuItem>
           <MenuItem
             decorator={<CopyIcon />}
-            onClick={(): void =>
+            onClick={(event): void => {
+              event.stopPropagation();
               copy(
                 `${process.env.NEXT_PUBLIC_WEB_URL}/${
                   is_self && current_user
                     ? current_user.username
                     : story.user?.username || "view"
                 }/${story.slug || story.id}`
-              )
-            }
+              );
+            }}
           >
             Copy link to story
           </MenuItem>
@@ -278,6 +284,7 @@ const StoryActions = ({
                 check_auth
                 decorator={<EditIcon />}
                 href={`/doc/${story.id}`}
+                onClick={(event): void => event.stopPropagation()}
               >
                 Edit this story
               </MenuItem>
@@ -286,6 +293,7 @@ const StoryActions = ({
                 check_auth
                 decorator={<CommentIcon />}
                 href={`/me/content/stories/${story.id}/responses`}
+                onClick={(event): void => event.stopPropagation()}
               >
                 View responses
               </MenuItem>
@@ -294,6 +302,7 @@ const StoryActions = ({
                 check_auth
                 decorator={<StoriesMetricsIcon />}
                 href={`/me/content/stories/${story.id}/metrics`}
+                onClick={(event): void => event.stopPropagation()}
               >
                 View metrics
               </MenuItem>
@@ -310,7 +319,10 @@ const StoryActions = ({
                   <MenuItem
                     decorator={<ReportIcon />}
                     onClick={open_modal}
-                    onSelect={(event): void => event.preventDefault()}
+                    onSelect={(event): void => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                    }}
                   >
                     Report this story
                   </MenuItem>
@@ -322,7 +334,8 @@ const StoryActions = ({
                   <MenuItem
                     check_auth
                     decorator={<MuteIcon />}
-                    onClick={(): void => {
+                    onClick={(event): void => {
+                      event.stopPropagation();
                       dispatch(boolean_action("mutes", story.user?.id || ""));
                     }}
                   >
