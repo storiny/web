@@ -28,7 +28,7 @@ const robots = (): MetadataRoute.Robots => ({
       "/*/*/comments/*"
     ]
   },
-  sitemap: "https://sitemaps.storiny.com/index.xml.gz"
+  sitemap: "https://sitemaps.storiny.com/index.xml"
 });
 
 export default robots;

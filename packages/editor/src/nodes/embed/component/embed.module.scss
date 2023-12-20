@@ -64,6 +64,11 @@
       padding-bottom: var(--padding-mobile, var(--padding-desktop, 0));
     }
   }
+
+  /* Twitter embed */
+  & iframe[id^="twitter-widget-"] {
+    border-radius: 13px !important;
+  }
 }
 
 .container {

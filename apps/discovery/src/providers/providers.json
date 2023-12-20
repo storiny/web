@@ -213,7 +213,7 @@
     "endpoint": "https://open.spotify.com/oembed",
     "schemas": ["open.spotify.com/*", "spotify:*"],
     "iframe_attrs": {
-      "style": "width:calc(100% - 72px);border-radius:12px;overflow:hidden;left:50%;transform:translateX(-50%)"
+      "style": "width:calc(100% - 72px);max-width:640px;border-radius:12px;overflow:hidden;left:50%;transform:translateX(-50%)"
     }
   },
   {

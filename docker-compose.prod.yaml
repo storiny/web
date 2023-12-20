@@ -24,14 +24,6 @@ services:
     environment:
       HOSTNAME: 0.0.0.0
       PORT: 3000
-      NEXT_PUBLIC_WEB_URL: https://storiny.com
-      NEXT_PUBLIC_CDN_URL: https://cdn.storiny.com
-      NEXT_PUBLIC_API_URL: https://api.storiny.com
-      NEXT_PUBLIC_DISCOVERY_URL: https://discovery.storiny.com
-      NEXT_PUBLIC_REALMS_ENDPOINT: wss://realms.storiny.com
-      NEXT_PUBLIC_APP_STATUS: alpha
-      NEXT_PUBLIC_APP_VERSION: 0.1
-      NEXT_PUBLIC_BUILD_HASH: 92je8a
       NODE_TLS_REJECT_UNAUTHORIZED: 0
       AWS_SECRET_ACCESS_KEY: "${WEB_AWS_SECRET_ACCESS_KEY}"
       AWS_ACCESS_KEY_ID: "${WEB_AWS_ACCESS_KEY_ID}"
@@ -56,6 +48,7 @@ services:
       API_SERVER_URL: https://api.storiny.com
       WEB_SERVER_URL: https://storiny.com
       CDN_SERVER_URL: https://cdn.storiny.com
+      SITEMAPS_SERVER_URL: https://sitemaps.storiny.com
       REALMS_SERVER_URL: wss://realms.storiny.com
       TOKEN_SALT: "${TOKEN_SALT}"
       GRPC_SECRET_TOKEN: "${GRPC_SECRET_TOKEN}"

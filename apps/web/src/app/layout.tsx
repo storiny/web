@@ -5,7 +5,6 @@ import "~/theme/global.scss";
 import "~/theme/main.module.scss"; // Import the global css styles so that they have the lowest style priority
 
 import dynamic from "next/dynamic";
-import NextTopLoader from "nextjs-toploader";
 import React from "react";
 
 import { get_session_token } from "~/common/utils/get-session-token";
@@ -20,6 +19,7 @@ import StateProvider from "./state-provider";
 import theme_sync from "./theme-sync.txt";
 
 const LazyFonts = dynamic(() => import("./fonts/lazy"));
+const Progress = dynamic(() => import("./progress"));
 
 const RootLayout = ({
   children
@@ -54,25 +54,24 @@ const RootLayout = ({
           title="Storiny"
           type="application/opensearchdescription+xml"
         />
+        {/* Preload emoji spritesheet */}
+        <link
+          as="image"
+          href={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/raw/spritesheets/emoji-sprite.png`}
+          rel="preload"
+        />
+        {/* Preload background noise */}
+        <link
+          as="image"
+          href={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/background/noise`}
+          rel="preload"
+        />
         <CriticalStyles />
         <CriticalFonts />
         <LazyFonts />
       </head>
       <body dir={"ltr"}>
-        <NextTopLoader
-          color="var(--inverted-400)"
-          crawl={true}
-          crawlSpeed={150}
-          easing="linear"
-          height={1.75}
-          initialPosition={0.1}
-          shadow="none"
-          showAtBottom={false}
-          showSpinner={false}
-          speed={250}
-          template={'<div class="bar" role="bar"><div class="peg"></div></div>'}
-          zIndex={1560}
-        />
+        <Progress />
         <StateProvider logged_in={logged_in}>{children}</StateProvider>
       </body>
       <ObserverErrorHandler />
