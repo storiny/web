@@ -29,7 +29,7 @@ const SuspendedEditorLeftSidebarEditableContent = ({
       <div className={styles["padded-divider"]}>
         <Divider />
       </div>
-      <EditorToc disabled={status === "deleted"} />
+      <EditorToc />
     </React.Fragment>
   );
 };

@@ -6,6 +6,7 @@ use crate::{
     constants::{
         buckets::S3_DOCS_BUCKET,
         redis_namespaces::RedisNamespace,
+        session_cookie::SESSION_COOKIE_NAME,
     },
     realms::realm::{
         Realm,
@@ -30,10 +31,7 @@ use futures_util::{
 };
 use lockable::AsyncLimit;
 use redis::AsyncCommands;
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use serde::Serialize;
 use sqlx::{
     Pool,
     Postgres,
@@ -134,12 +132,6 @@ struct ErrorResponse {
     reason: String,
 }
 
-/// The query parameters received on the handshake request.
-#[derive(Debug, Deserialize)]
-struct PeerQuery {
-    auth_token: Option<String>,
-}
-
 /// Rejection handler that maps rejections into responses.
 async fn handle_rejection(err: Rejection) -> Result<impl Reply, Infallible> {
     if err.is_not_found() {
@@ -197,7 +189,7 @@ async fn fetch_doc_from_s3(s3_client: &S3Client, doc_key: &str) -> Result<Vec<u8
 ///
 /// * `config` - The environment configuration.
 /// * `story_id` - The document (story) ID.
-/// * `peer_query` - The query parameters sent by the peer.
+/// * `session_cookie_value` - The value of the session cookie.
 /// * `realm_map` - The realm map.
 /// * `db_pool` - The Postgres connection pool.
 /// * `redis_pool` - The Redis connection pool.
@@ -206,19 +198,21 @@ async fn fetch_doc_from_s3(s3_client: &S3Client, doc_key: &str) -> Result<Vec<u8
 async fn enter_realm(
     config: Arc<Config>,
     story_id: i64,
-    peer_query: PeerQuery,
+    session_cookie_value: Option<String>,
     realm_map: RealmMap,
     db_pool: Pool<Postgres>,
     redis_pool: RedisPool,
     s3_client: S3Client,
 ) -> Result<(i64, Arc<Realm>), EnterRealmError> {
     let user_id = {
+        if session_cookie_value.is_none() {
+            return Err(EnterRealmError::Unauthorized);
+        }
+
         let secret_key = Key::from(config.session_secret_key.as_bytes());
-        let session_key = extract_session_key_from_cookie(
-            &peer_query.auth_token.unwrap_or_default(),
-            &secret_key,
-        )
-        .ok_or(EnterRealmError::Unauthorized)?;
+        let session_key =
+            extract_session_key_from_cookie(&session_cookie_value.unwrap(), &secret_key)
+                .ok_or(EnterRealmError::Unauthorized)?;
 
         let mut redis_conn = redis_pool.get().await.map_err(|error| {
             error!("unable to acquire a Redis connection from the pool: {error:?}");
@@ -491,14 +485,20 @@ async fn peer_handler(
     ws: WebSocket,
     config: Arc<Config>,
     story_id: i64,
-    peer_query: PeerQuery,
+    session_cookie_value: Option<String>,
     realm_map: RealmMap,
     db_pool: Pool<Postgres>,
     redis_pool: RedisPool,
     s3_client: S3Client,
 ) {
     match enter_realm(
-        config, story_id, peer_query, realm_map, db_pool, redis_pool, s3_client,
+        config,
+        story_id,
+        session_cookie_value,
+        realm_map,
+        db_pool,
+        redis_pool,
+        s3_client,
     )
     .await
     {
@@ -554,7 +554,7 @@ pub async fn start_realms_server(
         .or(warp::get()
             .and(warp::any().map(move || config.clone()))
             .and(warp::path::param::<i64>())
-            .and(warp::query::<PeerQuery>())
+            .and(warp::cookie::optional::<String>(SESSION_COOKIE_NAME))
             .and(warp::any().map(move || realm_map.clone()))
             .and(warp::any().map(move || db_pool.clone()))
             .and(warp::any().map(move || redis_pool.clone()))
@@ -563,7 +563,7 @@ pub async fn start_realms_server(
             .and_then(
                 |config,
                  story_id,
-                 peer_query,
+                 session_cookie_value,
                  realm_map,
                  db_pool,
                  redis_pool,
@@ -571,7 +571,13 @@ pub async fn start_realms_server(
                  ws: Ws| async move {
                     Ok::<_, Rejection>(ws.on_upgrade(move |socket| {
                         peer_handler(
-                            socket, config, story_id, peer_query, realm_map, db_pool, redis_pool,
+                            socket,
+                            config,
+                            story_id,
+                            session_cookie_value,
+                            realm_map,
+                            db_pool,
+                            redis_pool,
                             s3_client,
                         )
                     }))
@@ -664,7 +670,11 @@ pub mod tests {
     use storiny_macros::test_context;
     use tokio::net::TcpStream;
     use tokio_tungstenite::{
-        tungstenite::Message,
+        tungstenite::{
+            client::IntoClientRequest,
+            handshake::client::Request,
+            Message,
+        },
         MaybeTlsStream,
         WebSocketStream,
     };
@@ -725,7 +735,7 @@ pub mod tests {
         insert_story: bool,
     ) -> (
         // Endpoint
-        url::Url,
+        Request,
         RealmMap,
         // User ID
         i64,
@@ -737,7 +747,6 @@ pub mod tests {
         let redis_pool = get_redis_pool();
         let user_id = 1_i64;
         let story_id = 2_i64;
-        let mut auth_token: String = "".to_string();
 
         start_realms_server(
             realm_map.clone(),
@@ -770,6 +779,14 @@ VALUES ($5, $1)
             .expect("unable to insert the story");
         }
 
+        let endpoint_url = url::Url::parse(&format!(
+            "ws://{}:{}/{story_id}",
+            &config.realms_host, &config.realms_port
+        ))
+        .unwrap();
+
+        let mut endpoint = endpoint_url.into_client_request().unwrap();
+
         // Insert a session.
         if logged_in {
             let mut conn = redis_pool.get().await.unwrap();
@@ -794,14 +811,10 @@ VALUES ($5, $1)
                 .await
                 .unwrap();
 
-            auth_token = cookie.value().to_string();
+            endpoint
+                .headers_mut()
+                .insert("Cookie", cookie.to_string().parse().unwrap());
         }
-
-        let endpoint = url::Url::parse(&format!(
-            "ws://{}:{}/{story_id}?auth_token={auth_token}",
-            &config.realms_host, &config.realms_port
-        ))
-        .unwrap();
 
         (endpoint, realm_map, user_id, story_id)
     }
@@ -811,7 +824,7 @@ VALUES ($5, $1)
     ///
     /// * `endpoint` - The realm server connection endpoint.
     pub async fn peer(
-        endpoint: url::Url,
+        endpoint: Request,
     ) -> (
         SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>,
         SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>,

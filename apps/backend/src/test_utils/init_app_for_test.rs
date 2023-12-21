@@ -172,9 +172,7 @@ pub async fn init_app_for_test(
                     .cookie_domain(None)
                     .cookie_path("/".to_string())
                     .cookie_secure(true)
-                    // Cookie is read from the client side and used as the auth token for the realms
-                    // endpoint.
-                    .cookie_http_only(false)
+                    .cookie_http_only(true)
                     .build(),
             )
             .wrap(actix_web::middleware::NormalizePath::trim())

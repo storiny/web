@@ -2,27 +2,10 @@
 
 import { Doc } from "yjs";
 
-import { SESSION_COOKIE_ID } from "~/common/constants";
-
 import { Provider } from "../../collaboration/provider";
 import { WebsocketProvider } from "../../collaboration/websocket";
 
 const REALMS_ENDPOINT = process.env.NEXT_PUBLIC_REALMS_ENDPOINT as string;
-
-/**
- * Extracts and returns the session cookie value if present.
- */
-const get_session_cookie_value = (): string => {
-  const match = document.cookie.match(
-    RegExp(
-      "(?:^|;\\s*)" +
-        SESSION_COOKIE_ID.replace(/([.*+?$(){}|])/g, "\\$1") +
-        "=([^;]*)"
-    )
-  );
-
-  return match ? match[1] : "";
-};
 
 /**
  * Creates a collaboration websocket provider
@@ -42,13 +25,7 @@ export const create_ws_provider = (
     doc.load();
   }
 
-  return new WebsocketProvider(
-    REALMS_ENDPOINT,
-    get_session_cookie_value(),
-    id,
-    doc,
-    {
-      connect: false
-    }
-  ) as unknown as Provider;
+  return new WebsocketProvider(REALMS_ENDPOINT, id, doc, {
+    connect: false
+  }) as unknown as Provider;
 };

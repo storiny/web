@@ -1,48 +1,22 @@
 import { clsx } from "clsx";
-import { useAtom as use_atom, useAtomValue as use_atom_value } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
-import Link from "~/components/link";
 import ScrollArea, { ScrollAreaProps } from "~/components/scroll-area";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
-import { use_story_metadata_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 
-import {
-  DOC_STATUS,
-  doc_status_atom,
-  story_metadata_atom
-} from "../../../../../../atoms";
+import { story_metadata_atom } from "../../../../../../atoms";
 import TableOfContentsPlugin from "../../../../../../plugins/toc";
 import styles from "./toc.module.scss";
 
 const EditorToc = ({
-  disabled,
   read_only
 }: {
-  disabled?: boolean;
   read_only?: boolean;
 }): React.ReactElement => {
-  const [story, set_story] = use_atom(story_metadata_atom);
-  const [loading, set_loading] = React.useState<boolean>(false);
-  const doc_status = use_atom_value(doc_status_atom);
-  const publishing = doc_status === DOC_STATUS.publishing;
-  const [mutate_story_metadata] = use_story_metadata_mutation();
-  const on_change = React.useCallback(
-    (next_value: boolean): void => {
-      if (loading) {
-        return;
-      }
-
-      set_loading(true);
-      mutate_story_metadata({ id: story.id, disable_toc: next_value })
-        .unwrap()
-        .catch(() => undefined)
-        .finally(() => set_loading(false));
-    },
-    [loading, story.id, mutate_story_metadata]
-  );
+  const story = use_atom_value(story_metadata_atom);
 
   return (
     <div className={clsx(css["flex-col"], read_only && css["full-h"])}>
@@ -54,27 +28,6 @@ const EditorToc = ({
           Table of contents
         </Typography>
         <Spacer className={css["f-grow"]} />
-        {!disabled && !read_only ? (
-          <Link
-            aria-label={"Disable table of contents"}
-            disabled={publishing}
-            href={"#"}
-            level={"body2"}
-            onClick={(event): void => {
-              event.preventDefault();
-
-              const next_value = !story.disable_toc;
-              set_story((prev) => ({ ...prev, disable_toc: next_value }));
-              on_change(next_value);
-            }}
-            role={"button"}
-            tabIndex={0}
-            title={"Disable table of contents"}
-            underline={"always"}
-          >
-            {story.disable_toc ? "Enable" : "Disable"}
-          </Link>
-        ) : null}
       </div>
       <Spacer orientation={"vertical"} size={2} />
       <ScrollArea
