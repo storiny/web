@@ -44,6 +44,7 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
   const [mutate_mfa_preflight, { isLoading: is_mfa_preflight_loading }] =
     use_mfa_preflight_mutation();
   const is_loading = is_login_loading || is_mfa_preflight_loading;
+  const [done, set_done] = React.useState<boolean>(false);
 
   const handle_submit: SubmitHandler<LoginSchema> = React.useCallback(
     (values) => {
@@ -68,6 +69,7 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
                 .unwrap()
                 .then((res) => {
                   if (res.result === "success") {
+                    set_done(true);
                     router.replace(
                       res.is_first_login ? `/?onboarding=true` : "/"
                     ); // Home page
@@ -84,9 +86,10 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
                     );
                   }
                 })
-                .catch((error) =>
-                  handle_api_error(error, toast, form, "Could not log you in")
-                );
+                .catch((error) => {
+                  set_done(false);
+                  handle_api_error(error, toast, form, "Could not log you in");
+                });
             }
           })
           .catch((error) =>
@@ -163,6 +166,7 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
       <div className={clsx(css["flex-col"], css["flex-center"])}>
         <Button
           className={css["full-w"]}
+          disabled={done}
           loading={is_loading}
           size={"lg"}
           type={"submit"}

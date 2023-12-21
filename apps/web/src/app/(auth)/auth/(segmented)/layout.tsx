@@ -18,6 +18,11 @@ const SegmentedLayout = (
   const segment = params.get("segment") || "";
   const token = params.get("token") || "";
 
+  React.useEffect(() => {
+    // Remove the search parameters.
+    window.history.replaceState({}, "", "/auth");
+  }, []);
+
   if (segment === "reset-password" && token) {
     return props.reset_base;
   }

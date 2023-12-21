@@ -20,6 +20,7 @@ const Client = ({
     dispatch(logout_user());
     logout().then(() => {
       router.replace(to);
+      router.refresh(); // Refresh the state
     });
   }, [dispatch, logout, router, to]);
 

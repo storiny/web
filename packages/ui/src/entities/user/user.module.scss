@@ -9,10 +9,6 @@
 
   &.virtual {
     padding-block: 26px;
-
-    @include breakpoints.media("<=mobile") {
-      padding-block: 16px;
-    }
   }
 }
 

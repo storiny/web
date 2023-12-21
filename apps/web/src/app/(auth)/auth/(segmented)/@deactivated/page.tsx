@@ -22,7 +22,11 @@ const Page = (): React.ReactElement => {
 
   const handle_reactivate = React.useCallback((): void => {
     if (state.login_data) {
-      reactivate_account({ ...state.login_data, bypass: true })
+      reactivate_account({
+        ...state.login_data,
+        code: state.mfa_code || undefined,
+        bypass: true
+      })
         .unwrap()
         .then((res) => {
           if (res.result === "success") {
