@@ -337,9 +337,7 @@ fn main() -> io::Result<()> {
                                 })
                                 .cookie_path("/".to_string())
                                 .cookie_secure(!config.is_dev)
-                                // Cookie is read from the client side and used as the auth token
-                                // for the realms endpoint.
-                                .cookie_http_only(false)
+                                .cookie_http_only(true)
                                 .build(),
                         )
                         .wrap(

@@ -350,7 +350,6 @@ export class WebsocketProvider {
   /**
    * Ctor
    * @param server_url URL of the server
-   * @param auth_token Session cookie value
    * @param roomname Room / document name (gets appended to the `server_url`)
    * @param doc Document
    * @param connect Whether to initiate the connection
@@ -363,7 +362,6 @@ export class WebsocketProvider {
    */
   constructor(
     server_url: string,
-    auth_token: string,
     roomname: string,
     doc: Doc,
     {
@@ -394,8 +392,8 @@ export class WebsocketProvider {
     this.observers = new Map<string, Set<any>>();
     this.max_backoff_time = max_backoff_time;
     this.bc_channel = `${server_url}/${roomname}`;
-    this.url = `${server_url}/${roomname}?auth_token=${auth_token}${
-      encoded_params.length === 0 ? "" : "&" + encoded_params
+    this.url = `${server_url}/${roomname}${
+      encoded_params.length === 0 ? "" : "?" + encoded_params
     }`;
     this.roomname = roomname;
     this.doc = doc;
