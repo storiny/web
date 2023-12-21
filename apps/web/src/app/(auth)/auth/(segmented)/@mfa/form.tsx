@@ -38,6 +38,7 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
     }
   });
   const [mutate_login, { isLoading: is_loading }] = use_login_mutation();
+  const [done, set_done] = React.useState<boolean>(false);
 
   const handle_submit: SubmitHandler<MFASchema> = React.useCallback(
     (values) => {
@@ -56,22 +57,25 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
           .unwrap()
           .then((res) => {
             if (res.result === "success") {
+              set_done(true);
               router.replace("/"); // Home page
+              router.refresh(); // Refresh the state
             } else {
               actions.switch_segment(
                 res.result === "suspended"
                   ? "suspended"
                   : res.result === "held_for_deletion"
-                  ? "deletion"
-                  : res.result === "deactivated"
-                  ? "deactivated"
-                  : "email_confirmation"
+                    ? "deletion"
+                    : res.result === "deactivated"
+                      ? "deactivated"
+                      : "email_confirmation"
               );
             }
           })
-          .catch((error) =>
-            handle_api_error(error, toast, form, "Could not log you in")
-          );
+          .catch((error) => {
+            set_done(false);
+            handle_api_error(error, toast, form, "Could not log you in");
+          });
       } else {
         toast("Missing credentials", "error");
       }
@@ -103,6 +107,7 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
       <div className={clsx(css["flex-col"], css["flex-center"])}>
         <Button
           className={css["full-w"]}
+          disabled={done}
           loading={is_loading}
           size={"lg"}
           type={"submit"}
