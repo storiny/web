@@ -7,7 +7,7 @@ Sentry.init({
   tracesSampleRate: 0.8,
   beforeSend: (event) => {
     // Ignore "GRPC not found" errors (status code: 5)
-    if ((event.message || "").startsWith("5 NOT_FOUND")) {
+    if (/5 not_found/i.test(event.message || "")) {
       return null;
     }
 

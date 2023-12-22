@@ -5,7 +5,6 @@ import { Graph } from "schema-dts";
 import { GetTagResponse } from "~/common/grpc";
 import LeftSidebar from "~/layout/left-sidebar";
 import SplashScreen from "~/layout/splash-screen";
-import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import Client from "./client";
 import TagRightSidebar from "./right-sidebar";
@@ -24,7 +23,7 @@ const generate_json_ld = (tag: Props["tag"]): Graph => ({
       image: {
         "@type": "ImageObject",
         height: 128 as unknown as string,
-        url: get_cdn_url("web-assets/brand/logos/plain/logo", ImageSize.W_128),
+        url: `${process.env.NEXT_PUBLIC_CDN_URL}/w@${ImageSize.W_128}/web-assets/brand/logos/plain/logo`,
         width: 128 as unknown as string
       },
       name: "Storiny",

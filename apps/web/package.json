@@ -9,7 +9,7 @@
     "build:prod": "yarn minify && next build",
     "build:prod:analyze": "yarn minify && cross-env ANALYZE=true next build",
     "minify": "uglifyjs \"src/app/theme-sync.js\" --compress --mangle --output \"src/app/theme-sync.txt\"",
-    "start": "next start",
+    "start": "node .next/standalone/apps/web/server.js",
     "lint": "next lint",
     "test": "jest"
   },
