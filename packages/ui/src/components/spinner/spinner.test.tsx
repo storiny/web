@@ -51,7 +51,7 @@ describe("<Spinner />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = render_test_with_provider(
+    const { getByTestId, getAllByTestId } = render_test_with_provider(
       <Spinner
         slot_props={
           {
@@ -62,8 +62,7 @@ describe("<Spinner />", () => {
       />
     );
 
-    ["indicator", "bar"].forEach((element) => {
-      expect(getByTestId(element)).toBeInTheDocument();
-    });
+    expect(getByTestId("indicator")).toBeInTheDocument();
+    expect(getAllByTestId("bar").length).toBeGreaterThan(0);
   });
 });
