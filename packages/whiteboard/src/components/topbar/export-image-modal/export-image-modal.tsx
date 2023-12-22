@@ -1,7 +1,7 @@
 import { dev_console } from "@storiny/shared/src/utils/dev-log";
 import { download_as_file } from "@storiny/shared/src/utils/download-as-file";
 import clsx from "clsx";
-import { StaticCanvas } from "fabric";
+import { FabricObject, StaticCanvas } from "fabric";
 import React from "react";
 
 import AspectRatio from "~/components/aspect-ratio";
@@ -113,7 +113,7 @@ const ExportImageModal = React.forwardRef<
           data,
           (prop, object) => {
             recover_object(object, prop);
-            object.set({
+            (object as FabricObject).set({
               id: prop.id,
               name: prop.name,
               seed: prop.seed,
