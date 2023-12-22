@@ -21,18 +21,6 @@ type Story = StoryObj<typeof Spinner>;
 
 export const Default: Story = {};
 
-export const TypeDeterminate: Story = {
-  args: {
-    value: 50
-  }
-};
-
-export const WithChildren: Story = {
-  args: {
-    children: <RectangleIcon size={12} />
-  }
-};
-
 export const ColorInverted: Story = {
   args: {
     color: "inverted"

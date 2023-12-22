@@ -6,22 +6,22 @@ import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
 
-export type SpinnerSize = "lg" | "md" | "sm" | "xs";
-export type SpinnerColor = "inverted" | "ruby";
+export type CircularProgressSize = "lg" | "md" | "sm" | "xs";
+export type CircularProgressColor = "inverted" | "ruby";
 
-type SpinnerPrimitive = ProgressProps & PolymorphicProps<"div">;
+type CircularProgressPrimitive = ProgressProps & PolymorphicProps<"div">;
 
-export interface SpinnerProps extends SpinnerPrimitive {
+export interface CircularProgressProps extends CircularProgressPrimitive {
   /**
    * The color of the component.
    * @default 'inverted'
    */
-  color?: SpinnerColor;
+  color?: CircularProgressColor;
   /**
    * The size of the component.
    * @default 'md'
    */
-  size?: SpinnerSize;
+  size?: CircularProgressSize;
   /**
    * The props passed to the individual component elements.
    */

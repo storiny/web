@@ -50,36 +50,19 @@ describe("<Spinner />", () => {
     });
   });
 
-  it("renders determinate variant", () => {
-    const { getByRole } = render_test_with_provider(<Spinner value={50} />);
-    expect(getByRole("progressbar")).toHaveAttribute("data-state", "loading");
-  });
-
-  it("renders nested children", () => {
-    const { getByTestId } = render_test_with_provider(
-      <Spinner>
-        <span data-testid={"child"} />
-      </Spinner>
-    );
-
-    expect(getByTestId("child")).toBeInTheDocument();
-  });
-
   it("passes props to the element slots", () => {
     const { getByTestId } = render_test_with_provider(
       <Spinner
         slot_props={
           {
             indicator: { "data-testid": "indicator" },
-            svg: { "data-testid": "svg" },
-            progress: { "data-testid": "progress" },
-            track: { "data-testid": "track" }
+            bar: { "data-testid": "bar" }
           } as SpinnerProps["slot_props"]
         }
       />
     );
 
-    ["indicator", "svg", "progress", "track"].forEach((element) => {
+    ["indicator", "bar"].forEach((element) => {
       expect(getByTestId(element)).toBeInTheDocument();
     });
   });

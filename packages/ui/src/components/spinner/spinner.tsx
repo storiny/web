@@ -12,49 +12,33 @@ import { SpinnerProps } from "./spinner.props";
 const Spinner = forward_ref<SpinnerProps, "div">((props, ref) => {
   const {
     as: Component = "div",
-    value,
     size = "md",
     color = "inverted",
     className,
     slot_props,
-    style,
-    children,
     ...rest
   } = props;
+
   return (
     <Root
       {...rest}
       asChild
       className={clsx(styles.spinner, styles[size], styles[color], className)}
       ref={ref}
-      style={{ "--value": value, ...style } as React.CSSProperties}
-      value={value}
+      value={null}
     >
       <Component>
         <Indicator
           {...slot_props?.indicator}
           className={clsx(styles.indicator, slot_props?.indicator?.className)}
         >
-          <svg
-            aria-hidden
-            {...slot_props?.svg}
-            className={clsx(styles.svg, slot_props?.svg?.className)}
-          >
-            <circle
-              {...slot_props?.track}
-              className={clsx(styles.track, slot_props?.track?.className)}
-              cx={"50%"}
-              cy={"50%"}
+          {[...new Array(12)].map((_, index) => (
+            <span
+              className={clsx(styles.bar, slot_props?.bar?.className)}
+              key={index}
             />
-            <circle
-              {...slot_props?.progress}
-              className={clsx(styles.progress, slot_props?.progress?.className)}
-              cx={"50%"}
-              cy={"50%"}
-            />
-          </svg>
+          ))}
         </Indicator>
-        {children}
       </Component>
     </Root>
   );

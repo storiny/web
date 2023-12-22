@@ -1,2 +1,2 @@
-export { default } from "./spinner";
-export * from "./spinner.props";
+export { default } from "./circular-progress";
+export * from "./circular-progress.props";
