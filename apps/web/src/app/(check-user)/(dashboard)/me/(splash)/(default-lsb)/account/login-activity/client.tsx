@@ -124,7 +124,9 @@ const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
   const { logins: logins_prop, recent: recent_prop } = props;
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
   const [recent, set_recent] = React.useState<typeof recent_prop>(recent_prop);
-  const [logins, set_logins] = React.useState<typeof logins_prop>(logins_prop);
+  const [logins, set_logins] = React.useState<typeof logins_prop>(
+    logins_prop.sort((login) => (login.is_active ? -1 : 1))
+  );
 
   /**
    * Removes a login item
