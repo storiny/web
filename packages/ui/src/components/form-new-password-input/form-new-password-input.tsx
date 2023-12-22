@@ -6,9 +6,9 @@ import clsx from "clsx";
 import React from "react";
 import type { ZXCVBNScore } from "zxcvbn";
 
+import CircularProgress from "~/components/circular-progress";
 import FormInput from "~/components/form-input";
 import IconButton from "~/components/icon-button";
-import Spinner from "~/components/spinner";
 import EyeIcon from "~/icons/eye";
 import EyeClosedIcon from "~/icons/eye-closed";
 import LockIcon from "~/icons/lock";
@@ -56,7 +56,7 @@ const StrengthIndicator = ({
       )}
       role={"presentation"}
     >
-      <Spinner
+      <CircularProgress
         aria-valuemax={undefined}
         aria-valuemin={undefined}
         aria-valuenow={undefined}
@@ -76,7 +76,7 @@ const StrengthIndicator = ({
         value={score}
       >
         <LockIcon className={styles["strength-icon"]} />
-      </Spinner>
+      </CircularProgress>
     </span>
   );
 };

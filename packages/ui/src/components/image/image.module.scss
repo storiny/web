@@ -16,7 +16,7 @@
   height: var(--height, 100%);
   animation-timing-function: ease-out;
   animation-duration: 200ms;
-  animation-delay: 300ms; // Delay for image animation
+  animation-delay: 500ms; // Delay for image animation
   animation-fill-mode: forwards;
   background-color: var(--hex, var(--divider));
 
@@ -24,6 +24,7 @@
     animation-name: fade-background-out; // Hide background as images can be transparent
 
     & .native-image {
+      animation-delay: 0s;
       animation-name: fade-image-in;
     }
   }

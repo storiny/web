@@ -1,4 +1,4 @@
-.spinner {
+.circular-progress {
   --thickness: 1.75px;
   --radius: calc(var(--size) / 2 - var(--thickness) / 2);
 
@@ -44,12 +44,6 @@
 
 .indicator {
   position: absolute;
-
-  &[data-state="indeterminate"] {
-    & .progress {
-      animation: 550ms linear 0s infinite normal none running spin;
-    }
-  }
 }
 
 /* Sizes */
@@ -78,14 +72,4 @@
 .ruby {
   --track-bg: var(--ruby-100);
   --progress-bg: var(--ruby-600);
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
 }

@@ -5,27 +5,22 @@ import React from "react";
 
 import RectangleIcon from "~/icons/rectangle";
 
-import Spinner from "./spinner";
+import CircularProgress from "./circular-progress";
 
-const meta: Meta<typeof Spinner> = {
-  title: "components/spinner",
-  component: Spinner,
+const meta: Meta<typeof CircularProgress> = {
+  title: "components/circular-progress",
+  component: CircularProgress,
   tags: ["autodocs"],
   args: {
-    size: "md"
+    size: "md",
+    value: 50
   }
 };
 
 export default meta;
-type Story = StoryObj<typeof Spinner>;
+type Story = StoryObj<typeof CircularProgress>;
 
 export const Default: Story = {};
-
-export const TypeDeterminate: Story = {
-  args: {
-    value: 50
-  }
-};
 
 export const WithChildren: Story = {
   args: {

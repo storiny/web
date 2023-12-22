@@ -9,7 +9,8 @@ import { PolymorphicProps } from "~/types/index";
 export type SpinnerSize = "lg" | "md" | "sm" | "xs";
 export type SpinnerColor = "inverted" | "ruby";
 
-type SpinnerPrimitive = ProgressProps & PolymorphicProps<"div">;
+type SpinnerPrimitive = Omit<ProgressProps, "value"> &
+  Omit<PolymorphicProps<"div">, "children">;
 
 export interface SpinnerProps extends SpinnerPrimitive {
   /**
@@ -26,9 +27,7 @@ export interface SpinnerProps extends SpinnerPrimitive {
    * The props passed to the individual component elements.
    */
   slot_props?: {
+    bar?: React.ComponentPropsWithoutRef<"span">;
     indicator?: ProgressIndicatorProps;
-    progress?: React.ComponentPropsWithoutRef<"circle">;
-    svg?: React.ComponentPropsWithoutRef<"svg">;
-    track?: React.ComponentPropsWithoutRef<"circle">;
   };
 }
