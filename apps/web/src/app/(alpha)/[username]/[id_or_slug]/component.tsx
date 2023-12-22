@@ -52,7 +52,7 @@ const generate_json_ld = (story: Props["story"]): Graph => ({
       image: {
         "@type": "ImageObject",
         height: 128 as unknown as string,
-        url: get_cdn_url("web-assets/brand/logos/plain/logo", ImageSize.W_128),
+        url: `${process.env.NEXT_PUBLIC_CDN_URL}/w@${ImageSize.W_128}/web-assets/brand/logos/plain/logo`,
         width: 128 as unknown as string
       },
       name: "Storiny",
@@ -122,10 +122,7 @@ const generate_json_ld = (story: Props["story"]): Graph => ({
         logo: {
           "@type": "ImageObject",
           height: 128 as unknown as string,
-          url: get_cdn_url(
-            "web-assets/brand/logos/plain/logo",
-            ImageSize.W_128
-          ),
+          url: `${process.env.NEXT_PUBLIC_CDN_URL}/w@${ImageSize.W_128}/web-assets/brand/logos/plain/logo`,
           width: 128 as unknown as string
         },
         name: "Storiny",

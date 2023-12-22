@@ -46,7 +46,7 @@ const Page = (): React.ReactElement => {
     } else {
       toast("Could not reactivate your account", "error");
     }
-  }, [reactivate_account, router, state.login_data, toast]);
+  }, [reactivate_account, router, state.login_data, state.mfa_code, toast]);
 
   return (
     <>
