@@ -8,6 +8,7 @@ import React from "react";
 
 import AspectRatio from "~/components/aspect-ratio";
 import Button from "~/components/button";
+import DateTime from "~/components/date-time";
 import IconButton from "~/components/icon-button";
 import Image from "~/components/image";
 import Link from "~/components/link";
@@ -25,7 +26,7 @@ import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
-import { DateFormat, format_date } from "~/utils/format-date";
+import { DateFormat } from "~/utils/format-date";
 
 import ResponseParser from "../common/response-parser";
 import Actions from "./actions";
@@ -67,7 +68,10 @@ const StoryPersona = (props: {
           ellipsis
           level={"body3"}
         >
-          {format_date(created_at, DateFormat.RELATIVE_CAPITALIZED)}
+          <DateTime
+            date={created_at}
+            format={DateFormat.RELATIVE_CAPITALIZED}
+          />
           {edited_at && ` (edited)`}
         </Typography>
       </div>
@@ -187,10 +191,10 @@ const Comment = (props: CommentProps): React.ReactElement => {
                       @{comment.user?.username}
                     </Link>{" "}
                     &bull;{" "}
-                    {format_date(
-                      comment.created_at,
-                      DateFormat.RELATIVE_CAPITALIZED
-                    )}
+                    <DateTime
+                      date={comment.created_at}
+                      format={DateFormat.RELATIVE_CAPITALIZED}
+                    />
                     {comment.edited_at && ` (edited)`}
                   </Typography>
                 }

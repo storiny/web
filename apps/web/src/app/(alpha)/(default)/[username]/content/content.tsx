@@ -13,6 +13,7 @@ import Button from "~/components/button";
 import Divider from "~/components/divider";
 import Grow from "~/components/grow";
 import Link from "~/components/link";
+import NoSsr from "~/components/no-ssr";
 import Spacer from "~/components/spacer";
 import Tooltip from "~/components/tooltip";
 import Typography from "~/components/typography";
@@ -399,15 +400,18 @@ const ProfileContent = ({
               )}
               <li className={clsx(css["flex"], styles["list-item"])}>
                 <CalendarIcon />
-                <Typography
-                  as={"time"}
-                  className={css["t-minor"]}
-                  dateTime={profile.created_at}
-                  level={"body2"}
-                  title={format_date(profile.created_at)}
-                >
-                  Joined {format_date(profile.created_at, DateFormat.RELATIVE)}
-                </Typography>
+                <NoSsr>
+                  <Typography
+                    as={"time"}
+                    className={css["t-minor"]}
+                    dateTime={profile.created_at}
+                    level={"body2"}
+                    title={format_date(profile.created_at)}
+                  >
+                    Joined{" "}
+                    {format_date(profile.created_at, DateFormat.RELATIVE)}
+                  </Typography>
+                </NoSsr>
               </li>
             </ul>
             {/* Connections */}

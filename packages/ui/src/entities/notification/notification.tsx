@@ -7,6 +7,7 @@ import React from "react";
 
 import Avatar from "~/components/avatar";
 import Badge from "~/components/badge";
+import DateTime from "~/components/date-time";
 import Grow from "~/components/grow";
 import Typography from "~/components/typography";
 import NotificationParser from "~/entities/notification/parser";
@@ -27,7 +28,7 @@ import { select_read_notification } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
-import { DateFormat, format_date } from "~/utils/format-date";
+import { DateFormat } from "~/utils/format-date";
 
 import styles from "./notification.module.scss";
 import { NotificationProps } from "./notification.props";
@@ -140,10 +141,10 @@ const Notification = (props: NotificationProps): React.ReactElement => {
           <NotificationParser content={notification.rendered_content} />
         </Typography>
         <Typography className={css["t-minor"]} level={"body2"}>
-          {format_date(
-            notification.created_at,
-            DateFormat.RELATIVE_CAPITALIZED
-          )}
+          <DateTime
+            date={notification.created_at}
+            format={DateFormat.RELATIVE_CAPITALIZED}
+          />
         </Typography>
       </div>
       <Grow />

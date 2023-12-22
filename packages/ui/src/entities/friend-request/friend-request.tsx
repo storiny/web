@@ -6,6 +6,7 @@ import React from "react";
 
 import Avatar from "~/components/avatar";
 import Button from "~/components/button";
+import DateTime from "~/components/date-time";
 import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import {
@@ -15,7 +16,7 @@ import {
 } from "~/redux/features";
 import { use_app_dispatch } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
-import { DateFormat, format_date } from "~/utils/format-date";
+import { DateFormat } from "~/utils/format-date";
 import { handle_api_error } from "~/utils/handle-api-error";
 
 import styles from "./friend-request.module.scss";
@@ -84,10 +85,10 @@ const FriendRequest = (props: FriendRequestProps): React.ReactElement => {
           </Typography>
           <Typography className={css["t-minor"]} ellipsis level={"body3"}>
             @{user.username} &bull;{" "}
-            {format_date(
-              friend_request.created_at,
-              DateFormat.RELATIVE_CAPITALIZED
-            )}
+            <DateTime
+              date={friend_request.created_at}
+              format={DateFormat.RELATIVE_CAPITALIZED}
+            />
           </Typography>
         </div>
       </NextLink>

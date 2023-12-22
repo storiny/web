@@ -7,6 +7,7 @@ import React from "react";
 import Avatar from "~/components/avatar";
 import Button from "~/components/button";
 import Grow from "~/components/grow";
+import NoSsr from "~/components/no-ssr";
 import Typography from "~/components/typography";
 import { use_media_query } from "~/hooks/use-media-query";
 import CalendarIcon from "~/icons/calendar";
@@ -119,26 +120,28 @@ const Tag = (props: TagProps): React.ReactElement => {
           </span>
         </Typography>
         <Grow />
-        <Typography
-          as={"time"}
-          className={clsx(css["flex-center"], css["t-minor"], styles.stat)}
-          dateTime={tag.created_at}
-          level={"body2"}
-          title={format_date(tag.created_at)}
-        >
-          {is_mobile ? (
-            <>
-              <span className={clsx(css["flex-center"], styles["stat-icon"])}>
-                <CalendarIcon />
-              </span>
-              <span>
-                {format_date(tag.created_at, DateFormat.RELATIVE_CAPITALIZED)}
-              </span>
-            </>
-          ) : (
-            `Created ${format_date(tag.created_at, DateFormat.RELATIVE)}`
-          )}
-        </Typography>
+        <NoSsr>
+          <Typography
+            as={"time"}
+            className={clsx(css["flex-center"], css["t-minor"], styles.stat)}
+            dateTime={tag.created_at}
+            level={"body2"}
+            title={format_date(tag.created_at)}
+          >
+            {is_mobile ? (
+              <>
+                <span className={clsx(css["flex-center"], styles["stat-icon"])}>
+                  <CalendarIcon />
+                </span>
+                <span>
+                  {format_date(tag.created_at, DateFormat.RELATIVE_CAPITALIZED)}
+                </span>
+              </>
+            ) : (
+              `Created ${format_date(tag.created_at, DateFormat.RELATIVE)}`
+            )}
+          </Typography>
+        </NoSsr>
       </div>
     </div>
   );

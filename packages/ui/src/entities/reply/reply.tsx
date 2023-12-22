@@ -5,6 +5,7 @@ import NextLink from "next/link";
 import React from "react";
 
 import Button from "~/components/button";
+import DateTime from "~/components/date-time";
 import Grow from "~/components/grow";
 import IconButton from "~/components/icon-button";
 import Link from "~/components/link";
@@ -22,7 +23,7 @@ import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
-import { DateFormat, format_date } from "~/utils/format-date";
+import { DateFormat } from "~/utils/format-date";
 
 import ResponseParser from "../common/response-parser";
 import Actions from "./actions";
@@ -156,10 +157,10 @@ const Reply = (props: ReplyProps): React.ReactElement => {
                     </Link>
                   )}{" "}
                   &bull;{" "}
-                  {format_date(
-                    reply.created_at,
-                    DateFormat.RELATIVE_CAPITALIZED
-                  )}
+                  <DateTime
+                    date={reply.created_at}
+                    format={DateFormat.RELATIVE_CAPITALIZED}
+                  />
                   {reply.edited_at && ` (edited)`}
                 </Typography>
               }

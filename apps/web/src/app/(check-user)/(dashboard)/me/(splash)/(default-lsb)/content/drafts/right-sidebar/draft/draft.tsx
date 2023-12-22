@@ -4,6 +4,7 @@ import NextLink from "next/link";
 import React from "react";
 
 import AspectRatio from "~/components/aspect-ratio";
+import DateTime from "~/components/date-time";
 import IconButton from "~/components/icon-button";
 import Image from "~/components/image";
 import Link from "~/components/link";
@@ -12,7 +13,7 @@ import EditIcon from "~/icons/edit";
 import ImageIcon from "~/icons/image";
 import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
-import { DateFormat, format_date } from "~/utils/format-date";
+import { DateFormat } from "~/utils/format-date";
 
 import styles from "./draft.module.scss";
 import { DraftProps } from "./draft.props";
@@ -67,10 +68,10 @@ const Draft = (props: DraftProps): React.ReactElement => {
           >
             {abbreviate_number(latest_draft.word_count)} words{" "}
             <span className={css["t-muted"]}>&bull;</span> Edited{" "}
-            {format_date(
-              latest_draft.edited_at || latest_draft.created_at,
-              DateFormat.RELATIVE
-            )}
+            <DateTime
+              date={latest_draft.edited_at || latest_draft.created_at}
+              format={DateFormat.RELATIVE}
+            />
           </Typography>
         </footer>
       </div>

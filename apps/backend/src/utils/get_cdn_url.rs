@@ -1,7 +1,4 @@
-use crate::constants::{
-    buckets::S3_UPLOADS_BUCKET,
-    image_size::ImageSize,
-};
+use crate::constants::image_size::ImageSize;
 
 /// Generates the CDN URL for the provided media key (from the `uploads` bucket).
 ///
