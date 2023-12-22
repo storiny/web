@@ -34,6 +34,7 @@ const Spinner = forward_ref<SpinnerProps, "div">((props, ref) => {
         >
           {[...new Array(12)].map((_, index) => (
             <span
+              {...slot_props?.bar}
               className={clsx(styles.bar, slot_props?.bar?.className)}
               key={index}
             />
