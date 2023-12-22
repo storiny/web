@@ -13,6 +13,7 @@ import React from "react";
 
 import Divider from "~/components/divider";
 import Grow from "~/components/grow";
+import NoSsr from "~/components/no-ssr";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import TagChip from "~/entities/tag-chip";
@@ -116,21 +117,23 @@ const StoryFooter = (): React.ReactElement | null => {
             </Typography>
           )}
           {Boolean(story.edited_at) && (
-            <Typography
-              as={"time"}
-              className={clsx(
-                css["flex-center"],
-                css["t-minor"],
-                styles.x,
-                styles.stat
-              )}
-              dateTime={story.edited_at!}
-              level={"body2"}
-              title={format_date(story.edited_at!, DateFormat.LONG)}
-            >
-              <EditIcon />
-              Edited on {format_date(story.edited_at!)}
-            </Typography>
+            <NoSsr>
+              <Typography
+                as={"time"}
+                className={clsx(
+                  css["flex-center"],
+                  css["t-minor"],
+                  styles.x,
+                  styles.stat
+                )}
+                dateTime={story.edited_at!}
+                level={"body2"}
+                title={format_date(story.edited_at!, DateFormat.LONG)}
+              >
+                <EditIcon />
+                Edited on {format_date(story.edited_at!)}
+              </Typography>
+            </NoSsr>
           )}
         </div>
       ) : null}

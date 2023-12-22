@@ -4,6 +4,7 @@ import { clsx } from "clsx";
 import React from "react";
 
 import Link from "~/components/link";
+import NoSsr from "~/components/no-ssr";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import css from "~/theme/main.module.scss";
@@ -63,16 +64,18 @@ const ConnectionItem = ({
             </Typography>
           )}
           {connection ? (
-            <Typography
-              className={css["t-minor"]}
-              ellipsis
-              level={"body2"}
-              title={format_date(connection.created_at, DateFormat.STANDARD)}
-            >
-              {PROVIDER_DISPLAY_NAME_MAP[connection.provider]}{" "}
-              <span className={css["t-muted"]}>&bull;</span> Connected{" "}
-              {format_date(connection.created_at, DateFormat.RELATIVE)}
-            </Typography>
+            <NoSsr>
+              <Typography
+                className={css["t-minor"]}
+                ellipsis
+                level={"body2"}
+                title={format_date(connection.created_at, DateFormat.STANDARD)}
+              >
+                {PROVIDER_DISPLAY_NAME_MAP[connection.provider]}{" "}
+                <span className={css["t-muted"]}>&bull;</span> Connected{" "}
+                {format_date(connection.created_at, DateFormat.RELATIVE)}
+              </Typography>
+            </NoSsr>
           ) : (
             <Typography className={css["t-minor"]} level={"body2"}>
               Not connected

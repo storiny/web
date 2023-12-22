@@ -7,6 +7,7 @@ import IconButton from "~/components/icon-button";
 import Link from "~/components/link";
 import Menu from "~/components/menu";
 import MenuItem from "~/components/menu-item";
+import NoSsr from "~/components/no-ssr";
 import Separator from "~/components/separator";
 import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
@@ -256,26 +257,28 @@ const StoryHeader = (): React.ReactElement => {
       ) : null}
       <Spacer orientation={"vertical"} size={2} />
       <div className={clsx(css["flex-center"], styles.metadata)}>
-        <Typography
-          as={"time"}
-          className={clsx(
-            css["flex-center"],
-            css["t-minor"],
-            styles.x,
-            styles.stat
-          )}
-          dateTime={story.published_at!}
-          level={"body2"}
-          title={format_date(story.published_at!, DateFormat.LONG)}
-        >
-          <CalendarIcon />
-          <span>
-            {format_date(
-              story.published_at!,
-              is_mobile ? DateFormat.SHORT : DateFormat.STANDARD
+        <NoSsr>
+          <Typography
+            as={"time"}
+            className={clsx(
+              css["flex-center"],
+              css["t-minor"],
+              styles.x,
+              styles.stat
             )}
-          </span>
-        </Typography>
+            dateTime={story.published_at!}
+            level={"body2"}
+            title={format_date(story.published_at!, DateFormat.LONG)}
+          >
+            <CalendarIcon />
+            <span>
+              {format_date(
+                story.published_at!,
+                is_mobile ? DateFormat.SHORT : DateFormat.STANDARD
+              )}
+            </span>
+          </Typography>
+        </NoSsr>
         <Typography
           aria-label={`${get_read_time(story.word_count, user?.wpm)} min read`}
           className={clsx(

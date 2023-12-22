@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import Grow from "~/components/grow";
+import NoSsr from "~/components/no-ssr";
 import Typography from "~/components/typography";
 import MoodSmile from "~/icons/mood-smile";
 import { select_user } from "~/redux/features";
@@ -123,7 +124,7 @@ const Entity = forward_ref<
         </Typography>
       ) : null}
       <Grow />
-      {expires_at && <ExpiryTime expires_at={expires_at} />}
+      <NoSsr>{expires_at && <ExpiryTime expires_at={expires_at} />}</NoSsr>
     </Component>
   );
 });

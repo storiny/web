@@ -13,6 +13,7 @@ import {
 } from "~/components/accordion";
 import AspectRatio from "~/components/aspect-ratio";
 import Button from "~/components/button";
+import DateTime from "~/components/date-time";
 import Divider from "~/components/divider";
 import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
@@ -20,7 +21,6 @@ import Typography from "~/components/typography";
 import LogoutIcon from "~/icons/logout";
 import { use_session_logout_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
-import { DateFormat, format_date } from "~/utils/format-date";
 import { handle_api_error } from "~/utils/handle-api-error";
 
 import { DEVICE_TYPE_ICON_MAP } from "../icon-map";
@@ -127,7 +127,7 @@ const LoginAccordion = (props: LoginAccordionProps): React.ReactElement => {
                   <React.Fragment>
                     {login.location?.display_name || "Unknown location"}{" "}
                     <span className={css["t-muted"]}>&bull;</span>{" "}
-                    {format_date(login.created_at, DateFormat.STANDARD)}
+                    <DateTime date={login.created_at} />
                   </React.Fragment>
                 )}
               </Typography>

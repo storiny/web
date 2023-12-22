@@ -8,6 +8,7 @@ import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
 import Link from "~/components/link";
+import NoSsr from "~/components/no-ssr";
 import Typography from "~/components/typography";
 import ErrorState from "~/entities/error-state";
 import Persona from "~/entities/persona";
@@ -62,18 +63,20 @@ const RecommendedStory = ({ story }: { story: Story }): React.ReactElement => {
             >
               &bull;
             </Typography>
-            <Typography
-              as={"time"}
-              className={clsx(css["t-minor"], css["t-medium"])}
-              dateTime={story.published_at!}
-              level={"body2"}
-              title={format_date(story.published_at!)}
-            >
-              {format_date(
-                story.published_at!,
-                DateFormat.RELATIVE_CAPITALIZED
-              )}
-            </Typography>
+            <NoSsr>
+              <Typography
+                as={"time"}
+                className={clsx(css["t-minor"], css["t-medium"])}
+                dateTime={story.published_at!}
+                level={"body2"}
+                title={format_date(story.published_at!)}
+              >
+                {format_date(
+                  story.published_at!,
+                  DateFormat.RELATIVE_CAPITALIZED
+                )}
+              </Typography>
+            </NoSsr>
           </span>
         }
         size={"sm"}

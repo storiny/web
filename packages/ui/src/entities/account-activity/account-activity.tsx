@@ -5,6 +5,7 @@ import clsx from "clsx";
 import React from "react";
 
 import Avatar from "~/components/avatar";
+import DateTime from "~/components/date-time";
 import Typography from "~/components/typography";
 import ExportIcon from "~/icons/export";
 import ForbidIcon from "~/icons/forbid";
@@ -15,7 +16,7 @@ import PasswordIcon from "~/icons/password";
 import PencilIcon from "~/icons/pencil";
 import TwoFAIcon from "~/icons/two-fa";
 import css from "~/theme/main.module.scss";
-import { DateFormat, format_date } from "~/utils/format-date";
+import { DateFormat } from "~/utils/format-date";
 
 import styles from "./account-activity.module.scss";
 import { AccountActivityProps } from "./account-activity.props";
@@ -68,10 +69,10 @@ const AccountActivity = (props: AccountActivityProps): React.ReactElement => {
           <Typography level={"body2"}>
             <span className={css["t-muted"]}>&bull;</span>{" "}
             <span className={css["t-minor"]}>
-              {format_date(
-                account_activity.created_at,
-                DateFormat.RELATIVE_CAPITALIZED
-              )}
+              <DateTime
+                date={account_activity.created_at}
+                format={DateFormat.RELATIVE_CAPITALIZED}
+              />
             </span>
           </Typography>
         </Typography>

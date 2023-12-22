@@ -8,13 +8,11 @@ import {
   $getNodeByKey as $get_node_by_key,
   $getSelection as $get_selection,
   $isNodeSelection as $is_node_selection,
+  BaseSelection,
   CLICK_COMMAND,
   COMMAND_PRIORITY_LOW,
   DRAGSTART_COMMAND,
-  GridSelection,
-  NodeKey,
-  NodeSelection,
-  RangeSelection
+  NodeKey
 } from "lexical";
 import dynamic from "next/dynamic";
 import React from "react";
@@ -64,28 +62,28 @@ const get_image_sizes = (
             item_count === 2
               ? "50%" // Half of the screen
               : item_count === 3
-              ? item_index === 0
-                ? "66.6%" // 2/3 of the screen
-                : "33.3%" // 1/3 of the screen
-              : "100vw" // Full screen width
+                ? item_index === 0
+                  ? "66.6%" // 2/3 of the screen
+                  : "33.3%" // 1/3 of the screen
+                : "100vw" // Full screen width
           ]
         : layout === "overflow"
-        ? [
-            `${BREAKPOINTS.up("desktop")} ${
-              item_count === 2
-                ? "650px" // Half of the layout width
-                : item_count === 3
-                ? item_index === 0
-                  ? "860px" // 2/3 of 1300px
-                  : "432px" // 1/3 of 1300px
-                : "1300px" // Width of both the sidebars and the main content
-            }`,
-            "100vw"
-          ]
-        : [
-            `${BREAKPOINTS.up("desktop")} 680px`, // Fill the main content
-            "100vw" // Stretch over the entire screen
-          ]
+          ? [
+              `${BREAKPOINTS.up("desktop")} ${
+                item_count === 2
+                  ? "650px" // Half of the layout width
+                  : item_count === 3
+                    ? item_index === 0
+                      ? "860px" // 2/3 of 1300px
+                      : "432px" // 1/3 of 1300px
+                    : "1300px" // Width of both the sidebars and the main content
+              }`,
+              "100vw"
+            ]
+          : [
+              `${BREAKPOINTS.up("desktop")} 680px`, // Fill the main content
+              "100vw" // Stretch over the entire screen
+            ]
       ).join(",");
 
 const ImageComponent = ({
@@ -104,9 +102,7 @@ const ImageComponent = ({
   const [selected, set_selected, clear_selection] =
     use_lexical_node_selection(node_key);
   const [resizing, set_resizing] = React.useState<boolean>(false);
-  const [selection, set_selection] = React.useState<
-    RangeSelection | NodeSelection | GridSelection | null
-  >(null);
+  const [selection, set_selection] = React.useState<BaseSelection | null>(null);
   const set_overflowing_figures = use_set_atom(overflowing_figures_atom);
   const { height: container_height, ref: container_ref } =
     use_resize_observer();

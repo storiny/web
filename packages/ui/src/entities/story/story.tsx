@@ -67,53 +67,62 @@ const Meta = (props: StoryProps): React.ReactElement | null => {
     is_mobile ? (
       <Spacer orientation={"vertical"} size={0.5} />
     ) : (
-      <Typography
-        as={"time"}
-        className={clsx(
-          css["flex"],
-          css["t-minor"],
-          css["t-medium"],
-          styles["deleted-label"]
-        )}
-        dateTime={story.deleted_at!}
-        level={"body2"}
-        title={format_date(story.deleted_at!)}
-      >
-        <TrashIcon />
-        <Spacer size={0.75} />
-        <span>
-          Deleted {format_date(story.deleted_at!, DateFormat.RELATIVE)}
-        </span>
-      </Typography>
+      <NoSsr>
+        <Typography
+          as={"time"}
+          className={clsx(
+            css["flex"],
+            css["t-minor"],
+            css["t-medium"],
+            styles["deleted-label"]
+          )}
+          dateTime={story.deleted_at!}
+          level={"body2"}
+          title={format_date(story.deleted_at!)}
+        >
+          <TrashIcon />
+          <Spacer size={0.75} />
+          <span>
+            Deleted {format_date(story.deleted_at!, DateFormat.RELATIVE)}
+          </span>
+        </Typography>
+      </NoSsr>
     )
   ) : is_extended ? (
     is_mobile ? (
       <Spacer orientation={"vertical"} size={0.5} />
     ) : (
-      <Typography
-        as={"time"}
-        className={clsx(css["t-minor"], css["t-medium"])}
-        dateTime={story.published_at!}
-        level={"body2"}
-        title={format_date(story.published_at!)}
-      >
-        Published {format_date(story.published_at!, DateFormat.RELATIVE)}
-      </Typography>
+      <NoSsr>
+        <Typography
+          as={"time"}
+          className={clsx(css["t-minor"], css["t-medium"])}
+          dateTime={story.published_at!}
+          level={"body2"}
+          title={format_date(story.published_at!)}
+        >
+          Published {format_date(story.published_at!, DateFormat.RELATIVE)}
+        </Typography>
+      </NoSsr>
     )
   ) : is_draft ? (
     is_mobile ? (
       <Spacer orientation={"vertical"} size={0.5} />
     ) : (
-      <Typography
-        as={"time"}
-        className={clsx(css["t-minor"], css["t-medium"])}
-        dateTime={story.edited_at || story.created_at}
-        level={"body2"}
-        title={format_date(story.edited_at || story.created_at)}
-      >
-        Edited{" "}
-        {format_date(story.edited_at || story.created_at, DateFormat.RELATIVE)}
-      </Typography>
+      <NoSsr>
+        <Typography
+          as={"time"}
+          className={clsx(css["t-minor"], css["t-medium"])}
+          dateTime={story.edited_at || story.created_at}
+          level={"body2"}
+          title={format_date(story.edited_at || story.created_at)}
+        >
+          Edited{" "}
+          {format_date(
+            story.edited_at || story.created_at,
+            DateFormat.RELATIVE
+          )}
+        </Typography>
+      </NoSsr>
     )
   ) : (
     <Persona
@@ -146,18 +155,20 @@ const Meta = (props: StoryProps): React.ReactElement | null => {
           >
             &bull;
           </Typography>
-          <Typography
-            as={"time"}
-            className={css["t-minor"]}
-            dateTime={story.published_at || story.created_at}
-            level={"body2"}
-            title={format_date(story.published_at || story.created_at)}
-          >
-            {format_date(
-              story.published_at || story.created_at,
-              DateFormat.RELATIVE_CAPITALIZED
-            )}
-          </Typography>
+          <NoSsr>
+            <Typography
+              as={"time"}
+              className={css["t-minor"]}
+              dateTime={story.published_at || story.created_at}
+              level={"body2"}
+              title={format_date(story.published_at || story.created_at)}
+            >
+              {format_date(
+                story.published_at || story.created_at,
+                DateFormat.RELATIVE_CAPITALIZED
+              )}
+            </Typography>
+          </NoSsr>
         </span>
       }
       size={"sm"}
@@ -321,29 +332,34 @@ const Footer = (props: StoryProps): React.ReactElement => {
                 &bull;
               </Typography>
               {is_deleted ? (
-                <Typography
-                  as={"time"}
-                  className={clsx(css["t-minor"], css["t-medium"])}
-                  dateTime={story.deleted_at!}
-                  level={"body2"}
-                  title={format_date(story.deleted_at!)}
-                >
-                  Deleted {format_date(story.deleted_at!, DateFormat.RELATIVE)}
-                </Typography>
+                <NoSsr>
+                  <Typography
+                    as={"time"}
+                    className={clsx(css["t-minor"], css["t-medium"])}
+                    dateTime={story.deleted_at!}
+                    level={"body2"}
+                    title={format_date(story.deleted_at!)}
+                  >
+                    Deleted{" "}
+                    {format_date(story.deleted_at!, DateFormat.RELATIVE)}
+                  </Typography>
+                </NoSsr>
               ) : (
-                <Typography
-                  as={"time"}
-                  className={clsx(css["t-minor"], css["t-medium"])}
-                  dateTime={story.edited_at || story.created_at}
-                  level={"body2"}
-                  title={format_date(story.edited_at || story.created_at)}
-                >
-                  Edited{" "}
-                  {format_date(
-                    story.edited_at || story.created_at,
-                    DateFormat.RELATIVE
-                  )}
-                </Typography>
+                <NoSsr>
+                  <Typography
+                    as={"time"}
+                    className={clsx(css["t-minor"], css["t-medium"])}
+                    dateTime={story.edited_at || story.created_at}
+                    level={"body2"}
+                    title={format_date(story.edited_at || story.created_at)}
+                  >
+                    Edited{" "}
+                    {format_date(
+                      story.edited_at || story.created_at,
+                      DateFormat.RELATIVE
+                    )}
+                  </Typography>
+                </NoSsr>
               )}
             </React.Fragment>
           )}

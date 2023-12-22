@@ -1,9 +1,13 @@
+"use client";
+
 import dayjs from "dayjs";
 import relative_time from "dayjs/plugin/relativeTime";
+import timezone from "dayjs/plugin/timezone";
 
 import { capitalize } from "~/utils/capitalize";
 
 dayjs.extend(relative_time);
+dayjs.extend(timezone);
 
 export enum DateFormat {
   LONG /*                */ = "MMM D, YYYY h:mm A",
@@ -26,10 +30,10 @@ export const format_date = (
   format === DateFormat.STATUS_EXPIRY
     ? to_status_expiry_format(date)
     : format === DateFormat.RELATIVE
-    ? dayjs(date).fromNow(false)
-    : format === DateFormat.RELATIVE_CAPITALIZED
-    ? capitalize(dayjs(date).fromNow(false))
-    : dayjs(date).format(format);
+      ? dayjs(date).fromNow(false)
+      : format === DateFormat.RELATIVE_CAPITALIZED
+        ? capitalize(dayjs(date).fromNow(false))
+        : dayjs(date).format(format);
 
 const to_status_expiry_format = (
   date: string | number | Date | dayjs.Dayjs
