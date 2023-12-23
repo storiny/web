@@ -31,6 +31,19 @@ const meta: Meta<typeof Button> = {
         type: "boolean"
       }
     },
+    loading: {
+      name: "loading",
+      type: { name: "boolean", required: false },
+      defaultValue: false,
+      description: "The loading state.",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" }
+      },
+      control: {
+        type: "boolean"
+      }
+    },
     decorator: {
       options: ["Icon", "None"],
       control: { type: "select" },
