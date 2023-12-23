@@ -30,6 +30,19 @@ const meta: Meta<typeof IconButton> = {
       control: {
         type: "boolean"
       }
+    },
+    loading: {
+      name: "loading",
+      type: { name: "boolean", required: false },
+      defaultValue: false,
+      description: "The loading state.",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" }
+      },
+      control: {
+        type: "boolean"
+      }
     }
   }
 };
