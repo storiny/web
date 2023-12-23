@@ -21,7 +21,8 @@ const HOTKEYS_OPTIONS: Options = {
   enableOnContentEditable: true
 };
 
-// Sidebars (export this function as this will be present irrespective of whether the editor is in read-only mode)
+// Sidebars (export this function as this will be present irrespective of
+// whether the editor is in read-only mode)
 
 export const use_sidebars_shortcut = (): void => {
   const set_collapsed = use_set_atom(sidebars_collapsed_atom);

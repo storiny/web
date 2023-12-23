@@ -8,8 +8,8 @@
     "dev": "dotenv -e ./.env next dev",
     "build": "dotenv -e ./.env next build",
     "start": "dotenv -e ./.env next start",
-    "multiplayer:server": "dotenv -v HOST=localhost -v PORT=1234 -- npx y-websocket-server",
-    "multiplayer:test": "concurrently --raw \"yarn multiplayer:server\" \"yarn start\""
+    "realms:server": "dotenv -v HOST=localhost -v PORT=1234 -- npx y-websocket-server",
+    "realms:test": "concurrently --raw \"yarn realms:server\" \"yarn start\""
   },
   "devDependencies": {
     "@playwright/test": "^1.37.1",

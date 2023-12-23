@@ -119,7 +119,8 @@ export const use_register_tools = (): void => {
       if ($is_link_node(parent) || $is_link_node(node)) {
         set_link(true);
 
-        // When the selection is around a link, the parent is resolved to link node, so we need to resolve the parent caption node if it is present
+        // When the selection is around a link, the parent is resolved to link
+        // node, so we need to resolve the parent caption node if it is present
         is_caption = $is_caption_node(parent?.getParent());
       } else {
         set_link(false);

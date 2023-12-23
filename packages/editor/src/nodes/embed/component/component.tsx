@@ -7,12 +7,10 @@ import {
   $getNodeByKey as $get_node_by_key,
   $getSelection as $get_selection,
   $isNodeSelection as $is_node_selection,
+  BaseSelection,
   CLICK_COMMAND,
   COMMAND_PRIORITY_LOW,
-  GridSelection,
-  NodeKey,
-  NodeSelection,
-  RangeSelection
+  NodeKey
 } from "lexical";
 import dynamic from "next/dynamic";
 import React from "react";
@@ -85,9 +83,7 @@ const EmbedComponent = ({
   });
   const [selected, set_selected, clear_selection] =
     use_lexical_node_selection(node_key);
-  const [selection, set_selection] = React.useState<
-    RangeSelection | NodeSelection | GridSelection | null
-  >(null);
+  const [selection, set_selection] = React.useState<BaseSelection | null>(null);
   const { height: container_height, ref: resize_observer_ref } =
     use_resize_observer();
   const [intersection_observer_ref, { entry }] = use_intersection_observer({
