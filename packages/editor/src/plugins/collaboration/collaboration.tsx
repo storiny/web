@@ -1,6 +1,7 @@
 "use client";
 
 import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import { User } from "@storiny/types";
 import React from "react";
 import { Doc } from "yjs";
 
@@ -35,7 +36,7 @@ const CollaborationPlugin = ({
   role,
   awareness_data
 }: Props): React.ReactElement => {
-  const user = use_app_selector(select_user)!;
+  const user = use_app_selector(select_user) || ({} as User);
   const local_state = React.useMemo(
     () =>
       ({
