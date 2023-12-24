@@ -92,8 +92,8 @@
   }
 
   @include breakpoints.media("<=mobile") {
-    --grid-compensation: -16px;
-    --grid-gutter: 16px;
+    --grid-compensation: -22px;
+    --grid-gutter: 22px;
     --grid-area: ". hd hd ." ". main main ." ". ft ft ." !important;
 
     grid-column-gap: 0;

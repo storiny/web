@@ -56,7 +56,7 @@ export const generateMetadata = async ({
     /* eslint-enable prefer-snakecase/prefer-snakecase */
   } catch {
     return {
-      title: `@${username}`
+      title: "Unknown user"
     };
   }
 };

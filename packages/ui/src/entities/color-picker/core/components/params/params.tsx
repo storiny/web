@@ -54,10 +54,10 @@ const Params = (props: ParamsProps): React.ReactElement => {
             state.color.a / ALPHA_MAX
           })`
         : mode === "hsv"
-        ? `hsva(${state.color.h}, ${state.color.s}, ${state.color.v}, ${
-            state.color.a / ALPHA_MAX
-          })`
-        : `#${state.color.hex}`
+          ? `hsva(${state.color.h}, ${state.color.s}, ${state.color.v}, ${
+              state.color.a / ALPHA_MAX
+            })`
+          : `#${state.color.hex}`
     );
   }, [
     mode,
@@ -100,6 +100,7 @@ const Params = (props: ParamsProps): React.ReactElement => {
       }
       onChange={handle_change}
       placeholder={"Color value"}
+      size={"sm"}
       value={value}
     />
   );
