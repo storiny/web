@@ -46,7 +46,7 @@ jobs:
         uses: jakejarvis/s3-sync-action@v0.5.1
         env:
           AWS_S3_BUCKET: "assets-557c7e15"
-          SOURCE_DIR: "${{ github.workspace }}/apps/web/.next/static"
+          SOURCE_DIR: "./apps/web/.next/static"
           DEST_DIR: "_next/static"
         with:
           args: --follow-symlinks --delete
