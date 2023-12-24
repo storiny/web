@@ -11,7 +11,7 @@ ENV AWS_REGION=$AWS_REGION
 # Builder
 
 FROM base AS builder
-RUN apk add --no-cache libc6-compat aws-cli
+RUN apk add --no-cache libc6-compat
 RUN apk update
 # Set working directory
 WORKDIR /app
@@ -23,10 +23,10 @@ RUN turbo prune @storiny/web --docker
 
 # Add lockfile and package.json's of isolated subworkspace
 FROM base AS installer
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat aws-cli
 RUN apk update
 WORKDIR /app
- 
+
 # First install the dependencies (as they change less often)
 COPY .gitignore .gitignore
 COPY --from=builder /app/out/json/ .
