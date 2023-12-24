@@ -181,10 +181,5 @@ module.exports = {
         accessorPairPositioning: "getThenSet",
       },
     ],
-    "capitalized-comments": [
-      "error",
-      "always",
-      { ignorePattern: "pragma|noinspection", ignoreConsecutiveComments: true },
-    ],
   },
 };

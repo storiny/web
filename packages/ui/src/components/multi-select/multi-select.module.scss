@@ -121,9 +121,14 @@
   color: var(--fg);
   font-size: var(--font-size-sm) !important;
   line-height: var(--line-height-sm) !important;
+  border-radius: var(--radius-md);
   outline: none;
   cursor: pointer !important;
+  width: auto !important;
   min-width: 96px;
+  margin-inline: 6px;
+  left: calc(50% - 6px);
+  transform: translateX(-50%);
 
   &:not(.disabled).focused {
     --fg: var(--inverted-0);

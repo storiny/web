@@ -3,11 +3,15 @@
   align-items: center;
   position: relative;
   user-select: none;
+  margin-inline: 6px;
+  left: calc(50% - 6px);
+  transform: translateX(-50%);
   padding: var(--padding);
   gap: var(--gap);
   color: var(--fg);
   font-size: var(--font-size);
   line-height: var(--line-height-sm);
+  border-radius: var(--radius-md);
   outline: none;
   cursor: pointer;
   min-width: 96px;

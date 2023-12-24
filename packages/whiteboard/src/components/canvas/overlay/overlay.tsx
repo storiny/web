@@ -111,7 +111,13 @@ const ZoomControl = (): React.ReactElement => {
           </Button>
         }
       >
-        <div className={clsx(css["flex-center"], styles["zoom-input-wrapper"])}>
+        <div
+          className={clsx(
+            css["flex-center"],
+            css["full-w"],
+            styles["zoom-input-wrapper"]
+          )}
+        >
           <Input
             max={MAX_ZOOM_LEVEL}
             min={MIN_ZOOM_LEVEL}
@@ -120,6 +126,11 @@ const ZoomControl = (): React.ReactElement => {
             }}
             placeholder={"Zoom level"}
             size={"sm"}
+            slot_props={{
+              container: {
+                className: css["full-w"]
+              }
+            }}
             type={"number"}
             value={zoom}
           />
