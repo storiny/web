@@ -49,9 +49,9 @@ jobs:
 
       - name: Purge Cloudflare cache for static web assets
         uses: jakejarvis/cloudflare-purge-action@v0.3.0
-        with:
-          cloudflare_zone: ${{ secrets.CLOUDFLARE_ZONE }}
-          cloudflare_token: ${{ secrets.CLOUDFLARE_TOKEN }}
+        env:
+          CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
 
       # API
       - name: Build, tag, and push api image
