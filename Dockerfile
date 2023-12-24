@@ -11,7 +11,7 @@ ENV AWS_REGION=$AWS_REGION
 # Builder
 
 FROM base AS builder
-RUN apk add --no-cache libc6-compat awscli
+RUN apk add --no-cache libc6-compat aws-cli
 RUN apk update
 # Set working directory
 WORKDIR /app
