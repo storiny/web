@@ -6,6 +6,12 @@ mod health;
 #[path = "index.rs"]
 mod index;
 
+#[path = "favicon.rs"]
+mod favicon;
+
+#[path = "robots.rs"]
+mod robots;
+
 #[path = "v1/mod.rs"]
 mod v1;
 
@@ -18,6 +24,8 @@ mod oauth;
 pub fn init_common_routes(cfg: &mut web::ServiceConfig) {
     index::init_routes(cfg);
     health::init_routes(cfg);
+    favicon::init_routes(cfg);
+    robots::init_routes(cfg);
 }
 
 /// Registers oauth API routes.

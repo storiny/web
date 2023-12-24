@@ -3,7 +3,6 @@ use actix_extensible_rate_limit::{
     backend::SimpleInputFunctionBuilder,
     RateLimiter,
 };
-// use actix_files as fs;
 use actix_web::{
     http::header::ContentType,
     web,
@@ -151,8 +150,6 @@ fn main() -> io::Result<()> {
                         .wrap(actix_web::middleware::NormalizePath::trim())
                         .app_data(web_config.clone())
                         .configure(routes::init_routes)
-                        // TODO:
-                        // .service(fs::Files::new("/", "./static"))
                         .default_service(web::route().to(not_found))
                 })
                 .bind((host, port))?
