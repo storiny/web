@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   nginx:
-    image: storiny-nginx:v0
+    image: storiny_nginx
     build:
       context: ./nginx/
       args:
@@ -12,7 +12,7 @@ services:
         - action: sync
           path: ./nginx/njs-files
           target: /etc/nginx/njs
-    container_name: "storiny-nginx"
+    container_name: "storiny_nginx"
     volumes:
       - ./www:/var/www
       - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
