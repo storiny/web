@@ -60,7 +60,10 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build --platform linux/amd64 -f apps/backend/Dockerfile -t $ECR_REGISTRY/storiny_api:$IMAGE_TAG .
+          docker build \
+            --platform linux/amd64 \
+            -f apps/backend/Dockerfile \
+            -t $ECR_REGISTRY/storiny_api:$IMAGE_TAG apps/backend
           docker push $ECR_REGISTRY/storiny_api:$IMAGE_TAG
           echo "api-image=$ECR_REGISTRY/storiny_api:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
@@ -71,7 +74,10 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build --platform linux/amd64 -f apps/cdn/nginx/Dockerfile -t $ECR_REGISTRY/storiny_nginx:$IMAGE_TAG .
+          docker build \
+            --platform linux/amd64 \
+            -f apps/cdn/nginx/Dockerfile \
+            -t $ECR_REGISTRY/storiny_nginx:$IMAGE_TAG apps/cdn/nginx
           docker push $ECR_REGISTRY/storiny_nginx:$IMAGE_TAG
           echo "nginx-image=$ECR_REGISTRY/storiny_nginx:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
@@ -82,7 +88,10 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build --platform linux/amd64 -f apps/discovery/Dockerfile -t $ECR_REGISTRY/storiny_discovery:$IMAGE_TAG .
+          docker build \
+            --platform linux/amd64 \
+            -f apps/discovery/Dockerfile \
+            -t $ECR_REGISTRY/storiny_discovery:$IMAGE_TAG apps/discovery
           docker push $ECR_REGISTRY/storiny_discovery:$IMAGE_TAG
           echo "discovery-image=$ECR_REGISTRY/storiny_discovery:$IMAGE_TAG" >> $GITHUB_OUTPUT
 

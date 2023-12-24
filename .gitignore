@@ -47,9 +47,6 @@ apps/web/.env.development
 # turbo
 .turbo
 
-# vercel
-.vercel
-
 # playwright
 **/coverage
 **/test-results/
@@ -60,3 +57,4 @@ apps/web/.env.development
 .DS_Store
 *.pem
 migration-storybook.log
+.idea
