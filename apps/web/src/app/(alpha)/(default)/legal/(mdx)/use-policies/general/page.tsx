@@ -6,5 +6,5 @@ import GeneralUsePolicyClient from "./client";
 
 const Page = (): React.ReactElement => <GeneralUsePolicyClient />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

@@ -6,5 +6,5 @@ import AccessibilitySettingsClient from "./client";
 
 const Page = (): React.ReactElement => <AccessibilitySettingsClient />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

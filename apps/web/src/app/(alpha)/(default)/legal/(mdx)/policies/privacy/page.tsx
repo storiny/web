@@ -6,5 +6,5 @@ import PrivacyPolicyClient from "./client";
 
 const Page = (): React.ReactElement => <PrivacyPolicyClient />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

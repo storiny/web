@@ -42,5 +42,5 @@ const Page = async ({
   }
 };
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

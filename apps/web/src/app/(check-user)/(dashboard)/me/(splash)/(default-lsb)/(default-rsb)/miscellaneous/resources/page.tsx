@@ -6,5 +6,5 @@ import MiscellaneousResourcesClient from "./client";
 
 const Page = (): React.ReactElement => <MiscellaneousResourcesClient />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

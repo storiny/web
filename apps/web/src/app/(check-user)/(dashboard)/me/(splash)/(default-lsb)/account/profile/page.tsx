@@ -6,5 +6,5 @@ import ProfileSettingsClient from "./client";
 
 const Page = (): React.ReactElement => <ProfileSettingsClient />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

@@ -6,5 +6,5 @@ import HateSpeechPolicyClient from "./client";
 
 const Page = (): React.ReactElement => <HateSpeechPolicyClient />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

@@ -104,5 +104,5 @@ const Page = (): React.ReactElement => (
   </>
 );
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

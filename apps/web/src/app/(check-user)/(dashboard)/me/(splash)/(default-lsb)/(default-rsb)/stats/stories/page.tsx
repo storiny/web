@@ -6,5 +6,5 @@ import StoriesMetricsClient from "./client";
 
 const Page = (): React.ReactElement => <StoriesMetricsClient />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

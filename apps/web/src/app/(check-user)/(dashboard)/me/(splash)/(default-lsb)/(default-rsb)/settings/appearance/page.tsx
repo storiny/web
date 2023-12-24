@@ -6,5 +6,5 @@ import AppearanceSettingsClient from "./client";
 
 const Page = (): React.ReactElement => <AppearanceSettingsClient />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

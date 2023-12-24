@@ -6,5 +6,5 @@ import AccountMetricsClient from "./client";
 
 const Page = (): React.ReactElement => <AccountMetricsClient />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

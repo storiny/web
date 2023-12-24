@@ -6,5 +6,5 @@ import GovernmentTakedownPolicyClient from "./client";
 
 const Page = (): React.ReactElement => <GovernmentTakedownPolicyClient />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

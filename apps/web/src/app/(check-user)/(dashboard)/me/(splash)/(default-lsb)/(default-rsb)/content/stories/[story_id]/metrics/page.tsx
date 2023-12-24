@@ -19,5 +19,5 @@ const Page = ({
   return <ContentStoryMetricsClient />;
 };
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

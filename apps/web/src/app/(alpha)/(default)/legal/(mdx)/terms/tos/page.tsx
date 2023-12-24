@@ -6,5 +6,5 @@ import TermsOfServiceClient from "./client";
 
 const Page = (): React.ReactElement => <TermsOfServiceClient />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

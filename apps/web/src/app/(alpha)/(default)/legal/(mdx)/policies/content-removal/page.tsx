@@ -6,5 +6,5 @@ import ContentRemovalPolicyClient from "./client";
 
 const Page = (): React.ReactElement => <ContentRemovalPolicyClient />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

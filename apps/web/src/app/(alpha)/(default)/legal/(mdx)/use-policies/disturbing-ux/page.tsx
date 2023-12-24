@@ -6,5 +6,5 @@ import DisturbingUXClient from "./client";
 
 const Page = (): React.ReactElement => <DisturbingUXClient />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

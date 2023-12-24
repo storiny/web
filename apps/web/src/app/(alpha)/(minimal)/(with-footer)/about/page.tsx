@@ -202,5 +202,5 @@ const Page = (): React.ReactElement => (
   </React.Fragment>
 );
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

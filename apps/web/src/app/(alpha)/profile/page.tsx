@@ -22,5 +22,5 @@ const Page = async (): Promise<void> => {
   }
 };
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;
