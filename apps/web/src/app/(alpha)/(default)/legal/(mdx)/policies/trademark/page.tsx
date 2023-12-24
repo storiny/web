@@ -6,5 +6,5 @@ import TrademarkPolicyClient from "./client";
 
 const Page = (): React.ReactElement => <TrademarkPolicyClient />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

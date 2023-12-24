@@ -39,5 +39,5 @@ const AuthLayout = ({
   </div>
 );
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default AuthLayout;

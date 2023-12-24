@@ -6,5 +6,5 @@ import MiscellaneousActivityClient from "./client";
 
 const Page = (): React.ReactElement => <MiscellaneousActivityClient />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

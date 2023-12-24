@@ -4,5 +4,5 @@ import Client from "./client";
 
 const Page = (): React.ReactElement => <Client />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

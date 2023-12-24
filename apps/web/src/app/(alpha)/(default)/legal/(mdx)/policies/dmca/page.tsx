@@ -6,5 +6,5 @@ import DMCAPolicyClient from "./client";
 
 const Page = (): React.ReactElement => <DMCAPolicyClient />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

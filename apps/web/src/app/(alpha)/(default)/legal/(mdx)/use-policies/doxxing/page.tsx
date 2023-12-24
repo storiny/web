@@ -6,5 +6,5 @@ import DoxxingPolicyClient from "./client";
 
 const Page = (): React.ReactElement => <DoxxingPolicyClient />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

@@ -6,5 +6,5 @@ import LogoPolicyClient from "./client";
 
 const Page = (): React.ReactElement => <LogoPolicyClient />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

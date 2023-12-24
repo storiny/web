@@ -21,5 +21,5 @@ const Page = ({
   return <Client category={category || "all"} />;
 };
 
-export * from "./metadata";
+export { generateMetadata } from "./metadata";
 export default Page;

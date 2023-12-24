@@ -6,5 +6,5 @@ import ViolentContentPolicy from "./client";
 
 const Page = (): React.ReactElement => <ViolentContentPolicy />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

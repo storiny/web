@@ -6,5 +6,5 @@ import CommunityGuidelinesClient from "./client";
 
 const Page = (): React.ReactElement => <CommunityGuidelinesClient />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

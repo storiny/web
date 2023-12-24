@@ -6,5 +6,5 @@ import MisinformationPolicyClient from "./client";
 
 const Page = (): React.ReactElement => <MisinformationPolicyClient />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;

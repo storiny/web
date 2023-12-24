@@ -1,2 +1,2 @@
 export { Error504Page as default } from "../(alpha)/error-pages";
-export * from "./metadata";
+export { metadata } from "./metadata";

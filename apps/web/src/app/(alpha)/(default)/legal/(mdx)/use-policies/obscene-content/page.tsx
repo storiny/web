@@ -6,5 +6,5 @@ import ObsceneContentPolicy from "./client";
 
 const Page = (): React.ReactElement => <ObsceneContentPolicy />;
 
-export * from "./metadata";
+export { metadata } from "./metadata";
 export default Page;
