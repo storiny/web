@@ -86,20 +86,23 @@ jobs:
 #          echo "discovery-image=$ECR_REGISTRY/storiny_discovery:latest" >> $GITHUB_OUTPUT
 
       - name: Recreate containers
+        uses: appleboy/ssh-action@v1.0.0
         env:
-          PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-          HOSTNAME: ${{ secrets.EC2_SSH_HOST }}
-          USER_NAME: ${{ secrets.EC2_USER_NAME }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh \
-            -o StrictHostKeyChecking=no \
-            -i private_key ${USER_NAME}@${HOSTNAME} '
-            aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+        with:
+          host: ${{ secrets.EC2_SSH_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.EC2_SSH_PORT }}
+          envs: AWS_REGION,ECR_REGISTRY
+          script: |
+            aws ecr get-login-password \
+              --region $AWS_REGION \
+              | docker login \
+              --username AWS \
+              --password-stdin $ECR_REGISTRY
             && docker-compose up --force-recreate -d
-            '
 
 #      - name: Purge Cloudflare cache for static web assets
 #        uses: jakejarvis/cloudflare-purge-action@v0.3.0
