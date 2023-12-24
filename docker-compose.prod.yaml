@@ -3,8 +3,8 @@ version: "3.8"
 services:
   # Nginx
   nginx:
-    image: 992532056584.dkr.ecr.us-east-1.amazonaws.com/storiny-nginx
-    container_name: "storiny-nginx"
+    image: 992532056584.dkr.ecr.us-east-1.amazonaws.com/storiny_nginx
+    container_name: "storiny_nginx"
     restart: always
     network_mode: "host"
     volumes:
