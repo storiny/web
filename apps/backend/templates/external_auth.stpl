@@ -5,16 +5,12 @@
     <title>Continue to Storiny</title>
     <meta content="initial-scale=1,width=device-width,shrink-to-fit=no" name="viewport">
     <meta content="noindex,nofollow" name="robots">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <meta content="<%= provider_id %>" name="provider_id">
     <meta content="<%= access_token %>" name="access_token">
     <style>
-        @font-face {
-            font-family: satoshi;
-            font-weight: 100 900;
-            font-style: normal;
-            src: url("https://cdn.storiny.com/web-assets/raw/fonts/satoshi.woff") format("woff2");
-        }
-
         html,
         body {
             color-scheme: dark;
@@ -47,7 +43,7 @@
             border: 0;
             color: #b3b3b3;
             vertical-align: baseline;
-            font-family: satoshi, -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
             font-size: 16px;
             line-height: 21px;
         }

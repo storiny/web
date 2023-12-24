@@ -1,9 +1,11 @@
 use actix_web::web;
 
 mod embed;
+mod favicon;
 mod health;
 mod index;
 mod provider_check;
+mod robots;
 
 /// Registers common API routes.
 ///
@@ -11,6 +13,8 @@ mod provider_check;
 pub fn init_common_routes(cfg: &mut web::ServiceConfig) {
     index::init_routes(cfg);
     health::init_routes(cfg);
+    favicon::init_routes(cfg);
+    robots::init_routes(cfg);
 }
 
 /// Registers API routes.
