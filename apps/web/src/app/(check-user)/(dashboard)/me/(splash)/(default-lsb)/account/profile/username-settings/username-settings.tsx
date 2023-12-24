@@ -113,6 +113,7 @@ const UsernameSettings = ({
   const [element, , close_modal] = use_modal(
     ({ open_modal }) => (
       <Button
+        auto_size
         check_auth
         className={css["fit-w"]}
         onClick={open_modal}
