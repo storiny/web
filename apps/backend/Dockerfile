@@ -7,7 +7,7 @@ ENV SQLX_OFFLINE=true
 RUN apk add --no-cache musl-dev openssl-dev pkgconfig
 # set the workdir and copy the source into it
 WORKDIR /app
-COPY . /app
+COPY ./ /app
 # do a release build
 RUN cargo build --release
 RUN strip target/release/storiny
