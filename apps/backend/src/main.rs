@@ -3,7 +3,6 @@ use actix_extensible_rate_limit::{
     backend::SimpleInputFunctionBuilder,
     RateLimiter,
 };
-// use actix_files as fs;
 use actix_web::{
     cookie::{
         Key,
@@ -384,8 +383,6 @@ fn main() -> io::Result<()> {
                                 .wrap(alpha_identity::AlphaIdentity)
                                 .configure(routes::init::init_v1_routes),
                         )
-                        // TODO:
-                        // .service(fs::Files::new("/", "./static"))
                         .default_service(web::route().to(not_found))
                 })
                 .bind((host, port))?
