@@ -15,14 +15,26 @@
 }
 
 .radio {
+  position: relative;
   height: var(--size);
   width: var(--size);
   min-height: var(--size);
   min-width: var(--size);
   margin-top: 2px;
   border-radius: 100%;
-  background-color: var(--bg, var(--bg-body));
-  border: 2px solid var(--border);
+  background: none;
+  border: 1px solid var(--border);
+
+  &::after {
+    content: "";
+    width: calc(100% - 4px);
+    height: calc(100% - 4px);
+    top: 2px;
+    left: 2px;
+    position: absolute;
+    border-radius: 100%;
+    background-color: var(--bg, var(--bg-body));
+  }
 
   &:not([data-disabled]) {
     cursor: pointer;
@@ -92,8 +104,8 @@
 
   /* Checked */
   --checked-bg: var(--inverted-400);
-  --checked-border: var(--inverted-100);
-  --checked-hover-bg: var(--inverted-300);
+  --checked-border: var(--inverted-300);
+  --checked-hover-bg: var(--inverted-400);
   --checked-hover-border: var(--inverted-200);
   --checked-disabled-bg: var(--inverted-200);
   --checked-disabled-border: var(--inverted-50);
@@ -101,17 +113,17 @@
 
 .ruby {
   /* Unchecked */
-  --border: var(--ruby-500);
+  --border: var(--ruby-300);
   --hover-bg: var(--ruby-100);
-  --hover-border: var(--ruby-500);
+  --hover-border: var(--ruby-400);
   --disabled-border: var(--ruby-100);
   --focus-bg: var(--ruby-100);
 
   /* Checked */
   --checked-bg: var(--ruby-500);
-  --checked-border: var(--ruby-200);
+  --checked-border: var(--ruby-400);
   --checked-hover-bg: var(--ruby-500);
-  --checked-hover-border: var(--ruby-300);
+  --checked-hover-border: var(--ruby-500);
   --checked-disabled-bg: var(--ruby-300);
   --checked-disabled-border: var(--ruby-100);
 }

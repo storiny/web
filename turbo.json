@@ -15,7 +15,7 @@
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "test": {},
-    "multiplayer:test": {},
+    "realms:test": {},
     "deploy": {
       "dependsOn": ["build", "test"]
     },

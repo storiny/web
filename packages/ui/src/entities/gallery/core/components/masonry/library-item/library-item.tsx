@@ -264,6 +264,7 @@ const LibraryMasonryItem = React.memo(
           >
             <Image
               alt={data.alt || ""}
+              hex={data.hex}
               img_key={data.key}
               size={ImageSize.W_640}
               slot_props={{

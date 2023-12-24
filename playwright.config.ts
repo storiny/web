@@ -35,7 +35,7 @@ export default defineConfig({
   },
   webServer: {
     command:
-      'turbo run multiplayer:test --scope="@storiny/editor" --include-dependencies --no-deps',
+      'turbo run realms:test --scope="@storiny/editor" --include-dependencies --no-deps',
     port: 3000,
     reuseExistingServer: true,
     timeout: 120 * 1000,
