@@ -102,7 +102,7 @@ jobs:
               | docker login \
               --username AWS \
               --password-stdin $ECR_REGISTRY
-            && docker-compose up --force-recreate -d
+            docker-compose up --force-recreate -d
 
 #      - name: Purge Cloudflare cache for static web assets
 #        uses: jakejarvis/cloudflare-purge-action@v0.3.0
