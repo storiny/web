@@ -168,10 +168,10 @@ export const use_yjs_collaboration = ({
       /**
        * Handles the peer authentication login.
        *
-       * We currently do not use this method to authenticate the peer. The user
-       * authentication logic is handled during the handshake request and the
-       * rejection is catched by examining the event code of the websocket
-       * `connection-close` event.
+       * We currently do not use this method to authenticate the peer.
+       * The user authentication logic is handled during the handshake
+       * request and the rejection is catched by examining the event code
+       * of the websocket `connection-close` event.
        */
       const handle_auth = (): void => {
         set_doc_status(DOC_STATUS.join_unauthorized);
@@ -244,8 +244,8 @@ export const use_yjs_collaboration = ({
       };
 
       /**
-       * Handles an event fired when the current peer has been disconnceted for
-       * being inactive for too long.
+       * Handles an event fired when the current peer has been
+       * disconnceted for being inactive for too long.
        */
       const handle_stale = (): void => {
         set_doc_status(DOC_STATUS.stale_peer);
@@ -298,7 +298,8 @@ export const use_yjs_collaboration = ({
       awareness.on("update", handle_awareness_update);
 
       const on_yjs_tree_changes = (
-        // The below `any` type is taken directly from the vendor types for Yjs.
+        // The below `any` type is taken directly from the vendor types
+        // for Yjs.
         events: Array<YEvent<any>>,
         transaction: Transaction
       ): void => {
@@ -314,8 +315,8 @@ export const use_yjs_collaboration = ({
         }
       };
 
-      // This updates the local editor state when we receive updates from other
-      // clients.
+      // This updates the local editor state when we receive updates from
+      // other clients.
       root.get_shared_type().observeDeep(on_yjs_tree_changes);
 
       const remove_listener = editor.registerUpdateListener(
@@ -368,22 +369,8 @@ export const use_yjs_collaboration = ({
         remove_listener();
       };
     },
-    // `useEffect` fires twice on development due to strict mode. These deps
-    // are required to reconnect to the websocket after it disconnects for
-    // the first connection.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    process.env.NODE_ENV === "development"
-      ? [
-          binding,
-          connect,
-          disconnect,
-          doc_map,
-          editor,
-          provider,
-          local_state,
-          should_bootstrap
-        ]
-      : []
+    []
   );
 
   /**

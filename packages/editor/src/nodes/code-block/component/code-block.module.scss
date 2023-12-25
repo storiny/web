@@ -1,0 +1,9 @@
+@use "breakpoints";
+
+.code-block {
+  display: block;
+  position: relative;
+  user-select: none;
+  max-width: 100%;
+  width: 100%;
+}

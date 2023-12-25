@@ -241,12 +241,18 @@ const setup_ws = (provider: WebsocketProvider): void => {
         ]);
         // Codes > 3000 or 1006 indicate a client or internal error sent by the
         // server.
-      } else if (event.code < 3000 && event.code !== 1006) {
+      } else if (
+        (event.code < 3000 && event.code !== 1006) ||
+        process.env.NODE_ENV === "development"
+      ) {
         provider.ws_unsuccessful_reconnects++;
       }
 
       // Do not reconnect for client or internal server sent errors.
-      if (event.code < 3000 && event.code !== 1006) {
+      if (
+        (event.code < 3000 && event.code !== 1006) ||
+        process.env.NODE_ENV === "development"
+      ) {
         // Start with no reconnect timeout and increase the timeout by
         // Using exponential backoff starting with 100ms
         setTimeout(
