@@ -74,8 +74,10 @@ export const $create_collab_node_from_lexical_node = (
     map.set("__type", "linebreak");
     collab_node = $create_collab_line_break_node(map, parent);
   } else if ($is_decorator_node(lexical_node)) {
+    const elem = new YMap();
+    elem.set("__type", lexical_node.getType());
     const xml_element = new XmlElement(lexical_node.getType());
-    collab_node = $create_collab_decorator_node(xml_element, parent, nodeType);
+    collab_node = $create_collab_decorator_node(elem, parent, nodeType);
     collab_node.sync_properties_from_lexical(binding, lexical_node, null);
   } else {
     throw new Error("Expected text, element, decorator, or a linebreak node");

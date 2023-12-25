@@ -29,14 +29,17 @@ export const logged_in_state = (
  * @param loading Loading flag
  * @param logged_in Logged in flag
  * @param ignore_primitive_providers Whether or not to wrap the children with primitve providers
+ * @param ignore_initializer Whether or not to ignore the initializer
  */
 export const render_with_state = (
   children: React.ReactElement,
   {
     loading,
     logged_in,
-    ignore_primitive_providers
+    ignore_primitive_providers,
+    ignore_initializer
   }: {
+    ignore_initializer?: boolean;
     ignore_primitive_providers?: boolean;
     loading?: boolean;
     logged_in?: boolean;
@@ -51,6 +54,7 @@ export const render_with_state = (
 
   return (
     <AppStateProvider
+      ignore_initializer={ignore_initializer}
       ignore_primitive_providers={ignore_primitive_providers}
       store={store}
     >
