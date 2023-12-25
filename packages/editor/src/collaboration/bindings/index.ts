@@ -2,6 +2,7 @@ import { Klass, LexicalEditor, LexicalNode, NodeKey } from "lexical";
 import { Doc, XmlText } from "yjs";
 
 import { Cursor } from "../../utils/sync-cursor-positions";
+import { CollabCodeBlockNode } from "../nodes/code-block";
 import { CollabDecoratorNode } from "../nodes/decorator";
 import {
   $create_collab_element_node,
@@ -21,6 +22,7 @@ export interface Binding {
     | CollabTextNode
     | CollabDecoratorNode
     | CollabLineBreakNode
+    | CollabCodeBlockNode
   >;
   cursors: Map<ClientID, Cursor>;
   cursors_container: null | HTMLElement;

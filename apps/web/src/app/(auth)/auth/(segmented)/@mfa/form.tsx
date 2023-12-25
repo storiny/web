@@ -34,7 +34,7 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
   const form = use_form<MFASchema>({
     resolver: zod_resolver(MFA_SCHEMA),
     defaultValues: {
-      mfa_code: ""
+      code: ""
     }
   });
   const [mutate_login, { isLoading: is_loading }] = use_login_mutation();
@@ -42,7 +42,7 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
 
   const handle_submit: SubmitHandler<MFASchema> = React.useCallback(
     (values) => {
-      actions.set_mfa_code(values.mfa_code);
+      actions.set_mfa_code(values.code);
       const login_data = state.login_data;
 
       if (on_submit) {
@@ -52,7 +52,7 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
           email: login_data.email,
           password: login_data.password,
           remember_me: login_data.remember_me,
-          code: sanitize_authentication_code(values.mfa_code)
+          code: sanitize_authentication_code(values.code)
         })
           .unwrap()
           .then((res) => {
@@ -96,7 +96,7 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
         label={"Authentication code"}
         maxLength={AUTHENTICATION_CODE_MAX_LENGTH}
         minLength={AUTHENTICATION_CODE_MIN_LENGTH}
-        name={"mfa_code"}
+        name={"code"}
         placeholder={"6-digit authentication code"}
         required
         size={"lg"}

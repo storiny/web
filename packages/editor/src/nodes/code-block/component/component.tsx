@@ -10,6 +10,7 @@ import {
 import dynamic from "next/dynamic";
 import React from "react";
 import { useHotkeys as use_hot_keys } from "react-hotkeys-hook";
+import { Text as YText } from "yjs";
 
 import { $is_code_block_node } from "../code-block";
 import styles from "./code-block.module.scss";
@@ -20,9 +21,9 @@ const CodeBlockComponent = ({
   node_key,
   language,
   line_count,
-  content
+  collab_text
 }: {
-  content: string;
+  collab_text: YText;
   language: string | null;
   line_count: number;
   node_key: NodeKey;
@@ -85,7 +86,7 @@ const CodeBlockComponent = ({
 
   return (
     <div className={styles["code-block"]}>
-      <CodeBlockEditor content={content} node_key={node_key} />
+      <CodeBlockEditor collab_text={collab_text} node_key={node_key} />
     </div>
   );
 };

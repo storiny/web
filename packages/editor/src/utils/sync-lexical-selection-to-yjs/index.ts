@@ -1,10 +1,8 @@
 import {
   $isRangeSelection as $is_range_selection,
   $isTextNode as $is_text_node,
-  GridSelection,
-  NodeSelection,
-  Point,
-  RangeSelection
+  BaseSelection,
+  Point
 } from "lexical";
 import {
   compareRelativePositions as compare_relative_positions,
@@ -101,8 +99,8 @@ const should_update_position = (
 export const sync_lexical_selection_to_yjs = (
   binding: Binding,
   provider: Provider,
-  prev_selection: null | RangeSelection | NodeSelection | GridSelection,
-  next_selection: null | RangeSelection | NodeSelection | GridSelection
+  prev_selection: null | BaseSelection,
+  next_selection: null | BaseSelection
 ): void => {
   const awareness = provider.awareness;
   const local_state = awareness.getLocalState();
