@@ -3,18 +3,23 @@
 import { Compartment, EditorState, Extension } from "@codemirror/state";
 import { EditorView, ViewUpdate } from "@codemirror/view";
 import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import { useAtomValue as use_atom_value } from "jotai";
 import { $getNodeByKey as $get_node_by_key, NodeKey } from "lexical";
 import React from "react";
+import { yCollab as y_collab } from "y-codemirror.next";
+import { Text as YText } from "yjs";
 
+import { undo_manager_atom } from "../../../atoms";
 import { $is_code_block_node } from "../code-block";
 
 const CodeBlockEditor = ({
   node_key,
-  content
+  collab_text
 }: {
-  content: string;
+  collab_text: YText;
   node_key: NodeKey;
 }): React.ReactElement => {
+  const undo_manager = use_atom_value(undo_manager_atom);
   const ref = React.useRef<HTMLDivElement | null>(null);
   const view_ref = React.useRef<EditorView | null>(null);
   const [editor] = use_lexical_composer_context();
@@ -34,6 +39,8 @@ const CodeBlockEditor = ({
       }),
     [editor, node_key]
   );
+
+  React.useEffect(() => console.log("render"), []);
 
   const update_line_count = React.useCallback(
     (next_line_count: number) =>
@@ -125,31 +132,36 @@ const CodeBlockEditor = ({
       //   wrapCompartment.of([])
       // ];
 
-      const extensions: Extension[] = [wrap_compartment.of([])];
+      const extensions: Extension[] = [
+        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+        y_collab(collab_text, null, { undoManager: undo_manager || false }),
+        wrap_compartment.of([])
+      ];
 
-      if (!read_only_ref.current) {
-        extensions.push(
-          EditorView.updateListener.of((update: ViewUpdate) => {
-            if (update.focusChanged) {
-              if (update.view.hasFocus) {
-                editor.setEditable(false);
-              } else if (
-                document.activeElement &&
-                !document.activeElement.classList.contains("cm-content")
-              ) {
-                editor.setEditable(true);
-              }
-            } else if (update.docChanged) {
-              const { doc: code } = update.view.state.toJSON() || {};
-              update_content(code);
-              update_line_count(update.view.state.doc.lines || 1);
-            }
-          })
-        );
-      }
+      // if (!read_only_ref.current) {
+      //   extensions.push(
+      //     EditorView.updateListener.of((update: ViewUpdate) => {
+      //       if (update.focusChanged) {
+      //         if (update.view.hasFocus) {
+      //           editor.setEditable(false);
+      //         } else if (
+      //           document.activeElement &&
+      //           !document.activeElement.classList.contains("cm-content")
+      //         ) {
+      //           editor.setEditable(true);
+      //         }
+      //       } else if (update.docChanged) {
+      //         // const { doc: code } = update.view.state.toJSON() || {};
+      //         // collab_text.insert(0, code);
+      //         // update_content(code);
+      //         // update_line_count(update.view.state.doc.lines || 1);
+      //       }
+      //     })
+      //   );
+      // }
 
       const state = EditorState.create({
-        doc: content,
+        doc: collab_text.toJSON(),
         extensions
       });
 

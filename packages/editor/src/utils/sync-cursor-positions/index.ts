@@ -9,8 +9,7 @@ import {
   NodeKey,
   NodeMap
 } from "lexical";
-import { XmlElement, XmlText } from "yjs";
-import { YMap } from "yjs/dist/src/internals";
+import { Map as YMap, XmlElement, XmlText } from "yjs";
 
 import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";

@@ -7,6 +7,7 @@ import {
 } from "lexical";
 
 import { Binding } from "../../collaboration/bindings";
+import { CollabCodeBlockNode } from "../../collaboration/nodes/code-block";
 import { CollabDecoratorNode } from "../../collaboration/nodes/decorator";
 import { CollabElementNode } from "../../collaboration/nodes/element";
 import { CollabLineBreakNode } from "../../collaboration/nodes/line-break";
@@ -24,7 +25,8 @@ export const create_lexical_node_from_collab_node = (
     | CollabElementNode
     | CollabTextNode
     | CollabDecoratorNode
-    | CollabLineBreakNode,
+    | CollabLineBreakNode
+    | CollabCodeBlockNode,
   parent_key: NodeKey
 ): LexicalNode => {
   const type = collab_node.get_type();
@@ -50,7 +52,10 @@ export const create_lexical_node_from_collab_node = (
     collab_node.sync_children_from_yjs(binding);
   } else if (collab_node instanceof CollabTextNode) {
     collab_node.sync_properties_and_text_from_yjs(binding, null);
-  } else if (collab_node instanceof CollabDecoratorNode) {
+  } else if (
+    collab_node instanceof CollabDecoratorNode ||
+    collab_node instanceof CollabCodeBlockNode
+  ) {
     collab_node.sync_properties_from_yjs(binding, null);
   }
 

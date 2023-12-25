@@ -11,5 +11,5 @@ export const AUTHENTICATION_CODE_MIN_LENGTH = 6;
 export const AUTHENTICATION_CODE_MAX_LENGTH = 20;
 
 export const MFA_SCHEMA = z.object({
-  mfa_code: z.string().min(6, ZOD_MESSAGES.min("authentication code", 6))
+  code: z.string().min(6, ZOD_MESSAGES.min("authentication code", 6))
 });

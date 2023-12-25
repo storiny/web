@@ -15,7 +15,7 @@ export const simple_diff_with_cursor = (
   let right = 0; // Number of same characters counting from the right
 
   // Iterate left to the right until we find a changed character.
-  // First iteration considers the current cursor position
+  // First iteration considers the current cursor position.
   while (
     left < a_length &&
     left < b_length &&
@@ -25,7 +25,7 @@ export const simple_diff_with_cursor = (
     left++;
   }
 
-  // Iterate right to the left until we find a changed character
+  // Iterate right to the left until we find a changed character.
   while (
     right + left < a_length &&
     right + left < b_length &&
@@ -34,7 +34,8 @@ export const simple_diff_with_cursor = (
     right++;
   }
 
-  // Try to iterate left further to the right without caring about the current cursor position
+  // Try to iterate left further to the right without caring about the current
+  // cursor position.
   while (
     right + left < a_length &&
     right + left < b_length &&

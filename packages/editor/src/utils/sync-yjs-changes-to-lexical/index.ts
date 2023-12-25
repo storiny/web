@@ -10,6 +10,7 @@ import {
 import { Text as YText, YEvent, YMapEvent, YTextEvent, YXmlEvent } from "yjs";
 
 import { Binding } from "../../collaboration/bindings";
+import { CollabCodeBlockNode } from "../../collaboration/nodes/code-block";
 import { CollabDecoratorNode } from "../../collaboration/nodes/decorator";
 import { CollabElementNode } from "../../collaboration/nodes/element";
 import { CollabTextNode } from "../../collaboration/nodes/text";
@@ -57,6 +58,16 @@ const sync_event = (binding: Binding, event: YEvent<any>): void => {
     // Update
     if (keysChanged.size > 0) {
       collab_node.sync_properties_and_text_from_yjs(binding, keysChanged);
+    }
+  } else if (collab_node instanceof CollabCodeBlockNode) {
+    if (event instanceof YMapEvent) {
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+      const { keysChanged } = event;
+
+      // Update
+      if (keysChanged.size > 0) {
+        collab_node.sync_properties_from_yjs(binding, keysChanged);
+      }
     }
   } else if (
     collab_node instanceof CollabDecoratorNode &&
@@ -162,7 +173,8 @@ export const sync_yjs_changes_to_lexical = ({
               if (does_selection_need_recovering(selection)) {
                 const root = $get_root();
 
-                // If there was a collision on the top level paragraph, we need to re-add a paragraph
+                // If there was a collision on the top level paragraph, we need
+                // to re-add a paragraph
                 if (root.getChildrenSize() === 0) {
                   root.append($create_paragraph_node());
                 }

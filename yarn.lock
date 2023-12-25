@@ -6506,6 +6506,7 @@ __metadata:
     typescript: ^5.2.2
     use-file-picker: ^1.7.0
     use-resize-observer: ^9.1.0
+    y-codemirror.next: ^0.3.2
     y-protocols: ^1.0.6
     y-utility: ^0.1.3
     y-websocket: ^1.5.0
@@ -16737,7 +16738,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lib0@npm:^0.2.31, lib0@npm:^0.2.43, lib0@npm:^0.2.52, lib0@npm:^0.2.85, lib0@npm:^0.2.86":
+"lib0@npm:^0.2.31, lib0@npm:^0.2.42, lib0@npm:^0.2.43, lib0@npm:^0.2.52, lib0@npm:^0.2.85, lib0@npm:^0.2.86":
   version: 0.2.88
   resolution: "lib0@npm:0.2.88"
   dependencies:
@@ -24590,6 +24591,19 @@ __metadata:
   version: 4.0.2
   resolution: "xtend@npm:4.0.2"
   checksum: ac5dfa738b21f6e7f0dd6e65e1b3155036d68104e67e5d5d1bde74892e327d7e5636a076f625599dc394330a731861e87343ff184b0047fef1360a7ec0a5a36a
+  languageName: node
+  linkType: hard
+
+"y-codemirror.next@npm:^0.3.2":
+  version: 0.3.2
+  resolution: "y-codemirror.next@npm:0.3.2"
+  dependencies:
+    lib0: ^0.2.42
+  peerDependencies:
+    "@codemirror/state": ^6.0.0
+    "@codemirror/view": ^6.0.0
+    yjs: ^13.5.6
+  checksum: d86cae29fe654ad4e556782c08055eb3e4ee1706cdb1bd7bf5b15c2ce1c91cb5b9d7785c8b0a9ee85444337fd3a0dba84d9d276895114a62dba9dab6d9d05ca0
   languageName: node
   linkType: hard
 

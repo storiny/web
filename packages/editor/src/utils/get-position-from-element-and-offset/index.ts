@@ -1,3 +1,4 @@
+import { CollabCodeBlockNode } from "../../collaboration/nodes/code-block";
 import { CollabDecoratorNode } from "../../collaboration/nodes/decorator";
 import { CollabElementNode } from "../../collaboration/nodes/element";
 import { CollabLineBreakNode } from "../../collaboration/nodes/line-break";
@@ -20,6 +21,7 @@ export const get_position_from_element_and_offset = (
     | CollabTextNode
     | CollabDecoratorNode
     | CollabLineBreakNode
+    | CollabCodeBlockNode
     | null;
   node_index: number;
   offset: number;

@@ -1,5 +1,6 @@
 import { LexicalNode, NodeKey, Spread } from "lexical";
 import React from "react";
+import { Text as YText } from "yjs";
 
 import { BlockNode, SerializedBlockNode } from "../block";
 import CodeBlockComponent from "./component";
@@ -41,6 +42,7 @@ export class CodeBlockNode extends BlockNode {
     key?: NodeKey
   ) {
     super(key);
+    this.__collab_text = new YText();
     this.__content = content || "";
     this.__language = language || null;
     this.__line_count = line_count || 1;
@@ -97,6 +99,11 @@ export class CodeBlockNode extends BlockNode {
    * @private
    */
   private __language: string | null;
+  /**
+   * Yjs text type holding the code content
+   * @private
+   */
+  public __collab_text: YText;
 
   /**
    * Serializes the node to JSON
@@ -145,7 +152,7 @@ export class CodeBlockNode extends BlockNode {
   override decorate(): React.ReactElement {
     return (
       <CodeBlockComponent
-        content={this.__content}
+        collab_text={this.__collab_text}
         language={this.__language}
         line_count={this.__line_count}
         node_key={this.getKey()}
