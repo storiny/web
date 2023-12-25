@@ -7,10 +7,16 @@ import {
   $setSelection as $set_selection,
   EditorState
 } from "lexical";
-import { Text as YText, YEvent, YMapEvent, YTextEvent, YXmlEvent } from "yjs";
+import {
+  Text as YText,
+  XmlElement,
+  YEvent,
+  YMapEvent,
+  YTextEvent,
+  YXmlEvent
+} from "yjs";
 
 import { Binding } from "../../collaboration/bindings";
-import { CollabCodeBlockNode } from "../../collaboration/nodes/code-block";
 import { CollabDecoratorNode } from "../../collaboration/nodes/decorator";
 import { CollabElementNode } from "../../collaboration/nodes/element";
 import { CollabTextNode } from "../../collaboration/nodes/text";
@@ -28,6 +34,15 @@ import { sync_local_cursor_position } from "../sync-local-cursor-position";
  */
 const sync_event = (binding: Binding, event: YEvent<any>): void => {
   const { target } = event;
+
+  if (
+    target instanceof YText &&
+    target.parent instanceof XmlElement &&
+    target.parent._collab_node.get_type() === "code-block"
+  ) {
+    return;
+  }
+
   const collab_node = get_or_create_collab_node_from_shared_type(
     binding,
     target
@@ -58,16 +73,6 @@ const sync_event = (binding: Binding, event: YEvent<any>): void => {
     // Update
     if (keysChanged.size > 0) {
       collab_node.sync_properties_and_text_from_yjs(binding, keysChanged);
-    }
-  } else if (collab_node instanceof CollabCodeBlockNode) {
-    if (event instanceof YMapEvent) {
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-      const { keysChanged } = event;
-
-      // Update
-      if (keysChanged.size > 0) {
-        collab_node.sync_properties_from_yjs(binding, keysChanged);
-      }
     }
   } else if (
     collab_node instanceof CollabDecoratorNode &&

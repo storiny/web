@@ -2,10 +2,6 @@ import { Map as YMap, XmlElement, XmlText } from "yjs";
 
 import { Binding } from "../../collaboration/bindings";
 import {
-  $create_collab_code_block_node,
-  CollabCodeBlockNode
-} from "../../collaboration/nodes/code-block";
-import {
   $create_collab_decorator_node,
   CollabDecoratorNode
 } from "../../collaboration/nodes/decorator";
@@ -37,23 +33,20 @@ export const get_or_create_collab_node_from_shared_type = (
   | CollabElementNode
   | CollabTextNode
   | CollabLineBreakNode
-  | CollabDecoratorNode
-  | CollabCodeBlockNode => {
-  let collab_node:
+  | CollabDecoratorNode => {
+  const collab_node:
     | CollabElementNode
     | CollabTextNode
     | CollabLineBreakNode
     | CollabDecoratorNode
-    | CollabCodeBlockNode
     | undefined = shared_type._collab_node;
 
-  if (
-    (shared_type.parent as YMap<unknown> | null)?._collab_node instanceof
-    CollabCodeBlockNode
-  ) {
-    collab_node =
-      (shared_type.parent as YMap<unknown> | null)?._collab_node || undefined;
-  }
+  // if (
+  //   (shared_type.parent as YMap<unknown> | null)?._collab_node instanceof
+  //   CollabCodeBlockNode
+  // ) {
+  //   collab_node =
+  // (shared_type.parent as YMap<unknown> | null)?._collab_node || undefined; }
 
   if (collab_node === undefined) {
     const registered_nodes = binding.editor._nodes;
@@ -82,8 +75,6 @@ export const get_or_create_collab_node_from_shared_type = (
     } else if (shared_type instanceof YMap) {
       if (type === "linebreak") {
         return $create_collab_line_break_node(shared_type, target_parent);
-      } else if (type === "code-block") {
-        return $create_collab_code_block_node(shared_type, target_parent);
       }
 
       return $create_collab_text_node(shared_type, "", target_parent, type);

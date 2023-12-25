@@ -9,10 +9,6 @@ import { Map as YMap, XmlElement, XmlText } from "yjs";
 
 import { Binding } from "../../collaboration/bindings";
 import {
-  $create_collab_code_block_node,
-  CollabCodeBlockNode
-} from "../../collaboration/nodes/code-block";
-import {
   $create_collab_decorator_node,
   CollabDecoratorNode
 } from "../../collaboration/nodes/decorator";
@@ -44,8 +40,7 @@ export const $create_collab_node_from_lexical_node = (
   | CollabElementNode
   | CollabTextNode
   | CollabLineBreakNode
-  | CollabDecoratorNode
-  | CollabCodeBlockNode => {
+  | CollabDecoratorNode => {
   const nodeType = lexical_node.__type;
   let collab_node;
 
@@ -79,11 +74,6 @@ export const $create_collab_node_from_lexical_node = (
 
     map.set("__type", "linebreak");
     collab_node = $create_collab_line_break_node(map, parent);
-  } else if ($is_code_block_node(lexical_node)) {
-    const map = new YMap();
-
-    collab_node = $create_collab_code_block_node(map, parent);
-    collab_node.sync_properties_from_lexical(binding, lexical_node, null);
   } else if ($is_decorator_node(lexical_node)) {
     const xml_element = new XmlElement(lexical_node.getType());
 
