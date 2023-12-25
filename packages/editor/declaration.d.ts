@@ -1,4 +1,3 @@
-import { CollabCodeBlockNode } from "./src/collaboration/nodes/code-block";
 import { CollabDecoratorNode } from "./src/collaboration/nodes/decorator";
 import { CollabElementNode } from "./src/collaboration/nodes/element";
 import { CollabLineBreakNode } from "./src/collaboration/nodes/line-break";
@@ -16,6 +15,6 @@ export declare module "yjs" {
   }
 
   interface Map {
-    _collab_node: CollabCodeBlockNode | CollabLineBreakNode | CollabTextNode;
+    _collab_node: CollabLineBreakNode | CollabTextNode;
   }
 }

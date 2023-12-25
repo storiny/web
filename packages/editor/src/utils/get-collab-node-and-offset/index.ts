@@ -1,6 +1,5 @@
 import { Map as YMap, XmlElement, XmlText } from "yjs";
 
-import { CollabCodeBlockNode } from "../../collaboration/nodes/code-block";
 import { CollabDecoratorNode } from "../../collaboration/nodes/decorator";
 import { CollabElementNode } from "../../collaboration/nodes/element";
 import { CollabLineBreakNode } from "../../collaboration/nodes/line-break";
@@ -22,7 +21,6 @@ export const get_collab_node_and_offset = (
     | CollabElementNode
     | CollabTextNode
     | CollabLineBreakNode
-    | CollabCodeBlockNode
   ),
   number
 ] => {

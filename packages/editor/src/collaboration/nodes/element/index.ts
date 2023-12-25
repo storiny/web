@@ -21,7 +21,6 @@ import { splice_string } from "../../../utils/splice-string";
 import { sync_properties_from_lexical } from "../../../utils/sync-properties-from-lexical";
 import { sync_properties_from_yjs } from "../../../utils/sync-properties-from-yjs";
 import { Binding } from "../../bindings";
-import { CollabCodeBlockNode } from "../code-block";
 import { CollabDecoratorNode } from "../decorator";
 import { CollabLineBreakNode } from "../line-break";
 import { CollabTextNode } from "../text";
@@ -59,7 +58,6 @@ export class CollabElementNode {
     | CollabTextNode
     | CollabDecoratorNode
     | CollabLineBreakNode
-    | CollabCodeBlockNode
   >;
   /**
    * XML text
@@ -204,8 +202,7 @@ export class CollabElementNode {
           if (
             node instanceof CollabElementNode ||
             node instanceof CollabLineBreakNode ||
-            node instanceof CollabDecoratorNode ||
-            node instanceof CollabCodeBlockNode
+            node instanceof CollabDecoratorNode
           ) {
             children.splice(node_index, 1);
             deletion_size -= 1;
@@ -349,8 +346,6 @@ export class CollabElementNode {
             child_collab_node.sync_children_from_yjs(binding);
           } else if (child_collab_node instanceof CollabTextNode) {
             child_collab_node.sync_properties_and_text_from_yjs(binding, null);
-          } else if (child_collab_node instanceof CollabCodeBlockNode) {
-            child_collab_node.sync_properties_from_yjs(binding, null);
           } else if (child_collab_node instanceof CollabDecoratorNode) {
             child_collab_node.sync_properties_from_yjs(binding, null);
           } else if (
@@ -585,7 +580,6 @@ export class CollabElementNode {
       | CollabDecoratorNode
       | CollabTextNode
       | CollabLineBreakNode
-      | CollabCodeBlockNode
   ): void {
     const xml_text = this._xml_text;
     const children = this._children;
@@ -606,8 +600,6 @@ export class CollabElementNode {
 
       xml_text.insert(offset + 1, collab_node._text);
     } else if (collab_node instanceof CollabLineBreakNode) {
-      xml_text.insertEmbed(offset, collab_node._map);
-    } else if (collab_node instanceof CollabCodeBlockNode) {
       xml_text.insertEmbed(offset, collab_node._map);
     } else {
       xml_text.insertEmbed(offset, collab_node._xml_elem);
@@ -632,7 +624,6 @@ export class CollabElementNode {
       | CollabDecoratorNode
       | CollabTextNode
       | CollabLineBreakNode
-      | CollabCodeBlockNode
   ): void {
     const children = this._children;
     const child = children[index];
@@ -670,8 +661,6 @@ export class CollabElementNode {
       xml_text.insert(offset + 1, collab_node._text);
     } else if (collab_node instanceof CollabLineBreakNode) {
       xml_text.insertEmbed(offset, collab_node._map);
-    } else if (collab_node instanceof CollabCodeBlockNode) {
-      xml_text.insertEmbed(offset, collab_node._map);
     } else if (collab_node instanceof CollabDecoratorNode) {
       xml_text.insertEmbed(offset, collab_node._xml_elem);
     }
@@ -701,7 +690,6 @@ export class CollabElementNode {
       | CollabTextNode
       | CollabDecoratorNode
       | CollabLineBreakNode
-      | CollabCodeBlockNode
   ): number {
     let offset = 0;
     const children = this._children;
@@ -762,15 +750,6 @@ export class CollabElementNode {
       $is_text_node(next_child_node)
     ) {
       child_collab_node.sync_properties_and_text_from_lexical(
-        binding,
-        next_child_node,
-        prev_node_map
-      );
-    } else if (
-      child_collab_node instanceof CollabCodeBlockNode &&
-      $is_code_block_node(next_child_node)
-    ) {
-      child_collab_node.sync_properties_from_lexical(
         binding,
         next_child_node,
         prev_node_map
