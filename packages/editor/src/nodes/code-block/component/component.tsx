@@ -20,12 +20,10 @@ const CodeBlockEditor = dynamic(() => import("./editor"));
 const CodeBlockComponent = ({
   node_key,
   language,
-  line_count,
   collab_text
 }: {
   collab_text: YText;
   language: string | null;
-  line_count: number;
   node_key: NodeKey;
 }): React.ReactElement | null => {
   const [editor] = use_lexical_composer_context();

@@ -6,17 +6,16 @@ import { BlockNode, SerializedBlockNode } from "../block";
 import CodeBlockComponent from "./component";
 
 export interface CodeBlockPayload {
+  collab_text?: YText;
   content?: string;
   key?: NodeKey;
   language?: string | null;
-  line_count?: number;
 }
 
 export type SerializedCodeBlockNode = Spread<
   {
-    content: string;
+    collab_text: YText;
     language: string | null;
-    line_count: number;
   },
   SerializedBlockNode
 >;
@@ -30,22 +29,24 @@ export class CodeBlockNode extends BlockNode {
    * Ctor
    * @param content Code block content
    * @param language Code language
-   * @param line_count Number of lines inside the code block
+   * @param collab_text Yjs text type
    * @param key Node key
    */
   constructor(
     {
       content,
       language,
-      line_count
+      collab_text = new YText()
     }: Omit<CodeBlockPayload, "key"> = {} as any,
     key?: NodeKey
   ) {
     super(key);
-    this.__collab_text = new YText();
-    this.__content = content || "";
+    this.__collab_text = collab_text;
     this.__language = language || null;
-    this.__line_count = line_count || 1;
+
+    if (typeof content === "string") {
+      this.__collab_text.insert(0, content);
+    }
   }
 
   /**
@@ -62,9 +63,8 @@ export class CodeBlockNode extends BlockNode {
   static override clone(node: CodeBlockNode): CodeBlockNode {
     return new CodeBlockNode(
       {
-        content: node.__content,
-        language: node.__language,
-        line_count: node.__line_count
+        collab_text: node.__collab_text,
+        language: node.__language
       },
       node.__key
     );
@@ -78,22 +78,11 @@ export class CodeBlockNode extends BlockNode {
     serialized_node: SerializedCodeBlockNode
   ): CodeBlockNode {
     return $create_code_block_node({
-      content: serialized_node.content,
       language: serialized_node.language,
-      line_count: serialized_node.line_count
+      collab_text: serialized_node.collab_text
     });
   }
 
-  /**
-   * Code block content
-   * @private
-   */
-  private __content: string;
-  /**
-   * The number of lines in the code block, used to compute the estimated height during lazy loading.
-   * @private
-   */
-  private __line_count: number;
   /**
    * The language of the code inside the block
    * @private
@@ -111,21 +100,11 @@ export class CodeBlockNode extends BlockNode {
   override exportJSON(): SerializedCodeBlockNode {
     return {
       ...super.exportJSON(),
-      content: this.__content,
       language: this.__language,
-      line_count: this.__line_count,
+      collab_text: this.__collab_text,
       type: TYPE,
       version: VERSION
     };
-  }
-
-  /**
-   * Sets the content of the node
-   * @param next_content Content
-   */
-  public set_content(next_content: string): void {
-    const writable = this.getWritable();
-    writable.__content = next_content;
   }
 
   /**
@@ -138,15 +117,6 @@ export class CodeBlockNode extends BlockNode {
   }
 
   /**
-   * Sets the line count of the node
-   * @param next_line_count Line count
-   */
-  public set_line_count(next_line_count: number): void {
-    const writable = this.getWritable();
-    writable.__line_count = next_line_count;
-  }
-
-  /**
    * Renders the decorator
    */
   override decorate(): React.ReactElement {
@@ -154,7 +124,6 @@ export class CodeBlockNode extends BlockNode {
       <CodeBlockComponent
         collab_text={this.__collab_text}
         language={this.__language}
-        line_count={this.__line_count}
         node_key={this.getKey()}
       />
     );
@@ -165,14 +134,14 @@ export class CodeBlockNode extends BlockNode {
  * Creates a new code block node
  * @param content Code block content
  * @param language Language of the code inside the block
- * @param line_count Number of lines inside the code block
+ * @param collab_text Yjs text type
  */
 export const $create_code_block_node = ({
-  line_count,
+  collab_text,
   language,
   content
 }: CodeBlockPayload): CodeBlockNode =>
-  new CodeBlockNode({ content, language, line_count });
+  new CodeBlockNode({ content, language, collab_text });
 
 /**
  * Predicate function for determining code block nodes
