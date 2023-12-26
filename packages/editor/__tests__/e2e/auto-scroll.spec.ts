@@ -62,7 +62,7 @@ test.describe("auto-scroll while typing", () => {
   [
     [
       "can auto-scroll if the content editable element is scrollable",
-      `section[contenteditable="true"]`
+      `div[data-editor-content]`
     ],
     [
       "can auto-scroll if the parent element is scrollable",

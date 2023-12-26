@@ -35,6 +35,7 @@ import { sync_local_cursor_position } from "../sync-local-cursor-position";
 const sync_event = (binding: Binding, event: YEvent<any>): void => {
   const { target } = event;
 
+  // Ignore code-block text type
   if (
     target instanceof YText &&
     target.parent instanceof XmlElement &&
