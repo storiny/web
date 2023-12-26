@@ -22,7 +22,11 @@ const Page = (): React.ReactElement => {
 
   const handle_recover = React.useCallback((): void => {
     if (state.login_data) {
-      recover_account({ ...state.login_data, bypass: true })
+      recover_account({
+        ...state.login_data,
+        code: state.mfa_code || undefined,
+        bypass: true
+      })
         .unwrap()
         .then((res) => {
           if (res.result === "success") {
@@ -37,7 +41,7 @@ const Page = (): React.ReactElement => {
     } else {
       toast("Could not recover your account", "error");
     }
-  }, [recover_account, router, state.login_data, toast]);
+  }, [recover_account, router, state.login_data, state.mfa_code, toast]);
 
   return (
     <>
