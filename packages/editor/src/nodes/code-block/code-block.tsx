@@ -6,15 +6,14 @@ import { BlockNode, SerializedBlockNode } from "../block";
 import CodeBlockComponent from "./component";
 
 export interface CodeBlockPayload {
-  collab_text?: YText;
-  content?: string;
+  content?: YText;
   key?: NodeKey;
   language?: string | null;
 }
 
 export type SerializedCodeBlockNode = Spread<
   {
-    collab_text: YText;
+    content: YText;
     language: string | null;
   },
   SerializedBlockNode
@@ -27,26 +26,21 @@ const VERSION = 1;
 export class CodeBlockNode extends BlockNode {
   /**
    * Ctor
-   * @param content Code block content
    * @param language Code language
-   * @param collab_text Yjs text type
+   * @param content Yjs text type holding the code block content
    * @param key Node key
    */
   constructor(
     {
-      content,
       language,
-      collab_text = new YText()
+      content = new YText()
     }: Omit<CodeBlockPayload, "key"> = {} as any,
     key?: NodeKey
   ) {
     super(key);
-    this.__collab_text = collab_text;
-    this.__language = language || null;
 
-    if (typeof content === "string") {
-      this.__collab_text.insert(0, content);
-    }
+    this.__content = content;
+    this.__language = language || null;
   }
 
   /**
@@ -63,7 +57,7 @@ export class CodeBlockNode extends BlockNode {
   static override clone(node: CodeBlockNode): CodeBlockNode {
     return new CodeBlockNode(
       {
-        collab_text: node.__collab_text,
+        content: node.__content,
         language: node.__language
       },
       node.__key
@@ -79,7 +73,7 @@ export class CodeBlockNode extends BlockNode {
   ): CodeBlockNode {
     return $create_code_block_node({
       language: serialized_node.language,
-      collab_text: serialized_node.collab_text
+      content: serialized_node.content
     });
   }
 
@@ -92,7 +86,7 @@ export class CodeBlockNode extends BlockNode {
    * Yjs text type holding the code content
    * @private
    */
-  public __collab_text: YText;
+  public __content: YText;
 
   /**
    * Serializes the node to JSON
@@ -101,7 +95,7 @@ export class CodeBlockNode extends BlockNode {
     return {
       ...super.exportJSON(),
       language: this.__language,
-      collab_text: this.__collab_text,
+      content: this.__content,
       type: TYPE,
       version: VERSION
     };
@@ -122,7 +116,7 @@ export class CodeBlockNode extends BlockNode {
   override decorate(): React.ReactElement {
     return (
       <CodeBlockComponent
-        collab_text={this.__collab_text}
+        content={this.__content}
         language={this.__language}
         node_key={this.getKey()}
       />
@@ -132,16 +126,13 @@ export class CodeBlockNode extends BlockNode {
 
 /**
  * Creates a new code block node
- * @param content Code block content
  * @param language Language of the code inside the block
- * @param collab_text Yjs text type
+ * @param content Yjs text type holding the code block content
  */
 export const $create_code_block_node = ({
-  collab_text,
   language,
   content
-}: CodeBlockPayload): CodeBlockNode =>
-  new CodeBlockNode({ content, language, collab_text });
+}: CodeBlockPayload): CodeBlockNode => new CodeBlockNode({ content, language });
 
 /**
  * Predicate function for determining code block nodes

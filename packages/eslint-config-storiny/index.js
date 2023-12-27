@@ -145,6 +145,10 @@ module.exports = {
           "publicRuntimeConfig", // Next.js
           "generateMetadata",
           "browserName", // Playwright
+          "toDOM", // Codemirror
+          "ignoreEvent",
+          "initialSpacer",
+          "lineMarker",
         ],
       },
     ],

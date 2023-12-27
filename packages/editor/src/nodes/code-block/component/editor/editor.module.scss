@@ -1,0 +1,20 @@
+.code-block {
+  flex-direction: column;
+  max-width: 100%;
+  width: 100%;
+  margin-bottom: 40px;
+  border-block: 1px solid var(--divider);
+}
+
+.header {
+  width: 100%;
+  border-bottom: 1px solid var(--divider);
+}
+
+.title {
+  flex-grow: 1;
+}
+
+.editor {
+  width: 100%;
+}
