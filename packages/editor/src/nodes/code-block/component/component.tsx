@@ -13,16 +13,15 @@ import { useHotkeys as use_hot_keys } from "react-hotkeys-hook";
 import { Text as YText } from "yjs";
 
 import { $is_code_block_node } from "../code-block";
-import styles from "./code-block.module.scss";
 
 const CodeBlockEditor = dynamic(() => import("./editor"));
 
 const CodeBlockComponent = ({
   node_key,
   language,
-  collab_text
+  content
 }: {
-  collab_text: YText;
+  content: YText;
   language: string | null;
   node_key: NodeKey;
 }): React.ReactElement | null => {
@@ -48,23 +47,6 @@ const CodeBlockComponent = ({
     { enableOnContentEditable: true }
   );
 
-  const editable = editor.isEditable();
-
-  /**
-   * Changes the language of the code inside the block
-   */
-  const change_language = React.useCallback(
-    (language: string | null) => {
-      editor.update(() => {
-        const node = $get_node_by_key(node_key);
-        if ($is_code_block_node(node)) {
-          node.set_language(language);
-        }
-      });
-    },
-    [editor, node_key]
-  );
-
   React.useEffect(() => {
     let is_mounted = true;
 
@@ -82,11 +64,7 @@ const CodeBlockComponent = ({
     };
   }, [editor]);
 
-  return (
-    <div className={styles["code-block"]}>
-      <CodeBlockEditor collab_text={collab_text} node_key={node_key} />
-    </div>
-  );
+  return <CodeBlockEditor content={content} node_key={node_key} />;
 };
 
 export default CodeBlockComponent;

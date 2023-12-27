@@ -61,17 +61,19 @@ const sanitize_range = (
  * @param value Value to generate the color fromm
  * @param saturation Saturation bounds
  * @param lightness Lightness bounds
+ * @param alpha The alpha value
  */
 export const get_user_color = (
   value: string,
   {
     saturation = [50, 55],
     lightness = [50, 60]
-  }: { lightness?: [number, number]; saturation?: [number, number] } = {}
+  }: { lightness?: [number, number]; saturation?: [number, number] } = {},
+  alpha = 100
 ): string => {
   const hash = Math.abs(hash_code(String(value)));
   const h = bound_hash_code(hash, [0, 360]);
   const s = bound_hash_code(hash, sanitize_range(saturation, SATURATION_BOUND));
   const l = bound_hash_code(hash, sanitize_range(lightness, LIGHTNESS_BOUND));
-  return `hsl(${h},${s}%,${l}%)`;
+  return `hsla(${h},${s}%,${l}%,${alpha}%)`;
 };

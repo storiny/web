@@ -1,15 +1,5 @@
-import {
-  Annotation,
-  EditorState,
-  Facet,
-  StateCommand
-} from "@codemirror/state";
-import {
-  EditorView,
-  KeyBinding,
-  ViewPlugin,
-  ViewUpdate
-} from "@codemirror/view";
+import { Annotation, Facet, StateCommand } from "@codemirror/state";
+import { EditorView, ViewPlugin, ViewUpdate } from "@codemirror/view";
 import { UndoManager } from "yjs";
 
 import { YRange } from "./range";
@@ -184,20 +174,3 @@ export const undo: StateCommand = ({ state }) =>
 
 export const redo: StateCommand = ({ state }) =>
   state.facet(code_block_undo_manager_facet).redo() || true;
-
-export const undo_depth = (state: EditorState): number =>
-  state.facet(code_block_undo_manager_facet).get_undo_manager().undoStack
-    .length;
-
-export const redo_depth = (state: EditorState): number =>
-  state.facet(code_block_undo_manager_facet).get_undo_manager().redoStack
-    .length;
-
-/**
- * Default key bindigs for the undo manager.
- */
-export const code_block_undo_manager_keymap: KeyBinding[] = [
-  { key: "Mod-z", run: undo, preventDefault: true },
-  { key: "Mod-y", mac: "Mod-Shift-z", run: redo, preventDefault: true },
-  { key: "Mod-Shift-z", run: redo, preventDefault: true }
-];

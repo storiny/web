@@ -16,7 +16,7 @@
   max-width: var(--offset-width, 114px);
   padding: 2px;
   pointer-events: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   background-color: var(--color);
   box-shadow: var(--shadow-md);
   transform: translateY(-50%);
@@ -78,5 +78,4 @@
   top: 0;
   width: 100%;
   height: 100%;
-  opacity: 0.35;
 }

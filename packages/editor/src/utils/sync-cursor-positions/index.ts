@@ -32,6 +32,7 @@ export interface CursorSelection {
     offset: number;
   };
   name: HTMLSpanElement;
+  selection_color: string;
   selections: Array<HTMLElement>;
 }
 
@@ -41,6 +42,7 @@ export interface Cursor {
   color: string;
   name: string;
   selection: null | CursorSelection;
+  selection_color: string;
 }
 
 /**
@@ -48,7 +50,10 @@ export interface Cursor {
  * @param props Cursor props
  */
 const create_cursor = (
-  props: Pick<Cursor, "color" | "name" | "avatar_hex" | "avatar_id">
+  props: Pick<
+    Cursor,
+    "color" | "selection_color" | "name" | "avatar_hex" | "avatar_id"
+  >
 ): Cursor => ({
   ...props,
   selection: null
@@ -144,6 +149,7 @@ const create_cursor_selection = (
     },
     caret,
     color,
+    selection_color: cursor.selection_color,
     focus: {
       key: focus_key,
       offset: focus_offset
@@ -199,7 +205,7 @@ const update_cursor = (
   cursor.selection = next_selection;
 
   const caret = next_selection.caret;
-  const color = next_selection.color;
+  const selection_color = next_selection.selection_color;
   const selections = next_selection.selections;
   const anchor = next_selection.anchor;
   const focus = next_selection.focus;
@@ -254,7 +260,7 @@ const update_cursor = (
 
       const selection_bg = document.createElement("span");
       selection_bg.className = styles["selection-bg"];
-      selection_bg.style.backgroundColor = color;
+      selection_bg.style.backgroundColor = selection_color;
 
       selection.appendChild(selection_bg);
       cursors_container.appendChild(selection);
@@ -324,6 +330,7 @@ export const sync_cursor_positions = (
         focus_pos,
         name,
         color,
+        selection_color,
         avatar_id,
         avatar_hex,
         focusing
@@ -332,7 +339,13 @@ export const sync_cursor_positions = (
       let cursor = cursors.get(client_id);
 
       if (cursor === undefined) {
-        cursor = create_cursor({ name, color, avatar_id, avatar_hex });
+        cursor = create_cursor({
+          name,
+          color,
+          selection_color,
+          avatar_id,
+          avatar_hex
+        });
         cursors.set(client_id, cursor);
       }
 

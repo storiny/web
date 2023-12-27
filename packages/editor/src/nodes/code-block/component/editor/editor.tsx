@@ -3,55 +3,48 @@
 import { Compartment, EditorState, Extension } from "@codemirror/state";
 import { EditorView, ViewUpdate } from "@codemirror/view";
 import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
-import { basicSetup as basic_setup } from "codemirror";
+import { clsx } from "clsx";
 import { useAtomValue as use_atom_value } from "jotai";
 import { $getNodeByKey as $get_node_by_key, NodeKey } from "lexical";
 import React from "react";
 import { Text as YText } from "yjs";
 
-import { awareness_atom, undo_manager_atom } from "../../../atoms";
-import {
-  code_block_remote_selections,
-  code_block_remote_selections_theme
-} from "../../../collaboration/code-block/selection";
-import {
-  code_block_sync,
-  code_block_sync_facet,
-  YSyncConfig
-} from "../../../collaboration/code-block/sync";
-import {
-  code_block_undo_manager,
-  code_block_undo_manager_facet,
-  CodeBlockUndoManagerConfig,
-  redo,
-  undo
-} from "../../../collaboration/code-block/undo-manager";
-import { $is_code_block_node } from "../code-block";
+import Divider from "~/components/divider";
+import css from "~/theme/main.module.scss";
+
+import { awareness_atom, undo_manager_atom } from "../../../../atoms";
+import { $is_code_block_node } from "../../code-block";
+import styles from "./editor.module.scss";
 
 const CodeBlockEditor = ({
   node_key,
-  collab_text
+  content
 }: {
-  collab_text: YText;
+  content: YText;
   node_key: NodeKey;
 }): React.ReactElement => {
+  const [editor] = use_lexical_composer_context();
   const undo_manager = use_atom_value(undo_manager_atom);
   const awareness = use_atom_value(awareness_atom);
   const ref = React.useRef<HTMLDivElement | null>(null);
   const view_ref = React.useRef<EditorView | null>(null);
-  const [editor] = use_lexical_composer_context();
+  const mounted_ref = React.useRef<boolean>(false);
   const read_only_ref = React.useRef<boolean>(!editor.isEditable());
   const lang_compartment = React.useMemo(() => new Compartment(), []);
   const wrap_compartment = React.useMemo(() => new Compartment(), []);
   const theme_compartment = React.useMemo(() => new Compartment(), []);
 
+  /**
+   * Updates the code block language
+   * @param next_language The next language
+   */
   const update_language = React.useCallback(
-    (next_content: string) =>
+    (next_language: string) =>
       editor.update(() => {
         const node = $get_node_by_key(node_key);
 
         if ($is_code_block_node(node)) {
-          node.set_language(next_content);
+          node.set_language(next_language);
         }
       }),
     [editor, node_key]
@@ -114,10 +107,40 @@ const CodeBlockEditor = ({
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, []);
 
-  React.useEffect(() => {
+  /**
+   * Focuses the main editor
+   */
+  const focus_editor = React.useCallback(() => {
+    const content_editable = document.querySelector(
+      "div[data-editor-content]"
+    ) as HTMLDivElement | null;
+
+    editor.setEditable(true);
+
+    setTimeout(() => {
+      if (content_editable) {
+        editor.focus();
+        content_editable.focus();
+      }
+    }, 10);
+  }, [editor]);
+
+  /**
+   * Destroys the code editor
+   */
+  const destroy_editor = React.useCallback(() => {
     if (view_ref.current) {
       view_ref.current?.destroy();
     }
+  }, []);
+
+  React.useEffect(() => {
+    if (mounted_ref.current) {
+      return;
+    }
+
+    mounted_ref.current = true;
+    destroy_editor();
 
     (async (): Promise<void> => {
       // const lang_callable = await getLangCallable(
@@ -135,45 +158,26 @@ const CodeBlockEditor = ({
       //   wrapCompartment.of([])
       // ];
 
-      const collab_plugins = [
-        code_block_sync_facet.of(new YSyncConfig(collab_text, awareness)),
-        code_block_sync
-      ];
+      const extensions: Extension[] = [wrap_compartment.of([])];
 
-      if (awareness !== null) {
-        collab_plugins.push(
-          code_block_remote_selections_theme,
-          code_block_remote_selections
+      if (read_only_ref.current) {
+        const { read_only_extensions } = await import("./extensions/read-only");
+        extensions.push(...read_only_extensions);
+      } else {
+        const { get_editable_extensions } = await import(
+          "./extensions/editable"
         );
+        const editable_extensions = get_editable_extensions({
+          content,
+          editor,
+          node_key,
+          awareness,
+          undo_manager,
+          focus_editor
+        });
+
+        extensions.push(...editable_extensions);
       }
-
-      if (undo_manager !== null) {
-        collab_plugins.push(
-          code_block_undo_manager_facet.of(
-            new CodeBlockUndoManagerConfig(undo_manager)
-          ),
-          code_block_undo_manager,
-          EditorView.domEventHandlers({
-            beforeinput: (e, view) => {
-              if (e.inputType === "historyUndo") {
-                return undo(view);
-              }
-
-              if (e.inputType === "historyRedo") {
-                return redo(view);
-              }
-
-              return false;
-            }
-          })
-        );
-      }
-
-      const extensions: Extension[] = [
-        basic_setup,
-        wrap_compartment.of([]),
-        collab_plugins
-      ];
 
       if (!read_only_ref.current) {
         extensions.push(
@@ -181,38 +185,32 @@ const CodeBlockEditor = ({
             if (update.focusChanged) {
               if (update.view.hasFocus) {
                 editor.setEditable(false);
+
+                if (awareness) {
+                  const local_state = awareness.getLocalState();
+
+                  if (local_state) {
+                    local_state.focusing = true;
+                    awareness.setLocalState(local_state);
+                  }
+                }
               } else if (
                 !document.activeElement ||
+                // Check if the focus jumped from one code block to another
                 (document.activeElement &&
                   !document.activeElement.classList.contains("cm-content"))
               ) {
+                // Reset the selection
                 update.view.dispatch({ selection: { anchor: 0 } });
-
-                editor.setEditable(true);
-
-                const content_editable = document.querySelector(
-                  "div[data-editor-content]"
-                ) as HTMLDivElement | null;
-
-                setTimeout(() => {
-                  if (content_editable) {
-                    editor.focus();
-                    content_editable.focus();
-                  }
-                }, 10);
+                focus_editor();
               }
-            } else if (update.docChanged) {
-              // const { doc: code } = update.view.state.toJSON() || {};
-              // collab_text.insert(0, code);
-              // update_content(code);
-              // update_line_count(update.view.state.doc.lines || 1);
             }
           })
         );
       }
 
       const state = EditorState.create({
-        doc: collab_text.toString(),
+        doc: content.toString(),
         extensions
       });
 
@@ -226,12 +224,17 @@ const CodeBlockEditor = ({
       // setLoading(false);
     })();
 
-    return () => {
-      if (view_ref.current) {
-        view_ref.current?.destroy();
-      }
-    };
-  }, [awareness, collab_text, editor, undo_manager, wrap_compartment]);
+    return destroy_editor;
+  }, [
+    awareness,
+    content,
+    destroy_editor,
+    editor,
+    focus_editor,
+    node_key,
+    undo_manager,
+    wrap_compartment
+  ]);
 
   // React.useEffect(() => {
   //   if (view_ref.current) {
@@ -244,7 +247,16 @@ const CodeBlockEditor = ({
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [mode]);
 
-  return <div ref={ref} />;
+  return (
+    <div className={clsx(css["flex"], styles["code-block"])}>
+      <div className={clsx(css["flex-center"], styles.header)}>
+        <span className={styles.title}>Block title</span>
+        <Divider orientation={"vertical"} />
+        <div className={clsx(css["flex-center"], styles.actions)}>A</div>
+      </div>
+      <div className={styles.editor} ref={ref} />
+    </div>
+  );
 };
 
 export default CodeBlockEditor;

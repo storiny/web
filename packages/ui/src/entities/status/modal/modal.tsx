@@ -240,7 +240,8 @@ const StatusModal = ({
           </ModalFooterButton>
           <ModalFooterButton
             compact={is_smaller_than_mobile}
-            disabled={is_loading || !form.formState.isDirty}
+            disabled={!form.formState.isDirty}
+            loading={is_loading}
             onClick={(event): void => {
               event.preventDefault(); // Prevent closing of modal
               form.handleSubmit(handle_submit)(); // Submit manually
