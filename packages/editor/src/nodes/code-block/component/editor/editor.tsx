@@ -7,9 +7,16 @@ import { clsx } from "clsx";
 import { useAtomValue as use_atom_value } from "jotai";
 import { $getNodeByKey as $get_node_by_key, NodeKey } from "lexical";
 import React from "react";
+import use_resize_observer from "use-resize-observer";
 import { Text as YText } from "yjs";
 
 import Divider from "~/components/divider";
+import IconButton from "~/components/icon-button";
+import Typography from "~/components/typography";
+import CopyIcon from "~/icons/copy";
+import SettingsIcon from "~/icons/settings";
+import TerminalIcon from "~/icons/terminal";
+import TextWrapIcon from "~/icons/text-wrap";
 import css from "~/theme/main.module.scss";
 
 import { awareness_atom, undo_manager_atom } from "../../../../atoms";
@@ -30,6 +37,8 @@ const CodeBlockEditor = ({
   const view_ref = React.useRef<EditorView | null>(null);
   const mounted_ref = React.useRef<boolean>(false);
   const read_only_ref = React.useRef<boolean>(!editor.isEditable());
+  const { height: container_height, ref: resize_observer_ref } =
+    use_resize_observer();
   const lang_compartment = React.useMemo(() => new Compartment(), []);
   const wrap_compartment = React.useMemo(() => new Compartment(), []);
   const theme_compartment = React.useMemo(() => new Compartment(), []);
@@ -248,13 +257,68 @@ const CodeBlockEditor = ({
   // }, [mode]);
 
   return (
-    <div className={clsx(css["flex"], styles["code-block"])}>
-      <div className={clsx(css["flex-center"], styles.header)}>
-        <span className={styles.title}>Block title</span>
-        <Divider orientation={"vertical"} />
-        <div className={clsx(css["flex-center"], styles.actions)}>A</div>
+    <div className={styles["code-block"]}>
+      <div
+        className={clsx(
+          styles.container,
+          // Grid for overflowing the embed
+          css["grid"],
+          css["dashboard"],
+          css["no-sidenav"]
+        )}
+        data-testid={"code-block-node"}
+        ref={resize_observer_ref}
+      >
+        <div className={clsx(css["flex-col"], styles.content)}>
+          <div className={clsx(css["flex-center"], styles.header)}>
+            <div className={clsx(css.flex, styles.info)}>
+              <span className={clsx(css["flex-center"], styles.icon)}>
+                <TerminalIcon />
+              </span>
+              <Typography
+                className={clsx(styles.x, styles.title)}
+                color={"minor"}
+              >
+                Block title
+              </Typography>
+            </div>
+            <Divider orientation={"vertical"} />
+            <div className={clsx(css["flex-center"], styles.actions)}>
+              <IconButton
+                className={clsx(styles.x, styles.action)}
+                variant={"ghost"}
+              >
+                <TextWrapIcon />
+              </IconButton>
+              <IconButton
+                className={clsx(styles.x, styles.action)}
+                variant={"ghost"}
+              >
+                <CopyIcon />
+              </IconButton>
+              {!read_only_ref.current && (
+                <>
+                  <Divider orientation={"vertical"} />
+                  <IconButton
+                    className={clsx(styles.x, styles.action)}
+                    variant={"ghost"}
+                  >
+                    <SettingsIcon />
+                  </IconButton>
+                </>
+              )}
+            </div>
+          </div>
+          <div className={styles.editor} ref={ref} />
+        </div>
       </div>
-      <div className={styles.editor} ref={ref} />
+      {/* Compensate for the absolute position of the editor element */}
+      <div
+        aria-hidden
+        style={{
+          height: container_height
+        }}
+      />
     </div>
   );
 };
