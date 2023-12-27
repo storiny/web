@@ -37,7 +37,7 @@ describe("<MFAForm />", () => {
 
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(mock_submit).toHaveBeenCalledWith({
-      mfa_code: "123456"
+      code: "123456"
     });
   });
 });
