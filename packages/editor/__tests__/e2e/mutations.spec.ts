@@ -51,9 +51,7 @@ test.describe("mutations", () => {
 
     // Remove the paragraph
     await evaluate(page, () => {
-      const root_element = document.querySelector(
-        `section[contenteditable="true"]`
-      );
+      const root_element = document.querySelector(`div[data-editor-content]`);
       const paragraph = root_element?.firstChild;
       paragraph?.remove();
     });
@@ -61,9 +59,7 @@ test.describe("mutations", () => {
 
     // Remove the paragraph content
     await evaluate(page, () => {
-      const root_element = document.querySelector(
-        `section[contenteditable="true"]`
-      );
+      const root_element = document.querySelector(`div[data-editor-content]`);
       const paragraph = root_element?.firstChild;
 
       if (paragraph) {
@@ -74,9 +70,7 @@ test.describe("mutations", () => {
 
     // Remove the first child node
     await evaluate(page, () => {
-      const root_element = document.querySelector(
-        `section[contenteditable="true"]`
-      );
+      const root_element = document.querySelector(`div[data-editor-content]`);
       const first_node = root_element?.firstChild?.firstChild;
       first_node?.remove();
     });
@@ -84,9 +78,7 @@ test.describe("mutations", () => {
 
     // Remove the first child node's content
     await evaluate(page, () => {
-      const root_element = document.querySelector(
-        `section[contenteditable="true"]`
-      );
+      const root_element = document.querySelector(`div[data-editor-content]`);
       const first_node = root_element?.firstChild?.firstChild;
 
       if (first_node) {
@@ -97,9 +89,7 @@ test.describe("mutations", () => {
 
     // Move last node to first
     await evaluate(page, () => {
-      const root_element = document.querySelector(
-        `section[contenteditable="true"]`
-      );
+      const root_element = document.querySelector(`div[data-editor-content]`);
       const paragraph = root_element?.firstChild;
       const text_node = paragraph?.firstChild!;
       const code_node = text_node?.nextSibling!;
@@ -109,9 +99,7 @@ test.describe("mutations", () => {
 
     // Add additional nodes to the root
     await evaluate(page, () => {
-      const root_element = document.querySelector(
-        `section[contenteditable="true"]`
-      );
+      const root_element = document.querySelector(`div[data-editor-content]`);
       const span = document.createElement("span");
       const another_span = document.createElement("span");
       const text = document.createTextNode("123");
@@ -124,9 +112,7 @@ test.describe("mutations", () => {
 
     // Add additional nodes to the paragraph
     await evaluate(page, () => {
-      const root_element = document.querySelector(
-        `section[contenteditable="true"]`
-      );
+      const root_element = document.querySelector(`div[data-editor-content]`);
       const paragraph = root_element?.firstChild;
       const first_node = paragraph?.firstChild!;
 
@@ -142,9 +128,7 @@ test.describe("mutations", () => {
 
     // Add additional nodes to the text ndoe
     await evaluate(page, () => {
-      const root_element = document.querySelector(
-        `section[contenteditable="true"]`
-      );
+      const root_element = document.querySelector(`div[data-editor-content]`);
       const paragraph = root_element?.firstChild;
       const first_node = paragraph?.firstChild;
 
@@ -158,9 +142,7 @@ test.describe("mutations", () => {
 
     // Replace text nodes
     await evaluate(page, () => {
-      const root_element = document.querySelector(
-        `section[contenteditable="true"]`
-      );
+      const root_element = document.querySelector(`div[data-editor-content]`);
       const paragraph = root_element?.firstChild;
       const first_node = paragraph?.firstChild;
       const text = document.createTextNode("123");

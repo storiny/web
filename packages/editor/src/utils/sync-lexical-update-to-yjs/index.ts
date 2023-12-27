@@ -36,7 +36,8 @@ const handle_normalization_merge_conflicts = (
 
     if (collab_node instanceof CollabTextNode) {
       if ($is_text_node(lexical_node)) {
-        // We mutate the text collab nodes after removing all the dead nodes first, otherwise the offsets break.
+        // We mutate the text collab nodes after removing all the dead nodes
+        // first, otherwise the offsets break.
         merged_nodes.push([collab_node, lexical_node.__text]);
       } else {
         const offset = collab_node.get_offset();

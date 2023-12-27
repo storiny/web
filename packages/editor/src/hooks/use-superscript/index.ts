@@ -6,7 +6,7 @@ import React from "react";
 import { superscript_atom } from "../../atoms";
 
 /**
- * Hooks for using superscript text style
+ * Hook for using superscript text style
  */
 export const use_superscript = (): [boolean, () => void] => {
   const superscript = use_atom_value(superscript_atom);

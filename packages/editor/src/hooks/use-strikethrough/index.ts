@@ -6,7 +6,7 @@ import React from "react";
 import { strikethrough_atom } from "../../atoms";
 
 /**
- * Hooks for using strikethrough text style
+ * Hook for using strikethrough text style
  */
 export const use_strikethrough = (): [boolean, () => void] => {
   const strikethrough = use_atom_value(strikethrough_atom);

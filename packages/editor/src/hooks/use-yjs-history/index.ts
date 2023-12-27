@@ -1,4 +1,5 @@
 import { mergeRegister as merge_register } from "@lexical/utils";
+import { useSetAtom as use_set_atom } from "jotai";
 import {
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
@@ -9,6 +10,7 @@ import {
 } from "lexical";
 import React from "react";
 
+import { undo_manager_atom } from "../../atoms";
 import { Binding } from "../../collaboration/bindings";
 import { create_undo_manager } from "../../collaboration/history";
 
@@ -21,10 +23,15 @@ export const use_yjs_history = (
   editor: LexicalEditor,
   binding: Binding
 ): (() => void) => {
+  const set_undo_manager = use_set_atom(undo_manager_atom);
   const undo_manager = React.useMemo(
     () => create_undo_manager(binding, binding.root.get_shared_type()),
     [binding]
   );
+
+  React.useEffect(() => {
+    set_undo_manager(undo_manager);
+  }, [set_undo_manager, undo_manager]);
 
   React.useEffect(() => {
     const undo = (): void => {
@@ -53,7 +60,7 @@ export const use_yjs_history = (
         COMMAND_PRIORITY_EDITOR
       )
     );
-  });
+  }, [editor, undo_manager]);
 
   React.useEffect(() => {
     const update_undo_redo_states = (): void => {
