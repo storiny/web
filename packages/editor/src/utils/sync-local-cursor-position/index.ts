@@ -7,8 +7,7 @@ import {
   NodeKey,
   Point
 } from "lexical";
-import { XmlElement, XmlText } from "yjs";
-import { YMap } from "yjs/dist/src/internals";
+import { Map as YMap, XmlElement, XmlText } from "yjs";
 
 import { Binding } from "../../collaboration/bindings";
 import { Provider } from "../../collaboration/provider";

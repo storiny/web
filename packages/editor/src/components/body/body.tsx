@@ -47,6 +47,7 @@ const ColorPlugin = dynamic(() => import("../../plugins/color"));
 const CaptionPlugin = dynamic(() => import("../../plugins/caption"));
 const EmbedPlugin = dynamic(() => import("../../plugins/embed"));
 const ImagePlugin = dynamic(() => import("../../plugins/image"));
+const CodeBlockPlugin = dynamic(() => import("../../plugins/code-block"));
 const LinkPlugin = dynamic(() => import("../../plugins/link"));
 const ListPlugin = dynamic(() =>
   import("@lexical/react/LexicalListPlugin").then(
@@ -137,6 +138,7 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
           <CaptionPlugin />
           <EmbedPlugin />
           <ImagePlugin />
+          <CodeBlockPlugin />
           <HorizontalRulePlugin />
           <TextEntityPlugin />
           <ListMaxIndentLevelPlugin />

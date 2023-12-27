@@ -6,7 +6,7 @@ import React from "react";
 import { can_redo_atom, can_undo_atom } from "../../atoms";
 
 /**
- * Hooks for using editor history
+ * Hook for using editor history
  */
 export const use_history = (): {
   can_redo: boolean;

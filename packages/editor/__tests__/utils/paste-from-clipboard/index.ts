@@ -70,7 +70,7 @@ export const paste_from_clipboard = async (
         };
       }
 
-      const editor = document.querySelector('section[contenteditable="true"]');
+      const editor = document.querySelector("div[data-editor-content]");
       const paste_event = new ClipboardEvent("paste", {
         bubbles: true,
         cancelable: true

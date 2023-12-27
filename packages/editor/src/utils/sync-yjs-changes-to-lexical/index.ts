@@ -7,7 +7,14 @@ import {
   $setSelection as $set_selection,
   EditorState
 } from "lexical";
-import { Text as YText, YEvent, YMapEvent, YTextEvent, YXmlEvent } from "yjs";
+import {
+  Text as YText,
+  XmlElement,
+  YEvent,
+  YMapEvent,
+  YTextEvent,
+  YXmlEvent
+} from "yjs";
 
 import { Binding } from "../../collaboration/bindings";
 import { CollabDecoratorNode } from "../../collaboration/nodes/decorator";
@@ -27,6 +34,16 @@ import { sync_local_cursor_position } from "../sync-local-cursor-position";
  */
 const sync_event = (binding: Binding, event: YEvent<any>): void => {
   const { target } = event;
+
+  // Ignore code-block text type
+  if (
+    target instanceof YText &&
+    target.parent instanceof XmlElement &&
+    target.parent._collab_node.get_type() === "code-block"
+  ) {
+    return;
+  }
+
   const collab_node = get_or_create_collab_node_from_shared_type(
     binding,
     target
@@ -162,7 +179,8 @@ export const sync_yjs_changes_to_lexical = ({
               if (does_selection_need_recovering(selection)) {
                 const root = $get_root();
 
-                // If there was a collision on the top level paragraph, we need to re-add a paragraph
+                // If there was a collision on the top level paragraph, we need
+                // to re-add a paragraph
                 if (root.getChildrenSize() === 0) {
                   root.append($create_paragraph_node());
                 }

@@ -24,6 +24,7 @@ import {
   $create_collab_text_node,
   CollabTextNode
 } from "../../collaboration/nodes/text";
+import { $is_code_block_node } from "../../nodes/code-block";
 
 /**
  * Creates a collab node from a lexical node
@@ -55,7 +56,6 @@ export const $create_collab_node_from_lexical_node = (
       null
     );
   } else if ($is_text_node(lexical_node)) {
-    // TODO: Create a token text node for `token`, `segmented` nodes
     const map = new YMap();
 
     collab_node = $create_collab_text_node(
@@ -71,10 +71,12 @@ export const $create_collab_node_from_lexical_node = (
     );
   } else if ($is_line_break_node(lexical_node)) {
     const map = new YMap();
+
     map.set("__type", "linebreak");
     collab_node = $create_collab_line_break_node(map, parent);
   } else if ($is_decorator_node(lexical_node)) {
     const xml_element = new XmlElement(lexical_node.getType());
+
     collab_node = $create_collab_decorator_node(xml_element, parent, nodeType);
     collab_node.sync_properties_from_lexical(binding, lexical_node, null);
   } else {

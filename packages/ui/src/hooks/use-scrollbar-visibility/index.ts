@@ -2,7 +2,7 @@ import React from "react";
 import use_resize_observer from "use-resize-observer";
 
 /**
- * Hooks for determining scrollbar visibility inside a container
+ * Hook for determining scrollbar visibility inside a container
  * @param initial_value Initial default value
  */
 export const use_scrollbar_visibility = <T extends HTMLElement>(
