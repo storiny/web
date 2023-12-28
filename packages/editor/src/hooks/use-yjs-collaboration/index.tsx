@@ -154,7 +154,8 @@ export const use_yjs_collaboration = ({
                     DOC_STATUS.connecting,
                     DOC_STATUS.connected,
                     DOC_STATUS.reconnecting,
-                    DOC_STATUS.syncing
+                    DOC_STATUS.syncing,
+                    DOC_STATUS.synced
                   ].includes(prev_value)
                 ? DOC_STATUS.disconnected
                 : prev_value
@@ -192,7 +193,7 @@ export const use_yjs_collaboration = ({
           initialize_editor(editor);
         }
 
-        set_doc_status(DOC_STATUS.connected);
+        set_doc_status(DOC_STATUS.synced);
         is_reloading_doc.current = false;
       };
 

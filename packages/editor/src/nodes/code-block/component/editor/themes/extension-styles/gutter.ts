@@ -1,10 +1,10 @@
-import { CodeBlockThemeSettings, ExtensionStyles } from "../base";
+import { ExtensionStyles } from "../base";
 
 const empty_line_gutter_extension_styles: ExtensionStyles = {
   /* eslint-disable prefer-snakecase/prefer-snakecase */
   "&.cm-emptyLines": {
-    color: "var(--storiny-palette-text-secondary)",
-    opacity: 0.4,
+    color: "var(--fg-muted)",
+    opacity: 0.45,
     pointerEvents: "none",
     textAlign: "center",
     width: "18px"
@@ -47,39 +47,35 @@ const fold_gutter_extension_styles: ExtensionStyles = {
   /* eslint-enable prefer-snakecase/prefer-snakecase */
 };
 
-const get_line_number_gutter_extension_styles = (
-  settings: CodeBlockThemeSettings
-): ExtensionStyles => ({
+const line_number_gutter_extension_styles: ExtensionStyles = {
   /* eslint-disable prefer-snakecase/prefer-snakecase */
-  "&.cm-lineNumbers": {
+  "& .cm-gutter.cm-lineNumbers": {
+    "& .cm-gutterElement": {
+      color: "var(--fg-muted)",
+      opacity: 0.65
+    },
+    marginLeft: "6px"
+  },
+  "&.cm-focused .cm-gutter.cm-lineNumbers": {
     "& .cm-gutterElement": {
       "&.cm-activeLineGutter": {
-        color: settings.line_numbers.active_color,
-        textShadow: settings.line_numbers.active_shadow
-      },
-      color: settings.line_numbers.color
-    },
-    marginLeft: "5px"
+        color: "var(--fg-major)"
+      }
+    }
   }
   /* eslint-enable prefer-snakecase/prefer-snakecase */
-});
+};
 
-/**
- * Returns the styles for the gutter extension
- * @param settings Theme settings
- */
-export const get_gutter_extension_styles = (
-  settings: CodeBlockThemeSettings
-): ExtensionStyles => ({
+export const gutter_extension_styles: ExtensionStyles = {
   /* eslint-disable prefer-snakecase/prefer-snakecase */
   "& .cm-gutter": {
     "& *": {
-      fontFamily: "monospace"
+      fontFamily: "var(--font-monospace)"
     },
     userSelect: "none",
     ...empty_line_gutter_extension_styles,
-    ...fold_gutter_extension_styles,
-    ...get_line_number_gutter_extension_styles(settings)
-  }
+    ...fold_gutter_extension_styles
+  },
+  ...line_number_gutter_extension_styles
   /* eslint-enable prefer-snakecase/prefer-snakecase */
-});
+};
