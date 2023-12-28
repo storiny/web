@@ -77,9 +77,18 @@
     margin-left: 8px;
   }
 
-  &.action {
+  &.action,
+  &.select {
     border-radius: 0;
     height: 100%;
+    outline-offset: calc(-1 * var(--focus-thickness)); // Invert the focus
+  }
+
+  &.action {
     padding-inline: 18px;
+  }
+
+  &.select {
+    border: none;
   }
 }
