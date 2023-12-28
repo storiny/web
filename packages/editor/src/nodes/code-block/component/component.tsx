@@ -64,7 +64,13 @@ const CodeBlockComponent = ({
     };
   }, [editor]);
 
-  return <CodeBlockEditor content={content} node_key={node_key} />;
+  return (
+    <CodeBlockEditor
+      content={content}
+      language={language}
+      node_key={node_key}
+    />
+  );
 };
 
 export default CodeBlockComponent;

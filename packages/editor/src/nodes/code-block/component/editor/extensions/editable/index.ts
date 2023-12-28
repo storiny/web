@@ -6,8 +6,6 @@ import {
 } from "@codemirror/autocomplete";
 import {
   defaultKeymap as default_keymap,
-  history,
-  historyKeymap as history_keymap,
   indentWithTab as indent_with_tab
 } from "@codemirror/commands";
 import {
@@ -23,8 +21,6 @@ import {
   drawSelection as draw_selection,
   dropCursor as drop_cursor,
   EditorView,
-  highlightActiveLine as highlight_active_line,
-  highlightActiveLineGutter as highlight_active_line_gutter,
   keymap,
   rectangularSelection as rectangular_selection
 } from "@codemirror/view";
@@ -50,7 +46,6 @@ import {
   undo
 } from "../../../../../../collaboration/code-block/undo-manager";
 import { $is_code_block_node } from "../../../../code-block";
-import { common_extensions } from "../common";
 
 /**
  * Returns the set of code editor extensions for editable component.
@@ -122,30 +117,26 @@ export const get_editable_extensions = ({
   }
 
   return [
-    ...common_extensions,
+    /* eslint-disable prefer-snakecase/prefer-snakecase */
     ...collab_extensions,
-    highlight_active_line_gutter(),
-    history(),
     draw_selection(),
     drop_cursor(),
     indent_on_input(),
     bracket_matching(),
     close_brackets(),
-    autocompletion(),
+    autocompletion({ closeOnBlur: true, maxRenderedOptions: 5 }),
     rectangular_selection(),
     crosshair_cursor(),
-    highlight_active_line(),
     highlight_selection_matches(),
-    // TODO: Do we need this?
     EditorState.allowMultipleSelections.of(true),
     keymap.of([
       indent_with_tab,
       ...close_brackets_keymap,
       ...default_keymap,
-      ...history_keymap,
       ...fold_keymap,
       ...completion_keymap,
       ...lint_keymap
     ])
+    /* eslint-enable prefer-snakecase/prefer-snakecase */
   ];
 };
