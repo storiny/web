@@ -5,7 +5,6 @@ import { extend_code_block_theme } from "./base";
 export const CODE_BLOCK_DARK_THEME = extend_code_block_theme({
   mode: "dark",
   settings: {
-    active_line_background: "rgba(67 72 111 / 30%)",
     background: "#0f0f10",
     caret: "#ffa846",
     fold_marker_filter: "invert(1)",

@@ -8,8 +8,8 @@ import { EditorView } from "@codemirror/view";
 import type { StyleSpec } from "style-mod";
 
 import { auto_link_extension_styles } from "./extension-styles/auto-link";
-import { get_gutter_extension_styles } from "./extension-styles/gutter";
-import { get_tooltip_extension_styles } from "./extension-styles/tooltip";
+import { gutter_extension_styles } from "./extension-styles/gutter";
+import { tooltip_extension_styles } from "./extension-styles/tooltip";
 
 export type CodeBlockThemeMode = "light" | "dark";
 export type ExtensionStyles = Record<string, StyleSpec>;
@@ -21,7 +21,6 @@ export interface ExtendCodeBlockThemeOptions {
 }
 
 export interface CodeBlockThemeSettings {
-  active_line_background: string;
   background: string;
   caret: string;
   fold_marker_filter: string;
@@ -67,19 +66,16 @@ export const extend_code_block_theme = ({
     /* eslint-disable prefer-snakecase/prefer-snakecase */
     "&": {
       fontSize: "14px",
-      backgroundColor: settings.background,
-      color: settings.foreground,
-      outline: "none",
-      transition: "box-shadow 250ms ease"
-    },
-    "& .cm-activeLine": {
-      backgroundColor: "transparent"
+      backgroundColor: "var(--bg-body)",
+      color: "var(--fg-major)",
+      outline: "none"
     },
     "& .cm-activeLineGutter": {
       backgroundColor: "transparent"
     },
     "& .cm-content": {
-      caretColor: settings.caret
+      caretColor: settings.caret,
+      paddingInline: "8px"
     },
     "& .cm-cursor, .cm-dropCursor": {
       borderLeftColor: settings.caret
@@ -104,18 +100,15 @@ export const extend_code_block_theme = ({
     },
     "& .cm-gutters": {
       "&:after": {
-        backgroundImage: `linear-gradient(
-            to right,
-            var(--storiny-palette-background-body) 80%,
-            transparent
-        )`,
+        borderRight: "1px solid var(--divider)",
         content: '""',
         height: "100%",
         position: "absolute",
-        width: "calc(100% + 6px)",
-        zIndex: -1
+        width: "calc(100% + 1px)",
+        zIndex: -1,
+        opacity: 0.75
       },
-      backgroundColor: "transparent",
+      backgroundColor: "var(--bg-body)",
       border: "none"
     },
     "& .cm-scroller": {
@@ -124,22 +117,19 @@ export const extend_code_block_theme = ({
       },
       "&::-webkit-scrollbar-thumb": {
         borderRadius: "8px",
-        boxShadow: "inset 0 0 3px var(--storiny-palette-divider)"
+        boxShadow: "inset 0 0 3px var(--divider)"
       },
       "&::-webkit-scrollbar-track": {
-        backgroundColor: "var(--storiny-palette-background-level1)",
+        backgroundColor: "var(--inverted-200)",
         borderRadius: "0 0 8px 8px",
         borderTop:
           "1px solid rgba(var(--storiny-palette-neutral-mainChannel) / 15%)",
         boxShadow: "none"
       },
       outline: "none",
-      padding: "8px 0"
+      padding: "6px 0"
     },
     "&.cm-focused": {
-      "& .cm-activeLine": {
-        backgroundColor: settings.active_line_background
-      },
       "& .cm-selectionBackground, & .cm-selectionLayer .cm-selectionBackground, .cm-content ::selection":
         {
           backgroundColor: settings.selection.color
@@ -158,8 +148,8 @@ export const extend_code_block_theme = ({
       }
     },
     ...auto_link_extension_styles,
-    ...get_gutter_extension_styles(settings),
-    ...get_tooltip_extension_styles(settings)
+    ...gutter_extension_styles,
+    ...tooltip_extension_styles
     /* eslint-enable prefer-snakecase/prefer-snakecase */
   };
 

@@ -5,7 +5,6 @@ import { extend_code_block_theme } from "./base";
 export const CODE_BLOCK_LIGHT_THEME = extend_code_block_theme({
   mode: "light",
   settings: {
-    active_line_background: "rgba(225,228,246,0.3)",
     background: "var(--storiny-palette-background-surface)",
     caret: "#814702",
     fold_marker_filter: "none",

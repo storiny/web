@@ -63,6 +63,7 @@ const RegisterTools = dynamic(() => import("../register-tools"));
 
 const DOC_STATUS_TO_LABEL_MAP: Partial<Record<DocStatus, string>> = {
   [DOC_STATUS.connecting]: "Connecting…",
+  [DOC_STATUS.connected]: "Syncing…", // Document is being synced after the connection is established
   [DOC_STATUS.reconnecting]: "Reconnecting…",
   [DOC_STATUS.publishing]: "Publishing…",
   [DOC_STATUS.published]: "This story has been published.",
@@ -95,7 +96,7 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
       className={clsx(styles.body, read_only && styles["read-only"])}
       data-testid={"editor-container"}
       {...(!read_only &&
-      ![DOC_STATUS.connected, DOC_STATUS.syncing].includes(doc_status)
+      ![DOC_STATUS.syncing, DOC_STATUS.synced].includes(doc_status)
         ? /* eslint-disable prefer-snakecase/prefer-snakecase */
           {
             style: {
@@ -156,11 +157,12 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
       )}
       {!is_editable || read_only ? <ClickableLinkPlugin /> : null}
       {!read_only &&
-      ![DOC_STATUS.connected, DOC_STATUS.syncing].includes(doc_status) ? (
+      ![DOC_STATUS.syncing, DOC_STATUS.synced].includes(doc_status) ? (
         <EditorLoader
           hide_progress={
             ![
               DOC_STATUS.connecting,
+              DOC_STATUS.connected,
               DOC_STATUS.reconnecting,
               DOC_STATUS.publishing
             ].includes(doc_status)
@@ -170,6 +172,7 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
           show_icon={
             ![
               DOC_STATUS.connecting,
+              DOC_STATUS.connected,
               DOC_STATUS.reconnecting,
               DOC_STATUS.publishing
             ].includes(doc_status)
