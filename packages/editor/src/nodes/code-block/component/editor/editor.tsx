@@ -231,7 +231,8 @@ const CodeBlockEditor = ({
                   !document.activeElement ||
                   // Check if the focus jumped from one code block to another
                   (document.activeElement &&
-                    !document.activeElement.classList.contains("cm-content"))
+                    !document.activeElement.classList.contains("cm-content") &&
+                    !document.activeElement.classList.contains("cm-scroller"))
                 ) {
                   // Reset the selection
                   update.view.dispatch({ selection: { anchor: 0 } });

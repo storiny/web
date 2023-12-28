@@ -16,39 +16,7 @@ export type ExtensionStyles = Record<string, StyleSpec>;
 
 export interface ExtendCodeBlockThemeOptions {
   mode: CodeBlockThemeMode;
-  settings: CodeBlockThemeSettings;
   styles: TagStyle[];
-}
-
-export interface CodeBlockThemeSettings {
-  background: string;
-  caret: string;
-  fold_marker_filter: string;
-  fold_placeholder: {
-    active: {
-      background: string;
-      color: string;
-    };
-    background: string;
-    color: string;
-    hover: {
-      background: string;
-      color: string;
-    };
-  };
-  font_family?: string;
-  foreground: string;
-  line_numbers: {
-    active_color: string;
-    active_shadow: string;
-    color: string;
-  };
-  selection: {
-    color: string;
-    match_color: string;
-    match_outline: string;
-  };
-  tooltip_background: string;
 }
 
 /**
@@ -59,7 +27,6 @@ export interface CodeBlockThemeSettings {
  */
 export const extend_code_block_theme = ({
   mode,
-  settings,
   styles
 }: ExtendCodeBlockThemeOptions): Extension => {
   const theme_options: ExtensionStyles = {
@@ -74,37 +41,36 @@ export const extend_code_block_theme = ({
       backgroundColor: "transparent"
     },
     "& .cm-content": {
-      caretColor: settings.caret,
+      caretColor: "var(--fg-major)",
       paddingInline: "8px"
     },
     "& .cm-cursor, .cm-dropCursor": {
-      borderLeftColor: settings.caret
+      borderLeftColor: "var(--fg-major)"
     },
     "& .cm-fold-marker": {
-      filter: settings.fold_marker_filter
+      filter: mode === "dark" ? "invert(1)" : "none"
     },
     "& .cm-foldPlaceholder": {
       "&:hover": {
         "&:active": {
-          backgroundColor: settings.fold_placeholder.active.background,
-          color: settings.fold_placeholder.active.color
+          backgroundColor: "var(--bg-elevation-lg)"
         },
-        backgroundColor: settings.fold_placeholder.hover.background,
-        color: settings.fold_placeholder.hover.color
+        backgroundColor: "var(--bg-elevation-md)",
+        color: "var(--fg-major)"
       },
-      backgroundColor: settings.fold_placeholder.background,
-      border: "none",
-      color: settings.fold_placeholder.color,
-      padding: "0 5px",
-      transition: "all 150ms ease"
+      backgroundColor: "var(--bg-elevation-sm)",
+      border: "1px solid var(--divider)",
+      color: "var(--fg-minor)",
+      padding: "0 5px"
     },
     "& .cm-gutters": {
       "&:after": {
         borderRight: "1px solid var(--divider)",
         content: '""',
-        height: "100%",
         position: "absolute",
         width: "calc(100% + 1px)",
+        height: "calc(100% + 12px)",
+        top: "-6px",
         zIndex: -1,
         opacity: 0.75
       },
@@ -113,17 +79,19 @@ export const extend_code_block_theme = ({
     },
     "& .cm-scroller": {
       "&::-webkit-scrollbar": {
-        height: "8px"
+        height: "10px"
       },
       "&::-webkit-scrollbar-thumb": {
-        borderRadius: "8px",
-        boxShadow: "inset 0 0 3px var(--divider)"
+        border: "2px solid var(--inverted-50)",
+        borderRadius: "var(--radius-lg)",
+        backgroundColor: "var(--inverted-200)",
+        "&:hover": {
+          backgroundColor: "var(--inverted-400)"
+        }
       },
       "&::-webkit-scrollbar-track": {
-        backgroundColor: "var(--inverted-200)",
-        borderRadius: "0 0 8px 8px",
-        borderTop:
-          "1px solid rgba(var(--storiny-palette-neutral-mainChannel) / 15%)",
+        backgroundColor: "var(--inverted-50)",
+        borderTop: "1px solid var(--divider)",
         boxShadow: "none"
       },
       outline: "none",
@@ -132,13 +100,12 @@ export const extend_code_block_theme = ({
     "&.cm-focused": {
       "& .cm-selectionBackground, & .cm-selectionLayer .cm-selectionBackground, .cm-content ::selection":
         {
-          backgroundColor: settings.selection.color
+          backgroundColor: "var(--bg-selection) !important"
         },
       "& .cm-selectionMatch, & .cm-matchingBracket": {
-        backgroundColor: settings.selection.match_color,
-        borderRadius: "3px",
-        outline: `2px solid ${settings.selection.match_outline}`,
-        outlineOffset: "-1px"
+        backgroundColor: "var(--inverted-50)",
+        borderRadius: "var(--radius-xs)",
+        outline: "1px solid var(--inverted-300)"
       },
       outline: "none !important"
     },
