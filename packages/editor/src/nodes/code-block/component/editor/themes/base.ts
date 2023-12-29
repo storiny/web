@@ -47,7 +47,7 @@ export const extend_code_block_theme = ({
     "& .cm-cursor, .cm-dropCursor": {
       borderLeftColor: "var(--fg-major)"
     },
-    "& .cm-fold-marker": {
+    "& .cm-foldMarker": {
       filter: mode === "dark" ? "invert(1)" : "none"
     },
     "& .cm-foldPlaceholder": {

@@ -124,7 +124,7 @@ export const get_editable_extensions = ({
     indent_on_input(),
     bracket_matching(),
     close_brackets(),
-    autocompletion({ closeOnBlur: true, maxRenderedOptions: 5 }),
+    autocompletion({ closeOnBlur: true }),
     rectangular_selection(),
     crosshair_cursor(),
     highlight_selection_matches(),

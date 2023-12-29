@@ -1119,7 +1119,7 @@ test.describe("text style", () => {
             `[data-testid="subscript-toggle"][data-state="off"]`
           )
       )
-    ).toBeTruthy();
+    ).toBeTrue();
 
     await toggle_bold(page);
     await toggle_italic(page);
@@ -1166,6 +1166,6 @@ test.describe("text style", () => {
             `[data-testid="subscript-toggle"][data-state="on"]`
           )
       )
-    ).toBeTruthy();
+    ).toBeTrue();
   });
 });

@@ -26,12 +26,12 @@ class AutoLink extends WidgetType {
   }
 
   /**
-   * Widget state
+   * The widget state
    * @private
    */
   private readonly state: AutoLinkState;
 
-  eq(other: AutoLink): boolean {
+  public eq(other: AutoLink): boolean {
     return (
       this.state.url === other.state.url &&
       this.state.to === other.state.to &&
@@ -39,7 +39,7 @@ class AutoLink extends WidgetType {
     );
   }
 
-  toDOM(): HTMLElement {
+  public toDOM(): HTMLElement {
     const anchor = document.createElement("a");
     const img = document.createElement("img");
 
@@ -57,7 +57,7 @@ class AutoLink extends WidgetType {
     return anchor;
   }
 
-  ignoreEvent(): boolean {
+  public ignoreEvent(): boolean {
     return false;
   }
 }
