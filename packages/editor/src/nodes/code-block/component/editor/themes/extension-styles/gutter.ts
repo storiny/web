@@ -20,7 +20,7 @@ const UNFOLD_ICON = `url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3
 const fold_gutter_extension_styles: ExtensionStyles = {
   /* eslint-disable prefer-snakecase/prefer-snakecase */
   "&.cm-foldGutter": {
-    "& .cm-fold-marker": {
+    "& .cm-foldMarker": {
       "&:hover": {
         opacity: 0.75
       },

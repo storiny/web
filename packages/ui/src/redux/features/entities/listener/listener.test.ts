@@ -19,20 +19,20 @@ describe("entities_listener", () => {
       // Send request
       store.dispatch(boolean_action("sent_requests", test_id, true));
 
-      expect(store.getState().entities.following[test_id]).toBeTruthy();
-      expect(store.getState().entities.followers[test_id]).toBeTruthy();
-      expect(store.getState().entities.friends[test_id]).toBeTruthy();
-      expect(store.getState().entities.subscriptions[test_id]).toBeTruthy();
-      expect(store.getState().entities.sent_requests[test_id]).toBeTruthy();
+      expect(store.getState().entities.following[test_id]).toBeTrue();
+      expect(store.getState().entities.followers[test_id]).toBeTrue();
+      expect(store.getState().entities.friends[test_id]).toBeTrue();
+      expect(store.getState().entities.subscriptions[test_id]).toBeTrue();
+      expect(store.getState().entities.sent_requests[test_id]).toBeTrue();
 
       // Block the user
       store.dispatch(boolean_action("blocks", test_id, true));
 
-      expect(store.getState().entities.following[test_id]).toBeFalsy();
-      expect(store.getState().entities.followers[test_id]).toBeFalsy();
-      expect(store.getState().entities.friends[test_id]).toBeFalsy();
-      expect(store.getState().entities.subscriptions[test_id]).toBeFalsy();
-      expect(store.getState().entities.sent_requests[test_id]).toBeFalsy();
+      expect(store.getState().entities.following[test_id]).toBeFalse();
+      expect(store.getState().entities.followers[test_id]).toBeFalse();
+      expect(store.getState().entities.friends[test_id]).toBeFalse();
+      expect(store.getState().entities.subscriptions[test_id]).toBeFalse();
+      expect(store.getState().entities.sent_requests[test_id]).toBeFalse();
       expect(store.getState().entities.self_block_count).toEqual(1);
     });
   });
@@ -44,14 +44,14 @@ describe("entities_listener", () => {
       // Follow user
       store.dispatch(boolean_action("following", test_id, true));
 
-      expect(store.getState().entities.following[test_id]).toBeTruthy();
-      expect(store.getState().entities.subscriptions[test_id]).toBeTruthy();
+      expect(store.getState().entities.following[test_id]).toBeTrue();
+      expect(store.getState().entities.subscriptions[test_id]).toBeTrue();
 
       // Unfollow user
       store.dispatch(boolean_action("following", test_id, false));
 
-      expect(store.getState().entities.following[test_id]).toBeFalsy();
-      expect(store.getState().entities.subscriptions[test_id]).toBeFalsy();
+      expect(store.getState().entities.following[test_id]).toBeFalse();
+      expect(store.getState().entities.subscriptions[test_id]).toBeFalse();
     });
 
     it("syncs count on toggling following", () => {
