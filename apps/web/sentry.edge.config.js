@@ -12,5 +12,6 @@ Sentry.init({
     }
 
     return event;
-  }
+  },
+  ignoreErrors: [/5 not_found/i]
 });

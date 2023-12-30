@@ -22,8 +22,8 @@ const MiscellaneousResourcesClient = (): React.ReactElement => (
         {[
           ["About", "/about"],
           ["Media kit", "/branding"],
-          ["Service Status", "/status"],
-          ["Help center", "/help"]
+          ["Service Status", process.env.NEXT_PUBLIC_STATUS_PAGE_URL || "/"],
+          ["Help", "mailto:support@storiny.com"]
         ].map(([title, href]) => (
           <React.Fragment key={href}>
             <NavigationItem

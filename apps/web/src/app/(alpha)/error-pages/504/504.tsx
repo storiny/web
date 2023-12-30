@@ -12,7 +12,11 @@ const Error504Page = (): React.ReactElement => (
       <>
         Storiny is currently unavailable. Please try again later or check our{" "}
         {
-          <Link href={"/status"} underline={"always"}>
+          <Link
+            href={process.env.NEXT_PUBLIC_STATUS_PAGE_URL || "/"}
+            target={"_blank"}
+            underline={"always"}
+          >
             service status
           </Link>
         }{" "}

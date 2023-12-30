@@ -294,6 +294,7 @@ const EditorNavbar = ({
                 as={NextLink}
                 className={clsx(css["focus-invert"], styles.x, styles.button)}
                 disabled={document_loading}
+                // TODO: Replace with story tutorial
                 href={"/help"}
                 size={"lg"}
                 target={"_blank"}

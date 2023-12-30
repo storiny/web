@@ -21,8 +21,8 @@ const GetInTouchSection = (): React.ReactElement => (
         For any inquiries related to the contents of these branding guidelines
         or if there is uncertainty in ensuring that your communication aligns
         with the Storiny brand, please feel free to contact us at{" "}
-        <Link href={"mailto:brand@storiny.com"} underline={"always"}>
-          brand@storiny.com
+        <Link href={"mailto:branding@storiny.com"} underline={"always"}>
+          branding@storiny.com
         </Link>
         .
       </Typography>

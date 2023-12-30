@@ -56,7 +56,10 @@ const ErrorState = React.forwardRef<HTMLDivElement, ErrorStateProps>(
               <>
                 An invalid response was received from the server. Please check
                 our{" "}
-                <Link href={"/status"} underline={"always"}>
+                <Link
+                  href={process.env.NEXT_PUBLIC_STATUS_PAGE_URL || "/"}
+                  underline={"always"}
+                >
                   status page
                 </Link>{" "}
                 and try again after a few minutes or{" "}

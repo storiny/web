@@ -45,6 +45,17 @@ export const handler = (r: Request): void | undefined => {
   try {
     const uri = r.uri || "";
 
+    if (uri === "/") {
+      prepare_text_response(r);
+      r.return(200, "Storiny media service");
+      return;
+    }
+
+    // Health endpoint
+    if (uri === "/health") {
+      return pass_to_proxy(r, "health");
+    }
+
     // Remote image URI with digest and hex
     if (uri.startsWith("/remote")) {
       const matches = REMOTE_REGEX.exec(uri);

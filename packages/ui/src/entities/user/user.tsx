@@ -72,7 +72,9 @@ const User = (props: UserProps): React.ReactElement => {
               <span className={css[is_mobile ? "t-medium" : "t-bold"]}>
                 {user.name}
               </span>
-              {!is_mobile && <> @{user.username}</>}
+              {!is_mobile && (
+                <span className={"t-minor"}> @{user.username}</span>
+              )}
             </Typography>
             {is_mobile ? (
               <Typography className={css["t-minor"]}>

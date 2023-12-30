@@ -8,7 +8,7 @@ import { withSentryConfig as with_sentry_config } from "@sentry/nextjs";
 import { polyfill } from "interweave-ssr";
 import { fileURLToPath as file_url_to_path } from "url";
 
-import { mdxConfig } from "./mdx.config.mjs";
+import { mdx_config } from "./mdx.config.mjs";
 import { webpack_config } from "./webpack.config.mjs";
 
 polyfill();
@@ -17,7 +17,7 @@ const is_prod = process.env.NODE_ENV === "production";
 const __dirname = path.dirname(file_url_to_path(import.meta.url));
 
 const with_mdx = mdx({
-  options: mdxConfig
+  options: mdx_config
 });
 
 const with_bundle_analyzer = bundle_analyzer({
