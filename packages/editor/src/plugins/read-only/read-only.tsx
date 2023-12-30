@@ -16,6 +16,8 @@ interface Props {
   story_id: string;
 }
 
+const SIX_HOURS_IN_MS = 6 * 60 * 60 * 1000;
+
 const ReadOnlyPlugin = ({
   excluded_properties,
   initial_doc,
@@ -23,6 +25,7 @@ const ReadOnlyPlugin = ({
   reading_session_token
 }: Props): null => {
   const set_doc_status = use_set_atom(doc_status_atom);
+  const has_read_ref = React.useRef<boolean>(false);
   const [read_story] = use_read_story_mutation();
 
   use_yjs_read_only({
@@ -33,6 +36,12 @@ const ReadOnlyPlugin = ({
 
   React.useEffect(() => {
     const handle_read = (): void => {
+      if (has_read_ref.current) {
+        return;
+      }
+
+      has_read_ref.current = true;
+
       read_story({
         id: story_id,
         token: reading_session_token,
@@ -41,9 +50,18 @@ const ReadOnlyPlugin = ({
     };
 
     window.addEventListener("beforeunload", handle_read);
+    window.addEventListener("unload", handle_read);
+    window.addEventListener("pagehide", handle_read);
+
+    // Fallback
+    const timer = setTimeout(handle_read, SIX_HOURS_IN_MS);
 
     return () => {
       window.removeEventListener("beforeunload", handle_read);
+      window.removeEventListener("unload", handle_read);
+      window.removeEventListener("pagehide", handle_read);
+
+      clearTimeout(timer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
