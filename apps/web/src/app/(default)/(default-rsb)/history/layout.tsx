@@ -1,1 +1,1 @@
-export { default } from "../../../../(check-user)/layout";
+export { default } from "../../../(check-user)/layout";
