@@ -1,4 +1,4 @@
-import { BaseFabricObject, Canvas } from "fabric";
+import { Canvas, FabricObject } from "fabric";
 import React from "react";
 
 import css from "~/theme/main.module.scss";
@@ -29,7 +29,7 @@ class ActionsPlugin {
    * Current active object
    * @private
    */
-  private active_object: BaseFabricObject | undefined;
+  private active_object: FabricObject | undefined;
   /**
    * Vertical margin for the popover (px)
    * @private

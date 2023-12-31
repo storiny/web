@@ -1,4 +1,4 @@
-import { BaseFabricObject } from "fabric";
+import { FabricObject } from "fabric";
 
 import { LayerType } from "../../constants";
 import { Arrow, Line } from "../../lib";
@@ -8,6 +8,6 @@ import { Arrow, Line } from "../../lib";
  * @param object Object
  */
 export const is_linear_object = (
-  object: BaseFabricObject
+  object: FabricObject
 ): object is Line | Arrow =>
   [LayerType.LINE, LayerType.ARROW].includes(object.get("_type"));

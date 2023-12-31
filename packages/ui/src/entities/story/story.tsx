@@ -1,9 +1,9 @@
 "use client";
 
 import { ImageSize } from "@storiny/shared";
+import { use_app_router } from "@storiny/web/src/common/utils";
 import clsx from "clsx";
 import NextLink from "next/link";
-import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
 import AspectRatio from "~/components/aspect-ratio";
@@ -181,7 +181,7 @@ const Meta = (props: StoryProps): React.ReactElement | null => {
 const Splash = (props: StoryProps): React.ReactElement => {
   const { is_extended, is_deleted, is_draft, show_unlike_button, story } =
     props;
-  const router = use_router();
+  const router = use_app_router();
   const dispatch = use_app_dispatch();
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const is_bookmarked = use_app_selector(

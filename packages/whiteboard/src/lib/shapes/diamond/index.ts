@@ -1,4 +1,4 @@
-import { BaseFabricObject, classRegistry as class_registry } from "fabric";
+import { classRegistry as class_registry, FabricObject } from "fabric";
 import { RoughCanvas } from "roughjs/bin/canvas";
 import { Drawable } from "roughjs/bin/core";
 import rough from "roughjs/bin/rough";
@@ -33,7 +33,7 @@ const DEFAULT_DIAMOND_PROPS: Partial<DiamondProps> = {
  * @param object Object
  */
 const get_diamond_points = (
-  object: BaseFabricObject
+  object: FabricObject
 ): [number, number, number, number, number, number, number, number] => {
   const top_x = 0;
   const top_y = -object.height / 2;
@@ -115,20 +115,20 @@ export class Diamond extends DiamondPrimitve<DiamondProps> {
           right_x - vertical_radius
         } ${right_y - horizontal_radius}
             C ${right_x} ${right_y}, ${right_x} ${right_y}, ${
-          right_x - vertical_radius
-        } ${right_y + horizontal_radius}
+              right_x - vertical_radius
+            } ${right_y + horizontal_radius}
             L ${bottom_x + vertical_radius} ${bottom_y - horizontal_radius}
             C ${bottom_x} ${bottom_y}, ${bottom_x} ${bottom_y}, ${
-          bottom_x - vertical_radius
-        } ${bottom_y - horizontal_radius}
+              bottom_x - vertical_radius
+            } ${bottom_y - horizontal_radius}
             L ${left_x + vertical_radius} ${left_y + horizontal_radius}
             C ${left_x} ${left_y}, ${left_x} ${left_y}, ${
-          left_x + vertical_radius
-        } ${left_y - horizontal_radius}
+              left_x + vertical_radius
+            } ${left_y - horizontal_radius}
             L ${top_x - vertical_radius} ${top_y + horizontal_radius}
             C ${top_x} ${top_y}, ${top_x} ${top_y}, ${
-          top_x + vertical_radius
-        } ${top_y + horizontal_radius}`,
+              top_x + vertical_radius
+            } ${top_y + horizontal_radius}`,
         generate_rough_options(this, true)
       );
     } else {

@@ -12,13 +12,13 @@ const RightSidebarFooter = (): React.ReactElement => (
     <Link href={"/about"} level={"body3"}>
       About
     </Link>
-    <Link href={"/help"} level={"body3"}>
+    <Link href={"mailto:support@storiny.com"} level={"body3"}>
       Help
     </Link>
     <Link href={"/branding"} level={"body3"}>
       Brand
     </Link>
-    <Link href={"/status"} level={"body3"}>
+    <Link href={process.env.NEXT_PUBLIC_STATUS_PAGE_URL || "/"} level={"body3"}>
       Service status
     </Link>
     <Link href={"/privacy"} level={"body3"}>

@@ -1,8 +1,5 @@
-import clsx from "clsx";
 import React from "react";
 import use_resize_observer from "use-resize-observer";
-
-import css from "~/theme/main.module.scss";
 
 import { use_canvas, use_fabric } from "../../hooks";
 import Actions from "../layers/layer/actions";

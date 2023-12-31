@@ -142,9 +142,10 @@ const handle_on_cut = async (
 };
 
 /**
- * Clipboard may contain files that we aren't allowed to read. While the event is arguably useless,
- * on certain occasions, we want to know whether it was a file transfer, as opposed to text. We
- * control this with the first boolean flag.
+ * Clipboard may contain files that we aren't allowed to read. While the event
+ * is arguably useless, on certain occasions, we want to know whether it was a
+ * file transfer, as opposed to text. We control this with the first boolean
+ * flag.
  * @param event
  */
 export const event_files = (
@@ -442,7 +443,8 @@ export const register_rich_text = (editor: LexicalEditor): (() => void) =>
           $is_node_selection(selection) &&
           !$is_target_within_decorator(event.target as HTMLElement)
         ) {
-          // If selection is on a node, let's try and move selection back to being a range selection.
+          // If selection is on a node, let's try and move selection back to
+          // being a range selection.
           const nodes = selection.getNodes();
 
           if (nodes.length > 0) {
@@ -472,7 +474,8 @@ export const register_rich_text = (editor: LexicalEditor): (() => void) =>
       (event) => {
         const selection = $get_selection();
         if ($is_node_selection(selection)) {
-          // If selection is on a node, let's try and move selection back to being a range selection.
+          // If selection is on a node, let's try and move selection back to
+          // being a range selection.
           const nodes = selection.getNodes();
 
           if (nodes.length > 0) {
@@ -508,7 +511,8 @@ export const register_rich_text = (editor: LexicalEditor): (() => void) =>
       (event) => {
         const selection = $get_selection();
         if ($is_node_selection(selection)) {
-          // If selection is on a node, let's try and move selection back to being a range selection.
+          // If selection is on a node, let's try and move selection back to
+          // being a range selection.
           const nodes = selection.getNodes();
 
           if (nodes.length > 0) {
@@ -541,7 +545,8 @@ export const register_rich_text = (editor: LexicalEditor): (() => void) =>
           $is_node_selection(selection) &&
           !$is_target_within_decorator(event.target as HTMLElement)
         ) {
-          // If selection is on a node, let's try and move selection back to being a range selection.
+          // If selection is on a node, let's try and move selection back to
+          // being a range selection.
           const nodes = selection.getNodes();
 
           if (nodes.length > 0) {
@@ -742,7 +747,8 @@ export const register_rich_text = (editor: LexicalEditor): (() => void) =>
           const node = $get_nearest_node_from_dom_node(event_range.node);
 
           if ($is_decorator_node(node)) {
-            // Show browser caret as the user is dragging the media across the screen. Won't work for `DecoratorNode` nor it's relevant.
+            // Show browser caret as the user is dragging the media across the
+            // screen. Won't work for `DecoratorNode` nor it's relevant.
             event.preventDefault();
           }
         }
@@ -791,7 +797,8 @@ export const register_rich_text = (editor: LexicalEditor): (() => void) =>
           return true;
         }
 
-        // Ignore creating a new node on paste event if the paste event occured inside an input
+        // Ignore creating a new node on paste event if the paste event occured
+        // inside an input
         if (is_selection_captured_in_decorator_input(event.target as Node)) {
           return false;
         }

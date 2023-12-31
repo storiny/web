@@ -23,6 +23,7 @@
   /* Read-only */
   &:not(.editable) {
     height: fit-content;
+    min-height: 36vh;
     padding: 0 0 10vh;
 
     /* Normalize TK nodes in read-only mode */

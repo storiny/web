@@ -2,7 +2,7 @@ import {
   Canvas,
   Control,
   controlsUtils as control_utils,
-  Object as FabricObject,
+  FabricObject,
   Point,
   Transform
 } from "fabric";
@@ -157,16 +157,16 @@ class ObjectControls {
                   ? bounding_rect.left + bounding_rect.width
                   : bounding_rect.left
                 : flipped_x2
-                ? bounding_rect.left + bounding_rect.width
-                : bounding_rect.left;
+                  ? bounding_rect.left + bounding_rect.width
+                  : bounding_rect.left;
             const y =
               key === "linear_1"
                 ? flipped_y1
                   ? bounding_rect.top + bounding_rect.height
                   : bounding_rect.top
                 : flipped_y2
-                ? bounding_rect.top + bounding_rect.height
-                : bounding_rect.top;
+                  ? bounding_rect.top + bounding_rect.height
+                  : bounding_rect.top;
 
             control.positionHandler = (): Point =>
               new Point(x, y - MOVE_CONTROL_SIZE / 2);

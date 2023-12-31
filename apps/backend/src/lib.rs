@@ -21,7 +21,6 @@ pub use aws_sdk_s3::Client as S3Client;
 pub use aws_sdk_sesv2::Client as SesClient;
 pub use deadpool_redis::Pool as RedisPool;
 
-pub mod alpha_identity;
 pub mod config;
 pub mod constants;
 pub mod error;

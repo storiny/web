@@ -161,9 +161,9 @@ const TKPlugin = (): null => {
                     if ($is_paragraph_node(paragraph_node)) {
                       const paragraph_key = paragraph_node.getKey();
 
-                      // TK nodes can move under a different parent paragraph node,
-                      // so when they get updated, clean all the previous paragraph
-                      // node sets that include this TK node.
+                      // TK nodes can move under a different parent paragraph
+                      // node, so when they get updated, clean all the previous
+                      // paragraph node sets that include this TK node.
                       for (const [
                         paragraph_node_key,
                         paragraph_mode_set
@@ -210,8 +210,8 @@ const TKPlugin = (): null => {
             }
           }
         ),
-        // Convert the TK node to a text node when the parent paragraph node is changed to
-        // something else (for example, a heading node)
+        // Convert the TK node to a text node when the parent paragraph node is
+        // changed to something else (for example, a heading node)
         editor.registerMutationListener(
           ParagraphNode,
           (nodes, { dirtyLeaves: dirty_leaves }) => {

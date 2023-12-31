@@ -39,11 +39,10 @@ pub fn init_oauth_routes(cfg: &mut web::ServiceConfig) {
     oauth::dribbble::init_routes(cfg);
 }
 
-/// TODO: (alpha) merge these routes into [init_v1_routes]
-/// Registers v1 auth API routes.
+/// Registers v1 API routes.
 ///
 /// * `cfg` - Web service config
-pub fn init_v1_auth_routes(cfg: &mut web::ServiceConfig) {
+pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     // Auth
     v1::auth::login::init_routes(cfg);
     v1::auth::mfa_preflight::init_routes(cfg);
@@ -51,17 +50,6 @@ pub fn init_v1_auth_routes(cfg: &mut web::ServiceConfig) {
     v1::auth::reset_password::init_routes(cfg);
     v1::auth::recovery::init_routes(cfg);
     v1::auth::resend_verification_email::init_routes(cfg);
-    // TODO: (alpha) remove this route in beta.
-    v1::auth::invite_code_preflight::init_routes(cfg);
-    // Public - Validation - Username
-    v1::public::validation::username::init_routes(cfg);
-}
-
-/// Registers v1 API routes.
-///
-/// * `cfg` - Web service config
-pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
-    // Auth
     v1::auth::external::google::init_routes(cfg);
     v1::auth::external::google::callback::init_routes(cfg);
     // Feed
@@ -221,6 +209,8 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::public::stories::recommendations::init_routes(cfg);
     // Public - Tags
     v1::public::tags::init_routes(cfg);
+    // Public - Validation - Username
+    v1::public::validation::username::init_routes(cfg);
     // Right sidebar content
     v1::rsb_content::init_routes(cfg);
     // Tag

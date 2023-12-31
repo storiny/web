@@ -18,6 +18,7 @@ const transform = (node: HTMLElement, children: Node[]): React.ReactNode => {
         <Link
           className={clsx(node.className)}
           href={node.getAttribute("href") || "/"}
+          target={"_blank"}
           underline={"always"}
         >
           {children}

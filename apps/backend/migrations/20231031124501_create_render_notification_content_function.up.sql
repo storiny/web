@@ -81,7 +81,9 @@ BEGIN
 												 AND n_out.notified_id = nu.notified_id
 											  )
 						  SELECT (
-									 FORMAT('<a data-fw-bold href="/%s">%s</a> sent you a friend request',
+									 FORMAT(
+											 '<a data-fw-bold href="/%s">%s</a> sent you a friend request.'
+											     || ' <a data-underline href="/me/content/relations?tab=friends">View all friend requests</a>',
 											(SELECT username FROM transmitter),
 											(SELECT public.truncate_str(name, 32) FROM transmitter)
 									 )

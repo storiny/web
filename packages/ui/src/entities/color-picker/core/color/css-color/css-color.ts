@@ -14,10 +14,12 @@ export const css_color = (color?: string): RGBA | undefined => {
     return undefined;
   }
 
-  // Need to check the following valid color formats: RGB(A), HSL(A), hex, named color
+  // Need to check the following valid color formats: RGB(A), HSL(A), hex,
+  // named color
 
-  // First check for well formatted RGB(A), HSL(A), and hex formats at the start.
-  // This is for perf (not creating an element) and catches the intentional "transparent" color case early on.
+  // First check for well formatted RGB(A), HSL(A), and hex formats at the
+  // start. This is for perf (not creating an element) and catches the
+  // intentional "transparent" color case early on.
   const easy_color: RGBA | undefined =
     easy_rgba(color) ||
     easy_hex6(color) ||
@@ -45,7 +47,8 @@ const browser_compute = (str: string): RGBA | undefined => {
 
   const elem = document.createElement("div");
   elem.style.backgroundColor = str;
-  // This element must be attached to the DOM for getComputedStyle() to have a value
+  // This element must be attached to the DOM for getComputedStyle() to have a
+  // value
   elem.style.position = "absolute";
   elem.style.top = "-9999px";
   elem.style.left = "-9999px";
@@ -58,9 +61,12 @@ const browser_compute = (str: string): RGBA | undefined => {
   const computed_color = computed_style && computed_style.backgroundColor;
 
   document.body.removeChild(elem);
-  // `computed_color` is always an RGB(A) string, except for invalid colors in IE/Edge which return 'transparent'
+  // `computed_color` is always an RGB(A) string, except for invalid colors in
+  // IE/Edge which return 'transparent'
 
-  // Browsers return one of these if the color string is invalid, so need to differentiate between an actual error and intentionally passing in this color
+  // Browsers return one of these if the color string is invalid, so need to
+  // differentiate between an actual error and intentionally passing in this
+  // color
   if (
     computed_color === "rgba(0, 0, 0, 0)" ||
     computed_color === "transparent"

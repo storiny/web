@@ -2,9 +2,9 @@
 
 import { USER_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
-import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
+import { use_app_router } from "~/common/utils";
 import Button from "~/components/button";
 import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
 import FormCheckbox from "~/components/form-checkbox";
@@ -29,7 +29,7 @@ interface Props {
 }
 
 const LoginForm = ({ on_submit }: Props): React.ReactElement => {
-  const router = use_router();
+  const router = use_app_router();
   const { actions } = use_auth_state();
   const toast = use_toast();
   const form = use_form<LoginSchema>({

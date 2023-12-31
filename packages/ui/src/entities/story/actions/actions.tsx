@@ -1,3 +1,4 @@
+import { SUPPORT_ARTICLE_MAP } from "@storiny/shared/src/constants/support-articles";
 import { Story } from "@storiny/types";
 import { clsx } from "clsx";
 import NextLink from "next/link";
@@ -213,10 +214,8 @@ const StoryActions = ({
           again anytime with some limitations, such as your subscribers not
           being notified.{" "}
           <Link
-            // TODO(future): Get rid of notion
-            href={
-              "https://storiny.notion.site/Unpublishing-a-story-ace3d8fbfee54ff694b1a2a5d89961a9"
-            }
+            href={SUPPORT_ARTICLE_MAP.UNPUBLISHING_STORY}
+            target={"_blank"}
             underline={"always"}
           >
             Learn more

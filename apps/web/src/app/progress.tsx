@@ -1,23 +1,30 @@
 "use client";
 
 import { dev_console } from "@storiny/shared/src/utils/dev-log";
+import {
+  usePathname as use_pathname,
+  useSearchParams as use_search_params
+} from "next/navigation";
 import NProgress from "nprogress";
 import React from "react";
 
-const Progress = (): null => {
-  React.useEffect(() => {
-    NProgress.configure({
-      /* eslint-disable prefer-snakecase/prefer-snakecase */
-      showSpinner: false,
-      trickle: true,
-      trickleSpeed: 150,
-      minimum: 0.1,
-      easing: "linear",
-      speed: 250,
-      template: '<div class="bar" role="bar"><div class="peg"></div></div>'
-      /* eslint-enable prefer-snakecase/prefer-snakecase */
-    });
+NProgress.configure({
+  /* eslint-disable prefer-snakecase/prefer-snakecase */
+  showSpinner: false,
+  trickle: true,
+  trickleSpeed: 150,
+  minimum: 0.1,
+  easing: "linear",
+  speed: 250,
+  template: '<div class="bar" role="bar"><div class="peg"></div></div>'
+  /* eslint-enable prefer-snakecase/prefer-snakecase */
+});
 
+const Progress = (): null => {
+  const pathname = use_pathname();
+  const search_params = use_search_params();
+
+  React.useEffect(() => {
     const is_anchor_of_current_url = (
       current_url: string,
       next_url: string
@@ -58,6 +65,10 @@ const Progress = (): null => {
     };
 
     const handle_click = (event: MouseEvent): void => {
+      if (NProgress.isStarted()) {
+        return;
+      }
+
       try {
         const target = event.target as HTMLElement;
         const anchor = find_closest_anchor(target);
@@ -69,10 +80,11 @@ const Progress = (): null => {
           const is_empty_anchor = next_url.charAt(next_url.length - 1) === "#";
           const is_external_link =
             (anchor as HTMLAnchorElement).target === "_blank";
+          const is_mail = next_url.startsWith("mailto:");
           const is_blob = next_url.startsWith("blob:");
           const is_anchor = is_anchor_of_current_url(current_url, next_url);
 
-          if (is_empty_anchor) {
+          if (is_empty_anchor || is_mail) {
             return;
           }
 
@@ -125,6 +137,10 @@ const Progress = (): null => {
       document.removeEventListener("click", handle_click);
     };
   }, []);
+
+  React.useEffect(() => {
+    setTimeout(NProgress.done, 250);
+  }, [pathname, search_params]);
 
   return null;
 };

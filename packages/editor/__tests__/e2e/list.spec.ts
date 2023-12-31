@@ -1575,7 +1575,8 @@ test.describe("list", () => {
   });
 
   test("can create list with start number markdown", async ({ page }) => {
-    // Trigger markdown using 321 digits followed by a period and a trigger of space
+    // Trigger markdown using 321 digits followed by a period and a trigger of
+    // space
     await page.keyboard.type("321. ");
 
     await assert_html(
@@ -1781,7 +1782,8 @@ test.describe("list", () => {
 
   test("can replace existing element nodes", async ({ page }) => {
     // Create two quote nodes, select them, and format thme to a list.
-    // It should replace quotes nodes (instead of moving them into the list items)
+    // It should replace quotes nodes (instead of moving them into the list
+    // items)
     await page.keyboard.type("> hello from");
     await page.keyboard.press("Enter");
     await page.keyboard.type("> the other side");

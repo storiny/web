@@ -8,7 +8,6 @@ import PlusIcon from "~/icons/plus";
 import css from "~/theme/main.module.scss";
 
 import { doc_status_atom } from "../../../../atoms";
-import { is_doc_editable } from "../../../../utils/is-doc-editable";
 import { is_doc_loading } from "../../../../utils/is-doc-loading";
 import toolbar_styles from "../../toolbar.module.scss";
 import CodeBlockMenuItem from "./code-block";

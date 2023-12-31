@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { BaseFabricObject, Canvas } from "fabric";
+import { Canvas, FabricObject } from "fabric";
 import React from "react";
 
 import Input from "~/components/input";
@@ -32,7 +32,7 @@ const PenFillControl = ({
   active_object,
   canvas
 }: {
-  active_object?: BaseFabricObject;
+  active_object?: FabricObject;
   canvas: Canvas;
 }): React.ReactElement => {
   const [fill, set_fill] = React.useState<TColor>(
@@ -156,7 +156,7 @@ const PenWidthControl = ({
   active_object,
   canvas
 }: {
-  active_object?: BaseFabricObject;
+  active_object?: FabricObject;
   canvas: Canvas;
 }): React.ReactElement => {
   /**
@@ -206,7 +206,7 @@ const PenStyleControl = ({
   active_object,
   canvas
 }: {
-  active_object?: BaseFabricObject;
+  active_object?: FabricObject;
   canvas: Canvas;
 }): React.ReactElement => {
   const [pen_style, set_pen_style] = React.useState<PenStyle>(

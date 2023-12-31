@@ -27,7 +27,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     read_at: "2022-05-18T01:07:02.000Z",
     type: NotificationType.FRIEND_REQ_RECEIVED,
     actor: MOCK_USERS[1],
-    rendered_content: `<a data-fw-bold href="/${MOCK_USERS[1].username}">${MOCK_USERS[1].name}</a> sent you a friend request`,
+    rendered_content: `<a data-fw-bold href="/${MOCK_USERS[1].username}">${MOCK_USERS[1].name}</a> sent you a friend request. <a data-underline href="/me/content/relations?tab=friends">View all friend requests</a>`,
     created_at: "2021-04-18T01:07:02.000Z",
     id: "1638877680014708228"
   },
@@ -67,7 +67,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     read_at: "2022-05-18T01:07:02.000Z",
     type: NotificationType.FRIEND_REQ_RECEIVED,
     actor: MOCK_USERS[1],
-    rendered_content: `<a data-fw-bold href="/${MOCK_USERS[6].username}">${MOCK_USERS[6].name}</a> sent you a friend request`,
+    rendered_content: `<a data-fw-bold href="/${MOCK_USERS[6].username}">${MOCK_USERS[6].name}</a> sent you a friend request. <a data-underline href="/me/content/relations?tab=friends">View all friend requests</a>`,
     created_at: "2021-04-18T01:07:02.000Z",
     id: "1638877220014708228"
   },

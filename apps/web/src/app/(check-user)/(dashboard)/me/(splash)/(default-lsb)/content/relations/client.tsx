@@ -2,10 +2,15 @@
 
 import { clsx } from "clsx";
 import dynamic from "next/dynamic";
+import {
+  usePathname as use_pathname,
+  useSearchParams as use_search_params
+} from "next/navigation";
 import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
 import { UserListSkeleton, VirtualizedUserList } from "~/common/user";
+import { use_app_router } from "~/common/utils";
 import Divider from "~/components/divider";
 import Input from "~/components/input";
 import Option from "~/components/option";
@@ -102,8 +107,8 @@ const StatusHeader = ({
     (tab === "followers"
       ? user.follower_count
       : tab === "following"
-      ? user.following_count
-      : user.friend_count) || 0;
+        ? user.following_count
+        : user.friend_count) || 0;
 
   React.useEffect(() => {
     [
@@ -149,8 +154,8 @@ const StatusHeader = ({
               ? tab === "followers"
                 ? "follower"
                 : tab === "friends"
-                ? "friend"
-                : tab
+                  ? "friend"
+                  : tab
               : tab}
             .
           </>
@@ -220,9 +225,19 @@ const ControlBar = ({
 
 const ContentRelationsClient = (props: RelationsProps): React.ReactElement => {
   const { pending_friend_request_count } = props;
+  const router = use_app_router();
+  const pathname = use_pathname();
+  const search_params = use_search_params();
+  const tab = search_params.get("tab") || "followers";
   const [sort, set_sort] = React.useState<RelationsSortValue>("popular");
   const [query, set_query] = React.useState<string>("");
-  const [value, set_value] = React.useState<RelationsTabValue>("followers");
+  const [value, set_value] = React.useState<RelationsTabValue>(
+    (["followers", "following", "friends"] as RelationsTabValue[]).includes(
+      tab as RelationsTabValue
+    )
+      ? (tab as RelationsTabValue)
+      : "followers"
+  );
   const [page, set_page] = React.useState<number>(1);
   const debounced_query = use_debounce(query);
   const {
@@ -265,6 +280,14 @@ const ContentRelationsClient = (props: RelationsProps): React.ReactElement => {
     set_page(1);
     set_query(next_query);
   }, []);
+
+  React.useEffect(() => {
+    if (value === "followers") {
+      router.push(pathname);
+    } else {
+      router.push(`${pathname}?tab=${value}`);
+    }
+  }, [pathname, router, value]);
 
   return (
     <React.Fragment>

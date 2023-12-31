@@ -11,7 +11,7 @@ import {
   PROVIDER_DISPLAY_NAME_MAP,
   PROVIDER_ICON_MAP,
   PROVIDER_KEY_MAP
-} from "../../../../../../../../../(alpha)/providers";
+} from "../../../../../../../../../providers";
 import { ConnectionButtonProps } from "./connection-button.props";
 
 const ConnectionButton = ({

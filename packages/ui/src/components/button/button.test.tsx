@@ -2,7 +2,6 @@ import { axe, user_event } from "@storiny/test-utils";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
-import css from "~/theme/main.module.scss";
 
 import Button from "./button";
 import styles from "./button.module.scss";

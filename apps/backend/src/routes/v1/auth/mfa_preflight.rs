@@ -4,7 +4,6 @@ use crate::{
         AppError,
         ToastErrorResponse,
     },
-    middlewares::identity::identity::Identity,
     utils::{
         incr_resource_lock_attempts::incr_resource_lock_attempts,
         is_resource_locked::is_resource_locked,
@@ -54,16 +53,7 @@ struct Response {
     ),
     err
 )]
-async fn post(
-    payload: Json<Request>,
-    data: web::Data<AppState>,
-    user: Option<Identity>,
-) -> Result<HttpResponse, AppError> {
-    // Return early if the user is already logged-in.
-    if user.is_some() {
-        return Err(ToastErrorResponse::new(None, "You are already logged in").into());
-    }
-
+async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpResponse, AppError> {
     if is_resource_locked(&data.redis, ResourceLock::Login, &payload.email).await? {
         return Err(ToastErrorResponse::new(
             Some(StatusCode::TOO_MANY_REQUESTS),

@@ -111,7 +111,8 @@ export const use_color_state = (props: UseColorStateProps): ColorState => {
         on_change(
           typeof next_value === "function" ? next_value(color) : next_value
         );
-        // If value is provided then it's controlled, so stop excuting and don't update the internal state
+        // If value is provided then it's controlled, so stop excuting and
+        // don't update the internal state
         return;
       }
 

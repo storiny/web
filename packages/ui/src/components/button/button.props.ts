@@ -8,8 +8,8 @@ export type ButtonVariant = "rigid" | "hollow" | "ghost";
 
 export interface ButtonProps extends PolymorphicProps<"button"> {
   /**
-   * Automatically resize the component to `lg` when the viewport width is smaller than or
-   * equal to tablet
+   * Automatically resize the component to `lg` when the viewport width is
+   * smaller than or equal to tablet
    * @default false
    */
   auto_size?: boolean;

@@ -1,3 +1,5 @@
+/* eslint-disable prefer-snakecase/prefer-snakecase */
+
 module.exports = {
   extends: ["stylelint-config-standard-scss", "stylelint-config-prettier-scss"],
   rules: {
