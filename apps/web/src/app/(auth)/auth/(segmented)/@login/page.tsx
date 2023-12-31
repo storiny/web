@@ -20,44 +20,37 @@ const Page = (): React.ReactElement => {
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
       <Typography className={css["t-minor"]} level={"body2"}>
-        Need an account? {/* TODO: Uncomment after alpha */}
-        {/*<Link*/}
-        {/*  ClassName={css["t-medium"]}*/}
-        {/*  Href={"#"}*/}
-        {/*  Level={"body2"}*/}
-        {/*  OnClick={(event): void => {event.preventDefault();actions.switch_segment("signup_base")}}*/}
-        {/*  Underline={"always"}*/}
-        {/*>*/}
-        {/*  Sign up*/}
-        {/*</Link>*/}
+        Need an account?
         <Link
           className={css["t-medium"]}
           href={"#"}
           level={"body2"}
           onClick={(event): void => {
             event.preventDefault();
-            actions.switch_segment("alpha");
+            actions.switch_segment("signup_base");
           }}
           underline={"always"}
         >
-          Join using an invite code
+          Sign up
         </Link>
       </Typography>
       <Spacer orientation={"vertical"} size={5} />
       <LoginForm />
-      {/* TODO: Uncomment after alpha  */}
-      {/*<Spacer orientation={"vertical"} size={2} />*/}
-      {/*<div className={css["flex-center"]}>*/}
-      {/*  <Link*/}
-      {/*    ClassName={css["t-medium"]}*/}
-      {/*    Href={"#"}*/}
-      {/*    Level={"body2"}*/}
-      {/*    OnClick={(event): void => {event.preventDefault();actions.switch_segment("base")}}*/}
-      {/*    Underline={"always"}*/}
-      {/*  >*/}
-      {/*    Show other options to log in*/}
-      {/*  </Link>*/}
-      {/*</div>*/}
+      <Spacer orientation={"vertical"} size={2} />
+      <div className={css["flex-center"]}>
+        <Link
+          className={css["t-medium"]}
+          href={"#"}
+          level={"body2"}
+          onClick={(event): void => {
+            event.preventDefault();
+            actions.switch_segment("base");
+          }}
+          underline={"always"}
+        >
+          Show other options to log in
+        </Link>
+      </div>
     </>
   );
 };

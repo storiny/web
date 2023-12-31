@@ -75,7 +75,7 @@ const BannerSettings = (): React.ReactElement => {
           set_banner_id(res.banner_id);
           toast(
             `Banner ${
-              res.banner_id === null ? "remove" : "updated"
+              res.banner_id === null ? "removed" : "updated"
             } successfully`,
             "success"
           );

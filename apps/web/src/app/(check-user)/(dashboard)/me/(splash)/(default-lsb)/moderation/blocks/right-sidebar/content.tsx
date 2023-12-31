@@ -1,3 +1,4 @@
+import { SUPPORT_ARTICLE_MAP } from "@storiny/shared/src/constants/support-articles";
 import { clsx } from "clsx";
 import React from "react";
 
@@ -22,10 +23,8 @@ const ModerationBlocksRightSidebarContent = (): React.ReactElement => (
       However, they may still be able to access your profile and stories through
       a different account or if they are not logged into Storiny.{" "}
       <Link
-        // TODO(future): Get rid of notion
-        href={
-          "https://storiny.notion.site/Blocking-users-a7e7d4b651ae4a0c807fea4f5ae3a6bc"
-        }
+        href={SUPPORT_ARTICLE_MAP.BLOCKING_USERS}
+        target={"_blank"}
         underline={"always"}
       >
         Learn more

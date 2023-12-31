@@ -16,15 +16,12 @@ const ErrorLayout = ({
   error_code,
   title,
   description,
-  enable_search,
-  // TODO: remove hide_footer after alpha
-  hide_footer
+  enable_search
 }: {
   children?: React.ReactNode;
   description?: React.ReactNode;
   enable_search?: boolean;
   error_code: string;
-  hide_footer?: boolean;
   title: React.ReactNode;
 }): React.ReactElement => (
   <MinimalLayout>
@@ -86,7 +83,7 @@ const ErrorLayout = ({
         </>
       )}
     </div>
-    {!hide_footer && <Footer />}
+    <Footer />
   </MinimalLayout>
 );
 

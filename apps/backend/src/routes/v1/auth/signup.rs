@@ -68,9 +68,6 @@ struct Request {
     password: String,
     #[validate(range(min = 18, max = 320, message = "Invalid WPM range"))]
     wpm: u16,
-    // TODO: (alpha) remove this field in beta.
-    #[validate(length(min = 6, max = 12, message = "Invalid invite code length"))]
-    alpha_invite_code: String,
 }
 
 #[post("/v1/auth/signup")]
@@ -96,26 +93,6 @@ async fn post(
     if user.is_some() {
         return Err(ToastErrorResponse::new(None, "You are already logged in").into());
     }
-
-    // Validate the invite code.
-    // TODO: (alpha) remove this in beta
-    let result = sqlx::query(
-        r#"
-SELECT EXISTS (
-    SELECT 1 FROM alpha_invite_codes
-    WHERE code = $1
-)
-"#,
-    )
-    .bind(&payload.alpha_invite_code)
-    .fetch_one(&data.db_pool)
-    .await?;
-
-    if !result.get::<bool, _>("exists") {
-        return Err(ToastErrorResponse::new(None, "Missing or invalid invite code").into());
-    }
-
-    //
 
     let conn_info = req.connection_info();
     let client_ip = conn_info.realip_remote_addr().unwrap_or_default();
@@ -192,15 +169,10 @@ SELECT EXISTS (
     let pg_pool = &data.db_pool;
     let mut txn = pg_pool.begin().await?;
 
-    // TODO: (alpha) Remove CTE from query
     // Insert the user and the email verification token.
     sqlx::query(
         r#"
-WITH deleted_invite_code AS (
-    DELETE FROM alpha_invite_codes
-    WHERE code = $9
-),
-inserted_user AS (
+WITH inserted_user AS (
     INSERT INTO users (email, name, username, password, wpm)
     VALUES ($1, $2, $3, $4, $5)
     RETURNING id
@@ -217,7 +189,6 @@ SELECT $6, $7, (SELECT id FROM inserted_user), $8
     .bind(hashed_token.to_string())
     .bind(TokenType::EmailVerification as i16)
     .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
-    .bind(&payload.alpha_invite_code)
     .execute(&mut *txn)
     .await?;
 
@@ -267,7 +238,6 @@ mod tests {
     use super::*;
     use crate::test_utils::{
         assert_form_error_response,
-        assert_toast_error_response,
         exceed_resource_lock_attempts,
         get_resource_lock_attempts,
         init_app_for_test,
@@ -278,11 +248,7 @@ mod tests {
         PasswordHash,
         PasswordVerifier,
     };
-    use sqlx::{
-        pool::PoolConnection,
-        PgPool,
-        Postgres,
-    };
+    use sqlx::PgPool;
     use std::net::{
         Ipv4Addr,
         SocketAddr,
@@ -290,28 +256,12 @@ mod tests {
     };
     use storiny_macros::test_context;
 
-    // TODO: Temporary function for alpha
-    async fn get_alpha_invite_code(conn: &mut PoolConnection<Postgres>) -> sqlx::Result<String> {
-        sqlx::query(
-            r#"
-INSERT INTO alpha_invite_codes (code)
-VALUES ($1)
-"#,
-        )
-        .bind("0".repeat(8))
-        .execute(&mut **conn)
-        .await?;
-
-        Ok("0".repeat(8).to_string())
-    }
-
     #[sqlx::test]
     async fn can_reject_a_signup_request_when_the_email_is_already_in_use(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
-        let alpha_invite_code = get_alpha_invite_code(&mut conn).await?;
 
         // Insert the user.
         sqlx::query(
@@ -329,7 +279,6 @@ VALUES ($1, $2, $3)
         let req = test::TestRequest::post()
             .uri("/v1/auth/signup")
             .set_json(Request {
-                alpha_invite_code,
                 email: "someone@example.com".to_string(),
                 name: "Some user".to_string(),
                 username: "other_name".to_string(),
@@ -345,39 +294,12 @@ VALUES ($1, $2, $3)
         Ok(())
     }
 
-    // TODO: (alpha)
-    #[sqlx::test]
-    async fn can_reject_a_signup_request_for_an_invalid_alpha_invite_code(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let app = init_app_for_test(post, pool, false, false, None).await.0;
-
-        let req = test::TestRequest::post()
-            .uri("/v1/auth/signup")
-            .set_json(Request {
-                alpha_invite_code: "0".repeat(8).to_string(),
-                email: "someone@example.com".to_string(),
-                name: "Some user".to_string(),
-                username: "other_name".to_string(),
-                password: "some_secret_password".to_string(),
-                wpm: 270,
-            })
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Missing or invalid invite code").await;
-
-        Ok(())
-    }
-
     #[sqlx::test]
     async fn can_reject_a_signup_request_when_the_username_is_already_in_use(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
-        let alpha_invite_code = get_alpha_invite_code(&mut conn).await?;
 
         // Insert the user.
         sqlx::query(
@@ -395,7 +317,6 @@ VALUES ($1, $2, $3)
         let req = test::TestRequest::post()
             .uri("/v1/auth/signup")
             .set_json(Request {
-                alpha_invite_code,
                 email: "other@example.com".to_string(),
                 name: "Some user".to_string(),
                 username: "some_username".to_string(),
@@ -416,14 +337,11 @@ VALUES ($1, $2, $3)
     async fn can_reject_a_signup_request_for_a_reserved_usernames(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
-        let alpha_invite_code = get_alpha_invite_code(&mut conn).await?;
 
         let req = test::TestRequest::post()
             .uri("/v1/auth/signup")
             .set_json(Request {
-                alpha_invite_code,
                 email: "someone@example.com".to_string(),
                 name: "Some user".to_string(),
                 username: RESERVED_USERNAMES[10].to_string(),
@@ -450,7 +368,6 @@ VALUES ($1, $2, $3)
         ) -> sqlx::Result<()> {
             let mut conn = pool.acquire().await?;
             let app = init_app_for_test(post, pool, false, false, None).await.0;
-            let alpha_invite_code = get_alpha_invite_code(&mut conn).await?;
 
             let req = test::TestRequest::post()
                 .peer_addr(SocketAddr::from(SocketAddrV4::new(
@@ -459,7 +376,6 @@ VALUES ($1, $2, $3)
                 )))
                 .uri("/v1/auth/signup")
                 .set_json(Request {
-                    alpha_invite_code: alpha_invite_code.clone(),
                     email: "someone@example.com".to_string(),
                     name: "Some user".to_string(),
                     username: "some_user".to_string(),
@@ -507,22 +423,6 @@ SELECT EXISTS (
 
             assert!(token.get::<bool, _>("exists"));
 
-            // TODO: (alpha)
-            // Should delete the invite code.
-            let invite_code = sqlx::query(
-                r#"
-SELECT EXISTS (
-    SELECT 1 FROM alpha_invite_codes
-    WHERE code = $1
-)
-"#,
-            )
-            .bind(&alpha_invite_code)
-            .fetch_one(&mut *conn)
-            .await?;
-
-            assert!(!invite_code.get::<bool, _>("exists"));
-
             // Should increment the signup attempts.
             let result =
                 get_resource_lock_attempts(&ctx.redis_pool, ResourceLock::Signup, "8.8.8.8")
@@ -540,9 +440,7 @@ SELECT EXISTS (
             ctx: &mut RedisTestContext,
             pool: PgPool,
         ) -> sqlx::Result<()> {
-            let mut conn = pool.acquire().await?;
             let app = init_app_for_test(post, pool, false, false, None).await.0;
-            let alpha_invite_code = get_alpha_invite_code(&mut conn).await?;
 
             exceed_resource_lock_attempts(&ctx.redis_pool, ResourceLock::Signup, "8.8.8.8").await;
 
@@ -553,7 +451,6 @@ SELECT EXISTS (
                 )))
                 .uri("/v1/auth/signup")
                 .set_json(Request {
-                    alpha_invite_code,
                     email: "someone@example.com".to_string(),
                     name: "Some user".to_string(),
                     username: "some_user".to_string(),

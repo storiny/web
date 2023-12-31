@@ -1,6 +1,7 @@
 "use client";
 
 import { USER_PROPS } from "@storiny/shared";
+import { SUPPORT_ARTICLE_MAP } from "@storiny/shared/src/constants/support-articles";
 import { clsx } from "clsx";
 import React from "react";
 
@@ -150,10 +151,8 @@ const AccountGeneralForm = ({
             <b>bold</b>** and *<em>italics</em>*, and you can also mention{" "}
             <span className={css["t-medium"]}>@someone</span>.{" "}
             <Link
-              // TODO(future): Get rid of notion
-              href={
-                "https://storiny.notion.site/Formatting-your-bio-769c1a70c1fc443c93ed7dfa6761d399"
-              }
+              href={SUPPORT_ARTICLE_MAP.FORMATTING_BIO}
+              target={"_blank"}
               underline={"always"}
             >
               Learn more about formatting your bio

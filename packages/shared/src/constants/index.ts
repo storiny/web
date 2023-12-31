@@ -4,6 +4,7 @@ export * from "./comment";
 export * from "./messages";
 export * from "./reply";
 export * from "./story";
+export * from "./support-articles";
 export * from "./tag";
 export * from "./user";
 export * from "./vibration";

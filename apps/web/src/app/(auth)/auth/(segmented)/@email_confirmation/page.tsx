@@ -75,8 +75,6 @@ const Page = (): React.ReactElement => {
         <Button
           as={NextLink}
           className={css["full-w"]}
-          // TODO: Enable after alpha
-          disabled
           href={"/"}
           size={"lg"}
           variant={"hollow"}

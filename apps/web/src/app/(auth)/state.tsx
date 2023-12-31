@@ -18,8 +18,6 @@ type RecoverySegment = "base" | "inbox";
 type ResetSegment = "base" | "success";
 
 export type AuthSegment =
-  // TODO: remove after alpha
-  | "alpha"
   | "base"
   | "login"
   | `signup_${SignupSegment}`
@@ -32,8 +30,7 @@ export type AuthSegment =
 create_store(
   {
     auth: {
-      // TODO: uncomment after alpha segment: "base",
-      segment: "alpha"
+      segment: "base"
     },
     reset_password: { token: null },
     login_data: null,
@@ -46,8 +43,7 @@ create_store(
       name: "",
       password: "",
       username: "",
-      wpm: null,
-      alpha_invite_code: ""
+      wpm: null
     },
     signup_errors: {}
   },
