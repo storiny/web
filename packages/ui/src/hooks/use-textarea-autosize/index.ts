@@ -19,7 +19,8 @@ export const use_textarea_autosize =
     const { current: textarea } = textarea_ref;
 
     if (textarea) {
-      // We need to reset the height momentarily to get the correct `scrollHeight` for the textarea
+      // We need to reset the height momentarily to get the correct
+      // `scrollHeight` for the textarea
       textarea.style.height = "0px";
       let padding_y = parseFloat(
         textarea.getAttribute("data-padding-block") || ""

@@ -1,11 +1,11 @@
-import { BaseFabricObject } from "fabric";
+import { FabricObject } from "fabric";
 
 import { LayerType } from "../../constants";
 import { get_new_layer_name } from "./get-new-layer-name";
 
 describe("get_new_layer_name", () => {
   it("returns correct layer name", () => {
-    const layers: Partial<BaseFabricObject>[] = [];
+    const layers: Partial<FabricObject>[] = [];
     const get_layer_name = (type: LayerType = LayerType.RECTANGLE): string =>
       get_new_layer_name(type, undefined, layers);
 
@@ -17,7 +17,7 @@ describe("get_new_layer_name", () => {
       get: function (this: any, prop) {
         return this[prop];
       }
-    } as Partial<BaseFabricObject>);
+    } as Partial<FabricObject>);
 
     expect(get_layer_name()).toEqual("Rectangle 2");
 
@@ -27,7 +27,7 @@ describe("get_new_layer_name", () => {
       get: function (this: any, prop) {
         return this[prop];
       }
-    } as Partial<BaseFabricObject>);
+    } as Partial<FabricObject>);
 
     expect(get_layer_name()).toEqual("Rectangle 2");
   });

@@ -1,10 +1,9 @@
-import { BaseFabricObject, Rect } from "fabric";
+import { FabricObject, Rect } from "fabric";
 import React from "react";
 
 import Input from "~/components/input";
 import AngleIcon from "~/icons/angle";
 import CornerRadiusIcon from "~/icons/corner-radius";
-import css from "~/theme/main.module.scss";
 import { clamp } from "~/utils/clamp";
 
 import { MAX_ANGLE, MIN_ANGLE } from "../../../../../constants";
@@ -17,7 +16,7 @@ import DrawItem, { DrawItemRow } from "../../item";
 const AngleControl = ({
   active_object
 }: {
-  active_object: BaseFabricObject;
+  active_object: FabricObject;
 }): React.ReactElement => {
   use_event_render(
     "object:rotating",
@@ -76,7 +75,7 @@ const AngleControl = ({
 const CornerRadiusControl = ({
   active_object
 }: {
-  active_object: BaseFabricObject;
+  active_object: FabricObject;
 }): React.ReactElement => {
   /**
    * Mutates the corner radius of the object

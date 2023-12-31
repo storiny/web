@@ -1,4 +1,4 @@
-import { BaseFabricObject, Canvas, TPointerEventInfo } from "fabric";
+import { Canvas, FabricObject, TPointerEventInfo } from "fabric";
 
 import { CURSORS, DrawableLayerType, LayerType } from "../../../../constants";
 import { Arrow, Diamond, Ellipse, Line, Rect } from "../../../../lib";
@@ -58,7 +58,7 @@ export class DrawPlugin {
    * The object being drawn
    * @private
    */
-  private object: BaseFabricObject | null;
+  private object: FabricObject | null;
   /**
    * The type of the layer to draw
    * @private

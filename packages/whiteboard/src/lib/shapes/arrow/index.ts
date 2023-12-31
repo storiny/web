@@ -129,7 +129,8 @@ export class Arrow extends ArrowPrimitive<ArrowProps> {
     const p1 = [data[0], data[1]];
 
     // We need to find `p0` of the bézier curve.
-    // It is typically the last point of the previous curve; it can also be the position of `moveTo` operation
+    // It is typically the last point of the previous curve; it can also be the
+    // position of `moveTo` operation
     const prev_op = ops[index - 1];
     let p0 = [0, 0];
 
@@ -146,14 +147,17 @@ export class Arrow extends ArrowPrimitive<ArrowProps> {
       3 * Math.pow(t, 2) * (1 - t) * p1[idx] +
       p0[idx] * Math.pow(t, 3);
 
-    // We know the last point of the arrow (or the first, in case of start arrowhead)
+    // We know the last point of the arrow (or the first, in case of start
+    // arrowhead)
     const [x2, y2] = position === "start" ? p0 : p3;
 
-    // By using cubic bezier equation (B(t)) and the given parameters, we calculate a point that is closer to the last point.
-    // The value 0.3 is chosen arbitrarily, and it works best for all the tested cases
+    // By using cubic bezier equation (B(t)) and the given parameters, we
+    // calculate a point that is closer to the last point. The value 0.3 is
+    // chosen arbitrarily, and it works best for all the tested cases
     const [x1, y1] = [equation(0.3, 0), equation(0.3, 1)];
 
-    // Find the normalized direction vector based on the previously calculated points
+    // Find the normalized direction vector based on the previously calculated
+    // points
     const distance = Math.hypot(x2 - x1, y2 - y1);
     const nx = (x2 - x1) / distance;
     const ny = (y2 - y1) / distance;
@@ -184,8 +188,9 @@ export class Arrow extends ArrowPrimitive<ArrowProps> {
       length += Math.hypot(cx - px, cy - py);
     }
 
-    // Scale down the arrowhead until we hit a certain size so that it doesn't look weird.
-    // This value is selected by minimizing a minimum size with the last segment of the arrowhead
+    // Scale down the arrowhead until we hit a certain size so that it doesn't
+    // look weird. This value is selected by minimizing a minimum size with the
+    // last segment of the arrowhead
     const min_size = Math.min(size, length / 2);
     const xs = x2 - nx * min_size;
     const ys = y2 - ny * min_size;

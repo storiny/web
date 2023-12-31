@@ -1,4 +1,4 @@
-import { BaseFabricObject, Canvas } from "fabric";
+import { Canvas, FabricObject } from "fabric";
 
 import { capitalize } from "~/utils/capitalize";
 
@@ -14,7 +14,7 @@ import { LayerType } from "../../constants";
 export const get_new_layer_name = (
   type: LayerType,
   canvas?: Canvas,
-  layers_prop?: Partial<BaseFabricObject>[]
+  layers_prop?: Partial<FabricObject>[]
 ): string => {
   const layers = layers_prop || canvas?.getObjects() || [];
   const layer_prefix = capitalize(type);

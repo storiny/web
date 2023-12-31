@@ -57,10 +57,11 @@ export type TypographyProps = PolymorphicProps<TypographyElement> & {
    */
   color?: TypographyColor;
   /**
-   * If `true`, the text will not wrap, but instead will truncate with a text overflow ellipsis.
+   * If `true`, the text will not wrap, but instead will truncate with a text
+   * overflow ellipsis.
    *
-   * Note that text overflow can only happen with block or inline-block level elements
-   * (the element needs to have a width in order to overflow).
+   * Note that text overflow can only happen with block or inline-block level
+   * elements (the element needs to have a width in order to overflow).
    * @default false
    */
   ellipsis?: boolean;
@@ -70,8 +71,8 @@ export type TypographyProps = PolymorphicProps<TypographyElement> & {
    */
   level?: TypographyLevel;
   /**
-   * The scale of the component. Overrides the font size and line height coming from the
-   * `level` prop.
+   * The scale of the component. Overrides the font size and line height coming
+   * from the `level` prop.
    */
   scale?: TypographyScale;
   /**

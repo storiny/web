@@ -108,7 +108,8 @@ const offset_till = (node: HTMLElement, target: HTMLElement): number => {
   let current: HTMLElement = node;
   let offset = 0;
 
-  // If target is not an `offsetParent` itself, subtract its `offsetTop` and set the correct target
+  // If target is not an `offsetParent` itself, subtract its `offsetTop` and
+  // set the correct target
   if (!is_offset_element(target)) {
     offset += node.offsetTop - target.offsetTop;
     target = node.offsetParent as HTMLElement;

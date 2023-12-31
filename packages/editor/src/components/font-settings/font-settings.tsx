@@ -21,22 +21,12 @@
 //       Notify({
 //         Open: true,
 //         Children:
-//           "Difficulty reading? Try adjusting font properties in your settings.",
-//         PrimaryButtonText: "Settings",
-//         SlotProps: {
-//           PrimaryButton: {
-//             OnClick: (): void => router.push("/me/settings/appearance")
-//           },
-//           SecondaryButton: {
-//             OnClick: (): void => {
-//               Dispatch(set_font_settings_notification_visibility(false));
-//             }
-//           }
-//         },
-//         Icon: <TypographyIcon />
-//       });
-//     }
-//   }, [dispatch, notify, router, showNotification]);
+// "Difficulty reading? Try adjusting font properties in your settings.",
+// PrimaryButtonText: "Settings", SlotProps: { PrimaryButton: { OnClick: ():
+// void => router.push("/me/settings/appearance") }, SecondaryButton: { OnClick:
+// (): void => { Dispatch(set_font_settings_notification_visibility(false)); } }
+// }, Icon: <TypographyIcon /> }); } }, [dispatch, notify, router,
+// showNotification]);
 //
 //   Return null;
 // };

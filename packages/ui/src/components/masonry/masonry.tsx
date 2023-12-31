@@ -74,7 +74,8 @@ export default class Masonry<T extends object> extends React.Component<
   } {
     const { items } = props;
     const { measurement_store } = state;
-    // Whenever we're receiving new props, determine whether any items need to be measured
+    // Whenever we're receiving new props, determine whether any items need to
+    // be measured
     const has_pending_measurements = items.some(
       (item) => !measurement_store.has(item)
     );
@@ -430,7 +431,8 @@ export default class Masonry<T extends object> extends React.Component<
     let grid_body: React.ReactElement;
 
     if (width === null && has_pending_measurements) {
-      // When hyrdating from a server render, we don't have the width of the grid and the measurement store is empty
+      // When hyrdating from a server render, we don't have the width of the
+      // grid and the measurement store is empty
       grid_body = (
         <div
           {...slot_props?.container}
@@ -472,7 +474,8 @@ export default class Masonry<T extends object> extends React.Component<
         </div>
       );
     } else if (width === null) {
-      // When the width is empty (usually after a re-mount), render an empty div to collect the width for layout
+      // When the width is empty (usually after a re-mount), render an empty
+      // div to collect the width for layout
       grid_body = (
         <div
           ref={this.set_grid_wrapper_ref}

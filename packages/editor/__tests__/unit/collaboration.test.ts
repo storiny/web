@@ -365,12 +365,15 @@ describe("collaboration", () => {
     });
 
     /**
-     * TODO: We can probably handle these conflicts better by keeping a fallback map when
-     *   we remove text without any adjacent text nodes. This would require major changes
-     *   in `CollabElementNode.splice` and `CollabElementNode.apply_children_yjs_delta` to handle
-     *   the existence of these fallback maps. For now though, if a user clears all the text
-     *   nodes from an element and another user inserts some text into the same element at the
-     *   same time, the deletion operation will take precedence on conflicts.
+     * TODO: We can probably handle these conflicts better by keeping a
+     * fallback map when
+     *   we remove text without any adjacent text nodes. This would require
+     *   major changes in `CollabElementNode.splice` and
+     *   `CollabElementNode.apply_children_yjs_delta` to handle the existence
+     *   of these fallback maps. For now though, if a user clears all the text
+     *   nodes from an element and another user inserts some text into the same
+     *   element at the same time, the deletion operation will take precedence
+     *   on conflicts.
      */
     expect(client1.get_html()).toEqual("<p><br></p>");
     expect(client1.get_html()).toEqual(client2.get_html());
@@ -504,7 +507,8 @@ describe("collaboration", () => {
         test_case.clients.length
       );
 
-      // Set the initial content (into first editor only, the rest will be synced)
+      // Set the initial content (into first editor only, the rest will be
+      // synced)
       const client1 = clients[0];
 
       await wait_for_react(() => {
@@ -516,8 +520,8 @@ describe("collaboration", () => {
 
       test_clients_for_equality(clients);
 
-      // Disconnect clients and apply client-specific actions, reconnect them back, and
-      // verify that they are synced and have the same content
+      // Disconnect clients and apply client-specific actions, reconnect them
+      // back, and verify that they are synced and have the same content
       disconnect_clients(clients);
 
       for (let i = 0; i < clients.length; i++) {

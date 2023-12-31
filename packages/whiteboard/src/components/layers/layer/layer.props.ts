@@ -1,4 +1,4 @@
-import { BaseFabricObject } from "fabric";
+import { FabricObject } from "fabric";
 import React from "react";
 
 export interface LayerProps extends React.ComponentPropsWithRef<"li"> {
@@ -9,5 +9,5 @@ export interface LayerProps extends React.ComponentPropsWithRef<"li"> {
   /**
    * Layer object
    */
-  layer: BaseFabricObject;
+  layer: FabricObject;
 }

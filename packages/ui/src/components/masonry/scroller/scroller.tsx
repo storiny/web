@@ -5,10 +5,10 @@ import { ScrollerProps } from "./scroller.props";
 /**
  * Scroller is a pass-through component that simply sets up an `onScroll`
  * handler on the given `scroll_container` element (or the element that is
- * returned as a result of calling the `scroll_container` method). This allows for
- * the event listener subscription of the `scroll_container` to be managed inside
- * the React lifecycle without adding bloat to Masonry or other `onScroll`
- * subscribers.
+ * returned as a result of calling the `scroll_container` method). This allows
+ * for the event listener subscription of the `scroll_container` to be managed
+ * inside the React lifecycle without adding bloat to Masonry or other
+ * `onScroll` subscribers.
  *
  * Note that this component renders its children without creating any
  * additional content. Also note that, while the component is built to manage

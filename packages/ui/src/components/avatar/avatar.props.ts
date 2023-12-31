@@ -28,11 +28,13 @@ export interface AvatarProps extends AvatarPrimitive {
    */
   borderless?: boolean;
   /**
-   * The dominant hex color code of the image element with the `#` prefix, shown when the image is being loaded.
+   * The dominant hex color code of the image element with the `#` prefix,
+   * shown when the image is being loaded.
    */
   hex?: string | null;
   /**
-   * The label for computing fallback color and initials. Usually the name property of the user.
+   * The label for computing fallback color and initials. Usually the name
+   * property of the user.
    */
   label?: string;
   /**

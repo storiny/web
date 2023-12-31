@@ -34,7 +34,8 @@ const MaxLengthPlugin = (): null => {
         const anchor = selection.anchor;
 
         if (del_count > 0) {
-          // Restore the old editor state instead if the last text content was already at the limit.
+          // Restore the old editor state instead if the last text content was
+          // already at the limit.
           if (
             prev_text_content_size === STORY_MAX_LENGTH &&
             last_restored_editor_state !== prev_editor_state

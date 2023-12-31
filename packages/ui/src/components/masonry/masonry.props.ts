@@ -15,11 +15,13 @@ export type MasonryProps<T> = {
    */
   get_item_key?: (data: T) => string;
   /**
-   * The amount of vertical and horizontal space between each item, specified in pixels
+   * The amount of vertical and horizontal space between each item, specified
+   * in pixels
    */
   gutter_width?: number;
   /**
-   * Array of items to display that contains the data to be rendered by `renderItem`
+   * Array of items to display that contains the data to be rendered by
+   * `renderItem`
    */
   items: T[];
   /**
@@ -34,11 +36,15 @@ export type MasonryProps<T> = {
   overscan_factor?: number;
   /**
    * Function to render item in the grid
-   * If present, `heightAdjustment` indicates the number of pixels this item needs to grow/shrink to accommodate a 2-column item in the grid. Items must respond to this prop by adjusting their height or layout issues will occur.
+   * If present, `heightAdjustment` indicates the number of pixels this item
+   * needs to grow/shrink to accommodate a 2-column item in the grid. Items
+   * must respond to this prop by adjusting their height or layout issues will
+   * occur.
    */
   render_item: (args: RenderItemArgs<T>) => React.ReactElement;
   /**
-   * Function that returns a DOM node that masonry uses for scroll event subscription
+   * Function that returns a DOM node that masonry uses for scroll event
+   * subscription
    */
   scroll_container?: () => HTMLElement;
   /**

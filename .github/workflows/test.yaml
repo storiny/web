@@ -1,0 +1,35 @@
+name: Run tests
+env:
+  RUSTFLAGS: -D warnings
+  CARGO_TERM_COLOR: always
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Test
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run front-end tests
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+          cache-dependency-path: 'yarn.lock'
+      - run: corepack enable
+      - run: yarn install
+# TODO     - run: yarn lint
+      - run: yarn test
+
+        # TODO: Test other services

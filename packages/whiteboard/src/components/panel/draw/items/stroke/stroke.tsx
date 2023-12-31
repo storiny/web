@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { BaseFabricObject } from "fabric";
+import { FabricObject } from "fabric";
 import React from "react";
 
 import IconButton from "~/components/icon-button";
@@ -69,7 +69,7 @@ const get_arrowhead_icon = (
 const StrokeControl = ({
   active_object
 }: {
-  active_object: BaseFabricObject;
+  active_object: FabricObject;
 }): React.ReactElement => {
   const [stroke, set_stroke] = React.useState<TColor>(
     str_to_color((active_object.stroke as string) || DEFAULT_LAYER_STROKE)!
@@ -180,7 +180,7 @@ const StrokeWidthControl = ({
   active_object,
   disable_stroke_style
 }: {
-  active_object: BaseFabricObject;
+  active_object: FabricObject;
   disable_stroke_style: boolean;
 }): React.ReactElement => {
   /**
@@ -227,7 +227,7 @@ const StrokeWidthControl = ({
 const StrokeStyleControl = ({
   active_object
 }: {
-  active_object: BaseFabricObject;
+  active_object: FabricObject;
 }): React.ReactElement => {
   const [stroke_style, set_stroke_style] = React.useState<StrokeStyle>(
     active_object.get("strokeStyle") || StrokeStyle.SOLID
@@ -290,7 +290,7 @@ const StrokeStyleControl = ({
 const ArrowheadControl = ({
   active_object
 }: {
-  active_object: BaseFabricObject;
+  active_object: FabricObject;
 }): React.ReactElement => {
   const [start_arrowhead, set_start_arrowhead] = React.useState<Arrowhead>(
     active_object.get("startArrowhead") || Arrowhead.NONE
