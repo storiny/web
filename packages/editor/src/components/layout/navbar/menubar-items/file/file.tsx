@@ -1,6 +1,7 @@
 /* eslint-disable capitalized-comments */
 
-// import { download_as_file } from "@storiny/shared/src/utils/download_as_file";
+// import { download_as_file } from
+// "@storiny/shared/src/utils/download_as_file";
 import { get_shortcut_label } from "@storiny/shared/src/utils/get-shortcut-label";
 // import { deflateSync } from "fflate";
 import React from "react";
@@ -11,7 +12,8 @@ import MenubarSub from "~/components/menubar-sub";
 import Separator from "~/components/separator";
 
 import { EDITOR_SHORTCUTS } from "../../../../../constants/shortcuts";
-// import { use_collaboration_context } from "../../../../../plugins/collaboration/context";
+// import { use_collaboration_context } from
+// "../../../../../plugins/collaboration/context";
 
 // eslint-disable-next-line prefer-arrow-functions/prefer-arrow-functions
 const FileItem = (): React.ReactElement => {

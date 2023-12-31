@@ -10,8 +10,8 @@ type ThrottledFunction<T extends (...args: any) => any> = (
 ) => ReturnType<T>;
 
 /**
- * Returns a throttled function that only invokes the provided function (`func`) at most once
- * per within a given number of milliseconds
+ * Returns a throttled function that only invokes the provided function
+ * (`func`) at most once per within a given number of milliseconds
  * @param func Function to throttle
  * @param limit Limit in ms
  */

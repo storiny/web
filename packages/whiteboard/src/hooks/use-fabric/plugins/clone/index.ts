@@ -1,5 +1,5 @@
 import { get_shortcut_slug } from "@storiny/shared/src/utils/get-shortcut-slug";
-import { ActiveSelection, BaseFabricObject, Canvas } from "fabric";
+import { ActiveSelection, Canvas, FabricObject } from "fabric";
 import hotkeys from "hotkeys-js";
 
 import { CLONE_PROPS } from "../../../../lib";
@@ -33,7 +33,7 @@ class ClonePlugin {
    * Cloning cache
    * @private
    */
-  private cache: BaseFabricObject | ActiveSelection | null;
+  private cache: FabricObject | ActiveSelection | null;
   /**
    * The number of times a same object was cloned
    * @private
@@ -45,7 +45,7 @@ class ClonePlugin {
    * @param active_object Object to copy
    * @private
    */
-  private clone_object(active_object: BaseFabricObject): void {
+  private clone_object(active_object: FabricObject): void {
     this.clone_count++;
 
     active_object.clone(CLONE_PROPS).then((cloned) => {

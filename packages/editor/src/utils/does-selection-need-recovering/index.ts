@@ -28,7 +28,8 @@ export const does_selection_need_recovering = (
       recovery_needed = true;
     }
   } catch {
-    // Sometimes checking for a node via `getNode` might trigger an error, so we need recovery then too
+    // Sometimes checking for a node via `getNode` might trigger an error, so
+    // we need recovery then too
     recovery_needed = true;
   }
 

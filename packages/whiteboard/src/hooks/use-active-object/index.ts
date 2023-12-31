@@ -1,4 +1,4 @@
-import { BaseFabricObject } from "fabric";
+import { FabricObject } from "fabric";
 import React from "react";
 
 import { is_interactive_object } from "../../utils";
@@ -7,10 +7,10 @@ import { use_canvas } from "../use-canvas";
 /**
  * Returns the current active object
  */
-export const use_active_object = (): BaseFabricObject | null => {
+export const use_active_object = (): FabricObject | null => {
   const canvas = use_canvas();
   const [active_object, set_active_object] =
-    React.useState<BaseFabricObject | null>(null);
+    React.useState<FabricObject | null>(null);
 
   React.useEffect(() => {
     const { current } = canvas;
@@ -21,7 +21,7 @@ export const use_active_object = (): BaseFabricObject | null => {
     const update_object = (): void => {
       if (current) {
         const object = current.getActiveObject();
-        set_active_object(object as BaseFabricObject);
+        set_active_object(object as FabricObject);
       }
     };
 

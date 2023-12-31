@@ -1,4 +1,4 @@
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig as define_config, devices } from "@playwright/test";
 
 require("dotenv").config();
 
@@ -9,7 +9,8 @@ const IS_CI = CI === "true";
  * Playwright config
  * @see https://playwright.dev/docs/test-configuration.
  */
-export default defineConfig({
+export default define_config({
+  /* eslint-disable prefer-snakecase/prefer-snakecase */
   forbidOnly: IS_CI,
   testMatch: "**/*.spec.[jt]s?(x)",
   testDir: "./packages/editor/__tests__/",
@@ -40,4 +41,5 @@ export default defineConfig({
     reuseExistingServer: true,
     timeout: 120 * 1000,
   },
+  /* eslint-enable prefer-snakecase/prefer-snakecase */
 });

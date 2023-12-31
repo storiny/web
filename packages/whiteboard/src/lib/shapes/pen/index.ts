@@ -126,7 +126,8 @@ export class PenBrush extends BaseBrush {
 
     this.has_committed_last_point = false;
     this.prepare_for_drawing(pointer);
-    // Capture coordinates immediately, allowing to draw dots (when the movement never occurs)
+    // Capture coordinates immediately, allowing to draw dots (when the
+    // movement never occurs)
     this.add_point(pointer);
     this._render();
   }
@@ -194,8 +195,8 @@ export class PenBrush extends BaseBrush {
   }
 
   /**
-   * Adds a new point to the `points` array. Returns `true` if the point was added,
-   * false otherwise
+   * Adds a new point to the `points` array. Returns `true` if the point was
+   * added, false otherwise
    * @param point Point to add
    * @private
    */

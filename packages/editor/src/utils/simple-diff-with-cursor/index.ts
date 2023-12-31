@@ -34,7 +34,8 @@ export const simple_diff_with_cursor = (
     right++;
   }
 
-  // Try to iterate left further to the right without caring about the current cursor position
+  // Try to iterate left further to the right without caring about the current
+  // cursor position
   while (
     right + left < a_length &&
     right + left < b_length &&

@@ -66,7 +66,8 @@ const FloatingTextStylePopover = (): React.ReactElement => {
         const element_under_mouse = document.elementFromPoint(x, y);
 
         if (!popover_ref.current.contains(element_under_mouse)) {
-          // Mouse is not over the target element -> not a normal click, but probably a drag
+          // Mouse is not over the target element -> not a normal click, but
+          // probably a drag
           popover_ref.current.style.pointerEvents = "none";
         }
       }

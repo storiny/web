@@ -15,8 +15,8 @@ type CheckboxPrimitive = Omit<
 
 export interface CheckboxProps extends CheckboxPrimitive {
   /**
-   * Automatically resize the component to `lg` when the viewport width is smaller than or
-   * equal to tablet
+   * Automatically resize the component to `lg` when the viewport width is
+   * smaller than or equal to tablet
    * @default false
    */
   auto_size?: boolean;

@@ -1,4 +1,4 @@
-import { BaseFabricObject } from "fabric";
+import { FabricObject } from "fabric";
 import React from "react";
 
 import IconButton from "~/components/icon-button";
@@ -19,7 +19,7 @@ import DrawItem, { DrawItemRow } from "../../item";
 const OpacityControl = ({
   active_object
 }: {
-  active_object: BaseFabricObject;
+  active_object: FabricObject;
 }): React.ReactElement => {
   use_event_render(
     "object:modified",
@@ -87,7 +87,7 @@ const OpacityControl = ({
 const RoughnessControl = ({
   active_object
 }: {
-  active_object: BaseFabricObject;
+  active_object: FabricObject;
 }): React.ReactElement => {
   /**
    * Mutates the roughness of the object

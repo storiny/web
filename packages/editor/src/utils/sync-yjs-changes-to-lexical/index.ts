@@ -162,7 +162,8 @@ export const sync_yjs_changes_to_lexical = ({
               if (does_selection_need_recovering(selection)) {
                 const root = $get_root();
 
-                // If there was a collision on the top level paragraph, we need to re-add a paragraph
+                // If there was a collision on the top level paragraph, we need
+                // to re-add a paragraph
                 if (root.getChildrenSize() === 0) {
                   root.append($create_paragraph_node());
                 }

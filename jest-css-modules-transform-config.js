@@ -1,14 +1,16 @@
-const path = require("path");
-const additionalResolvePath = path.resolve(
+/* eslint-disable prefer-snakecase/prefer-snakecase */
+
+const path = require("node:path");
+const additional_resolve_path = path.resolve(
   __dirname,
   "packages",
   "ui",
   "src",
-  "theme"
+  "theme",
 );
 
 module.exports = {
   sassConfig: {
-    includePaths: [additionalResolvePath],
+    includePaths: [additional_resolve_path],
   },
 };

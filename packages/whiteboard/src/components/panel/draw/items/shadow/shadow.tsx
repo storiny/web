@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { BaseFabricObject, Canvas, Shadow as ObjectShadow } from "fabric";
+import { Canvas, FabricObject, Shadow as ObjectShadow } from "fabric";
 import React from "react";
 
 import Input from "~/components/input";
@@ -27,7 +27,7 @@ const ShadowColorControl = ({
   active_object,
   canvas
 }: {
-  active_object?: BaseFabricObject;
+  active_object?: FabricObject;
   canvas: Canvas;
 }): React.ReactElement => {
   const [color, set_color] = React.useState<TColor>(
@@ -155,7 +155,7 @@ const ShadowBlurControl = ({
   active_object,
   canvas
 }: {
-  active_object?: BaseFabricObject;
+  active_object?: FabricObject;
   canvas: Canvas;
 }): React.ReactElement => {
   /**
@@ -215,7 +215,7 @@ const ShadowOffsetsControl = ({
   active_object,
   canvas
 }: {
-  active_object?: BaseFabricObject;
+  active_object?: FabricObject;
   canvas: Canvas;
 }): React.ReactElement => {
   /**

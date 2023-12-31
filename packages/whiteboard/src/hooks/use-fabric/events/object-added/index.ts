@@ -1,4 +1,4 @@
-import { BaseFabricObject, Canvas } from "fabric";
+import { Canvas, FabricObject } from "fabric";
 import { nanoid } from "nanoid";
 
 import {
@@ -10,7 +10,7 @@ import {
 
 export const object_added_event = (canvas: Canvas): void => {
   canvas.on("object:added", (options) => {
-    const object = options.target as BaseFabricObject;
+    const object = options.target as FabricObject;
 
     if (!is_interactive_object(object)) {
       return;

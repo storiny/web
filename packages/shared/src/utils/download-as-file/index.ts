@@ -23,8 +23,9 @@ export const download_as_file = (
   temp_link.href = blob_url;
   temp_link.setAttribute("download", filename);
 
-  // Safari thinks `_blank` anchor are pop-ups. We only want to set `_blank` target if the browser does not support the HTML5 download attribute.
-  // This allows us to download files in desktop safari if pop up blocking is enabled
+  // Safari thinks `_blank` anchor are pop-ups. We only want to set `_blank`
+  // target if the browser does not support the HTML5 download attribute. This
+  // allows us to download files in desktop safari if pop up blocking is enabled
   if (typeof temp_link.download === "undefined") {
     temp_link.setAttribute("target", "_blank");
   }

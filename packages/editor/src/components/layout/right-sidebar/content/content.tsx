@@ -16,7 +16,6 @@ import css from "~/theme/main.module.scss";
 import {
   DOC_STATUS,
   doc_status_atom,
-  DocStatus,
   overflowing_figures_atom,
   sidebars_collapsed_atom
 } from "../../../../atoms";
