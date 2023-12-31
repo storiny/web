@@ -725,17 +725,17 @@ test.describe("text style", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.type("hello world");
 
-    await click(page, 'section[contenteditable="true"] > p', {
+    await click(page, "div[data-editor-content] > p", {
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       clickCount: 1,
       delay: 100
     });
-    await click(page, 'section[contenteditable="true"] > p', {
+    await click(page, "div[data-editor-content] > p", {
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       clickCount: 2,
       delay: 100
     });
-    await click(page, 'section[contenteditable="true"] > p', {
+    await click(page, "div[data-editor-content] > p", {
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       clickCount: 3,
       delay: 100
@@ -1119,7 +1119,7 @@ test.describe("text style", () => {
             `[data-testid="subscript-toggle"][data-state="off"]`
           )
       )
-    ).toBeTruthy();
+    ).toBeTrue();
 
     await toggle_bold(page);
     await toggle_italic(page);
@@ -1166,6 +1166,6 @@ test.describe("text style", () => {
             `[data-testid="subscript-toggle"][data-state="on"]`
           )
       )
-    ).toBeTruthy();
+    ).toBeTrue();
   });
 });

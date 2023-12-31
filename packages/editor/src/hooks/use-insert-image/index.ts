@@ -7,7 +7,7 @@ import {
 } from "../../plugins/image/image";
 
 /**
- * Hooks for inserting image nodes
+ * Hook for inserting image nodes
  */
 export const use_insert_image = (): [(payload: InsertImagePayload) => void] => {
   const [editor] = use_lexical_composer_context();

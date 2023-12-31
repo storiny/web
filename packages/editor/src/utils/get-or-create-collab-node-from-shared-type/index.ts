@@ -34,7 +34,19 @@ export const get_or_create_collab_node_from_shared_type = (
   | CollabTextNode
   | CollabLineBreakNode
   | CollabDecoratorNode => {
-  const collab_node = shared_type._collab_node;
+  const collab_node:
+    | CollabElementNode
+    | CollabTextNode
+    | CollabLineBreakNode
+    | CollabDecoratorNode
+    | undefined = shared_type._collab_node;
+
+  // if (
+  //   (shared_type.parent as YMap<unknown> | null)?._collab_node instanceof
+  //   CollabCodeBlockNode
+  // ) {
+  //   collab_node =
+  // (shared_type.parent as YMap<unknown> | null)?._collab_node || undefined; }
 
   if (collab_node === undefined) {
     const registered_nodes = binding.editor._nodes;
@@ -71,5 +83,5 @@ export const get_or_create_collab_node_from_shared_type = (
     }
   }
 
-  return collab_node;
+  return collab_node!;
 };

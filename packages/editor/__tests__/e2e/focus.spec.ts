@@ -14,7 +14,7 @@ test.describe("focus", () => {
     await page.keyboard.press("Tab");
 
     const is_editor_focused = await evaluate(page, () => {
-      const editor = document.querySelector('section[contenteditable="true"]');
+      const editor = document.querySelector("div[data-editor-content]");
       return editor === document.activeElement;
     });
 

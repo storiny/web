@@ -6,7 +6,7 @@ import React from "react";
 import { underline_atom } from "../../atoms";
 
 /**
- * Hooks for using underline text style
+ * Hook for using underline text style
  */
 export const use_underline = (): [boolean, () => void] => {
   const underline = use_atom_value(underline_atom);

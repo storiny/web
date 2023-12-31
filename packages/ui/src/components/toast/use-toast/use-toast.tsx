@@ -4,7 +4,7 @@ import { use_app_dispatch } from "~/redux/hooks";
 import { ToastSeverity } from "../toast.props";
 
 /**
- * Hooks for rendering toasts
+ * Hook for rendering toasts
  */
 export const use_toast = (): ((
   message: string,

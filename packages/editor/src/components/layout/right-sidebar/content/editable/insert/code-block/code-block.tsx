@@ -1,22 +1,25 @@
 import React from "react";
 
-import Tooltip from "~/components/tooltip";
 import CodeBlockIcon from "~/icons/code-block";
 
+import { use_insert_code_block } from "../../../../../../../hooks/use-insert-code-block";
 import InsertItem from "../insert-item";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const CodeBlockItem = (_: { disabled?: boolean }): React.ReactElement => (
-  <Tooltip content={"Available soon"}>
-    <div>
-      <InsertItem
-        data-testid={"insert-code-block"}
-        decorator={<CodeBlockIcon />}
-        disabled
-        label={"Code block"}
-      />
-    </div>
-  </Tooltip>
-);
+const CodeBlockItem = ({
+  disabled
+}: {
+  disabled?: boolean;
+}): React.ReactElement => {
+  const [insert_code_block] = use_insert_code_block();
+  return (
+    <InsertItem
+      data-testid={"insert-code-block"}
+      decorator={<CodeBlockIcon />}
+      disabled={disabled}
+      label={"Code block"}
+      onClick={(): void => insert_code_block({})}
+    />
+  );
+};
 
 export default CodeBlockItem;

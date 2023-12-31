@@ -62,7 +62,7 @@ test.describe("extensions", () => {
         };
       };
 
-      const editor = document.querySelector('section[contenteditable="true"]');
+      const editor = document.querySelector("div[data-editor-content]");
       const dispatch_paste = paste();
 
       if (editor) {
@@ -103,7 +103,7 @@ test.describe("extensions", () => {
         };
       };
 
-      const editor = document.querySelector('section[contenteditable="true"]');
+      const editor = document.querySelector("div[data-editor-content]");
       const dispatch_paste = paste();
 
       if (editor) {
@@ -152,7 +152,7 @@ test.describe("extensions", () => {
         };
       };
 
-      const editor = document.querySelector('section[contenteditable="true"]');
+      const editor = document.querySelector("div[data-editor-content]");
       const dispatch_paste = paste();
 
       if (editor) {
@@ -211,7 +211,7 @@ test.describe("extensions", () => {
 
     // Selection is at the last paragraph
     await evaluate(page, async () => {
-      const editor = document.querySelector('section[contenteditable="true"]');
+      const editor = document.querySelector("div[data-editor-content]");
       const selection = window.getSelection();
       const second_paragraph_text_node =
         editor?.firstChild?.nextSibling?.firstChild?.firstChild;

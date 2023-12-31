@@ -1,5 +1,4 @@
-import { XmlElement, XmlText } from "yjs";
-import { YMap } from "yjs/dist/src/internals";
+import { Map as YMap, XmlElement, XmlText } from "yjs";
 
 import { CollabDecoratorNode } from "../../collaboration/nodes/decorator";
 import { CollabElementNode } from "../../collaboration/nodes/element";
