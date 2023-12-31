@@ -7,7 +7,7 @@ import {
 } from "../../plugins/embed/embed";
 
 /**
- * Hooks for inserting embed nodes
+ * Hook for inserting embed nodes
  */
 export const use_insert_embed = (): [(payload: InsertEmbedPayload) => void] => {
   const [editor] = use_lexical_composer_context();

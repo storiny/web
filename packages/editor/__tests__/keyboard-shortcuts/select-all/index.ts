@@ -16,9 +16,7 @@ export const select_all = async (page: Page): Promise<void> => {
   // TODO: Follow-up https://github.com/facebook/lexical/issues/4665
   if (E2E_BROWSER === "firefox" && IS_LINUX) {
     await evaluate(page, () => {
-      const root_element = document.querySelector(
-        'section[contenteditable="true"]'
-      );
+      const root_element = document.querySelector("div[data-editor-content]");
 
       if (root_element) {
         const selection = window.getSelection();
