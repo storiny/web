@@ -5,8 +5,6 @@ import { api_slice } from "~/redux/features/api/slice";
 const SEGMENT = "auth/signup";
 
 export interface SignupPayload {
-  // TODO: Remove after alpha
-  alpha_invite_code: string;
   email: string;
   name: string;
   password: string;

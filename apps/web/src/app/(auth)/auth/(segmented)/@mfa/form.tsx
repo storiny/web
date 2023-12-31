@@ -1,9 +1,9 @@
 "use client";
 
 import { clsx } from "clsx";
-import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
+import { use_app_router } from "~/common/utils";
 import { sanitize_authentication_code } from "~/common/utils/sanitize-authentication-code";
 import Button from "~/components/button";
 import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
@@ -28,7 +28,7 @@ interface Props {
 }
 
 const MFAForm = ({ on_submit }: Props): React.ReactElement => {
-  const router = use_router();
+  const router = use_app_router();
   const { actions, state } = use_auth_state();
   const toast = use_toast();
   const form = use_form<MFASchema>({

@@ -1,3 +1,5 @@
+/* eslint-disable prefer-snakecase/prefer-snakecase */
+
 /** @type {import('eslint').ESLint.ConfigData} */
 module.exports = {
   extends: [

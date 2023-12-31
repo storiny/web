@@ -1,8 +1,8 @@
 import { is_test_env } from "@storiny/shared/src/utils/is-test-env";
 import { Provider, useAtom as use_atom } from "jotai";
-import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
+import { use_app_router } from "~/common/utils";
 import Button from "~/components/button";
 import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
 import FormInput from "~/components/form-input";
@@ -109,7 +109,7 @@ const AddPasswordModal = (): React.ReactElement => {
 };
 
 const Component = ({ on_submit }: AddPasswordProps): React.ReactElement => {
-  const router = use_router();
+  const router = use_app_router();
   const toast = use_toast();
   const [screen, set_screen] = use_atom(add_password_screen_atom);
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));

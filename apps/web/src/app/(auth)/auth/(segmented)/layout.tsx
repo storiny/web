@@ -14,7 +14,6 @@ const SegmentedLayout = (
 ): React.ReactNode => {
   const params = use_search_params();
   const { state } = use_auth_state();
-  // TODO: clean after alpha
   const segment = params.get("segment") || "";
   const token = params.get("token") || "";
 
@@ -27,17 +26,12 @@ const SegmentedLayout = (
     return props.reset_base;
   }
 
-  // TODO: Uncomment after alpha
-  // if (["login", "signup", "recover"].includes(segment)) {
-  //   return segment === "login"
-  //     ? props.login
-  //     : segment === "recover"
-  //     ? props.recovery_base
-  //     : props.signup_base;
-  // }
-
-  if (["login", "recover"].includes(segment)) {
-    return segment === "login" ? props.login : props.recovery_base;
+  if (["login", "signup", "recover"].includes(segment)) {
+    return segment === "login"
+      ? props.login
+      : segment === "recover"
+        ? props.recovery_base
+        : props.signup_base;
   }
 
   return props[state.auth.segment];

@@ -1,9 +1,6 @@
 // noinspection JSUnusedGlobalSymbols
 
 import type { Meta, StoryObj } from "@storybook/react";
-import React from "react";
-
-import RectangleIcon from "~/icons/rectangle";
 
 import Spinner from "./spinner";
 

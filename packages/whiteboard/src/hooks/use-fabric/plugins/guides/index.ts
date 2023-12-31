@@ -1,10 +1,4 @@
-import {
-  BaseFabricObject,
-  Canvas,
-  Object as FabricObject,
-  Point,
-  util
-} from "fabric";
+import { Canvas, FabricObject, Point, util } from "fabric";
 
 import { is_interactive_object } from "../../../../utils";
 
@@ -12,7 +6,7 @@ type LineCoords<T extends "vertical" | "horizontal"> = T extends "vertical"
   ? { x: number; y1: number; y2: number }
   : { x1: number; x2: number; y: number };
 
-type ACoordsAppendCenter = NonNullable<BaseFabricObject["aCoords"]> & {
+type ACoordsAppendCenter = NonNullable<FabricObject["aCoords"]> & {
   c: Point;
 };
 
@@ -83,7 +77,7 @@ class GuidesPlugin {
    * Current active object
    * @private
    */
-  private active_object: BaseFabricObject = new FabricObject();
+  private active_object: FabricObject = new FabricObject();
 
   /**
    * Draws cross sign
@@ -276,10 +270,10 @@ class GuidesPlugin {
    * @private
    */
   private get_obj_dragging_obj_coords(
-    active_object: BaseFabricObject
+    active_object: FabricObject
   ): ACoordsAppendCenter {
     const a_coords = active_object.aCoords as NonNullable<
-      BaseFabricObject["aCoords"]
+      FabricObject["aCoords"]
     >;
     const center_point = new Point(
       (a_coords.tl.x + a_coords.br.x) / 2,
@@ -400,7 +394,7 @@ class GuidesPlugin {
    * @private
    */
   private calc_center_point_by_a_coords(
-    coords: NonNullable<BaseFabricObject["aCoords"]>
+    coords: NonNullable<FabricObject["aCoords"]>
   ): Point {
     return new Point(
       (coords.tl.x + coords.br.x) / 2,
@@ -415,8 +409,8 @@ class GuidesPlugin {
    * @private
    */
   private traverse_all_objects(
-    active_object: BaseFabricObject,
-    canvas_objects: BaseFabricObject[]
+    active_object: FabricObject,
+    canvas_objects: FabricObject[]
   ): void {
     const obj_coords_by_moving_distance =
       this.get_obj_dragging_obj_coords(active_object);
@@ -621,7 +615,7 @@ class GuidesPlugin {
     dragging_obj_coords,
     snap_y_points
   }: {
-    active_object: BaseFabricObject;
+    active_object: FabricObject;
     dragging_obj_coords: ACoordsAppendCenter;
     snap_x_points: number[];
     snap_y_points: number[];
@@ -640,7 +634,8 @@ class GuidesPlugin {
     };
 
     active_object.setPositionByOrigin(
-      // Auto snap nearest object, record all the snap points, and then find the nearest one
+      // Auto snap nearest object, record all the snap points, and then find
+      // the nearest one
       new Point(
         sort_points(snap_x_points, dragging_obj_coords.c.x),
         sort_points(snap_y_points, dragging_obj_coords.c.y)

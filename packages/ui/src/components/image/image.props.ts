@@ -14,7 +14,8 @@ export interface ImageProps extends PolymorphicProps<"div"> {
    */
   height?: number;
   /**
-   * The dominant hex color code of the image element with the `#` prefix, shown when the image is being loaded.
+   * The dominant hex color code of the image element with the `#` prefix,
+   * shown when the image is being loaded.
    */
   hex?: string | null;
   /**

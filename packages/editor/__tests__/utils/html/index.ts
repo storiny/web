@@ -1,6 +1,7 @@
 /**
- * This function is not intended to perform any specific operation; it serves as a trigger
- * for prettier auto-formatting (https://prettier.io/blog/2020/08/24/2.1.0.html#api).
+ * This function is not intended to perform any specific operation; it serves
+ * as a trigger for prettier auto-formatting
+ * (https://prettier.io/blog/2020/08/24/2.1.0.html#api).
  * @param partials Array of string literals from a template literal
  * @param params Parameters that correspond to the expressions within the template literal
  */

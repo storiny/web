@@ -55,8 +55,7 @@ const Wordmark = forward_ref<WordmarkProps, "span">((props, ref) => {
               component_props?.beta_label?.className
             )}
           >
-            Alpha
-            {/* TODO: Uncomment on beta: Beta */}
+            Beta
           </Typography>
         )}
       </Typography>

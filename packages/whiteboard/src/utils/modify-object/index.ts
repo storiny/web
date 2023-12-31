@@ -1,4 +1,4 @@
-import { BaseFabricObject } from "fabric";
+import { FabricObject } from "fabric";
 
 /**
  * Modifies an object
@@ -6,7 +6,7 @@ import { BaseFabricObject } from "fabric";
  * @param props Props to modify
  */
 export const modify_object = (
-  object: BaseFabricObject,
+  object: FabricObject,
   props: Record<string, any>
 ): void => {
   const canvas = object.canvas;

@@ -1,4 +1,4 @@
-import { BaseFabricObject } from "fabric";
+import { FabricObject } from "fabric";
 import { Options } from "roughjs/bin/core";
 
 import { LayerType, StrokeStyle } from "../../constants";
@@ -11,16 +11,18 @@ import { get_dotted_dash_array } from "../get-dotted-dash-array";
  * @param continuous_path Whether the object is a continuous path
  */
 export const generate_rough_options = (
-  object: BaseFabricObject,
+  object: FabricObject,
   continuous_path = false
 ): Options => {
   /* eslint-disable prefer-snakecase/prefer-snakecase */
   const options: Options = {
     seed: object.get("seed"),
     stroke: object.stroke as string,
-    // For non-solid strokes, disable `multiStroke` because it tends to make dashes / dots overlay over each other
+    // For non-solid strokes, disable `multiStroke` because it tends to make
+    // dashes / dots overlay over each other
     disableMultiStroke: object.get("strokeStyle") !== StrokeStyle.SOLID,
-    // For non-solid strokes, increase the width a bit to make it visually similar to solid strokes, as we're also disabling `multiStroke`
+    // For non-solid strokes, increase the width a bit to make it visually
+    // similar to solid strokes, as we're also disabling `multiStroke`
     strokeWidth:
       object.get("strokeStyle") !== StrokeStyle.SOLID
         ? object.strokeWidth + 0.5
@@ -33,8 +35,8 @@ export const generate_rough_options = (
       object.get("strokeStyle") === StrokeStyle.DASHED
         ? get_dashed_dash_array(object.strokeWidth)
         : object.get("strokeStyle") === StrokeStyle.DOTTED
-        ? get_dotted_dash_array(object.strokeWidth)
-        : undefined,
+          ? get_dotted_dash_array(object.strokeWidth)
+          : undefined,
     preserveVertices: continuous_path
   };
   /* eslint-enable prefer-snakecase/prefer-snakecase */

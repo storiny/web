@@ -45,7 +45,9 @@ export const use_decorators = (
   );
 
   React.useEffect(() => {
-    // If the content editable mounts before the subscription is added, then nothing will be rendered on initial pass. We can get around that by ensuring that we set the value.
+    // If the content editable mounts before the subscription is added, then
+    // nothing will be rendered on initial pass. We can get around that by
+    // ensuring that we set the value.
     set_decorators(editor.getDecorators());
   }, [editor]);
 

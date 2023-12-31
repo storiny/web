@@ -169,8 +169,10 @@ const Library = ({
           <Masonry<GetUserAssetsResponse[number]>
             get_item_key={(data): string => data.id}
             gutter_width={12}
-            items={items.filter((item) =>
-              items.some((other_item) => other_item.id !== item.id)
+            items={items.filter(
+              (item) =>
+                items.length === 1 ||
+                items.some((other_item) => other_item.id !== item.id)
             )}
             min_cols={min_cols}
             overscan_factor={2.8}

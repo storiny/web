@@ -27,7 +27,8 @@ export const get_items_position = <T>({
       }));
   }
 
-  // The "guessing" here is meant to replicate the pass that the original implementation takes place with CSS
+  // The "guessing" here is meant to replicate the pass that the original
+  // implementation takes place with CSS
   const col_guess = Math.floor(width / ideal_column_width);
   const col_count = Math.max(
     Math.floor((width - col_guess * gutter) / ideal_column_width),

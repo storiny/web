@@ -12,8 +12,8 @@ export const add_following_listener = (
   start_listening: AppStartListening
 ): void => {
   /**
-   * Subscribe to the user when following them by default, and unsubscribe from them when unfollowing. Also
-   * update the following count
+   * Subscribe to the user when following them by default, and unsubscribe from
+   * them when unfollowing. Also update the following count
    */
   start_listening({
     actionCreator: set_entity_record_value,

@@ -14,16 +14,14 @@ import SignupUsernameForm from "./form";
 import { SignupUsernameSchema } from "./schema";
 
 const Page = (): React.ReactElement => {
-  const { actions, state } = use_auth_state();
+  const { actions } = use_auth_state();
 
   const on_submit: SubmitHandler<SignupUsernameSchema> = React.useCallback(
     ({ username }) => {
       actions.set_signup_state({ username });
-      actions.switch_segment(
-        state.signup.wpm === null ? "signup_wpm_base" : "email_confirmation"
-      );
+      actions.switch_segment("signup_wpm_base");
     },
-    [actions, state.signup.wpm]
+    [actions]
   );
 
   return (

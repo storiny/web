@@ -1,5 +1,3 @@
-import { BaseFabricObject } from "fabric";
-
 import { is_arrow_object } from "../is-arrow-object";
 import { is_image_object } from "../is-image-object";
 import { is_linear_object } from "../is-linear-object";
@@ -12,7 +10,7 @@ import { sync_linear_points } from "../sync-linear-points";
  * @param object Object to recover
  * @param prop Additional properties
  */
-export const recover_object = (object: BaseFabricObject, prop: any): void => {
+export const recover_object = (object: any, prop: any): void => {
   object.set({
     left: prop.left,
     top: prop.top,

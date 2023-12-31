@@ -2,7 +2,6 @@ import { useNProgress as use_n_progress } from "@tanem/react-nprogress";
 import React from "react";
 
 import ProgressBar, { ProgressBarProps } from "~/components/progress-bar";
-import css from "~/theme/main.module.scss";
 
 import styles from "./upload-progress.module.scss";
 

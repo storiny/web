@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { BaseFabricObject } from "fabric";
+import { FabricObject } from "fabric";
 import React from "react";
 
 import Input from "~/components/input";
@@ -37,7 +37,7 @@ import common_styles from "../common.module.scss";
 const FillControl = ({
   active_object
 }: {
-  active_object: BaseFabricObject;
+  active_object: FabricObject;
 }): React.ReactElement => {
   const [fill, set_fill] = React.useState<TColor>(
     str_to_color((active_object?.fill as string) || DEFAULT_LAYER_COLOR)!
@@ -149,7 +149,7 @@ const FillControl = ({
 const FillStyleControl = ({
   active_object
 }: {
-  active_object: BaseFabricObject;
+  active_object: FabricObject;
 }): React.ReactElement => {
   const [fill_style, set_fill_style] = React.useState<FillStyle>(
     active_object?.get("fillStyle") || FillStyle.SOLID

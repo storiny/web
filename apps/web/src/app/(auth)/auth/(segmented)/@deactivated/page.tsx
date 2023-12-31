@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
+import { use_app_router } from "~/common/utils";
 import Button from "~/components/button";
 import Grow from "~/components/grow";
 import Spacer from "~/components/spacer";
@@ -16,8 +16,9 @@ import { use_auth_state } from "../../../actions";
 
 const Page = (): React.ReactElement => {
   const { state } = use_auth_state();
-  const router = use_router();
+  const router = use_app_router();
   const toast = use_toast();
+  const [done, set_done] = React.useState<boolean>(false);
   const [reactivate_account, { isLoading: is_loading }] = use_login_mutation();
 
   const handle_reactivate = React.useCallback((): void => {
@@ -30,19 +31,23 @@ const Page = (): React.ReactElement => {
         .unwrap()
         .then((res) => {
           if (res.result === "success") {
+            set_done(true);
             router.replace("/"); // Home page
+            router.refresh(); // Refresh the state
           } else {
+            set_done(false);
             toast("Could not reactivate your account", "error");
           }
         })
-        .catch((error) =>
+        .catch((error) => {
+          set_done(false);
           handle_api_error(
             error,
             toast,
             null,
             "Could not reactivate your account"
-          )
-        );
+          );
+        });
     } else {
       toast("Could not reactivate your account", "error");
     }
@@ -62,6 +67,7 @@ const Page = (): React.ReactElement => {
       <div className={css["flex-center"]}>
         <Button
           className={css["full-w"]}
+          disabled={done}
           loading={is_loading}
           onClick={handle_reactivate}
           size={"lg"}

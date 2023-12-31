@@ -1,1 +1,1 @@
-try{let e=localStorage.getItem("theme")||"system";"system"===e&&(e=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"),document.documentElement.setAttribute("data-theme",e)}catch{}
+function sync_theme(){try{let e=localStorage.getItem("theme")||"system";"system"===e&&(e=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"),document.documentElement.setAttribute("data-theme",e)}catch{}}sync_theme(),"undefined"!=typeof document&&(document.onload=sync_theme);

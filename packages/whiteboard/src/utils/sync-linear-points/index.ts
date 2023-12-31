@@ -1,4 +1,4 @@
-import { BaseFabricObject, util } from "fabric";
+import { FabricObject, util } from "fabric";
 
 import { is_linear_object } from "../is-linear-object";
 
@@ -6,7 +6,7 @@ import { is_linear_object } from "../is-linear-object";
  * Syncs the point coordinates of a linear object
  * @param object Linear object
  */
-export const sync_linear_points = (object: BaseFabricObject): void => {
+export const sync_linear_points = (object: FabricObject): void => {
   if (is_linear_object(object)) {
     const points = object.calcLinePoints();
     const matrix = object.calcTransformMatrix();

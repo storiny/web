@@ -38,8 +38,10 @@ const MeasureItems = <T,>({
   return (
     <React.Fragment>
       {items.map((data, index) => {
-        // `items` is always the length of minCols, so index will always be between 0 and minCols.length.
-        // We normalize the index here relative to the item list as a whole so that `itemIndex` is correct and React does not reuse the measurement nodes.
+        // `items` is always the length of minCols, so index will always be
+        // between 0 and minCols.length. We normalize the index here relative to
+        // the item list as a whole so that `itemIndex` is correct and React
+        // does not reuse the measurement nodes.
         const measurement_index = base_index + index;
         const position = measuring_positions[index];
 

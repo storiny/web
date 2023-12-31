@@ -1,3 +1,5 @@
+/* eslint-disable prefer-snakecase/prefer-snakecase */
+
 /** @type {import('prettier').Config} */
 module.exports = {
   endOfLine: "auto",

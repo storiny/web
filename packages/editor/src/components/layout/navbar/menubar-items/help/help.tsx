@@ -7,8 +7,12 @@ import Separator from "~/components/separator";
 
 const HelpItem = (): React.ReactElement => (
   <MenubarSub trigger={"Help"}>
-    <MenubarItem as={NextLink} href={"/help"} target={"_blank"}>
-      Help center
+    <MenubarItem
+      as={NextLink}
+      href={"mailto:support@storiny.com"}
+      target={"_blank"}
+    >
+      Help
     </MenubarItem>
     <MenubarItem as={NextLink} href={"/legal"} target={"_blank"}>
       Legal

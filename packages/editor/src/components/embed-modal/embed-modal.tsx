@@ -1,3 +1,4 @@
+import { SUPPORT_ARTICLE_MAP } from "@storiny/shared/src/constants/support-articles";
 import { compressToEncodedURIComponent as compress_to_encoded_uri_component } from "lz-string";
 import React from "react";
 
@@ -24,10 +25,8 @@ const EmbedModalContent = (): React.ReactElement => (
         embeds from your provided site are not supported, a website preview will
         be displayed instead.{" "}
         <Link
-          // TODO(future): Get rid of notion
-          href={
-            "https://storiny.notion.site/Embedding-third-party-content-5915b27927a64ddabca6b3a70cb0d9a6"
-          }
+          href={SUPPORT_ARTICLE_MAP.EMBEDDING_THIRD_PARTY_CONTENT}
+          target={"_blank"}
           underline={"always"}
         >
           Learn more about embedding external content in your story

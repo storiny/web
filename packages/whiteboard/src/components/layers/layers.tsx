@@ -8,7 +8,7 @@ import {
   DropResult
 } from "@hello-pangea/dnd";
 import clsx from "clsx";
-import { BaseFabricObject } from "fabric";
+import { FabricObject } from "fabric";
 import { useSetAtom as use_set_atom } from "jotai";
 import React from "react";
 import { Virtuoso } from "react-virtuoso";
@@ -30,7 +30,7 @@ const LAYER_HEIGHT = 28;
 const VirtualizedLayer = React.memo<
   {
     is_dragging: boolean;
-    layer: BaseFabricObject;
+    layer: FabricObject;
     provided: DraggableProvided;
   } & React.ComponentPropsWithoutRef<"li">
 >(({ layer, provided, is_dragging, ...rest }) => (
@@ -108,7 +108,7 @@ LayerPlaceholder.displayName = "LayerPlaceholder";
 const Layers = (): React.ReactElement | null => {
   const droppable_id = React.useId();
   const canvas = use_canvas();
-  const [layers, set_layers] = React.useState<BaseFabricObject[]>([]);
+  const [layers, set_layers] = React.useState<FabricObject[]>([]);
   const { ref, height = 1 } = use_resize_observer();
   const set_dragging = use_set_atom(is_layers_dragging_atom);
 
@@ -131,7 +131,7 @@ const Layers = (): React.ReactElement | null => {
      * @param options Options
      */
     const update_layers_if_modified = (options: {
-      target: BaseFabricObject;
+      target: FabricObject;
     }): void => {
       const next_layer = options.target;
       const prev_layer = layers.find(
@@ -244,7 +244,7 @@ const Layers = (): React.ReactElement | null => {
               type={"auto"}
             >
               <ul>
-                <Virtuoso<BaseFabricObject>
+                <Virtuoso<FabricObject>
                   className={clsx(css["full-w"], css["full-h"])}
                   components={{
                     Item: LayerPlaceholder,
