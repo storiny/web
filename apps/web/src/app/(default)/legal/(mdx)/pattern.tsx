@@ -7,7 +7,7 @@ import DateTime from "~/components/date-time";
 import Typography from "~/components/typography";
 import css from "~/theme/main.module.scss";
 
-import MarkdownProvider from "../../../../../mdx-provider";
+import MarkdownProvider from "../../../../mdx-provider";
 import styles from "./pattern.module.scss";
 
 interface Props {
