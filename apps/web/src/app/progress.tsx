@@ -8,23 +8,23 @@ import {
 import NProgress from "nprogress";
 import React from "react";
 
+NProgress.configure({
+  /* eslint-disable prefer-snakecase/prefer-snakecase */
+  showSpinner: false,
+  trickle: true,
+  trickleSpeed: 150,
+  minimum: 0.1,
+  easing: "linear",
+  speed: 250,
+  template: '<div class="bar" role="bar"><div class="peg"></div></div>'
+  /* eslint-enable prefer-snakecase/prefer-snakecase */
+});
+
 const Progress = (): null => {
   const pathname = use_pathname();
   const search_params = use_search_params();
 
   React.useEffect(() => {
-    NProgress.configure({
-      /* eslint-disable prefer-snakecase/prefer-snakecase */
-      showSpinner: false,
-      trickle: true,
-      trickleSpeed: 150,
-      minimum: 0.1,
-      easing: "linear",
-      speed: 250,
-      template: '<div class="bar" role="bar"><div class="peg"></div></div>'
-      /* eslint-enable prefer-snakecase/prefer-snakecase */
-    });
-
     const is_anchor_of_current_url = (
       current_url: string,
       next_url: string
@@ -65,6 +65,10 @@ const Progress = (): null => {
     };
 
     const handle_click = (event: MouseEvent): void => {
+      if (NProgress.isStarted()) {
+        return;
+      }
+
       try {
         const target = event.target as HTMLElement;
         const anchor = find_closest_anchor(target);
@@ -74,9 +78,9 @@ const Progress = (): null => {
           const current_url = window.location.href;
           // Check if the anchor href is `#`.
           const is_empty_anchor = next_url.charAt(next_url.length - 1) === "#";
-          const is_mail = next_url.startsWith("mailto:");
           const is_external_link =
             (anchor as HTMLAnchorElement).target === "_blank";
+          const is_mail = next_url.startsWith("mailto:");
           const is_blob = next_url.startsWith("blob:");
           const is_anchor = is_anchor_of_current_url(current_url, next_url);
 
@@ -135,7 +139,7 @@ const Progress = (): null => {
   }, []);
 
   React.useEffect(() => {
-    NProgress.done();
+    setTimeout(NProgress.done, 250);
   }, [pathname, search_params]);
 
   return null;

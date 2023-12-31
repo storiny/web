@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS stories
 	disable_comments                BOOL           NOT NULL DEFAULT FALSE,
 	disable_toc                     BOOL           NOT NULL DEFAULT FALSE,
 	-- Timestamps
+	pinned_at                       TIMESTAMPTZ,
 	created_at                      TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
 	first_published_at              TIMESTAMPTZ,
 	published_at                    TIMESTAMPTZ,
@@ -59,7 +60,10 @@ CREATE INDEX published_at_on_stories ON stories (published_at)
 	WHERE
 		published_at IS NOT NULL;
 
+CREATE INDEX pinned_at_on_stories ON stories (pinned_at)
+	WHERE
+		pinned_at IS NOT NULL;
+
 CREATE INDEX user_id_on_stories ON stories (user_id);
 
 CREATE INDEX search_vec_on_stories ON stories USING GIN (search_vec);
-

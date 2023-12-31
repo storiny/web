@@ -1,3 +1,4 @@
+import { SUPPORT_ARTICLE_MAP } from "@storiny/shared/src/constants/support-articles";
 import React from "react";
 
 import Link from "~/components/link";
@@ -12,10 +13,8 @@ const BlocksEmptyState = (): React.ReactElement => (
         When you block someone, they will show up here. Blocking someone
         prevents them from following you or reading your stories.{" "}
         <Link
-          // TODO(future): Get rid of notion
-          href={
-            "https://storiny.notion.site/Blocking-users-a7e7d4b651ae4a0c807fea4f5ae3a6bc"
-          }
+          href={SUPPORT_ARTICLE_MAP.BLOCKING_USERS}
+          target={"_blank"}
           underline={"always"}
         >
           Learn more

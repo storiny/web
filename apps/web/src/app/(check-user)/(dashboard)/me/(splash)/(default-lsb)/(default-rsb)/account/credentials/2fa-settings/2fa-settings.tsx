@@ -1,3 +1,4 @@
+import { SUPPORT_ARTICLE_MAP } from "@storiny/shared/src/constants/support-articles";
 import { clsx } from "clsx";
 import React from "react";
 
@@ -34,10 +35,8 @@ const CredentialsTwoFactorAuthSettings = ({
         authentication (2FA for short) adds an extra layer of security to your
         account.{" "}
         <Link
-          // TODO(future): Get rid of notion
-          href={
-            "https://storiny.notion.site/Two-factor-authentication-3df23ed3a39b4a659828d7cb5eea8108"
-          }
+          href={SUPPORT_ARTICLE_MAP.TWO_FA}
+          target={"_blank"}
           underline={"always"}
         >
           Learn more about two-factor authentication

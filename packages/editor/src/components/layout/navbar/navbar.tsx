@@ -1,6 +1,7 @@
 "use client";
 
 import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import { SUPPORT_ARTICLE_MAP } from "@storiny/shared/src/constants/support-articles";
 import SuspenseLoader from "@storiny/web/src/common/suspense-loader";
 import clsx from "clsx";
 import { useAtom as use_atom, useAtomValue as use_atom_value } from "jotai";
@@ -195,10 +196,7 @@ const Publish = ({
           {tk_count_ref.current === 1 ? "placeholder" : "placeholders"} in your
           story.{" "}
           <Link
-            // TODO(future): Get rid of notion
-            href={
-              "https://storiny.notion.site/TK-placeholders-34a0e44b11e1413f83c54e72f2115879"
-            }
+            href={SUPPORT_ARTICLE_MAP.TK_PLACEHOLDERS}
             target={"_blank"}
             underline={"always"}
           >

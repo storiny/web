@@ -1,5 +1,6 @@
 "use client";
 
+import { SUPPORT_ARTICLE_MAP } from "@storiny/shared/src/constants/support-articles";
 import React from "react";
 
 import Divider from "~/components/divider";
@@ -53,10 +54,8 @@ const ProfileSettingsClient = (): React.ReactElement => {
               break any existing links to your profile. You can only change your
               username once a month.{" "}
               <Link
-                // TODO(future): Get rid of notion
-                href={
-                  "https://storiny.notion.site/Changing-your-username-42bd9f2e43114d3ebe5dd0c8a9adc838"
-                }
+                href={SUPPORT_ARTICLE_MAP.CHANGING_USERNAME}
+                target={"_blank"}
                 underline={"always"}
               >
                 Learn more about changing your username

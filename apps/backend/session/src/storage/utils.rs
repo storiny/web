@@ -1,12 +1,10 @@
-use std::convert::TryInto;
-
+use crate::storage::SessionKey;
 use rand::{
     distributions::Alphanumeric,
     rngs::OsRng,
     Rng as _,
 };
-
-use crate::storage::SessionKey;
+use std::convert::TryInto;
 
 /// Session key generation routine that follows [OWASP recommendations].
 ///

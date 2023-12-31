@@ -29,6 +29,7 @@ import MapPinIcon from "~/icons/map-pin";
 import UserCheckIcon from "~/icons/user-check";
 import UserPlusIcon from "~/icons/user-plus";
 import UserXIcon from "~/icons/user-x";
+import VerifiedFillIcon from "~/icons/verified-fill";
 import { boolean_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
@@ -244,14 +245,23 @@ const ProfileContent = ({
       >
         <Badge
           badge_content={
-            <Tooltip content={"Your account is private"} delayDuration={0}>
-              <LockIcon />
-            </Tooltip>
+            profile.username === "storiny" ? (
+              <Tooltip content={"Official account"} delayDuration={0}>
+                <VerifiedFillIcon />
+              </Tooltip>
+            ) : (
+              <Tooltip content={"Your account is private"} delayDuration={0}>
+                <LockIcon />
+              </Tooltip>
+            )
           }
           className={clsx(styles.x, styles.badge)}
           elevation={is_inside_sidebar ? "xs" : "body"}
           inset={is_inside_sidebar ? "15%" : "24%"}
-          visible={profile.is_self && profile.is_private}
+          visible={
+            profile.username === "storiny" ||
+            (profile.is_self && profile.is_private)
+          }
         >
           {is_private || is_suspended ? (
             <Avatar
