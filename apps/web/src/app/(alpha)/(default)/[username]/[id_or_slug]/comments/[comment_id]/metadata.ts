@@ -43,7 +43,7 @@ export const generateMetadata = async ({
                 height: 256
               }
             ]
-          : []
+          : undefined
       },
       twitter: {
         card: "summary",
@@ -51,7 +51,7 @@ export const generateMetadata = async ({
         description: comment_response.content,
         images: comment_response.user?.avatar_id
           ? [get_cdn_url(comment_response.user.avatar_id, ImageSize.W_256)]
-          : []
+          : undefined
       }
       /* eslint-enable prefer-snakecase/prefer-snakecase */
     };

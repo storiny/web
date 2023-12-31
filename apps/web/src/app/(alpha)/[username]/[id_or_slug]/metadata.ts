@@ -31,6 +31,7 @@ export const generateMetadata = async ({
           story_response.user?.username || "story"
         }/${story_response.slug}`,
         description: story_response.description,
+        // TODO: Replace with dynamic images
         images: story_response.preview_image
           ? [
               {
@@ -42,16 +43,7 @@ export const generateMetadata = async ({
                 height: 630
               }
             ]
-          : story_response.splash_id
-          ? [
-              // TODO: Replace with dynamic opengraph images
-              {
-                url: get_cdn_url(story_response.splash_id, ImageSize.W_1440),
-                width: 1200,
-                height: 630
-              }
-            ]
-          : []
+          : undefined
       },
       twitter: {
         card: "summary_large_image",
@@ -59,9 +51,7 @@ export const generateMetadata = async ({
         description: story_response.description,
         images: story_response.preview_image
           ? [get_cdn_url(story_response.preview_image, ImageSize.W_1440)]
-          : story_response.splash_id
-          ? [get_cdn_url(story_response.splash_id, ImageSize.W_1440)]
-          : []
+          : undefined
       },
       alternates: {
         canonical: story_response.canonical_url

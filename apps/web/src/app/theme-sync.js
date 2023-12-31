@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-(function () {
+function sync_theme() {
   try {
     let theme = localStorage.getItem("theme") || "system";
 
@@ -14,4 +14,10 @@
 
     document.documentElement.setAttribute("data-theme", theme);
   } catch {}
-})();
+}
+
+sync_theme();
+
+if (typeof document !== "undefined") {
+  document.onload = sync_theme;
+}

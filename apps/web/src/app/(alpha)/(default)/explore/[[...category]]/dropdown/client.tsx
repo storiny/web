@@ -5,12 +5,10 @@ import {
   CATEGORY_ICON_MAP,
   CATEGORY_LABEL_MAP
 } from "@storiny/shared/src/constants/category-icon-map";
-import {
-  usePathname as use_pathname,
-  useRouter as use_router
-} from "next/navigation";
+import { usePathname as use_pathname } from "next/navigation";
 import React from "react";
 
+import { use_app_router } from "~/common/utils";
 import Divider from "~/components/divider";
 import Option, { OptionProps } from "~/components/option";
 import Select from "~/components/select";
@@ -33,7 +31,7 @@ const AnchorOption = ({
 
 const DropdownClient = (): React.ReactElement => {
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const router = use_router();
+  const router = use_app_router();
   const pathname = use_pathname();
   const value = pathname.split("/")[2] || "all";
 

@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     siteName: "Storiny",
     images: [
       {
-        url: "/og.png", // TODO: Change
+        url: `${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/brand/images/social-preview`,
         width: 630,
         height: 1200
       }
@@ -52,7 +52,9 @@ export const metadata: Metadata = {
     title: "Storiny",
     description,
     site: "@storiny_intl",
-    images: ["https://storiny.com/twitter.png"] // TODO: Change
+    images: [
+      `${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/brand/images/social-preview`
+    ]
   },
   appleWebApp: {
     title: "Storiny",

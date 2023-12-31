@@ -1,6 +1,7 @@
 "use client";
 
 import { useSetAtom as use_set_atom } from "jotai";
+import { usePathname as use_pathname } from "next/navigation";
 import React from "react";
 
 import { use_read_story_mutation } from "~/redux/features";
@@ -24,8 +25,10 @@ const ReadOnlyPlugin = ({
   story_id,
   reading_session_token
 }: Props): null => {
+  const pathname = use_pathname();
   const set_doc_status = use_set_atom(doc_status_atom);
   const has_read_ref = React.useRef<boolean>(false);
+  const prev_pathname_ref = React.useRef<string>(pathname);
   const [read_story] = use_read_story_mutation();
 
   use_yjs_read_only({
@@ -49,6 +52,10 @@ const ReadOnlyPlugin = ({
       });
     };
 
+    if (prev_pathname_ref.current !== pathname) {
+      handle_read();
+    }
+
     window.addEventListener("beforeunload", handle_read);
     window.addEventListener("unload", handle_read);
     window.addEventListener("pagehide", handle_read);
@@ -63,8 +70,7 @@ const ReadOnlyPlugin = ({
 
       clearTimeout(timer);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [pathname, read_story, reading_session_token, story_id]);
 
   return null;
 };

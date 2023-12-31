@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
-import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
+import { use_app_router } from "~/common/utils";
 import { use_confirmation } from "~/components/confirmation";
 import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
 import FormSwitch from "~/components/form-switch";
@@ -27,7 +27,7 @@ const PrivateAccount = ({
   is_private_account
 }: PrivateAccountProps): React.ReactElement => {
   const toast = use_toast();
-  const router = use_router();
+  const router = use_app_router();
   const form = use_form<PrivateAccountSchema>({
     resolver: zod_resolver(PRIVATE_ACCOUNT_SCHEMA),
     defaultValues: {

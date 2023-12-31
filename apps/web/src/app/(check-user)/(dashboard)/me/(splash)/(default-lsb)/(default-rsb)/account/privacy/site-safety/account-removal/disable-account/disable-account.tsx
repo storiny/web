@@ -1,6 +1,6 @@
-import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
+import { use_app_router } from "~/common/utils";
 import Button from "~/components/button";
 import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
 import FormPasswordInput from "~/components/form-password-input";
@@ -61,7 +61,7 @@ const DisableAccountModal = ({
 const DisableAccount = ({
   on_submit
 }: DisableAccountProps): React.ReactElement => {
-  const router = use_router();
+  const router = use_app_router();
   const toast = use_toast();
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const [disabled, set_disabled] = React.useState<boolean>(false);

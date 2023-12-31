@@ -1,16 +1,16 @@
 "use client";
 
 import { clsx } from "clsx";
-import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
+import { use_app_router } from "~/common/utils";
 import Input from "~/components/input";
 import SearchIcon from "~/icons/search";
 
 import styles from "./layout.module.scss";
 
 const ErrorLayoutInput = (): React.ReactElement => {
-  const router = use_router();
+  const router = use_app_router();
   return (
     <Input
       decorator={<SearchIcon />}

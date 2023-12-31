@@ -5,12 +5,12 @@ import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import {
   usePathname as use_pathname,
-  useRouter as use_router,
   useSearchParams as use_search_params
 } from "next/navigation";
 import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
+import { use_app_router } from "~/common/utils";
 import Input from "~/components/input";
 import Tab from "~/components/tab";
 import TabPanel from "~/components/tab-panel";
@@ -108,7 +108,7 @@ const PageInputHeader = ({
 const Client = ({ category }: Props): React.ReactElement => {
   const search_params = use_search_params();
   const pathname = use_pathname();
-  const router = use_router();
+  const router = use_app_router();
   const tab = search_params.get("tab") || "all";
   const [value, set_value] = React.useState<ExploreTabValue>(
     (["all", "stories", "writers", "tags"] as ExploreTabValue[]).includes(
