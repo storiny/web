@@ -1,8 +1,8 @@
 "use client";
 
+import { use_app_router } from "@storiny/web/src/common/utils";
 import clsx from "clsx";
 import NextLink from "next/link";
-import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
 import Wordmark from "~/brand/wordmark";
@@ -24,7 +24,7 @@ const Navbar = (props: NavbarProps): React.ReactElement => {
     children,
     ...rest
   } = props;
-  const router = use_router();
+  const router = use_app_router();
   const logged_in = use_app_selector(select_is_logged_in);
 
   return (

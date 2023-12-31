@@ -3,10 +3,15 @@
 import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import NextLink from "next/link";
+import {
+  usePathname as use_pathname,
+  useSearchParams as use_search_params
+} from "next/navigation";
 import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
+import { use_app_router } from "~/common/utils";
 import Button from "~/components/button";
 import Divider from "~/components/divider";
 import Input from "~/components/input";
@@ -229,9 +234,17 @@ const ControlBar = ({
 
 const ContentDraftsClient = (props: DraftsProps): React.ReactElement => {
   const { latest_draft, deleted_draft_count, pending_draft_count } = props;
+  const router = use_app_router();
+  const pathname = use_pathname();
+  const search_params = use_search_params();
+  const tab = search_params.get("tab") || "pending";
   const [sort, set_sort] = React.useState<DraftsSortValue>("recent");
   const [query, set_query] = React.useState<string>("");
-  const [value, set_value] = React.useState<DraftsTabValue>("pending");
+  const [value, set_value] = React.useState<DraftsTabValue>(
+    (["pending", "deleted"] as DraftsTabValue[]).includes(tab as DraftsTabValue)
+      ? (tab as DraftsTabValue)
+      : "pending"
+  );
   const [page, set_page] = React.useState<number>(1);
   const debounced_query = use_debounce(query);
   const {
@@ -271,6 +284,14 @@ const ContentDraftsClient = (props: DraftsProps): React.ReactElement => {
     set_page(1);
     set_query(next_query);
   }, []);
+
+  React.useEffect(() => {
+    if (value === "pending") {
+      router.push(pathname);
+    } else {
+      router.push(`${pathname}?tab=${value}`);
+    }
+  }, [pathname, router, value]);
 
   return (
     <React.Fragment>

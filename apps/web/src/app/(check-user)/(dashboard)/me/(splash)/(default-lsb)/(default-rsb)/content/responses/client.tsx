@@ -2,11 +2,16 @@
 
 import { clsx } from "clsx";
 import dynamic from "next/dynamic";
+import {
+  usePathname as use_pathname,
+  useSearchParams as use_search_params
+} from "next/navigation";
 import React from "react";
 
 import { CommentListSkeleton, VirtualizedCommentList } from "~/common/comment";
 import { dynamic_loader } from "~/common/dynamic";
 import { ReplyListSkeleton, VirtualizedReplyList } from "~/common/reply";
+import { use_app_router } from "~/common/utils";
 import Divider from "~/components/divider";
 import Input from "~/components/input";
 import Option from "~/components/option";
@@ -352,9 +357,19 @@ const ReplyList = (props: {
 };
 
 const ContentResponsesClient = (props: ResponsesProps): React.ReactElement => {
+  const router = use_app_router();
+  const pathname = use_pathname();
+  const search_params = use_search_params();
+  const tab = search_params.get("tab") || "comments";
   const [sort, set_sort] = React.useState<ResponsesSortValue>("recent");
   const [query, set_query] = React.useState<string>("");
-  const [value, set_value] = React.useState<ResponsesTabValue>("comments");
+  const [value, set_value] = React.useState<ResponsesTabValue>(
+    (["comments", "replies"] as ResponsesTabValue[]).includes(
+      tab as ResponsesTabValue
+    )
+      ? (tab as ResponsesTabValue)
+      : "comments"
+  );
   const [page, set_page] = React.useState<number>(1);
 
   const load_more = React.useCallback(
@@ -381,6 +396,14 @@ const ContentResponsesClient = (props: ResponsesProps): React.ReactElement => {
     set_page(1);
     set_query(next_query);
   }, []);
+
+  React.useEffect(() => {
+    if (value === "comments") {
+      router.push(pathname);
+    } else {
+      router.push(`${pathname}?tab=${value}`);
+    }
+  }, [pathname, router, value]);
 
   return (
     <React.Fragment>

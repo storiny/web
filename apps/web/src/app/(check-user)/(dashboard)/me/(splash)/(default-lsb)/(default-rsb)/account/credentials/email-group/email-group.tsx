@@ -1,7 +1,7 @@
 import { USER_PROPS } from "@storiny/shared";
-import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
+import { use_app_router } from "~/common/utils";
 import Button from "~/components/button";
 import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
 import FormInput from "~/components/form-input";
@@ -89,7 +89,7 @@ export const EmailSettings = ({
   on_submit,
   has_password
 }: EmailGroupProps): React.ReactElement => {
-  const router = use_router();
+  const router = use_app_router();
   const dispatch = use_app_dispatch();
   const toast = use_toast();
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));

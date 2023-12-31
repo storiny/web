@@ -7,10 +7,10 @@ import { useAtom as use_atom, useAtomValue as use_atom_value } from "jotai";
 import { $getRoot as $get_root, $isTextNode as $is_text_node } from "lexical";
 import dynamic from "next/dynamic";
 import NextLink from "next/link";
-import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
 import Logo from "~/brand/logo";
+import { use_app_router } from "~/common/utils";
 import Button from "~/components/button";
 import { use_confirmation } from "~/components/confirmation";
 import IconButton from "~/components/icon-button";
@@ -109,7 +109,7 @@ const Publish = ({
 }): React.ReactElement => {
   const toast = use_toast();
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const router = use_router();
+  const router = use_app_router();
   const story = use_atom_value(story_metadata_atom);
   const [editor] = use_lexical_composer_context();
   const tk_count_ref = React.useRef<number>(0);
@@ -216,7 +216,7 @@ const Publish = ({
 
 const Recover = ({ is_draft }: { is_draft: boolean }): React.ReactElement => {
   const toast = use_toast();
-  const router = use_router();
+  const router = use_app_router();
   const story = use_atom_value(story_metadata_atom);
   const [loading, set_loading] = React.useState<boolean>(false);
   const [recover_story] = use_recover_story_mutation();

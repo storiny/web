@@ -1,10 +1,17 @@
 "use client";
 
 import { dev_console } from "@storiny/shared/src/utils/dev-log";
+import {
+  usePathname as use_pathname,
+  useSearchParams as use_search_params
+} from "next/navigation";
 import NProgress from "nprogress";
 import React from "react";
 
 const Progress = (): null => {
+  const pathname = use_pathname();
+  const search_params = use_search_params();
+
   React.useEffect(() => {
     NProgress.configure({
       /* eslint-disable prefer-snakecase/prefer-snakecase */
@@ -67,12 +74,13 @@ const Progress = (): null => {
           const current_url = window.location.href;
           // Check if the anchor href is `#`.
           const is_empty_anchor = next_url.charAt(next_url.length - 1) === "#";
+          const is_mail = next_url.startsWith("mailto:");
           const is_external_link =
             (anchor as HTMLAnchorElement).target === "_blank";
           const is_blob = next_url.startsWith("blob:");
           const is_anchor = is_anchor_of_current_url(current_url, next_url);
 
-          if (is_empty_anchor) {
+          if (is_empty_anchor || is_mail) {
             return;
           }
 
@@ -125,6 +133,10 @@ const Progress = (): null => {
       document.removeEventListener("click", handle_click);
     };
   }, []);
+
+  React.useEffect(() => {
+    NProgress.done();
+  }, [pathname, search_params]);
 
   return null;
 };

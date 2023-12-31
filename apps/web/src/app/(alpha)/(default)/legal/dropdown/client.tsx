@@ -2,9 +2,9 @@
 
 import { clsx } from "clsx";
 import { useSelectedLayoutSegments as use_selected_layout_segments } from "next/navigation";
-import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
+import { use_app_router } from "~/common/utils";
 import Option, { OptionProps } from "~/components/option";
 import Select, { SelectGroup, SelectLabel } from "~/components/select";
 import css from "~/theme/main.module.scss";
@@ -103,7 +103,7 @@ const MiscellaneousGroup = (): React.ReactElement => (
 );
 
 const DropdownClient = (): React.ReactElement => {
-  const router = use_router();
+  const router = use_app_router();
   const segments = use_selected_layout_segments();
   segments.shift(); // Remove (mdx) layout
   const current_segment = segments.join("/");

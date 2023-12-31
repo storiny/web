@@ -1,6 +1,6 @@
+import { use_app_router } from "@storiny/web/src/common/utils";
 import clsx from "clsx";
 import NextLink from "next/link";
-import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
 import IconButton from "~/components/icon-button";
@@ -20,7 +20,7 @@ const PageTitle = (props: PageTitleProps): React.ReactElement => {
     children,
     ...rest
   } = props;
-  const router = use_router();
+  const router = use_app_router();
   return (
     <header
       {...rest}

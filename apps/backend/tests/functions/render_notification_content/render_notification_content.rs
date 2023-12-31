@@ -154,7 +154,7 @@ WHERE notification_id = $2;
 
         assert_eq!(
             result.get::<String, _>("content"),
-            r#"<a data-fw-bold href="/sample_user_1">Sample user 1</a> sent you a friend request"#
+            r#"<a data-fw-bold href="/sample_user_1">Sample user 1</a> sent you a friend request. <a data-underline href="/me/content/relations?tab=friends">View all friend requests</a>"#
                 .to_string()
         );
 

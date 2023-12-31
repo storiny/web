@@ -34,7 +34,7 @@ export const generateMetadata = async ({
         description,
         images:
           profile.is_private || !profile.avatar_id
-            ? []
+            ? undefined
             : [
                 {
                   url: get_cdn_url(profile.avatar_id, ImageSize.W_256),
@@ -49,7 +49,7 @@ export const generateMetadata = async ({
         description,
         images:
           profile.is_private || !profile.avatar_id
-            ? []
+            ? undefined
             : [get_cdn_url(profile.avatar_id, ImageSize.W_256)]
       }
     };
