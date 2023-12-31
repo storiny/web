@@ -49,6 +49,7 @@ const RecommendedStory = ({ story }: { story: Story }): React.ReactElement => {
           <span className={clsx(css["flex-center"], styles["primary-text"])}>
             <Link
               className={css["t-medium"]}
+              ellipsis
               fixed_color
               href={`/${user?.username}`}
               level={"body2"}
@@ -68,6 +69,7 @@ const RecommendedStory = ({ story }: { story: Story }): React.ReactElement => {
                 as={"time"}
                 className={clsx(css["t-minor"], css["t-medium"])}
                 dateTime={story.published_at!}
+                ellipsis
                 level={"body2"}
                 title={format_date(story.published_at!)}
               >
