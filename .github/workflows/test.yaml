@@ -27,7 +27,6 @@ jobs:
           node-version: 20
           cache: 'yarn'
           cache-dependency-path: 'yarn.lock'
-      - run: corepack enable
       - run: yarn install
 # TODO     - run: yarn lint
       - run: yarn test
