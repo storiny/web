@@ -83,7 +83,7 @@ const StatusModalContent = (): React.ReactElement => (
       autoComplete={"off"}
       auto_size
       end_decorator={<EmojiIconButton />}
-      maxLength={USER_SCHEMA.status_text.maxLength || undefined}
+      maxLength={USER_SCHEMA.status_text.maxLength ?? undefined}
       name={"status_text"}
       placeholder={"What's happening?"}
     />
@@ -157,12 +157,13 @@ const StatusModal = ({
   const toast = use_toast();
   const dispatch = use_app_dispatch();
   const [open, set_open] = React.useState<boolean>(false);
+  const is_clear_action_ref = React.useRef<boolean>(false);
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const user = use_app_selector(select_user)!;
   const form = use_form<SetStatusSchema>({
     resolver: zod_resolver(SET_STATUS_SCHEMA),
     defaultValues: {
-      status_text: user.status?.text || "",
+      status_text: user.status?.text ?? undefined,
       status_emoji: user.status?.emoji,
       duration: is_num(user.status?.duration)
         ? user.status!.duration
@@ -229,8 +230,10 @@ const StatusModal = ({
         <>
           <ModalFooterButton
             compact={is_smaller_than_mobile}
-            disabled={is_loading}
+            disabled={!is_clear_action_ref.current && is_loading}
+            loading={is_loading && is_clear_action_ref.current}
             onClick={(event): void => {
+              is_clear_action_ref.current = true;
               event.preventDefault(); // Prevent closing of modal
               clear_status();
             }}
@@ -240,8 +243,13 @@ const StatusModal = ({
           </ModalFooterButton>
           <ModalFooterButton
             compact={is_smaller_than_mobile}
-            disabled={is_loading || !form.formState.isDirty}
+            disabled={
+              (is_clear_action_ref.current && is_loading) ||
+              !form.formState.isDirty
+            }
+            loading={is_loading && !is_clear_action_ref.current}
             onClick={(event): void => {
+              is_clear_action_ref.current = false;
               event.preventDefault(); // Prevent closing of modal
               form.handleSubmit(handle_submit)(); // Submit manually
             }}

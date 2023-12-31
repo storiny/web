@@ -23,7 +23,7 @@ const Page = (): React.ReactElement => {
         The speed at which you read is measured in words per minute. Unless you
         are a superhuman, it usually falls between 70 and 320 words per minute.
         Should you find your reading pace to be too fast or too slow, please{" "}
-        <Link href={"/support"} underline={"always"}>
+        <Link href={"mailto:support@storiny.com"} underline={"always"}>
           contact support
         </Link>
         .

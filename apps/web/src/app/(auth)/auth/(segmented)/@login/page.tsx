@@ -20,7 +20,7 @@ const Page = (): React.ReactElement => {
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
       <Typography className={css["t-minor"]} level={"body2"}>
-        Need an account?
+        Need an account?{" "}
         <Link
           className={css["t-medium"]}
           href={"#"}

@@ -237,8 +237,10 @@ WHERE
         r#"
 -- Make sure to handle private user
 AND (
-    NOT source_user.is_private OR
-    EXISTS (
+    NOT source_user.is_private
+    -- Self
+    OR source_user.id = $4
+    OR EXISTS (
         SELECT 1
         FROM friends
         WHERE
@@ -254,6 +256,8 @@ AND (
 AND (
     -- Everyone
     source_user.friend_list_visibility = 1
+    -- Self
+    OR source_user.id = $4
     -- Friends
     OR (
         source_user.friend_list_visibility = 2
@@ -1532,6 +1536,131 @@ VALUES ($1, $2, NOW())
 
         let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
         assert_eq!(json.len(), 2); // Also include the current friend relation.
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("friend"))]
+    async fn can_return_user_friends_for_self_when_the_user_is_private_and_logged_in(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
+
+        // Add some friends.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
+        )
+        .bind(1_i64)
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        // Should return friends initially.
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/user/{}/friends", 1))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
+        assert_eq!(json.len(), 1);
+
+        // Make the user private.
+        let result = sqlx::query(
+            r#"
+UPDATE users
+SET is_private = TRUE
+WHERE id = $1
+"#,
+        )
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should still return friends.
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/user/{}/friends", 1))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
+        assert_eq!(json.len(), 1);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("friend"))]
+    async fn can_return_user_friends_for_self_when_the_friend_list_visibility_is_set_to_none_when_logged_in(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
+
+        // Add some friends.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
+        )
+        .bind(1_i64)
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        // Should return friends initially.
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/user/{}/friends", 1))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
+        assert_eq!(json.len(), 1);
+
+        // Change the `friend_list_visibility` to none.
+        let result = sqlx::query(
+            r#"
+UPDATE users
+SET friend_list_visibility = $2
+WHERE id = $1
+"#,
+        )
+        .bind(1_i64)
+        .bind(RelationVisibility::None as i16)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should still return friends.
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/user/{}/friends", 1))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
+        assert_eq!(json.len(), 1);
 
         Ok(())
     }

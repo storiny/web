@@ -63,7 +63,7 @@ const ErrorState = React.forwardRef<HTMLDivElement, ErrorStateProps>(
                   status page
                 </Link>{" "}
                 and try again after a few minutes or{" "}
-                <Link href={"/support"} underline={"always"}>
+                <Link href={"mailto:support@storiny.com"} underline={"always"}>
                   contact support
                 </Link>{" "}
                 if the issue persists.

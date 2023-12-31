@@ -36,7 +36,7 @@ const Page = (): React.ReactElement => (
     <footer className={clsx(css["flex-col"], css["flex-center"])}>
       <Link
         className={css["t-medium"]}
-        href={"/support"}
+        href={"mailto:support@storiny.com"}
         level={"body2"}
         underline={"always"}
       >
