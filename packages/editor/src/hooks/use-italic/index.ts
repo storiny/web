@@ -6,7 +6,7 @@ import React from "react";
 import { italic_atom } from "../../atoms";
 
 /**
- * Hooks for using italic text style
+ * Hook for using italic text style
  */
 export const use_italic = (): [boolean, () => void] => {
   const italic = use_atom_value(italic_atom);

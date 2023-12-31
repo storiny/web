@@ -9,7 +9,7 @@ export const copy_to_clipboard = async (
 ): Promise<Record<string, string>> =>
   await page.frame("left")!.evaluate(() => {
     const clipboard_data: Record<string, string> = {};
-    const editor = document.querySelector('section[contenteditable="true"]');
+    const editor = document.querySelector("div[data-editor-content]");
     const copy_event = new ClipboardEvent("copy");
 
     Object.defineProperty(copy_event, "clipboardData", {

@@ -23,9 +23,7 @@ export const assert_selection = async (
   }
 
   const selection = await frame.evaluate(() => {
-    const root_element = document.querySelector(
-      'section[contenteditable="true"]'
-    );
+    const root_element = document.querySelector("div[data-editor-content]");
 
     const get_path_from_node = (node: Node | null): number[] => {
       if (node === root_element) {

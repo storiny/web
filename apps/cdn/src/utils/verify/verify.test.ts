@@ -10,10 +10,10 @@ const DECODED_URL =
 
 describe("verify", () => {
   it("returns `true` for a valid remote image url", () => {
-    expect(verify(DIGEST, DECODED_URL, KEY)).toBeTruthy();
+    expect(verify(DIGEST, DECODED_URL, KEY)).toBeTrue();
   });
 
   it("returns `false` for an invalid remote image url", () => {
-    expect(verify(DIGEST, DECODED_URL + "invalid", KEY)).toBeFalsy();
+    expect(verify(DIGEST, DECODED_URL + "invalid", KEY)).toBeFalse();
   });
 });

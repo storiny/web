@@ -22,7 +22,11 @@ const LayoutWithState = ({
     >
       {children}
     </div>,
-    { ignore_primitive_providers: false, logged_in: true }
+    {
+      ignore_primitive_providers: false,
+      ignore_initializer: true,
+      logged_in: true
+    }
   );
 
 export default LayoutWithState;

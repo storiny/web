@@ -5,6 +5,7 @@ import {
   $isTextNode as $is_text_node,
   NodeKey,
   NodeMap,
+  TextModeType,
   TextNode
 } from "lexical";
 import { Map as YMap } from "yjs";

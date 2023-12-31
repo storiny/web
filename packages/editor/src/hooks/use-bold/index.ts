@@ -6,7 +6,7 @@ import React from "react";
 import { bold_atom } from "../../atoms";
 
 /**
- * Hooks for using bold text style
+ * Hook for using bold text style
  */
 export const use_bold = (): [boolean, () => void] => {
   const bold = use_atom_value(bold_atom);

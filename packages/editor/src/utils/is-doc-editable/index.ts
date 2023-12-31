@@ -10,5 +10,6 @@ export const is_doc_editable = (doc_status: DocStatus): boolean =>
     DOC_STATUS.connected,
     DOC_STATUS.reconnecting,
     DOC_STATUS.syncing,
+    DOC_STATUS.synced,
     DOC_STATUS.publishing
   ].includes(doc_status);

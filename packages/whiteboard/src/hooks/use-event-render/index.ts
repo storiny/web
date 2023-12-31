@@ -4,7 +4,7 @@ import React from "react";
 import { use_canvas } from "../index";
 
 /**
- * Hooks for force re-rendering on canvas event
+ * Hook for force re-rendering on canvas event
  * @param event_name Event name
  * @param callback Callback
  */
