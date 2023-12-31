@@ -140,7 +140,7 @@ export const assert_html = async (
     ignore_classes = false,
     ignore_inline_styles = false,
     custom_ignore_pattern = undefined,
-    selector = `section[contenteditable="true"]`
+    selector = `div[data-editor-content]`
   }: {
     custom_ignore_pattern?: RegExp;
     ignore_classes?: boolean;

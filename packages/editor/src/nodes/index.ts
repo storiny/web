@@ -4,6 +4,7 @@ import { HorizontalRuleNode } from "@lexical/react/LexicalHorizontalRuleNode";
 import { Klass, LexicalNode } from "lexical";
 
 import { CaptionNode } from "./caption";
+import { CodeBlockNode } from "./code-block";
 import { ColorNode } from "./color";
 import { EmbedNode } from "./embed";
 import { FigureNode } from "./figure";
@@ -30,6 +31,7 @@ export const EDITOR_NODES: (
   ColorNode,
   TKNode,
   ImageNode,
+  CodeBlockNode,
   CaptionNode,
   FigureNode,
   EmbedNode

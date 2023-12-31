@@ -143,7 +143,13 @@ const LoginItem = (props: LoginItemProps): React.ReactElement => {
         </div>
       </div>
       <AspectRatio
-        className={clsx(css["full-w"], css["flex-col"], styles.x, styles.map)}
+        className={clsx(
+          css["full-w"],
+          css["flex-col"],
+          css["flex-center"],
+          styles.x,
+          styles.map
+        )}
         ratio={ratio || 1.44}
       >
         {typeof login.location?.lat !== "undefined" &&

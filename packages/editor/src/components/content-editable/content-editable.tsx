@@ -32,7 +32,7 @@ const EditorContentEditable = ({
   }, [editor]);
 
   return (
-    <section
+    <div
       {...rest}
       aria-activedescendant={
         !is_editable ? undefined : rest["aria-activedescendant"]
@@ -56,6 +56,7 @@ const EditorContentEditable = ({
         className
       )}
       contentEditable={is_editable}
+      data-editor-content={""}
       ref={ref}
       spellCheck={spell_check}
     />

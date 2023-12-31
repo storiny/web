@@ -6,7 +6,7 @@ import React from "react";
 import { can_indent_atom, can_outdent_atom } from "../../atoms";
 
 /**
- * Hooks for using text indentation
+ * Hook for using text indentation
  */
 export const use_indentation = (): {
   can_indent: boolean;

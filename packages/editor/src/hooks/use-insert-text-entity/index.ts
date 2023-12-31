@@ -4,7 +4,7 @@ import React from "react";
 import { INSERT_TEXT_ENTITY_COMMAND } from "../../commands/text-entity";
 
 /**
- * Hooks for inserting emoji text nodes
+ * Hook for inserting emoji text nodes
  */
 export const use_insert_text_entity = (): [(entity: string) => void] => {
   const [editor] = use_lexical_composer_context();

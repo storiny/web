@@ -13,10 +13,8 @@ export declare module "yjs" {
   interface XmlText {
     _collab_node: CollabElementNode;
   }
-}
 
-export declare module "yjs/dist/src/internals" {
-  interface YMap {
+  interface Map {
     _collab_node: CollabLineBreakNode | CollabTextNode;
   }
 }

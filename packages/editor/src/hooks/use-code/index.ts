@@ -6,7 +6,7 @@ import React from "react";
 import { code_atom } from "../../atoms";
 
 /**
- * Hooks for using code text style
+ * Hook for using code text style
  */
 export const use_code = (): [boolean, () => void] => {
   const code = use_atom_value(code_atom);
