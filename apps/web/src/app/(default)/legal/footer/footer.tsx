@@ -18,7 +18,7 @@ const LegalFooter = (): React.ReactElement => (
     <Link
       className={clsx(css["flex-center"], styles.x, styles["support-link"])}
       color={"beryl"}
-      href={"/support"}
+      href={"mailto:support@storiny.com"}
       level={"body2"}
     >
       <MessagesIcon />

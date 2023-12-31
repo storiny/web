@@ -139,7 +139,11 @@ const Progress = (): null => {
   }, []);
 
   React.useEffect(() => {
-    setTimeout(NProgress.done, 250);
+    setTimeout(() => {
+      if (NProgress.isStarted()) {
+        NProgress.done();
+      }
+    }, 250);
   }, [pathname, search_params]);
 
   return null;

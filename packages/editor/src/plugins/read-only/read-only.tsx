@@ -17,7 +17,9 @@ interface Props {
   story_id: string;
 }
 
-const SIX_HOURS_IN_MS = 6 * 60 * 60 * 1000;
+// TODO: Uncomment after fixing
+// const SIX_HOURS_IN_MS = 6 * 60 * 60 * 1000;
+const SIX_HOURS_IN_MS = 30 * 1000; // 30 seconds for now
 
 const ReadOnlyPlugin = ({
   excluded_properties,
@@ -37,6 +39,8 @@ const ReadOnlyPlugin = ({
     on_read_error: () => set_doc_status(DOC_STATUS.doc_corrupted)
   });
 
+  // TODO: Fix this block. The `handle_read` is not called/inconsistent on page
+  // unload. For now, we're using a fixed window of 30 seconds.
   React.useEffect(() => {
     const handle_read = (): void => {
       if (has_read_ref.current) {
