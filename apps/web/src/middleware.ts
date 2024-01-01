@@ -1,5 +1,36 @@
 import { NextMiddleware, NextResponse } from "next/server";
 
+// Third-party frame sources.
+const CSP_FRAME_SRC = [
+  "https://www.instagram.com",
+  "https://twitter.com",
+  "platform.twitter.com",
+  "syndication.twitter.com"
+].join(" ");
+
+// Third-party image sources.
+const CSP_IMAGE_SRC = [
+  "abs.twimg.com",
+  "https://pbs.twimg.com",
+  "ton.twimg.com",
+  "platform.twitter.com",
+  "https://syndication.twitter.com"
+].join(" ");
+
+// Third-party script sources.
+const CSP_SCRIPT_SRC = [
+  "https://platform.instagram.com",
+  "https://www.instagram.com",
+  "https://cdn.syndication.twimg.com",
+  "api.twitter.com",
+  "platform.twitter.com"
+].join(" ");
+
+// Third-party style sources.
+const CSP_STYLE_SRC = ["https://ton.twimg.com", "platform.twitter.com"].join(
+  " "
+);
+
 /**
  * Next.js middleware function
  * @see https://nextjs.org/docs/app/building-your-application/routing/middleware
@@ -42,10 +73,10 @@ export const middleware: NextMiddleware = (request) => {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const csp_header = `
     default-src 'self';
-    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${process.env.NEXT_PUBLIC_ASSETS_URL};
-    style-src 'self' 'unsafe-inline' ${process.env.NEXT_PUBLIC_ASSETS_URL};
-    frame-src 'self' ${process.env.NEXT_PUBLIC_DISCOVERY_URL};
-    img-src 'self' blob: data: ${process.env.NEXT_PUBLIC_ASSETS_URL} ${process.env.NEXT_PUBLIC_CDN_URL} ${process.env.NEXT_PUBLIC_DISCOVERY_URL};
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${process.env.NEXT_PUBLIC_ASSETS_URL} ${CSP_SCRIPT_SRC};
+    style-src 'self' 'unsafe-inline' ${process.env.NEXT_PUBLIC_ASSETS_URL} ${CSP_STYLE_SRC};
+    frame-src 'self' ${process.env.NEXT_PUBLIC_DISCOVERY_URL} ${CSP_FRAME_SRC};
+    img-src 'self' blob: data: ${process.env.NEXT_PUBLIC_ASSETS_URL} ${process.env.NEXT_PUBLIC_CDN_URL} ${process.env.NEXT_PUBLIC_DISCOVERY_URL} ${CSP_IMAGE_SRC};
     font-src 'self' ${process.env.NEXT_PUBLIC_ASSETS_URL};
     connect-src 'self' wss://realms.storiny.com *.storiny.com *.sentry.io;
     object-src 'none';
