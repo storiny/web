@@ -12,6 +12,7 @@ services:
       - "./nginx/njs-files:/etc/nginx/njs"
       - "/etc/pki/nginx:/etc/pki/nginx"
       - "./logs/nginx:/var/log/nginx"
+      - "./nginx/public:/etc/nginx/storiny/public"
     environment:
       PROXY_KEY: "${PROXY_KEY_SECRET}"
 
