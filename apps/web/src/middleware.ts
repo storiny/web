@@ -8,15 +8,6 @@ const CSP_FRAME_SRC = [
   "syndication.twitter.com"
 ].join(" ");
 
-// Third-party image sources.
-const CSP_IMAGE_SRC = [
-  "abs.twimg.com",
-  "https://pbs.twimg.com",
-  "ton.twimg.com",
-  "platform.twitter.com",
-  "https://syndication.twitter.com"
-].join(" ");
-
 // Third-party script sources.
 const CSP_SCRIPT_SRC = [
   "https://platform.instagram.com",
@@ -76,7 +67,7 @@ export const middleware: NextMiddleware = (request) => {
     script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${process.env.NEXT_PUBLIC_ASSETS_URL} ${CSP_SCRIPT_SRC};
     style-src 'self' 'unsafe-inline' ${process.env.NEXT_PUBLIC_ASSETS_URL} ${CSP_STYLE_SRC};
     frame-src 'self' ${process.env.NEXT_PUBLIC_DISCOVERY_URL} ${CSP_FRAME_SRC};
-    img-src 'self' blob: data: ${process.env.NEXT_PUBLIC_ASSETS_URL} ${process.env.NEXT_PUBLIC_CDN_URL} ${process.env.NEXT_PUBLIC_DISCOVERY_URL} ${CSP_IMAGE_SRC};
+    img-src 'self' blob: data: *;
     font-src 'self' ${process.env.NEXT_PUBLIC_ASSETS_URL};
     connect-src 'self' wss://realms.storiny.com *.storiny.com *.sentry.io;
     object-src 'none';
