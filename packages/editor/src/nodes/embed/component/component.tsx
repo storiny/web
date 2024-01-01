@@ -147,9 +147,14 @@ const EmbedComponent = ({
             // Embed with script sourcse
             if (data.sources) {
               for (const source of data.sources) {
+                const nonce = document
+                  .querySelector('meta[name="csp-nonce"]')
+                  ?.getAttribute?.("content");
                 const script = document.createElement("script");
+
                 script.src = source;
                 script.async = true;
+                script.nonce = nonce ?? undefined;
                 document.body.appendChild(script);
               }
             }

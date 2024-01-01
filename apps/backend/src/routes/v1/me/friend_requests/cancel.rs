@@ -47,6 +47,7 @@ WHERE
     receiver_id = $1
     AND transmitter_id = $2
     AND accepted_at IS NULL
+    AND deleted_at IS NULL
 "#,
     )
     .bind(&receiver_id)

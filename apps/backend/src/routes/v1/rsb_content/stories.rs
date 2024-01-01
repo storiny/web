@@ -94,6 +94,7 @@ AND (
                     (transmitter_id = $1 AND receiver_id = u.id)
             )
             AND accepted_at IS NOT NULL
+            AND deleted_at IS NULL
     )
 )
 -- Filter out stories from blocked users

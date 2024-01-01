@@ -250,6 +250,7 @@ AND (
                     (transmitter_id = $4 AND receiver_id = source_user.id)
             )
             AND accepted_at IS NOT NULL
+            AND deleted_at IS NULL
     )
 )
 -- Handle `friend_list_visibility`
@@ -271,7 +272,26 @@ AND (
                         (transmitter_id = $4 AND receiver_id = source_user.id)
                 )
                 AND accepted_at IS NOT NULL
+                AND deleted_at IS NULL
         )
+    )
+)
+-- Make sure to handle private friend
+AND (
+    NOT fu.is_private
+    -- Self
+    OR fu.id = $4
+    OR EXISTS (
+        SELECT 1
+        FROM friends
+        WHERE
+            (
+                    (transmitter_id = fu.id AND receiver_id = $4)
+                OR 
+                    (transmitter_id = $4 AND receiver_id = fu.id)
+            )
+            AND accepted_at IS NOT NULL
+            AND deleted_at IS NULL
     )
 )
 "#
@@ -282,6 +302,7 @@ AND (
     -- Everyone
     source_user.friend_list_visibility = 1
 )
+AND fu.is_private IS FALSE
 "#
     });
 
@@ -742,6 +763,69 @@ WHERE transmitter_id = $1 AND receiver_id = $2
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("friend"))]
+    async fn should_not_include_private_friends(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
+
+        // Add some friends.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW()), ($1, $3, NOW())
+"#,
+        )
+        .bind(1_i64)
+        .bind(2_i64)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        // Should return the friend initially.
+        let req = test::TestRequest::get()
+            .uri(&format!("/v1/user/{}/friends", 1))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await);
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 2);
+
+        // Make one of the friend private.
+        let result = sqlx::query(
+            r#"
+UPDATE users
+SET is_private = TRUE
+WHERE id = $1
+"#,
+        )
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return only one friend.
+        let req = test::TestRequest::get()
+            .uri(&format!("/v1/user/{}/friends", 1))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let friends = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
+
+        assert_eq!(friends.len(), 1);
+        assert_ne!(friends[0].id, 2_i64);
 
         Ok(())
     }
@@ -1447,6 +1531,92 @@ VALUES ($1, $2, NOW())
 
         let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
         assert_eq!(json.len(), 2); // Also include the current friend relation.
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("friend"))]
+    async fn can_handle_private_friends_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
+
+        // Add some friends.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
+        )
+        .bind(2_i64)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        // Should return friends initially.
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/user/{}/friends", 2))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
+        assert_eq!(json.len(), 1);
+
+        // Make the user private.
+        let result = sqlx::query(
+            r#"
+UPDATE users
+SET is_private = TRUE
+WHERE id = $1
+"#,
+        )
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should not return friends.
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/user/{}/friends", 2))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
+        assert_eq!(json.len(), 0);
+
+        // Add the private user as friend.
+        let result = sqlx::query(
+            r#"
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return the private friend.
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/user/{}/friends", 2))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
+        assert_eq!(json.len(), 1);
 
         Ok(())
     }
