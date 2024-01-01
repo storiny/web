@@ -95,7 +95,7 @@ const Enable2FAModal = (): React.ReactElement => {
               className={clsx(css["t-mono"], styles.code)}
               level={"body2"}
             >
-              {code}
+              {((code || "").match(/.{1,4}/g) || []).join(" ")}
             </Typography>
           </div>
           <Divider orientation={"vertical"} />
