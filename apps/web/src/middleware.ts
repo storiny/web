@@ -47,7 +47,7 @@ export const middleware: NextMiddleware = (request) => {
     frame-src 'self' ${process.env.NEXT_PUBLIC_DISCOVERY_URL};
     img-src 'self' blob: data: ${process.env.NEXT_PUBLIC_ASSETS_URL} ${process.env.NEXT_PUBLIC_CDN_URL} ${process.env.NEXT_PUBLIC_DISCOVERY_URL};
     font-src 'self' ${process.env.NEXT_PUBLIC_ASSETS_URL};
-    connect-src 'self' *.storiny.com *.sentry.io;
+    connect-src 'self' wss://realms.storiny.com *.storiny.com *.sentry.io;
     object-src 'none';
     base-uri 'self';
     form-action 'self';
