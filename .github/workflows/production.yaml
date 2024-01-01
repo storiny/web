@@ -31,44 +31,44 @@ jobs:
         shell: bash
         run: < apps/web/.env.production >> $GITHUB_ENV
 
-#      # API
-#      - name: Build, tag, and push api image
-#        id: build-api-image
-#        env:
-#          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-#        run: |
-#          docker build \
-#            --platform linux/amd64 \
-#            -f apps/backend/Dockerfile \
-#            -t $ECR_REGISTRY/storiny_api:latest apps/backend
-#          docker push $ECR_REGISTRY/storiny_api:latest
-#          echo "api-image=$ECR_REGISTRY/storiny_api:latest" >> $GITHUB_OUTPUT
-#
-#      # Nginx
-#      - name: Build, tag, and push nginx image
-#        id: build-nginx-image
-#        env:
-#          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-#        run: |
-#          docker build \
-#            --platform linux/amd64 \
-#            -f apps/cdn/nginx/Dockerfile \
-#            -t $ECR_REGISTRY/storiny_nginx:latest apps/cdn/nginx
-#          docker push $ECR_REGISTRY/storiny_nginx:latest
-#          echo "nginx-image=$ECR_REGISTRY/storiny_nginx:latest" >> $GITHUB_OUTPUT
-#
-#      # Discovery
-#      - name: Build, tag, and push discovery image
-#        id: build-discovery-image
-#        env:
-#          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-#        run: |
-#          docker build \
-#            --platform linux/amd64 \
-#            -f apps/discovery/Dockerfile \
-#            -t $ECR_REGISTRY/storiny_discovery:latest apps/discovery
-#          docker push $ECR_REGISTRY/storiny_discovery:latest
-#          echo "discovery-image=$ECR_REGISTRY/storiny_discovery:latest" >> $GITHUB_OUTPUT
+      # API
+      - name: Build, tag, and push api image
+        id: build-api-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker build \
+            --platform linux/amd64 \
+            -f apps/backend/Dockerfile \
+            -t $ECR_REGISTRY/storiny_api:latest apps/backend
+          docker push $ECR_REGISTRY/storiny_api:latest
+          echo "api-image=$ECR_REGISTRY/storiny_api:latest" >> $GITHUB_OUTPUT
+
+      # Nginx
+      - name: Build, tag, and push nginx image
+        id: build-nginx-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker build \
+            --platform linux/amd64 \
+            -f apps/cdn/nginx/Dockerfile \
+            -t $ECR_REGISTRY/storiny_nginx:latest apps/cdn/nginx
+          docker push $ECR_REGISTRY/storiny_nginx:latest
+          echo "nginx-image=$ECR_REGISTRY/storiny_nginx:latest" >> $GITHUB_OUTPUT
+
+      # Discovery
+      - name: Build, tag, and push discovery image
+        id: build-discovery-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker build \
+            --platform linux/amd64 \
+            -f apps/discovery/Dockerfile \
+            -t $ECR_REGISTRY/storiny_discovery:latest apps/discovery
+          docker push $ECR_REGISTRY/storiny_discovery:latest
+          echo "discovery-image=$ECR_REGISTRY/storiny_discovery:latest" >> $GITHUB_OUTPUT
 
       # Web
       - name: Build, tag, and push web image
