@@ -5,6 +5,7 @@ import "~/theme/global.scss";
 import "~/theme/main.module.scss"; // Import the global css styles so that they have the lowest style priority
 
 import dynamic from "next/dynamic";
+import { headers } from "next/headers";
 import React from "react";
 
 import { get_session_token } from "~/common/utils/get-session-token";
@@ -26,6 +27,7 @@ const RootLayout = ({
 }: {
   children: React.ReactNode;
 }): React.ReactElement => {
+  const nonce = headers().get("x-nonce") ?? undefined;
   const session_token = get_session_token();
   const logged_in = Boolean(session_token);
 
@@ -38,7 +40,9 @@ const RootLayout = ({
           dangerouslySetInnerHTML={{
             __html: theme_sync
           }}
+          nonce={nonce}
         />
+        <meta content={nonce ?? ""} name={"csp-nonce"} />
         <link href="/favicon.ico" rel="icon" sizes="any" />
         <link
           href="/favicon.dark.ico"

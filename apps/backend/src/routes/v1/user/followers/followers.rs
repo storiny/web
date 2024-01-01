@@ -227,6 +227,33 @@ WHERE
 "#,
     );
 
+    query_builder.push(if current_user_id.is_some() {
+        r#"
+-- Make sure to handle private follower
+AND (
+    NOT ru.is_private
+    -- Self
+    OR ru.id = $4
+    OR EXISTS (
+        SELECT 1
+        FROM friends
+        WHERE
+            (
+                    (transmitter_id = ru.id AND receiver_id = $4)
+                OR 
+                    (transmitter_id = $4 AND receiver_id = ru.id)
+            )
+            AND accepted_at IS NOT NULL
+            AND deleted_at IS NULL
+    )
+)
+"#
+    } else {
+        r#"
+AND ru.is_private IS FALSE
+"#
+    });
+
     if has_search_query {
         query_builder.push(r#"AND ru.search_vec @@ (SELECT tsq FROM search_query)"#);
     }
@@ -620,6 +647,69 @@ WHERE follower_id = $1 AND followed_id = $2
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("follower"))]
+    async fn should_not_include_private_followers(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let app = init_app_for_test(get, pool, false, false, None).await.0;
+
+        // Add some followers.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($2, $1), ($3, $1)
+"#,
+        )
+        .bind(1_i64)
+        .bind(2_i64)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        // Should return all the followers initially.
+        let req = test::TestRequest::get()
+            .uri(&format!("/v1/user/{}/followers", 1))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await);
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 2);
+
+        // Make one of the followers private.
+        let result = sqlx::query(
+            r#"
+UPDATE users
+SET is_private = TRUE
+WHERE id = $1
+"#,
+        )
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return only one follower.
+        let req = test::TestRequest::get()
+            .uri(&format!("/v1/user/{}/followers", 1))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let followers = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await).unwrap();
+
+        assert_eq!(followers.len(), 1);
+        assert_ne!(followers[0].id, 2_i64);
 
         Ok(())
     }
@@ -1147,6 +1237,92 @@ VALUES ($2, $1), ($3, $1)
 
         assert_eq!(json.len(), 1);
         assert_eq!(json[0].username, "two".to_string());
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("follower"))]
+    async fn can_handle_private_followers_when_logged_in(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
+
+        // Add some followers.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(3_i64)
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        // Should return followers initially.
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/user/{}/followers", 2))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await).unwrap();
+        assert_eq!(json.len(), 1);
+
+        // Make the followed user private.
+        let result = sqlx::query(
+            r#"
+UPDATE users
+SET is_private = TRUE
+WHERE id = $1
+"#,
+        )
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should not return the private follower.
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/user/{}/followers", 2))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await).unwrap();
+        assert_eq!(json.len(), 0);
+
+        // Add the private follower as friend.
+        let result = sqlx::query(
+            r#"
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return the private follower.
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/user/{}/followers", 2))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await).unwrap();
+        assert_eq!(json.len(), 1);
 
         Ok(())
     }
