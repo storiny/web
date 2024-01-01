@@ -31,21 +31,6 @@ jobs:
         shell: bash
         run: < apps/web/.env.production >> $GITHUB_ENV
 
-      # Web
-      - name: Build, tag, and push web image
-        id: build-web-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          docker build \
-            --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
-            --build-arg AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
-            --build-arg AWS_REGION=${{ secrets.AWS_REGION }} \
-            --platform linux/amd64 \
-            -t $ECR_REGISTRY/storiny_web:latest .
-          docker push $ECR_REGISTRY/storiny_web:latest
-          echo "web-image=$ECR_REGISTRY/storiny_web:latest" >> $GITHUB_OUTPUT
-
       # API
       - name: Build, tag, and push api image
         id: build-api-image
@@ -84,6 +69,21 @@ jobs:
             -t $ECR_REGISTRY/storiny_discovery:latest apps/discovery
           docker push $ECR_REGISTRY/storiny_discovery:latest
           echo "discovery-image=$ECR_REGISTRY/storiny_discovery:latest" >> $GITHUB_OUTPUT
+
+      # Web
+      - name: Build, tag, and push web image
+        id: build-web-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker build \
+            --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            --build-arg AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+            --build-arg AWS_REGION=${{ secrets.AWS_REGION }} \
+            --platform linux/amd64 \
+            -t $ECR_REGISTRY/storiny_web:latest .
+          docker push $ECR_REGISTRY/storiny_web:latest
+          echo "web-image=$ECR_REGISTRY/storiny_web:latest" >> $GITHUB_OUTPUT
 
       - name: Recreate containers
         uses: appleboy/ssh-action@v1.0.0

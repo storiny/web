@@ -33,6 +33,44 @@ export const middleware: NextMiddleware = (request) => {
         )
       );
   }
+
+  // Skip adding CSP directives in development environment.
+  if (process.env.NODE_ENV === "development") {
+    return;
+  }
+
+  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+  const csp_header = `
+    default-src 'self';
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${process.env.NEXT_PUBLIC_ASSETS_URL};
+    style-src 'self' 'unsafe-inline' ${process.env.NEXT_PUBLIC_ASSETS_URL};
+    frame-src 'self' ${process.env.NEXT_PUBLIC_DISCOVERY_URL};
+    img-src 'self' blob: data: ${process.env.NEXT_PUBLIC_ASSETS_URL} ${process.env.NEXT_PUBLIC_CDN_URL} ${process.env.NEXT_PUBLIC_DISCOVERY_URL};
+    font-src 'self' ${process.env.NEXT_PUBLIC_ASSETS_URL};
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'none';
+    block-all-mixed-content;
+    upgrade-insecure-requests;
+`;
+
+  // Replace newline characters and spaces
+  const csp_header_value = csp_header.replace(/\s{2,}/g, " ").trim();
+
+  const request_headers = new Headers(request.headers);
+  request_headers.set("x-nonce", nonce);
+  request_headers.set("Content-Security-Policy", csp_header_value);
+
+  const response = NextResponse.next({
+    request: {
+      headers: request_headers
+    }
+  });
+
+  response.headers.set("Content-Security-Policy", csp_header_value);
+
+  return response;
 };
 
 /**
@@ -41,13 +79,19 @@ export const middleware: NextMiddleware = (request) => {
  */
 export const config = {
   matcher: [
-    "/login",
-    "/signup",
-    "/sign-up",
-    "/legal",
-    "/terms",
-    "/privacy",
-    "/guidelines",
-    "/cookies"
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    {
+      source: "/((?!api|_next/static|_next/image|favicon.ico).*)",
+      missing: [
+        { type: "header", key: "next-router-prefetch" },
+        { type: "header", key: "purpose", value: "prefetch" }
+      ]
+    }
   ]
 };
