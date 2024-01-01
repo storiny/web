@@ -28,6 +28,17 @@ const with_bundle_analyzer = bundle_analyzer({
 const next_config = {
   trailingSlash: false,
   productionBrowserSourceMaps: false,
+  headers: async () => [
+    {
+      source: "/(.*)",
+      headers: [
+        {
+          key: "X-Frame-Options",
+          value: "SAMEORIGIN"
+        }
+      ]
+    }
+  ],
   images: {
     loader: "custom",
     loaderFile: "./img.loader.js",
