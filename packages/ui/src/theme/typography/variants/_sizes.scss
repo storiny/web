@@ -190,7 +190,7 @@
 /* Code */
 @mixin mono {
   &-mono {
-    font-family: var(--font-code, var(--font-monospace));
+    font-family: var(--font-monospace);
   }
 }
 

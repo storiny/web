@@ -86,7 +86,7 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
   return (
     <Form<MFASchema>
       className={clsx(css["flex-col"], css["full-h"])}
-      disabled={is_loading}
+      disabled={done || is_loading}
       on_submit={handle_submit}
       provider_props={form}
     >

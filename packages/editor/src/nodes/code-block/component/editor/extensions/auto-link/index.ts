@@ -43,15 +43,14 @@ class AutoLink extends WidgetType {
     const anchor = document.createElement("a");
     const img = document.createElement("img");
 
-    // TODO: Image anchor src
-    img.src = `${process.env.NEXT_PUBLIC_CDN_BASE_URI}/elements/decorators/link_icon.svg`;
+    img.src = `${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/raw/icons/anchor.svg`;
     img.width = 16;
     img.height = 16;
     img.draggable = false;
 
     anchor.href = this.state.url;
     anchor.target = "_blank";
-    anchor.className = "cm-linkIcon no-decorate";
+    anchor.className = "cm-link-icon";
     anchor.appendChild(img);
 
     return anchor;

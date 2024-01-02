@@ -392,7 +392,7 @@ impl Realm {
 
         if reason != RealmDestroyReason::DocOverload {
             // Persist any updates before destroying
-            let _ = self.persist_doc_to_s3().await;
+            let _ = self.persist_doc_to_s3(true).await;
         }
 
         {
@@ -410,6 +410,9 @@ impl Realm {
     /// Serializes the present document state to binary data, deflates it using GZIP, and uploads it
     /// to the S3 docs bucket. Returns the size (in bytes) of the document at the time of uploading
     /// it to the object storage.
+    ///
+    /// * `force` - If `true`, forces the document to be uploaded to the object storage, even if it
+    ///   is not modified.
     #[tracing::instrument(
         name = "REALM persist_doc_to_s3",
         skip_all,
@@ -419,7 +422,7 @@ impl Realm {
         ),
         err
     )]
-    async fn persist_doc_to_s3(&self) -> Result<usize, PersistDocError> {
+    async fn persist_doc_to_s3(&self, force: bool) -> Result<usize, PersistDocError> {
         trace!("[{}] trying to persist the doc to s3", self.doc_id);
 
         let mut last_state_vec = self.last_state_vector.write().await;
@@ -435,8 +438,12 @@ impl Realm {
         };
 
         // Document has been updated since the last persistence call.
-        if *last_state_vec != next_state_vec {
-            debug!("[{}] persisting the doc…", self.doc_id);
+        if force || *last_state_vec != next_state_vec {
+            debug!(
+                "[{}] persisting the doc… ({})",
+                self.doc_id,
+                if force { "forced" } else { "not forced" }
+            );
 
             let doc_binary_data = {
                 let txn = doc
@@ -584,7 +591,7 @@ impl Realm {
                             *is_last_persistence_iteration = false;
                             drop(is_last_persistence_iteration);
 
-                            let _ = self_ref.persist_doc_to_s3().await;
+                            let _ = self_ref.persist_doc_to_s3(false).await;
                         } else if *is_last_persistence_iteration {
                             drop(is_last_persistence_iteration);
 

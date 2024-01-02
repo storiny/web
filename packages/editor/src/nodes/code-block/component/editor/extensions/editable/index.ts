@@ -54,7 +54,7 @@ import { $is_code_block_node } from "../../../../code-block";
  * @param undo_manager Undo manager instance
  * @param editor Editor instance
  * @param node_key Key of the code block node
- * @param focus_editor Callback to focus the main editor
+ * @param make_editor_editable Callback to make the main editor editable
  */
 export const get_editable_extensions = ({
   content,
@@ -62,12 +62,12 @@ export const get_editable_extensions = ({
   undo_manager,
   editor,
   node_key,
-  focus_editor
+  make_editor_editable
 }: {
   awareness: Awareness | null;
   content: YText;
   editor: LexicalEditor;
-  focus_editor: () => void;
+  make_editor_editable: (should_focus?: boolean) => void;
   node_key: NodeKey;
   undo_manager: UndoManager | null;
 }): Extension[] => {
@@ -102,7 +102,7 @@ export const get_editable_extensions = ({
 
                   if ($is_code_block_node(node)) {
                     node.remove();
-                    focus_editor();
+                    make_editor_editable();
                   }
                 });
 

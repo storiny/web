@@ -44,6 +44,11 @@ const handle_legacy_mode = async (
         .cmake;
       break;
     //
+    case "cobol":
+      legacy_language = (await import("@codemirror/legacy-modes/mode/cobol"))
+        .cobol;
+      break;
+    //
     case "coffeescript":
       legacy_language = (
         await import("@codemirror/legacy-modes/mode/coffeescript")
@@ -180,6 +185,11 @@ const handle_legacy_mode = async (
       legacy_language = (
         await import("@codemirror/legacy-modes/mode/powershell")
       ).powerShell;
+      break;
+    //
+    case "protobuf":
+      legacy_language = (await import("@codemirror/legacy-modes/mode/protobuf"))
+        .protobuf;
       break;
     //
     case "puppet":

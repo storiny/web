@@ -9,12 +9,14 @@ export interface CodeBlockPayload {
   content?: YText;
   key?: NodeKey;
   language?: string | null;
+  title?: string;
 }
 
 export type SerializedCodeBlockNode = Spread<
   {
     content: YText;
     language: string | null;
+    title: string;
   },
   SerializedBlockNode
 >;
@@ -28,10 +30,12 @@ export class CodeBlockNode extends BlockNode {
    * Ctor
    * @param language Code language
    * @param content Yjs text type holding the code block content
+   * @param title Title of the code block
    * @param key Node key
    */
   constructor(
     {
+      title,
       language,
       content = new YText()
     }: Omit<CodeBlockPayload, "key"> = {} as any,
@@ -39,6 +43,7 @@ export class CodeBlockNode extends BlockNode {
   ) {
     super(key);
 
+    this.__title = title || "";
     this.__content = content;
     this.__language = language || null;
   }
@@ -58,7 +63,8 @@ export class CodeBlockNode extends BlockNode {
     return new CodeBlockNode(
       {
         content: node.__content,
-        language: node.__language
+        language: node.__language,
+        title: node.__title
       },
       node.__key
     );
@@ -73,7 +79,8 @@ export class CodeBlockNode extends BlockNode {
   ): CodeBlockNode {
     return $create_code_block_node({
       language: serialized_node.language,
-      content: serialized_node.content
+      content: serialized_node.content,
+      title: serialized_node.title
     });
   }
 
@@ -87,6 +94,11 @@ export class CodeBlockNode extends BlockNode {
    * @private
    */
   public __content: YText;
+  /**
+   * The title of the code block
+   * @private
+   */
+  private __title: string;
 
   /**
    * Serializes the node to JSON
@@ -96,6 +108,7 @@ export class CodeBlockNode extends BlockNode {
       ...super.exportJSON(),
       language: this.__language,
       content: this.__content,
+      title: this.__title,
       type: TYPE,
       version: VERSION
     };
@@ -111,6 +124,15 @@ export class CodeBlockNode extends BlockNode {
   }
 
   /**
+   * Sets the title of the code block
+   * @param next_title Title
+   */
+  public set_title(next_title: string): void {
+    const writable = this.getWritable();
+    writable.__title = next_title;
+  }
+
+  /**
    * Renders the decorator
    */
   override decorate(): React.ReactElement {
@@ -119,6 +141,7 @@ export class CodeBlockNode extends BlockNode {
         content={this.__content}
         language={this.__language}
         node_key={this.getKey()}
+        title={this.__title}
       />
     );
   }
@@ -128,11 +151,14 @@ export class CodeBlockNode extends BlockNode {
  * Creates a new code block node
  * @param language Language of the code inside the block
  * @param content Yjs text type holding the code block content
+ * @param title Title of the code block
  */
 export const $create_code_block_node = ({
   language,
-  content
-}: CodeBlockPayload): CodeBlockNode => new CodeBlockNode({ content, language });
+  content,
+  title
+}: CodeBlockPayload): CodeBlockNode =>
+  new CodeBlockNode({ content, language, title });
 
 /**
  * Predicate function for determining code block nodes

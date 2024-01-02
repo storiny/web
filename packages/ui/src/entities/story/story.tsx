@@ -54,7 +54,7 @@ const get_story_url = (props: StoryProps): string => {
     return `/doc/${story.id}`;
   }
 
-  return `/${story.user?.username}/${story.slug}`;
+  return `/${story.user?.username || "view"}/${story.slug ?? story.id}`;
 };
 
 // Meta
