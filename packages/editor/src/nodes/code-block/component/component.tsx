@@ -13,8 +13,11 @@ import { useHotkeys as use_hot_keys } from "react-hotkeys-hook";
 import { Text as YText } from "yjs";
 
 import { $is_code_block_node } from "../code-block";
+import CodeBlockSkeleton from "./editor/components/skeleton";
 
-const CodeBlockEditor = dynamic(() => import("./editor"));
+const CodeBlockEditor = dynamic(() => import("./editor"), {
+  loading: (props) => <CodeBlockSkeleton {...props} />
+});
 
 const CodeBlockComponent = ({
   node_key,
