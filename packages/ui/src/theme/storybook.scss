@@ -4,7 +4,14 @@
   font-family: satoshi;
   font-weight: 100 900;
   font-style: normal;
-  src: url("../static/fonts/satoshi.woff2") format("woff2");
+  src: url("../static/fonts/satoshi/satoshi.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: satoshi;
+  font-weight: 100 900;
+  font-style: italic;
+  src: url("../static/fonts/satoshi/satoshi-italic.woff2") format("woff2");
 }
 
 // Cabinet grotesk

@@ -1,3 +1,9 @@
-.skeleton {
-  height: 338px;
+.action {
+  &:first-of-type {
+    margin-inline: 12px 6px;
+  }
+
+  &:last-of-type {
+    margin-inline: 6px 12px;
+  }
 }
