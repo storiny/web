@@ -19,11 +19,13 @@ const CodeBlockEditor = dynamic(() => import("./editor"));
 const CodeBlockComponent = ({
   node_key,
   language,
-  content
+  content,
+  title
 }: {
   content: YText;
   language: string | null;
   node_key: NodeKey;
+  title: string;
 }): React.ReactElement | null => {
   const [editor] = use_lexical_composer_context();
   const [selected, set_selected] = use_lexical_node_selection(node_key);
@@ -69,6 +71,7 @@ const CodeBlockComponent = ({
       content={content}
       language={language}
       node_key={node_key}
+      title={title}
     />
   );
 };

@@ -117,4 +117,5 @@ export const USER_SCHEMA = {
       USER_PROPS.status.text.max_length,
       ZOD_MESSAGES.max("status text", USER_PROPS.status.text.max_length)
     )
+    .nullable()
 } as const;

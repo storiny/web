@@ -11,22 +11,25 @@ import use_resize_observer from "use-resize-observer";
 import { Text as YText } from "yjs";
 
 import Divider from "~/components/divider";
-import IconButton from "~/components/icon-button";
 import Option from "~/components/option";
 import Select from "~/components/select";
+import Spinner from "~/components/spinner";
+import Tooltip from "~/components/tooltip";
 import Typography from "~/components/typography";
-import CopyIcon from "~/icons/copy";
-import SettingsIcon from "~/icons/settings";
 import TerminalIcon from "~/icons/terminal";
-import TextWrapIcon from "~/icons/text-wrap";
+import WarningIcon from "~/icons/warning";
 import { select_theme } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 
 import { awareness_atom, undo_manager_atom } from "../../../../atoms";
 import { $is_code_block_node } from "../../code-block";
+import CopyCodeAction from "./components/copy-code-action";
+import CodeBlockTitle from "./components/title";
+import WrapLinesAction from "./components/wrap-lines-action";
 import styles from "./editor.module.scss";
 import { common_extensions } from "./extensions/common";
+import { gutter_extensions } from "./extensions/gutter";
 import { CODE_BLOCK_LANGUAGE_MAP, get_language_support } from "./languages";
 import { CODE_BLOCK_DARK_THEME } from "./themes/dark";
 import { CODE_BLOCK_LIGHT_THEME } from "./themes/light";
@@ -34,25 +37,36 @@ import { CODE_BLOCK_LIGHT_THEME } from "./themes/light";
 const CodeBlockEditor = ({
   node_key,
   content,
-  language
+  language,
+  title
 }: {
   content: YText;
   language: string | null;
   node_key: NodeKey;
+  title: string;
 }): React.ReactElement => {
   const [editor] = use_lexical_composer_context();
+  const code_block_id = React.useId();
   const undo_manager = use_atom_value(undo_manager_atom);
   const awareness = use_atom_value(awareness_atom);
   const theme = use_app_selector(select_theme);
+  const enable_code_gutters = use_app_selector(
+    (state) => state.preferences.enable_code_gutters
+  );
   const { height: container_height, ref: resize_observer_ref } =
     use_resize_observer();
   const ref = React.useRef<HTMLDivElement | null>(null);
   const view_ref = React.useRef<EditorView | null>(null);
   const mounted_ref = React.useRef<boolean>(false);
   const read_only_ref = React.useRef<boolean>(!editor.isEditable());
+  const [loading, set_loading] = React.useState<boolean>(editor.isEditable());
+  const [language_status, set_language_status] = React.useState<
+    "loading" | "loaded" | "error"
+  >(language === null ? "loaded" : "loading");
   const language_compartment = React.useMemo(() => new Compartment(), []);
   const wrap_compartment = React.useMemo(() => new Compartment(), []);
   const theme_compartment = React.useMemo(() => new Compartment(), []);
+  const gutter_compartment = React.useMemo(() => new Compartment(), []);
 
   /**
    * Updates the code block language
@@ -67,82 +81,33 @@ const CodeBlockEditor = ({
           node.set_language(next_language === "none" ? null : next_language);
         }
       });
-
-      const view = view_ref.current;
-
-      if (view && next_language !== "none") {
-        // setLangLoading(true);
-        // setError(false);
-
-        get_language_support(
-          next_language as keyof typeof CODE_BLOCK_LANGUAGE_MAP
-        )
-          .then((support) => {
-            // setParser(newLang);
-
-            if (support) {
-              view.dispatch({
-                effects: language_compartment.reconfigure(support)
-              });
-            }
-          })
-          .catch(() => {
-            // setError(true);
-            // toast.danger("Unable to load the language");
-          });
-        // .finally(() => setLangLoading(false));
-      }
     },
-    [editor, language_compartment, node_key]
+    [editor, node_key]
   );
 
-  // const handle_wrap = React.useCallback(() => {
-  //   if (viewRef.current) {
-  //     viewRef.current!.dispatch({
-  //       effects: wrapCompartment.reconfigure(
-  //         wrap ? [] : EditorView.lineWrapping
-  //       )
-  //     });
-  //   }
-  //
-  //   toggleWrap();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [wrap_compartment, wrap]);
-
-  // const handle_copy = React.useCallback(async () => {
-  //   if (viewRef.current) {
-  //     try {
-  //       setCopying(true);
-  //       const content = viewRef.current!.state.doc.toString() || "";
-  //       await copyToClipboard(content);
-  //       setCopyStatus("success", false);
-  //     } catch (e) {
-  //       setCopyStatus("error", false);
-  //     } finally {
-  //       setCopying(false);
-  //       setCopyStatus(null);
-  //     }
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
-
   /**
-   * Focuses the main editor
+   * Makes the main editor editable.
+   * @param should_focus Whether to focus the editor
    */
-  const focus_editor = React.useCallback(() => {
-    const content_editable = document.querySelector(
-      "div[data-editor-content]"
-    ) as HTMLDivElement | null;
+  const make_editor_editable = React.useCallback(
+    (should_focus?: boolean) => {
+      editor.setEditable(true);
 
-    editor.setEditable(true);
+      if (should_focus) {
+        const content_editable = document.querySelector(
+          "div[data-editor-content]"
+        ) as HTMLDivElement | null;
 
-    setTimeout(() => {
-      if (content_editable) {
-        editor.focus();
-        content_editable.focus();
+        setTimeout(() => {
+          if (content_editable) {
+            editor.focus();
+            content_editable.focus();
+          }
+        }, 10);
       }
-    }, 10);
-  }, [editor]);
+    },
+    [editor]
+  );
 
   /**
    * Destroys the code editor
@@ -164,7 +129,49 @@ const CodeBlockEditor = ({
         )
       });
     }
-  }, [theme, theme_compartment]);
+  }, [theme, theme_compartment, loading]);
+
+  // Listen for code gutter preference changes
+  React.useEffect(() => {
+    const view = view_ref.current;
+
+    if (view) {
+      view.dispatch({
+        effects: gutter_compartment.reconfigure(
+          enable_code_gutters ? gutter_extensions : []
+        )
+      });
+    }
+  }, [enable_code_gutters, gutter_compartment, loading]);
+
+  // Dynamically load the language support.
+  React.useEffect(() => {
+    const view = view_ref.current;
+
+    if (view !== null) {
+      if (language !== null) {
+        set_language_status("loading");
+
+        get_language_support(language as keyof typeof CODE_BLOCK_LANGUAGE_MAP)
+          .then((support) => {
+            set_language_status("loaded");
+
+            if (support) {
+              view.dispatch({
+                effects: language_compartment.reconfigure(support)
+              });
+            }
+          })
+          .catch(() => {
+            set_language_status("error");
+          });
+      } else {
+        view.dispatch({
+          effects: language_compartment.reconfigure([])
+        });
+      }
+    }
+  }, [language, language_compartment, loading]);
 
   React.useEffect(() => {
     if (mounted_ref.current) {
@@ -174,31 +181,32 @@ const CodeBlockEditor = ({
     mounted_ref.current = true;
     destroy_editor();
 
-    (async (): Promise<void> => {
-      const extensions: Extension[] = [
-        ...common_extensions,
-        theme_compartment.of(
-          theme === "light" ? CODE_BLOCK_LIGHT_THEME : CODE_BLOCK_DARK_THEME
-        ),
-        wrap_compartment.of([])
-      ];
+    const extensions: Extension[] = [
+      ...common_extensions,
+      gutter_compartment.of(enable_code_gutters ? gutter_extensions : []),
+      theme_compartment.of(
+        theme === "light" ? CODE_BLOCK_LIGHT_THEME : CODE_BLOCK_DARK_THEME
+      ),
+      language_compartment.of([]),
+      wrap_compartment.of([])
+    ];
 
-      // Dynamically load the language support.
-      if (language !== null) {
-        const language_support = await get_language_support(
-          language as keyof typeof CODE_BLOCK_LANGUAGE_MAP
-        );
+    if (read_only_ref.current) {
+      extensions.push(
+        ...[EditorState.readOnly.of(true), EditorView.editable.of(false)]
+      );
 
-        if (language_support) {
-          extensions.push(language_compartment.of(language_support));
-        }
-      }
+      view_ref.current = new EditorView({
+        parent: ref.current as HTMLDivElement,
+        state: EditorState.create({
+          doc: content.toString(),
+          extensions
+        })
+      });
+    } else {
+      (async (): Promise<void> => {
+        set_loading(true);
 
-      if (read_only_ref.current) {
-        extensions.push(
-          ...[EditorState.readOnly.of(true), EditorView.editable.of(false)]
-        );
-      } else {
         const { get_editable_extensions } = await import(
           "./extensions/editable"
         );
@@ -208,7 +216,7 @@ const CodeBlockEditor = ({
           node_key,
           awareness,
           undo_manager,
-          focus_editor
+          make_editor_editable
         });
 
         extensions.push(
@@ -229,55 +237,62 @@ const CodeBlockEditor = ({
                   }
                 } else if (
                   !document.activeElement ||
-                  // Check if the focus jumped from one code block to another
+                  // Check if the focus jumped from one code block to
+                  // another
                   (document.activeElement &&
                     !document.activeElement.classList.contains("cm-content") &&
                     !document.activeElement.classList.contains("cm-scroller"))
                 ) {
                   // Reset the selection
                   update.view.dispatch({ selection: { anchor: 0 } });
-                  focus_editor();
+
+                  // Only focus if the active element is not present inside
+                  // the code block.
+                  make_editor_editable(
+                    !document
+                      .getElementById(code_block_id)
+                      ?.contains?.(document.activeElement)
+                  );
                 }
               }
             })
           ]
         );
-      }
 
-      view_ref.current = new EditorView({
-        parent: ref.current as HTMLDivElement,
-        state: EditorState.create({
-          doc: content.toString(),
-          extensions
-        })
-      });
+        view_ref.current = new EditorView({
+          parent: ref.current as HTMLDivElement,
+          state: EditorState.create({
+            doc: content.toString(),
+            extensions
+          })
+        });
 
-      // initializeLineHighlights(viewRef.current!, data.highlightedLines);
-      // setLangLoading(false);
-      // setLoading(false);
-    })();
+        set_loading(false);
+      })();
+    }
 
     return destroy_editor;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    code_block_id,
     awareness,
     content,
     destroy_editor,
     editor,
-    focus_editor,
+    make_editor_editable,
     node_key,
     undo_manager,
     theme_compartment,
     wrap_compartment,
-    language_compartment
+    language_compartment,
+    gutter_compartment
   ]);
 
   return (
-    <div className={styles["code-block"]}>
+    <div className={styles["code-block"]} id={code_block_id}>
       <div
         className={clsx(
           styles.container,
-          // Grid for overflowing the embed
           css["grid"],
           css["dashboard"],
           css["no-sidenav"]
@@ -289,64 +304,109 @@ const CodeBlockEditor = ({
           <div className={clsx(css["flex-center"], styles.header)}>
             <div className={clsx(css.flex, styles.info)}>
               <span className={clsx(css["flex-center"], styles.icon)}>
-                <TerminalIcon />
+                {read_only_ref.current ? (
+                  language_status === "loading" ? (
+                    <Spinner size={"sm"} />
+                  ) : language_status === "error" ? (
+                    <Tooltip content={"Unable to fetch the syntax highlighter"}>
+                      <WarningIcon />
+                    </Tooltip>
+                  ) : (
+                    <TerminalIcon />
+                  )
+                ) : (
+                  <TerminalIcon />
+                )}
               </span>
-              <Typography
-                className={clsx(styles.x, styles.title)}
-                color={"minor"}
-              >
-                Block title
-              </Typography>
+              <CodeBlockTitle
+                node_key={node_key}
+                read_only={read_only_ref.current}
+                title={title}
+              />
             </div>
-            <Divider orientation={"vertical"} />
             <div className={clsx(css["flex-center"], styles.actions)}>
-              <Select
-                onValueChange={update_language}
-                slot_props={{
-                  trigger: {
-                    className: clsx(styles.x, styles.select),
-                    "aria-label": "Change code block language"
-                  },
-                  value: {
-                    placeholder: "Language"
-                  }
-                }}
-                value={language || "none"}
-              >
-                <Option value={"none"}>None</Option>
-                {Object.entries(CODE_BLOCK_LANGUAGE_MAP).map(([key, value]) => (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                ))}
-              </Select>
-              <Divider orientation={"vertical"} />
-              <IconButton
-                className={clsx(styles.x, styles.action)}
-                variant={"ghost"}
-              >
-                <TextWrapIcon />
-              </IconButton>
-              <IconButton
-                className={clsx(styles.x, styles.action)}
-                variant={"ghost"}
-              >
-                <CopyIcon />
-              </IconButton>
-              {!read_only_ref.current && (
+              {read_only_ref.current ? (
+                language === null ||
+                !(language in CODE_BLOCK_LANGUAGE_MAP) ? null : (
+                  <>
+                    <Typography
+                      className={clsx(css["flex-center"], styles.language)}
+                      color={"minor"}
+                      level={"body2"}
+                    >
+                      {
+                        CODE_BLOCK_LANGUAGE_MAP[
+                          language as keyof typeof CODE_BLOCK_LANGUAGE_MAP
+                        ]
+                      }
+                    </Typography>
+                    <Divider orientation={"vertical"} />
+                  </>
+                )
+              ) : (
                 <>
-                  <Divider orientation={"vertical"} />
-                  <IconButton
-                    className={clsx(styles.x, styles.action)}
-                    variant={"ghost"}
+                  <Select
+                    onValueChange={update_language}
+                    render_trigger={(trigger): React.ReactElement => (
+                      <div
+                        className={clsx(
+                          css["flex-center"],
+                          styles["language-select"],
+                          language_status !== "loaded" &&
+                            styles[language_status]
+                        )}
+                      >
+                        {language_status === "loading" ? (
+                          <Spinner size={"sm"} />
+                        ) : language_status === "error" ? (
+                          <WarningIcon />
+                        ) : null}
+                        {trigger}
+                      </div>
+                    )}
+                    slot_props={{
+                      trigger: {
+                        className: clsx(styles.x, styles.select),
+                        "aria-label": "Change code block language"
+                      },
+                      value: {
+                        placeholder: "Language"
+                      }
+                    }}
+                    value={language || "none"}
                   >
-                    <SettingsIcon />
-                  </IconButton>
+                    <Option value={"none"}>None</Option>
+                    {Object.entries(CODE_BLOCK_LANGUAGE_MAP).map(
+                      ([key, value]) => (
+                        <Option key={key} value={key}>
+                          {value}
+                        </Option>
+                      )
+                    )}
+                  </Select>
+                  <Divider orientation={"vertical"} />
                 </>
               )}
+              <WrapLinesAction
+                view_ref={view_ref}
+                wrap_compartment={wrap_compartment}
+              />
+              <CopyCodeAction view_ref={view_ref} />
             </div>
           </div>
           <div className={styles.editor} ref={ref} />
+          {loading && (
+            <div
+              aria-hidden={"true"}
+              className={clsx(
+                css["flex-center"],
+                css["full-w"],
+                styles.skeleton
+              )}
+            >
+              <Spinner />
+            </div>
+          )}
         </div>
       </div>
       {/* Compensate for the absolute position of the editor element */}

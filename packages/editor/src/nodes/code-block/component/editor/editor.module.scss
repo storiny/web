@@ -52,7 +52,9 @@
 .info {
   flex-grow: 1;
   align-items: center;
-  padding-inline: 8px;
+  padding-inline: 12px;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .icon {
@@ -60,22 +62,39 @@
   --icon-stroke: var(--fg-muted);
 }
 
+/* Read-only language label */
+.language {
+  padding-inline: 12px;
+}
+
+.language-select {
+  white-space: nowrap;
+
+  &.loading,
+  &.error {
+    padding-left: 12px;
+  }
+
+  &.error {
+    --icon-size: 16px;
+    --icon-stroke: var(--lemon-500);
+  }
+}
+
 .actions {
   align-items: stretch;
+  border-left: 1px solid var(--divider);
 }
 
 .editor {
   width: 100%;
 }
 
-.x {
-  &.title {
-    font-size: 14.6px;
-    line-height: 19.8px;
-    cursor: pointer;
-    margin-left: 8px;
-  }
+.skeleton {
+  height: 300px;
+}
 
+.x {
   &.action,
   &.select {
     border-radius: 0;

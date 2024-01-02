@@ -1,10 +1,8 @@
 import { ExtensionStyles } from "../base";
 
-// TODO
-
 export const auto_link_extension_styles: ExtensionStyles = {
   /* eslint-disable prefer-snakecase/prefer-snakecase */
-  ".cm-linkIcon": {
+  ".cm-link-icon": {
     "& img": {
       display: "block",
       userSelect: "none"
