@@ -76,7 +76,6 @@ test.describe("html copy and paste", () => {
     await assert_html(
       page,
       html`
-        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
         <hr class="" contenteditable="false" data-lexical-decorator="true" />
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Text between HRs</span>
@@ -87,9 +86,9 @@ test.describe("html copy and paste", () => {
 
     await assert_selection(page, {
       anchor_offset: 16,
-      anchor_path: [2, 0, 0],
+      anchor_path: [1, 0, 0],
       focus_offset: 16,
-      focus_path: [2, 0, 0]
+      focus_path: [1, 0, 0]
     });
   });
 

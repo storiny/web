@@ -725,17 +725,17 @@ test.describe("text style", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.type("hello world");
 
-    await click(page, 'section[contenteditable="true"] > p', {
+    await click(page, "div[data-editor-content] > p", {
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       clickCount: 1,
       delay: 100
     });
-    await click(page, 'section[contenteditable="true"] > p', {
+    await click(page, "div[data-editor-content] > p", {
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       clickCount: 2,
       delay: 100
     });
-    await click(page, 'section[contenteditable="true"] > p', {
+    await click(page, "div[data-editor-content] > p", {
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       clickCount: 3,
       delay: 100
@@ -1126,7 +1126,53 @@ test.describe("text style", () => {
     await toggle_underline(page);
     await toggle_strikethrough(page);
     await toggle_code(page);
+
+    // With subscript
     await toggle_subscript(page);
+
+    expect(
+      await evaluate(
+        page,
+        () =>
+          // Floating
+          !!document.querySelector(
+            `[data-testid="floating-bold-toggle"][data-state="on"]`
+          ) &&
+          !!document.querySelector(
+            `[data-testid="floating-italic-toggle"][data-state="on"]`
+          ) &&
+          !!document.querySelector(
+            `[data-testid="floating-underline-toggle"][data-state="on"]`
+          ) &&
+          // Sidebar
+          !!document.querySelector(
+            `[data-testid="bold-toggle"][data-state="on"]`
+          ) &&
+          !!document.querySelector(
+            `[data-testid="italic-toggle"][data-state="on"]`
+          ) &&
+          !!document.querySelector(
+            `[data-testid="underline-toggle"][data-state="on"]`
+          ) &&
+          !!document.querySelector(
+            `[data-testid="strikethrough-toggle"][data-state="on"]`
+          ) &&
+          !!document.querySelector(
+            `[data-testid="code-toggle"][data-state="on"]`
+          ) &&
+          !!document.querySelector(
+            `[data-testid="superscript-toggle"][data-state="off"]`
+          ) &&
+          !!document.querySelector(
+            `[data-testid="subscript-toggle"][data-state="on"]`
+          )
+      )
+    ).toBeTruthy();
+
+    // Reset subscript
+    await toggle_subscript(page);
+
+    // With superscript
     await toggle_superscript(page);
 
     expect(
@@ -1163,7 +1209,7 @@ test.describe("text style", () => {
             `[data-testid="superscript-toggle"][data-state="on"]`
           ) &&
           !!document.querySelector(
-            `[data-testid="subscript-toggle"][data-state="on"]`
+            `[data-testid="subscript-toggle"][data-state="off"]`
           )
       )
     ).toBeTruthy();

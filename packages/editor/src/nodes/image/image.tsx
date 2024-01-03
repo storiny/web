@@ -226,7 +226,7 @@ export class ImageNode extends BlockNode {
   override decorate(): React.ReactElement {
     return (
       <ImageComponent
-        images={this.__images}
+        images={this.__images.slice(0, 3)}
         layout={this.__layout}
         node_key={this.getKey()}
         resizable={this.__layout === "fit"}

@@ -524,7 +524,9 @@ test.describe("tk", () => {
 
     // Convert to a heading
     await key_down_ctrl_or_meta(page);
+    await page.keyboard.down("Shift");
     await page.keyboard.press(EDITOR_SHORTCUTS.heading.key);
+    await page.keyboard.up("Shift");
     await key_up_ctrl_or_meta(page);
 
     await assert_html(

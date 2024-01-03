@@ -1,0 +1,10 @@
+.color-preview {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 0.5ch;
+  border-radius: var(--radius-xs);
+  outline: 1px solid var(--divider);
+  background-color: var(--color);
+  pointer-events: none;
+}

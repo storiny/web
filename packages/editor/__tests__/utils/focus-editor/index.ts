@@ -7,7 +7,7 @@ import { sleep } from "../sleep";
  * @param page Page
  */
 export const focus_editor = async (page: Page): Promise<void> => {
-  const selector = 'section[contenteditable="true"]';
+  const selector = "div[data-editor-content]";
   await page.waitForSelector('iframe[name="left"]');
   const left_frame = page.frame("left");
 

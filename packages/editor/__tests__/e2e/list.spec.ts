@@ -25,14 +25,14 @@ import {
 } from "../utils";
 
 /**
- * Converts the curernt node selection to paragraph
+ * Converts the current node selection to paragraph
  * @param page Page
  */
 const convert_to_paragraph = async (page: Page): Promise<void> => {
   await key_down_ctrl_or_meta(page);
-  await page.keyboard.down("Alt");
+  await page.keyboard.down("Shift");
   await page.keyboard.press(EDITOR_SHORTCUTS.paragraph.key);
-  await page.keyboard.up("Alt");
+  await page.keyboard.up("Shift");
   await key_up_ctrl_or_meta(page);
 };
 

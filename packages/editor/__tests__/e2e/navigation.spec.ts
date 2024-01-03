@@ -168,9 +168,9 @@ test.describe("keyboard navigation", () => {
     await type_paragraphs(page);
     await move_to_paragraph_beginning(page);
     await assert_selection(page, {
-      anchor_offset: 68,
+      anchor_offset: 0,
       anchor_path: [2, 0, 0],
-      focus_offset: 68,
+      focus_offset: 0,
       focus_path: [2, 0, 0]
     });
   });

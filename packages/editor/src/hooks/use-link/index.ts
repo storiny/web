@@ -7,7 +7,7 @@ import { link_atom } from "../../atoms";
 import { sanitize_url } from "../../utils/sanitize-url";
 
 /**
- * Hooks for using hyperlinks
+ * Hook for using hyperlinks
  */
 export const use_link = (): [boolean, (value?: string) => void] => {
   const link = use_atom_value(link_atom);

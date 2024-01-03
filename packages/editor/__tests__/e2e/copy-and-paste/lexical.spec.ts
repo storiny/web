@@ -211,7 +211,7 @@ test.describe("lexical copy and paste", () => {
     await assert_selection(page, {
       anchor_offset: 13,
       anchor_path: [1, 0, 0],
-      focus_offset: 0,
+      focus_offset: 6,
       focus_path: [0, 0, 0]
     });
 

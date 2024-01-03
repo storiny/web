@@ -64,20 +64,20 @@ const get_defaults = <Schema extends z.AnyZodObject>(
 
 // Schema to validate preferences stored in the browser (localStorage)
 const preferences_schema = z.object({
-  theme: /*                          */ z
+  theme: z
     .union([z.literal("system"), z.literal("light"), z.literal("dark")])
     .catch("system"),
-  show_appearance_alert: /*          */ z.boolean().catch(true),
-  show_accessibility_alert: /*       */ z.boolean().catch(true),
-  show_font_settings_notification: /**/ z.boolean().catch(true),
-  haptic_feedback: /*                */ z.boolean().catch(false),
-  reduced_motion: /*                 */ z
+  show_appearance_alert: z.boolean().catch(true),
+  show_accessibility_alert: z.boolean().catch(true),
+  show_font_settings_notification: z.boolean().catch(true),
+  haptic_feedback: z.boolean().catch(false),
+  reduced_motion: z
     .union([z.literal("system"), z.literal("enabled"), z.literal("disabled")])
     .catch("system"),
-  reading_font_size: /*              */ z
+  reading_font_size: z
     .union([z.literal("slim"), z.literal("regular"), z.literal("oversized")])
     .catch("regular"),
-  reading_font: /*                   */ z
+  reading_font: z
     .union([
       z.literal("satoshi"),
       z.literal("system"),
@@ -89,14 +89,16 @@ const preferences_schema = z.object({
       z.literal("source-serif")
     ])
     .catch("satoshi"),
-  code_font: /*                      */ z
+  code_font: z
     .union([
       z.literal("plex-mono"),
       z.literal("source-code-pro"),
       z.literal("system")
     ])
     .catch("system"),
-  enable_code_ligatures: /*          */ z.boolean().catch(false)
+  enable_code_ligatures: z.boolean().catch(false),
+  enable_code_wrapping: z.boolean().catch(false),
+  enable_code_gutters: z.boolean().catch(true)
 });
 
 export type PreferencesState = z.infer<typeof preferences_schema>;
@@ -187,6 +189,18 @@ export const preferences_slice = create_slice({
       state.enable_code_ligatures = action.payload;
     },
     /**
+     * Toggles the code line wrapping
+     */
+    toggle_code_wrapping: (state, action: PayloadAction<boolean>) => {
+      state.enable_code_wrapping = action.payload;
+    },
+    /**
+     * Toggles the code gutters
+     */
+    toggle_code_gutters: (state, action: PayloadAction<boolean>) => {
+      state.enable_code_gutters = action.payload;
+    },
+    /**
      * Toggles haptic feeback
      */
     toggle_haptic_feedback: (state, action: PayloadAction<boolean>) => {
@@ -211,7 +225,9 @@ const {
   set_reading_font_size,
   set_code_font,
   toggle_code_ligatures,
+  toggle_code_wrapping,
   toggle_haptic_feedback,
+  toggle_code_gutters,
   set_font_settings_notification_visibility
 } = preferences_slice.actions;
 
@@ -225,7 +241,9 @@ export {
   set_reduced_motion,
   set_theme,
   sync_to_browser,
+  toggle_code_gutters,
   toggle_code_ligatures,
+  toggle_code_wrapping,
   toggle_haptic_feedback
 };
 
@@ -403,6 +421,8 @@ export const add_preferences_listeners = (
       set_reading_font,
       set_reading_font_size,
       toggle_code_ligatures,
+      toggle_code_wrapping,
+      toggle_code_gutters,
       toggle_haptic_feedback
     ),
     effect: (_, listener_api) => {

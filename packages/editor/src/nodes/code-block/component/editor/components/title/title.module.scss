@@ -1,0 +1,21 @@
+.x {
+  &.title {
+    font-size: 14.6px;
+    line-height: 19.8px;
+    margin-left: 8px;
+    color: var(--fg-muted);
+
+    &.has-title {
+      color: var(--fg-minor);
+    }
+
+    &:not(.read-only) {
+      cursor: pointer;
+      appearance: none;
+      border: none;
+      outline: none;
+      text-decoration: none;
+      background: none;
+    }
+  }
+}
