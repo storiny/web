@@ -10,11 +10,11 @@ export const get_shortcut_slug = (shortcut: Shortcut): string => {
   const slug: string[] = [];
 
   if (shortcut.ctrl) {
-    slug.push(IS_APPLE ? "cmd" : "ctrl");
+    slug.push("mod");
   }
 
   if (shortcut.alt) {
-    slug.push(IS_APPLE ? "opt" : "alt");
+    slug.push(IS_APPLE ? "option" : "alt");
   }
 
   if (shortcut.shift) {

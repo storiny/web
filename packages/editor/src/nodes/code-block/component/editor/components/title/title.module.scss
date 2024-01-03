@@ -11,6 +11,11 @@
 
     &:not(.read-only) {
       cursor: pointer;
+      appearance: none;
+      border: none;
+      outline: none;
+      text-decoration: none;
+      background: none;
     }
   }
 }

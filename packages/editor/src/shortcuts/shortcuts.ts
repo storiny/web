@@ -44,9 +44,7 @@ const use_alignment_shortcut = (): void => {
       EDITOR_SHORTCUTS.center_align,
       EDITOR_SHORTCUTS.right_align,
       EDITOR_SHORTCUTS.justify_align
-    ]
-      .map(get_shortcut_slug)
-      .join(","),
+    ].map(get_shortcut_slug),
     (_, hotkeys_event) => {
       if (hotkeys_event.keys) {
         switch (hotkeys_event.keys[0]) {
@@ -88,9 +86,7 @@ const use_text_node_shortcut = (): void => {
       EDITOR_SHORTCUTS.numbered_list,
       EDITOR_SHORTCUTS.bulleted_list,
       EDITOR_SHORTCUTS.quote
-    ]
-      .map(get_shortcut_slug)
-      .join(","),
+    ].map(get_shortcut_slug),
     (_, hotkeys_event) => {
       if (hotkeys_event.keys) {
         switch (hotkeys_event.keys[0]) {
@@ -98,8 +94,10 @@ const use_text_node_shortcut = (): void => {
             format_paragraph();
             break;
           case EDITOR_SHORTCUTS.heading.key:
+            format_heading("h2");
+            break;
           case EDITOR_SHORTCUTS.subheading.key:
-            format_heading(hotkeys_event.shift ? "h3" : "h2");
+            format_heading("h3");
             break;
           case EDITOR_SHORTCUTS.bulleted_list.key:
             format_bulleted_list();
@@ -134,9 +132,7 @@ const use_text_style_shortcut = (): void => {
       EDITOR_SHORTCUTS.link,
       EDITOR_SHORTCUTS.subscript,
       EDITOR_SHORTCUTS.superscript
-    ]
-      .map(get_shortcut_slug)
-      .join(","),
+    ].map(get_shortcut_slug),
     (_, hotkeys_event) => {
       if (hotkeys_event.keys) {
         switch (hotkeys_event.keys[0]) {
@@ -167,9 +163,7 @@ const use_text_style_shortcut = (): void => {
 const use_indentation_shortcut = (): void => {
   const { indent, outdent } = use_indentation();
   use_hot_keys(
-    [EDITOR_SHORTCUTS.indent, EDITOR_SHORTCUTS.outdent]
-      .map(get_shortcut_slug)
-      .join(","),
+    [EDITOR_SHORTCUTS.indent, EDITOR_SHORTCUTS.outdent].map(get_shortcut_slug),
     (_, hotkeys_event) => {
       if (hotkeys_event.keys) {
         switch (hotkeys_event.keys[0]) {

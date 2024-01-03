@@ -22,7 +22,9 @@ import {
   focus_editor,
   html,
   initialize,
+  key_down_ctrl_or_alt,
   key_down_ctrl_or_meta,
+  key_up_ctrl_or_alt,
   paste_from_clipboard,
   sleep
 } from "../utils";
@@ -1236,7 +1238,9 @@ test.describe("link", () => {
 
     // Convert to a heading
     await key_down_ctrl_or_meta(page);
+    await page.keyboard.down("Shift");
     await page.keyboard.press(EDITOR_SHORTCUTS.heading.key);
+    await page.keyboard.up("Shift");
     await key_down_ctrl_or_meta(page);
 
     await assert_html(
@@ -1428,8 +1432,8 @@ test.describe("link", () => {
               insert_method === "paste:plain"
                 ? clipboardData.plain
                 : insert_method === "paste:html"
-                ? clipboardData.html
-                : clipboardData.lexical;
+                  ? clipboardData.html
+                  : clipboardData.lexical;
             await paste_from_clipboard(page, data);
           }
 
@@ -1503,8 +1507,8 @@ test.describe("link", () => {
               insert_method === "paste:plain"
                 ? clipboardData.plain
                 : insert_method === "paste:html"
-                ? clipboardData.html
-                : clipboardData.lexical;
+                  ? clipboardData.html
+                  : clipboardData.lexical;
             await paste_from_clipboard(page, data);
           }
 
@@ -1574,8 +1578,8 @@ test.describe("link", () => {
               insert_method === "paste:plain"
                 ? clipboardData.plain
                 : insert_method === "paste:html"
-                ? clipboardData.html
-                : clipboardData.lexical;
+                  ? clipboardData.html
+                  : clipboardData.lexical;
             await paste_from_clipboard(page, data);
           }
 
@@ -1650,8 +1654,8 @@ test.describe("link", () => {
               insert_method === "paste:plain"
                 ? clipboardData.plain
                 : insert_method === "paste:html"
-                ? clipboardData.html
-                : clipboardData.lexical;
+                  ? clipboardData.html
+                  : clipboardData.lexical;
             await paste_from_clipboard(page, data);
           }
 
@@ -1724,8 +1728,8 @@ test.describe("link", () => {
               insert_method === "paste:plain"
                 ? clipboardData.plain
                 : insert_method === "paste:html"
-                ? clipboardData.html
-                : clipboardData.lexical;
+                  ? clipboardData.html
+                  : clipboardData.lexical;
             await paste_from_clipboard(page, data);
           }
 
@@ -1798,8 +1802,8 @@ test.describe("link", () => {
               insert_method === "paste:plain"
                 ? clipboardData.plain
                 : insert_method === "paste:html"
-                ? clipboardData.html
-                : clipboardData.lexical;
+                  ? clipboardData.html
+                  : clipboardData.lexical;
             await paste_from_clipboard(page, data);
           }
 

@@ -1119,14 +1119,60 @@ test.describe("text style", () => {
             `[data-testid="subscript-toggle"][data-state="off"]`
           )
       )
-    ).toBeTrue();
+    ).toBeTruthy();
 
     await toggle_bold(page);
     await toggle_italic(page);
     await toggle_underline(page);
     await toggle_strikethrough(page);
     await toggle_code(page);
+
+    // With subscript
     await toggle_subscript(page);
+
+    expect(
+      await evaluate(
+        page,
+        () =>
+          // Floating
+          !!document.querySelector(
+            `[data-testid="floating-bold-toggle"][data-state="on"]`
+          ) &&
+          !!document.querySelector(
+            `[data-testid="floating-italic-toggle"][data-state="on"]`
+          ) &&
+          !!document.querySelector(
+            `[data-testid="floating-underline-toggle"][data-state="on"]`
+          ) &&
+          // Sidebar
+          !!document.querySelector(
+            `[data-testid="bold-toggle"][data-state="on"]`
+          ) &&
+          !!document.querySelector(
+            `[data-testid="italic-toggle"][data-state="on"]`
+          ) &&
+          !!document.querySelector(
+            `[data-testid="underline-toggle"][data-state="on"]`
+          ) &&
+          !!document.querySelector(
+            `[data-testid="strikethrough-toggle"][data-state="on"]`
+          ) &&
+          !!document.querySelector(
+            `[data-testid="code-toggle"][data-state="on"]`
+          ) &&
+          !!document.querySelector(
+            `[data-testid="superscript-toggle"][data-state="off"]`
+          ) &&
+          !!document.querySelector(
+            `[data-testid="subscript-toggle"][data-state="on"]`
+          )
+      )
+    ).toBeTruthy();
+
+    // Reset subscript
+    await toggle_subscript(page);
+
+    // With superscript
     await toggle_superscript(page);
 
     expect(
@@ -1163,9 +1209,9 @@ test.describe("text style", () => {
             `[data-testid="superscript-toggle"][data-state="on"]`
           ) &&
           !!document.querySelector(
-            `[data-testid="subscript-toggle"][data-state="on"]`
+            `[data-testid="subscript-toggle"][data-state="off"]`
           )
       )
-    ).toBeTrue();
+    ).toBeTruthy();
   });
 });
