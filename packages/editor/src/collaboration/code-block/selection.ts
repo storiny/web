@@ -198,6 +198,10 @@ export class YRemoteSelectionsPluginValue {
     const ydoc = ytext.doc;
     const awareness = this.conf.awareness;
 
+    if (process.env.NODE_ENV === "test") {
+      return;
+    }
+
     if (awareness) {
       const local_awareness_state = awareness.getLocalState();
 

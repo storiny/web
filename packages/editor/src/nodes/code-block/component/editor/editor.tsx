@@ -297,6 +297,8 @@ const CodeBlockEditor = ({
           css["dashboard"],
           css["no-sidenav"]
         )}
+        data-language={language || "none"}
+        data-status={loading ? "loading" : "loaded"}
         data-testid={"code-block-node"}
         ref={resize_observer_ref}
       >

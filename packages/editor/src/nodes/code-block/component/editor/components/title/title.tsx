@@ -79,6 +79,7 @@ const EditableTitle = ({
   const [element, , close_modal] = use_modal(
     ({ open_modal }) => (
       <Typography
+        as={"button"}
         className={clsx(
           css["ellipsis"],
           styles.x,
@@ -86,6 +87,7 @@ const EditableTitle = ({
           Boolean(title) && styles["has-title"]
         )}
         onClick={open_modal}
+        type={"button"}
       >
         {title || "Edit title"}
       </Typography>

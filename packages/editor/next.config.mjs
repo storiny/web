@@ -1,6 +1,7 @@
 /* eslint-disable prefer-snakecase/prefer-snakecase */
 
-import * as path from "path";
+import * as path from "node:path";
+
 import { fileURLToPath as file_url_to_path } from "url";
 
 const __dirname = path.dirname(file_url_to_path(import.meta.url));

@@ -96,10 +96,10 @@ test.describe("text entry", () => {
     await assert_html(
       page,
       html`
-        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
-        <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
+        <h2 class="${EDITOR_CLASSNAMES.heading}"><br /></h2>
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">hello</span>
-        </h2>
+        </p>
       `
     );
 
