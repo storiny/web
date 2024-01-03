@@ -152,7 +152,6 @@ const ReadingFontTypefacePreference = (): React.ReactElement => {
         className={clsx(
           common_styles.x,
           common_styles["radio-group"],
-          common_styles.wrap,
           typeface_styles.x,
           typeface_styles["radio-group"]
         )}

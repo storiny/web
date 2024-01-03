@@ -1,3 +1,5 @@
+@use "breakpoints";
+
 .svg {
   width: 100%;
   height: 100%;
@@ -7,11 +9,18 @@
 .item {
   --typeface-preview-fill: var(--fg-minor);
 
-  flex: 1;
-  min-width: 145px;
+  flex-basis: calc(25% - 12px);
 
   &.selected {
     --typeface-preview-fill: var(--fg-major);
+  }
+
+  @include breakpoints.media("<=tablet") {
+    flex-basis: calc(33.33% - 12px);
+  }
+
+  @include breakpoints.media("<=mobile") {
+    flex-basis: calc(50% - 12px);
   }
 }
 

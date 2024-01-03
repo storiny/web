@@ -217,6 +217,7 @@ const Splash = (props: StoryProps): React.ReactElement => {
         img_key={story.splash_id}
         slot_props={{
           image: {
+            loading: "lazy",
             sizes: [
               "(min-width: 800px) 320px",
               "(min-width: 650px) 256px",
