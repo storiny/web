@@ -198,7 +198,7 @@ export class YRemoteSelectionsPluginValue {
     const ydoc = ytext.doc;
     const awareness = this.conf.awareness;
 
-    if (process.env.NODE_ENV === "test") {
+    if (process.env.NEXT_PUBLIC_ENV === "test") {
       return;
     }
 
