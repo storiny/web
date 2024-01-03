@@ -1,8 +1,6 @@
 .item {
   --ligature-preview-fill: var(--fg-minor);
 
-  flex-grow: 1;
-
   &.selected {
     --ligature-preview-fill: var(--fg-major);
   }

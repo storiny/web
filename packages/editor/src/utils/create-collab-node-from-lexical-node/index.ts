@@ -24,7 +24,6 @@ import {
   $create_collab_text_node,
   CollabTextNode
 } from "../../collaboration/nodes/text";
-import { $is_code_block_node } from "../../nodes/code-block";
 
 /**
  * Creates a collab node from a lexical node

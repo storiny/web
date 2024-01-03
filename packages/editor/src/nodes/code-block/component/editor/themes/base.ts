@@ -32,7 +32,7 @@ export const extend_code_block_theme = ({
   const theme_options: ExtensionStyles = {
     /* eslint-disable prefer-snakecase/prefer-snakecase */
     "&": {
-      fontSize: "14px",
+      fontSize: "13px",
       backgroundColor: "var(--bg-body)",
       color: "var(--fg-major)",
       outline: "none"
