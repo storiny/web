@@ -129,7 +129,8 @@ const CodeBlockEditor = ({
         )
       });
     }
-  }, [theme, theme_compartment, loading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [theme, theme_compartment, view_ref.current]);
 
   // Listen for code gutter preference changes
   React.useEffect(() => {
@@ -142,7 +143,8 @@ const CodeBlockEditor = ({
         )
       });
     }
-  }, [enable_code_gutters, gutter_compartment, loading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enable_code_gutters, gutter_compartment, view_ref.current]);
 
   // Dynamically load the language support.
   React.useEffect(() => {
@@ -171,7 +173,8 @@ const CodeBlockEditor = ({
         });
       }
     }
-  }, [language, language_compartment, loading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language, language_compartment, view_ref.current]);
 
   React.useEffect(() => {
     if (mounted_ref.current) {
