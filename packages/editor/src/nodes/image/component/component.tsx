@@ -324,6 +324,7 @@ const ImageComponent = ({
                     rating={editable ? undefined : image.rating}
                     slot_props={{
                       image: {
+                        loading: "lazy",
                         sizes: get_image_sizes(layout, images.length, index),
                         // eslint-disable-next-line prefer-snakecase/prefer-snakecase
                         srcSet: [

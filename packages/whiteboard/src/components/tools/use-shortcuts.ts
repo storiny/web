@@ -5,7 +5,7 @@ import { tool_atom } from "../../atoms";
 import { Tool } from "../../constants";
 
 /**
- * Hooks for using and mutating a tool using its shortcut key
+ * Hook for using and mutating a tool using its shortcut key
  * @param tool Tool
  * @param key Shortcut key
  */
@@ -15,7 +15,7 @@ const use_tool_key = (tool: Tool, key: string): void => {
 };
 
 /**
- * Hooks for handling selection of tools using their shortcut keys
+ * Hook for handling selection of tools using their shortcut keys
  */
 export const use_shortcuts = (): void => {
   use_tool_key(Tool.SELECT, "v");

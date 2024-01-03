@@ -11,10 +11,10 @@ export const EDITOR_SHORTCUTS = {
   superscript /*  */: { key: ";", ctrl: true },
   subscript /*    */: { key: "'", ctrl: true },
   // Text nodes
-  paragraph /*    */: { key: "p", ctrl: true, alt: true },
-  heading /*      */: { key: "h", ctrl: true },
-  subheading /*   */: { key: "h", ctrl: true, shift: true },
-  quote /*        */: { key: "q", ctrl: true, shift: true },
+  paragraph /*    */: { key: "p", ctrl: true, shift: true },
+  heading /*      */: { key: "h", ctrl: true, shift: true },
+  subheading /*   */: { key: "g", ctrl: true, shift: true },
+  quote /*        */: { key: "w", ctrl: true },
   bulleted_list /**/: { key: "8", ctrl: true, shift: true },
   numbered_list /**/: { key: "7", ctrl: true, shift: true },
   // Alignment

@@ -7,6 +7,7 @@ export * from "./evaluate";
 export * from "./focus-editor";
 export * from "./html";
 export * from "./initialize";
+export * from "./insert-code-block";
 export * from "./insert-embed";
 export * from "./insert-horizontal-rule";
 export * from "./insert-image";

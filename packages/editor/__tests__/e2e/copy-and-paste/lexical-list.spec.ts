@@ -240,10 +240,10 @@ test.describe("lexical list copy and paste", () => {
         </p>
         <ul class="${EDITOR_CLASSNAMES.ul}">
           <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
-            <span data-lexical-text="true">three</span>
+            <span data-lexical-text="true">two</span>
           </li>
           <li value="2" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
-            <span data-lexical-text="true">two</span>
+            <span data-lexical-text="true">three</span>
           </li>
         </ul>
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -371,7 +371,7 @@ test.describe("lexical list copy and paste", () => {
     });
   });
 
-  test("can copy list items and them paste back into the list on an existing item", async ({
+  test("can copy list items and then paste them back into the list on an existing item", async ({
     page
   }) => {
     await page.keyboard.type("- one");
@@ -472,12 +472,15 @@ test.describe("lexical list copy and paste", () => {
             <span data-lexical-text="true">three</span>
           </li>
           <li value="4" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
-            <span data-lexical-text="true">fourthree</span>
-          </li>
-          <li value="5" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">four</span>
           </li>
+          <li value="5" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
+            <span data-lexical-text="true">three</span>
+          </li>
           <li value="6" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
+            <span data-lexical-text="true">four</span>
+          </li>
+          <li value="7" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">five</span>
           </li>
         </ul>
@@ -486,9 +489,9 @@ test.describe("lexical list copy and paste", () => {
 
     await assert_selection(page, {
       anchor_offset: 4,
-      anchor_path: [0, 4, 0, 0],
+      anchor_path: [0, 5, 0, 0],
       focus_offset: 4,
-      focus_path: [0, 4, 0, 0]
+      focus_path: [0, 5, 0, 0]
     });
   });
 

@@ -13,6 +13,7 @@ import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import DashboardTitle from "../../../dashboard-title";
 import DashboardWrapper from "../../../dashboard-wrapper";
 import SettingsAlert from "../alert";
+import CodeBlockPreference from "./code-block-preference";
 import CodeFontPreference from "./code-font-preference";
 import ReadingFontPreference from "./reading-font-preference";
 import ThemePreference from "./theme-preference";
@@ -48,6 +49,8 @@ const AppearanceSettingsClient = (): React.ReactElement => (
       <ReadingFontPreference />
       <Divider />
       <CodeFontPreference />
+      <Divider />
+      <CodeBlockPreference />
     </DashboardWrapper>
     <Spacer orientation={"vertical"} size={10} />
   </React.Fragment>

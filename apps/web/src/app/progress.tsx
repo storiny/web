@@ -12,9 +12,9 @@ NProgress.configure({
   /* eslint-disable prefer-snakecase/prefer-snakecase */
   showSpinner: false,
   trickle: true,
-  trickleSpeed: 150,
+  trickleSpeed: 260,
   minimum: 0.1,
-  easing: "linear",
+  easing: "ease-out",
   speed: 250,
   template: '<div class="bar" role="bar"><div class="peg"></div></div>'
   /* eslint-enable prefer-snakecase/prefer-snakecase */

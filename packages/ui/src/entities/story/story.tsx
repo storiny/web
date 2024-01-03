@@ -54,7 +54,7 @@ const get_story_url = (props: StoryProps): string => {
     return `/doc/${story.id}`;
   }
 
-  return `/${story.user?.username}/${story.slug}`;
+  return `/${story.user?.username || "view"}/${story.slug ?? story.id}`;
 };
 
 // Meta
@@ -217,6 +217,7 @@ const Splash = (props: StoryProps): React.ReactElement => {
         img_key={story.splash_id}
         slot_props={{
           image: {
+            loading: "lazy",
             sizes: [
               "(min-width: 800px) 320px",
               "(min-width: 650px) 256px",

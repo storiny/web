@@ -6,7 +6,7 @@ import React from "react";
 import { subscript_atom } from "../../atoms";
 
 /**
- * Hooks for using subscript text style
+ * Hook for using subscript text style
  */
 export const use_subscript = (): [boolean, () => void] => {
   const subscript = use_atom_value(subscript_atom);

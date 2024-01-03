@@ -7,8 +7,7 @@ import {
   NodeKey,
   NodeMap
 } from "lexical";
-import { AbstractType, XmlElement, XmlText } from "yjs";
-import { YMap } from "yjs/dist/src/internals";
+import { AbstractType, Map as YMap, XmlElement, XmlText } from "yjs";
 
 import { create_children_array } from "../../../utils/create-children-array";
 import { $create_collab_node_from_lexical_node } from "../../../utils/create-collab-node-from-lexical-node";

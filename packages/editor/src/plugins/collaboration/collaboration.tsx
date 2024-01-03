@@ -44,6 +44,7 @@ const CollaborationPlugin = ({
         user_id: user.id,
         role,
         color: get_user_color(user.username),
+        selection_color: get_user_color(user.username, undefined, 35),
         avatar_id: user.avatar_id,
         avatar_hex: user.avatar_hex,
         awareness_data

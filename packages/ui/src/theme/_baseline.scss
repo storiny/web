@@ -162,6 +162,7 @@ body {
   // Programming ligatures
   &.ligatures {
     font-variant-ligatures: contextual;
+    font-feature-settings: "liga" 0, "calt" 0;
   }
 
   // Reduced motion settings
