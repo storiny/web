@@ -502,15 +502,7 @@ async fn get(
     data: web::Data<AppState>,
     params: QsQuery<AuthRequest>,
     session: Session,
-    user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    // Redirect to the web server if already logged-in.
-    if user.is_some() {
-        return Ok(HttpResponse::Found()
-            .append_header((header::LOCATION, data.config.web_server_url.to_string()))
-            .finish());
-    }
-
     match handle_oauth_request(req, &data, &session, Some(&params), None, None).await {
         // Redirect to the web server location on successful login.
         Ok(is_first_login) => Ok(HttpResponse::Found()
@@ -556,16 +548,8 @@ async fn verify(
     req: HttpRequest,
     data: web::Data<AppState>,
     session: Session,
-    user: Option<Identity>,
     params: QsQuery<VerificationRequest>,
 ) -> Result<HttpResponse, AppError> {
-    // Redirect to the web server if already logged-in..
-    if user.is_some() {
-        return Ok(HttpResponse::Found()
-            .append_header((header::LOCATION, data.config.web_server_url.to_string()))
-            .finish());
-    }
-
     match handle_oauth_request(
         req,
         &data,
