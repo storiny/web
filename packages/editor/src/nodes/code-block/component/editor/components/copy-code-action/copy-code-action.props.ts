@@ -1,9 +1,8 @@
 import { EditorView } from "@codemirror/view";
-import React from "react";
 
 export interface CopyCodeActionProps {
   /**
-   * The editor view ref
+   * The editor view
    */
-  view_ref: React.RefObject<EditorView | null>;
+  view: EditorView | null;
 }

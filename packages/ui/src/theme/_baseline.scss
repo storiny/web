@@ -144,13 +144,13 @@ body {
 
   &:not(.footer) {
     & main[data-root="true"] {
-      padding-bottom: calc(var(--global-bottom-gutter, 0) + 124px);
+      padding-bottom: calc(var(--global-bottom-gutter, 0px) + 196px);
     }
   }
 
   &.footer {
     & footer[data-global-footer="true"] {
-      padding-bottom: calc(var(--global-bottom-gutter, 0) + 32px);
+      padding-bottom: calc(var(--global-bottom-gutter, 0px) + 32px);
     }
   }
 

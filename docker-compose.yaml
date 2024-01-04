@@ -31,12 +31,10 @@ services:
       /usr/bin/mc mb objstore/docs-84b42278;
       /usr/bin/mc mb objstore/uploads-ec0f63c5;
       /usr/bin/mc mb objstore/sitemaps-1fbc3def;
-      /usr/bin/mc mb objstore/assets-557c7e15;
       /usr/bin/mc anonymous set public objstore/base-3939361a;
       /usr/bin/mc anonymous set public objstore/docs-84b42278;
       /usr/bin/mc anonymous set public objstore/uploads-ec0f63c5;
       /usr/bin/mc anonymous set public objstore/sitemaps-1fbc3def;
-      /usr/bin/mc anonymous set public objstore/assets-557c7e15;
       exit 0;
       "
 

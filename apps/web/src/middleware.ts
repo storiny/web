@@ -64,11 +64,11 @@ export const middleware: NextMiddleware = (request) => {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const csp_header = `
     default-src 'self';
-    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${process.env.NEXT_PUBLIC_ASSETS_URL} ${CSP_SCRIPT_SRC};
-    style-src 'self' 'unsafe-inline' ${process.env.NEXT_PUBLIC_ASSETS_URL} ${CSP_STYLE_SRC};
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${CSP_SCRIPT_SRC};
+    style-src 'self' 'unsafe-inline' ${CSP_STYLE_SRC};
     frame-src 'self' ${process.env.NEXT_PUBLIC_DISCOVERY_URL} ${CSP_FRAME_SRC};
     img-src 'self' blob: data: *;
-    font-src 'self' ${process.env.NEXT_PUBLIC_ASSETS_URL};
+    font-src 'self';
     connect-src 'self' wss://realms.storiny.com *.storiny.com *.sentry.io;
     object-src 'none';
     base-uri 'self';

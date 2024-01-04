@@ -46,6 +46,10 @@ const UserWithAction = (props: UserWithActionProps): React.ReactElement => {
             label: user.name,
             alt: `${user.name}'s avatar`
           }}
+          component_props={{
+            secondary_text: { ellipsis: true },
+            primary_text: { ellipsis: true }
+          }}
           primary_text={user.name}
           secondary_text={`@${user.username}`}
         />

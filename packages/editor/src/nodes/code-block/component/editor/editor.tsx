@@ -56,7 +56,7 @@ const CodeBlockEditor = ({
   const { height: container_height, ref: resize_observer_ref } =
     use_resize_observer();
   const ref = React.useRef<HTMLDivElement | null>(null);
-  const view_ref = React.useRef<EditorView | null>(null);
+  const [view, set_view] = React.useState<EditorView | null>(null);
   const mounted_ref = React.useRef<boolean>(false);
   const read_only_ref = React.useRef<boolean>(!editor.isEditable());
   const [loading, set_loading] = React.useState<boolean>(editor.isEditable());
@@ -113,43 +113,35 @@ const CodeBlockEditor = ({
    * Destroys the code editor
    */
   const destroy_editor = React.useCallback(() => {
-    if (view_ref.current) {
-      view_ref.current?.destroy();
+    if (view !== null && mounted_ref.current) {
+      view.destroy();
     }
-  }, []);
+  }, [view]);
 
   // Listen for theme changes
   React.useEffect(() => {
-    const view = view_ref.current;
-
-    if (view) {
+    if (view !== null) {
       view.dispatch({
         effects: theme_compartment.reconfigure(
           theme === "light" ? CODE_BLOCK_LIGHT_THEME : CODE_BLOCK_DARK_THEME
         )
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [theme, theme_compartment, view_ref.current]);
+  }, [theme, theme_compartment, view]);
 
   // Listen for code gutter preference changes
   React.useEffect(() => {
-    const view = view_ref.current;
-
-    if (view) {
+    if (view !== null) {
       view.dispatch({
         effects: gutter_compartment.reconfigure(
           enable_code_gutters ? gutter_extensions : []
         )
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enable_code_gutters, gutter_compartment, view_ref.current]);
+  }, [enable_code_gutters, gutter_compartment, view]);
 
   // Dynamically load the language support.
   React.useEffect(() => {
-    const view = view_ref.current;
-
     if (view !== null) {
       if (language !== null) {
         set_language_status("loading");
@@ -173,8 +165,7 @@ const CodeBlockEditor = ({
         });
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [language, language_compartment, view_ref.current]);
+  }, [language, language_compartment, view]);
 
   React.useEffect(() => {
     if (mounted_ref.current) {
@@ -199,13 +190,15 @@ const CodeBlockEditor = ({
         ...[EditorState.readOnly.of(true), EditorView.editable.of(false)]
       );
 
-      view_ref.current = new EditorView({
-        parent: ref.current as HTMLDivElement,
-        state: EditorState.create({
-          doc: content.toString(),
-          extensions
+      set_view(
+        new EditorView({
+          parent: ref.current as HTMLDivElement,
+          state: EditorState.create({
+            doc: content.toString(),
+            extensions
+          })
         })
-      });
+      );
     } else {
       (async (): Promise<void> => {
         set_loading(true);
@@ -262,13 +255,15 @@ const CodeBlockEditor = ({
           ]
         );
 
-        view_ref.current = new EditorView({
-          parent: ref.current as HTMLDivElement,
-          state: EditorState.create({
-            doc: content.toString(),
-            extensions
+        set_view(
+          new EditorView({
+            parent: ref.current as HTMLDivElement,
+            state: EditorState.create({
+              doc: content.toString(),
+              extensions
+            })
           })
-        });
+        );
 
         set_loading(false);
       })();
@@ -393,10 +388,10 @@ const CodeBlockEditor = ({
                 </>
               )}
               <WrapLinesAction
-                view_ref={view_ref}
+                view={view}
                 wrap_compartment={wrap_compartment}
               />
-              <CopyCodeAction view_ref={view_ref} />
+              <CopyCodeAction view={view} />
             </div>
           </div>
           <div className={styles.editor} ref={ref} />

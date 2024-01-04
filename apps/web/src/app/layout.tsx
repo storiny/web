@@ -61,7 +61,7 @@ const RootLayout = ({
         {/* Preload emoji spritesheet */}
         <link
           as="image"
-          href={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/raw/spritesheets/emoji-sprite.png`}
+          href={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/raw/spritesheets/emoji-sprite`}
           rel="preload"
         />
         {/* Preload background noise */}

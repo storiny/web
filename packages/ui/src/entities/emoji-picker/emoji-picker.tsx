@@ -112,7 +112,7 @@ const EmojiPicker = (props: EmojiPickerProps): React.ReactElement => {
             className={clsx(css["flex-center"], styles.icon)}
             style={
               {
-                "--spritesheet": `url("${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/raw/spritesheets/emoji-sprite.png")`
+                "--spritesheet": `url("${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/raw/spritesheets/emoji-sprite")`
               } as React.CSSProperties
             }
           >

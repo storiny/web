@@ -5,7 +5,7 @@ export const tooltip_extension_styles: ExtensionStyles = {
   "& .cm-tooltip": {
     "& > ul": {
       "& li": {
-        fontFamily: "var(--font-monospace)",
+        fontFamily: "var(--font-code, var(--font-monospace))",
         fontSize: "12px",
         paddingBlock: "3px !important",
         borderRadius: "var(--radius-sm)",

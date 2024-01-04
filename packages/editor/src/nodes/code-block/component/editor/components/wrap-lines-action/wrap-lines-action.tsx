@@ -12,7 +12,7 @@ import styles from "../../editor.module.scss";
 import { WrapLinesActionProps } from "./wrap-lines-action.props";
 
 const WrapLinesAction = ({
-  view_ref,
+  view,
   wrap_compartment
 }: WrapLinesActionProps): React.ReactElement => {
   const wrap_lines_preference = use_app_selector(
@@ -23,16 +23,14 @@ const WrapLinesAction = ({
   );
 
   React.useEffect(() => {
-    const view = view_ref.current;
-
-    if (view) {
+    if (view !== null) {
       view.dispatch({
         effects: wrap_compartment.reconfigure(
           wrap_lines ? EditorView.lineWrapping : []
         )
       });
     }
-  }, [view_ref, wrap_compartment, wrap_lines]);
+  }, [view, wrap_compartment, wrap_lines]);
 
   return (
     <Tooltip content={`${wrap_lines ? "Unwrap" : "Wrap"} lines`}>

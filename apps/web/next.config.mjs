@@ -13,7 +13,6 @@ import { webpack_config } from "./webpack.config.mjs";
 
 polyfill();
 
-const is_prod = process.env.NODE_ENV === "production";
 const __dirname = path.dirname(file_url_to_path(import.meta.url));
 
 const with_mdx = mdx({
@@ -60,11 +59,10 @@ const next_config = {
     windowHistorySupport: true
   },
   poweredByHeader: false,
-  reactStrictMode: true,
+  reactStrictMode: false,
   webpack: webpack_config,
   transpilePackages: ["@storiny/ui", "@storiny/editor", "@storiny/shared"],
   output: "standalone",
-  assetPrefix: is_prod ? "https://assets.storiny.com" : undefined,
   sentry: {
     disableServerWebpackPlugin: true,
     disableClientWebpackPlugin: true,

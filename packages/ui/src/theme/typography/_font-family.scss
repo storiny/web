@@ -12,9 +12,8 @@
   --font-system: -apple-system, "BlinkMacSystemFont", avenir next, avenir,
     segoe ui, helvetica neue, helvetica, "Cantarell", "Ubuntu", roboto, noto,
     arial, sans-serif;
-  --font-system-mono: "Menlo", "Consolas", "Monaco", "Liberation Mono",
+  --font-monospace: "Menlo", "Consolas", "Monaco", "Liberation Mono",
     "Lucida Console", monospace;
   --font-primary: var(--font-cabinet-grotesk), var(--font-secondary);
   --font-secondary: "Storiny Charfix", var(--font-satoshi), var(--font-system);
-  --font-monospace: var(--font-code), var(--font-system-mono);
 }

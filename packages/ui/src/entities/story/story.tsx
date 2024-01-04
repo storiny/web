@@ -227,7 +227,7 @@ const Splash = (props: StoryProps): React.ReactElement => {
             srcSet: [
               `${get_cdn_url(story.splash_id, ImageSize.W_256)} 256w`,
               `${get_cdn_url(story.splash_id, ImageSize.W_320)} 320w`,
-              `${get_cdn_url(story.splash_id, ImageSize.W_640)} 640w`
+              `${get_cdn_url(story.splash_id, ImageSize.W_860)} 860w`
             ].join(",")
           }
         }}
