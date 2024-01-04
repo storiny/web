@@ -64,11 +64,9 @@ pub async fn get_user_id(
 
     let user_id = rmp_serde::from_slice::<CacheResponse>(&result.unwrap())
         .map_err(|error| {
-            // `user_id` can be missing if the session was created through the oauth or external
-            // auth routes.
-            error!("no `user_id` key found in the session data: {error:?}");
+            error!("unable to deserialize the session data: {error:?}");
 
-            Status::not_found("Valid session not found")
+            Status::internal("Unable to deserialize the session state")
         })?
         .user_id;
 
