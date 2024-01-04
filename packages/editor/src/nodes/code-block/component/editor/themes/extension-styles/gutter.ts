@@ -73,7 +73,7 @@ export const gutter_extension_styles: ExtensionStyles = {
   /* eslint-disable prefer-snakecase/prefer-snakecase */
   "& .cm-gutter": {
     "& *": {
-      fontFamily: "var(--font-monospace)"
+      fontFamily: "var(--font-code, var(--font-monospace))"
     },
     userSelect: "none",
     ...empty_line_gutter_extension_styles,

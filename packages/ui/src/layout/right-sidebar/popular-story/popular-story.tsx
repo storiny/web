@@ -35,10 +35,14 @@ const PopularStory = (props: PopularStoryProps): React.ReactElement | null => {
           label: user.name,
           hex: user.avatar_hex
         }}
+        component_props={{
+          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+          primary_text: { style: { minWidth: 0 } }
+        }}
         primary_text={
           <span className={clsx(css["flex-center"], styles["primary-text"])}>
             <Link
-              className={css["t-medium"]}
+              className={clsx(css["t-medium"], css.ellipsis)}
               fixed_color
               href={`/${user.username}`}
               level={"body2"}

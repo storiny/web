@@ -97,8 +97,11 @@ export const extend_code_block_theme = ({
       outline: "none",
       padding: "6px 0"
     },
+    "& .cm-content ::selection": {
+      backgroundColor: "var(--bg-selection) !important"
+    },
     "&.cm-focused": {
-      "& .cm-selectionBackground, & .cm-selectionLayer .cm-selectionBackground, .cm-content ::selection":
+      "& .cm-selectionBackground, & .cm-selectionLayer .cm-selectionBackground":
         {
           backgroundColor: "var(--bg-selection) !important"
         },

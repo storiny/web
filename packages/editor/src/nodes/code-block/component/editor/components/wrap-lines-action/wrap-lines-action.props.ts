@@ -1,12 +1,11 @@
 import { Compartment } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
-import React from "react";
 
 export interface WrapLinesActionProps {
   /**
-   * The editor view ref
+   * The editor view
    */
-  view_ref: React.RefObject<EditorView | null>;
+  view: EditorView | null;
   /**
    * The wrap compartment
    */

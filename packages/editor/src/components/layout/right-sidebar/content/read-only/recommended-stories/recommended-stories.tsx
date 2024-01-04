@@ -45,11 +45,14 @@ const RecommendedStory = ({ story }: { story: Story }): React.ReactElement => {
           label: user?.name,
           hex: user?.avatar_hex
         }}
+        component_props={{
+          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+          primary_text: { style: { minWidth: 0 } }
+        }}
         primary_text={
           <span className={clsx(css["flex-center"], styles["primary-text"])}>
             <Link
-              className={css["t-medium"]}
-              ellipsis
+              className={clsx(css["t-medium"], css.ellipsis)}
               fixed_color
               href={`/${user?.username}`}
               level={"body2"}
@@ -67,9 +70,8 @@ const RecommendedStory = ({ story }: { story: Story }): React.ReactElement => {
             <NoSsr>
               <Typography
                 as={"time"}
-                className={clsx(css["t-minor"], css["t-medium"])}
+                className={clsx(css["t-minor"], css["t-medium"], css.ellipsis)}
                 dateTime={story.published_at!}
-                ellipsis
                 level={"body2"}
                 title={format_date(story.published_at!)}
               >

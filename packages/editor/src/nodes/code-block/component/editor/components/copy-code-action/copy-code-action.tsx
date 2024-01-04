@@ -11,18 +11,14 @@ import { copy_to_clipboard } from "~/utils/copy-to-clipboard";
 import styles from "../../editor.module.scss";
 import { CopyCodeActionProps } from "./copy-code-action.props";
 
-const CopyCodeAction = ({
-  view_ref
-}: CopyCodeActionProps): React.ReactElement => {
+const CopyCodeAction = ({ view }: CopyCodeActionProps): React.ReactElement => {
   const toast = use_toast();
 
   /**
    * Copies the code block contents to the clipboard.
    */
   const copy_code_content = React.useCallback(async () => {
-    const view = view_ref.current;
-
-    if (view) {
+    if (view !== null) {
       try {
         const content = view.state.doc.toString() ?? "";
         await copy_to_clipboard(content);
@@ -32,7 +28,7 @@ const CopyCodeAction = ({
         toast("Unable to copy the code", "error");
       }
     }
-  }, [toast, view_ref]);
+  }, [toast, view]);
 
   return (
     <Tooltip content={"Copy code content"}>
