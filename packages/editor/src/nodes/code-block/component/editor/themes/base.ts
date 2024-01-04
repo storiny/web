@@ -78,6 +78,9 @@ export const extend_code_block_theme = ({
       border: "none"
     },
     "& .cm-scroller": {
+      fontFamily: "var(--font-code, var(--font-monospace)) !important",
+      outline: "none",
+      padding: "6px 0",
       "&::-webkit-scrollbar": {
         height: "10px"
       },
@@ -93,9 +96,7 @@ export const extend_code_block_theme = ({
         backgroundColor: "var(--inverted-50)",
         borderTop: "1px solid var(--divider)",
         boxShadow: "none"
-      },
-      outline: "none",
-      padding: "6px 0"
+      }
     },
     "& .cm-content ::selection": {
       backgroundColor: "var(--bg-selection) !important"
