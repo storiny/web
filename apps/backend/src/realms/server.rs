@@ -235,9 +235,11 @@ async fn enter_realm(
 
         rmp_serde::from_slice::<UserSession>(&session_value)
             .map_err(|error| {
+                // This can happen if the session was created through the oauth or external
+                // auth routes.
                 error!("unable to deserialize the user session: {error:?}");
 
-                EnterRealmError::Internal
+                EnterRealmError::Unauthorized
             })?
             .user_id
     };
