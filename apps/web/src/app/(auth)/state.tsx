@@ -6,6 +6,8 @@ import {
 } from "little-state-machine";
 import React from "react";
 
+import NoSsr from "~/components/no-ssr";
+
 type SignupSegment =
   | "base"
   | "username"
@@ -27,10 +29,34 @@ export type AuthSegment =
   | "deletion"
   | "deactivated";
 
+const get_segment = (): AuthSegment => {
+  if (typeof window !== "undefined") {
+    const params = new URLSearchParams(window.location.search);
+    const segment = params.get("segment") || "";
+    const token = params.get("token") || "";
+
+    if (["reset-password", "login", "signup", "recover"].includes(segment)) {
+      if (segment === "reset-password" && token) {
+        return "reset_base";
+      }
+
+      if (["login", "signup", "recover"].includes(segment)) {
+        return segment === "login"
+          ? "login"
+          : segment === "recover"
+            ? "recovery_base"
+            : "signup_base";
+      }
+    }
+  }
+
+  return "base";
+};
+
 create_store(
   {
     auth: {
-      segment: "base"
+      segment: get_segment()
     },
     reset_password: { token: null },
     login_data: null,
@@ -57,7 +83,9 @@ const AuthState = ({
 }: {
   children: React.ReactNode;
 }): React.ReactElement => (
-  <StateMachineProvider>{children}</StateMachineProvider>
+  <NoSsr>
+    <StateMachineProvider>{children}</StateMachineProvider>
+  </NoSsr>
 );
 
 export default AuthState;
