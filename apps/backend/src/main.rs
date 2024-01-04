@@ -113,7 +113,10 @@ fn main() -> io::Result<()> {
                             // Do not send form error response.
                             message.starts_with("FormError") ||
                             // Do not send `NotFound` response inside a GRPC service.
-                            message.starts_with("status: NotFound")
+                            message.starts_with("status: NotFound") ||
+                            // Do not send external auth client error.
+                            message.starts_with("VerifyPassword") ||
+                            message.starts_with("InvalidPassword")
                             {
                                 return None;
                             }
