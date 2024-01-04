@@ -79,7 +79,9 @@ const Progress = (): null => {
           // Check if the anchor href is `#`.
           const is_empty_anchor = next_url.charAt(next_url.length - 1) === "#";
           const is_external_link =
-            (anchor as HTMLAnchorElement).target === "_blank";
+            (anchor as HTMLAnchorElement).target === "_blank" ||
+            next_url.startsWith("http://") ||
+            next_url.startsWith("https://");
           const is_mail = next_url.startsWith("mailto:");
           const is_blob = next_url.startsWith("blob:");
           const is_anchor = is_anchor_of_current_url(current_url, next_url);

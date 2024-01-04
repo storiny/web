@@ -23,7 +23,7 @@
     grid-column: 6 / -6;
     place-content: center;
     z-index: 1;
-    padding-block: 0;
+    padding-block: 0 !important;
 
     @include breakpoints.media("<=desktop") {
       grid-column: 4 / -4;
