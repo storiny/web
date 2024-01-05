@@ -16,11 +16,18 @@ const Page = async ({
   const logout = async (): Promise<void> => {
     "use server";
 
+    // Delete the cookie.
     cookies().set({
       name: SESSION_COOKIE_ID,
       value: "",
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+      httpOnly: true,
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       maxAge: 0,
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+      sameSite: "none",
+      domain: "storiny.com",
+      secure: true,
       path: "/"
     });
   };
