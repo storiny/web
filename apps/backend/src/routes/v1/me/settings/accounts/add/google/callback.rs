@@ -67,7 +67,7 @@ async fn handle_google_callback(
     session.remove("oauth_token");
 
     let code = AuthorizationCode::new(params.code.clone());
-    let token_res = (&data.oauth_client_map.google)
+    let token_res = (&data.oauth_client_map.google_alt)
         .exchange_code(code)
         .request_async(async_http_client)
         .await
