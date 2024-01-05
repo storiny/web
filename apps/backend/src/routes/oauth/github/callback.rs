@@ -46,6 +46,7 @@ struct GitHubTokenErrorResponse {
 }
 
 /// Asynchronous HTTP client. (GitHub shim)
+#[tracing::instrument(skip_all, err)]
 async fn github_async_http_client(
     request: oauth2::HttpRequest,
 ) -> Result<oauth2::HttpResponse, oauth2::reqwest::Error<reqwest::Error>> {
@@ -92,7 +93,8 @@ async fn github_async_http_client(
     })
 }
 
-async fn handle_oauth_request(
+#[tracing::instrument(skip_all, fields(user_id), err)]
+async fn handle_github_oauth_request(
     data: &web::Data<AppState>,
     session: &Session,
     params: &QsQuery<AuthRequest>,
@@ -150,13 +152,28 @@ async fn handle_oauth_request(
         .await
         .map_err(|_| ConnectionError::Other)?;
 
-    let provider_identifier = profile_res.login;
-    let display_name = profile_res.name;
+    handle_github_data(profile_res, data, &user_id).await
+}
+
+/// Handles GitHub profile response and saves the connection to the database.
+///
+/// * `github_data` - The GitHub profile endpoint response.
+/// * `data` - The shared app state.
+/// * `user_id` - The ID of the user who requested this flow.
+#[tracing::instrument(skip_all, fields(user_id), err)]
+async fn handle_github_data(
+    github_data: Response,
+    data: &web::Data<AppState>,
+    user_id: &i64,
+) -> Result<(), ConnectionError> {
+    let provider_identifier = github_data.login;
+    let display_name = github_data.name;
 
     // Save the connection.
     match sqlx::query(
         r#"
-INSERT INTO connections (provider, provider_identifier, display_name, user_id)
+INSERT INTO connections
+    (provider, provider_identifier, display_name, user_id)
 VALUES ($1, $2, $3, $4)
 "#,
     )
@@ -185,6 +202,12 @@ VALUES ($1, $2, $3, $4)
 }
 
 #[get("/oauth/github/callback")]
+#[tracing::instrument(
+    name = "GET /oauth/github/callback",
+    skip_all,
+    fields(user = user.id().ok()),
+    err
+)]
 async fn get(
     data: web::Data<AppState>,
     params: QsQuery<AuthRequest>,
@@ -194,7 +217,7 @@ async fn get(
     Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
         ConnectionTemplate {
             error: if let Ok(user_id) = user.id() {
-                handle_oauth_request(&data, &session, &params, user_id)
+                handle_github_oauth_request(&data, &session, &params, user_id)
                     .await
                     .err()
             } else {
@@ -210,4 +233,111 @@ async fn get(
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(get);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::test_utils::{
+        assert_response_body_text,
+        init_app_for_test,
+    };
+    use actix_web::{
+        test,
+        Responder,
+    };
+    use sqlx::{
+        PgPool,
+        Row,
+    };
+
+    #[get("/connect-github-account")]
+    async fn get(data: web::Data<AppState>, user: Identity) -> impl Responder {
+        let user_id = user.id().unwrap();
+
+        match handle_github_data(
+            Response {
+                login: "github_user".to_string(),
+                name: "GitHub user".to_string(),
+            },
+            &data,
+            &user_id,
+        )
+        .await
+        {
+            Ok(_) => HttpResponse::Ok().finish(),
+            Err(error) => match error {
+                ConnectionError::Duplicate => HttpResponse::BadRequest().body("duplicate"),
+                _ => HttpResponse::InternalServerError().finish(),
+            },
+        }
+    }
+
+    #[sqlx::test]
+    async fn can_connect_a_github_account(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/connect-github-account")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        // Connection should be present in the database.
+        let result = sqlx::query(
+            r#"
+SELECT EXISTS (
+    SELECT 1 FROM connections
+    WHERE
+        user_id = $1
+        AND provider = $2
+)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(Provider::Github as i16)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_connecting_a_duplicate_github_account(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Add connection for the user.
+        let result = sqlx::query(
+            r#"
+INSERT INTO connections
+    (provider, provider_identifier, display_name, user_id)
+VALUES ($1, $2, $3, $4)
+"#,
+        )
+        .bind(Provider::Github as i16)
+        .bind("0")
+        .bind("github_user")
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/connect-github-account")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_response_body_text(res, "duplicate").await;
+
+        Ok(())
+    }
 }

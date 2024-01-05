@@ -4,27 +4,21 @@ import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
 
-import RemoveAccount from "./remove-account";
+import AddAccount from "./add-account";
 
-const noop = (): void => undefined;
-
-describe("<RemoveAccount />", () => {
+describe("<AddAccount />", () => {
   it("renders validation messages", async () => {
     const mock_submit = jest.fn();
     const user = user_event.setup();
     render_test_with_provider(
-      <RemoveAccount
-        on_remove={noop}
-        on_submit={mock_submit}
-        vendor={"Apple"}
-      />,
+      <AddAccount on_submit={mock_submit} vendor={"Apple"} />,
       {
         logged_in: true
       }
     );
 
     await user.click(
-      screen.getByRole("button", { name: /remove/i }) // Open modal
+      screen.getByRole("button", { name: /add/i }) // Open modal
     );
 
     await user.type(screen.getByTestId("current-password-input"), " "); // The button is disabled until the form is dirty
@@ -38,18 +32,14 @@ describe("<RemoveAccount />", () => {
     const mock_submit = jest.fn();
     const user = user_event.setup();
     render_test_with_provider(
-      <RemoveAccount
-        on_remove={noop}
-        on_submit={mock_submit}
-        vendor={"Apple"}
-      />,
+      <AddAccount on_submit={mock_submit} vendor={"Apple"} />,
       {
         logged_in: true
       }
     );
 
     await user.click(
-      screen.getByRole("button", { name: /remove/i }) // Open modal
+      screen.getByRole("button", { name: /add/i }) // Open modal
     );
 
     await user.type(

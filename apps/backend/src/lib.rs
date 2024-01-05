@@ -17,6 +17,7 @@ use sqlx::{
 use user_agent_parser::UserAgentParser;
 
 // Aliases
+use crate::error::AddAccountError;
 pub use aws_sdk_s3::Client as S3Client;
 pub use aws_sdk_sesv2::Client as SesClient;
 pub use deadpool_redis::Pool as RedisPool;
@@ -49,20 +50,27 @@ pub struct IndexTemplate {
 #[derive(TemplateOnce)]
 #[template(path = "connection.stpl")]
 pub struct ConnectionTemplate {
-    provider_icon: String,
     provider_name: String,
+    provider_icon: String,
     error: Option<ConnectionError>,
 }
 
 /// Third-party login error template
-#[derive(TemplateOnce, Default)]
+#[derive(TemplateOnce)]
 #[template(path = "external_auth.stpl")]
 pub struct ExternalAuthTemplate {
     provider_name: String,
-    provider_id: String,
-    access_token: String,
-    error: Option<ExternalAuthError>,
-    is_password_invalid: bool,
+    provider_icon: String,
+    error: ExternalAuthError,
+}
+
+/// Add external account page template
+#[derive(TemplateOnce)]
+#[template(path = "add_account.stpl")]
+pub struct AddAccountTemplate {
+    provider_name: String,
+    provider_icon: String,
+    error: Option<AddAccountError>,
 }
 
 /// Application state
@@ -93,6 +101,8 @@ pub struct OAuthClientMap {
     discord: BasicClient,
     dribbble: BasicClient,
     google: BasicClient,
+    /// Google OAuth client for connecting Google accounts to existing Storiny accounts.
+    google_alt: BasicClient,
 }
 
 /// Returns the behavior version for AWS services.

@@ -5,11 +5,6 @@
     <title>Continue to Storiny</title>
     <meta content="initial-scale=1,width=device-width,shrink-to-fit=no" name="viewport">
     <meta content="noindex,nofollow" name="robots">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <meta content="<%= provider_id %>" name="provider_id">
-    <meta content="<%= access_token %>" name="access_token">
     <style>
         html,
         body {
@@ -43,7 +38,7 @@
             border: 0;
             color: #b3b3b3;
             vertical-align: baseline;
-            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
             font-size: 14px;
             line-height: 19px;
         }
@@ -60,77 +55,17 @@
             gap: 32px;
         }
 
-        .logo {
-            height: 118px;
+        svg:not(.x) {
+            width: 74px;
+            height: 74px;
+        }
+
+        svg:not(.x) path {
+            fill: #fcfcfc;
         }
 
         .account {
             font-weight: bold;
-        }
-
-        form {
-            width: 100%;
-            margin-top: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        input {
-            display: block;
-            border: none;
-            border-radius: 4px;
-            max-height: 36px;
-            max-width: 228px;
-            width: 100%;
-            padding: 8px 10px;
-            outline: 1px solid #4d4d4d;
-            font-size: 14px;
-        }
-
-        input:focus {
-            outline: 2px solid #ffffff;
-        }
-
-        .continue-button {
-            -webkit-tap-highlight-color: transparent;
-            border-radius: 4px;
-            height: 32px;
-            width: 32px;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #ffffff;
-        }
-
-        .continue-button:hover {
-            background-color: #9a9a9a;
-        }
-
-        .continue-button:disabled {
-            cursor: wait;
-            background-color: #4f4f4f;
-        }
-
-        .continue-button svg {
-            height: 18px;
-            width: 18px;
-        }
-
-        label {
-            border: 0;
-            padding: 0;
-            margin: 0;
-            position: absolute !important;
-            height: 1px;
-            width: 1px;
-            overflow: hidden;
-            clip-path: inset(50%);
-            white-space: nowrap;
         }
 
         @media (max-width: 600px) {
@@ -138,8 +73,9 @@
                 gap: 24px;
             }
 
-            .logo {
-                height: 96px;
+            svg:not(.x) {
+                width: 58px;
+                height: 58px;
             }
         }
     </style>
@@ -147,25 +83,28 @@
 <body dir="ltr">
 <main>
     <div aria-hidden="true" class="content">
-        <svg class="logo" fill="none" viewBox="0 0 132 108">
-            <path d="M109.94 98.38h9.94a9.75 9.75 0 0 0 9.75-9.75V59.38a9.75 9.75 0 0 0-9.75-9.76H86.72l2.03 3.5a29 29 0 0 1 21.19 45.26Z"
-                  fill="#414141"/>
-            <path d="M119.88 49.63a9.75 9.75 0 0 1 9.75 9.74v29.26a9.75 9.75 0 0 1-9.75 9.75h-9.94a29 29 0 0 0-21.2-45.25l-2.02-3.5m33.16 0H115m4.88 0H86.72m28.28 0H86.72m28.28 0v-19.5A19.5 19.5 0 0 0 81.45 16.6"
-                  stroke="#414141" stroke-width="4.3" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M70.85 16.26a19.4 19.4 0 1 0-11.9 28.49l13.6 23.56a19.4 19.4 0 1 0 8.9-5.15l-13.6-23.55c6-6.07 7.47-15.6 3-23.35ZM21.64 101.45a19.4 19.4 0 1 0 0-38.82 19.4 19.4 0 0 0 0 38.82Z"
-                  fill="#fcfcfc"/>
+        <svg viewBox="0 0 64 64"
+        >
+            <path
+                    d="M41.98 9.64a11.5 11.5 0 1 0-7.05 16.88l8.06 13.96a11.5 11.5 0 1 0 5.27-3.05l-8.05-13.96a11.5 11.5 0 0 0 1.77-13.83ZM12.82 60.12a11.5 11.5 0 1 0 0-23 11.5 11.5 0 0 0 0 23Z"
+            />
         </svg>
+        <svg class="x" viewBox="0 0 12 12" width="24" height="24">
+            <path d="M9 3 3 9m0-6 6 6" stroke="#f83f5e" stroke-width="1" stroke-linecap="round"
+                  stroke-linejoin="round"/>
+        </svg>
+        <%- provider_icon %>
     </div>
     <div>
-        <% if let Some(err) = error { %>
         <p class="error">
-            <% match err {
+            <% match error {
             error::ExternalAuthError::StateMismatch => { %>
             Login failed due to the request being tampered during the authentication window.
             <% } error::ExternalAuthError::InsufficientScopes => { %>
             Unable to log you in as you (or the provider) did not grant the required scopes.
-            <% } error::ExternalAuthError::InvalidAccessToken => { %>
-            Unable to log you in as you (or the provider) returned an invalid access token.
+            <% } error::ExternalAuthError::DuplicateEmail => { %>
+            The email associated with this <span class="account"><%= provider_name %></span> account is already used by
+            some other <span class="account">Storiny</span> account.
             <% } error::ExternalAuthError::UserSuspended => { %>
             The <span class="account">Storiny</span> account associated with your <span class="account"><%= provider_name %></span>
             account has been suspended.
@@ -180,38 +119,6 @@
             <% }
             } %>
         </p>
-        <% } else { %>
-        <p>
-            You need to enter the current password for your <span class="account">Storiny</span> account to continue.
-        </p>
-        <% if is_password_invalid { %>
-        <p id="invalid-password-hint" class="error" style="margin-top: 10px;">
-            Invalid password
-        </p>
-        <% } %>
-        <form id="service-form">
-            <label for="password">Current password</label>
-            <input aria-invalid="<%= is_password_invalid %>" id="password" minlength="6" maxlength="64"
-                   placeholder="Your current password" type="password" autocomplete="current-password"/>
-            <button class="continue-button" title="Continue" aria-label="Submit password" type="submit">
-                <svg aria-hidden="true" fill="none" viewBox="0 0 12 12">
-                    <path d="M2.5 6h7m0 0-3 3m3-3-3-3" stroke="#000000" stroke-width=".75" stroke-linecap="round"
-                          stroke-linejoin="round"/>
-                </svg>
-            </button>
-        </form>
-        <script>
-            document.getElementById("service-form").addEventListener("submit", (event) => {
-                event.preventDefault();
-
-                const provider_id = document.querySelector("meta[name='provider_id']").content;
-                const password = document.getElementById("password").value;
-                const access_token = document.querySelector("meta[name='access_token']").content;
-
-                window.location = `/v1/auth/external/${provider_id}/verification?access_token=${access_token}&password=${password}`;
-            });
-        </script>
-        <% } %>
     </div>
 </main>
 </body>

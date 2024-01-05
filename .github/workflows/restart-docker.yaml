@@ -1,4 +1,4 @@
-name: Restart Docker containers on EC2
+name: restart-docker-ec2
 
 on:
   workflow_run:
