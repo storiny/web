@@ -12,13 +12,18 @@
   align-items: stretch;
   margin-top: -12px; // Tackle padding
   position: sticky;
+  min-height: 42px;
+  max-height: 42px;
   top: var(--header-height);
   z-index: calc(var(--z-index-header) - 2);
   box-shadow: var(--shadow-sm);
   background-color: var(--bg-elevation-xs);
 
   &.with-page-title {
-    top: calc(var(--header-height) + 44px);
+    min-height: unset;
+    max-height: unset;
+    top: calc(var(--header-height) + 42px);
+    z-index: calc(var(--z-index-header) - 3);
   }
 }
 

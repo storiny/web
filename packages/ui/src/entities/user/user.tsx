@@ -77,7 +77,7 @@ const User = (props: UserProps): React.ReactElement => {
               )}
             </Typography>
             {is_mobile ? (
-              <Typography className={css["t-minor"]}>
+              <Typography className={css["t-minor"]} ellipsis>
                 @{user.username}
               </Typography>
             ) : (
