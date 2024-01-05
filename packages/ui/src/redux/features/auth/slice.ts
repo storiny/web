@@ -28,14 +28,20 @@ export const auth_initial_state: AuthState = {
 /**
  * Fetch the user object from the server
  */
-export const fetch_user = create_async_thunk<User>(
+export const fetch_user = create_async_thunk<User | null>(
   "auth/fetch_user",
   async () => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}/me`,
       { credentials: "include" }
     );
-    return res.json();
+
+    // User is not logged in.
+    if (res.status === 401) {
+      return null;
+    }
+
+    return await res.json();
   },
   {
     condition: (_, { getState: get_state }) => {
@@ -127,6 +133,7 @@ export const auth_slice = create_slice({
       .addCase(fetch_user.fulfilled, (state, action) => {
         state.status = "complete";
         state.user = action.payload;
+        state.logged_in = action.payload !== null;
       })
       .addCase(fetch_user.pending, (state) => {
         if (state.user === null) {
@@ -136,6 +143,7 @@ export const auth_slice = create_slice({
       .addCase(fetch_user.rejected, (state) => {
         state.status = "error";
         state.user = null;
+        state.logged_in = false;
       });
   }
 });

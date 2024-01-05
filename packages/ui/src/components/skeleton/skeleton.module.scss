@@ -17,4 +17,6 @@
 .circular {
   border-radius: 50%;
   aspect-ratio: 1 / 1;
+  min-width: var(--width, 0);
+  min-height: var(--height, 0);
 }
