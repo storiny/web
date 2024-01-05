@@ -5,7 +5,6 @@ import { use_app_router } from "~/common/utils";
 import { use_confirmation } from "~/components/confirmation";
 import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
 import FormSwitch from "~/components/form-switch";
-import Link from "~/components/link";
 import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
@@ -83,11 +82,7 @@ const PrivateAccount = ({
               <br />
               <br />
               When you switch to a private account, your stories will no longer
-              be included in the search results.{" "}
-              <Link href={"/guide/private-accounts"} underline={"always"}>
-                Learn more about private accounts
-              </Link>
-              .
+              be included in the search results.
             </React.Fragment>
           }
           label={"Private account"}
