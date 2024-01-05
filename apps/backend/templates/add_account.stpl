@@ -111,26 +111,33 @@
     <div>
         <% if let Some(err) = error { %>
         <p class="error">
-            Failed to connect your <span class="account"><%= provider_name %></span> account to <span
+            Failed to add your <span class="account"><%= provider_name %></span> account to <span
                 class="account">Storiny</span>
         </p>
         <p class="sub">
             <% match err {
-            routes::oauth::ConnectionError::StateMismatch => { %>
+            error::AddAccountError::StateMismatch => { %>
             The request was tampered during the authentication window.
-            <% } routes::oauth::ConnectionError::InsufficientScopes => { %>
+            <% } error::AddAccountError::InsufficientScopes => { %>
             You (or the provider) did not grant the required scopes.
-            <% } routes::oauth::ConnectionError::Duplicate => { %>
+            <% } error::AddAccountError::DuplicateAccount => { %>
             You already have a <span class="account"><%= provider_name %></span> account connected to your <span
                 class="account">Storiny</span>
             account.
+            <% } error::AddAccountError::DuplicateVendorID => { %>
+            This <span class="account"><%= provider_name %></span> account is already connected to some other <span
+                class="account">Storiny</span>
+            account.
+            <% } error::AddAccountError::DuplicateVendorEmail => { %>
+            The email associated with this <span class="account"><%= provider_name %></span> account is already used
+            by some other <span class="account">Storiny</span> account.
             <% } _ => {}
             } %>
         </p>
         <% } else { %>
         <p>
-            Connected your <span class="account"><%= provider_name %></span> account to <span
-                class="account">Storiny</span>
+            Added your <span class="account"><%= provider_name %></span> account to your <span
+                class="account">Storiny</span> account.
         </p>
         <p class="sub">
             You can close this window.

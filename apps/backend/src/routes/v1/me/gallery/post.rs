@@ -406,21 +406,63 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{
-        assert_toast_error_response,
-        exceed_resource_limit,
-        get_resource_limit,
-        init_app_for_test,
-        res_to_string,
-        RedisTestContext,
+    use crate::{
+        test_utils::{
+            assert_toast_error_response,
+            exceed_resource_limit,
+            get_redis_pool,
+            get_resource_limit,
+            get_s3_client,
+            init_app_for_test,
+            res_to_string,
+            RedisTestContext,
+            TestContext,
+        },
+        utils::delete_s3_objects::delete_s3_objects,
+        RedisPool,
     };
     use actix_http::StatusCode;
     use actix_web::test;
+    use futures_util::future;
     use sqlx::{
         PgPool,
         Row,
     };
     use storiny_macros::test_context;
+
+    struct LocalTestContext {
+        s3_client: S3Client,
+        redis_pool: RedisPool,
+    }
+
+    #[async_trait::async_trait]
+    impl TestContext for LocalTestContext {
+        async fn setup() -> LocalTestContext {
+            LocalTestContext {
+                s3_client: get_s3_client().await,
+                redis_pool: get_redis_pool(),
+            }
+        }
+
+        async fn teardown(self) {
+            future::join(
+                async {
+                    let redis_pool = &self.redis_pool;
+                    let mut conn = redis_pool.get().await.unwrap();
+                    let _: String = redis::cmd("FLUSHDB")
+                        .query_async(&mut conn)
+                        .await
+                        .expect("Failed to FLUSHDB");
+                },
+                async {
+                    delete_s3_objects(&self.s3_client, S3_UPLOADS_BUCKET, None, None)
+                        .await
+                        .unwrap()
+                },
+            )
+            .await;
+        }
+    }
 
     #[sqlx::test]
     async fn can_reject_an_invalid_photo(pool: PgPool) -> sqlx::Result<()> {
@@ -444,10 +486,10 @@ mod tests {
     mod serial {
         use super::*;
 
-        #[test_context(RedisTestContext)]
+        #[test_context(LocalTestContext)]
         #[sqlx::test]
         async fn can_upload_a_photo_from_pexels(
-            ctx: &mut RedisTestContext,
+            ctx: &mut LocalTestContext,
             pool: PgPool,
         ) -> sqlx::Result<()> {
             let mut conn = pool.acquire().await?;

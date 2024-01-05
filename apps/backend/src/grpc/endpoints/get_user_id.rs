@@ -20,6 +20,7 @@ use tonic::{
 use tracing::{
     debug,
     error,
+    warn,
 };
 
 #[derive(Debug, Deserialize)]
@@ -64,9 +65,11 @@ pub async fn get_user_id(
 
     let user_id = rmp_serde::from_slice::<CacheResponse>(&result.unwrap())
         .map_err(|error| {
-            error!("unable to deserialize the session data: {error:?}");
+            // This can happen when we manually insert a key value pair into the session while the
+            // user has not logged-in.
+            warn!("`user_id` is not present in the session data: {error:?}");
 
-            Status::internal("Unable to deserialize the session state")
+            Status::not_found("Valid session not found")
         })?
         .user_id;
 

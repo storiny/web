@@ -5,6 +5,8 @@ use crate::{
 
 pub mod icons;
 
+pub use google::GoogleOAuthResponse;
+
 mod discord;
 mod dribbble;
 mod github;
@@ -26,6 +28,13 @@ pub fn get_oauth_client_map(config: Config) -> OAuthClientMap {
             &config.api_server_url,
             &config.google_client_id,
             &config.google_client_secret,
+            "v1/auth/external/google/callback",
+        ),
+        google_alt: google::get_google_oauth_client(
+            &config.api_server_url,
+            &config.google_client_id,
+            &config.google_client_secret,
+            "v1/me/settings/accounts/add/google/callback",
         ),
         github: github::get_github_oauth_client(
             &config.api_server_url,

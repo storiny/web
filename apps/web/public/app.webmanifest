@@ -14,8 +14,8 @@
   "start_url": "/?utm_source=app",
   "id": "/?utm_source=app",
   "short_name": "Storiny",
-  "theme_color": "#000000",
-  "background_color": "#ffffff",
+  "theme_color": "#fafafa",
+  "background_color": "#17191c",
   "icons": [
     { "src": "/icons/icon-192.png", "type": "image/png", "sizes": "192x192" },
     { "src": "/icons/icon-512.png", "type": "image/png", "sizes": "512x512" },
