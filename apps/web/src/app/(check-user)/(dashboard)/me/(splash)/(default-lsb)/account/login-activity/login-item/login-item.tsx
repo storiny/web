@@ -23,7 +23,11 @@ import styles from "./login-item.module.scss";
 import { LoginItemProps } from "./login-item.props";
 
 const Map = dynamic(() => import("../map"), {
-  loading: dynamic_loader(),
+  loading: dynamic_loader(undefined, {
+    suspense_loader_props: {
+      className: css["full-h"]
+    }
+  }),
   ssr: false
 });
 
