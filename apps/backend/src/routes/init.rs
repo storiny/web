@@ -135,6 +135,8 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::notifications::read_all::init_routes(cfg);
     // Me - Settings - Accounts
     v1::me::settings::accounts::remove::init_routes(cfg);
+    v1::me::settings::accounts::add::google::init_routes(cfg);
+    v1::me::settings::accounts::add::google::callback::init_routes(cfg);
     // Me - Settings - Avatar
     v1::me::settings::avatar::init_routes(cfg);
     // Me - Settings - Banner

@@ -15,7 +15,14 @@ const Page = async ({
 }): Promise<React.ReactElement> => {
   const logout = async (): Promise<void> => {
     "use server";
-    cookies().delete(SESSION_COOKIE_ID);
+
+    cookies().set({
+      name: SESSION_COOKIE_ID,
+      value: "",
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+      maxAge: 0,
+      path: "/"
+    });
   };
 
   return (

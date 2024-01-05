@@ -1,6 +1,5 @@
 use crate::{
     constants::{
-        account_activity_type::AccountActivityType,
         notification_entity_type::NotificationEntityType,
         user_flag::UserFlag,
     },
@@ -9,6 +8,10 @@ use crate::{
         ExternalAuthError,
     },
     middlewares::identity::identity::Identity,
+    oauth::{
+        icons::google::GOOGLE_LOGO,
+        GoogleOAuthResponse,
+    },
     routes::oauth::AuthRequest,
     utils::{
         clear_user_sessions::clear_user_sessions,
@@ -37,18 +40,12 @@ use actix_web::{
     HttpResponse,
 };
 use actix_web_validator::QsQuery;
-use argon2::{
-    Argon2,
-    PasswordHash,
-    PasswordVerifier,
-};
 use oauth2::{
     reqwest::async_http_client,
     AuthorizationCode,
     TokenResponse,
 };
 use sailfish::TemplateOnce;
-use serde::Deserialize;
 use sqlx::Row;
 use std::net::IpAddr;
 use storiny_session::Session;
@@ -59,78 +56,58 @@ use tracing::{
 };
 use validator::Validate;
 
-/// A [Google OAuth V2 API](https://www.googleapis.com/oauth2/v2/userinfo) endpoint response.
-#[derive(Debug, Deserialize, Validate)]
-struct Response {
-    /// The name of the Google account.
-    #[validate(length(min = 3))]
-    name: String,
-    /// The email address of the Google account.
-    #[validate(email)]
-    #[validate(length(min = 3, max = 300))]
-    email: String,
-    /// The unique ID that identifies this Google account.
-    #[validate(length(min = 3, max = 256))]
-    id: String,
-}
-
 #[tracing::instrument(skip_all, err)]
 async fn handle_oauth_request(
     req: HttpRequest,
     data: &web::Data<AppState>,
     session: &Session,
-    params: Option<&QsQuery<AuthRequest>>,
-    access_token_param: Option<String>,
-    user_password: Option<String>,
+    params: &QsQuery<AuthRequest>,
 ) -> Result<bool, ExternalAuthError> {
-    let mut access_token = access_token_param.clone().unwrap_or_default();
     let reqwest_client = &data.reqwest_client;
 
-    if let Some(params) = params {
-        let oauth_token = session
-            .get::<String>("oauth_token")
-            .map_err(|error| ExternalAuthError::Other(error.to_string()))?
-            .ok_or(ExternalAuthError::Other(
-                "unable to extract the oauth token from the session".to_string(),
-            ))?;
+    let oauth_token = session
+        .get::<String>("oauth_token")
+        .map_err(|error| ExternalAuthError::Other(error.to_string()))?
+        .ok_or(ExternalAuthError::Other(
+            "unable to extract the oauth token from the session".to_string(),
+        ))?;
 
-        // Check whether the CSRF token has been tampered.
-        if oauth_token != params.state {
-            return Err(ExternalAuthError::StateMismatch);
-        }
-
-        session.remove("oauth_token");
-
-        let code = AuthorizationCode::new(params.code.clone());
-        let token_res = (&data.oauth_client_map.google)
-            .exchange_code(code)
-            .request_async(async_http_client)
-            .await
-            .map_err(|error| ExternalAuthError::Other(error.to_string()))?;
-
-        // Check if the `userinfo.email` and `userinfo.profile` scopes were granted, required for
-        // obtaining the account details.
-        let received_scopes = token_res
-            .scopes()
-            .ok_or(ExternalAuthError::InsufficientScopes)?
-            .iter()
-            .map(|scope| scope.as_str())
-            .collect::<Vec<_>>();
-
-        debug!(?received_scopes, "scopes received from Google");
-
-        if !vec![
-            "https://www.googleapis.com/auth/userinfo.email",
-            "https://www.googleapis.com/auth/userinfo.profile",
-        ]
-        .iter()
-        .all(|scope| received_scopes.contains(scope))
-        {
-            return Err(ExternalAuthError::InsufficientScopes);
-        }
-
-        access_token = token_res.access_token().secret().to_string();
+    // Check whether the CSRF token has been tampered.
+    if oauth_token != params.state {
+        return Err(ExternalAuthError::StateMismatch);
     }
+
+    session.remove("oauth_token");
+
+    let code = AuthorizationCode::new(params.code.clone());
+    let token_res = (&data.oauth_client_map.google)
+        .exchange_code(code)
+        .request_async(async_http_client)
+        .await
+        .map_err(|error| ExternalAuthError::Other(error.to_string()))?;
+
+    // Check if the `userinfo.email` and `userinfo.profile` scopes were granted, required for
+    // obtaining the account details.
+    let received_scopes = token_res
+        .scopes()
+        .ok_or(ExternalAuthError::InsufficientScopes)?
+        .iter()
+        .map(|scope| scope.as_str())
+        .collect::<Vec<_>>();
+
+    debug!(?received_scopes, "scopes received from Google");
+
+    if !vec![
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile",
+    ]
+    .iter()
+    .all(|scope| received_scopes.contains(scope))
+    {
+        return Err(ExternalAuthError::InsufficientScopes);
+    }
+
+    let access_token = token_res.access_token().secret().to_string();
 
     // Fetch the account details.
     let google_data = reqwest_client
@@ -139,14 +116,8 @@ async fn handle_oauth_request(
         .header(header::AUTHORIZATION, format!("Bearer {access_token}"))
         .send()
         .await
-        .map_err(|error| {
-            if access_token_param.is_some() {
-                ExternalAuthError::InvalidAccessToken
-            } else {
-                ExternalAuthError::Other(error.to_string())
-            }
-        })?
-        .json::<Response>()
+        .map_err(|err| ExternalAuthError::Other(err.to_string()))?
+        .json::<GoogleOAuthResponse>()
         .await
         .map_err(|err| ExternalAuthError::Other(err.to_string()))?;
 
@@ -155,95 +126,29 @@ async fn handle_oauth_request(
         .validate()
         .map_err(|err| ExternalAuthError::Other(err.to_string()))?;
 
-    handle_google_profile_data(google_data, req, data, session, access_token, user_password).await
+    handle_google_profile_data(google_data, req, data, session).await
 }
 
 /// Handles Google account profile data response. It creates a session if the user has previously
 /// signed-in using Google, otherwise inserts a new user with the data based on the Google
 /// account profile response into the database.
 ///
-/// If a user already exists with the email address received from Google, the user is redirected to
-/// the password verification page. This helps unwanted access to accounts that might have the same
-/// email address.
-///
 /// * `google_data` - The response from the Google OAuth API call.
 /// * `req` - The HTTP request.
 /// * `data` - The shared API server data.
 /// * `session` - The session instance for the user.
-/// * `access_token` - The access token received from Google.
-/// * `user_password` - The password provided by the user for their Storiny account.
 async fn handle_google_profile_data(
-    google_data: Response,
+    google_data: GoogleOAuthResponse,
     req: HttpRequest,
     data: &web::Data<AppState>,
     session: &Session,
-    access_token: String,
-    user_password: Option<String>,
 ) -> Result<bool, ExternalAuthError> {
-    if let Some(provided_password) = user_password {
-        // Verify the password sent by the user.
-        match sqlx::query(
-            r#"
-SELECT password FROM users
-WHERE
-    email = $1
-    AND password IS NOT NULL
-"#,
-        )
-        .bind(&google_data.email)
-        .fetch_one(&data.db_pool)
-        .await
-        {
-            Ok(user) => match PasswordHash::new(&user.get::<String, _>("password")) {
-                Ok(hash) => {
-                    match Argon2::default().verify_password(&provided_password.as_bytes(), &hash) {
-                        Ok(_) => {}
-                        Err(_) => return Err(ExternalAuthError::InvalidPassword),
-                    }
-                }
-                Err(err) => return Err(ExternalAuthError::Other(err.to_string())),
-            },
-            Err(error) => {
-                // Skip the password verification process if the user with the provided email does
-                // not exist or has not set a password.
-                if !matches!(error, sqlx::Error::RowNotFound) {
-                    return Err(ExternalAuthError::Other(error.to_string()));
-                }
-            }
-        }
-    } else {
-        // Request to verify the user's password if the user already exist with the email address
-        // received from Google.
-        match sqlx::query(
-            r#"
-SELECT 1 FROM users
-WHERE
-    email = $1
-    AND password IS NOT NULL
-"#,
-        )
-        .bind(&google_data.email)
-        .fetch_one(&data.db_pool)
-        .await
-        {
-            Ok(_) => {
-                return Err(ExternalAuthError::VerifyPassword(access_token));
-            }
-            Err(error) => {
-                if !matches!(error, sqlx::Error::RowNotFound) {
-                    return Err(ExternalAuthError::Other(error.to_string()));
-                }
-            }
-        }
-    }
-
     let pg_pool = &data.db_pool;
     let mut txn = pg_pool
         .begin()
         .await
         .map_err(|err| ExternalAuthError::Other(err.to_string()))?;
-    // The upsert type (`insert` or `update`)
-    let mut upsert_type: Option<&str> = None;
+
     let mut is_first_login = false;
 
     let user_data = match sqlx::query(
@@ -268,57 +173,16 @@ WHERE login_google_id = $1
             result.get::<Option<OffsetDateTime>, _>("deleted_at"),
         ),
         Err(err) => {
-            // Upsert a user
             if matches!(err, sqlx::Error::RowNotFound) {
-                let upsert_result = sqlx::query(
+                is_first_login = true;
+
+                let insert_result = sqlx::query(
                     r#"
-WITH inserted_user AS (
-    INSERT INTO users (name, username, email, login_google_id, last_login_at)
-    VALUES ($1, $2, $3, $4, NOW())
-    ON CONFLICT (email) DO NOTHING
-    RETURNING
-        id,
-        public_flags,
-        deleted_at,
-        deactivated_at
-),
-updated_user AS (
-    UPDATE users
-    SET
-        login_google_id = $4,
-        last_login_at = NOW()
-    WHERE
-        email = $3
-        AND NOT EXISTS (SELECT 1 FROM inserted_user)
-    RETURNING 
-        id,
-        public_flags,
-        deleted_at,
-        deactivated_at
-)
-SELECT 
-    COALESCE (
-        (SELECT id FROM updated_user),
-        (SELECT id FROM inserted_user)
-    ) AS "id",
-    COALESCE (
-        (SELECT public_flags FROM updated_user),
-        (SELECT public_flags FROM inserted_user)
-    ) AS "public_flags",
-    COALESCE (
-        (SELECT deleted_at FROM updated_user),
-        (SELECT deleted_at FROM inserted_user)
-    ) AS "deleted_at",
-    COALESCE (
-        (SELECT deactivated_at FROM updated_user),
-        (SELECT deactivated_at FROM inserted_user)
-    ) AS "deactivated_at",
-    CASE WHEN
-        EXISTS (
-            SELECT 1 FROM updated_user
-        )
-    THEN TRUE ELSE FALSE
-    END AS "has_updated"
+INSERT INTO users (name, username, email, login_google_id, last_login_at)
+VALUES ($1, $2, $3, $4, NOW())
+RETURNING
+    id,
+    public_flags
 "#,
                 )
                 .bind(truncate_str(&google_data.name, 32))
@@ -335,21 +199,25 @@ SELECT
                 .bind(&google_data.email)
                 .bind(&google_data.id)
                 .fetch_one(&mut *txn)
-                .await?;
+                .await
+                .map_err(|error| {
+                    if let Some(db_err) = error.as_database_error() {
+                        let error_kind = db_err.kind();
 
-                if upsert_result.get::<bool, _>("has_updated") {
-                    upsert_type = Some("update");
-                } else {
-                    is_first_login = true;
+                        // Email is already used by some other Storiny account.
+                        if matches!(error_kind, sqlx::error::ErrorKind::UniqueViolation) {
+                            return ExternalAuthError::DuplicateEmail;
+                        }
+                    }
 
-                    upsert_type = Some("insert")
-                }
+                    return ExternalAuthError::Other(error.to_string());
+                })?;
 
                 (
-                    upsert_result.get::<i64, _>("id"),
-                    upsert_result.get::<i32, _>("public_flags"),
-                    upsert_result.get::<Option<OffsetDateTime>, _>("deactivated_at"),
-                    upsert_result.get::<Option<OffsetDateTime>, _>("deleted_at"),
+                    insert_result.get::<i64, _>("id"),
+                    insert_result.get::<i32, _>("public_flags"),
+                    None,
+                    None,
                 )
             } else {
                 return Err(ExternalAuthError::Other(err.to_string()));
@@ -383,7 +251,7 @@ SELECT
     let mut client_device_value = "Unknown device".to_string();
     let mut client_location_value: Option<String> = None;
 
-    // Insert additional data to the session.
+    // Insert additional data into the session.
     {
         if let Some(ip) = req.connection_info().realip_remote_addr() {
             if let Ok(parsed_ip) = ip.parse::<IpAddr>() {
@@ -409,22 +277,7 @@ SELECT
         }
     }
 
-    if upsert_type == Some("update") {
-        // Insert an account activity for the user.
-        sqlx::query(
-            r#"
-INSERT INTO account_activities (type, description, user_id)
-VALUES ($2, 'You added <m>Google</m> as a third-party login method.', $1)
-"#,
-        )
-        .bind(&user_id)
-        .bind(AccountActivityType::ThirdPartyLogin as i16)
-        .execute(&mut *txn)
-        .await?;
-    }
-    // Do not insert a login notification when a new user is created. `is_none` signifies that the
-    // user was neither updated nor inserted.
-    else if upsert_type.is_none() {
+    if !is_first_login {
         // Update the `last_login_at` column and insert a login notification for the user.
         sqlx::query(
             r#"
@@ -495,15 +348,15 @@ SELECT
     Ok(is_first_login)
 }
 
-#[tracing::instrument(name = "GET /v1/auth/external/google/callback", skip_all, err)]
 #[get("/v1/auth/external/google/callback")]
+#[tracing::instrument(name = "GET /v1/auth/external/google/callback", skip_all, err)]
 async fn get(
     req: HttpRequest,
     data: web::Data<AppState>,
     params: QsQuery<AuthRequest>,
     session: Session,
 ) -> Result<HttpResponse, AppError> {
-    match handle_oauth_request(req, &data, &session, Some(&params), None, None).await {
+    match handle_oauth_request(req, &data, &session, &params).await {
         // Redirect to the web server location on successful login.
         Ok(is_first_login) => Ok(HttpResponse::Found()
             .append_header((
@@ -517,64 +370,9 @@ async fn get(
             .finish()),
         Err(error) => Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
             ExternalAuthTemplate {
-                access_token: match &error {
-                    ExternalAuthError::VerifyPassword(access_token) => access_token.to_string(),
-                    _ => "".to_string(),
-                },
-                provider_id: "google".to_string(),
                 provider_name: "Google".to_string(),
-                error: if matches!(error, ExternalAuthError::VerifyPassword(_)) {
-                    None
-                } else {
-                    Some(error)
-                },
-                ..Default::default()
-            }
-            .render_once()
-            .unwrap(),
-        )),
-    }
-}
-
-#[derive(Deserialize, Validate)]
-struct VerificationRequest {
-    access_token: String,
-    password: String,
-}
-
-#[get("/v1/auth/external/google/verification")]
-#[tracing::instrument(name = "GET /v1/auth/external/google/verification", skip_all, err)]
-async fn verify(
-    req: HttpRequest,
-    data: web::Data<AppState>,
-    session: Session,
-    params: QsQuery<VerificationRequest>,
-) -> Result<HttpResponse, AppError> {
-    match handle_oauth_request(
-        req,
-        &data,
-        &session,
-        None,
-        Some((&params.access_token).to_string()),
-        Some((&params.password).to_string()),
-    )
-    .await
-    {
-        // Redirect to the web server location on successful login.
-        Ok(_) => Ok(HttpResponse::Found()
-            .append_header((header::LOCATION, data.config.web_server_url.to_string()))
-            .finish()),
-        Err(error) => Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
-            ExternalAuthTemplate {
-                access_token: (&params.access_token).to_string(),
-                provider_id: "google".to_string(),
-                provider_name: "Google".to_string(),
-                is_password_invalid: matches!(error, ExternalAuthError::InvalidPassword),
-                error: if matches!(error, ExternalAuthError::InvalidPassword) {
-                    None
-                } else {
-                    Some(error)
-                },
+                provider_icon: GOOGLE_LOGO.to_string(),
+                error,
             }
             .render_once()
             .unwrap(),
@@ -584,7 +382,6 @@ async fn verify(
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(get);
-    cfg.service(verify);
 }
 
 #[cfg(test)]
@@ -598,19 +395,12 @@ mod tests {
         test,
         Responder,
     };
-    use argon2::{
-        password_hash::{
-            rand_core::OsRng,
-            SaltString,
-        },
-        PasswordHasher,
-    };
     use sqlx::PgPool;
 
     #[get("/google-login")]
-    async fn post(req: HttpRequest, data: web::Data<AppState>, session: Session) -> impl Responder {
+    async fn get(req: HttpRequest, data: web::Data<AppState>, session: Session) -> impl Responder {
         match handle_google_profile_data(
-            Response {
+            GoogleOAuthResponse {
                 id: "1".to_string(),
                 email: "someone@example.com".to_string(),
                 name: "Test Google account".to_string(),
@@ -618,8 +408,6 @@ mod tests {
             req,
             &data,
             &session,
-            "".to_string(),
-            None,
         )
         .await
         {
@@ -632,51 +420,8 @@ mod tests {
                 ExternalAuthError::UserSuspended => {
                     HttpResponse::BadRequest().body("user_suspended")
                 }
-                ExternalAuthError::VerifyPassword(_) => {
-                    HttpResponse::BadRequest().body("verify_password")
-                }
-                ExternalAuthError::InvalidPassword => {
-                    HttpResponse::BadRequest().body("invalid_password")
-                }
-                _ => HttpResponse::InternalServerError().finish(),
-            },
-        }
-    }
-
-    #[get("/google-login-with-password")]
-    async fn post_with_password(
-        req: HttpRequest,
-        data: web::Data<AppState>,
-        session: Session,
-    ) -> impl Responder {
-        match handle_google_profile_data(
-            Response {
-                id: "1".to_string(),
-                email: "someone@example.com".to_string(),
-                name: "Test Google account".to_string(),
-            },
-            req,
-            &data,
-            &session,
-            "".to_string(),
-            Some("some_password".to_string()),
-        )
-        .await
-        {
-            Ok(_) => HttpResponse::Ok().finish(),
-            Err(error) => match error {
-                ExternalAuthError::UserDeleted => HttpResponse::BadRequest().body("user_deleted"),
-                ExternalAuthError::UserDeactivated => {
-                    HttpResponse::BadRequest().body("user_deactivated")
-                }
-                ExternalAuthError::UserSuspended => {
-                    HttpResponse::BadRequest().body("user_suspended")
-                }
-                ExternalAuthError::VerifyPassword(_) => {
-                    HttpResponse::BadRequest().body("verify_password")
-                }
-                ExternalAuthError::InvalidPassword => {
-                    HttpResponse::BadRequest().body("invalid_password")
+                ExternalAuthError::DuplicateEmail => {
+                    HttpResponse::BadRequest().body("duplicate_email")
                 }
                 _ => HttpResponse::InternalServerError().finish(),
             },
@@ -686,7 +431,7 @@ mod tests {
     #[sqlx::test]
     async fn can_login_using_google(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, _, _) = init_app_for_test(post, pool, false, false, None).await;
+        let (app, _, _) = init_app_for_test(get, pool, false, false, None).await;
 
         let req = test::TestRequest::get().uri("/google-login").to_request();
         let res = test::call_service(&app, req).await;
@@ -754,7 +499,7 @@ WHERE login_google_id = $1
     #[sqlx::test]
     async fn can_login_using_google_for_an_existing_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
+        let (app, _, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Update `login_google_id` for the current user.
         let result = sqlx::query(
@@ -827,190 +572,6 @@ WHERE id = $1
         Ok(())
     }
 
-    #[sqlx::test]
-    async fn can_update_login_google_id_for_an_existing_user_without_password(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
-
-        let req = test::TestRequest::get().uri("/google-login").to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // User should get updated in the database.
-        let result = sqlx::query(
-            r#"
-SELECT login_google_id
-FROM users
-WHERE id = $1
-"#,
-        )
-        .bind(user_id.unwrap())
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(result.get::<Option<String>, _>("login_google_id").is_some());
-
-        // Should insert an account activity.
-        let result = sqlx::query(
-            r#"
-SELECT EXISTS (
-    SELECT 1
-    FROM account_activities
-    WHERE type = $1
-)
-"#,
-        )
-        .bind(AccountActivityType::ThirdPartyLogin as i16)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(result.get::<bool, _>("exists"));
-
-        Ok(())
-    }
-
-    #[sqlx::test]
-    async fn can_reject_a_new_google_login_for_an_existing_user_with_no_provided_password(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
-
-        // Add a password for the user.
-        let result = sqlx::query(
-            r#"
-UPDATE users
-SET password = $1
-WHERE id = $2
-"#,
-        )
-        .bind("some_bad_password")
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        let req = test::TestRequest::get().uri("/google-login").to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_client_error());
-        assert_response_body_text(res, "verify_password").await;
-
-        Ok(())
-    }
-
-    #[sqlx::test]
-    async fn can_reject_a_new_google_login_for_an_existing_user_with_invalid_password(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, _, user_id) =
-            init_app_for_test(post_with_password, pool, true, false, None).await;
-
-        let salt = SaltString::generate(&mut OsRng);
-        let password_hash = Argon2::default()
-            .hash_password("some_other_password".as_bytes(), &salt)
-            .unwrap()
-            .to_string();
-
-        // Add a different password for the user.
-        let result = sqlx::query(
-            r#"
-UPDATE users
-SET password = $1
-WHERE id = $2
-"#,
-        )
-        .bind(password_hash)
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        let req = test::TestRequest::get()
-            .uri("/google-login-with-password")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_client_error());
-        assert_response_body_text(res, "invalid_password").await;
-
-        Ok(())
-    }
-
-    #[sqlx::test]
-    async fn can_update_login_google_id_for_an_existing_user_with_password(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, _, user_id) =
-            init_app_for_test(post_with_password, pool, true, false, None).await;
-
-        let salt = SaltString::generate(&mut OsRng);
-        let password_hash = Argon2::default()
-            .hash_password("some_password".as_bytes(), &salt)
-            .unwrap()
-            .to_string();
-
-        // Add a valid password for the user.
-        let result = sqlx::query(
-            r#"
-UPDATE users
-SET password = $1
-WHERE id = $2
-"#,
-        )
-        .bind(password_hash)
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        let req = test::TestRequest::get()
-            .uri("/google-login-with-password")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // User should get updated in the database.
-        let result = sqlx::query(
-            r#"
-SELECT login_google_id
-FROM users WHERE id = $1
-"#,
-        )
-        .bind(user_id.unwrap())
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(result.get::<Option<String>, _>("login_google_id").is_some());
-
-        // Should insert an account activity.
-        let result = sqlx::query(
-            r#"
-SELECT EXISTS (
-    SELECT 1
-    FROM account_activities
-    WHERE type = $1
-)
-"#,
-        )
-        .bind(AccountActivityType::ThirdPartyLogin as i16)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(result.get::<bool, _>("exists"));
-
-        Ok(())
-    }
-
     //
 
     #[sqlx::test]
@@ -1018,7 +579,7 @@ SELECT EXISTS (
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
+        let (app, _, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         let mut flags = Flag::new(0);
         flags.add_flag(UserFlag::TemporarilySuspended);
@@ -1055,7 +616,7 @@ WHERE id = $3
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
+        let (app, _, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         let mut flags = Flag::new(0);
         flags.add_flag(UserFlag::PermanentlySuspended);
@@ -1090,7 +651,7 @@ WHERE id = $3
     #[sqlx::test]
     async fn can_reject_google_login_for_a_soft_deleted_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
+        let (app, _, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Update `login_google_id` and soft-delete the current user.
         let result = sqlx::query(
@@ -1121,7 +682,7 @@ WHERE id = $2
     #[sqlx::test]
     async fn can_reject_google_login_for_a_deactivated_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
+        let (app, _, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
         // Update `login_google_id` and deactivate the current user.
         let result = sqlx::query(
@@ -1152,25 +713,19 @@ WHERE id = $2
     //
 
     #[sqlx::test]
-    async fn can_reject_a_new_google_login_for_a_temporarily_suspended_user(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
+    async fn can_reject_a_new_google_login_for_a_duplicate_email(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
+        let (app, _, _) = init_app_for_test(get, pool, false, false, None).await;
 
-        let mut flags = Flag::new(0);
-        flags.add_flag(UserFlag::TemporarilySuspended);
-
-        // Update the current user.
+        // Insert a random user with the same email.
         let result = sqlx::query(
             r#"
-UPDATE users
-SET public_flags = $1
-WHERE id = $2
+INSERT INTO
+users (name, username, email)
+VALUES ('Sample user 2', 'sample_user_2', $1)
 "#,
         )
-        .bind(flags.get_flags() as i32)
-        .bind(user_id.unwrap())
+        .bind("someone@example.com")
         .execute(&mut *conn)
         .await?;
 
@@ -1180,101 +735,7 @@ WHERE id = $2
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "user_suspended").await;
-
-        Ok(())
-    }
-
-    #[sqlx::test]
-    async fn can_reject_a_new_google_login_for_a_permanently_suspended_user(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
-
-        let mut flags = Flag::new(0);
-        flags.add_flag(UserFlag::PermanentlySuspended);
-
-        // Update the current user.
-        let result = sqlx::query(
-            r#"
-UPDATE users
-SET public_flags = $1
-WHERE id = $2
-"#,
-        )
-        .bind(flags.get_flags() as i32)
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        let req = test::TestRequest::get().uri("/google-login").to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_client_error());
-        assert_response_body_text(res, "user_suspended").await;
-
-        Ok(())
-    }
-
-    #[sqlx::test]
-    async fn can_reject_a_new_google_login_for_a_soft_deleted_user(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
-
-        // Soft-delete the current user.
-        let result = sqlx::query(
-            r#"
-UPDATE users
-SET deleted_at = NOW()
-WHERE id = $1
-"#,
-        )
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        let req = test::TestRequest::get().uri("/google-login").to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_client_error());
-        assert_response_body_text(res, "user_deleted").await;
-
-        Ok(())
-    }
-
-    #[sqlx::test]
-    async fn can_reject_a_new_google_login_for_a_deactivated_user(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, _, user_id) = init_app_for_test(post, pool, true, false, None).await;
-
-        // Deactivate the current user.
-        let result = sqlx::query(
-            r#"
-UPDATE users
-SET deactivated_at = NOW()
-WHERE id = $1
-"#,
-        )
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        let req = test::TestRequest::get().uri("/google-login").to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_client_error());
-        assert_response_body_text(res, "user_deactivated").await;
+        assert_response_body_text(res, "duplicate_email").await;
 
         Ok(())
     }

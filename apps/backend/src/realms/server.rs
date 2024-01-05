@@ -235,9 +235,11 @@ async fn enter_realm(
 
         rmp_serde::from_slice::<UserSession>(&session_value)
             .map_err(|error| {
-                error!("unable to deserialize the user session: {error:?}");
+                // This can happen when we manually insert a key value pair into the session while
+                // the user has not logged-in.
+                warn!("expected properties are not present in the user session: {error:?}");
 
-                EnterRealmError::Internal
+                EnterRealmError::Unauthorized
             })?
             .user_id
     };

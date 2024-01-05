@@ -124,9 +124,13 @@ impl SessionStore for RedisSessionStore {
 
         match value {
             None => Ok(None),
-            Some(value) => Ok(rmp_serde::from_slice(&value)
-                .map_err(Into::into)
-                .map_err(LoadError::Deserialization)?),
+            Some(value) => {
+                let data = rmp_serde::from_slice::<SessionState>(&value)
+                    .map_err(Into::into)
+                    .map_err(LoadError::Deserialization)?;
+
+                Ok(Some(data))
+            }
         }
     }
 

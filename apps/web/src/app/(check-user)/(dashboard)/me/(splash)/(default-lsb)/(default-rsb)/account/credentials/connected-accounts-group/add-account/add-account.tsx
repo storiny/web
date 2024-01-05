@@ -1,5 +1,6 @@
 import React from "react";
 
+import { use_app_router } from "~/common/utils";
 import Button from "~/components/button";
 import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
 import FormPasswordInput from "~/components/form-password-input";
@@ -8,9 +9,9 @@ import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import { use_media_query } from "~/hooks/use-media-query";
+import LinkIcon from "~/icons/link";
 import PasswordIcon from "~/icons/password";
-import UnlinkIcon from "~/icons/unlink";
-import { use_remove_account_mutation } from "~/redux/features";
+import { use_add_account_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
@@ -19,17 +20,17 @@ import {
   ACCOUNT_ACTION_SCHEMA,
   AccountActionSchema
 } from "../account-action.schema";
-import { RemoveAccountProps } from "./remove-account.props";
+import { AddAccountProps } from "./add-account.props";
 
-const RemoveAccountModal = ({
+const AddAccountModal = ({
   vendor
-}: Pick<RemoveAccountProps, "vendor">): React.ReactElement => (
+}: Pick<AddAccountProps, "vendor">): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
       <Typography className={css["t-minor"]} level={"body2"}>
-        This will remove your {vendor} account from your Storiny account, and
-        you will no longer be able to sign in to Storiny with your {vendor}
-        account unless you add it again.
+        This will add your {vendor} account to your Storiny account, and you
+        will be able to sign in to Storiny using your {vendor}
+        account.
       </Typography>
     </Description>
     <Spacer orientation={"vertical"} size={5} />
@@ -51,57 +52,52 @@ const RemoveAccountModal = ({
   </React.Fragment>
 );
 
-const RemoveAccount = ({
+const AddAccount = ({
   on_submit,
   vendor,
-  on_remove
-}: RemoveAccountProps): React.ReactElement => {
+  disabled
+}: AddAccountProps): React.ReactElement => {
   const toast = use_toast();
+  const router = use_app_router();
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const [done, set_done] = React.useState<boolean>(false);
   const form = use_form<AccountActionSchema>({
     resolver: zod_resolver(ACCOUNT_ACTION_SCHEMA),
     defaultValues: {
       current_password: ""
     }
   });
-  const [remove_account, { isLoading: is_loading }] =
-    use_remove_account_mutation();
+  const [add_account, { isLoading: is_loading }] = use_add_account_mutation();
 
   const handle_submit: SubmitHandler<AccountActionSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      remove_account({
+      add_account({
         ...values,
         vendor: vendor.toLowerCase() as "google" | "apple"
       })
         .unwrap()
-        .then(() => {
-          close_modal();
-          toast(`Removed your ${vendor} account`, "success");
-          on_remove();
+        .then((response) => {
+          set_done(true);
+          router.push(response.url);
         })
         .catch((error) => {
+          set_done(false);
           handle_api_error(
             error,
             toast,
             form,
-            `Could not remove your ${vendor} account`
+            `Could not add your ${vendor} account`
           );
         });
     }
   };
 
-  const [element, , close_modal] = use_modal(
+  const [element] = use_modal(
     ({ open_modal }) => (
-      <Button
-        auto_size
-        check_auth
-        color={"ruby"}
-        onClick={open_modal}
-        variant={"hollow"}
-      >
-        Remove
+      <Button auto_size check_auth disabled={disabled} onClick={open_modal}>
+        Add
       </Button>
     ),
     <Form<AccountActionSchema>
@@ -110,19 +106,22 @@ const RemoveAccount = ({
       on_submit={handle_submit}
       provider_props={form}
     >
-      <RemoveAccountModal vendor={vendor} />
+      <AddAccountModal vendor={vendor} />
     </Form>,
     {
       fullscreen: is_smaller_than_mobile,
       footer: (
         <>
-          <ModalFooterButton compact={is_smaller_than_mobile} variant={"ghost"}>
+          <ModalFooterButton
+            compact={is_smaller_than_mobile}
+            disabled={done}
+            variant={"ghost"}
+          >
             Cancel
           </ModalFooterButton>
           <ModalFooterButton
-            color={"ruby"}
             compact={is_smaller_than_mobile}
-            disabled={!form.formState.isDirty}
+            disabled={done || !form.formState.isDirty}
             loading={is_loading}
             onClick={(event): void => {
               event.preventDefault(); // Prevent closing of modal
@@ -143,8 +142,8 @@ const RemoveAccount = ({
           }
         },
         header: {
-          decorator: <UnlinkIcon />,
-          children: `Remove your ${vendor} account`
+          decorator: <LinkIcon />,
+          children: `Add your ${vendor} account`
         }
       }
     }
@@ -153,4 +152,4 @@ const RemoveAccount = ({
   return element;
 };
 
-export default RemoveAccount;
+export default AddAccount;

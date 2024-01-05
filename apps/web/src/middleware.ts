@@ -69,7 +69,7 @@ export const middleware: NextMiddleware = (request) => {
     frame-src 'self' ${process.env.NEXT_PUBLIC_DISCOVERY_URL} ${CSP_FRAME_SRC};
     img-src 'self' blob: data: *;
     font-src 'self';
-    connect-src 'self' wss://realms.storiny.com *.storiny.com *.sentry.io;
+    connect-src 'self' wss://realms.storiny.com *.storiny.com *.sentry.io *.tile.openstreetmap.fr;
     object-src 'none';
     base-uri 'self';
     form-action 'self';
