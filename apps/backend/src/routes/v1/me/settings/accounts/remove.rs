@@ -2,6 +2,7 @@ use crate::{
     constants::account_activity_type::AccountActivityType,
     error::{
         AppError,
+        FormErrorResponse,
         ToastErrorResponse,
     },
     middlewares::identity::identity::Identity,
@@ -86,9 +87,9 @@ WHERE id = $1
     Argon2::default()
         .verify_password(&payload.current_password.as_bytes(), &password_hash)
         .map_err(|_| {
-            AppError::ToastError(ToastErrorResponse::new(
+            AppError::FormError(FormErrorResponse::new(
                 Some(StatusCode::FORBIDDEN),
-                "Invalid password",
+                vec![("current_password", "Invalid password")],
             ))
         })?;
 
@@ -137,6 +138,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::test_utils::{
+        assert_form_error_response,
         assert_toast_error_response,
         init_app_for_test,
     };
@@ -353,7 +355,7 @@ VALUES
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Invalid password").await;
+        assert_form_error_response(res, vec![("current_password", "Invalid password")]).await;
 
         Ok(())
     }

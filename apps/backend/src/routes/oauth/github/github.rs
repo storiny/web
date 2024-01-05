@@ -17,6 +17,12 @@ use serde_json::Value;
 use storiny_session::Session;
 
 #[get("/oauth/github")]
+#[tracing::instrument(
+    name = "GET /oauth/github",
+    skip_all,
+    fields(user = user.id().ok()),
+    err
+)]
 async fn get(
     data: web::Data<AppState>,
     session: Session,
@@ -41,4 +47,28 @@ async fn get(
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(get);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::test_utils::init_app_for_test;
+    use actix_web::test;
+    use http::StatusCode;
+    use sqlx::PgPool;
+
+    #[sqlx::test]
+    async fn can_request_connecting_a_github_account(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(get, pool, true, false, None).await;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/oauth/github")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert_eq!(res.status(), StatusCode::FOUND);
+
+        Ok(())
+    }
 }

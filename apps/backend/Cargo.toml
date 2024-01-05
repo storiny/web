@@ -3,6 +3,9 @@ name = "storiny"
 version = "0.1.0"
 edition = "2021"
 
+[workspace]
+members = ["session", "macros"]
+
 [dependencies]
 storiny_session = { version = "0.1.0", path = "session" }
 actix-cors = "0.6.4"

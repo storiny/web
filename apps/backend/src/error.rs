@@ -265,13 +265,9 @@ pub enum ExternalAuthError {
     UserDeactivated,
     /// The user associated with the third-party account is suspended.
     UserSuspended,
-    /// The user must verify its password before proceeding. The user must also return the access
-    /// token with the verification request.
-    VerifyPassword(String),
-    /// The user provided an invalid password.
-    InvalidPassword,
-    /// The user provided an invalid access token during verification.
-    InvalidAccessToken,
+    /// The email associated with the vendor account is already in use by some other Storiny
+    /// account.
+    DuplicateEmail,
     /// Other connection error.
     Other(String),
 }
@@ -283,6 +279,40 @@ impl From<sqlx::Error> for ExternalAuthError {
 }
 
 impl fmt::Display for ExternalAuthError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+// Add external account error
+
+/// An error raised while adding an external login account (such as "Google login") to a Storiny
+/// account.
+#[derive(Debug)]
+pub enum AddAccountError {
+    /// Insufficient scopes were returned on the callback endpoint.
+    InsufficientScopes,
+    /// The CSRF token is tampered.
+    StateMismatch,
+    /// The Storiny account is already connected to a relevant vendor account.
+    DuplicateAccount,
+    /// The ID of the account returned from the vendor is already associated with another Storiny
+    /// account.
+    DuplicateVendorID,
+    /// The email of the account returned from the vendor is already associated with another
+    /// Storiny account.
+    DuplicateVendorEmail,
+    /// Other connection error.
+    Other(String),
+}
+
+impl From<sqlx::Error> for AddAccountError {
+    fn from(value: sqlx::Error) -> Self {
+        AddAccountError::Other(value.to_string())
+    }
+}
+
+impl fmt::Display for AddAccountError {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{:?}", self)
     }

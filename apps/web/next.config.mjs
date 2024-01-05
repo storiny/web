@@ -59,7 +59,7 @@ const next_config = {
     windowHistorySupport: true
   },
   poweredByHeader: false,
-  reactStrictMode: false,
+  reactStrictMode: true,
   webpack: webpack_config,
   transpilePackages: ["@storiny/ui", "@storiny/editor", "@storiny/shared"],
   output: "standalone",

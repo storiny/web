@@ -1,8 +1,6 @@
 import { clsx } from "clsx";
-import NextLink from "next/link";
 import React from "react";
 
-import Button from "~/components/button";
 import Grow from "~/components/grow";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
@@ -11,6 +9,7 @@ import CheckIcon from "~/icons/check";
 import css from "~/theme/main.module.scss";
 
 import DashboardGroup from "../../../../dashboard-group";
+import AddAccount from "./add-account";
 import styles from "./connected-accounts-group.module.scss";
 import { ConnectedAccountsGroupProps } from "./connected-accounts-group.props";
 import RemoveAccount from "./remove-account";
@@ -108,16 +107,12 @@ const AppleAccount = ({
             vendor={"Apple"}
           />
         ) : (
-          <Button
-            auto_size
-            check_auth
-            // TODO: Uncomment when we support Apple as a login provider.
+          <AddAccount
             disabled
-            // Disabled={Boolean(login_apple_id) && !has_password}
-            variant={"hollow"}
-          >
-            Connect
-          </Button>
+            // TODO: Uncomment when we support Apple as a login provider.
+            // disabled={Boolean(login_apple_id) && !has_password}
+            vendor={"Apple"}
+          />
         )
       }
       connected={Boolean(login_apple_id)}
@@ -149,16 +144,10 @@ const GoogleAccount = ({
             vendor={"Google"}
           />
         ) : (
-          <Button
-            as={NextLink}
-            auto_size
-            check_auth
+          <AddAccount
             disabled={Boolean(login_google_id) && !has_password}
-            href={`${process.env.NEXT_PUBLIC_API_URL}/v1/auth/external/google`}
-            variant={"hollow"}
-          >
-            Connect
-          </Button>
+            vendor={"Google"}
+          />
         )
       }
       connected={Boolean(login_google_id)}

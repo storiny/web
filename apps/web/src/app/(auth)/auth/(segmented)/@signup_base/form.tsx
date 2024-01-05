@@ -65,6 +65,7 @@ const SignupBaseForm = ({ on_submit }: Props): React.ReactElement => {
         maxLength={USER_PROPS.name.max_length}
         minLength={USER_PROPS.name.min_length}
         name={"name"}
+        placeholder={"Your full name"}
         required
         size={"lg"}
       />
@@ -76,6 +77,7 @@ const SignupBaseForm = ({ on_submit }: Props): React.ReactElement => {
         maxLength={USER_PROPS.email.max_length}
         minLength={USER_PROPS.email.min_length}
         name={"email"}
+        placeholder={"Your current e-mail address"}
         required
         size={"lg"}
         type={"email"}

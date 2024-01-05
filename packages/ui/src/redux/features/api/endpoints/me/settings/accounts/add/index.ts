@@ -3,21 +3,23 @@ import { AccountActionSchema } from "@storiny/web/src/app/(check-user)/(dashboar
 
 import { api_slice } from "~/redux/features/api/slice";
 
-const SEGMENT = "me/settings/accounts/remove";
+const SEGMENT = (vendor: "apple" | "google"): string =>
+  `me/settings/accounts/add/${vendor}`;
 
-export type RemoveAccountPayload = AccountActionSchema & {
+export type AddAccountPayload = AccountActionSchema & {
   vendor: "apple" | "google";
 };
+export type AddAccountResponse = { url: string };
 
-export const { useRemoveAccountMutation: use_remove_account_mutation } =
+export const { useAddAccountMutation: use_add_account_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-      removeAccount: builder.mutation<void, RemoveAccountPayload>({
-        query: (body) => ({
-          url: `/${SEGMENT}`,
+      addAccount: builder.mutation<AddAccountResponse, AddAccountPayload>({
+        query: ({ vendor, ...rest }) => ({
+          url: `/${SEGMENT(vendor)}`,
           method: "POST",
-          body,
+          body: rest,
           headers: {
             "Content-type": ContentType.JSON
           }
