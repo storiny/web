@@ -6,16 +6,17 @@
     "lifestyle",
     "magazines",
     "news",
-    "social"
+    "social",
+    "publishing"
   ],
-  "description": "Discover captivating stories on Storiny, the platform that harbors the narratives that reside within you.",
+  "description": "Discover stories from your favourite writers on Storiny, the platform that fosters the narratives within you.",
   "display": "standalone",
   "scope": "/",
   "start_url": "/?utm_source=app",
   "id": "/?utm_source=app",
   "short_name": "Storiny",
-  "theme_color": "#fafafa",
-  "background_color": "#17191c",
+  "theme_color": "#17191c",
+  "background_color": "#000000",
   "icons": [
     { "src": "/icons/icon-192.png", "type": "image/png", "sizes": "192x192" },
     { "src": "/icons/icon-512.png", "type": "image/png", "sizes": "512x512" },
@@ -74,7 +75,7 @@
     },
     {
       "name": "Settings",
-      "url": "/me/profile?utm_source=app",
+      "url": "/me?utm_source=app",
       "icons": [
         {
           "src": "/shortcuts/shortcut-settings.png",

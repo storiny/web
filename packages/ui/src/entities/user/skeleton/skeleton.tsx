@@ -23,7 +23,7 @@ const UserSkeleton = (props: UserSkeletonProps): React.ReactElement => {
       <div className={clsx(css["flex"], styles.main)}>
         <div className={clsx(css["flex"], styles.meta)}>
           <Skeleton height={48} shape={"circular"} width={48} />
-          <div className={css["flex-col"]} style={{ gap: "8px" }}>
+          <div className={css["flex-col"]} style={{ gap: "8px", minWidth: 0 }}>
             <Skeleton height={18} width={142} />
             {is_mobile ? (
               <Skeleton height={14} width={88} />
