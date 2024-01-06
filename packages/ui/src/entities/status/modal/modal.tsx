@@ -1,4 +1,4 @@
-import { StatusDuration, StatusVisibility, USER_SCHEMA } from "@storiny/shared";
+import { StatusDuration, StatusVisibility, USER_PROPS } from "@storiny/shared";
 import { is_num } from "@storiny/shared/src/utils/is-num";
 import clsx from "clsx";
 import React from "react";
@@ -83,7 +83,7 @@ const StatusModalContent = (): React.ReactElement => (
       autoComplete={"off"}
       auto_size
       end_decorator={<EmojiIconButton />}
-      maxLength={USER_SCHEMA.status_text.maxLength ?? undefined}
+      maxLength={USER_PROPS.status.text.max_length}
       name={"status_text"}
       placeholder={"What's happening?"}
     />

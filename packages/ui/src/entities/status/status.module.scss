@@ -4,7 +4,7 @@
 
 .status {
   background-color: var(--bg-elevation-sm);
-  border: 1px solid var(--divider);
+  border: 1px solid var(--divider) !important;
   border-radius: var(--radius-md);
   justify-content: flex-start;
   padding: 5px 8px;
