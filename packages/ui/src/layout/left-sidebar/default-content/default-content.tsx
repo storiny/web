@@ -27,7 +27,8 @@ import StoryHeartIcon from "~/icons/story-heart";
 import UserIcon from "~/icons/user";
 import {
   select_is_logged_in,
-  select_unread_notification_count
+  select_unread_notification_count,
+  select_user
 } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
@@ -50,6 +51,7 @@ const AnchorTab = (props: TabProps & { href: string }): React.ReactElement => (
 const LeftSidebarDefaultContent = (): React.ReactElement => {
   const pathname = use_pathname();
   const logged_in = use_app_selector(select_is_logged_in);
+  const user = use_app_selector(select_user);
   const unread_notification_count = use_app_selector(
     select_unread_notification_count
   );
@@ -137,7 +139,7 @@ const LeftSidebarDefaultContent = (): React.ReactElement => {
                   as={NextLink}
                   check_auth
                   decorator={<UserIcon />}
-                  href={"/profile"}
+                  href={`/${user?.username || "profile"}`}
                 >
                   Profile
                 </MenuItem>

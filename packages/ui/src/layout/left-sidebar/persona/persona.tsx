@@ -107,7 +107,7 @@ const LeftSidebarPersona = (): React.ReactElement => {
                 className={css["t-bold"]}
                 ellipsis
                 fixed_color
-                href={"/profile"}
+                href={`/${user?.username || "profile"}`}
                 level={"body1"}
               >
                 {user?.name}
@@ -115,7 +115,7 @@ const LeftSidebarPersona = (): React.ReactElement => {
               <Link
                 className={clsx(css["t-minor"], css["t-medium"])}
                 ellipsis
-                href={"/profile"}
+                href={`/${user?.username || "profile"}`}
                 level={"body2"}
               >
                 @{user?.username}
