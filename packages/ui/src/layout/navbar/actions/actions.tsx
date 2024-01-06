@@ -98,7 +98,10 @@ const LoggedInMenu = ({
         asChild
         className={clsx(css["focusable"], styles["menu-item"])}
       >
-        <NextLink aria-label={"Go to your profile"} href={"/profile"}>
+        <NextLink
+          aria-label={"Go to your profile"}
+          href={`/${user?.username || "profile"}`}
+        >
           <Persona
             avatar={{
               alt: "",
@@ -132,7 +135,11 @@ const LoggedInMenu = ({
       </MenuItemUnstyled>
     </div>
     <Separator />
-    <MenuItemWithLink check_auth decorator={<UserIcon />} href={"/profile"}>
+    <MenuItemWithLink
+      check_auth
+      decorator={<UserIcon />}
+      href={`/${user?.username || "profile"}`}
+    >
       Your profile
     </MenuItemWithLink>
     <MenuItemWithLink

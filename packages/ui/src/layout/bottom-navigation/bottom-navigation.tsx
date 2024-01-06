@@ -138,7 +138,7 @@ const BottomNavigation = (
           <AnchorTab
             aria-label={"Your profile"}
             decorator={<UserIcon />}
-            href={"/profile"}
+            href={`/${user?.username || "profile"}`}
             title={"Profile"}
             value={"profile"}
           />
