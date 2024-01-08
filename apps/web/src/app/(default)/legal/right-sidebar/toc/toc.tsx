@@ -95,7 +95,7 @@ const use_headings_observer = (set_active_id: (id: string) => void): void => {
     });
 
     const heading_elements = Array.from(
-      document.querySelectorAll("section h2, section h3")
+      document.querySelectorAll("article h2, article h3")
     );
 
     heading_elements.forEach((element) => observer.observe(element));
@@ -127,7 +127,7 @@ const LegalToc = (): React.ReactElement => {
   React.useEffect(() => {
     set_nested_headings(
       get_nested_headings(
-        Array.from(document.querySelectorAll("section h2, section h3"))
+        Array.from(document.querySelectorAll("article h2, article h3"))
       )
     );
   }, []);
