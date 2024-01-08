@@ -102,11 +102,10 @@ async fn handle_github_oauth_request(
 ) -> Result<(), ConnectionError> {
     let oauth_token = session
         .get::<String>("oauth_token")
-        .map_err(|_| ConnectionError::Other)?
-        .ok_or(ConnectionError::Other)?;
+        .map_err(|error| ConnectionError::Other(error.to_string()))?;
 
-    // Check whether the CSRF token has been tampered.
-    if oauth_token != params.state {
+    // Check whether the CSRF token is missing or has been tampered.
+    if oauth_token.is_none() || oauth_token.unwrap_or_default() != params.state {
         return Err(ConnectionError::StateMismatch);
     }
 
@@ -118,7 +117,7 @@ async fn handle_github_oauth_request(
         .exchange_code(code)
         .request_async(github_async_http_client)
         .await
-        .map_err(|_| ConnectionError::Other)?;
+        .map_err(|error| ConnectionError::Other(error.to_string()))?;
 
     // Github returns a single comma-separated "scope" parameter instead of multiple
     // space-separated scopes.
@@ -147,10 +146,10 @@ async fn handle_github_oauth_request(
         )
         .send()
         .await
-        .map_err(|_| ConnectionError::Other)?
+        .map_err(|err| ConnectionError::Other(err.to_string()))?
         .json::<Response>()
         .await
-        .map_err(|_| ConnectionError::Other)?;
+        .map_err(|err| ConnectionError::Other(err.to_string()))?;
 
     handle_github_data(profile_res, data, &user_id).await
 }
@@ -185,17 +184,19 @@ VALUES ($1, $2, $3, $4)
     .await
     {
         Ok(result) => match result.rows_affected() {
-            0 => Err(ConnectionError::Other),
+            0 => Err(ConnectionError::Other(
+                "no connection row was inserted into the database".to_string(),
+            )),
             _ => Ok(()),
         },
         Err(err) => {
-            if let Some(db_err) = err.into_database_error() {
+            if let Some(db_err) = err.as_database_error() {
                 match db_err.kind() {
                     sqlx::error::ErrorKind::UniqueViolation => Err(ConnectionError::Duplicate),
-                    _ => Err(ConnectionError::Other),
+                    _ => Err(ConnectionError::Other(err.to_string())),
                 }
             } else {
-                Err(ConnectionError::Other)
+                Err(ConnectionError::Other(err.to_string()))
             }
         }
     }
@@ -216,12 +217,11 @@ async fn get(
 ) -> Result<HttpResponse, AppError> {
     Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
         ConnectionTemplate {
-            error: if let Ok(user_id) = user.id() {
-                handle_github_oauth_request(&data, &session, &params, user_id)
+            error: match user.id() {
+                Ok(user_id) => handle_github_oauth_request(&data, &session, &params, user_id)
                     .await
-                    .err()
-            } else {
-                Some(ConnectionError::Other)
+                    .err(),
+                Err(error) => Some(ConnectionError::Other(error.to_string())),
             },
             provider_icon: GITHUB_LOGO.to_string(),
             provider_name: "GitHub".to_string(),
