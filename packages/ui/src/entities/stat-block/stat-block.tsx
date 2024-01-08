@@ -62,9 +62,9 @@ const StatBlock = (props: StatBlockProps): React.ReactElement => {
                 } as React.CSSProperties
               }
             />
-          ) : caption_icon ? (
-            caption_icon
-          ) : null}
+          ) : (
+            caption_icon || null
+          )}
           {caption}
         </Typography>
       )}

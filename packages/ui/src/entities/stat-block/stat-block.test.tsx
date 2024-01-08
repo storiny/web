@@ -3,47 +3,57 @@ import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
 
-import TitleBlock from "./stat-block";
-import { TitleBlockProps } from "./stat-block.props";
+import StatBlock from "./stat-block";
+import { StatBlockProps } from "./stat-block.props";
 
-describe("<TitleBlock />", () => {
+describe("<StatBlock />", () => {
   it("renders", () => {
-    render_test_with_provider(<TitleBlock title={"test"}>Content</TitleBlock>);
+    render_test_with_provider(<StatBlock label={"test"} value={"0"} />);
   });
 
   it("does not have any accessibility violations", async () => {
     const { container } = render_test_with_provider(
-      <TitleBlock title={"test"}>Content</TitleBlock>
+      <StatBlock
+        caption={"test"}
+        caption_icon={"increment"}
+        label={"test"}
+        value={"0"}
+      />
     );
+
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  it("renders children", () => {
+  it("renders custom caption icon", () => {
     const { getByTestId } = render_test_with_provider(
-      <TitleBlock title={"test"}>
-        <span data-testid={"child"} />
-      </TitleBlock>
+      <StatBlock
+        caption={"test"}
+        caption_icon={<span data-testid={"icon"} />}
+        label={"test"}
+        value={"0"}
+      />
     );
 
-    expect(getByTestId("child")).toBeInTheDocument();
+    expect(getByTestId("icon")).toBeInTheDocument();
   });
 
   it("passes props to the component slots", () => {
     const { getByTestId } = render_test_with_provider(
-      <TitleBlock
+      <StatBlock
+        caption={"test"}
         component_props={
           {
-            title: { "data-testid": "title" },
-            content: { "data-testid": "content" }
-          } as TitleBlockProps["component_props"]
+            label: { "data-testid": "label" },
+            value: { "data-testid": "value" },
+            caption: { "data-testid": "caption" }
+          } as StatBlockProps["component_props"]
         }
-        title={"test"}
-      >
-        Content
-      </TitleBlock>
+        label={"test"}
+        value={"0"}
+      />
     );
 
-    ["title", "content"].forEach((element) => {
+    ["label", "value", "caption"].forEach((element) => {
       expect(getByTestId(element)).toBeInTheDocument();
     });
   });
