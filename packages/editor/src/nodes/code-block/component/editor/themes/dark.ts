@@ -27,7 +27,7 @@ export const CODE_BLOCK_DARK_THEME = extend_code_block_theme({
     { tag: [t.typeName], color: "#0db9d7" },
     { tag: [t.operator, t.operatorKeyword], color: "#bb9af7" },
     { tag: [t.url, t.escape, t.regexp, t.link], color: "#b4f9f8" },
-    { tag: [t.meta, t.comment], color: "#444b6a" },
+    { tag: [t.meta, t.comment], color: "#848693" },
     { tag: t.strong, fontWeight: "bold" },
     { tag: t.emphasis, fontStyle: "italic" },
     { tag: t.link, textDecoration: "underline" },
