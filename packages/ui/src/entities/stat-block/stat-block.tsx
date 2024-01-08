@@ -2,6 +2,7 @@ import clsx from "clsx";
 import React from "react";
 
 import Typography from "~/components/typography";
+import CaretUpIcon from "~/icons/caret-up";
 import css from "~/theme/main.module.scss";
 
 import styles from "./stat-block.module.scss";
@@ -48,6 +49,22 @@ const StatBlock = (props: StatBlockProps): React.ReactElement => {
           color={"minor"}
           level={"body3"}
         >
+          {typeof caption_icon === "string" &&
+          ["increment", "decrement"].includes(caption_icon) ? (
+            <CaretUpIcon
+              rotation={caption_icon === "increment" ? 0 : 180}
+              style={
+                {
+                  "--icon-stroke":
+                    caption_icon === "increment"
+                      ? "var(--melon-200)"
+                      : "var(--ruby-500)"
+                } as React.CSSProperties
+              }
+            />
+          ) : caption_icon ? (
+            caption_icon
+          ) : null}
           {caption}
         </Typography>
       )}
