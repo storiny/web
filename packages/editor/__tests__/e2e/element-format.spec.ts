@@ -1,13 +1,15 @@
 import { test } from "@playwright/test";
 
 import { EDITOR_CLASSNAMES } from "../constants";
+import { move_left, select_characters } from "../keyboard-shortcuts";
 import {
-  move_left,
-  move_right,
-  select_characters,
-  toggle_link
-} from "../keyboard-shortcuts";
-import { assert_html, click, focus_editor, html, initialize } from "../utils";
+  assert_html,
+  click,
+  focus_editor,
+  html,
+  initialize,
+  set_url
+} from "../utils";
 
 test.describe("element format", () => {
   test.beforeEach(async ({ page }) => {
@@ -21,11 +23,8 @@ test.describe("element format", () => {
     await page.keyboard.type("Hello https://storiny.com world");
     await move_left(page, 6);
     await select_characters(page, "left", 19);
-    await toggle_link(page);
 
-    // Clear selection and move 5 characters
-    await move_left(page, 5);
-    await move_right(page, 5);
+    await set_url(page, "/");
 
     await click(page, `[data-testid="indent"]`);
     await click(page, `[data-testid="indent"]`);

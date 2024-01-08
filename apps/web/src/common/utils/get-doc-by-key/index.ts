@@ -1,14 +1,14 @@
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { redirect } from "next/navigation";
 
-import { S3_CLIENT } from "~/common/client/s3";
+import { get_s3_client } from "~/common/client/s3";
 
 /**
  * Returns the binary data of a document stored in S3
  * @param key Key of the document
  */
 export const get_doc_by_key = async (key: string): Promise<Uint8Array> => {
-  const response = await S3_CLIENT.send(
+  const response = await get_s3_client().send(
     new GetObjectCommand({
       Key: key,
       Bucket: "docs-84b42278"

@@ -1,11 +1,7 @@
 import { test } from "@playwright/test";
 
 import { EDITOR_CLASSNAMES, IS_LINUX } from "../../constants";
-import {
-  move_to_prev_word,
-  select_all,
-  toggle_link
-} from "../../keyboard-shortcuts";
+import { move_to_prev_word, select_all } from "../../keyboard-shortcuts";
 import {
   assert_html,
   assert_selection,
@@ -13,7 +9,8 @@ import {
   focus_editor,
   html,
   initialize,
-  paste_from_clipboard
+  paste_from_clipboard,
+  set_url
 } from "../../utils";
 
 test.describe("lexical copy and paste", () => {
@@ -284,7 +281,9 @@ test.describe("lexical copy and paste", () => {
     //      |- Text "World"
     await page.keyboard.type("Hello");
     await select_all(page);
-    await toggle_link(page);
+
+    await set_url(page, "/");
+
     await page.keyboard.press("ArrowRight");
     await page.keyboard.press("Space");
     await page.keyboard.type("World");
