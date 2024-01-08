@@ -54,13 +54,10 @@ async fn handle_google_callback(
 
     let oauth_token = session
         .get::<String>("oauth_token")
-        .map_err(|error| AddAccountError::Other(error.to_string()))?
-        .ok_or(AddAccountError::Other(
-            "unable to extract the oauth token from the session".to_string(),
-        ))?;
+        .map_err(|error| AddAccountError::Other(error.to_string()))?;
 
-    // Check whether the CSRF token has been tampered.
-    if oauth_token != params.state {
+    // Check whether the CSRF token is missing or has been tampered.
+    if oauth_token.is_none() || oauth_token.unwrap_or_default() != params.state {
         return Err(AddAccountError::StateMismatch);
     }
 

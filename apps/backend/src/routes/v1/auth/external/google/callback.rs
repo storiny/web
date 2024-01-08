@@ -67,13 +67,10 @@ async fn handle_oauth_request(
 
     let oauth_token = session
         .get::<String>("oauth_token")
-        .map_err(|error| ExternalAuthError::Other(error.to_string()))?
-        .ok_or(ExternalAuthError::Other(
-            "unable to extract the oauth token from the session".to_string(),
-        ))?;
+        .map_err(|error| ExternalAuthError::Other(error.to_string()))?;
 
-    // Check whether the CSRF token has been tampered.
-    if oauth_token != params.state {
+    // Check whether the CSRF token is missing or has been tampered.
+    if oauth_token.is_none() || oauth_token.unwrap_or_default() != params.state {
         return Err(ExternalAuthError::StateMismatch);
     }
 
