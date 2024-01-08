@@ -11,12 +11,10 @@ import { useAtomValue as use_atom_value } from "jotai";
 import {
   $getSelection as $get_selection,
   $isRangeSelection as $is_range_selection,
+  BaseSelection,
   COMMAND_PRIORITY_HIGH,
   COMMAND_PRIORITY_LOW,
-  GridSelection,
   KEY_ESCAPE_COMMAND,
-  NodeSelection,
-  RangeSelection,
   SELECTION_CHANGE_COMMAND
 } from "lexical";
 import React from "react";
@@ -47,9 +45,8 @@ const FloatingLinkEditorPopover = (): React.ReactElement => {
   const [link_url, set_link_url] = React.useState("");
   const [edited_link_url, set_edited_link_url] = React.useState("");
   const [edit_mode, set_edit_mode] = React.useState(false);
-  const [last_selection, set_last_selection] = React.useState<
-    RangeSelection | GridSelection | NodeSelection | null
-  >(null);
+  const [last_selection, set_last_selection] =
+    React.useState<BaseSelection | null>(null);
 
   /**
    * Updates the link editor position
@@ -60,14 +57,23 @@ const FloatingLinkEditorPopover = (): React.ReactElement => {
     if ($is_range_selection(selection)) {
       const node = get_selected_node(selection);
       const parent = node.getParent();
+      let resolved_url = "";
 
       if ($is_link_node(parent)) {
-        set_link_url(parent.getURL());
+        resolved_url = parent.getURL();
       } else if ($is_link_node(node)) {
-        set_link_url(node.getURL());
-      } else {
-        set_link_url("");
+        resolved_url = node.getURL();
       }
+
+      if (
+        editor.isEditable() &&
+        (resolved_url === "" || resolved_url === "/") &&
+        ($is_link_node(parent) || $is_link_node(node))
+      ) {
+        set_edit_mode(true);
+      }
+
+      set_link_url(resolved_url);
     }
 
     const popover_element = popover_ref.current;
@@ -209,7 +215,7 @@ const FloatingLinkEditorPopover = (): React.ReactElement => {
           autoComplete={"url"}
           data-link-input
           decorator={<LinkIcon />}
-          onBlur={(): void => set_edit_mode(false)}
+          onBlur={handle_link_submission}
           onChange={(event): void => set_edited_link_url(event.target.value)}
           onFocus={(): void => set_edit_mode(true)}
           onKeyDown={(event): void => monitor_input_interaction(event)}

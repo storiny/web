@@ -8,19 +8,18 @@ import {
   move_to_editor_end,
   move_to_line_beginning,
   move_to_next_word,
-  press_backspace,
   select_all,
   toggle_link
 } from "../../keyboard-shortcuts";
 import {
   assert_html,
   assert_selection,
-  click,
   copy_to_clipboard,
   focus_editor,
   html,
   initialize,
   paste_from_clipboard,
+  set_url,
   sleep
 } from "../../utils";
 
@@ -70,11 +69,7 @@ test.describe("html link copy and paste", () => {
       `
     );
 
-    await toggle_link(page);
-    await click(page, `button[title="Edit link"]`);
-    await press_backspace(page); // Remove `/` from the input
-    await page.keyboard.type("https://storiny.com");
-    await page.keyboard.press("Enter");
+    await set_url(page, "https://storiny.com");
 
     await assert_html(
       page,

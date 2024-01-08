@@ -9,23 +9,18 @@ const robots = (): MetadataRoute.Robots => ({
     userAgent: "*",
     allow: "/",
     disallow: [
-      "/search/",
-      "/user/",
       "/logout$",
-      "/scripts/",
-      "/static/",
-      "/vendor/",
+      "/profile$",
+      "/handler$",
+      "/new$",
       "/api/",
       "/doc/",
-      "/profile$",
-      "/new$",
-      "/handler$",
-      "/*/stories",
-      "/*/friends",
-      "/*/followers",
-      "/*/following",
-      "/*/*/revisions/*",
-      "/*/*/comments/*"
+      "/me/",
+      "/auth/reset-password$",
+      "/auth/reset-password/",
+      "/auth/verify-email$",
+      "/auth/verify-email/",
+      "/gateway-error$"
     ]
   },
   sitemap: "https://sitemaps.storiny.com/index.xml"

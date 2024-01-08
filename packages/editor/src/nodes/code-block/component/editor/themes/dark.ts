@@ -6,26 +6,35 @@ export const CODE_BLOCK_DARK_THEME = extend_code_block_theme({
   mode: "dark",
   styles: [
     /* eslint-disable prefer-snakecase/prefer-snakecase */
-    { tag: [t.standard(t.tagName), t.tagName], color: "#7ee787" },
-    { tag: [t.comment, t.bracket], color: "#8b949e" },
-    { tag: [t.className, t.propertyName], color: "#d2a8ff" },
+    { tag: t.keyword, color: "#bb9af7" },
+    { tag: [t.name, t.deleted, t.character, t.macroName], color: "#c0caf5" },
+    { tag: [t.propertyName], color: "#7aa2f7" },
     {
-      tag: [t.variableName, t.attributeName, t.number, t.operator],
-      color: "#79c0ff"
+      tag: [t.processingInstruction, t.string, t.inserted, t.special(t.string)],
+      color: "#9ece6a"
     },
+    { tag: [t.function(t.variableName), t.labelName], color: "#7aa2f7" },
     {
-      tag: [t.keyword, t.typeName, t.typeOperator, t.typeName],
-      color: "#ff7b72"
+      tag: [t.color, t.constant(t.name), t.standard(t.name)],
+      color: "#bb9af7"
     },
-    { tag: [t.string, t.meta, t.regexp], color: "#a5d6ff" },
-    { tag: [t.name, t.quote], color: "#7ee787" },
-    { tag: [t.heading, t.strong], color: "#d2a8ff", fontWeight: "bold" },
-    { tag: [t.emphasis], color: "#d2a8ff", fontStyle: "italic" },
-    { tag: [t.deleted], color: "#ffdcd7", backgroundColor: "ffeef0" },
-    { tag: [t.atom, t.bool, t.special(t.variableName)], color: "#ffab70" },
+    { tag: [t.definition(t.name), t.separator], color: "#c0caf5" },
+    { tag: [t.className], color: "#c0caf5" },
+    {
+      tag: [t.number, t.changed, t.annotation, t.modifier, t.self, t.namespace],
+      color: "#ff9e64"
+    },
+    { tag: [t.typeName], color: "#0db9d7" },
+    { tag: [t.operator, t.operatorKeyword], color: "#bb9af7" },
+    { tag: [t.url, t.escape, t.regexp, t.link], color: "#b4f9f8" },
+    { tag: [t.meta, t.comment], color: "#444b6a" },
+    { tag: t.strong, fontWeight: "bold" },
+    { tag: t.emphasis, fontStyle: "italic" },
     { tag: t.link, textDecoration: "underline" },
-    { tag: t.strikethrough, textDecoration: "line-through" },
-    { tag: t.invalid, color: "#f97583" }
+    { tag: t.heading, fontWeight: "bold", color: "#89ddff" },
+    { tag: [t.atom, t.bool, t.special(t.variableName)], color: "#c0caf5" },
+    { tag: t.invalid, color: "#ff5370" },
+    { tag: t.strikethrough, textDecoration: "line-through" }
     /* eslint-enable prefer-snakecase/prefer-snakecase */
   ]
 });

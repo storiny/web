@@ -10,7 +10,6 @@ import {
   select_all,
   select_characters,
   toggle_bulleted_list,
-  toggle_link,
   toggle_numbered_list
 } from "../keyboard-shortcuts";
 import {
@@ -21,7 +20,8 @@ import {
   html,
   initialize,
   key_down_ctrl_or_meta,
-  key_up_ctrl_or_meta
+  key_up_ctrl_or_meta,
+  set_url
 } from "../utils";
 
 /**
@@ -621,7 +621,7 @@ test.describe("list", () => {
 
     await move_left(page, 6);
     await select_characters(page, "left", 3);
-    await toggle_link(page);
+    await set_url(page, "/");
 
     await assert_html(
       page,
