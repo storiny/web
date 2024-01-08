@@ -5,12 +5,12 @@
 
       &::before {
         margin-top: 140px;
-        left: 1px !important;
+        border-left: none !important;
         height: calc(100% - 140px);
         border-top-left-radius: var(--radius-xl);
-        background-color: var(--bg-elevation-xs);
+        background-color: var(--divider);
         box-shadow: 50vw 50vw 0 50vw var(--bg-elevation-xs),
-        calc(50vw - 1px) calc(50vw - 1px) 0 50vw var(--divider) !important;
+        50vw calc(50vw - 1px) 0 50vw var(--divider) !important;
       }
     }
   }
