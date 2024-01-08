@@ -8,7 +8,6 @@ import {
   move_right,
   move_to_line_beginning,
   move_to_line_end,
-  press_backspace,
   select_all,
   select_characters,
   toggle_bold,
@@ -18,30 +17,16 @@ import {
 import {
   assert_html,
   assert_selection,
-  click,
   focus_editor,
   html,
   initialize,
-  key_down_ctrl_or_alt,
   key_down_ctrl_or_meta,
-  key_up_ctrl_or_alt,
   paste_from_clipboard,
+  set_url,
   sleep
 } from "../utils";
 
 type InsertMethod = "type" | "paste:plain" | "paste:html" | "paste:lexical";
-
-/**
- * Sets the URL of a link node
- * @param page Page
- * @param url URL string
- */
-const set_url = async (page: Page, url: string): Promise<void> => {
-  await click(page, `button[title="Edit link"]`);
-  await press_backspace(page); // Remove `/` from the input
-  await page.keyboard.type(url);
-  await page.keyboard.press("Enter");
-};
 
 test.describe("link", () => {
   test.beforeEach(async ({ page }) => {
@@ -62,14 +47,14 @@ test.describe("link", () => {
       `
     );
 
-    await toggle_link(page);
+    await set_url(page, "https://example.com");
 
     await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <a
-            href="/"
+            href="https://example.com"
             rel="noreferrer"
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
@@ -172,8 +157,7 @@ test.describe("link", () => {
 
     await move_left(page, 1);
     await select_characters(page, "left", 9);
-
-    await toggle_link(page);
+    await set_url(page, "https://example.com");
 
     await assert_html(
       page,
@@ -183,7 +167,7 @@ test.describe("link", () => {
           <a
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
-            href="/"
+            href="https://example.com"
             rel="noreferrer"
           >
             <span data-lexical-text="true">abc</span>
@@ -272,8 +256,7 @@ test.describe("link", () => {
 
     await move_left(page, 10);
     await select_characters(page, "right", 9);
-
-    await toggle_link(page);
+    await set_url(page, "https://example.com");
 
     await assert_html(
       page,
@@ -283,7 +266,7 @@ test.describe("link", () => {
           <a
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
-            href="/"
+            href="https://example.com"
             rel="noreferrer"
           >
             <span data-lexical-text="true">abc</span>
@@ -337,7 +320,7 @@ test.describe("link", () => {
   }) => {
     await page.keyboard.type("- hello");
     await select_characters(page, "left", 5);
-    await toggle_link(page);
+    await set_url(page, "/");
     await move_left(page, 1);
 
     await assert_html(
@@ -386,7 +369,7 @@ test.describe("link", () => {
     await page.keyboard.type(" abc def ");
     await move_left(page, 5);
     await select_characters(page, "left", 3);
-    await toggle_link(page);
+    await set_url(page, "https://storiny.com");
 
     await assert_html(
       page,
@@ -396,7 +379,7 @@ test.describe("link", () => {
           <a
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
-            href="/"
+            href="https://storiny.com"
             rel="noreferrer"
           >
             <span data-lexical-text="true">abc</span>
@@ -406,9 +389,8 @@ test.describe("link", () => {
       `
     );
 
-    await move_left(page, 1, 50);
-    await move_right(page, 2, 50);
-    await sleep(500);
+    await move_right(page, 1);
+    await move_left(page, 1);
     await page.keyboard.press("Enter");
 
     await assert_html(
@@ -419,7 +401,7 @@ test.describe("link", () => {
           <a
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
-            href="/"
+            href="https://storiny.com"
             rel="noreferrer"
           >
             <span data-lexical-text="true">ab</span>
@@ -429,7 +411,7 @@ test.describe("link", () => {
           <a
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
-            href="/"
+            href="https://storiny.com"
             rel="noreferrer"
           >
             <span data-lexical-text="true">c</span>
@@ -449,7 +431,7 @@ test.describe("link", () => {
           <a
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
-            href="/"
+            href="https://storiny.com"
             rel="noreferrer"
           >
             <span data-lexical-text="true">ab</span>
@@ -457,7 +439,7 @@ test.describe("link", () => {
           <a
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
-            href="/"
+            href="https://storiny.com"
             rel="noreferrer"
           >
             <span data-lexical-text="true">c</span>
@@ -474,7 +456,7 @@ test.describe("link", () => {
     await page.keyboard.type(" abc ");
     await move_left(page, 1);
     await select_characters(page, "left", 3);
-    await toggle_link(page);
+    await set_url(page, "/");
 
     await assert_html(
       page,
@@ -513,7 +495,7 @@ test.describe("link", () => {
     await move_left(page, 1);
     await select_characters(page, "left", 3);
 
-    await toggle_link(page);
+    await set_url(page, "/");
 
     await select_characters(page, "left", 1);
     await page.keyboard.type("a");
@@ -535,7 +517,7 @@ test.describe("link", () => {
     await move_left(page, 1);
     await select_characters(page, "left", 3);
 
-    await toggle_link(page);
+    await set_url(page, "/");
 
     await select_characters(page, "right", 1);
     await page.keyboard.type("a");
@@ -599,7 +581,7 @@ test.describe("link", () => {
 
     await move_left(page, 1);
     await select_characters(page, "left", 9);
-    await toggle_link(page);
+    await set_url(page, "/");
 
     await assert_html(
       page,
@@ -674,7 +656,7 @@ test.describe("link", () => {
 
     // Select all characters
     await select_characters(page, "left", link_text.length);
-    await toggle_link(page);
+    await set_url(page, "/");
 
     await assert_html(
       page,
@@ -761,7 +743,7 @@ test.describe("link", () => {
 
     // Select all characters
     await select_characters(page, "left", link_text.length);
-    await toggle_link(page);
+    await set_url(page, "/");
 
     await assert_html(
       page,
@@ -845,7 +827,7 @@ test.describe("link", () => {
   test("can edit link with collapsed selection", async ({ page }) => {
     await page.keyboard.type("A link");
     await select_all(page);
-    await toggle_link(page);
+    await set_url(page, "https://example.com");
 
     await assert_html(
       page,
@@ -854,7 +836,7 @@ test.describe("link", () => {
           <a
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
-            href="/"
+            href="https://example.com"
             rel="noreferrer"
           >
             <span data-lexical-text="true">A link</span>
@@ -896,14 +878,14 @@ test.describe("link", () => {
       `
     );
 
-    await toggle_link(page);
+    await set_url(page, "https://example.com");
 
     await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <a
-            href="/"
+            href="https://example.com"
             rel="noreferrer"
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
@@ -925,7 +907,7 @@ test.describe("link", () => {
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">text before link </span>
           <a
-            href="/"
+            href="https://example.com"
             rel="noreferrer"
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
@@ -954,7 +936,7 @@ test.describe("link", () => {
     );
 
     await select_characters(page, "left", 6);
-    await toggle_link(page);
+    await set_url(page, "https://example.com");
 
     await assert_html(
       page,
@@ -963,7 +945,7 @@ test.describe("link", () => {
           <span data-lexical-text="true">some </span>
           <a
             class="${EDITOR_CLASSNAMES.link}"
-            href="/"
+            href="https://example.com"
             rel="noreferrer"
             dir="ltr"
           >
@@ -986,7 +968,7 @@ test.describe("link", () => {
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">some </span>
           <a
-            href="/"
+            href="https://example.com"
             rel="noreferrer"
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
@@ -1016,7 +998,7 @@ test.describe("link", () => {
 
     await move_left(page, 5);
     await select_characters(page, "right", 5);
-    await toggle_link(page);
+    await set_url(page, "https://example.com");
 
     await assert_html(
       page,
@@ -1024,7 +1006,7 @@ test.describe("link", () => {
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <a
-            href="/"
+            href="https://example.com"
             rel="noreferrer"
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
@@ -1044,8 +1026,8 @@ test.describe("link", () => {
       });
     } else {
       await assert_selection(page, {
-        anchor_offset: 6,
-        anchor_path: [0, 0, 0],
+        anchor_offset: 0,
+        anchor_path: [0, 1],
         focus_offset: 5,
         focus_path: [0, 1, 0, 0]
       });
@@ -1080,7 +1062,7 @@ test.describe("link", () => {
     } else {
       await assert_selection(page, {
         anchor_offset: 0,
-        anchor_path: [0, 1],
+        anchor_path: [0, 1, 0, 0],
         focus_offset: 5,
         focus_path: [0, 1, 0, 0]
       });
@@ -1121,7 +1103,7 @@ test.describe("link", () => {
     );
 
     await select_characters(page, "left", 5);
-    await toggle_link(page);
+    await set_url(page, "https://example.com");
 
     await assert_html(
       page,
@@ -1129,7 +1111,7 @@ test.describe("link", () => {
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <a
-            href="/"
+            href="https://example.com"
             rel="noreferrer"
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
@@ -1215,7 +1197,7 @@ test.describe("link", () => {
   }) => {
     await page.keyboard.type("Hello world");
     await select_characters(page, "left", 5);
-    await toggle_link(page);
+    await set_url(page, "https://example.com");
 
     await assert_html(
       page,
@@ -1223,7 +1205,7 @@ test.describe("link", () => {
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <a
-            href="/"
+            href="https://example.com"
             rel="noreferrer"
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
@@ -1249,7 +1231,7 @@ test.describe("link", () => {
         <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <a
-            href="/"
+            href="https://example.com"
             rel="noreferrer"
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
@@ -1269,7 +1251,7 @@ test.describe("link", () => {
     await page.keyboard.type("Hello world");
 
     await select_all(page);
-    await toggle_link(page);
+    await set_url(page, "https://example.com");
 
     await assert_html(
       page,
@@ -1278,7 +1260,7 @@ test.describe("link", () => {
           <a
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
-            href="/"
+            href="https://example.com"
             rel="noreferrer"
           >
             <span data-lexical-text="true">Hello world</span>
@@ -1288,7 +1270,7 @@ test.describe("link", () => {
           <a
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
-            href="/"
+            href="https://example.com"
             rel="noreferrer"
           >
             <span data-lexical-text="true">Hello world</span>
@@ -1298,7 +1280,7 @@ test.describe("link", () => {
           <a
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
-            href="/"
+            href="https://example.com"
             rel="noreferrer"
           >
             <span data-lexical-text="true">Hello world</span>
@@ -1312,7 +1294,7 @@ test.describe("link", () => {
     await page.keyboard.type("Hello awesome");
 
     await select_all(page);
-    await toggle_link(page);
+    await set_url(page, "https://example.com");
 
     await page.keyboard.press("ArrowRight");
     await page.keyboard.type("world");
@@ -1330,7 +1312,7 @@ test.describe("link", () => {
           <a
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
-            href="/"
+            href="https://example.com"
             rel="noreferrer"
           >
             <span data-lexical-text="true">Hello</span>
@@ -1340,7 +1322,7 @@ test.describe("link", () => {
           <a
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
-            href="/"
+            href="https://example.com"
             rel="noreferrer"
           >
             <span data-lexical-text="true">awesome</span>
@@ -1357,7 +1339,7 @@ test.describe("link", () => {
     await page.keyboard.type("Hello awesome");
 
     await select_all(page);
-    await toggle_link(page);
+    await set_url(page, "https://example.com");
 
     await page.keyboard.press("ArrowRight");
     await page.keyboard.type(" world");
@@ -1373,7 +1355,7 @@ test.describe("link", () => {
           <a
             class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
-            href="/"
+            href="https://example.com"
             rel="noreferrer"
           >
             <span data-lexical-text="true">Hello awesome</span>
@@ -1420,7 +1402,7 @@ test.describe("link", () => {
           // Turn `a` into a link
           await move_left(page, 1);
           await select_characters(page, "left", 1);
-          await toggle_link(page);
+          await set_url(page, "/");
 
           // Insert a character directly before the link
           await move_left(page, 1);
@@ -1495,7 +1477,7 @@ test.describe("link", () => {
           // Turn `b` into a link
           await move_left(page, 1);
           await select_characters(page, "left", 1);
-          await toggle_link(page);
+          await set_url(page, "/");
 
           // Insert a character directly before the link
           await move_left(page, 1);
@@ -1567,7 +1549,7 @@ test.describe("link", () => {
 
           // Turn `b` into a link
           await select_characters(page, "left", 1);
-          await toggle_link(page);
+          await set_url(page, "/");
 
           // Insert a character directly before the link
           await move_left(page, 1);
@@ -1642,7 +1624,7 @@ test.describe("link", () => {
           // Turn `a` into a link
           await move_left(page, "b".length);
           await select_characters(page, "left", 1);
-          await toggle_link(page);
+          await set_url(page, "/");
 
           // Insert a character directly after the link
           await move_right(page, 1);
@@ -1716,7 +1698,7 @@ test.describe("link", () => {
           // Turn `b` into a link
           await move_left(page, 1);
           await select_characters(page, "left", 1);
-          await toggle_link(page);
+          await set_url(page, "/");
 
           // Insert a character directly after the link
           await move_right(page, 1);
@@ -1790,7 +1772,7 @@ test.describe("link", () => {
 
           // Turn `b` into a link
           await select_characters(page, "left", 1);
-          await toggle_link(page);
+          await set_url(page, "/");
 
           // Insert a character directly after the link
           await move_right(page, 1);

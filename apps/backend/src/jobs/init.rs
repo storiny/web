@@ -148,8 +148,8 @@ pub async fn start_jobs(
                     .layer(Extension(state.clone()))
                     .stream(
                         CronStream::new(
-                            // Run every monday
-                            Schedule::from_str("0 0 0 * * 1")
+                            // Run every month
+                            Schedule::from_str("0 0 0 1 * *")
                                 .expect("Unable to parse the cron schedule"),
                         )
                         .timer(TokioTimer)
@@ -163,8 +163,8 @@ pub async fn start_jobs(
                     .layer(Extension(state.clone()))
                     .stream(
                         CronStream::new(
-                            // Run every tuesday
-                            Schedule::from_str("0 0 0 * * 2")
+                            // Run every monday
+                            Schedule::from_str("0 0 0 * * 1")
                                 .expect("Unable to parse the cron schedule"),
                         )
                         .timer(TokioTimer)
@@ -178,8 +178,8 @@ pub async fn start_jobs(
                     .layer(Extension(state.clone()))
                     .stream(
                         CronStream::new(
-                            // Run every wednesday
-                            Schedule::from_str("0 0 0 * * 3")
+                            // Run every tuesday
+                            Schedule::from_str("0 0 0 * * 2")
                                 .expect("Unable to parse the cron schedule"),
                         )
                         .timer(TokioTimer)

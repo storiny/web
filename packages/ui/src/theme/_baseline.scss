@@ -119,13 +119,6 @@ input[type="search"]::-webkit-search-results-decoration {
   appearance: none;
 }
 
-html,
-body {
-  overflow-x: clip;
-  height: 100%;
-  width: 100%;
-}
-
 body {
   color: var(--fg-major);
   background-color: var(--bg-body);
@@ -134,6 +127,9 @@ body {
   font-weight: var(--font-weight-regular);
   line-height: var(--line-height-md);
   letter-spacing: 0;
+  overflow-x: clip;
+  height: 100%;
+  width: 100%;
 
   // Fixed banner height compensation
   padding-top: var(--banner-height, 0);

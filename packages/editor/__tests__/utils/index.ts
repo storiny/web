@@ -17,6 +17,7 @@ export * from "./key-down-ctrl-or-meta";
 export * from "./key-up-ctrl-or-alt";
 export * from "./key-up-ctrl-or-meta";
 export * from "./paste-from-clipboard";
+export * from "./set_url";
 export * from "./sleep";
 export * from "./text-content";
 export * from "./wait-for-selector";
