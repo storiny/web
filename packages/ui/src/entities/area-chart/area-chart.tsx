@@ -12,12 +12,15 @@ import {
   AnimatedAreaStack,
   AnimatedAxis,
   AnimatedGrid,
-  lightTheme as dark_theme,
+  buildChartTheme as build_chart_theme,
   Tooltip,
   XYChart
 } from "@visx/xychart";
 import clsx from "clsx";
 import React from "react";
+
+import { select_theme } from "~/redux/features";
+import { use_app_selector } from "~/redux/hooks";
 
 import styles from "./area-chart.module.scss";
 import { AreaChartProps } from "./area-chart.props";
@@ -26,6 +29,18 @@ const date_scale_config = { type: "band", padding_inner: 0.3 } as const;
 const temperature_scale_config = { type: "linear" } as const;
 const num_ticks = 6;
 const data = city_temperature.slice(40, 275);
+
+const chart_theme = build_chart_theme({
+  /* eslint-disable prefer-snakecase/prefer-snakecase */
+  backgroundColor: "var(--bg-elevation-sm)",
+  colors: ["var(--inverted-400)", "var(--lemon-400)"],
+  gridColor: "var(--divider)",
+  gridColorDark: "var(--divider)",
+  gridStyles: { opacity: 0.85 },
+  svgLabelBig: { fill: "#1d1b38" },
+  tickLength: 8
+  /* eslint-enable prefer-snakecase/prefer-snakecase */
+});
 
 const getDate = (d: CityTemperature): string => d.date;
 const get_sf_temperature = (d: CityTemperature): number =>
@@ -124,56 +139,59 @@ type City = "San Francisco" | "New York" | "Austin";
 const Example = ({ height }: XYChartProps): React.ReactNode => {
   const grad_1 = React.useId();
   const grad_2 = React.useId();
+  const theme = use_app_selector(select_theme);
 
   return (
     <Chart>
       {({ accessors, config, curve, data, num_ticks }): React.ReactNode => (
         <XYChart
-          // captureEvents={true}
           height={Math.min(600, height)}
-          // onPointerUp={(d) => {
-          //   setAnnotationDataKey(
-          //     d.key as "New York" | "San Francisco" | "Austin"
-          //   );
-          //   setAnnotationDataIndex(d.index);
-          // }}
-          theme={dark_theme}
+          theme={chart_theme}
           xScale={config.x}
           yScale={config.y}
         >
           <LinearGradient
-            from="rgba(75, 81, 88, 0.20)"
+            from={
+              theme === "light"
+                ? "rgba(75, 81, 88, 0.20)"
+                : "rgba(255, 255, 255, 0.20)"
+            }
             id={grad_1}
+            stroke={"red"}
             to="transparent"
           />
           <LinearGradient
-            from="rgba(255, 213, 0, 0.25)"
+            from={
+              theme === "light"
+                ? "rgba(255, 213, 0, 0.35)"
+                : "rgba(255, 231, 112, 0.25)"
+            }
             id={grad_2}
             to="transparent"
           />
           <AnimatedGrid
             animationTrajectory={"center"}
-            className={styles.grid}
             columns
             numTicks={num_ticks}
             rows={false}
-            stroke={"var(--divider)"}
             strokeDasharray={"0 5 0"}
           />
           <AnimatedGrid
             animationTrajectory={"center"}
-            className={styles.grid}
             columns={false}
             numTicks={num_ticks}
             rows
-            stroke={"var(--divider)"}
           />
-          <AnimatedAreaStack curve={curve} order={"reverse"} renderLine={false}>
+          <AnimatedAreaStack curve={curve} order={"reverse"}>
             <AnimatedAreaSeries
               data={data}
               dataKey="San Francisco"
               fill={`url(#${grad_1})`}
-              stroke={"var(--inverted-400)"}
+              lineProps={{
+                stroke: "var(--inverted-400)",
+                strokeWidth: 1
+              }}
+              renderLine
               xAccessor={accessors.x["San Francisco"]}
               yAccessor={accessors.y["San Francisco"]}
             />
@@ -181,7 +199,11 @@ const Example = ({ height }: XYChartProps): React.ReactNode => {
               data={data}
               dataKey="New York"
               fill={`url(#${grad_2})`}
-              stroke={"var(--lemon-400)"}
+              lineProps={{
+                stroke: "var(--lemon-400)",
+                strokeWidth: 1
+              }}
+              renderLine
               xAccessor={accessors.x["New York"]}
               yAccessor={accessors.y["New York"]}
             />
