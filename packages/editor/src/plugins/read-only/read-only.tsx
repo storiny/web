@@ -57,7 +57,11 @@ const ReadOnlyPlugin = ({
     }
 
     const handle_read_via_beacon = (): void => {
-      if (document.visibilityState === "hidden" && !has_read_ref.current) {
+      if (
+        document.visibilityState === "hidden" &&
+        !has_read_ref.current &&
+        "sendBeacon" in navigator
+      ) {
         has_read_ref.current = true;
 
         navigator.sendBeacon(
