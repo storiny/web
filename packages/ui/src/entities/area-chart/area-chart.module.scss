@@ -1,3 +1,11 @@
-.grid {
-  opacity: 0.85;
+.tooltip {
+  position: absolute;
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--fg-minor);
+  background-color: var(--bg-elevation-sm);
+  box-shadow: var(--ridge-xs), var(--shadow-lg);
+  border-radius: var(--radius-md);
+  pointer-events: none;
 }

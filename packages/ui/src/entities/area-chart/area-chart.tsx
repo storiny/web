@@ -5,8 +5,6 @@ import city_temperature, {
 } from "@visx/mock-data/lib/mocks/cityTemperature";
 import { AnimationTrajectory } from "@visx/react-spring/lib/types";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
-/* eslint-disable jsx-a11y/accessible-emoji */
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import {
   AnimatedAreaSeries,
   AnimatedAreaStack,
@@ -37,7 +35,8 @@ const chart_theme = build_chart_theme({
   gridColor: "var(--divider)",
   gridColorDark: "var(--divider)",
   gridStyles: { opacity: 0.85 },
-  svgLabelBig: { fill: "#1d1b38" },
+  svgLabelBig: { fill: "var(--fg-minor)" },
+  svgLabelSmall: { fill: "var(--fg-minor)" },
   tickLength: 8
   /* eslint-enable prefer-snakecase/prefer-snakecase */
 });
@@ -210,19 +209,19 @@ const Example = ({ height }: XYChartProps): React.ReactNode => {
           </AnimatedAreaStack>
           <AnimatedAxis
             animationTrajectory={"center"}
-            key={`time-axis`}
             numTicks={num_ticks}
             orientation={"bottom"}
+            stroke={"none"}
           />
           <AnimatedAxis
             animationTrajectory={"center"}
-            key={`temp-axis`}
-            label={"Temperature (°F)"}
+            hideZero
             numTicks={num_ticks}
             orientation={"right"}
-            tickFormat={undefined}
+            stroke={"none"}
           />
           <Tooltip<CityTemperature>
+            className={styles.tooltip}
             renderTooltip={({
               tooltipData: tooltip_data,
               colorScale: color_scale
@@ -269,6 +268,7 @@ const Example = ({ height }: XYChartProps): React.ReactNode => {
             showVerticalCrosshair={true}
             snapTooltipToDatumX={false}
             snapTooltipToDatumY={false}
+            style={{}}
           />
         </XYChart>
       )}
