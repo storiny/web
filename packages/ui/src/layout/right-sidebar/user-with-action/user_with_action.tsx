@@ -6,6 +6,7 @@ import React from "react";
 
 import Grow from "~/components/grow";
 import IconButton from "~/components/icon-button";
+import Typography from "~/components/typography";
 import Persona from "~/entities/persona";
 import UserCheckIcon from "~/icons/user-check";
 import UserPlusIcon from "~/icons/user-plus";
@@ -47,10 +48,18 @@ const UserWithAction = (props: UserWithActionProps): React.ReactElement => {
             alt: `${user.name}'s avatar`
           }}
           component_props={{
-            secondary_text: { ellipsis: true },
-            primary_text: { ellipsis: true }
+            secondary_text: { ellipsis: true }
           }}
-          primary_text={user.name}
+          primary_text={
+            <Typography
+              as={"span"}
+              ellipsis
+              level={"body2"}
+              style={{ color: "inherit", fontWeight: "inherit" }}
+            >
+              {user.name}
+            </Typography>
+          }
           secondary_text={`@${user.username}`}
         />
       </NextLink>
