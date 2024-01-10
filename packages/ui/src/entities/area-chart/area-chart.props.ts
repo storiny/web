@@ -1,31 +1,50 @@
+import { LinearGradientProps } from "@visx/gradient/lib/gradients/LinearGradient";
+import { ParentSizeProps } from "@visx/responsive/lib/components/ParentSize";
+import { AnimatedAxisProps } from "@visx/xychart/lib/components/axis/AnimatedAxis";
+import { AnimatedGridProps } from "@visx/xychart/lib/components/grid/AnimatedGrid";
+import { TooltipProps } from "@visx/xychart/lib/components/Tooltip";
+import { XYChartProps } from "@visx/xychart/lib/components/XYChart";
 import React from "react";
 
-import { TypographyProps } from "~/components/typography";
+import { DATE_SCALE_CONFIG, VALUE_SCALE_CONFIG } from "./area-chart";
 
-export interface AreaChartProps extends React.ComponentPropsWithoutRef<"div"> {
+export interface AreaChartDatum {
   /**
-   * Optional caption for the block
+   * The date part (for x-axis)
    */
-  caption?: React.ReactNode;
+  date: string;
   /**
-   * Icon for the caption. Pass `increment` or `decrement` to render preset
-   * icons, or pass a custom icon.
+   * The value part (for y-axis)
    */
-  caption_icon?: "increment" | "decrement" | React.ReactNode;
-  /**
-   * The props passed to the individual entity components
-   */
-  component_props?: {
-    caption?: TypographyProps;
-    label?: TypographyProps;
-    value?: TypographyProps;
-  };
-  /**
-   * Label for the block
-   */
-  label: React.ReactNode;
-  /**
-   * Value for the block
-   */
-  value: React.ReactNode;
+  value: number;
 }
+
+export type AreaChartData = AreaChartDatum[];
+
+export type AreaChartProps = ParentSizeProps &
+  React.ComponentPropsWithoutRef<"div"> & {
+    /**
+     * The props passed to the individual entity components
+     */
+    component_props?: {
+      axis_x?: AnimatedAxisProps<any>;
+      axis_y?: AnimatedAxisProps<any>;
+      gradient?: LinearGradientProps;
+      grid_x?: AnimatedGridProps;
+      grid_y?: AnimatedGridProps;
+      tooltip?: TooltipProps<AreaChartDatum>;
+      xy_chart?: XYChartProps<
+        typeof DATE_SCALE_CONFIG,
+        typeof VALUE_SCALE_CONFIG,
+        AreaChartDatum
+      >;
+    };
+    /**
+     * Data for the chart
+     */
+    data: AreaChartData;
+    /**
+     * Override the number of ticks
+     */
+    num_ticks?: number;
+  };

@@ -1,6 +1,15 @@
+.grid {
+  opacity: 0.5;
+
+  &.column {
+    opacity: 0.65;
+  }
+}
+
 .tooltip {
   position: absolute;
-  padding: 5px 10px;
+  padding: 10px 10px 5px;
+  gap: 6px;
   font-size: 12px;
   line-height: 17px;
   color: var(--fg-minor);
@@ -8,4 +17,18 @@
   box-shadow: var(--ridge-xs), var(--shadow-lg);
   border-radius: var(--radius-md);
   pointer-events: none;
+}
+
+.tooltip-value {
+  gap: 8px;
+  color: var(--fg-major);
+  justify-content: space-between !important;
+}
+
+.tooltip-marker {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--inverted-400);
+  background-color: var(--bg-body);
 }
