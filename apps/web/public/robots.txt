@@ -11,7 +11,16 @@ Disallow: /doc/
 Disallow: /_next/
 Disallow: /gateway-error
 
+User-agent: Mediapartners-Google
+Disallow: /
+
 User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
 Disallow: /
 
 Sitemap: https://sitemaps.storiny.com/index.xml
