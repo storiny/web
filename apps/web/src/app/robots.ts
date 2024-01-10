@@ -20,7 +20,8 @@ const robots = (): MetadataRoute.Robots => ({
       "/auth/reset-password/",
       "/auth/verify-email$",
       "/auth/verify-email/",
-      "/gateway-error$"
+      "/gateway-error$",
+      "/_next/"
     ]
   },
   sitemap: "https://sitemaps.storiny.com/index.xml"
