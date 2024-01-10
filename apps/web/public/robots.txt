@@ -1,0 +1,17 @@
+User-agent: *
+Disallow: /auth$
+Disallow: /logout$
+Disallow: /login$
+Disallow: /signup$
+Disallow: /profile$
+Disallow: /handler$
+Disallow: /new$
+Disallow: /api/
+Disallow: /doc/
+Disallow: /_next/
+Disallow: /gateway-error
+
+User-agent: GPTBot
+Disallow: /
+
+Sitemap: https://sitemaps.storiny.com/index.xml
