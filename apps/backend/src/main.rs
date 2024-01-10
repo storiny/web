@@ -185,6 +185,8 @@ fn main() -> io::Result<()> {
                 // Postgres
                 let db_pool = match PgPoolOptions::new()
                     .max_connections(30)
+                    .min_connections(1)
+                    .idle_timeout(Some(Duration::from_secs(120)))
                     .connect(&config.database_url)
                     .await
                 {
