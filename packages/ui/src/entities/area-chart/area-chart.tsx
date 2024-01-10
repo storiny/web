@@ -1,18 +1,18 @@
 import { curveStep as curve_step } from "@visx/curve";
 import { LinearGradient } from "@visx/gradient";
-import city_temperature, {
-  CityTemperature
-} from "@visx/mock-data/lib/mocks/cityTemperature";
+import apple_stock, { AppleStock } from "@visx/mock-data/lib/mocks/appleStock";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
-import { withTooltip as with_tooltip } from "@visx/tooltip";
+import {
+  scaleLinear as scale_linear,
+  scaleTime as scale_time
+} from "@visx/scale";
+import { extent, max } from "@visx/vendor/d3-array";
 import {
   AnimatedAreaSeries,
-  AnimatedAreaStack,
   AnimatedAxis,
   AnimatedGrid,
   buildChartTheme as build_chart_theme,
   Tooltip,
-  TooltipData,
   XYChart
 } from "@visx/xychart";
 import clsx from "clsx";
@@ -20,14 +20,13 @@ import React from "react";
 
 import { select_theme } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import styles from "./area-chart.module.scss";
 import { AreaChartProps } from "./area-chart.props";
 
-const date_scale_config = { type: "band", padding_inner: 0.3 } as const;
-const temperature_scale_config = { type: "linear" } as const;
-const num_ticks = 6;
-const data = city_temperature.slice(40, 275);
+const num_ticks = 8;
+const data = apple_stock.slice(0, 90);
 
 const chart_theme = build_chart_theme({
   /* eslint-disable prefer-snakecase/prefer-snakecase */
@@ -42,46 +41,34 @@ const chart_theme = build_chart_theme({
   /* eslint-enable prefer-snakecase/prefer-snakecase */
 });
 
-const getDate = (d: CityTemperature): string => d.date;
-const get_sf_temperature = (d: CityTemperature): number =>
-  Number(d["San Francisco"]);
-const get_ny_temperature = (d: CityTemperature): number =>
-  -Number(d["New York"]) / 10;
-const get_austin_temperature = (d: CityTemperature): number => Number(d.Austin);
+const get_date = (d: AppleStock): Date => new Date(d.date);
+const get_value = (d: AppleStock): number => d.close;
 
 export type XYChartProps = {
   height: number;
   width: number;
 };
 
-type City = "San Francisco" | "New York" | "Austin";
-
 const Example = ({ height }: XYChartProps): React.ReactNode => {
-  const grad_1 = React.useId();
-  const grad_2 = React.useId();
+  const gradient_id = React.useId();
   const theme = use_app_selector(select_theme);
-  const accessors = React.useMemo(
-    () => ({
-      x: {
-        "San Francisco": getDate,
-        "New York": getDate,
-        Austin: getDate
-      },
-      y: {
-        "San Francisco": get_sf_temperature,
-        "New York": get_ny_temperature,
-        Austin: get_austin_temperature
-      },
-      date: getDate
-    }),
+
+  const date_scale = React.useMemo(
+    () =>
+      scale_time({
+        range: [0, innerWidth],
+        domain: extent(data, get_date) as [Date, Date]
+      }),
     []
   );
 
-  const config = React.useMemo(
-    () => ({
-      x: date_scale_config,
-      y: temperature_scale_config
-    }),
+  const value_scale = React.useMemo(
+    () =>
+      scale_linear({
+        range: [innerHeight, 0],
+        domain: [0, (max(data, get_value) || 0) + innerHeight / 3],
+        nice: true
+      }),
     []
   );
 
@@ -89,8 +76,9 @@ const Example = ({ height }: XYChartProps): React.ReactNode => {
     <XYChart
       height={Math.min(600, height)}
       theme={chart_theme}
-      xScale={config.x}
-      yScale={config.y}
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+      xScale={{ type: "band", paddingInner: 0.3 }}
+      yScale={{ type: "linear" }}
     >
       <LinearGradient
         from={
@@ -98,18 +86,9 @@ const Example = ({ height }: XYChartProps): React.ReactNode => {
             ? "rgba(75, 81, 88, 0.20)"
             : "rgba(255, 255, 255, 0.20)"
         }
-        id={grad_1}
+        id={gradient_id}
         stroke={"red"}
         to="transparent"
-      />
-      <LinearGradient
-        from="transparent"
-        id={grad_2}
-        to={
-          theme === "light"
-            ? "rgba(255, 213, 0, 0.35)"
-            : "rgba(255, 231, 112, 0.25)"
-        }
       />
       <AnimatedGrid
         animationTrajectory={"center"}
@@ -125,38 +104,19 @@ const Example = ({ height }: XYChartProps): React.ReactNode => {
         numTicks={num_ticks}
         rows
       />
-      <>
-        <AnimatedAreaSeries
-          curve={curve_step}
-          data={data}
-          dataKey="San Francisco"
-          fill={`url(#${grad_1})`}
-          lineProps={{
-            stroke: "var(--inverted-400)",
-            strokeWidth: 1
-          }}
-          renderLine
-          stroke={"var(--inverted-400)"}
-          strokeOpacity={0.25}
-          xAccessor={accessors.x["San Francisco"]}
-          yAccessor={accessors.y["San Francisco"]}
-        />
-        <AnimatedAreaSeries
-          curve={curve_step}
-          data={data}
-          dataKey="New York"
-          fill={`url(#${grad_2})`}
-          lineProps={{
-            stroke: "var(--lemon-400)",
-            strokeWidth: 1
-          }}
-          renderLine
-          stroke={"var(--lemon-400)"}
-          strokeOpacity={0.25}
-          xAccessor={accessors.x["New York"]}
-          yAccessor={accessors.y["New York"]}
-        />
-      </>
+      <AnimatedAreaSeries
+        curve={curve_step}
+        data={data}
+        dataKey=""
+        fill={`url(#${gradient_id})`}
+        lineProps={{
+          stroke: "var(--inverted-400)",
+          strokeWidth: 1
+        }}
+        renderLine
+        xAccessor={(x): number => date_scale(get_date(x)) ?? 0}
+        yAccessor={(x): number => value_scale(get_value(x)) ?? 0}
+      />
       <AnimatedAxis
         animationTrajectory={"center"}
         numTicks={num_ticks}
@@ -170,10 +130,15 @@ const Example = ({ height }: XYChartProps): React.ReactNode => {
         orientation={"right"}
         stroke={"none"}
       />
-      <Tooltip<CityTemperature>
+      <Tooltip<AppleStock>
         applyPositionStyle
         className={styles.tooltip}
-        glyphStyle={{}}
+        glyphStyle={{
+          r: 5,
+          stroke: "var(--inverted-400)",
+          strokeWidth: 2,
+          fill: "var(--bg-body)"
+        }}
         renderTooltip={({
           tooltipData: tooltip_data,
           colorScale: color_scale
@@ -181,39 +146,33 @@ const Example = ({ height }: XYChartProps): React.ReactNode => {
           <>
             {/** date */}
             {(tooltip_data?.nearestDatum?.datum &&
-              accessors.date(tooltip_data?.nearestDatum?.datum)) ||
+              date_scale(get_date(tooltip_data?.nearestDatum?.datum))) ||
               "No date"}
             <br />
             <br />
             {/** temperatures */}
-            {(
-              Object.keys(tooltip_data?.datumByKey ?? {}).filter(
-                (city) => city
-              ) as City[]
-            ).map((city) => {
-              const temperature =
-                tooltip_data?.nearestDatum?.datum &&
-                accessors.y[city](tooltip_data?.nearestDatum?.datum);
+            {Object.keys(tooltip_data?.datumByKey ?? {})
+              .filter((city) => city)
+              .map((city) => {
+                const value =
+                  tooltip_data?.nearestDatum?.datum &&
+                  get_value(tooltip_data?.nearestDatum?.datum);
 
-              return (
-                <div key={city}>
-                  <em
-                    style={{
-                      color: color_scale?.(city),
-                      textDecoration:
-                        tooltip_data?.nearestDatum?.key === city
-                          ? "underline"
-                          : undefined
-                    }}
-                  >
-                    {city}
-                  </em>{" "}
-                  {temperature == null || Number.isNaN(temperature)
-                    ? "–"
-                    : `${temperature}° F`}
-                </div>
-              );
-            })}
+                return (
+                  <div key={city}>
+                    <em
+                      style={{
+                        color: color_scale?.(city)
+                      }}
+                    >
+                      {city}
+                    </em>{" "}
+                    {value == null || Number.isNaN(value)
+                      ? "–"
+                      : abbreviate_number(value)}
+                  </div>
+                );
+              })}
           </>
         )}
         showDatumGlyph
