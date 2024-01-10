@@ -2338,6 +2338,66 @@ WHERE id = $1
         Ok(())
     }
 
+    #[sqlx::test(fixtures("user"))]
+    async fn can_reset_is_deleted_by_user_when_recovering_the_story(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
+
+        // Soft-delete the story
+        let update_result = sqlx::query(
+            r#"
+UPDATE stories
+SET
+    deleted_at = NOW(),
+    is_deleted_by_user = TRUE
+WHERE id = $1
+RETURNING is_deleted_by_user
+"#,
+        )
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            update_result
+                .get::<Option<bool>, _>("is_deleted_by_user")
+                .unwrap()
+        );
+
+        // Recover the story
+        sqlx::query(
+            r#"
+UPDATE stories
+SET deleted_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Should reset the `is_deleted_by_user` flag
+        let result = sqlx::query(
+            r#"
+SELECT is_deleted_by_user FROM stories
+WHERE id = $1
+"#,
+        )
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<bool>, _>("is_deleted_by_user")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
     //
 
     #[sqlx::test(fixtures("user"))]

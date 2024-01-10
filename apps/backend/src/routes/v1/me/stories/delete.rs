@@ -62,7 +62,8 @@ async fn delete(
 UPDATE stories
 SET
     deleted_at = NOW(),
-    published_at = NULL
+    published_at = NULL,
+    is_deleted_by_user = TRUE
 WHERE
     user_id = $1
     AND id = $2
@@ -142,7 +143,11 @@ VALUES ($1, $2, NOW())
         // Story should get soft-deleted and unpublished.
         let result = sqlx::query(
             r#"
-SELECT deleted_at, published_at FROM stories
+SELECT
+    deleted_at,
+    published_at,
+    is_deleted_by_user
+FROM stories
 WHERE id = $1
 "#,
         )
@@ -160,6 +165,7 @@ WHERE id = $1
                 .get::<Option<OffsetDateTime>, _>("published_at")
                 .is_none()
         );
+        assert!(result.get::<Option<bool>, _>("is_deleted_by_user").unwrap());
 
         Ok(())
     }
