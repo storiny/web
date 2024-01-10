@@ -1,7 +1,3 @@
-DROP TRIGGER IF EXISTS user_after_update_trigger ON users;
-
-DROP FUNCTION IF EXISTS user_after_update_trigger_proc;
-
 CREATE OR REPLACE FUNCTION user_after_update_trigger_proc(
 )
 	RETURNS TRIGGER
@@ -166,7 +162,7 @@ BEGIN
 			deleted_at = NULL
 		WHERE
 			  deleted_at IS NOT NULL
-		  AND is_deleted_by_user <> TRUE
+		  AND is_deleted_by_user IS NOT TRUE
 		  AND user_id = NEW.id;
 		--
 		-- Restore comments
