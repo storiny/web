@@ -2367,7 +2367,7 @@ RETURNING is_deleted_by_user
         );
 
         // Recover the story
-        sqlx::query(
+        let result = sqlx::query(
             r#"
 UPDATE stories
 SET deleted_at = NULL
@@ -2377,6 +2377,8 @@ WHERE id = $1
         .bind(story_id)
         .execute(&mut *conn)
         .await?;
+
+        assert_eq!(result.rows_affected(), 1);
 
         // Should reset the `is_deleted_by_user` flag
         let result = sqlx::query(

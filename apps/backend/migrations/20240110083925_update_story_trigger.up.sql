@@ -1,6 +1,76 @@
-DROP TRIGGER IF EXISTS story_after_update_trigger ON stories;
+CREATE OR REPLACE FUNCTION story_before_update_trigger_proc(
+)
+	RETURNS TRIGGER
+AS
+$$
+BEGIN
+	-- Story soft-deleted or unpublished
+	IF ((OLD.deleted_at IS NULL AND NEW.deleted_at IS NOT NULL) OR
+		(OLD.published_at IS NOT NULL AND NEW.published_at IS NULL)) THEN
+		-- Reset `view_count` and `read_count` as a penalty
+		NEW.view_count := 0;
+		NEW.read_count := 0;
+		NEW.edited_at := NULL;
+		-- Also delete all the read analytics data
+		DELETE
+		FROM
+			story_reads
+		WHERE
+			story_id = NEW.id;
+		--
+		-- Decrement `story_count` on user if the story was previously published
+		IF (OLD.published_at IS NOT NULL) THEN
+			UPDATE
+				users
+			SET
+				story_count = story_count - 1
+			WHERE
+				  id = NEW.user_id
+			  AND story_count > 0;
+		END IF;
+		--
+		RETURN NEW;
+		--
+	END IF;
+	--
+	-- Story recovered
+	IF (OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL) THEN
+		-- Reset `is_deleted_by_user` flag
+		NEW.is_deleted_by_user := NULL;
+	END IF;
+	--
+	-- Story (that was already published) recovered or a draft is published
+	IF ((OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL AND OLD.published_at IS NOT NULL) OR
+		(OLD.published_at IS NULL AND NEW.published_at IS NOT NULL)) THEN
+		--
+		IF (OLD.published_at IS NULL AND NEW.published_at IS NOT NULL) THEN
+			-- Update `first_published_at` on publishing the story
+			NEW.first_published_at := NEW.published_at;
+		END IF;
+		--
+		-- Increment `story_count` on user
+		UPDATE
+			users
+		SET
+			story_count = story_count + 1
+		WHERE
+			id = NEW.user_id;
+		--
+	END IF;
+	--
+	RETURN NEW;
+END;
+$$
+	LANGUAGE plpgsql;
 
-DROP FUNCTION IF EXISTS story_after_update_trigger_proc;
+CREATE OR REPLACE TRIGGER story_before_update_trigger
+	BEFORE UPDATE
+	ON stories
+	FOR EACH ROW
+	WHEN (OLD.deleted_at IS DISTINCT FROM NEW.deleted_at OR OLD.published_at IS DISTINCT FROM NEW.published_at)
+EXECUTE PROCEDURE story_before_update_trigger_proc();
+
+--
 
 CREATE OR REPLACE FUNCTION story_after_update_trigger_proc(
 )
@@ -93,9 +163,6 @@ BEGIN
 	-- Story (published) recovered or published
 	IF ((NEW.published_at IS NOT NULL AND OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL) OR
 		(OLD.published_at IS NULL AND NEW.published_at IS NOT NULL)) THEN
-		-- Reset `is_deleted_by_user` flag
-		NEW.is_deleted_by_user := NULL;
-		--
 		-- Restore comments
 		UPDATE
 			comments AS c
