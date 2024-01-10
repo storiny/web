@@ -360,6 +360,190 @@ WHERE id = $1
         Ok(())
     }
 
+    #[sqlx::test]
+    async fn should_not_recover_stories_deleted_by_user_when_recovering_the_user(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert a story
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO stories (user_id, is_deleted_by_user)
+VALUES ($1, TRUE)
+RETURNING id, deleted_at, is_deleted_by_user
+"#,
+        )
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(insert_result.try_get::<i64, _>("id").is_ok());
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+        assert!(
+            insert_result
+                .get::<Option<bool>, _>("is_deleted_by_user")
+                .unwrap()
+        );
+
+        // Soft-delete the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Story should be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM stories
+WHERE id = $1
+"#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deleted_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Story should not be restored
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM stories
+WHERE id = $1
+"#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn should_not_recover_stories_deleted_by_user_when_reactivating_the_user(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert a story
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO stories (user_id, is_deleted_by_user)
+VALUES ($1, TRUE)
+RETURNING id, deleted_at, is_deleted_by_user
+"#,
+        )
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(insert_result.try_get::<i64, _>("id").is_ok());
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+        assert!(
+            insert_result
+                .get::<Option<bool>, _>("is_deleted_by_user")
+                .unwrap()
+        );
+
+        // Deactivate the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Story should be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM stories
+WHERE id = $1
+"#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Reactivate the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deactivated_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Story should not be restored
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM stories
+WHERE id = $1
+"#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        Ok(())
+    }
+
     // Comments
 
     #[sqlx::test(fixtures("story"))]
