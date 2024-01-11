@@ -85,10 +85,10 @@ const Footer = (props: FooterProps): React.ReactElement => {
               <ListItem href={"/explore"} level={"body2"}>
                 Categories
               </ListItem>
-              <ListItem href={"/explore?sort=popular"} level={"body2"}>
+              <ListItem href={"/explore?tab=stories"} level={"body2"}>
                 Popular stories
               </ListItem>
-              <ListItem href={"/tags"} level={"body2"}>
+              <ListItem href={"/explore?tab=tags"} level={"body2"}>
                 Tags
               </ListItem>
             </List>
@@ -125,7 +125,7 @@ const Footer = (props: FooterProps): React.ReactElement => {
             </Typography>
             <List>
               <ListItem
-                href={"https://help.storiny.com"}
+                href={"mailto:support@storiny.com"}
                 level={"body2"}
                 target={"_blank"}
               >
@@ -135,7 +135,7 @@ const Footer = (props: FooterProps): React.ReactElement => {
                 Legal
               </ListItem>
               <ListItem
-                href={"https://help.storiny.com/contact"}
+                href={"mailto:support@storiny.com"}
                 level={"body2"}
                 target={"_blank"}
               >
