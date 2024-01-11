@@ -6,7 +6,7 @@ import { TooltipProps } from "@visx/xychart/lib/components/Tooltip";
 import { XYChartProps } from "@visx/xychart/lib/components/XYChart";
 import React from "react";
 
-import { DATE_SCALE_CONFIG, VALUE_SCALE_CONFIG } from "./area-chart";
+import { DATE_SCALE_CONFIG, VALUE_SCALE_CONFIG } from "./mercator";
 
 export interface AreaChartDatum {
   /**
@@ -21,7 +21,7 @@ export interface AreaChartDatum {
 
 export type AreaChartData = AreaChartDatum[];
 
-export type AreaChartProps = Omit<ParentSizeProps, "children"> &
+export type MercatorProps = Omit<ParentSizeProps, "children"> &
   React.ComponentPropsWithoutRef<"div"> & {
     /**
      * The `aria-label` for the chart SVG
