@@ -1,0 +1,40 @@
+.svg {
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+@at-root html[data-theme="dark"] {
+  .path {
+    --fill-channel: 0deg 0% 99%;
+  }
+}
+
+.path {
+  --fill-channel: 0deg 0% 22%;
+
+  fill: hsla(var(--fill-channel) / var(--fill-strength, 12%));
+  stroke: var(--bg-body);
+  stroke-width: 1;
+  fill-opacity: 1;
+  vector-effect: non-scaling-stroke;
+
+  &:hover {
+    stroke: var(--inverted-400);
+    stroke-width: 1.5;
+    fill-opacity: 0.5;
+  }
+}
+
+.tooltip {
+  position: absolute;
+  padding: 5px 10px;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--fg-minor);
+  background-color: var(--bg-elevation-sm);
+  box-shadow: var(--ridge-xs), var(--shadow-lg);
+  border-radius: var(--radius-md);
+  pointer-events: none;
+}
