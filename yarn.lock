@@ -7045,6 +7045,7 @@ __metadata:
     "@visx/axis": ^3.5.0
     "@visx/event": ^3.3.0
     "@visx/gradient": ^3.3.0
+    "@visx/legend": ^3.5.0
     "@visx/mock-data": ^3.3.0
     "@visx/react-spring": ^3.5.1
     "@visx/responsive": ^3.3.0
@@ -9709,6 +9710,21 @@ __metadata:
   peerDependencies:
     react: ^16.0.0-0 || ^17.0.0-0 || ^18.0.0-0
   checksum: a2f950664f43f1f1700a329f3a66bc3921ce8be35a93095a9ea28334ae4f9943c1082f21ba0f57f2bda913d2a40da8b7124235c2ae666c0e5d58a900c7148a8b
+  languageName: node
+  linkType: hard
+
+"@visx/legend@npm:^3.5.0":
+  version: 3.5.0
+  resolution: "@visx/legend@npm:3.5.0"
+  dependencies:
+    "@types/react": "*"
+    "@visx/group": 3.3.0
+    "@visx/scale": 3.5.0
+    classnames: ^2.3.1
+    prop-types: ^15.5.10
+  peerDependencies:
+    react: ^16.3.0-0 || ^17.0.0-0 || ^18.0.0-0
+  checksum: 633793c795140c41d85bcc799fac075b75c19acb942fd8f0461616733142ad04930eeed55ef216f4d078605ab659e6976a50ddcaf7f2a039fb59f80cd8d0b5c1
   languageName: node
   linkType: hard
 

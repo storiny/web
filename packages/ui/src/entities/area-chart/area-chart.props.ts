@@ -24,6 +24,10 @@ export type AreaChartData = AreaChartDatum[];
 export type AreaChartProps = ParentSizeProps &
   React.ComponentPropsWithoutRef<"div"> & {
     /**
+     * The `aria-label` for the chart SVG
+     */
+    accessibility_label: string;
+    /**
      * The props passed to the individual entity components
      */
     component_props?: {
@@ -43,6 +47,10 @@ export type AreaChartProps = ParentSizeProps &
      * Data for the chart
      */
     data: AreaChartData;
+    /**
+     * The label for the chart
+     */
+    label: string;
     /**
      * Override the number of ticks
      */

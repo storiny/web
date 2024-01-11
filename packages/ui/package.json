@@ -72,6 +72,7 @@
     "@visx/axis": "^3.5.0",
     "@visx/event": "^3.3.0",
     "@visx/gradient": "^3.3.0",
+    "@visx/legend": "^3.5.0",
     "@visx/react-spring": "^3.5.1",
     "@visx/responsive": "^3.3.0",
     "@visx/scale": "^3.5.0",
