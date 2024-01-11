@@ -4,7 +4,7 @@ import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
 
-import AreaChart from "./area-chart";
+import Mercator from "./mercator";
 
 const DATA = apple_stock.slice(0, 90).map((stock) => ({
   value: stock.close,
@@ -14,7 +14,7 @@ const DATA = apple_stock.slice(0, 90).map((stock) => ({
 describe("<StatBlock />", () => {
   it("renders", () => {
     render_test_with_provider(
-      <AreaChart
+      <Mercator
         accessibility_label={"test area chart"}
         data={DATA}
         label={"test"}
@@ -25,7 +25,7 @@ describe("<StatBlock />", () => {
 
   it("does not have any accessibility violations", async () => {
     const { container } = render_test_with_provider(
-      <AreaChart
+      <Mercator
         accessibility_label={"test area chart"}
         data={DATA}
         label={"test"}

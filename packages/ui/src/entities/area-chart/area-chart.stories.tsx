@@ -13,6 +13,7 @@ const meta: Meta<typeof AreaChart> = {
       value: stock.close,
       date: stock.date
     })),
+    accessibility_label: "Sample area chart",
     label: "Label",
     // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     style: { width: 640, minHeight: 300 }

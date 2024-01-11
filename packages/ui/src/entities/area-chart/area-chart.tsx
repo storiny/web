@@ -183,6 +183,7 @@ const AreaChart = (props: AreaChartProps): React.ReactElement => {
             />
             <Tooltip<AreaChartDatum>
               applyPositionStyle
+              detectBounds
               glyphStyle={{
                 r: 5,
                 stroke: "var(--inverted-400)",
