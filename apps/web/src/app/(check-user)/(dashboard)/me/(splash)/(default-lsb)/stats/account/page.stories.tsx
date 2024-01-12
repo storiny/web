@@ -5,10 +5,9 @@ import React from "react";
 
 import { render_with_state } from "~/redux/mock";
 
-import DashboardLayout from "../../../../../../layout";
-import DashboardSplashLayout from "../../../../layout";
-import DefaultDashboardLeftSidebarLayout from "../../../layout";
-import DefaultDashboardRightSidebarLayout from "../../layout";
+import DashboardLayout from "../../../../../layout";
+import DashboardSplashLayout from "../../../layout";
+import DefaultDashboardLeftSidebarLayout from "../../layout";
 import AccountMetricsPage from "./client";
 
 const meta: Meta<typeof AccountMetricsPage> = {
@@ -30,9 +29,7 @@ export const Default: Story = {
         <DashboardLayout>
           <DashboardSplashLayout>
             <DefaultDashboardLeftSidebarLayout>
-              <DefaultDashboardRightSidebarLayout>
-                <Story />
-              </DefaultDashboardRightSidebarLayout>
+              <Story />
             </DefaultDashboardLeftSidebarLayout>
           </DashboardSplashLayout>
         </DashboardLayout>,

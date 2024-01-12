@@ -4,6 +4,7 @@ import React from "react";
 import Typography from "~/components/typography";
 import CaretUpIcon from "~/icons/caret-up";
 import css from "~/theme/main.module.scss";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import styles from "./stat-block.module.scss";
 import { StatBlockProps } from "./stat-block.props";
@@ -36,7 +37,7 @@ const StatBlock = (props: StatBlockProps): React.ReactElement => {
         {...component_props?.value}
         className={clsx(css["t-bold"], styles.value)}
       >
-        {value}
+        {typeof value === "number" ? abbreviate_number(value) : value}
       </Typography>
       {Boolean(caption) && (
         <Typography

@@ -5,15 +5,14 @@ import React from "react";
 
 import { render_with_state } from "~/redux/mock";
 
-import DashboardLayout from "../../../../../../../../layout";
-import DashboardSplashLayout from "../../../../../../layout";
-import DefaultDashboardLeftSidebarLayout from "../../../../../layout";
-import DefaultDashboardRightSidebarLayout from "../../../../layout";
-import ContentStoryMetricsPage from "./client";
+import DashboardLayout from "../../../../../layout";
+import DashboardSplashLayout from "../../../layout";
+import DefaultDashboardLeftSidebarLayout from "../../layout";
+import StoriesMetricsPage from "./client";
 
-const meta: Meta<typeof ContentStoryMetricsPage> = {
-  title: "dashboard/content/stories/metrics",
-  component: ContentStoryMetricsPage,
+const meta: Meta<typeof StoriesMetricsPage> = {
+  title: "dashboard/stats/stories",
+  component: StoriesMetricsPage,
   parameters: {
     layout: "fullscreen"
   },
@@ -21,7 +20,7 @@ const meta: Meta<typeof ContentStoryMetricsPage> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof ContentStoryMetricsPage>;
+type Story = StoryObj<typeof StoriesMetricsPage>;
 
 export const Default: Story = {
   decorators: [
@@ -30,9 +29,7 @@ export const Default: Story = {
         <DashboardLayout>
           <DashboardSplashLayout>
             <DefaultDashboardLeftSidebarLayout>
-              <DefaultDashboardRightSidebarLayout>
-                <Story />
-              </DefaultDashboardRightSidebarLayout>
+              <Story />
             </DefaultDashboardLeftSidebarLayout>
           </DashboardSplashLayout>
         </DashboardLayout>,

@@ -13,6 +13,7 @@ import "./comments";
 import "./replies";
 import "./stories";
 import "./settings";
+import "./stats";
 import "./followed-tags";
 import "./relations";
 import "./blocked-users";
