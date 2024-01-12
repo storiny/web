@@ -1,44 +1,40 @@
 import { axe } from "@storiny/test-utils";
 import React from "react";
 
+import HomeIcon from "~/icons/home";
 import { render_test_with_provider } from "~/redux/test-utils";
 
-import Mercator from "./mercator";
+import StatBars from "./stat-bars";
 
 const DATA = {
-  JP: 245,
-  IN: 128,
-  CA: 1024,
-  DK: 17,
-  HU: 199,
-  MX: 12
-};
+  Internal: 256,
+  "twitter.com": 56,
+  "example.com": 118,
+  "google.com": 95,
+  "bing.com": 166
+} as const;
 
 describe("<StatBlock />", () => {
   it("renders", () => {
     render_test_with_provider(
-      <Mercator
-        accessibility_label={"test mercator"}
+      <StatBars
         data={DATA}
-        label={{
-          plural: "visitors",
-          singular: "visitor"
+        icon_map={{
+          Internal: <HomeIcon />
         }}
-        style={{ width: 640 }}
+        max_value={500}
       />
     );
   });
 
   it("does not have any accessibility violations", async () => {
     const { container } = render_test_with_provider(
-      <Mercator
-        accessibility_label={"test mercator"}
+      <StatBars
         data={DATA}
-        label={{
-          plural: "visitors",
-          singular: "visitor"
+        icon_map={{
+          Internal: <HomeIcon />
         }}
-        style={{ width: 640 }}
+        max_value={500}
       />
     );
 

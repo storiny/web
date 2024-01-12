@@ -67,6 +67,9 @@ const preferences_schema = z.object({
   theme: z
     .union([z.literal("system"), z.literal("light"), z.literal("dark")])
     .catch("system"),
+  resolved_theme: z
+    .union([z.literal("light"), z.literal("dark")])
+    .catch("dark"),
   show_appearance_alert: z.boolean().catch(true),
   show_accessibility_alert: z.boolean().catch(true),
   show_font_settings_notification: z.boolean().catch(true),
@@ -211,6 +214,10 @@ export const preferences_slice = create_slice({
      */
     set_theme: (state, action: PayloadAction<Theme>) => {
       state.theme = action.payload;
+
+      if (typeof window !== "undefined") {
+        state.resolved_theme = resolve_theme_value(action.payload);
+      }
     }
   }
 });
@@ -313,7 +320,12 @@ export const add_preferences_listeners = (
             hydrate_state(
               preferences_schema.parse({
                 ...JSON.parse(decompress_from_utf16(client_value)),
-                theme: theme_value || "system"
+                theme: theme_value || "system",
+                resolved_theme: resolve_theme_value(
+                  ["light", "dark"].includes(theme_value || "")
+                    ? (theme_value as "light" | "dark")
+                    : "system"
+                )
               })
             )
           );
@@ -430,7 +442,8 @@ export const add_preferences_listeners = (
         const serialized_state = compress_to_utf16(
           JSON.stringify({
             ...listener_api.getState().preferences,
-            theme: undefined
+            theme: undefined,
+            resolved_theme: undefined
           })
         );
         localStorage.setItem(PREFERENCES_STORAGE_KEY, serialized_state);

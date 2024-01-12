@@ -2,18 +2,11 @@ import { ParentSizeProps } from "@visx/responsive/lib/components/ParentSize";
 
 import { AspectRatioProps } from "~/components/aspect-ratio";
 
-export interface MercatorDatum {
-  /**
-   * The country code in ISO 3166-1 alpha-2 format
-   */
-  code: string;
-  /**
-   * The value for the country code
-   */
-  value: number;
-}
-
-export type MercatorData = MercatorDatum[];
+/**
+ * The data for mercator, key-value pairs of country codes and their
+ * corresponding values.
+ */
+export type MercatorData = Record<string, number>;
 
 export type MercatorProps = AspectRatioProps & {
   /**
@@ -30,4 +23,11 @@ export type MercatorProps = AspectRatioProps & {
    * Data for the chart
    */
   data: MercatorData;
+  /**
+   * The label for the tooltip
+   */
+  label: {
+    plural: string;
+    singular: string;
+  };
 };

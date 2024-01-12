@@ -16,16 +16,16 @@ import {
 import clsx from "clsx";
 import React from "react";
 
-import { select_theme } from "~/redux/features";
+import AspectRatio from "~/components/aspect-ratio";
+import { use_media_query } from "~/hooks/use-media-query";
+import { select_resolved_theme } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import styles from "./area-chart.module.scss";
 import { AreaChartDatum, AreaChartProps } from "./area-chart.props";
-
-const DEFAULT_NUM_TICKS = 8;
-const MIN_HEIGHT = 300; // px
 
 // eslint-disable-next-line prefer-snakecase/prefer-snakecase
 export const DATE_SCALE_CONFIG = { type: "band", paddingInner: 0.3 } as const;
@@ -93,7 +93,7 @@ const ChartLegend = (): React.ReactElement | null => {
 const AreaChart = (props: AreaChartProps): React.ReactElement => {
   const {
     data,
-    num_ticks = DEFAULT_NUM_TICKS,
+    num_ticks: num_ticks_prop,
     style,
     component_props,
     label,
@@ -101,138 +101,153 @@ const AreaChart = (props: AreaChartProps): React.ReactElement => {
     ...rest
   } = props;
   const gradient_id = React.useId();
-  const theme = use_app_selector(select_theme);
+  const theme = use_app_selector(select_resolved_theme);
+  const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const num_ticks = num_ticks_prop ?? is_mobile ? 6 : 8;
 
   return (
-    <ParentSize {...rest} style={{ maxWidth: "100%", ...style }}>
-      {({ width, height }): React.ReactNode => (
-        <DataProvider
-          theme={chart_theme}
-          xScale={DATE_SCALE_CONFIG}
-          yScale={VALUE_SCALE_CONFIG}
-        >
-          <ChartLegend />
-          <XYChart<
-            typeof DATE_SCALE_CONFIG,
-            typeof VALUE_SCALE_CONFIG,
-            AreaChartDatum
+    <AspectRatio
+      {...rest}
+      ratio={is_mobile ? 1.5 : 1.75}
+      style={{ ...style, maxWidth: "100%" }}
+    >
+      <ParentSize {...component_props?.parent_size}>
+        {({ width, height }): React.ReactNode => (
+          <DataProvider
+            theme={chart_theme}
+            xScale={DATE_SCALE_CONFIG}
+            yScale={VALUE_SCALE_CONFIG}
           >
-            {...component_props?.xy_chart}
-            accessibilityLabel={accessibility_label}
-            height={Math.min(MIN_HEIGHT, height)}
-            width={width}
-          >
-            <LinearGradient
-              from={
-                theme === "light"
-                  ? "rgba(75, 81, 88, 0.20)"
-                  : "rgba(255, 255, 255, 0.20)"
-              }
-              to="transparent"
-              {...component_props?.gradient}
-              id={gradient_id}
-            />
-            <AnimatedGrid
-              animationTrajectory={"center"}
-              columns
-              numTicks={num_ticks}
-              rows={false}
-              {...component_props?.grid_y}
-              className={clsx(
-                styles.grid,
-                styles.column,
-                component_props?.grid_y?.className
-              )}
-              strokeDasharray={"5,4"}
-            />
-            <AnimatedGrid
-              animationTrajectory={"center"}
-              columns={false}
-              numTicks={num_ticks}
-              rows
-              {...component_props?.grid_x}
-              className={clsx(styles.grid, component_props?.grid_x?.className)}
-            />
-            <AnimatedAreaSeries
-              curve={curve_step}
-              data={data}
-              dataKey={label}
-              fill={`url(#${gradient_id})`}
-              lineProps={{
-                stroke: "var(--inverted-400)",
-                strokeWidth: 1
-              }}
-              renderLine
-              xAccessor={(x): string => format_date(get_date(x))}
-              yAccessor={(x): number => get_value(x) ?? 0}
-            />
-            <AnimatedAxis
-              animationTrajectory={"center"}
-              stroke={"none"}
-              {...component_props?.axis_x}
-              numTicks={num_ticks}
-              orientation={"bottom"}
-            />
-            <AnimatedAxis
-              animationTrajectory={"center"}
-              hideZero
-              stroke={"none"}
-              {...component_props?.axis_y}
-              numTicks={num_ticks}
-              orientation={"right"}
-            />
-            <Tooltip<AreaChartDatum>
-              applyPositionStyle
-              detectBounds
-              glyphStyle={{
-                r: 5,
-                stroke: "var(--inverted-400)",
-                strokeWidth: 2,
-                fill: "var(--bg-body)"
-              }}
-              renderTooltip={({
-                tooltipData: tooltip_data
-              }): React.ReactNode => (
-                <>
-                  <div
-                    className={clsx(
-                      css["flex-center"],
-                      styles["tooltip-value"]
-                    )}
-                  >
-                    <span className={styles["tooltip-marker"]} />
+            <ChartLegend />
+            <XYChart<
+              typeof DATE_SCALE_CONFIG,
+              typeof VALUE_SCALE_CONFIG,
+              AreaChartDatum
+            >
+              {...component_props?.xy_chart}
+              accessibilityLabel={accessibility_label}
+              height={height}
+              margin={{ top: 50, right: 50, bottom: 50, left: 18 }}
+              width={width}
+            >
+              <LinearGradient
+                from={
+                  theme === "light"
+                    ? "rgba(75, 81, 88, 0.20)"
+                    : "rgba(255, 255, 255, 0.20)"
+                }
+                to="transparent"
+                {...component_props?.gradient}
+                id={gradient_id}
+              />
+              <AnimatedGrid
+                animationTrajectory={"center"}
+                columns
+                numTicks={num_ticks}
+                rows={false}
+                {...component_props?.grid_y}
+                className={clsx(
+                  styles.grid,
+                  styles.column,
+                  component_props?.grid_y?.className
+                )}
+                strokeDasharray={"5,4"}
+              />
+              <AnimatedGrid
+                animationTrajectory={"center"}
+                columns={false}
+                numTicks={num_ticks}
+                rows
+                {...component_props?.grid_x}
+                className={clsx(
+                  styles.grid,
+                  component_props?.grid_x?.className
+                )}
+              />
+              <AnimatedAreaSeries
+                curve={curve_step}
+                data={data}
+                dataKey={label}
+                fill={`url(#${gradient_id})`}
+                key={theme}
+                lineProps={{
+                  stroke: "var(--inverted-400)",
+                  strokeWidth: 1
+                }}
+                renderLine
+                xAccessor={(x): string => format_date(get_date(x))}
+                yAccessor={(x): number => get_value(x) ?? 0}
+              />
+              <AnimatedAxis
+                animationTrajectory={"center"}
+                stroke={"none"}
+                {...component_props?.axis_x}
+                numTicks={num_ticks}
+                orientation={"bottom"}
+              />
+              <AnimatedAxis
+                animationTrajectory={"center"}
+                hideZero
+                stroke={"none"}
+                {...component_props?.axis_y}
+                numTicks={num_ticks}
+                orientation={"right"}
+              />
+              <Tooltip<AreaChartDatum>
+                applyPositionStyle
+                detectBounds
+                glyphStyle={{
+                  r: 5,
+                  stroke: "var(--inverted-400)",
+                  strokeWidth: 2,
+                  fill: "var(--bg-body)"
+                }}
+                renderTooltip={({
+                  tooltipData: tooltip_data
+                }): React.ReactNode => (
+                  <>
+                    <div
+                      className={clsx(
+                        css["flex-center"],
+                        styles["tooltip-value"]
+                      )}
+                    >
+                      <span className={styles["tooltip-marker"]} />
+                      {(tooltip_data?.nearestDatum?.datum &&
+                        abbreviate_number(
+                          get_value(tooltip_data?.nearestDatum?.datum)
+                        )) ||
+                        "No data"}
+                    </div>
                     {(tooltip_data?.nearestDatum?.datum &&
-                      abbreviate_number(
-                        get_value(tooltip_data?.nearestDatum?.datum)
+                      format_date(
+                        get_date(tooltip_data?.nearestDatum?.datum)
                       )) ||
-                      "No data"}
-                  </div>
-                  {(tooltip_data?.nearestDatum?.datum &&
-                    format_date(get_date(tooltip_data?.nearestDatum?.datum))) ||
-                    null}
-                </>
-              )}
-              showDatumGlyph
-              showVerticalCrosshair
-              snapTooltipToDatumX
-              snapTooltipToDatumY
-              unstyled
-              verticalCrosshairStyle={{
-                stroke: "var(--inverted-400)",
-                strokeWidth: 1
-              }}
-              {...component_props?.tooltip}
-              className={clsx(
-                css["flex-col"],
-                css["flex-center"],
-                styles.tooltip,
-                component_props?.tooltip?.className
-              )}
-            />
-          </XYChart>
-        </DataProvider>
-      )}
-    </ParentSize>
+                      null}
+                  </>
+                )}
+                showDatumGlyph
+                showVerticalCrosshair
+                snapTooltipToDatumX
+                snapTooltipToDatumY
+                unstyled
+                verticalCrosshairStyle={{
+                  stroke: "var(--inverted-400)",
+                  strokeWidth: 1
+                }}
+                {...component_props?.tooltip}
+                className={clsx(
+                  css["flex-col"],
+                  css["flex-center"],
+                  styles.tooltip,
+                  component_props?.tooltip?.className
+                )}
+              />
+            </XYChart>
+          </DataProvider>
+        )}
+      </ParentSize>
+    </AspectRatio>
   );
 };
 
