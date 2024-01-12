@@ -1,0 +1,43 @@
+.stat-bars {
+  padding-block: 8px;
+  gap: 8px;
+}
+
+.bar {
+  position: relative;
+  padding: 8px;
+  gap: 12px;
+  min-height: 35px;
+  max-height: 35px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    height: 30px;
+    width: var(--strength, 0%);
+    border-radius: var(--radius-xs);
+    background-color: var(--inverted-50);
+    transform: translateY(-50%);
+    z-index: -1;
+    pointer-events: none;
+  }
+}
+
+.label {
+  --icon-size: 16px;
+  --icon-stroke: var(--fg-minor);
+
+  gap: 6px;
+  min-width: 0;
+
+  & svg {
+    margin-bottom: -2px;
+    margin-right: 6px;
+  }
+}
+
+.value {
+  white-space: nowrap;
+}
