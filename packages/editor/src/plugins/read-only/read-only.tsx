@@ -17,9 +17,7 @@ interface Props {
   story_id: string;
 }
 
-// TODO: Uncomment after fixing
-// const SIX_HOURS_IN_MS = 6 * 60 * 60 * 1000;
-const SIX_HOURS_IN_MS = 30 * 1000; // 30 seconds for now
+const SIX_HOURS_IN_MS = 6 * 60 * 60 * 1000;
 
 const ReadOnlyPlugin = ({
   excluded_properties,
@@ -39,8 +37,6 @@ const ReadOnlyPlugin = ({
     on_read_error: () => set_doc_status(DOC_STATUS.doc_corrupted)
   });
 
-  // TODO: Fix this block. The `handle_read` is not called/inconsistent on page
-  // unload. For now, we're using a fixed window of 30 seconds.
   React.useEffect(() => {
     const handle_read = (): void => {
       if (has_read_ref.current) {
@@ -52,7 +48,7 @@ const ReadOnlyPlugin = ({
       read_story({
         id: story_id,
         token: reading_session_token,
-        referrer: document.referrer
+        referrer: document.referrer || ""
       });
     };
 
@@ -60,17 +56,40 @@ const ReadOnlyPlugin = ({
       handle_read();
     }
 
-    window.addEventListener("beforeunload", handle_read);
-    window.addEventListener("unload", handle_read);
-    window.addEventListener("pagehide", handle_read);
+    const handle_read_via_beacon = (): void => {
+      if (
+        document.visibilityState === "hidden" &&
+        !has_read_ref.current &&
+        "sendBeacon" in navigator
+      ) {
+        has_read_ref.current = true;
 
-    // Fallback
+        navigator.sendBeacon(
+          `${
+            process.env.NEXT_PUBLIC_API_URL
+          }/v1/public/stories/${story_id}/read?token=${reading_session_token}&referrer=${encodeURIComponent(
+            document.referrer || ""
+          )}`
+        );
+      }
+    };
+
+    document.addEventListener("visibilitychange", handle_read_via_beacon);
+
+    // Fallbacks
+
+    if (!("sendBeacon" in navigator)) {
+      window.addEventListener("pagehide", handle_read);
+    }
+
     const timer = setTimeout(handle_read, SIX_HOURS_IN_MS);
 
     return () => {
-      window.removeEventListener("beforeunload", handle_read);
-      window.removeEventListener("unload", handle_read);
-      window.removeEventListener("pagehide", handle_read);
+      document.removeEventListener("visibilitychange", handle_read_via_beacon);
+
+      if (!("sendBeacon" in navigator)) {
+        window.removeEventListener("pagehide", handle_read);
+      }
 
       clearTimeout(timer);
     };
