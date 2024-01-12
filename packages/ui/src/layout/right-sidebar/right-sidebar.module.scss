@@ -4,6 +4,7 @@
   &::before {
     border-left: 1px solid var(--divider);
     left: 0;
+    box-shadow: 50vw 0 0 50vw var(--bg-elevation-xs);
   }
 
   @media print {

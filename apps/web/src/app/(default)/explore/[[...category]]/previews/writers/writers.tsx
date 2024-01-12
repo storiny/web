@@ -98,10 +98,7 @@ const WritersPreview = ({
         <Typography className={css["t-medium"]} level={"body2"}>
           Popular writers in {normalized_category}
         </Typography>
-        <div
-          className={clsx(css["flex-center"], styles["writers-list"])}
-          key={String(loading)}
-        >
+        <div className={styles["writers-list"]} key={String(loading)}>
           {loading
             ? [...Array(5)].map((_, index) => <WriterSkeleton key={index} />)
             : items.map((writer) => <Writer key={writer.id} writer={writer} />)}
