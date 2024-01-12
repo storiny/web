@@ -90,114 +90,116 @@ const Mercator = (props: MercatorProps): React.ReactElement => {
   return (
     <AspectRatio {...rest} ratio={1.5} style={{ ...style, maxWidth: "100%" }}>
       <ParentSize {...component_props?.parent_size}>
-        {({ width, height }): React.ReactNode => (
-          <div style={{ position: "relative" }}>
-            <svg
-              aria-label={accessibility_label}
-              height={height}
-              ref={container_ref}
-              width={width}
-            >
-              <rect fill={"none"} height={height} width={width} x={0} y={0} />
-              <MercatorPrimitive<FeatureShape>
-                data={
-                  (
-                    world as unknown as {
-                      features: FeatureShape[];
-                      type: "FeatureCollection";
-                    }
-                  ).features
-                }
-                scale={(width / 630) * 100}
-                translate={[width / 2, height / 1.42]}
+        {({ width, height }): React.ReactElement | null =>
+          width < 10 ? null : (
+            <div style={{ position: "relative" }}>
+              <svg
+                aria-label={accessibility_label}
+                height={height}
+                ref={container_ref}
+                width={width}
               >
-                {(mercator): React.ReactElement[] =>
-                  mercator.features.map(({ feature, path }, i) => (
-                    <path
-                      className={styles.path}
-                      d={path || ""}
-                      key={`feature-${i}`}
-                      onMouseLeave={hide_tooltip}
-                      onMouseMove={(event): void => {
-                        const coords = local_point(event);
+                <rect fill={"none"} height={height} width={width} x={0} y={0} />
+                <MercatorPrimitive<FeatureShape>
+                  data={
+                    (
+                      world as unknown as {
+                        features: FeatureShape[];
+                        type: "FeatureCollection";
+                      }
+                    ).features
+                  }
+                  scale={(width / 630) * 100}
+                  translate={[width / 2, height / 1.42]}
+                >
+                  {(mercator): React.ReactElement[] =>
+                    mercator.features.map(({ feature, path }, i) => (
+                      <path
+                        className={styles.path}
+                        d={path || ""}
+                        key={`feature-${i}`}
+                        onMouseLeave={hide_tooltip}
+                        onMouseMove={(event): void => {
+                          const coords = local_point(event);
 
-                        show_tooltip({
-                          /* eslint-disable prefer-snakecase/prefer-snakecase */
-                          tooltipData: {
-                            name: feature.properties.name,
-                            code: feature.properties.code
-                          },
-                          tooltipTop: coords?.y,
-                          tooltipLeft: coords?.x
-                          /* eslint-enable prefer-snakecase/prefer-snakecase */
-                        });
-                      }}
-                      // Move the path to the bottom so that it is drawn last
-                      // to avoid stroke overlapping when hovering
-                      onMouseOver={(event): void => {
-                        (event.target as SVGElement).parentNode?.appendChild(
-                          event.target as HTMLElement
-                        );
-                      }}
-                      style={((): React.CSSProperties => {
-                        if (feature.properties.code in strength_map) {
-                          const strength = linear_interpolate(
-                            strength_map[feature.properties.code],
-                            [0, 100],
-                            [30, 90] // 12% is the global strength
+                          show_tooltip({
+                            /* eslint-disable prefer-snakecase/prefer-snakecase */
+                            tooltipData: {
+                              name: feature.properties.name,
+                              code: feature.properties.code
+                            },
+                            tooltipTop: coords?.y,
+                            tooltipLeft: coords?.x
+                            /* eslint-enable prefer-snakecase/prefer-snakecase */
+                          });
+                        }}
+                        // Move the path to the bottom so that it is drawn last
+                        // to avoid stroke overlapping when hovering
+                        onMouseOver={(event): void => {
+                          (event.target as SVGElement).parentNode?.appendChild(
+                            event.target as HTMLElement
                           );
+                        }}
+                        style={((): React.CSSProperties => {
+                          if (feature.properties.code in strength_map) {
+                            const strength = linear_interpolate(
+                              strength_map[feature.properties.code],
+                              [0, 100],
+                              [30, 90] // 12% is the global strength
+                            );
 
-                          return {
-                            "--fill-strength": `${strength.toFixed(2)}%`
-                          } as React.CSSProperties;
-                        }
+                            return {
+                              "--fill-strength": `${strength.toFixed(2)}%`
+                            } as React.CSSProperties;
+                          }
 
-                        return {};
-                      })()}
-                    />
-                  ))
-                }
-              </MercatorPrimitive>
-            </svg>
-            {tooltip_open && !!tooltip_data && (
-              <TooltipInPortal
-                applyPositionStyle
-                className={styles.tooltip}
-                detectBounds
-                left={tooltip_left}
-                top={tooltip_top}
-                unstyled
-              >
-                <span>
-                  {((): string => {
-                    const country_code = tooltip_data?.code;
+                          return {};
+                        })()}
+                      />
+                    ))
+                  }
+                </MercatorPrimitive>
+              </svg>
+              {tooltip_open && !!tooltip_data && (
+                <TooltipInPortal
+                  applyPositionStyle
+                  className={styles.tooltip}
+                  detectBounds
+                  left={tooltip_left}
+                  top={tooltip_top}
+                  unstyled
+                >
+                  <span>
+                    {((): string => {
+                      const country_code = tooltip_data?.code;
 
-                    if (!country_code) {
-                      return "No data";
-                    }
+                      if (!country_code) {
+                        return "No data";
+                      }
 
-                    return `${
-                      is_flag_emoji_supported
-                        ? get_flag_emoji(country_code) + " "
-                        : ""
-                    }${tooltip_data?.name || "No data"}`;
+                      return `${
+                        is_flag_emoji_supported
+                          ? get_flag_emoji(country_code) + " "
+                          : ""
+                      }${tooltip_data?.name || "No data"}`;
+                    })()}
+                  </span>
+                  {((): React.ReactElement => {
+                    const value = data[tooltip_data?.code || ""] || 0;
+                    return (
+                      <span>
+                        <span className={clsx(css["t-major"], css["t-medium"])}>
+                          {abbreviate_number(value)}
+                        </span>{" "}
+                        {value === 1 ? label.singular : label.plural}
+                      </span>
+                    );
                   })()}
-                </span>
-                {((): React.ReactElement => {
-                  const value = data[tooltip_data?.code || ""] || 0;
-                  return (
-                    <span>
-                      <span className={clsx(css["t-major"], css["t-medium"])}>
-                        {abbreviate_number(value)}
-                      </span>{" "}
-                      {value === 1 ? label.singular : label.plural}
-                    </span>
-                  );
-                })()}
-              </TooltipInPortal>
-            )}
-          </div>
-        )}
+                </TooltipInPortal>
+              )}
+            </div>
+          )
+        }
       </ParentSize>
     </AspectRatio>
   );

@@ -1,19 +1,24 @@
 // noinspection JSUnusedGlobalSymbols
 
+import { MOCK_STORIES } from "@storiny/ui/src/mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
 import { render_with_state } from "~/redux/mock";
 
-import DashboardLayout from "../../../../../../layout";
-import DashboardSplashLayout from "../../../../layout";
-import DefaultDashboardLeftSidebarLayout from "../../../layout";
-import DefaultDashboardRightSidebarLayout from "../../layout";
-import StoriesMetricsPage from "./client";
+import DashboardLayout from "../../../../../../../layout";
+import DashboardSplashLayout from "../../../../../layout";
+import DefaultDashboardLeftSidebarLayout from "../../../../layout";
+import ContentStoryStatsPage from "./client";
 
-const meta: Meta<typeof StoriesMetricsPage> = {
-  title: "dashboard/stats/stories",
-  component: StoriesMetricsPage,
+const meta: Meta<typeof ContentStoryStatsPage> = {
+  title: "dashboard/content/stories/stats",
+  component: ContentStoryStatsPage,
+  args: {
+    total_count: 5,
+    hidden_count: 5,
+    story_id: MOCK_STORIES[0].id
+  },
   parameters: {
     layout: "fullscreen"
   },
@@ -21,7 +26,7 @@ const meta: Meta<typeof StoriesMetricsPage> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof StoriesMetricsPage>;
+type Story = StoryObj<typeof ContentStoryStatsPage>;
 
 export const Default: Story = {
   decorators: [
@@ -30,9 +35,7 @@ export const Default: Story = {
         <DashboardLayout>
           <DashboardSplashLayout>
             <DefaultDashboardLeftSidebarLayout>
-              <DefaultDashboardRightSidebarLayout>
-                <Story />
-              </DefaultDashboardRightSidebarLayout>
+              <Story />
             </DefaultDashboardLeftSidebarLayout>
           </DashboardSplashLayout>
         </DashboardLayout>,

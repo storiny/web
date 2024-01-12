@@ -16,5 +16,6 @@ export * from "./notifications";
 export * from "./relations";
 export * from "./replies";
 export * from "./settings";
+export * from "./stats";
 export * from "./status";
 export * from "./stories";
