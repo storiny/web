@@ -15,8 +15,6 @@ const meta: Meta<typeof ContentStoryStatsPage> = {
   title: "dashboard/content/stories/stats",
   component: ContentStoryStatsPage,
   args: {
-    total_count: 5,
-    hidden_count: 5,
     story_id: MOCK_STORIES[0].id
   },
   parameters: {

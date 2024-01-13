@@ -3,14 +3,15 @@
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relative_time from "dayjs/plugin/relativeTime";
+import dynamic from "next/dynamic";
 import React from "react";
 
+import { dynamic_loader } from "~/common/dynamic";
 import ProgressState from "~/common/progress-state";
 import Divider from "~/components/divider";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import AreaChart from "~/entities/area-chart";
-import CustomState from "~/entities/custom-state";
 import ErrorState from "~/entities/error-state";
 import Mercator from "~/entities/mercator";
 import StatBars from "~/entities/stat-bars";
@@ -31,6 +32,10 @@ import styles from "./styles.module.scss";
 dayjs.extend(relative_time);
 dayjs.extend(duration);
 
+const EmptyState = dynamic(() => import("../../stats-empty-state"), {
+  loading: dynamic_loader()
+});
+
 const StoriesMetricsClient = (): React.ReactElement => {
   const hook_return = use_get_stories_stats_query();
   const {
@@ -45,7 +50,7 @@ const StoriesMetricsClient = (): React.ReactElement => {
   return (
     <React.Fragment>
       <main data-root={"true"}>
-        <DashboardTitle>Stories stats</DashboardTitle>
+        <DashboardTitle>Stories statistics</DashboardTitle>
         <DashboardWrapper>
           {is_error ? (
             <ErrorState
@@ -155,14 +160,7 @@ const StoriesMetricsClient = (): React.ReactElement => {
                     label={"Reads"}
                   />
                 ) : (
-                  <CustomState
-                    auto_size
-                    description={
-                      "There isn't enough data to show this report. Please check back later."
-                    }
-                    style={{ marginBlock: "16px" }}
-                    title={"Insufficient data"}
-                  />
+                  <EmptyState />
                 )}
               </div>
               <Divider />
@@ -194,14 +192,7 @@ const StoriesMetricsClient = (): React.ReactElement => {
                     />
                   </div>
                 ) : (
-                  <CustomState
-                    auto_size
-                    description={
-                      "There isn't enough data to show this report. Please check back later."
-                    }
-                    style={{ marginBlock: "16px" }}
-                    title={"Insufficient data"}
-                  />
+                  <EmptyState />
                 )}
               </div>
               <Divider />
@@ -227,14 +218,7 @@ const StoriesMetricsClient = (): React.ReactElement => {
                     max_value={data.reads_last_three_months}
                   />
                 ) : (
-                  <CustomState
-                    auto_size
-                    description={
-                      "There isn't enough data to show this report. Please check back later."
-                    }
-                    style={{ marginBlock: "16px" }}
-                    title={"Insufficient data"}
-                  />
+                  <EmptyState />
                 )}
               </div>
             </>

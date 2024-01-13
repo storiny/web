@@ -1,219 +1,49 @@
 "use client";
 
-import { clsx } from "clsx";
+import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
+import relative_time from "dayjs/plugin/relativeTime";
 import dynamic from "next/dynamic";
 import React from "react";
 
 import { CommentListSkeleton, VirtualizedCommentList } from "~/common/comment";
 import { dynamic_loader } from "~/common/dynamic";
+import ProgressState from "~/common/progress-state";
 import Divider from "~/components/divider";
-import Input from "~/components/input";
-import Option from "~/components/option";
-import Select from "~/components/select";
 import Spacer from "~/components/spacer";
-import Tab from "~/components/tab";
-import Tabs from "~/components/tabs";
-import TabsList from "~/components/tabs-list";
 import Typography from "~/components/typography";
+import AreaChart from "~/entities/area-chart";
 import ErrorState from "~/entities/error-state";
-import { use_debounce } from "~/hooks/use-debounce";
-import SearchIcon from "~/icons/search";
+import Mercator from "~/entities/mercator";
+import StatBars from "~/entities/stat-bars";
+import StatBlock from "~/entities/stat-block";
+import HomeIcon from "~/icons/home";
 import {
   get_query_error_type,
-  number_action,
-  use_get_story_comments_query
+  use_get_story_comments_query,
+  use_get_story_stats_query
 } from "~/redux/features";
-import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
-import { abbreviate_number } from "~/utils/abbreviate-number";
+import { capitalize } from "~/utils/capitalize";
 
 import DashboardTitle from "../../../../dashboard-title";
-import ContentStoryResponsesRightSidebar from "./right-sidebar";
-import { StoryResponsesProps } from "./stats.props";
+import DashboardWrapper from "../../../../dashboard-wrapper";
+import ContentStoryStatsRightSidebar from "./right-sidebar";
+import { StoryStatsProps } from "./stats.props";
 import styles from "./styles.module.scss";
 
-const EmptyState = dynamic(() => import("./empty-state"), {
+dayjs.extend(relative_time);
+dayjs.extend(duration);
+
+const EmptyState = dynamic(() => import("../../../../stats-empty-state"), {
   loading: dynamic_loader()
 });
 
-type SortOrder = "least" | "most";
-
-export type StoryResponsesTabValue = "all" | "hidden";
-export type StoryResponsesSortValue =
-  | "recent"
-  | "old"
-  | `${SortOrder}-replied`
-  | `${SortOrder}-liked`;
-
-// Page header tabs
-
-const PageHeader = ({
-  value,
-  on_change
+const CommentList = ({
+  story_id
 }: {
-  on_change: (next_value: StoryResponsesTabValue) => void;
-  value: StoryResponsesTabValue;
-}): React.ReactElement => (
-  <Tabs
-    className={clsx(
-      css["full-bleed"],
-      css["page-header"],
-      css["dashboard-header"],
-      css["with-page-title"],
-      styles.x,
-      styles.tabs
-    )}
-    onValueChange={(next_value): void =>
-      on_change(next_value as StoryResponsesTabValue)
-    }
-    value={value}
-  >
-    <TabsList className={clsx(css["full-w"], styles.x, styles["tabs-list"])}>
-      <Tab aria-controls={undefined} value={"all"}>
-        All
-      </Tab>
-      <Tab aria-controls={undefined} value={"hidden"}>
-        Hidden
-      </Tab>
-    </TabsList>
-  </Tabs>
-);
-
-// Status header
-
-const StatusHeader = ({
-  tab,
-  story_id,
-  total_count: total_count_prop,
-  hidden_count: hidden_count_prop
-}: {
-  tab: StoryResponsesTabValue;
-} & StoryResponsesProps): React.ReactElement => {
-  const dispatch = use_app_dispatch();
-  const total_count =
-    use_app_selector(
-      (state) => state.entities.story_comment_counts[story_id]
-    ) || 0;
-  const hidden_count =
-    use_app_selector(
-      (state) => state.entities.story_hidden_comment_counts[story_id]
-    ) || 0;
-  const count_param = tab === "all" ? total_count : hidden_count;
-
-  React.useEffect(() => {
-    dispatch(number_action("story_comment_counts", story_id, total_count_prop));
-    dispatch(
-      number_action("story_hidden_comment_counts", story_id, hidden_count_prop)
-    );
-  }, [total_count_prop, dispatch, hidden_count_prop, story_id]);
-
-  return (
-    <div
-      className={clsx(
-        css["full-bleed"],
-        css["dashboard-header"],
-        css["flex-center"],
-        styles["status-header"]
-      )}
-    >
-      <Typography ellipsis level={"body2"}>
-        {count_param === 0 ? (
-          tab === "all" ? (
-            "Your story does not have any comments yet."
-          ) : (
-            "You have not hidden any comments on this story."
-          )
-        ) : tab === "all" ? (
-          <React.Fragment>
-            Your story has a total of{" "}
-            <span className={css["t-bold"]}>
-              {abbreviate_number(count_param)}
-            </span>{" "}
-            {count_param === 1 ? "comment" : "comments"}.
-          </React.Fragment>
-        ) : (
-          <React.Fragment>
-            You have hidden{" "}
-            <span className={css["t-bold"]}>
-              {abbreviate_number(count_param)}
-            </span>{" "}
-            {count_param === 1 ? "comment" : "comments"} on this story.
-          </React.Fragment>
-        )}
-      </Typography>
-    </div>
-  );
-};
-
-// Control bar
-
-const ControlBar = ({
-  tab,
-  query,
-  sort,
-  on_sort_change,
-  on_query_change,
-  disabled
-}: {
-  disabled?: boolean;
-  on_query_change: (next_query: string) => void;
-  on_sort_change: (next_sort: StoryResponsesSortValue) => void;
-  query: string;
-  sort: StoryResponsesSortValue;
-  tab: StoryResponsesTabValue;
-}): React.ReactElement => (
-  <div
-    className={clsx(
-      css["flex-center"],
-      css["full-bleed"],
-      css["dashboard-header"],
-      styles["control-bar"]
-    )}
-  >
-    <Input
-      decorator={<SearchIcon />}
-      disabled={disabled}
-      onChange={(event): void => on_query_change(event.target.value)}
-      placeholder={
-        tab === "hidden" ? "Search hidden comments" : "Search comments"
-      }
-      size={"lg"}
-      type={"search"}
-      value={query}
-    />
-    <Divider orientation={"vertical"} />
-    <Select
-      disabled={disabled}
-      onValueChange={on_sort_change}
-      slot_props={{
-        trigger: {
-          "aria-label": "Sort items"
-        },
-        value: {
-          placeholder: "Sort"
-        }
-      }}
-      value={sort}
-    >
-      <Option value={"recent"}>Recent</Option>
-      <Option value={"old"}>Old</Option>
-      <Option value={"most-liked"}>Most liked</Option>
-      <Option value={"least-liked"}>Least liked</Option>
-      <Option value={"most-replied"}>Most replied</Option>
-      <Option value={"least-replied"}>Least replied</Option>
-    </Select>
-  </div>
-);
-
-const ContentStoryResponsesClient = (
-  props: StoryResponsesProps
-): React.ReactElement => {
-  const { story_id } = props;
-  const [sort, set_sort] = React.useState<StoryResponsesSortValue>("recent");
-  const [query, set_query] = React.useState<string>("");
-  const [value, set_value] = React.useState<StoryResponsesTabValue>("all");
-  const [page, set_page] = React.useState<number>(1);
-  const debounced_query = use_debounce(query);
+  story_id: string;
+}): React.ReactElement => {
   const {
     data,
     isLoading: is_loading,
@@ -223,41 +53,50 @@ const ContentStoryResponsesClient = (
     refetch
   } = use_get_story_comments_query({
     story_id,
-    page,
-    sort,
-    type: value,
-    query: debounced_query
+    page: 1,
+    sort: "most-liked",
+    type: "all"
   });
-  const { items = [], has_more } = data || {};
-  const is_typing = query !== debounced_query;
+  const { items = [] } = data || {};
 
-  const load_more = React.useCallback(
-    () => set_page((prev_state) => prev_state + 1),
-    []
+  return is_loading || is_fetching ? (
+    <CommentListSkeleton virtual />
+  ) : is_error ? (
+    <ErrorState
+      auto_size
+      component_props={{
+        button: { loading: is_fetching }
+      }}
+      retry={refetch}
+      type={get_query_error_type(error)}
+    />
+  ) : !is_fetching && !items.length ? (
+    <EmptyState />
+  ) : (
+    <VirtualizedCommentList
+      comment_props={{ is_static: true }}
+      comments={items.slice(0, 5)}
+      has_more={false}
+      load_more={(): void => undefined}
+      skeleton_props={{ virtual: true }}
+    />
   );
+};
 
-  const handle_change = React.useCallback(
-    (next_value: StoryResponsesTabValue) => {
-      set_page(1);
-      set_sort("recent");
-      set_query("");
-      set_value(next_value);
-    },
-    []
-  );
-
-  const handle_sort_change = React.useCallback(
-    (next_sort: StoryResponsesSortValue) => {
-      set_page(1);
-      set_sort(next_sort);
-    },
-    []
-  );
-
-  const handle_query_change = React.useCallback((next_query: string) => {
-    set_page(1);
-    set_query(next_query);
-  }, []);
+const ContentStoryStatsClient = (
+  props: StoryStatsProps
+): React.ReactElement => {
+  const { story_id } = props;
+  const {
+    data,
+    isLoading: is_loading,
+    isFetching: is_fetching,
+    isError: is_error,
+    error,
+    refetch
+  } = use_get_story_stats_query({
+    id: story_id
+  });
 
   return (
     <React.Fragment>
@@ -266,47 +105,373 @@ const ContentStoryResponsesClient = (
           back_button_href={"/me/content/stories"}
           hide_back_button={false}
         >
-          Story responses
+          Story statistics
         </DashboardTitle>
-        <PageHeader on_change={handle_change} value={value} />
-        <StatusHeader {...props} tab={value} />
-        <ControlBar
-          disabled={!query && !items.length}
-          on_query_change={handle_query_change}
-          on_sort_change={handle_sort_change}
-          query={query}
-          sort={sort}
-          tab={value}
-        />
-        {is_loading || is_typing || (is_fetching && page === 1) ? (
-          <CommentListSkeleton />
-        ) : is_error ? (
-          <ErrorState
-            auto_size
-            component_props={{
-              button: { loading: is_fetching }
-            }}
-            retry={refetch}
-            type={get_query_error_type(error)}
-          />
-        ) : !is_fetching && !items.length ? (
-          <EmptyState query={query} value={value} />
-        ) : (
-          <VirtualizedCommentList
-            comment_props={{
-              is_static: true,
-              hide_hidden_overlay: true
-            }}
-            comments={items}
-            has_more={Boolean(has_more)}
-            load_more={load_more}
-          />
-        )}
+        <DashboardWrapper>
+          {is_error ? (
+            <ErrorState
+              auto_size
+              component_props={{
+                button: { loading: is_fetching }
+              }}
+              retry={refetch}
+              type={get_query_error_type(error)}
+            />
+          ) : !data || is_loading || is_fetching ? (
+            <ProgressState label={"Loading statistics data…"} />
+          ) : (
+            <>
+              <div className={styles.container}>
+                <StatBlock
+                  caption={"Did not go through your entire story."}
+                  className={styles.stat}
+                  label={"Total visitors"}
+                  value={data.total_views}
+                />
+                <StatBlock
+                  caption={"All time"}
+                  className={styles.stat}
+                  label={"Total reads"}
+                  value={data.total_reads}
+                />
+                <StatBlock
+                  caption={"Read your story more than once."}
+                  className={styles.stat}
+                  label={"Returning readers"}
+                  value={data.returning_readers}
+                />
+                <StatBlock
+                  caption={((): string => {
+                    const percent_change = Math.round(
+                      100 -
+                        (data.reads_last_month / data.reads_this_month) * 100
+                    );
+
+                    return `${
+                      percent_change >= 0 ? "+" : ""
+                    }${percent_change}% from last month`;
+                  })()}
+                  caption_icon={
+                    data.reads_this_month === data.reads_last_month
+                      ? null
+                      : data.reads_this_month > data.reads_last_month
+                        ? "increment"
+                        : "decrement"
+                  }
+                  className={styles.stat}
+                  label={"Reads this month"}
+                  value={data.reads_this_month}
+                />
+                <StatBlock
+                  caption={((): string => {
+                    const percent_change = Math.round(
+                      100 -
+                        (data.reading_time_last_month /
+                          data.reading_time_this_month) *
+                          100
+                    );
+
+                    return `${
+                      percent_change >= 0 ? "+" : ""
+                    }${percent_change}% from last month`;
+                  })()}
+                  caption_icon={
+                    data.reading_time_this_month ===
+                    data.reading_time_last_month
+                      ? null
+                      : data.reading_time_this_month >
+                          data.reading_time_last_month
+                        ? "increment"
+                        : "decrement"
+                  }
+                  className={styles.stat}
+                  label={"Reading time this month"}
+                  value={capitalize(
+                    dayjs
+                      .duration(data.reading_time_this_month, "seconds")
+                      .humanize()
+                  )}
+                />
+                <StatBlock
+                  caption={((): string => {
+                    const percent_change = Math.round(
+                      100 -
+                        (data.reading_time_estimate /
+                          data.reading_time_average) *
+                          100
+                    );
+
+                    return `${
+                      percent_change >= 0 ? "+" : ""
+                    }${percent_change}% of the estimated read time`;
+                  })()}
+                  caption_icon={
+                    data.reading_time_average === data.reading_time_estimate
+                      ? null
+                      : data.reading_time_average > data.reading_time_estimate
+                        ? "increment"
+                        : "decrement"
+                  }
+                  className={styles.stat}
+                  label={"Average reading time"}
+                  value={capitalize(
+                    dayjs
+                      .duration(data.reading_time_average, "seconds")
+                      .humanize()
+                  )}
+                />
+              </div>
+              {/* Story reads */}
+              <div className={css["flex-col"]}>
+                <Typography
+                  as={"h2"}
+                  className={css["t-medium"]}
+                  color={"minor"}
+                  level={"body2"}
+                >
+                  Story reads (last 3 months)
+                </Typography>
+                <Spacer orientation={"vertical"} size={3} />
+                {Object.keys(data.read_timeline).length ? (
+                  <AreaChart
+                    accessibility_label={"Story reads chart"}
+                    data={Object.entries(data.read_timeline).map(
+                      ([key, value]) => ({
+                        value,
+                        date: key
+                      })
+                    )}
+                    label={"Reads"}
+                  />
+                ) : (
+                  <EmptyState />
+                )}
+              </div>
+              {/* Reading duration */}
+              <div className={css["flex-col"]}>
+                <Typography
+                  as={"h2"}
+                  className={css["t-medium"]}
+                  color={"minor"}
+                  level={"body2"}
+                >
+                  Reading duration (last 3 months)
+                </Typography>
+                <Spacer orientation={"vertical"} size={3} />
+                {Object.keys(data.reading_time_timeline).length ? (
+                  <AreaChart
+                    accessibility_label={"Story reading time chart"}
+                    data={Object.entries(data.reading_time_timeline).map(
+                      ([key, value]) => ({
+                        value,
+                        date: key
+                      })
+                    )}
+                    label={"Duration (in minutes)"}
+                  />
+                ) : (
+                  <EmptyState />
+                )}
+              </div>
+              <Divider />
+              {/* Readers by country */}
+              <div className={css["flex-col"]}>
+                <Typography
+                  as={"h2"}
+                  className={css["t-medium"]}
+                  color={"minor"}
+                  level={"body2"}
+                >
+                  Readers by country (last 3 months)
+                </Typography>
+                <Spacer orientation={"vertical"} size={0.5} />
+                <Typography color={"minor"} level={"body3"}>
+                  Countries with less than 15 readers are not displayed due to
+                  privacy reasons.
+                </Typography>
+                <Spacer orientation={"vertical"} size={3} />
+                {Object.keys(data.read_mercator).length ? (
+                  <div className={styles.mercator}>
+                    <Mercator
+                      accessibility_label={"Readers by country chart"}
+                      data={data.read_mercator}
+                      label={{
+                        plural: "readers",
+                        singular: "reader"
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <EmptyState />
+                )}
+              </div>
+              <Divider />
+              {/* Referral sources */}
+              <div className={css["flex-col"]}>
+                <Typography
+                  as={"h2"}
+                  className={css["t-medium"]}
+                  color={"minor"}
+                  level={"body2"}
+                >
+                  Referral sources (last 3 months)
+                </Typography>
+                <Spacer orientation={"vertical"} size={0.5} />
+                <Typography color={"minor"} level={"body3"}>
+                  These are the top referral sources for your readers.
+                </Typography>
+                <Spacer orientation={"vertical"} size={3} />
+                {Object.keys(data.referral_map).length ? (
+                  <StatBars
+                    data={data.referral_map}
+                    icon_map={{ Internal: <HomeIcon /> }}
+                    max_value={data.reads_last_three_months}
+                  />
+                ) : (
+                  <EmptyState />
+                )}
+              </div>
+              <Divider />
+              <div className={styles.container}>
+                <StatBlock
+                  caption={"All time"}
+                  className={styles.stat}
+                  label={"Total likes"}
+                  value={data.total_likes}
+                />
+                <StatBlock
+                  caption={((): string => {
+                    const percent_change = Math.round(
+                      100 -
+                        (data.likes_last_month / data.likes_this_month) * 100
+                    );
+
+                    return `${
+                      percent_change >= 0 ? "+" : ""
+                    }${percent_change}% from last month`;
+                  })()}
+                  caption_icon={
+                    data.likes_this_month === data.likes_last_month
+                      ? null
+                      : data.likes_this_month > data.likes_last_month
+                        ? "increment"
+                        : "decrement"
+                  }
+                  className={styles.stat}
+                  label={"Likes this month"}
+                  value={data.likes_this_month}
+                />
+              </div>
+              {/* Story likes */}
+              <div className={css["flex-col"]}>
+                <Typography
+                  as={"h2"}
+                  className={css["t-medium"]}
+                  color={"minor"}
+                  level={"body2"}
+                >
+                  Story likes (last 3 months)
+                </Typography>
+                <Spacer orientation={"vertical"} size={3} />
+                {Object.keys(data.like_timeline).length ? (
+                  <AreaChart
+                    accessibility_label={"Story reads chart"}
+                    data={Object.entries(data.like_timeline).map(
+                      ([key, value]) => ({
+                        value,
+                        date: key
+                      })
+                    )}
+                    label={"Reads"}
+                  />
+                ) : (
+                  <EmptyState />
+                )}
+              </div>
+              <Divider />
+              {/* Devices */}
+              <div className={css["flex-col"]}>
+                <Typography
+                  as={"h2"}
+                  className={css["t-medium"]}
+                  color={"minor"}
+                  level={"body2"}
+                >
+                  Devices your readers use (last 3 months)
+                </Typography>
+                <Spacer orientation={"vertical"} size={0.5} />
+                <Typography color={"minor"} level={"body3"}>
+                  These are the devices that your audience uses to read your
+                  stories.
+                </Typography>
+                <Spacer orientation={"vertical"} size={3} />
+                {Object.keys(data.device_map).length ? (
+                  <StatBars
+                    data={data.device_map}
+                    max_value={data.reads_last_three_months}
+                  />
+                ) : (
+                  <EmptyState />
+                )}
+              </div>
+              <Divider />
+              {/* Comments */}
+              <div className={styles.container}>
+                <StatBlock
+                  caption={"All time"}
+                  className={styles.stat}
+                  label={"Total comments"}
+                  value={data.total_comments}
+                />
+                <StatBlock
+                  caption={((): string => {
+                    const percent_change = Math.round(
+                      100 -
+                        (data.comments_last_month / data.comments_this_month) *
+                          100
+                    );
+
+                    return `${
+                      percent_change >= 0 ? "+" : ""
+                    }${percent_change}% from last month`;
+                  })()}
+                  caption_icon={
+                    data.comments_this_month === data.comments_last_month
+                      ? null
+                      : data.comments_this_month > data.comments_last_month
+                        ? "increment"
+                        : "decrement"
+                  }
+                  className={styles.stat}
+                  label={"Comments this month"}
+                  value={data.comments_this_month}
+                />
+              </div>
+              <div className={css["flex-col"]}>
+                <Typography
+                  as={"h2"}
+                  className={css["t-medium"]}
+                  color={"minor"}
+                  level={"body2"}
+                >
+                  Top comments
+                </Typography>
+                <Spacer orientation={"vertical"} size={0.5} />
+                <Typography color={"minor"} level={"body3"}>
+                  These are the comments that received the most attention on
+                  this story.
+                </Typography>
+                <Spacer orientation={"vertical"} size={1.5} />
+                <CommentList story_id={story_id} />
+              </div>
+            </>
+          )}
+        </DashboardWrapper>
         <Spacer orientation={"vertical"} size={10} />
       </main>
-      <ContentStoryResponsesRightSidebar story_id={story_id} />
+      <ContentStoryStatsRightSidebar story_id={story_id} />
     </React.Fragment>
   );
 };
 
-export default ContentStoryResponsesClient;
+export default ContentStoryStatsClient;

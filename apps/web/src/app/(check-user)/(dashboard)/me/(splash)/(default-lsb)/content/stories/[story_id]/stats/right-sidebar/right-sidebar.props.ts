@@ -1,3 +1,3 @@
-export interface StoryResponsesRightSidebarProps {
+export interface StoryStatsRightSidebarProps {
   story_id: string;
 }

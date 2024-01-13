@@ -3,12 +3,12 @@ import "server-only";
 import { notFound as not_found, redirect } from "next/navigation";
 import React from "react";
 
-import { get_story_responses_info } from "~/common/grpc";
+import { validate_story } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
 import { get_user } from "~/common/utils/get-user";
 import { is_snowflake } from "~/common/utils/is-snowflake";
 
-import ContentStoryResponsesClient from "./client";
+import ContentStoryStatsClient from "./client";
 
 const Page = async ({
   params: { story_id }
@@ -26,17 +26,12 @@ const Page = async ({
       redirect("/login");
     }
 
-    const story_responses_info_response = await get_story_responses_info({
-      user_id: user_id,
-      story_id: story_id
+    await validate_story({
+      user_id,
+      story_id
     });
 
-    return (
-      <ContentStoryResponsesClient
-        {...story_responses_info_response}
-        story_id={story_id}
-      />
-    );
+    return <ContentStoryStatsClient story_id={story_id} />;
   } catch (e) {
     handle_exception(e);
   }

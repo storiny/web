@@ -53,7 +53,7 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::auth::external::google::init_routes(cfg);
     v1::auth::external::google::callback::init_routes(cfg);
     // Feed
-    v1::feed::feed::init_routes(cfg);
+    v1::feed::init_routes(cfg);
     // Me
     v1::me::get::init_routes(cfg);
     // Me - User activity
@@ -114,7 +114,7 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::gallery::get::init_routes(cfg);
     v1::me::gallery::post::init_routes(cfg);
     // Me - History
-    v1::me::history::history::init_routes(cfg);
+    v1::me::history::init_routes(cfg);
     // Me - Liked comments
     v1::me::liked_comments::post::init_routes(cfg);
     v1::me::liked_comments::delete::init_routes(cfg);

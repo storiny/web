@@ -9,10 +9,10 @@ import {
   use_get_story_preview_query
 } from "~/redux/features";
 
-import { StoryResponsesRightSidebarProps } from "./right-sidebar.props";
+import { StoryStatsRightSidebarProps } from "./right-sidebar.props";
 
-const ContentStoryResponsesRightSidebarContent = (
-  props: StoryResponsesRightSidebarProps
+const ContentStoryStatsRightSidebarContent = (
+  props: StoryStatsRightSidebarProps
 ): React.ReactElement => {
   const { story_id } = props;
   const {
@@ -40,4 +40,4 @@ const ContentStoryResponsesRightSidebarContent = (
   );
 };
 
-export default ContentStoryResponsesRightSidebarContent;
+export default ContentStoryStatsRightSidebarContent;
