@@ -27,8 +27,8 @@ const Page = async ({
     }
 
     const story_responses_info_response = await get_story_responses_info({
-      user_id: user_id,
-      story_id: story_id
+      user_id,
+      story_id
     });
 
     return (

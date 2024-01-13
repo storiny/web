@@ -1,27 +1,22 @@
 @use "breakpoints";
 
-.status-header {
-  padding-inline: 20px;
-  padding-block: 16px;
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
 
+.stat {
+  flex-grow: 1;
+  flex-basis: calc(33% - 12px);
+
+  @include breakpoints.media("<=mobile") {
+    flex-basis: calc(50% - 12px);
+  }
+}
+
+.mercator {
   @include breakpoints.media(">tablet") {
-    padding-right: 0;
-    padding-block: 0;
-    min-height: 42px;
-  }
-}
-
-.control-bar {
-  align-items: stretch;
-}
-
-.x {
-  &.tabs {
-    padding-inline: 20px;
-  }
-
-  &.tabs-list {
-    display: flex;
-    justify-content: space-around;
+    padding: 32px;
   }
 }

@@ -17,6 +17,20 @@ pub struct Draft {
     #[prost(string, optional, tag="7")]
     pub edited_at: ::core::option::Option<::prost::alloc::string::String>,
 }
+// Story validation request
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ValidateStoryRequest {
+    #[prost(string, tag="1")]
+    pub user_id: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub story_id: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ValidateStoryResponse {
+}
 // Create draft request
 
 #[allow(clippy::derive_partial_eq_without_eq)]

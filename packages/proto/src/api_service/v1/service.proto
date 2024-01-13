@@ -62,6 +62,10 @@ service ApiService {
    */
   rpc GetLoginActivity(login_activity_def.v1.GetLoginActivityRequest) returns (login_activity_def.v1.GetLoginActivityResponse) {}
   /**
+   * Validates a story
+   */
+  rpc ValidateStory(story_def.v1.ValidateStoryRequest) returns (story_def.v1.ValidateStoryResponse) {}
+  /**
    * Returns the user's drafts details
    */
   rpc GetDraftsInfo(story_def.v1.GetDraftsInfoRequest) returns (story_def.v1.GetDraftsInfoResponse) {}

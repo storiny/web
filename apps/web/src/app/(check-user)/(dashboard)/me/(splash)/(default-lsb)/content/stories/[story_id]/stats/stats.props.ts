@@ -1,5 +1,3 @@
-import { GetStoryResponsesInfoResponse } from "~/common/grpc";
-
-export type StoryResponsesProps = GetStoryResponsesInfoResponse & {
+export type StoryStatsProps = {
   story_id: string;
 };

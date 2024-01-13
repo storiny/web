@@ -1,13 +1,14 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import React from "react";
 
+import { dynamic_loader } from "~/common/dynamic";
 import ProgressState from "~/common/progress-state";
 import Divider from "~/components/divider";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import AreaChart from "~/entities/area-chart";
-import CustomState from "~/entities/custom-state";
 import ErrorState from "~/entities/error-state";
 import StatBlock from "~/entities/stat-block";
 import {
@@ -20,6 +21,10 @@ import DashboardTitle from "../../dashboard-title";
 import DashboardWrapper from "../../dashboard-wrapper";
 import AccountMetricsRightSidebar from "./right-sidebar";
 import styles from "./styles.module.scss";
+
+const EmptyState = dynamic(() => import("../../stats-empty-state"), {
+  loading: dynamic_loader()
+});
 
 const AccountMetricsClient = (): React.ReactElement => {
   const hook_return = use_get_account_stats_query();
@@ -35,7 +40,7 @@ const AccountMetricsClient = (): React.ReactElement => {
   return (
     <React.Fragment>
       <main data-root={"true"}>
-        <DashboardTitle>Account stats</DashboardTitle>
+        <DashboardTitle>Account statistics</DashboardTitle>
         <DashboardWrapper>
           {is_error ? (
             <ErrorState
@@ -112,14 +117,7 @@ const AccountMetricsClient = (): React.ReactElement => {
                     label={"Follows"}
                   />
                 ) : (
-                  <CustomState
-                    auto_size
-                    description={
-                      "There isn't enough data to show this report. Please check back later."
-                    }
-                    style={{ marginBlock: "16px" }}
-                    title={"Insufficient data"}
-                  />
+                  <EmptyState />
                 )}
               </div>
             </>

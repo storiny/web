@@ -9,17 +9,17 @@ import RightSidebar from "~/layout/right-sidebar";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "./right-sidebar.module.scss";
-import { StoryResponsesRightSidebarProps } from "./right-sidebar.props";
+import { StoryStatsRightSidebarProps } from "./right-sidebar.props";
 
-const SuspendedContentStoryResponsesRightSidebarContent = dynamic(
+const SuspendedContentStoryStatsRightSidebarContent = dynamic(
   () => import("./content"),
   {
     loading: dynamic_loader()
   }
 );
 
-const ContentStoryResponsesRightSidebar = (
-  props: StoryResponsesRightSidebarProps
+const ContentStoryStatsRightSidebar = (
+  props: StoryStatsRightSidebarProps
 ): React.ReactElement | null => {
   const should_render = use_media_query(BREAKPOINTS.up("desktop"));
 
@@ -29,11 +29,11 @@ const ContentStoryResponsesRightSidebar = (
 
   return (
     <RightSidebar className={clsx(styles.x, styles["right-sidebar"])}>
-      <SuspendedContentStoryResponsesRightSidebarContent {...props} />
+      <SuspendedContentStoryStatsRightSidebarContent {...props} />
       {/* Push the footer to the bottom of the viewport */}
       <Grow />
     </RightSidebar>
   );
 };
 
-export default ContentStoryResponsesRightSidebar;
+export default ContentStoryStatsRightSidebar;
