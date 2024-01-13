@@ -20,7 +20,7 @@ pub mod muted_users;
 pub mod notifications;
 pub mod replies;
 pub mod settings;
-mod stats;
+pub mod stats;
 pub mod status;
 pub mod stories;
 pub mod subscriptions;

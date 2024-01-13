@@ -177,6 +177,8 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::settings::sessions::acknowledge::init_routes(cfg);
     // Me - Settings - Username
     v1::me::settings::username::init_routes(cfg);
+    // Me - Stats - Account
+    v1::me::stats::account::init_routes(cfg);
     // Me - Status
     v1::me::status::post::init_routes(cfg);
     v1::me::status::delete::init_routes(cfg);
