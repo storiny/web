@@ -1,5 +1,3 @@
-import { User } from "@storiny/types";
-
 import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = "me/stats/account";
@@ -8,7 +6,6 @@ export type GetAccountStatsResponse = {
   follow_timeline: Record<string, number>;
   follows_last_month: number;
   follows_this_month: number;
-  recent_followers: (User & { followed_at: string })[];
   total_followers: number;
   total_subscribers: number;
 };

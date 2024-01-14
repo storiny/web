@@ -161,12 +161,15 @@ pub mod snowflake_id {
         };
         use std::fmt;
 
-        pub fn serialize<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
+        pub fn serialize<T, S>(value: &Option<T>, serializer: S) -> Result<S::Ok, S::Error>
         where
             T: fmt::Display,
             S: Serializer,
         {
-            serializer.collect_str(value)
+            match value {
+                Some(value) => serializer.collect_str(value),
+                None => serializer.serialize_none(),
+            }
         }
 
         pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<i64>, D::Error>

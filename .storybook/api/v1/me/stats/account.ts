@@ -1,5 +1,4 @@
 import { appleStock as apple_stock } from "@visx/mock-data";
-import { MOCK_USERS } from "@storiny/ui/src/mocks";
 
 const { worker, rest } = window.msw;
 
@@ -17,10 +16,6 @@ worker.use(
         ctx.delay(3500),
         ctx.json({
           follow_timeline,
-          recent_followers: MOCK_USERS.slice(0, 5).map((user) => ({
-            ...user,
-            followed_at: user.created_at,
-          })),
           follows_last_month: 224,
           follows_this_month: 356,
           total_followers: 1600,
