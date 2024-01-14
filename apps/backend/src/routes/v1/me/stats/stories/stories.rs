@@ -21,16 +21,23 @@ use std::collections::HashMap;
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 struct Response {
-    follow_timeline: sqlx::types::Json<HashMap<String, i32>>,
-    follows_last_month: i32,
-    follows_this_month: i32,
-    total_followers: i32,
-    total_subscribers: i32,
+    latest_story_id: Option<String>,
+    read_mercator: sqlx::types::Json<HashMap<String, i32>>,
+    read_timeline: sqlx::types::Json<HashMap<String, i32>>,
+    reading_time_last_month: i32,
+    reading_time_this_month: i32,
+    reads_last_month: i32,
+    reads_last_three_months: i32,
+    reads_this_month: i32,
+    referral_map: sqlx::types::Json<HashMap<String, i32>>,
+    returning_readers: i32,
+    total_reads: i32,
+    total_views: i64,
 }
 
-#[get("/v1/me/stats/account")]
+#[get("/v1/me/stats/stories")]
 #[tracing::instrument(
-    name = "GET /v1/me/stats/account",
+    name = "GET /v1/me/stats/stories",
     skip_all,
     fields(
         user_id = user.id().ok(),
@@ -126,13 +133,13 @@ mod tests {
     use sqlx::PgPool;
 
     #[allow(unused_variables)]
-    #[sqlx::test(fixtures("account"))]
-    async fn can_return_account_stats(pool: PgPool) -> sqlx::Result<()> {
+    #[sqlx::test(fixtures("stories"))]
+    async fn can_return_stories_stats(pool: PgPool) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri("/v1/me/stats/account")
+            .uri("/v1/me/stats/stories")
             .to_request();
         let res = test::call_service(&app, req).await;
 
