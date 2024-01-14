@@ -17,11 +17,10 @@ use serde::{
     Serialize,
 };
 use sqlx::FromRow;
-use std::collections::HashMap;
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 struct Response {
-    follow_timeline: sqlx::types::Json<HashMap<String, i32>>,
+    follow_timeline: sqlx::types::Json<Vec<(String, i32)>>,
     follows_last_month: i32,
     follows_this_month: i32,
     total_followers: i32,
@@ -79,21 +78,28 @@ follows_last_month AS (
         AND created_at > NOW() - INTERVAL '60 days'
 ),
 follow_timeline AS (
-    SELECT JSON_OBJECT_AGG(
-        created_at, count
-    ) AS map
+    SELECT 
+        COALESCE(
+            JSON_AGG(
+                JSON_BUILD_ARRAY(
+                    created_at,
+                    count
+                )
+                ORDER BY created_at::DATE
+            ),
+            '[]'::JSON
+        ) AS data
     FROM (
         SELECT created_at::DATE, COUNT(*) AS count
         FROM follows_since_90_days
         GROUP BY created_at::DATE
-        ORDER BY created_at::DATE
     ) AS result
 )
 SELECT (SELECT count::INT4 FROM subscriber_count)   AS "total_subscribers",
 	   (SELECT count::INT4 FROM follower_count)     AS "total_followers",
 	   (SELECT count::INT4 FROM follows_this_month) AS "follows_this_month",
 	   (SELECT count::INT4 FROM follows_last_month) AS "follows_last_month",
-	   (SELECT map FROM follow_timeline)      AS "follow_timeline";
+	   (SELECT data FROM follow_timeline)      AS "follow_timeline";
 "#,
     )
     .bind(user_id)
@@ -139,11 +145,7 @@ mod tests {
         assert!(res.status().is_success());
 
         let json = serde_json::from_str::<Response>(&res_to_string(res).await).unwrap();
-
-        let mut follow_timeline: HashMap<String, i32> = HashMap::new();
-
-        follow_timeline.insert("2023-11-17".to_string(), 1);
-        follow_timeline.insert("2024-01-01".to_string(), 1);
+        let follow_timeline = vec![("2023-11-17".to_string(), 1), ("2024-01-01".to_string(), 1)];
 
         assert!(matches!(
             json,

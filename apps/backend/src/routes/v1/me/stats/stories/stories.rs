@@ -17,19 +17,19 @@ use serde::{
     Serialize,
 };
 use sqlx::FromRow;
-use std::collections::HashMap;
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 struct Response {
-    latest_story_id: Option<String>,
-    read_mercator: sqlx::types::Json<HashMap<String, i32>>,
-    read_timeline: sqlx::types::Json<HashMap<String, i32>>,
+    #[serde(with = "crate::snowflake_id::option")]
+    latest_story_id: Option<i64>,
+    read_mercator: sqlx::types::Json<Vec<(String, i32)>>,
+    read_timeline: sqlx::types::Json<Vec<(String, i32)>>,
     reading_time_last_month: i32,
     reading_time_this_month: i32,
     reads_last_month: i32,
     reads_last_three_months: i32,
     reads_this_month: i32,
-    referral_map: sqlx::types::Json<HashMap<String, i32>>,
+    referral_data: sqlx::types::Json<Vec<(String, i32)>>,
     returning_readers: i32,
     total_reads: i32,
     total_views: i64,
@@ -49,58 +49,174 @@ async fn get(data: web::Data<AppState>, user: Identity) -> Result<HttpResponse, 
 
     let result = sqlx::query_as::<_, Response>(
         r#"
-WITH subscriber_count AS (
+WITH total_stats AS (
+    SELECT
+        COALESCE(SUM(view_count), 0) AS view_count,
+        COALESCE(SUM(read_count), 0) AS read_count
+    FROM stories
+    WHERE
+        user_id = $1
+        AND published_at IS NOT NULL
+        AND deleted_at IS NULL
+),
+latest_story AS (
+    SELECT id
+    FROM stories
+    WHERE
+        user_id = $1
+        AND published_at IS NOT NULL
+        AND deleted_at IS NULL
+    ORDER BY published_at DESC
+    LIMIT 1
+),
+returning_readers AS (
     SELECT COUNT(*) AS count
+    FROM (
+        SELECT FROM story_reads sr
+            INNER JOIN stories s
+                ON s.id = sr.story_id
+                AND s.user_id = $1
+                AND s.published_at IS NOT NULL
+                AND s.deleted_at IS NULL
+        WHERE
+            sr.user_id IS NOT NULL
+        GROUP BY sr.user_id
+        HAVING
+            COUNT(*) > 1
+    ) AS result
+),
+reads_since_90_days AS (
+    SELECT
+        sr.duration,
+        sr.country_code,
+        sr.hostname,
+        sr.created_at
     FROM
-        relations
+        story_reads sr
+            INNER JOIN stories s
+                ON s.id = sr.story_id
+                AND s.user_id = $1
+                AND s.published_at IS NOT NULL
+                AND s.deleted_at IS NULL
     WHERE
-            followed_id = $1
-        AND subscribed_at IS NOT NULL
-        AND deleted_at IS NULL
+        sr.created_at > NOW() - INTERVAL '90 days'
 ),
-follower_count AS (
-    SELECT follower_count AS count
-    FROM users
-    WHERE
-        id = $1
-),
-follows_since_90_days AS (
-    SELECT created_at
-    FROM relations
-    WHERE
-        followed_id = $1
-        AND created_at > NOW() - INTERVAL '90 days'
-        AND deleted_at IS NULL
-),
-follows_this_month AS (
+-- Reads
+reads_90_days AS (
     SELECT COUNT(*) AS count
-    FROM follows_since_90_days
+    FROM reads_since_90_days
+),
+reads_this_month AS (
+    SELECT COUNT(*) AS count
+    FROM reads_since_90_days
     WHERE
         created_at > NOW() - INTERVAL '30 days'
 ),
-follows_last_month AS (
+reads_last_month AS (
     SELECT COUNT(*) AS count
-    FROM follows_since_90_days
+    FROM reads_since_90_days
     WHERE
         created_at < NOW() - INTERVAL '30 days'
         AND created_at > NOW() - INTERVAL '60 days'
 ),
-follow_timeline AS (
-    SELECT JSON_OBJECT_AGG(
-        created_at, count
-    ) AS map
+-- Reading duration
+reading_time_this_month AS (
+    SELECT COALESCE(SUM(duration), 0) AS duration
+    FROM reads_since_90_days
+    WHERE
+        created_at > NOW() - INTERVAL '30 days'
+),
+reading_time_last_month AS (
+    SELECT COALESCE(SUM(duration), 0) AS duration
+    FROM reads_since_90_days
+    WHERE
+        created_at < NOW() - INTERVAL '30 days'
+        AND created_at > NOW() - INTERVAL '60 days'
+),
+-- Read timeline
+read_timeline AS (
+    SELECT
+        COALESCE(
+            JSON_AGG(
+                JSON_BUILD_ARRAY(
+                    created_at,
+                    count
+                )
+                ORDER BY created_at::DATE
+            ),
+            '[]'::JSON
+        ) AS data
     FROM (
-        SELECT created_at::DATE, COUNT(*) AS count
-        FROM follows_since_90_days
+        SELECT
+            created_at::DATE,
+            COUNT(*) AS count
+        FROM reads_since_90_days
         GROUP BY created_at::DATE
-        ORDER BY created_at::DATE
+    ) AS result
+),
+-- Read mercator
+read_mercator AS (
+    SELECT
+        COALESCE(
+            JSON_AGG(
+                JSON_BUILD_ARRAY(
+                    country_code,
+                    count
+                )
+                ORDER BY count DESC
+            ) FILTER (
+                -- Do not include data having less than 15 rows due to privacy reasons.
+                WHERE count >= 15
+            ),
+            '[]'::JSON
+        ) AS data
+    FROM (
+        SELECT
+            country_code,
+            COUNT(*) AS count
+        FROM reads_since_90_days
+        WHERE
+            country_code IS NOT NULL
+        GROUP BY country_code
+    ) AS result
+),
+-- Referral data
+referral_data AS (
+    SELECT
+        COALESCE(
+            JSON_AGG(
+                JSON_BUILD_ARRAY(
+                    hostname,
+                    count
+                )
+                ORDER BY count DESC
+            ),
+            '[]'::JSON
+        ) AS data
+    FROM (
+        SELECT
+            COALESCE(hostname, 'Internal') AS hostname,
+            COUNT(*) AS count
+        FROM reads_since_90_days
+        GROUP BY hostname
     ) AS result
 )
-SELECT (SELECT count::INT4 FROM subscriber_count)   AS "total_subscribers",
-	   (SELECT count::INT4 FROM follower_count)     AS "total_followers",
-	   (SELECT count::INT4 FROM follows_this_month) AS "follows_this_month",
-	   (SELECT count::INT4 FROM follows_last_month) AS "follows_last_month",
-	   (SELECT map FROM follow_timeline)      AS "follow_timeline";
+SELECT (SELECT read_count::INT4 FROM total_stats)           AS "total_reads",
+	   (SELECT view_count::int8 FROM total_stats)           AS "total_views",
+	   (SELECT count::int4 FROM reads_90_days)              AS "reads_last_three_months",
+	   (SELECT count::int4 FROM returning_readers)          AS "returning_readers",
+	   --
+	   (SELECT count::int4 FROM reads_this_month)           AS "reads_this_month",
+	   (SELECT count::int4 FROM reads_last_month)           AS "reads_last_month",
+	   --
+	   (SELECT duration::int4 FROM reading_time_this_month) AS "reading_time_this_month",
+	   (SELECT duration::int4 FROM reading_time_last_month) AS "reading_time_last_month",
+	   --
+	   (SELECT data FROM read_timeline)                      AS "read_timeline",
+	   (SELECT data FROM read_mercator)                      AS "read_mercator",
+	   (SELECT data FROM referral_data)                       AS "referral_data",
+	   -- 
+	   (SELECT id FROM latest_story)                        AS "latest_story_id"
 "#,
     )
     .bind(user_id)
@@ -146,22 +262,76 @@ mod tests {
         assert!(res.status().is_success());
 
         let json = serde_json::from_str::<Response>(&res_to_string(res).await).unwrap();
-
-        let mut follow_timeline: HashMap<String, i32> = HashMap::new();
-
-        follow_timeline.insert("2023-11-17".to_string(), 1);
-        follow_timeline.insert("2024-01-01".to_string(), 1);
+        let read_mercator = vec![("IN".to_string(), 15)];
+        let read_timeline = vec![
+            ("2023-11-12".to_string(), 1),
+            ("2023-11-17".to_string(), 2),
+            ("2023-11-22".to_string(), 1),
+            ("2023-11-27".to_string(), 1),
+            ("2023-11-30".to_string(), 1),
+            ("2024-01-01".to_string(), 6),
+            ("2024-01-02".to_string(), 1),
+            ("2024-01-10".to_string(), 1),
+            ("2024-01-12".to_string(), 1),
+            ("2024-01-14".to_string(), 4),
+            ("2024-01-15".to_string(), 1),
+            ("2024-01-16".to_string(), 1),
+        ];
+        let referral_data = vec![
+            ("Internal".to_string(), 9),
+            ("bing.com".to_string(), 8),
+            ("google.com".to_string(), 3),
+            ("example.com".to_string(), 1),
+        ];
 
         assert!(matches!(
             json,
             Response {
-                follow_timeline,
-                total_followers: 3,
-                total_subscribers: 1,
-                follows_last_month: 1,
-                follows_this_month: 1
+                latest_story_id: Some(4,),
+                read_mercator,
+                read_timeline,
+                reading_time_last_month: 440,
+                reading_time_this_month: 1352,
+                reads_last_month: 5,
+                reads_last_three_months: 21,
+                reads_this_month: 15,
+                referral_data,
+                returning_readers: 3,
+                total_reads: 22,
+                total_views: 50,
             }
         ));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("stories"))]
+    async fn can_handle_no_latest_story(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
+
+        // Delete all the stories.
+        sqlx::query(
+            r#"
+DELETE FROM stories
+WHERE user_id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/stats/stories")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Response>(&res_to_string(res).await).unwrap();
+
+        assert!(json.latest_story_id.is_none());
 
         Ok(())
     }

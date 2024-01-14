@@ -2,81 +2,37 @@ INSERT INTO
 	users (id, name, username, email)
 VALUES (1, 'Sample user 1', 'sample_user_1', 'sample.1@example.com'),
 	   (2, 'Sample user 2', 'sample_user_2', 'sample.2@example.com'),
-	   (3, 'Sample user 3', 'sample_user_3', 'sample.3@example.com'),
-	   (4, 'Sample user 4', 'sample_user_4', 'sample.4@example.com'),
-	   (5, 'Sample user 5', 'sample_user_5', 'sample.5@example.com');
+	   (3, 'Sample user 3', 'sample_user_3', 'sample.3@example.com');
 
 INSERT INTO
-	relations (follower_id, followed_id, created_at, subscribed_at)
-VALUES (2, 1, '2024-01-01'::TIMESTAMPTZ, NOW()),
-	   (3, 1, '2024-01-01'::TIMESTAMPTZ - INTERVAL '45 days', NULL),
-	   (4, 1, NOW() - INTERVAL '120 days', NULL);
+	stories (id, user_id, view_count, published_at, deleted_at)
+VALUES (4, 1, 0, '2024-01-01'::TIMESTAMPTZ, NULL),
+	   (5, 1, 15, '2024-01-01'::TIMESTAMPTZ, NOW()),
+	   (6, 1, 5, '2024-01-01'::TIMESTAMPTZ - INTERVAL '45 days', NULL),
+	   (7, 1, 45, NOW() - INTERVAL '120 days', NULL),
+	   (DEFAULT, 2, 25, NOW(), NOW());
 
---
-
--- latest_story_id: Option<String>,
--- read_mercator: sqlx::types::Json<HashMap<String, i32>>,
--- read_timeline: sqlx::types::Json<HashMap<String, i32>>,
--- reading_time_last_month: i32,
--- reading_time_this_month: i32,
--- reads_last_month: i32,
--- reads_last_three_months: i32,
--- reads_this_month: i32,
--- referral_map: sqlx::types::Json<HashMap<String, i32>>,
--- returning_readers: i32,
--- total_reads: i32,
--- total_views: i64,
-
-WITH total_stats AS (
-	SELECT SUM(view_count) AS view_count,
-	       SUM(read_count) AS read_count
-	FROM
-		stories
-	WHERE
-		  user_id = $1
-	  AND published_at IS NOT NULL
-	  AND deleted_at IS NULL
-						 ),
-	 follower_count AS (
-		 SELECT follower_count AS count
-		 FROM users
-		 WHERE
-			 id = $1
-						 ),
-	 follows_since_90_days AS (
-		 SELECT created_at
-		 FROM relations
-		 WHERE
-			   followed_id = $1
-		   AND created_at > NOW() - INTERVAL '90 days'
-		   AND deleted_at IS NULL
-						 ),
-	 follows_this_month AS (
-		 SELECT COUNT(*) AS count
-		 FROM follows_since_90_days
-		 WHERE
-			 created_at > NOW() - INTERVAL '30 days'
-						 ),
-	 follows_last_month AS (
-		 SELECT COUNT(*) AS count
-		 FROM follows_since_90_days
-		 WHERE
-			   created_at < NOW() - INTERVAL '30 days'
-		   AND created_at > NOW() - INTERVAL '60 days'
-						 ),
-	 follow_timeline AS (
-		 SELECT JSON_OBJECT_AGG(
-						created_at, count
-				) AS map
-		 FROM (
-				  SELECT created_at::DATE, COUNT(*) AS count
-				  FROM follows_since_90_days
-				  GROUP BY created_at::DATE
-				  ORDER BY created_at::DATE
-			  ) AS result
-						 )
-SELECT (SELECT count::INT4 FROM subscriber_count)   AS "total_subscribers",
-	   (SELECT count::INT4 FROM follower_count)     AS "total_followers",
-	   (SELECT count::INT4 FROM follows_this_month) AS "follows_this_month",
-	   (SELECT count::INT4 FROM follows_last_month) AS "follows_last_month",
-	   (SELECT map FROM follow_timeline)      AS "follow_timeline";
+INSERT INTO
+	story_reads (hostname, country_code, duration, user_id, story_id, created_at)
+VALUES (NULL, 'AQ', 60, 1, 4, NOW() - INTERVAL '120 days'),
+	   ('example.com', NULL, 180, 2, 4, '2024-01-01'::TIMESTAMPTZ - INTERVAL '45 days'),
+	   ('bing.com', 'IN', 96, 2, 4, '2024-01-01'::TIMESTAMPTZ - INTERVAL '45 days'),
+	   ('bing.com', 'IN', 32, 2, 4, '2024-01-01'::TIMESTAMPTZ - INTERVAL '35 days'),
+	   ('bing.com', 'IN', 93, 2, 4, '2024-01-01'::TIMESTAMPTZ - INTERVAL '32 days'),
+	   ('bing.com', 'IN', 39, 2, 4, '2024-01-01'::TIMESTAMPTZ - INTERVAL '40 days'),
+	   ('bing.com', 'IN', 23, 2, 4, '2024-01-01'::TIMESTAMPTZ - INTERVAL '50 days'),
+	   ('google.com', 'IN', 94, 2, 4, '2024-01-01'::TIMESTAMPTZ),
+	   ('google.com', 'IN', 129, 2, 4, '2024-01-02'::TIMESTAMPTZ),
+	   ('bing.com', 'IN', 34, 2, 4, '2024-01-10'::TIMESTAMPTZ),
+	   (NULL, 'IN', 46, 2, 4, '2024-01-01'::TIMESTAMPTZ),
+	   (NULL, 'IN', 30, 2, 4, '2024-01-12'::TIMESTAMPTZ),
+	   (NULL, 'IN', 49, 2, 4, '2024-01-01'::TIMESTAMPTZ),
+	   (NULL, 'IN', 219, 2, 4, '2024-01-14'::TIMESTAMPTZ),
+	   (NULL, 'IN', 92, 2, 4, '2024-01-15'::TIMESTAMPTZ),
+	   (NULL, 'IN', 34, 2, 4, '2024-01-16'::TIMESTAMPTZ),
+	   (NULL, 'IN', 49, 2, 4, '2024-01-01'::TIMESTAMPTZ),
+	   ('bing.com', NULL, 122, 2, 4, NOW()),
+	   ('bing.com', NULL, 301, 3, 4, NOW()),
+	   (NULL, NULL, 23, 3, 4, '2024-01-01'::TIMESTAMPTZ),
+	   (NULL, NULL, 10, 3, 6, '2024-01-01'::TIMESTAMPTZ),
+	   ('google.com', 'AQ', 120, 1, 4, NOW());
