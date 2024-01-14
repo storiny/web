@@ -5,7 +5,7 @@ import { api_slice } from "~/redux/features/api/slice";
 const SEGMENT = "me/stats/stories";
 
 export type GetStoriesStatsResponse = {
-  latest_story: Story | null;
+  latest_story_id: string | null;
   read_mercator: Record<string, number>;
   read_timeline: Record<string, number>;
   reading_time_last_month: number;
