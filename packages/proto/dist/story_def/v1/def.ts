@@ -164,6 +164,14 @@ export interface Draft {
   edited_at?: string | undefined;
 }
 
+export interface ValidateStoryRequest {
+  user_id: string;
+  story_id: string;
+}
+
+export interface ValidateStoryResponse {
+}
+
 export interface CreateDraftRequest {
   user_id: string;
 }
@@ -430,6 +438,123 @@ export const Draft = {
     message.word_count = object.word_count ?? 0;
     message.created_at = object.created_at ?? "";
     message.edited_at = object.edited_at ?? undefined;
+    return message;
+  },
+};
+
+function createBaseValidateStoryRequest(): ValidateStoryRequest {
+  return { user_id: "", story_id: "" };
+}
+
+export const ValidateStoryRequest = {
+  encode(message: ValidateStoryRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.user_id !== "") {
+      writer.uint32(10).string(message.user_id);
+    }
+    if (message.story_id !== "") {
+      writer.uint32(18).string(message.story_id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ValidateStoryRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseValidateStoryRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.user_id = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.story_id = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ValidateStoryRequest {
+    return {
+      user_id: isSet(object.user_id) ? globalThis.String(object.user_id) : "",
+      story_id: isSet(object.story_id) ? globalThis.String(object.story_id) : "",
+    };
+  },
+
+  toJSON(message: ValidateStoryRequest): unknown {
+    const obj: any = {};
+    if (message.user_id !== "") {
+      obj.user_id = message.user_id;
+    }
+    if (message.story_id !== "") {
+      obj.story_id = message.story_id;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ValidateStoryRequest>, I>>(base?: I): ValidateStoryRequest {
+    return ValidateStoryRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ValidateStoryRequest>, I>>(object: I): ValidateStoryRequest {
+    const message = createBaseValidateStoryRequest();
+    message.user_id = object.user_id ?? "";
+    message.story_id = object.story_id ?? "";
+    return message;
+  },
+};
+
+function createBaseValidateStoryResponse(): ValidateStoryResponse {
+  return {};
+}
+
+export const ValidateStoryResponse = {
+  encode(_: ValidateStoryResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ValidateStoryResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseValidateStoryResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): ValidateStoryResponse {
+    return {};
+  },
+
+  toJSON(_: ValidateStoryResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ValidateStoryResponse>, I>>(base?: I): ValidateStoryResponse {
+    return ValidateStoryResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ValidateStoryResponse>, I>>(_: I): ValidateStoryResponse {
+    const message = createBaseValidateStoryResponse();
     return message;
   },
 };

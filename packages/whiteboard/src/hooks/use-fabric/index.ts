@@ -1,7 +1,7 @@
 import { Canvas } from "fabric";
 import React from "react";
 
-import { select_theme } from "~/redux/features";
+import { select_resolved_theme } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 
 import { FabricContext } from "../../components/context";
@@ -21,21 +21,6 @@ import {
 } from "./plugins";
 
 /**
- * Returns the system color scheme
- */
-const parse_system_theme = (): "dark" | "light" => {
-  if (
-    window &&
-    window.matchMedia &&
-    window.matchMedia("(prefers-color-scheme: light)").matches
-  ) {
-    return "light";
-  }
-
-  return "dark";
-};
-
-/**
  * Hook for initializing fabric context
  */
 export const use_fabric = (): ((
@@ -43,7 +28,7 @@ export const use_fabric = (): ((
 ) => Promise<boolean> | undefined) => {
   const { initial_image_url } = use_whiteboard();
   const canvas = React.useContext(FabricContext);
-  const theme = use_app_selector(select_theme);
+  const theme = use_app_selector(select_resolved_theme);
 
   return React.useCallback((element: HTMLCanvasElement) => {
     if (!element) {
@@ -53,10 +38,7 @@ export const use_fabric = (): ((
     canvas.current = new Canvas(element, {
       /* eslint-disable prefer-snakecase/prefer-snakecase */
       enableRetinaScaling: true,
-      backgroundColor:
-        (theme === "system" ? parse_system_theme() : theme) === "dark"
-          ? SWATCH.dark
-          : SWATCH.light,
+      backgroundColor: SWATCH[theme],
       selectionColor: "rgba(46,115,252,0.12)",
       selectionBorderColor: "rgba(106,172,255,0.8)",
       selectionLineWidth: 1.75,

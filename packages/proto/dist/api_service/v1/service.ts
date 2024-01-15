@@ -36,6 +36,8 @@ import {
   GetStoryMetadataResponse,
   GetStoryRequest,
   GetStoryResponse,
+  ValidateStoryRequest,
+  ValidateStoryResponse,
 } from "../../story_def/v1/def";
 import {
   GetFollowedTagCountRequest,
@@ -228,6 +230,16 @@ export const ApiServiceService = {
       Buffer.from(GetLoginActivityResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetLoginActivityResponse.decode(value),
   },
+  /** Validates a story */
+  validateStory: {
+    path: "/api_service.v1.ApiService/ValidateStory",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: ValidateStoryRequest) => Buffer.from(ValidateStoryRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => ValidateStoryRequest.decode(value),
+    responseSerialize: (value: ValidateStoryResponse) => Buffer.from(ValidateStoryResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => ValidateStoryResponse.decode(value),
+  },
   /** Returns the user's drafts details */
   getDraftsInfo: {
     path: "/api_service.v1.ApiService/GetDraftsInfo",
@@ -383,6 +395,8 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getConnectionSettings: handleUnaryCall<GetConnectionSettingsRequest, GetConnectionSettingsResponse>;
   /** Returns the user's login activity */
   getLoginActivity: handleUnaryCall<GetLoginActivityRequest, GetLoginActivityResponse>;
+  /** Validates a story */
+  validateStory: handleUnaryCall<ValidateStoryRequest, ValidateStoryResponse>;
   /** Returns the user's drafts details */
   getDraftsInfo: handleUnaryCall<GetDraftsInfoRequest, GetDraftsInfoResponse>;
   /** Returns the user's stories details */
@@ -585,6 +599,22 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetLoginActivityResponse) => void,
+  ): ClientUnaryCall;
+  /** Validates a story */
+  validateStory(
+    request: ValidateStoryRequest,
+    callback: (error: ServiceError | null, response: ValidateStoryResponse) => void,
+  ): ClientUnaryCall;
+  validateStory(
+    request: ValidateStoryRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: ValidateStoryResponse) => void,
+  ): ClientUnaryCall;
+  validateStory(
+    request: ValidateStoryRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: ValidateStoryResponse) => void,
   ): ClientUnaryCall;
   /** Returns the user's drafts details */
   getDraftsInfo(

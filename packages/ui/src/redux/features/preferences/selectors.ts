@@ -3,6 +3,9 @@ import { AppState } from "~/redux/store";
 export const select_theme = (state: AppState): "light" | "dark" | "system" =>
   state.preferences.theme;
 
+export const select_resolved_theme = (state: AppState): "light" | "dark" =>
+  state.preferences.resolved_theme;
+
 export const select_alert_visibility =
   (type: "appearance" | "accessibility") =>
   (state: AppState): boolean =>
