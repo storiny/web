@@ -8,14 +8,14 @@ const meta: Meta<typeof Mercator> = {
   title: "entities/mercator",
   component: Mercator,
   args: {
-    data: {
-      JP: 245,
-      IN: 128,
-      CA: 366,
-      DK: 17,
-      HU: 199,
-      MX: 12
-    },
+    data: [
+      ["JP", 245],
+      ["IN", 128],
+      ["CA", 366],
+      ["DK", 17],
+      ["HU", 199],
+      ["MX", 16]
+    ],
     label: {
       plural: "visitors",
       singular: "visitor"

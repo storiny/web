@@ -5,14 +5,14 @@ import { render_test_with_provider } from "~/redux/test-utils";
 
 import Mercator from "./mercator";
 
-const DATA = {
-  JP: 245,
-  IN: 128,
-  CA: 1024,
-  DK: 17,
-  HU: 199,
-  MX: 12
-};
+const DATA = [
+  ["JP", 245],
+  ["IN", 128],
+  ["CA", 366],
+  ["DK", 17],
+  ["HU", 199],
+  ["MX", 16]
+] as [string, number][];
 
 describe("<StatBlock />", () => {
   it("renders", () => {

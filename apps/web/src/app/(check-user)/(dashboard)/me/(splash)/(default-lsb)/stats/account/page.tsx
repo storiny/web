@@ -2,9 +2,9 @@ import "server-only";
 
 import React from "react";
 
-import AccountMetricsClient from "./client";
+import AccountStatsClient from "./client";
 
-const Page = (): React.ReactElement => <AccountMetricsClient />;
+const Page = (): React.ReactElement => <AccountStatsClient />;
 
 export { metadata } from "./metadata";
 export default Page;

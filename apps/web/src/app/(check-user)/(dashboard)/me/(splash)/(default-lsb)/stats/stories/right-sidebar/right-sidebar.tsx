@@ -11,17 +11,17 @@ import RightSidebar from "~/layout/right-sidebar";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "./right-sidebar.module.scss";
-import { StoriesMetricsRightSidebarProps } from "./right-sidebar.props";
+import { StoriesStatsRightSidebarProps } from "./right-sidebar.props";
 
-const SuspendedStoriesMetricsRightSidebarContent = dynamic(
+const SuspendedStoriesStatsRightSidebarContent = dynamic(
   () => import("./content"),
   {
     loading: dynamic_loader()
   }
 );
 
-const StoriesMetricsRightSidebar = (
-  props: StoriesMetricsRightSidebarProps
+const StoriesStatsRightSidebar = (
+  props: StoriesStatsRightSidebarProps
 ): React.ReactElement | null => {
   const should_render = use_media_query(BREAKPOINTS.up("desktop"));
 
@@ -31,11 +31,11 @@ const StoriesMetricsRightSidebar = (
 
   return (
     <RightSidebar className={clsx(styles.x, styles["right-sidebar"])}>
-      <SuspendedStoriesMetricsRightSidebarContent {...props} />
+      <SuspendedStoriesStatsRightSidebarContent {...props} />
       {/* Push the footer to the bottom of the viewport */}
       <Grow />
     </RightSidebar>
   );
 };
 
-export default StoriesMetricsRightSidebar;
+export default StoriesStatsRightSidebar;

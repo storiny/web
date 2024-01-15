@@ -1,3 +1,5 @@
+import { DeviceType } from "@storiny/shared";
+
 import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = (id: string): string => `me/stories/${id}/stats`;
@@ -9,21 +11,21 @@ export interface GetStoryStatsPayload {
 export type GetStoryStatsResponse = {
   comments_last_month: number;
   comments_this_month: number;
-  device_map: Record<string, number>;
-  like_timeline: Record<string, number>;
+  device_data: [DeviceType, number][];
+  like_timeline: [string, number][];
   likes_last_month: number;
   likes_this_month: number;
-  read_mercator: Record<string, number>;
-  read_timeline: Record<string, number>;
+  read_mercator: [string, number][];
+  read_timeline: [string, number][];
   reading_time_average: number;
   reading_time_estimate: number;
   reading_time_last_month: number;
   reading_time_this_month: number;
-  reading_time_timeline: Record<string, number>;
+  reading_time_timeline: [string, number][];
   reads_last_month: number;
   reads_last_three_months: number;
   reads_this_month: number;
-  referral_map: Record<string, number>;
+  referral_data: [string, number][];
   returning_readers: number;
   total_comments: number;
   total_likes: number;

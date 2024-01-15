@@ -9,10 +9,9 @@ const meta: Meta<typeof AreaChart> = {
   title: "entities/area-chart",
   component: AreaChart,
   args: {
-    data: apple_stock.slice(0, 90).map((stock) => ({
-      value: stock.close,
-      date: stock.date
-    })),
+    data: apple_stock
+      .slice(0, 90)
+      .map(({ date, close }) => [date, Math.round(close)]),
     accessibility_label: "Sample area chart",
     label: "Label",
     // eslint-disable-next-line prefer-snakecase/prefer-snakecase

@@ -171,4 +171,33 @@ mod tests {
 
         Ok(())
     }
+
+    #[sqlx::test]
+    async fn can_return_account_stats_for_a_minimal_account(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(get, pool, true, false, None).await;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/stats/account")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Response>(&res_to_string(res).await).unwrap();
+        let follow_timeline = vec![];
+
+        assert_eq!(
+            json,
+            Response {
+                follow_timeline: sqlx::types::Json::from(follow_timeline),
+                total_followers: 0,
+                total_subscribers: 0,
+                follows_last_month: 0,
+                follows_this_month: 0
+            }
+        );
+
+        Ok(())
+    }
 }

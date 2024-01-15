@@ -11,18 +11,15 @@ import RightSidebar from "~/layout/right-sidebar";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "./right-sidebar.module.scss";
-import { AccountMetricsRightSidebarProps } from "./right-sidebar.props";
 
-const SuspendedAccountMetricsRightSidebarContent = dynamic(
+const SuspendedAccountStatsRightSidebarContent = dynamic(
   () => import("./content"),
   {
     loading: dynamic_loader()
   }
 );
 
-const AccountMetricsRightSidebar = (
-  props: AccountMetricsRightSidebarProps
-): React.ReactElement | null => {
+const AccountStatsRightSidebar = (): React.ReactElement | null => {
   const should_render = use_media_query(BREAKPOINTS.up("desktop"));
 
   if (!should_render) {
@@ -31,11 +28,11 @@ const AccountMetricsRightSidebar = (
 
   return (
     <RightSidebar className={clsx(styles.x, styles["right-sidebar"])}>
-      <SuspendedAccountMetricsRightSidebarContent {...props} />
+      <SuspendedAccountStatsRightSidebarContent />
       {/* Push the footer to the bottom of the viewport */}
       <Grow />
     </RightSidebar>
   );
 };
 
-export default AccountMetricsRightSidebar;
+export default AccountStatsRightSidebar;

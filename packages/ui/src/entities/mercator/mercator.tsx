@@ -77,10 +77,10 @@ const Mercator = (props: MercatorProps): React.ReactElement => {
   } = use_tooltip<{ code: string; name: string }>();
 
   const strength_map = React.useMemo(() => {
-    const upper_bound = Math.max(...Object.values(data));
+    const upper_bound = Math.max(...data.map(([, value]) => value));
     const map: Record<string, number> = {};
 
-    for (const [code, value] of Object.entries(data)) {
+    for (const [code, value] of data) {
       map[code] = (value / upper_bound) * 100;
     }
 
@@ -185,7 +185,11 @@ const Mercator = (props: MercatorProps): React.ReactElement => {
                     })()}
                   </span>
                   {((): React.ReactElement => {
-                    const value = data[tooltip_data?.code || ""] || 0;
+                    const value =
+                      data.find(
+                        ([country_code]) =>
+                          country_code === tooltip_data?.code || ""
+                      )?.[1] || 0;
                     return (
                       <span>
                         <span className={clsx(css["t-major"], css["t-medium"])}>

@@ -6,13 +6,13 @@ import { render_test_with_provider } from "~/redux/test-utils";
 
 import StatBars from "./stat-bars";
 
-const DATA = {
-  Internal: 256,
-  "twitter.com": 56,
-  "example.com": 118,
-  "google.com": 95,
-  "bing.com": 166
-} as const;
+const DATA = [
+  ["Internal", 3002],
+  ["google.com", 1023],
+  ["bing.com", 393],
+  ["example.com", 232],
+  ["twitter.com", 192]
+] as [string, number][];
 
 describe("<StatBlock />", () => {
   it("renders", () => {

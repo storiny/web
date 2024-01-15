@@ -1,5 +1,6 @@
 "use client";
 
+import { DeviceType } from "@storiny/shared";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relative_time from "dayjs/plugin/relativeTime";
@@ -232,15 +233,10 @@ const ContentStoryStatsClient = (
                   Story reads (last 3 months)
                 </Typography>
                 <Spacer orientation={"vertical"} size={3} />
-                {Object.keys(data.read_timeline).length ? (
+                {data.read_timeline.length ? (
                   <AreaChart
                     accessibility_label={"Story reads chart"}
-                    data={Object.entries(data.read_timeline).map(
-                      ([key, value]) => ({
-                        value,
-                        date: key
-                      })
-                    )}
+                    data={data.read_timeline}
                     label={"Reads"}
                   />
                 ) : (
@@ -258,15 +254,10 @@ const ContentStoryStatsClient = (
                   Reading duration (last 3 months)
                 </Typography>
                 <Spacer orientation={"vertical"} size={3} />
-                {Object.keys(data.reading_time_timeline).length ? (
+                {data.reading_time_timeline.length ? (
                   <AreaChart
                     accessibility_label={"Story reading time chart"}
-                    data={Object.entries(data.reading_time_timeline).map(
-                      ([key, value]) => ({
-                        value,
-                        date: key
-                      })
-                    )}
+                    data={data.reading_time_timeline}
                     label={"Duration (in minutes)"}
                   />
                 ) : (
@@ -290,7 +281,7 @@ const ContentStoryStatsClient = (
                   privacy reasons.
                 </Typography>
                 <Spacer orientation={"vertical"} size={3} />
-                {Object.keys(data.read_mercator).length ? (
+                {data.read_mercator.length ? (
                   <div className={styles.mercator}>
                     <Mercator
                       accessibility_label={"Readers by country chart"}
@@ -321,9 +312,9 @@ const ContentStoryStatsClient = (
                   These are the top referral sources for your readers.
                 </Typography>
                 <Spacer orientation={"vertical"} size={3} />
-                {Object.keys(data.referral_map).length ? (
+                {data.referral_data.length ? (
                   <StatBars
-                    data={data.referral_map}
+                    data={data.referral_data}
                     icon_map={{ Internal: <HomeIcon /> }}
                     max_value={data.reads_last_three_months}
                   />
@@ -373,15 +364,10 @@ const ContentStoryStatsClient = (
                   Story likes (last 3 months)
                 </Typography>
                 <Spacer orientation={"vertical"} size={3} />
-                {Object.keys(data.like_timeline).length ? (
+                {data.like_timeline.length ? (
                   <AreaChart
                     accessibility_label={"Story reads chart"}
-                    data={Object.entries(data.like_timeline).map(
-                      ([key, value]) => ({
-                        value,
-                        date: key
-                      })
-                    )}
+                    data={data.like_timeline}
                     label={"Reads"}
                   />
                 ) : (
@@ -405,9 +391,23 @@ const ContentStoryStatsClient = (
                   stories.
                 </Typography>
                 <Spacer orientation={"vertical"} size={3} />
-                {Object.keys(data.device_map).length ? (
+                {data.device_data.length ? (
                   <StatBars
-                    data={data.device_map}
+                    data={data.device_data.map(([device_type, value]) => [
+                      ((): string => {
+                        switch (device_type) {
+                          case DeviceType.COMPUTER:
+                            return "Computer";
+                          case DeviceType.TABLET:
+                            return "Tablet";
+                          case DeviceType.MOBILE:
+                            return "Mobile";
+                          default:
+                            return "Unknown";
+                        }
+                      })(),
+                      value
+                    ])}
                     max_value={data.reads_last_three_months}
                   />
                 ) : (

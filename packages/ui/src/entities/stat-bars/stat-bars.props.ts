@@ -1,10 +1,10 @@
 import React from "react";
 
 /**
- * The data for stat bars, key-value pairs of labels and their
+ * The data for stat bars, an array of tuples of labels with their
  * corresponding values.
  */
-export type StatBarsData = Record<string, number>;
+export type StatBarsData = [label: string, value: number][];
 
 export interface StatBarsProps<T extends StatBarsData>
   extends React.ComponentPropsWithoutRef<"div"> {
@@ -15,7 +15,7 @@ export interface StatBarsProps<T extends StatBarsData>
   /**
    * The optional icon map for the bars
    */
-  icon_map?: Partial<Record<keyof T, React.ReactElement>>;
+  icon_map?: Partial<Record<T[number][0], React.ReactElement>>;
   /**
    * The maximum value of the statistics
    */
