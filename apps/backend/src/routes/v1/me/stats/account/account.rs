@@ -18,7 +18,7 @@ use serde::{
 };
 use sqlx::FromRow;
 
-#[derive(Debug, FromRow, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, FromRow, Serialize, Deserialize)]
 struct Response {
     follow_timeline: sqlx::types::Json<Vec<(String, i32)>>,
     follows_last_month: i32,
@@ -129,9 +129,12 @@ mod tests {
         res_to_string,
     };
     use actix_web::test;
+    use chrono::{
+        Duration,
+        Utc,
+    };
     use sqlx::PgPool;
 
-    #[allow(unused_variables)]
     #[sqlx::test(fixtures("account"))]
     async fn can_return_account_stats(pool: PgPool) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
@@ -145,18 +148,26 @@ mod tests {
         assert!(res.status().is_success());
 
         let json = serde_json::from_str::<Response>(&res_to_string(res).await).unwrap();
-        let follow_timeline = vec![("2023-11-17".to_string(), 1), ("2024-01-01".to_string(), 1)];
+        let follow_timeline = vec![
+            (
+                (Utc::now() - Duration::days(45))
+                    .format("%Y-%m-%d")
+                    .to_string(),
+                1,
+            ),
+            (Utc::now().format("%Y-%m-%d").to_string(), 1),
+        ];
 
-        assert!(matches!(
+        assert_eq!(
             json,
             Response {
-                follow_timeline,
+                follow_timeline: sqlx::types::Json::from(follow_timeline),
                 total_followers: 3,
                 total_subscribers: 1,
                 follows_last_month: 1,
                 follows_this_month: 1
             }
-        ));
+        );
 
         Ok(())
     }

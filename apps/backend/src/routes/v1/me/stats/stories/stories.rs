@@ -18,7 +18,7 @@ use serde::{
 };
 use sqlx::FromRow;
 
-#[derive(Debug, FromRow, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, FromRow, Serialize, Deserialize)]
 struct Response {
     #[serde(with = "crate::snowflake_id::option")]
     latest_story_id: Option<i64>,
@@ -246,9 +246,12 @@ mod tests {
         res_to_string,
     };
     use actix_web::test;
+    use chrono::{
+        Duration,
+        Utc,
+    };
     use sqlx::PgPool;
 
-    #[allow(unused_variables)]
     #[sqlx::test(fixtures("stories"))]
     async fn can_return_stories_stats(pool: PgPool) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
@@ -264,18 +267,43 @@ mod tests {
         let json = serde_json::from_str::<Response>(&res_to_string(res).await).unwrap();
         let read_mercator = vec![("IN".to_string(), 15)];
         let read_timeline = vec![
-            ("2023-11-12".to_string(), 1),
-            ("2023-11-17".to_string(), 2),
-            ("2023-11-22".to_string(), 1),
-            ("2023-11-27".to_string(), 1),
-            ("2023-11-30".to_string(), 1),
-            ("2024-01-01".to_string(), 6),
-            ("2024-01-02".to_string(), 1),
-            ("2024-01-10".to_string(), 1),
-            ("2024-01-12".to_string(), 1),
-            ("2024-01-14".to_string(), 4),
-            ("2024-01-15".to_string(), 1),
-            ("2024-01-16".to_string(), 1),
+            (
+                (Utc::now() - Duration::days(58))
+                    .format("%Y-%m-%d")
+                    .to_string(),
+                1,
+            ),
+            (
+                (Utc::now() - Duration::days(50))
+                    .format("%Y-%m-%d")
+                    .to_string(),
+                1,
+            ),
+            (
+                (Utc::now() - Duration::days(45))
+                    .format("%Y-%m-%d")
+                    .to_string(),
+                2,
+            ),
+            (
+                (Utc::now() - Duration::days(40))
+                    .format("%Y-%m-%d")
+                    .to_string(),
+                1,
+            ),
+            (
+                (Utc::now() - Duration::days(35))
+                    .format("%Y-%m-%d")
+                    .to_string(),
+                1,
+            ),
+            (
+                (Utc::now() - Duration::days(32))
+                    .format("%Y-%m-%d")
+                    .to_string(),
+                1,
+            ),
+            (Utc::now().format("%Y-%m-%d").to_string(), 14),
         ];
         let referral_data = vec![
             ("Internal".to_string(), 9),
@@ -284,42 +312,65 @@ mod tests {
             ("example.com".to_string(), 1),
         ];
 
-        assert!(matches!(
+        assert_eq!(
             json,
             Response {
-                latest_story_id: Some(4,),
-                read_mercator,
-                read_timeline,
-                reading_time_last_month: 440,
-                reading_time_this_month: 1352,
-                reads_last_month: 5,
+                latest_story_id: Some(4),
+                read_mercator: sqlx::types::Json::from(read_mercator),
+                read_timeline: sqlx::types::Json::from(read_timeline),
+                reading_time_last_month: 497,
+                reading_time_this_month: 1318,
+                reads_last_month: 7,
                 reads_last_three_months: 21,
-                reads_this_month: 15,
-                referral_data,
+                reads_this_month: 14,
+                referral_data: sqlx::types::Json::from(referral_data),
                 returning_readers: 3,
                 total_reads: 22,
                 total_views: 50,
             }
-        ));
+        );
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("stories"))]
-    async fn can_handle_no_latest_story(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, true, Some(1_i64)).await;
+    #[sqlx::test]
+    async fn can_return_stories_stats_for_a_minimal_account(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Delete all the stories.
-        sqlx::query(
-            r#"
-DELETE FROM stories
-WHERE user_id = $1
-"#,
-        )
-        .bind(user_id)
-        .execute(&mut *conn)
-        .await?;
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/stats/stories")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Response>(&res_to_string(res).await).unwrap();
+
+        assert_eq!(
+            json,
+            Response {
+                latest_story_id: None,
+                read_mercator: sqlx::types::Json::from(Vec::new()),
+                read_timeline: sqlx::types::Json::from(Vec::new()),
+                reading_time_last_month: 0,
+                reading_time_this_month: 0,
+                reads_last_month: 0,
+                reads_last_three_months: 0,
+                reads_this_month: 0,
+                referral_data: sqlx::types::Json::from(Vec::new()),
+                returning_readers: 0,
+                total_reads: 0,
+                total_views: 0,
+            }
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_handle_no_latest_story(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(get, pool, true, false, None).await;
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())

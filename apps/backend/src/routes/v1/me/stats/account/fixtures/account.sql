@@ -8,6 +8,6 @@ VALUES (1, 'Sample user 1', 'sample_user_1', 'sample.1@example.com'),
 
 INSERT INTO
 	relations (follower_id, followed_id, created_at, subscribed_at)
-VALUES (2, 1, '2024-01-01'::TIMESTAMPTZ, NOW()),
-	   (3, 1, '2024-01-01'::TIMESTAMPTZ - INTERVAL '45 days', NULL),
+VALUES (2, 1, NOW(), NOW()),
+	   (3, 1, NOW() - INTERVAL '45 days', NULL),
 	   (4, 1, NOW() - INTERVAL '120 days', NULL);
