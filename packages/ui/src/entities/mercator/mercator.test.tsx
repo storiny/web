@@ -14,7 +14,7 @@ const DATA = [
   ["MX", 16]
 ] as [string, number][];
 
-describe("<StatBlock />", () => {
+describe("<Mercator />", () => {
   it("renders", () => {
     render_test_with_provider(
       <Mercator

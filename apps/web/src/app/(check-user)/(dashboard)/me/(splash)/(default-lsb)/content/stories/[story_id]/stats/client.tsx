@@ -145,7 +145,8 @@ const ContentStoryStatsClient = (
                   caption={((): string => {
                     const percent_change = Math.round(
                       100 -
-                        (data.reads_last_month / data.reads_this_month) * 100
+                        (data.reads_last_month / data.reads_this_month || 1) *
+                          100
                     );
 
                     return `${
@@ -168,7 +169,7 @@ const ContentStoryStatsClient = (
                     const percent_change = Math.round(
                       100 -
                         (data.reading_time_last_month /
-                          data.reading_time_this_month) *
+                          data.reading_time_this_month || 1) *
                           100
                     );
 
@@ -334,7 +335,8 @@ const ContentStoryStatsClient = (
                   caption={((): string => {
                     const percent_change = Math.round(
                       100 -
-                        (data.likes_last_month / data.likes_this_month) * 100
+                        (data.likes_last_month / data.likes_this_month || 1) *
+                          100
                     );
 
                     return `${
@@ -427,7 +429,8 @@ const ContentStoryStatsClient = (
                   caption={((): string => {
                     const percent_change = Math.round(
                       100 -
-                        (data.comments_last_month / data.comments_this_month) *
+                        (data.comments_last_month / data.comments_this_month ||
+                          1) *
                           100
                     );
 

@@ -90,7 +90,11 @@ describe("preferences_listener", () => {
     expect(localStorage.setItem).toHaveBeenCalledWith(
       PREFERENCES_STORAGE_KEY,
       compress_to_utf16(
-        JSON.stringify({ ...preferences_initial_state, theme: undefined })
+        JSON.stringify({
+          ...preferences_initial_state,
+          theme: undefined,
+          resolved_theme: undefined
+        })
       )
     );
   });

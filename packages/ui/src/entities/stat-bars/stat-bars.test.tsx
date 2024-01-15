@@ -14,7 +14,7 @@ const DATA = [
   ["twitter.com", 192]
 ] as [string, number][];
 
-describe("<StatBlock />", () => {
+describe("<StatBars />", () => {
   it("renders", () => {
     render_test_with_provider(
       <StatBars
