@@ -73,7 +73,8 @@ const AccountStatsClient = (): React.ReactElement => {
                   caption={((): string => {
                     const percent_change = Math.round(
                       100 -
-                        (data.follows_last_month / data.follows_this_month) *
+                        (data.follows_last_month / data.follows_this_month ||
+                          1) *
                           100
                     );
 

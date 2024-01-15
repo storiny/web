@@ -88,7 +88,8 @@ const StoriesStatsClient = (): React.ReactElement => {
                   caption={((): string => {
                     const percent_change = Math.round(
                       100 -
-                        (data.reads_last_month / data.reads_this_month) * 100
+                        (data.reads_last_month / data.reads_this_month || 1) *
+                          100
                     );
 
                     return `${
@@ -111,7 +112,7 @@ const StoriesStatsClient = (): React.ReactElement => {
                     const percent_change = Math.round(
                       100 -
                         (data.reading_time_last_month /
-                          data.reading_time_this_month) *
+                          data.reading_time_this_month || 1) *
                           100
                     );
 

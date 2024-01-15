@@ -10,7 +10,7 @@ const DATA = apple_stock
   .slice(0, 90)
   .map(({ date, close }) => [date, Math.round(close)]) as [string, number][];
 
-describe("<StatBlock />", () => {
+describe("<AreaChart />", () => {
   it("renders", () => {
     render_test_with_provider(
       <AreaChart
