@@ -2,7 +2,7 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 export type QueryErrorType =
-  // Server error (server / 50x)
+  // Server error (server / 5xx)
   | "server"
   // Network errors (client)
   | "network";

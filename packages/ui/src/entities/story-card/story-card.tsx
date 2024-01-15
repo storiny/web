@@ -21,7 +21,7 @@ import { StoryCardProps } from "./story-card.props";
 
 const StoryCard = (props: StoryCardProps): React.ReactElement => {
   const { story, className, ...rest } = props;
-  const href = `/${story.user?.username || "story"}/${story.slug}`;
+  const href = `/${story.user?.username || "story"}/${story.slug ?? story.id}`;
 
   return (
     <article {...rest} className={clsx(styles["story-card"], className)}>

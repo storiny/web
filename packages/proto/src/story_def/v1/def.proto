@@ -39,6 +39,15 @@ message Draft {
   optional string edited_at /*   */ = 7;
 }
 
+// Story validation request
+
+message ValidateStoryRequest {
+  string user_id /* */ = 1;
+  string story_id /**/ = 2;
+}
+
+message ValidateStoryResponse {}
+
 // Create draft request
 
 message CreateDraftRequest {

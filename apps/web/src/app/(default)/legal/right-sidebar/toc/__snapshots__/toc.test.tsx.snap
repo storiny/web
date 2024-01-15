@@ -2,7 +2,7 @@
 
 exports[`<LegalToc /> matches snapshot 1`] = `
 <div>
-  <section>
+  <article>
     <h2
       id="h2-1"
     >
@@ -13,7 +13,7 @@ exports[`<LegalToc /> matches snapshot 1`] = `
     >
       H3
     </h3>
-  </section>
+  </article>
   <nav
     aria-label="Table of contents"
     class="scroll-area md"
