@@ -18,7 +18,7 @@ import Tooltip from "~/components/tooltip";
 import Typography from "~/components/typography";
 import TerminalIcon from "~/icons/terminal";
 import WarningIcon from "~/icons/warning";
-import { select_theme } from "~/redux/features";
+import { select_resolved_theme } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 
@@ -49,7 +49,7 @@ const CodeBlockEditor = ({
   const code_block_id = React.useId();
   const undo_manager = use_atom_value(undo_manager_atom);
   const awareness = use_atom_value(awareness_atom);
-  const theme = use_app_selector(select_theme);
+  const theme = use_app_selector(select_resolved_theme);
   const enable_code_gutters = use_app_selector(
     (state) => state.preferences.enable_code_gutters
   );

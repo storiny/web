@@ -1,0 +1,21 @@
+.stat-block {
+  background-color: var(--bg-elevation-xs);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-md);
+  padding: 8px 16px;
+  gap: 8px;
+}
+
+.value {
+  font-size: 18px;
+  line-height: 23px;
+}
+
+.caption {
+  --icon-size: 14px;
+
+  align-items: center;
+  padding-top: 4px;
+  margin-top: auto;
+  gap: 6px;
+}

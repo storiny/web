@@ -300,10 +300,10 @@ const StoryActions = ({
                 as={NextLink}
                 check_auth
                 decorator={<StoriesMetricsIcon />}
-                href={`/me/content/stories/${story.id}/metrics`}
+                href={`/me/content/stories/${story.id}/stats`}
                 onClick={(event): void => event.stopPropagation()}
               >
-                View metrics
+                View stats
               </MenuItem>
               <Separator />
               {unpublish_story_element}

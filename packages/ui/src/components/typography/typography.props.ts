@@ -50,7 +50,10 @@ export type TypographyElement =
   | "code";
 
 // Not polymorphic
-export type TypographyProps = PolymorphicProps<TypographyElement> & {
+export type TypographyProps = Omit<
+  PolymorphicProps<TypographyElement>,
+  "color"
+> & {
   /**
    * The color of the component.
    * @default 'major'
