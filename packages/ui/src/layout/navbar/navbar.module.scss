@@ -27,7 +27,7 @@
   }
 
   &.dashboard {
-    @include breakpoints.media("<desktop") {
+    @include breakpoints.media("<=desktop") {
       & .wordmark {
         display: none;
       }

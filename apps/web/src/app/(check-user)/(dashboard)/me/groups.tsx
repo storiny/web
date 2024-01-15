@@ -127,12 +127,12 @@ const STATS_GROUP: Group = {
   title: "Your stats",
   items: [
     {
-      title: "Account metrics",
+      title: "Account stats",
       value: "stats/account",
       decorator: <UserMetricsIcon />
     },
     {
-      title: "Stories metrics",
+      title: "Stories stats",
       value: "stats/stories",
       decorator: <StoriesMetricsIcon />
     }
@@ -223,6 +223,6 @@ export const search_dashboard_groups = async (
             result.matches &&
             result.matches.some((match) => match.value === item.title)
         )
-      } as Group)
+      }) as Group
   );
 };

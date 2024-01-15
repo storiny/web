@@ -51,7 +51,9 @@ import {
   GetStoryMetadataRequest,
   GetStoryMetadataResponse,
   GetStoryRequest,
-  GetStoryResponse
+  GetStoryResponse,
+  ValidateStoryRequest,
+  ValidateStoryResponse
 } from "@storiny/proto/dist/story_def/v1/def";
 import {
   GetFollowedTagCountRequest,
@@ -153,6 +155,7 @@ export {
   GetUserMuteCountResponse,
   GetUsernameResponse,
   GetUserRelationsInfoResponse,
+  ValidateStoryResponse,
   VerifyEmailResponse
 };
 
@@ -283,5 +286,11 @@ export const get_comment = cache(
 export const create_draft = cache(
   promisify<CreateDraftRequest, CreateDraftResponse>(
     global.grpc_client.createDraft
+  )
+);
+
+export const validate_story = cache(
+  promisify<ValidateStoryRequest, ValidateStoryResponse>(
+    global.grpc_client.validateStory
   )
 );
