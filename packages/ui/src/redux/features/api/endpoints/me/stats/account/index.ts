@@ -3,7 +3,7 @@ import { api_slice } from "~/redux/features/api/slice";
 const SEGMENT = "me/stats/account";
 
 export type GetAccountStatsResponse = {
-  follow_timeline: Record<string, number>;
+  follow_timeline: [string, number][];
   follows_last_month: number;
   follows_this_month: number;
   total_followers: number;

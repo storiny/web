@@ -6,10 +6,9 @@ import { render_test_with_provider } from "~/redux/test-utils";
 
 import AreaChart from "./area-chart";
 
-const DATA = apple_stock.slice(0, 90).map((stock) => ({
-  value: stock.close,
-  date: stock.date
-}));
+const DATA = apple_stock
+  .slice(0, 90)
+  .map(({ date, close }) => [date, Math.round(close)]) as [string, number][];
 
 describe("<StatBlock />", () => {
   it("renders", () => {

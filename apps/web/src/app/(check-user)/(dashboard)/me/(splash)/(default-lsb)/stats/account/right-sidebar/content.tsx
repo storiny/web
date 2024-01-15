@@ -1,19 +1,19 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import DateTime from "~/components/date-time";
 import Link from "~/components/link";
 import Skeleton from "~/components/skeleton";
 import Typography from "~/components/typography";
 import ErrorState from "~/entities/error-state";
 import Persona from "~/entities/persona";
-import { get_query_error_type } from "~/redux/features";
+import {
+  get_query_error_type,
+  use_get_relations_query
+} from "~/redux/features";
 import css from "~/theme/main.module.scss";
-import { DateFormat } from "~/utils/format-date";
 
 import SuspendedDashboardRightSidebarContent from "../../../(default-rsb)/right-sidebar/content";
 import styles from "./right-sidebar.module.scss";
-import { AccountMetricsRightSidebarProps } from "./right-sidebar.props";
 
 const UserSkeleton = (): React.ReactElement => (
   <div className={styles.skeleton}>
@@ -25,9 +25,7 @@ const UserSkeleton = (): React.ReactElement => (
   </div>
 );
 
-const AccountMetricsRightSidebarContent = ({
-  hook_return
-}: AccountMetricsRightSidebarProps): React.ReactElement => {
+const AccountStatsRightSidebarContent = (): React.ReactElement => {
   const {
     data,
     isLoading: is_loading,
@@ -35,7 +33,12 @@ const AccountMetricsRightSidebarContent = ({
     isError: is_error,
     error,
     refetch
-  } = hook_return;
+  } = use_get_relations_query({
+    page: 1,
+    sort: "recent",
+    relation_type: "followers"
+  });
+  const { items = [] } = data || {};
 
   return is_error ? (
     <ErrorState
@@ -46,7 +49,7 @@ const AccountMetricsRightSidebarContent = ({
       size={"sm"}
       type={get_query_error_type(error)}
     />
-  ) : data && !data.recent_followers.length ? (
+  ) : data && !items.length ? (
     <SuspendedDashboardRightSidebarContent />
   ) : (
     <React.Fragment>
@@ -59,7 +62,7 @@ const AccountMetricsRightSidebarContent = ({
       <div className={clsx(css["flex-col"], styles.list)}>
         {!data || is_loading || is_fetching
           ? [...Array(5)].map((_, index) => <UserSkeleton key={index} />)
-          : data.recent_followers.map((user) => (
+          : items.slice(0, 5).map((user) => (
               <Persona
                 avatar={{
                   alt: `${user.name}'s avatar`,
@@ -82,16 +85,9 @@ const AccountMetricsRightSidebarContent = ({
                   </Link>
                 }
                 secondary_text={
-                  <>
-                    <Link className={css.ellipsis} href={`/${user.username}`}>
-                      @{user.username}
-                    </Link>{" "}
-                    &bull;{" "}
-                    <DateTime
-                      date={user.followed_at}
-                      format={DateFormat.RELATIVE}
-                    />
-                  </>
+                  <Link className={css.ellipsis} href={`/${user.username}`}>
+                    @{user.username}
+                  </Link>
                 }
               />
             ))}
@@ -100,4 +96,4 @@ const AccountMetricsRightSidebarContent = ({
   );
 };
 
-export default AccountMetricsRightSidebarContent;
+export default AccountStatsRightSidebarContent;

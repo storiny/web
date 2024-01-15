@@ -9,17 +9,7 @@ import { AspectRatioProps } from "~/components/aspect-ratio";
 
 import { DATE_SCALE_CONFIG, VALUE_SCALE_CONFIG } from "./area-chart";
 
-export interface AreaChartDatum {
-  /**
-   * The date part (for x-axis)
-   */
-  date: string;
-  /**
-   * The value part (for y-axis)
-   */
-  value: number;
-}
-
+export type AreaChartDatum = [date: string, value: number];
 export type AreaChartData = AreaChartDatum[];
 
 export type AreaChartProps = AspectRatioProps & {

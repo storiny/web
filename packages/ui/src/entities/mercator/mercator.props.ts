@@ -3,10 +3,10 @@ import { ParentSizeProps } from "@visx/responsive/lib/components/ParentSize";
 import { AspectRatioProps } from "~/components/aspect-ratio";
 
 /**
- * The data for mercator, key-value pairs of country codes and their
+ * The data for mercator, an array of tuples of country codes with their
  * corresponding values.
  */
-export type MercatorData = Record<string, number>;
+export type MercatorData = [country_code: string, value: number][];
 
 export type MercatorProps = AspectRatioProps & {
   /**

@@ -47,13 +47,13 @@ const chart_theme = build_chart_theme({
  * Returns the date part for a given datum
  * @param datum Datum
  */
-const get_date = (datum: AreaChartDatum): Date => new Date(datum.date);
+const get_date = (datum: AreaChartDatum): Date => new Date(datum[0]);
 
 /**
  * Returns the value part for a given datum
  * @param datum Datum
  */
-const get_value = (datum: AreaChartDatum): number => datum.value;
+const get_value = (datum: AreaChartDatum): number => datum[1];
 
 /**
  * Date formatter

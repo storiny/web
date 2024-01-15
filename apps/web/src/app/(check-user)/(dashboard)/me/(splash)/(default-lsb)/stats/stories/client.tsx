@@ -26,7 +26,7 @@ import { capitalize } from "~/utils/capitalize";
 
 import DashboardTitle from "../../dashboard-title";
 import DashboardWrapper from "../../dashboard-wrapper";
-import StoriesMetricsRightSidebar from "./right-sidebar";
+import StoriesStatsRightSidebar from "./right-sidebar";
 import styles from "./styles.module.scss";
 
 dayjs.extend(relative_time);
@@ -36,7 +36,7 @@ const EmptyState = dynamic(() => import("../../stats-empty-state"), {
   loading: dynamic_loader()
 });
 
-const StoriesMetricsClient = (): React.ReactElement => {
+const StoriesStatsClient = (): React.ReactElement => {
   const hook_return = use_get_stories_stats_query();
   const {
     data,
@@ -148,15 +148,10 @@ const StoriesMetricsClient = (): React.ReactElement => {
                   Story reads (last 3 months)
                 </Typography>
                 <Spacer orientation={"vertical"} size={3} />
-                {Object.keys(data.read_timeline).length ? (
+                {data.read_timeline.length ? (
                   <AreaChart
                     accessibility_label={"Story reads chart"}
-                    data={Object.entries(data.read_timeline).map(
-                      ([key, value]) => ({
-                        value,
-                        date: key
-                      })
-                    )}
+                    data={data.read_timeline}
                     label={"Reads"}
                   />
                 ) : (
@@ -180,7 +175,7 @@ const StoriesMetricsClient = (): React.ReactElement => {
                   privacy reasons.
                 </Typography>
                 <Spacer orientation={"vertical"} size={3} />
-                {Object.keys(data.read_mercator).length ? (
+                {data.read_mercator.length ? (
                   <div className={styles.mercator}>
                     <Mercator
                       accessibility_label={"Readers by country chart"}
@@ -211,9 +206,9 @@ const StoriesMetricsClient = (): React.ReactElement => {
                   These are the top referral sources for your readers.
                 </Typography>
                 <Spacer orientation={"vertical"} size={3} />
-                {Object.keys(data.referral_map).length ? (
+                {data.referral_data.length ? (
                   <StatBars
-                    data={data.referral_map}
+                    data={data.referral_data}
                     icon_map={{ Internal: <HomeIcon /> }}
                     max_value={data.reads_last_three_months}
                   />
@@ -226,9 +221,9 @@ const StoriesMetricsClient = (): React.ReactElement => {
         </DashboardWrapper>
         <Spacer orientation={"vertical"} size={10} />
       </main>
-      <StoriesMetricsRightSidebar hook_return={hook_return} />
+      <StoriesStatsRightSidebar hook_return={hook_return} />
     </React.Fragment>
   );
 };
 
-export default StoriesMetricsClient;
+export default StoriesStatsClient;

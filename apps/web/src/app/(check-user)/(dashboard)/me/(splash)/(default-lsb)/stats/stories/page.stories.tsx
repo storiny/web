@@ -8,11 +8,11 @@ import { render_with_state } from "~/redux/mock";
 import DashboardLayout from "../../../../../layout";
 import DashboardSplashLayout from "../../../layout";
 import DefaultDashboardLeftSidebarLayout from "../../layout";
-import StoriesMetricsPage from "./client";
+import StoriesStatsPage from "./client";
 
-const meta: Meta<typeof StoriesMetricsPage> = {
+const meta: Meta<typeof StoriesStatsPage> = {
   title: "dashboard/stats/stories",
-  component: StoriesMetricsPage,
+  component: StoriesStatsPage,
   parameters: {
     layout: "fullscreen"
   },
@@ -20,7 +20,7 @@ const meta: Meta<typeof StoriesMetricsPage> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof StoriesMetricsPage>;
+type Story = StoryObj<typeof StoriesStatsPage>;
 
 export const Default: Story = {
   decorators: [

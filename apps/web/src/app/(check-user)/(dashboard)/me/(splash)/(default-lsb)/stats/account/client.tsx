@@ -19,15 +19,14 @@ import css from "~/theme/main.module.scss";
 
 import DashboardTitle from "../../dashboard-title";
 import DashboardWrapper from "../../dashboard-wrapper";
-import AccountMetricsRightSidebar from "./right-sidebar";
+import AccountStatsRightSidebar from "./right-sidebar";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("../../stats-empty-state"), {
   loading: dynamic_loader()
 });
 
-const AccountMetricsClient = (): React.ReactElement => {
-  const hook_return = use_get_account_stats_query();
+const AccountStatsClient = (): React.ReactElement => {
   const {
     data,
     isLoading: is_loading,
@@ -35,7 +34,7 @@ const AccountMetricsClient = (): React.ReactElement => {
     isError: is_error,
     error,
     refetch
-  } = hook_return;
+  } = use_get_account_stats_query();
 
   return (
     <React.Fragment>
@@ -105,15 +104,10 @@ const AccountMetricsClient = (): React.ReactElement => {
                   Account follows (last 3 months)
                 </Typography>
                 <Spacer orientation={"vertical"} size={3} />
-                {Object.keys(data.follow_timeline).length ? (
+                {data.follow_timeline.length ? (
                   <AreaChart
                     accessibility_label={"Account follows chart"}
-                    data={Object.entries(data.follow_timeline).map(
-                      ([key, value]) => ({
-                        value,
-                        date: key
-                      })
-                    )}
+                    data={data.follow_timeline}
                     label={"Follows"}
                   />
                 ) : (
@@ -125,9 +119,9 @@ const AccountMetricsClient = (): React.ReactElement => {
         </DashboardWrapper>
         <Spacer orientation={"vertical"} size={10} />
       </main>
-      <AccountMetricsRightSidebar hook_return={hook_return} />
+      <AccountStatsRightSidebar />
     </React.Fragment>
   );
 };
 
-export default AccountMetricsClient;
+export default AccountStatsClient;

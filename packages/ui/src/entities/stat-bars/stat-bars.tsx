@@ -15,7 +15,7 @@ const StatBars = <T extends StatBarsData>(
   const strength_map = React.useMemo(() => {
     const map: Record<string, number> = {};
 
-    for (const [label, value] of Object.entries(data)) {
+    for (const [label, value] of data) {
       map[label] = Math.round((value / max_value) * 100);
     }
 
@@ -27,35 +27,31 @@ const StatBars = <T extends StatBarsData>(
       {...rest}
       className={clsx(css["flex-col"], styles["stat-bars"], className)}
     >
-      {Object.entries(data)
-        .sort(([, prev_value], [, next_value]) =>
-          next_value > prev_value ? 1 : -1
-        )
-        .map(([label, value]) => (
-          <div
-            className={clsx(css["flex-center"], styles.bar)}
-            key={label}
-            style={
-              {
-                "--strength": `${strength_map[label] || 0}%`
-              } as React.CSSProperties
-            }
+      {data.map(([label, value]) => (
+        <div
+          className={clsx(css["flex-center"], styles.bar)}
+          key={label}
+          style={
+            {
+              "--strength": `${strength_map[label] || 0}%`
+            } as React.CSSProperties
+          }
+        >
+          <Typography className={styles.label} ellipsis level={"body2"}>
+            {icon_map ? icon_map[label as keyof typeof icon_map] || null : null}
+            {label}
+          </Typography>
+          <Typography
+            className={clsx(css["t-medium"], styles.value)}
+            level={"body3"}
           >
-            <Typography className={styles.label} ellipsis level={"body2"}>
-              {icon_map ? icon_map[label] || null : null}
-              {label}
-            </Typography>
-            <Typography
-              className={clsx(css["t-medium"], styles.value)}
-              level={"body3"}
-            >
-              {abbreviate_number(value)}{" "}
-              <span className={css["t-minor"]}>
-                ({strength_map[label] || 0}%)
-              </span>
-            </Typography>
-          </div>
-        ))}
+            {abbreviate_number(value)}{" "}
+            <span className={css["t-minor"]}>
+              ({strength_map[label] || 0}%)
+            </span>
+          </Typography>
+        </div>
+      ))}
     </div>
   );
 };
