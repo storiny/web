@@ -13,8 +13,10 @@ import ErrorState from "~/entities/error-state";
 import StatBlock from "~/entities/stat-block";
 import {
   get_query_error_type,
+  select_user,
   use_get_account_stats_query
 } from "~/redux/features";
+import { use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 
 import DashboardTitle from "../../dashboard-title";
@@ -27,6 +29,7 @@ const EmptyState = dynamic(() => import("../../stats-empty-state"), {
 });
 
 const AccountStatsClient = (): React.ReactElement => {
+  const user = use_app_selector(select_user);
   const {
     data,
     isLoading: is_loading,
@@ -34,7 +37,7 @@ const AccountStatsClient = (): React.ReactElement => {
     isError: is_error,
     error,
     refetch
-  } = use_get_account_stats_query();
+  } = use_get_account_stats_query({ user_id: user?.id || "" });
 
   return (
     <React.Fragment>
