@@ -32,3 +32,11 @@
   border: 2px solid var(--inverted-400);
   background-color: var(--bg-body);
 }
+
+// noinspection Stylelint
+:global(.visx-tooltip-glyph) {
+  svg {
+    width: 10px;
+    height: 10px;
+  }
+}

@@ -9,6 +9,7 @@
   gap: 12px;
   min-height: 35px;
   max-height: 35px;
+  z-index: 0;
 
   &::before {
     content: "";
