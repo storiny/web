@@ -186,7 +186,7 @@ const EmbedComponent = ({
               <iframe
                 loading="lazy"
                 style="${Object.entries({
-                  "color-scheme": parsed_theme,
+                  "color-scheme": theme,
                   border: "none",
                   outline: "none",
                   position: "absolute",
