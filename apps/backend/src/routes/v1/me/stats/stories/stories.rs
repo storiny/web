@@ -12,6 +12,7 @@ use actix_web::{
     web,
     HttpResponse,
 };
+use http::header;
 use serde::{
     Deserialize,
     Serialize,
@@ -230,6 +231,8 @@ SELECT (SELECT read_count::INT4 FROM total_stats)           AS "total_reads",
         CacheDirective::MaxAge(86400u32), // 24 hours
         CacheDirective::MustRevalidate,
     ]));
+
+    builder.append_header((header::VARY, "x-storiny-uid"));
 
     Ok(builder.json(result))
 }

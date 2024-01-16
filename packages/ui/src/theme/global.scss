@@ -55,3 +55,9 @@ main[data-root="true"] {
   grid-area: main;
 }
 
+.visx-tooltip-glyph {
+  svg {
+    width: 10px;
+    height: 10px;
+  }
+}
