@@ -2,6 +2,8 @@ import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = "me/stats/stories";
 
+export type GetStoriesStatsRequest = { user_id: string };
+
 export type GetStoriesStatsResponse = {
   latest_story_id: string | null;
   read_mercator: [string, number][];
@@ -21,8 +23,14 @@ export const { useGetStoriesStatsQuery: use_get_stories_stats_query } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-      getStoriesStats: builder.query<GetStoriesStatsResponse, void>({
-        query: () => `/${SEGMENT}`,
+      getStoriesStats: builder.query<
+        GetStoriesStatsResponse,
+        GetStoriesStatsRequest
+      >({
+        query: ({ user_id }) => ({
+          url: `/${SEGMENT}`,
+          headers: { "x-storiny-uid": user_id }
+        }),
         serializeQueryArgs: ({ endpointName }) => endpointName
       })
     })
