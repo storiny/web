@@ -13,7 +13,7 @@ const DashboardFooter = (): React.ReactElement | null => {
     return null;
   }
 
-  return <Footer style={{ marginTop: "225px" }} />;
+  return <Footer style={{ marginTop: "160px" }} />;
 };
 
 export default DashboardFooter;
