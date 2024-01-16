@@ -141,7 +141,7 @@ async fn post(
         if host.contains("storiny.com") {
             None
         } else {
-            Some(host)
+            Some(host.replace("www.", ""))
         }
     });
 
