@@ -19,8 +19,10 @@ import StatBlock from "~/entities/stat-block";
 import HomeIcon from "~/icons/home";
 import {
   get_query_error_type,
+  select_user,
   use_get_stories_stats_query
 } from "~/redux/features";
+import { use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 import { capitalize } from "~/utils/capitalize";
 
@@ -37,7 +39,8 @@ const EmptyState = dynamic(() => import("../../stats-empty-state"), {
 });
 
 const StoriesStatsClient = (): React.ReactElement => {
-  const hook_return = use_get_stories_stats_query();
+  const user = use_app_selector(select_user);
+  const hook_return = use_get_stories_stats_query({ user_id: user?.id || "" });
   const {
     data,
     isLoading: is_loading,
