@@ -1,6 +1,7 @@
 import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection as use_lexical_node_selection } from "@lexical/react/useLexicalNodeSelection";
 import { mergeRegister as merge_register } from "@lexical/utils";
+import { captureException as capture_exception } from "@sentry/nextjs";
 import { clsx } from "clsx";
 import { useSetAtom as use_set_atom } from "jotai";
 import {
@@ -177,7 +178,8 @@ const EmbedComponent = ({
                     embed_data.supports_binary_theme
                   );
                 }
-              } catch {
+              } catch (error) {
+                capture_exception(`embed node error: ${error}`);
                 set_error(true);
               }
             }
@@ -199,7 +201,8 @@ const EmbedComponent = ({
                   .map(([key, value]) => `${key}:${value}`)
                   .join(";")}" 
                 src="${embed_url}"></iframe>`;
-          } catch {
+          } catch (error) {
+            capture_exception(`embed node error: ${error}`);
             set_error(true);
           }
         }
