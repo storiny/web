@@ -282,7 +282,7 @@ mod tests {
     use crate::test_helpers::acceptance_test_suite;
 
     async fn redis_store() -> RedisSessionStore {
-        RedisSessionStore::new("redis://127.0.0.1:7001")
+        RedisSessionStore::new("redis://127.0.0.1:6379")
             .await
             .unwrap()
     }
