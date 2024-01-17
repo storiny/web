@@ -186,10 +186,10 @@ WHERE
     AND deleted_at IS NULL
 "#,
     )
-    .bind(&user_id)
-    .bind(&story_id)
+    .bind(user_id)
+    .bind(story_id)
     .bind(&story_slug)
-    .bind(&(payload.word_count as i16))
+    .bind(payload.word_count as i16)
     .execute(&mut *txn)
     .await?
     .rows_affected()
@@ -209,9 +209,9 @@ WHERE
 
             // Queue push notification jobs.
             let mut notify_story_add_by_user_job =
-                (&*notify_story_add_by_user_job_storage.into_inner()).clone();
+                (*notify_story_add_by_user_job_storage.into_inner()).clone();
             let mut notify_story_add_by_tag_job =
-                (&*notify_story_add_by_tag_job_storage.into_inner()).clone();
+                (*notify_story_add_by_tag_job_storage.into_inner()).clone();
 
             future::try_join(
                 notify_story_add_by_user_job.push(NotifyStoryAddByUserJob { story_id }),
@@ -281,7 +281,7 @@ AND EXISTS (
 RETURNING id
 "#,
     )
-    .bind(&story_id)
+    .bind(story_id)
     .fetch_one(&mut *txn)
     .await
     .map_err(|error| {
@@ -313,9 +313,9 @@ WHERE
     AND deleted_at IS NULL
 "#,
     )
-    .bind(&user_id)
-    .bind(&story_id)
-    .bind(&(payload.word_count as i16))
+    .bind(user_id)
+    .bind(story_id)
+    .bind(payload.word_count as i16)
     .execute(&mut *txn)
     .await?
     .rows_affected()

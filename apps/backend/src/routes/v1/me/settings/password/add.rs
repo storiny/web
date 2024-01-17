@@ -64,7 +64,7 @@ SELECT password FROM users
 WHERE id = $1
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .fetch_one(&mut *txn)
     .await?;
 
@@ -81,7 +81,7 @@ WHERE type = $1 AND user_id = $2
 "#,
     )
     .bind(TokenType::PasswordAdd as i16)
-    .bind(&user_id)
+    .bind(user_id)
     .fetch_one(&mut *txn)
     .await
     .map_err(|error| {
@@ -99,7 +99,7 @@ WHERE type = $1 AND user_id = $2
 
     // Validate the token.
     Argon2::default()
-        .verify_password(&payload.verification_code.as_bytes(), &token_hash)
+        .verify_password(payload.verification_code.as_bytes(), &token_hash)
         .map_err(|_| {
             AppError::ToastError(ToastErrorResponse::new(None, "Invalid verification code"))
         })?;
@@ -115,7 +115,7 @@ WHERE type = $1 AND user_id = $2
 
     let salt = SaltString::generate(&mut OsRng);
     let hashed_password = Argon2::default()
-        .hash_password(&payload.new_password.as_bytes(), &salt)
+        .hash_password(payload.new_password.as_bytes(), &salt)
         .map_err(|error| AppError::from(format!("unable to generate password hash: {error:?}")))?;
 
     // Delete the verification token and update the user's password.
@@ -131,7 +131,7 @@ WHERE id = $2
 "#,
     )
     .bind(hashed_password.to_string())
-    .bind(&user_id)
+    .bind(user_id)
     .bind(token.get::<String, _>("id"))
     .execute(&mut *txn)
     .await?;
@@ -144,7 +144,7 @@ VALUES ($1, 'You added a password to your account.', $2)
 "#,
     )
     .bind(AccountActivityType::Password as i16)
-    .bind(&user_id)
+    .bind(user_id)
     .execute(&mut *txn)
     .await?;
 
@@ -190,7 +190,7 @@ mod tests {
         let verification_code = nanoid!(6);
         let salt = SaltString::generate(&mut OsRng);
         let hashed_verification_code = Argon2::default()
-            .hash_password(&verification_code.as_bytes(), &salt)
+            .hash_password(verification_code.as_bytes(), &salt)
             .unwrap();
 
         // Insert a password-add verification token.
@@ -324,7 +324,7 @@ VALUES ($1, $2, $3, $4, $5)
         let verification_code = nanoid!(6);
         let salt = SaltString::generate(&mut OsRng);
         let hashed_verification_code = Argon2::default()
-            .hash_password(&verification_code.as_bytes(), &salt)
+            .hash_password(verification_code.as_bytes(), &salt)
             .unwrap();
 
         // Insert a password-add verification token.

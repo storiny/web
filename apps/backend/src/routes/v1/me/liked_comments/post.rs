@@ -62,8 +62,8 @@ INSERT INTO comment_likes (user_id, comment_id)
 VALUES ($1, $2)
 "#,
     )
-    .bind(&user_id)
-    .bind(&comment_id)
+    .bind(user_id)
+    .bind(comment_id)
     .execute(&mut *txn)
     .await
     {

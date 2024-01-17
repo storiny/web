@@ -80,12 +80,12 @@ pub const MAX_PEERS_PER_REALM: u16 = 3;
 const PERSISTENCE_LOOP_DURATION: u64 = 60; // 1 minute
 
 /// The maximum size (in bytes) of the binary document data after compression.
-const MAX_DOCUMENT_SIZE: u32 = 80_00_000; // 8 megabytes
+const MAX_DOCUMENT_SIZE: u32 = 8_000_000; // 8 megabytes
 
 /// The maximum size (in bytes) of the individual incoming awareness update. Awareness updates
 /// should normally never overflow this limit unless the peer is sending malformed updates, in
 /// which case we simply reject them.
-const MAX_AWARENESS_PAYLOAD_SIZE: usize = 10_00_000; // 1 megabyte
+const MAX_AWARENESS_PAYLOAD_SIZE: usize = 1_000_000; // 1 megabyte
 
 /// The timeout (in seconds) for uploading a document to the object storage.
 const DOC_UPLOAD_TIMEOUT: u64 = 25; // 25 seconds
@@ -527,7 +527,7 @@ impl Realm {
         // Lock the document entry until the realm is destroyed. This should never throw.
         if let Ok(mut entry) = self
             .realm_map
-            .async_lock(self.doc_id.clone(), AsyncLimit::no_limit())
+            .async_lock(self.doc_id, AsyncLimit::no_limit())
             .await
         {
             self.destroy(reason).await;
@@ -661,7 +661,7 @@ mod tests {
         let realm = Arc::new(Realm::new(
             realm_map.clone(),
             s3_client.clone(),
-            doc_id.clone(),
+            doc_id,
             doc_key.to_string(),
             bc_group,
         ));

@@ -120,11 +120,11 @@ async fn get(
         .comment_id
         .parse::<i64>()
         .map_err(|_| AppError::from("Invalid comment ID"))?;
-    let user_id = maybe_user.and_then(|user| Some(user.id())).transpose()?;
+    let user_id = maybe_user.map(|user| user.id()).transpose()?;
 
-    tracing::Span::current().record("user_id", &user_id);
+    tracing::Span::current().record("user_id", user_id);
 
-    let page = query.page.clone().unwrap_or(1) - 1;
+    let page = query.page.unwrap_or(1) - 1;
 
     let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
         r#"
@@ -246,7 +246,7 @@ LIMIT $2 OFFSET $3
 
     let mut db_query = query_builder
         .build_query_as::<Reply>()
-        .bind(&comment_id)
+        .bind(comment_id)
         .bind(10_i16)
         .bind((page * 10) as i16);
 

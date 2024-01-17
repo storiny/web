@@ -26,7 +26,7 @@ pub async fn incr_resource_limit(
     let increx = redis::Script::new(include_str!("../../lua/increx.lua"));
     let cache_key = format!(
         "{}:{}:{user_id}",
-        RedisNamespace::ResourceLimit.to_string(),
+        RedisNamespace::ResourceLimit,
         resource_limit as i32
     );
 
@@ -61,7 +61,7 @@ mod tests {
             // Key should be present in the cache.
             let cache_key = format!(
                 "{}:{}:{}",
-                RedisNamespace::ResourceLimit.to_string(),
+                RedisNamespace::ResourceLimit,
                 ResourceLimit::CreateStory as i32,
                 1
             );
@@ -95,7 +95,7 @@ mod tests {
             // Key should be present in the cache with the correct value.
             let cache_key = format!(
                 "{}:{}:{}",
-                RedisNamespace::ResourceLimit.to_string(),
+                RedisNamespace::ResourceLimit,
                 ResourceLimit::CreateStory as i32,
                 1
             );

@@ -104,7 +104,7 @@ pub async fn get_profile(
 
     let profile = {
         if let Some(current_user_id) = current_user_id {
-            tracing::Span::current().record("user_id", &current_user_id);
+            tracing::Span::current().record("user_id", current_user_id);
 
             sqlx::query_file_as!(
                 Profile,
@@ -139,8 +139,7 @@ pub async fn get_profile(
                 emoji: profile.status_emoji,
                 text: profile.status_text,
                 expires_at: profile
-                    .status_expires_at
-                    .and_then(|value| Some(to_iso8601(&value))),
+                    .status_expires_at.map(|value| to_iso8601(&value)),
                 duration: profile
                     .status_duration
                     .unwrap_or(StatusDuration::Day1 as i16) as i32,
@@ -153,17 +152,17 @@ pub async fn get_profile(
         },
         bio: Some(profile.bio),
         rendered_bio: Some(profile.rendered_bio),
-        avatar_id: profile.avatar_id.and_then(|value| Some(value.to_string())),
+        avatar_id: profile.avatar_id.map(|value| value.to_string()),
         avatar_hex: profile.avatar_hex,
-        banner_id: profile.banner_id.and_then(|value| Some(value.to_string())),
+        banner_id: profile.banner_id.map(|value| value.to_string()),
         banner_hex: profile.banner_hex,
         location: profile.location,
         created_at: to_iso8601(&profile.created_at),
         public_flags: profile.public_flags as u32,
         story_count: profile.story_count as u32,
         follower_count: profile.follower_count as u32,
-        following_count: profile.following_count.and_then(|value| Some(value as u32)),
-        friend_count: profile.friend_count.and_then(|value| Some(value as u32)),
+        following_count: profile.following_count.map(|value| value as u32),
+        friend_count: profile.friend_count.map(|value| value as u32),
         is_private: profile.is_private,
         connections: profile
             .connections
@@ -312,7 +311,7 @@ WHERE id = $1
                 let response = client
                     .get_profile(Request::new(GetProfileRequest {
                         username: "target_user".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await;
 
@@ -331,7 +330,7 @@ WHERE id = $1
                 let response = client
                     .get_profile(Request::new(GetProfileRequest {
                         username: "target_user".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await
                     .unwrap()
@@ -358,7 +357,7 @@ VALUES ($1, $2)
                 let response = client
                     .get_profile(Request::new(GetProfileRequest {
                         username: "target_user".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await
                     .unwrap()
@@ -380,7 +379,7 @@ VALUES ($1, $2)
                 let response = client
                     .get_profile(Request::new(GetProfileRequest {
                         username: "target_user".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await
                     .unwrap()
@@ -407,7 +406,7 @@ VALUES ($2, $1)
                 let response = client
                     .get_profile(Request::new(GetProfileRequest {
                         username: "target_user".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await
                     .unwrap()
@@ -431,7 +430,7 @@ VALUES ($2, $1)
                 let response = client
                     .get_profile(Request::new(GetProfileRequest {
                         username: "target_user".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await
                     .unwrap()
@@ -459,7 +458,7 @@ VALUES ($1, $2)
                 let response = client
                     .get_profile(Request::new(GetProfileRequest {
                         username: "target_user".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await
                     .unwrap()
@@ -488,7 +487,7 @@ WHERE transmitter_id = $1
                 let response = client
                     .get_profile(Request::new(GetProfileRequest {
                         username: "target_user".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await
                     .unwrap()
@@ -527,7 +526,7 @@ VALUES ($1, $2, NULL)
                 let response = client
                     .get_profile(Request::new(GetProfileRequest {
                         username: "target_user".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await
                     .unwrap()
@@ -554,7 +553,7 @@ WHERE follower_id = $1
                 let response = client
                     .get_profile(Request::new(GetProfileRequest {
                         username: "target_user".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await
                     .unwrap()
@@ -576,7 +575,7 @@ WHERE follower_id = $1
                 let response = client
                     .get_profile(Request::new(GetProfileRequest {
                         username: "target_user".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await
                     .unwrap()
@@ -603,7 +602,7 @@ VALUES ($2, $1)
                 let response = client
                     .get_profile(Request::new(GetProfileRequest {
                         username: "target_user".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await
                     .unwrap()
@@ -625,7 +624,7 @@ VALUES ($2, $1)
                 let response = client
                     .get_profile(Request::new(GetProfileRequest {
                         username: "target_user".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await
                     .unwrap()
@@ -652,7 +651,7 @@ VALUES ($1, $2)
                 let response = client
                     .get_profile(Request::new(GetProfileRequest {
                         username: "target_user".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await
                     .unwrap()
@@ -674,7 +673,7 @@ VALUES ($1, $2)
                 let response = client
                     .get_profile(Request::new(GetProfileRequest {
                         username: "target_user".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await
                     .unwrap()
@@ -701,7 +700,7 @@ VALUES ($1, $2)
                 let response = client
                     .get_profile(Request::new(GetProfileRequest {
                         username: "target_user".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await
                     .unwrap()
@@ -738,7 +737,7 @@ WHERE id = $1
                 let response = client
                     .get_profile(Request::new(GetProfileRequest {
                         username: "target_user".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await;
 
@@ -772,7 +771,7 @@ WHERE id = $1
                 let response = client
                     .get_profile(Request::new(GetProfileRequest {
                         username: "target_user".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await;
 

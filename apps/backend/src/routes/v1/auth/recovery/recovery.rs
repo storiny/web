@@ -111,7 +111,7 @@ WHERE email = $1
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
     let hashed_token = Argon2::default()
-        .hash_password(&token_id.as_bytes(), &salt)
+        .hash_password(token_id.as_bytes(), &salt)
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
     sqlx::query(
@@ -144,11 +144,11 @@ VALUES ($1, $2, $3, $4)
         AppError::InternalError(format!("unable to serialize the template data: {error:?}"))
     })?;
 
-    let mut templated_email_job = (&*templated_email_job_storage.into_inner()).clone();
+    let mut templated_email_job = (*templated_email_job_storage.into_inner()).clone();
 
     templated_email_job
         .push(TemplatedEmailJob {
-            destination: (&payload.email).to_string(),
+            destination: payload.email.to_string(),
             template: EmailTemplate::PasswordReset,
             template_data,
         })
@@ -298,7 +298,7 @@ SELECT EXISTS (
             let token_id = nanoid!(TOKEN_LENGTH);
             let salt = SaltString::from_b64(&config.token_salt).unwrap();
             let hashed_token = Argon2::default()
-                .hash_password(&token_id.as_bytes(), &salt)
+                .hash_password(token_id.as_bytes(), &salt)
                 .unwrap();
 
             // Insert a password reset token.

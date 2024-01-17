@@ -104,7 +104,7 @@ SET
 WHERE id = $1
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .execute(&mut *txn)
     .await?;
 

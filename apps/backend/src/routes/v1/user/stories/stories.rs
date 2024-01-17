@@ -112,16 +112,16 @@ async fn get(
     data: web::Data<AppState>,
     maybe_user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    let current_user_id = maybe_user.and_then(|user| Some(user.id())).transpose()?;
+    let current_user_id = maybe_user.map(|user| user.id()).transpose()?;
 
-    tracing::Span::current().record("current_user_id", &current_user_id);
+    tracing::Span::current().record("current_user_id", current_user_id);
 
     let user_id = path
         .user_id
         .parse::<i64>()
         .map_err(|_| AppError::from("Invalid user ID"))?;
 
-    let page = query.page.clone().unwrap_or(1) - 1;
+    let page = query.page.unwrap_or(1) - 1;
     let sort = query.sort.clone().unwrap_or("popular".to_string());
     let search_query = query.query.clone().unwrap_or_default();
     let has_search_query = !search_query.trim().is_empty();
@@ -181,57 +181,55 @@ async fn get(
 
             Ok(HttpResponse::Ok().json(result))
         }
+    } else if has_search_query {
+        let result = sqlx::query_file_as!(
+            Story,
+            "queries/user/stories/with_query.sql",
+            search_query,
+            user_id,
+            10 as i16,
+            (page * 10) as i16,
+        )
+        .fetch_all(&data.db_pool)
+        .await?;
+
+        Ok(HttpResponse::Ok().json(result))
+    } else if sort == "recent" {
+        let result = sqlx::query_file_as!(
+            Story,
+            "queries/user/stories/recent.sql",
+            user_id,
+            10 as i16,
+            (page * 10) as i16,
+        )
+        .fetch_all(&data.db_pool)
+        .await?;
+
+        Ok(HttpResponse::Ok().json(result))
+    } else if sort == "old" {
+        let result = sqlx::query_file_as!(
+            Story,
+            "queries/user/stories/old.sql",
+            user_id,
+            10 as i16,
+            (page * 10) as i16,
+        )
+        .fetch_all(&data.db_pool)
+        .await?;
+
+        Ok(HttpResponse::Ok().json(result))
     } else {
-        if has_search_query {
-            let result = sqlx::query_file_as!(
-                Story,
-                "queries/user/stories/with_query.sql",
-                search_query,
-                user_id,
-                10 as i16,
-                (page * 10) as i16,
-            )
-            .fetch_all(&data.db_pool)
-            .await?;
+        let result = sqlx::query_file_as!(
+            Story,
+            "queries/user/stories/popular.sql",
+            user_id,
+            10 as i16,
+            (page * 10) as i16,
+        )
+        .fetch_all(&data.db_pool)
+        .await?;
 
-            Ok(HttpResponse::Ok().json(result))
-        } else if sort == "recent" {
-            let result = sqlx::query_file_as!(
-                Story,
-                "queries/user/stories/recent.sql",
-                user_id,
-                10 as i16,
-                (page * 10) as i16,
-            )
-            .fetch_all(&data.db_pool)
-            .await?;
-
-            Ok(HttpResponse::Ok().json(result))
-        } else if sort == "old" {
-            let result = sqlx::query_file_as!(
-                Story,
-                "queries/user/stories/old.sql",
-                user_id,
-                10 as i16,
-                (page * 10) as i16,
-            )
-            .fetch_all(&data.db_pool)
-            .await?;
-
-            Ok(HttpResponse::Ok().json(result))
-        } else {
-            let result = sqlx::query_file_as!(
-                Story,
-                "queries/user/stories/popular.sql",
-                user_id,
-                10 as i16,
-                (page * 10) as i16,
-            )
-            .fetch_all(&data.db_pool)
-            .await?;
-
-            Ok(HttpResponse::Ok().json(result))
-        }
+        Ok(HttpResponse::Ok().json(result))
     }
 }
 

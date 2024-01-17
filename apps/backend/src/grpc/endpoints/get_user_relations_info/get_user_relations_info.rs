@@ -32,7 +32,7 @@ pub async fn get_user_relations_info(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
-    tracing::Span::current().record("user_id", &user_id);
+    tracing::Span::current().record("user_id", user_id);
 
     let result = sqlx::query(
         r#"

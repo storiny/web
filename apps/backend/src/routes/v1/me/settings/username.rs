@@ -68,7 +68,7 @@ SELECT password FROM users
 WHERE id = $1
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .fetch_one(&mut *txn)
     .await?;
 
@@ -89,7 +89,7 @@ WHERE id = $1
             .map_err(|error| AppError::InternalError(error.to_string()))?;
 
         Argon2::default()
-            .verify_password(&payload.current_password.as_bytes(), &password_hash)
+            .verify_password(payload.current_password.as_bytes(), &password_hash)
             .map_err(|_| {
                 AppError::FormError(FormErrorResponse::new(
                     Some(StatusCode::FORBIDDEN),
@@ -126,7 +126,7 @@ VALUES (
 )
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .bind(&slugged_username)
     .bind(AccountActivityType::Username as i16)
     .execute(&mut *txn)

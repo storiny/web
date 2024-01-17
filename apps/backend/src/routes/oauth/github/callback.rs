@@ -82,7 +82,7 @@ async fn github_async_http_client(
         // GitHub returns 200 status code for errors, with a JSON body describing the error details.
         // It needs to be mapped to a 400 error code to remain compliant with the OAuth spec.
         // https://github.com/ramosbugs/oauth2-rs/issues/218
-        status_code: if serde_json::from_slice::<GitHubTokenErrorResponse>(&chunks.to_vec()).is_ok()
+        status_code: if serde_json::from_slice::<GitHubTokenErrorResponse>(&chunks).is_ok()
         {
             StatusCode::BAD_REQUEST
         } else {
@@ -113,7 +113,7 @@ async fn handle_github_oauth_request(
 
     let reqwest_client = &data.reqwest_client;
     let code = AuthorizationCode::new(params.code.clone());
-    let token_res = (&data.oauth_client_map.github)
+    let token_res = data.oauth_client_map.github
         .exchange_code(code)
         .request_async(github_async_http_client)
         .await
@@ -124,8 +124,7 @@ async fn handle_github_oauth_request(
     let scopes = if let Some(scopes_vec) = token_res.scopes() {
         scopes_vec
             .iter()
-            .map(|comma_separated| comma_separated.split(','))
-            .flatten()
+            .flat_map(|comma_separated| comma_separated.split(','))
             .collect::<Vec<_>>()
     } else {
         Vec::new()

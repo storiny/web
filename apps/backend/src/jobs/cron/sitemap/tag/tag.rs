@@ -91,7 +91,7 @@ LIMIT $1 OFFSET $2
     if !result.is_empty() {
         if has_more_rows {
             result.pop(); // Remove the extra row
-            result_length = result_length - 1;
+            result_length -= 1;
         }
 
         // This should never panic as the number of rows are always <= 50,000
@@ -202,7 +202,7 @@ mod tests {
             let config = get_app_config().unwrap();
             let s3_client = &ctx.s3_client;
             let result =
-                generate_tag_sitemap(&pool, &s3_client, &config.web_server_url, None, None).await;
+                generate_tag_sitemap(&pool, s3_client, &config.web_server_url, None, None).await;
 
             assert!(result.is_ok());
             assert_eq!(
@@ -215,7 +215,7 @@ mod tests {
 
             // Sitemaps should be present in the bucket.
             let sitemap_count = count_s3_objects(
-                &s3_client,
+                s3_client,
                 S3_SITEMAPS_BUCKET,
                 Some("tags-".to_string()),
                 None,
@@ -237,7 +237,7 @@ mod tests {
             let config = get_app_config().unwrap();
             let s3_client = &ctx.s3_client;
             let result =
-                generate_tag_sitemap(&pool, &s3_client, &config.web_server_url, None, None).await;
+                generate_tag_sitemap(&pool, s3_client, &config.web_server_url, None, None).await;
 
             assert!(result.is_ok());
             assert_eq!(
@@ -250,7 +250,7 @@ mod tests {
 
             // Sitemaps should be present in the bucket.
             let sitemap_count = count_s3_objects(
-                &s3_client,
+                s3_client,
                 S3_SITEMAPS_BUCKET,
                 Some("tags-".to_string()),
                 None,

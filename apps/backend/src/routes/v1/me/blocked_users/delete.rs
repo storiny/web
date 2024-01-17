@@ -45,8 +45,8 @@ WHERE
     AND blocked_id = $2
 "#,
     )
-    .bind(&blocker_id)
-    .bind(&blocked_id)
+    .bind(blocker_id)
+    .bind(blocked_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

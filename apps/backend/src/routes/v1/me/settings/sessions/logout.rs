@@ -36,11 +36,11 @@ async fn post(
     data: web::Data<AppState>,
 ) -> Result<HttpResponse, AppError> {
     let user_id = user.id()?;
-    let mut redis_conn = (&data.redis).get().await?;
+    let mut redis_conn = data.redis.get().await?;
 
     let cache_key = format!(
         "{}:{user_id}:{}",
-        RedisNamespace::Session.to_string(),
+        RedisNamespace::Session,
         &payload.id
     );
 
@@ -112,7 +112,7 @@ mod tests {
                 .set(
                     &format!(
                         "{}:{}:{}",
-                        RedisNamespace::Session.to_string(),
+                        RedisNamespace::Session,
                         user_id.unwrap(),
                         session_token
                     ),
@@ -126,7 +126,7 @@ mod tests {
                 .unwrap();
 
             // Should have 2 sessions initially.
-            let sessions = get_user_sessions(&redis_pool, user_id.unwrap())
+            let sessions = get_user_sessions(redis_pool, user_id.unwrap())
                 .await
                 .unwrap();
 
@@ -144,7 +144,7 @@ mod tests {
             assert!(res.status().is_success());
 
             // Cache should only have the current session.
-            let sessions = get_user_sessions(&redis_pool, user_id.unwrap())
+            let sessions = get_user_sessions(redis_pool, user_id.unwrap())
                 .await
                 .unwrap();
 

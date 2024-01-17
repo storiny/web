@@ -181,7 +181,7 @@ SELECT EXISTS (
 "#,
                 )
                 .bind(&authentication_code)
-                .bind(&user_id)
+                .bind(user_id)
                 .fetch_one(&mut *txn)
                 .await?;
 
@@ -206,7 +206,7 @@ WHERE code = $1 AND user_id = $2
 "#,
                 )
                 .bind(&authentication_code)
-                .bind(&user_id)
+                .bind(user_id)
                 .execute(&mut *txn)
                 .await?;
             }
@@ -273,7 +273,7 @@ WHERE code = $1 AND user_id = $2
         let password_hash = PasswordHash::new(&user_password)
             .map_err(|error| AppError::InternalError(error.to_string()))?;
 
-        match Argon2::default().verify_password(&payload.password.as_bytes(), &password_hash) {
+        match Argon2::default().verify_password(payload.password.as_bytes(), &password_hash) {
             Ok(_) => {
                 // The user is validated at this point, so it is safe to reset the login attempts.
                 reset_resource_lock(&data.redis, ResourceLock::Login, &payload.email).await?;
@@ -327,7 +327,7 @@ SET deleted_at = NULL
 WHERE id = $1
 "#,
                 )
-                .bind(&user_id)
+                .bind(user_id)
                 .execute(&mut *txn)
                 .await?;
             } else {
@@ -356,7 +356,7 @@ SET deactivated_at = NULL
 WHERE id = $1
 "#,
                 )
-                .bind(&user_id)
+                .bind(user_id)
                 .execute(&mut *txn)
                 .await?;
             } else {
@@ -399,7 +399,7 @@ WHERE id = $1
             }
         }
 
-        if let Some(ua_header) = (&req.headers()).get("user-agent") {
+        if let Some(ua_header) = req.headers().get("user-agent") {
             if let Ok(ua) = ua_header.to_str() {
                 let client_device_result = get_client_device(ua, &data.ua_parser);
                 client_device_value = client_device_result.display_name.to_string();
@@ -435,7 +435,7 @@ SELECT $2, (SELECT id FROM inserted_notification), $3
 "#,
     )
     .bind(NotificationEntityType::LoginAttempt as i16)
-    .bind(&user_id)
+    .bind(user_id)
     .bind(if let Some(location) = client_location_value {
         format!("{client_device_value}:{location}")
     } else {
@@ -454,10 +454,10 @@ SELECT $2, (SELECT id FROM inserted_notification), $3
     // Check if the user maintains more than or equal to 10 sessions, and
     // delete all the previous sessions if the current number of active
     // sessions for the user exceeds the per user session limit (10).
-    match get_user_sessions(&data.redis, user_id.clone()).await {
+    match get_user_sessions(&data.redis, user_id).await {
         Ok(sessions) => {
             if sessions.len() >= 10 {
-                match clear_user_sessions(&data.redis, user_id.clone()).await {
+                match clear_user_sessions(&data.redis, user_id).await {
                     Ok(_) => {
                         debug!(
                             "cleared {} ovreflowing sessions for the user",
@@ -481,7 +481,9 @@ SELECT $2, (SELECT id FROM inserted_notification), $3
         }
     };
 
-    match Identity::login(&req.extensions(), user.get::<i64, _>("id")) {
+    let login_result = Identity::login(&req.extensions(), user.get::<i64, _>("id"));
+
+    match login_result {
         Ok(_) => {
             txn.commit().await?;
 
@@ -590,7 +592,7 @@ VALUES ($1, $2, $3, $4, TRUE)
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .bind(password_hash)
         .execute(&mut *conn)
         .await?;
@@ -676,7 +678,7 @@ VALUES ($1, $2, $3, $4, $5, TRUE, TRUE)
         .bind(1_i64)
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .bind(password_hash)
         .execute(&mut *conn)
         .await?;
@@ -757,7 +759,7 @@ VALUES ($1, $2, $3, $4, TRUE, TRUE, $5)
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .bind(password_hash)
         .bind(mfa_secret.to_encoded().to_string())
         .execute(&mut *conn)
@@ -807,7 +809,7 @@ VALUES ($1, $2, $3, $4, TRUE, NOW())
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .bind(password_hash)
         .execute(&mut *conn)
         .await?;
@@ -853,7 +855,7 @@ VALUES ($1, $2, $3, $4)
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .bind(password_hash)
         .execute(&mut *conn)
         .await?;
@@ -890,7 +892,7 @@ VALUES ($1, $2, $3)
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .execute(&mut *conn)
         .await?;
 
@@ -931,7 +933,7 @@ VALUES ($1, $2, $3, $4, $5)
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .bind(password_hash)
         .bind(flags.get_flags() as i32)
         .execute(&mut *conn)
@@ -982,7 +984,7 @@ VALUES ($1, $2, $3, $4, $5)
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .bind(password_hash)
         .bind(flags.get_flags() as i32)
         .execute(&mut *conn)
@@ -1031,7 +1033,7 @@ VALUES ($1, $2, $3, $4)
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .bind(password_hash)
         .execute(&mut *conn)
         .await?;
@@ -1044,7 +1046,7 @@ SET deactivated_at = NOW()
 WHERE email = $1
 "#,
         )
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .execute(&mut *conn)
         .await?;
 
@@ -1091,7 +1093,7 @@ VALUES ($1, $2, $3, $4)
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .bind(password_hash)
         .execute(&mut *conn)
         .await?;
@@ -1104,7 +1106,7 @@ SET deleted_at = NOW()
 WHERE email = $1
 "#,
         )
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .execute(&mut *conn)
         .await?;
 
@@ -1151,7 +1153,7 @@ VALUES ($1, $2, $3, $4)
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .bind(password_hash)
         .execute(&mut *conn)
         .await?;
@@ -1199,7 +1201,7 @@ VALUES ($1, $2, $3, TRUE)
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .execute(&mut *conn)
         .await?;
 
@@ -1238,7 +1240,7 @@ VALUES ($1, $2, $3, TRUE)
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .execute(&mut *conn)
         .await?;
 
@@ -1279,7 +1281,7 @@ VALUES ($1, $2, $3, $4, TRUE)
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .bind(password_hash)
         .execute(&mut *conn)
         .await?;
@@ -1328,7 +1330,7 @@ VALUES ($1, $2, $3, $4, TRUE)
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .bind(password_hash)
         .execute(&mut *conn)
         .await?;
@@ -1375,7 +1377,7 @@ VALUES ($1, $2, $3, $4, TRUE)
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .bind(password_hash)
         .execute(&mut *conn)
         .await?;
@@ -1388,7 +1390,7 @@ SET deleted_at = NOW()
 WHERE email = $1
 "#,
         )
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .execute(&mut *conn)
         .await?;
 
@@ -1421,7 +1423,7 @@ SELECT deleted_at FROM users
 WHERE email = $1
 "#,
         )
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1454,7 +1456,7 @@ VALUES ($1, $2, $3, $4, TRUE)
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .bind(password_hash)
         .execute(&mut *conn)
         .await?;
@@ -1467,7 +1469,7 @@ SET deactivated_at = NOW()
 WHERE email = $1
 "#,
         )
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .execute(&mut *conn)
         .await?;
 
@@ -1500,7 +1502,7 @@ SELECT deactivated_at FROM users
 WHERE email = $1
 "#,
         )
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1536,7 +1538,7 @@ VALUES ($1, $2, $3, $4)
             )
             .bind("Sample user".to_string())
             .bind("sample_user".to_string())
-            .bind((&email).to_string())
+            .bind(email.to_string())
             .bind(password_hash)
             .execute(&mut *conn)
             .await?;
@@ -1584,7 +1586,7 @@ VALUES ($1, $2, $3, TRUE)
             )
             .bind("Sample user".to_string())
             .bind("sample_user".to_string())
-            .bind((&email).to_string())
+            .bind(email.to_string())
             .execute(&mut *conn)
             .await?;
 
@@ -1633,7 +1635,7 @@ VALUES ($1, $2, $3, TRUE, $4)
             )
             .bind("Sample user".to_string())
             .bind("sample_user".to_string())
-            .bind((&email).to_string())
+            .bind(email.to_string())
             .bind(mfa_secret.to_encoded().to_string())
             .execute(&mut *conn)
             .await?;
@@ -1683,7 +1685,7 @@ VALUES ($1, $2, $3, $4, $5, TRUE, TRUE)
             .bind(1_i64)
             .bind("Sample user".to_string())
             .bind("sample_user".to_string())
-            .bind((&email).to_string())
+            .bind(email.to_string())
             .bind(password_hash)
             .execute(&mut *conn)
             .await?;
@@ -1786,7 +1788,7 @@ VALUES ($1, $2, $3, $4, TRUE)
             )
             .bind("Sample user".to_string())
             .bind("sample_user".to_string())
-            .bind((&email).to_string())
+            .bind(email.to_string())
             .bind(password_hash)
             .execute(&mut *conn)
             .await?;
@@ -1832,7 +1834,7 @@ VALUES ($1, $2, $3, $4, TRUE)
                     .set(
                         &format!(
                             "{}:{}:{}",
-                            RedisNamespace::Session.to_string(),
+                            RedisNamespace::Session,
                             user_id.unwrap(),
                             Uuid::new_v4()
                         ),
@@ -1862,7 +1864,7 @@ VALUES ($1, $2, $3, $4, $5, TRUE)
             .bind(user_id.unwrap())
             .bind("Sample user".to_string())
             .bind("sample_user".to_string())
-            .bind((&email).to_string())
+            .bind(email.to_string())
             .bind(password_hash)
             .execute(&mut *conn)
             .await?;
@@ -1921,7 +1923,7 @@ VALUES ($1, $2, $3, $4, TRUE)
             )
             .bind("Sample user".to_string())
             .bind("sample_user".to_string())
-            .bind((&email).to_string())
+            .bind(email.to_string())
             .bind(password_hash)
             .execute(&mut *conn)
             .await?;

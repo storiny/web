@@ -105,7 +105,7 @@ WHERE
   AND u.deleted_at IS NULL
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .map(|row: PgRow| User {
         id: row.get("id"),
         name: row.get("name"),

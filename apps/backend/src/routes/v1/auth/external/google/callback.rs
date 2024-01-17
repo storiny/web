@@ -77,7 +77,7 @@ async fn handle_oauth_request(
     session.remove("oauth_token");
 
     let code = AuthorizationCode::new(params.code.clone());
-    let token_res = (&data.oauth_client_map.google)
+    let token_res = data.oauth_client_map.google
         .exchange_code(code)
         .request_async(async_http_client)
         .await
@@ -94,10 +94,8 @@ async fn handle_oauth_request(
 
     debug!(?received_scopes, "scopes received from Google");
 
-    if !vec![
-        "https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/userinfo.profile",
-    ]
+    if !["https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile"]
     .iter()
     .all(|scope| received_scopes.contains(scope))
     {
@@ -207,7 +205,7 @@ RETURNING
                         }
                     }
 
-                    return ExternalAuthError::Other(error.to_string());
+                    ExternalAuthError::Other(error.to_string())
                 })?;
 
                 (
@@ -262,7 +260,7 @@ RETURNING
             }
         }
 
-        if let Some(ua_header) = (&req.headers()).get("user-agent") {
+        if let Some(ua_header) = req.headers().get("user-agent") {
             if let Ok(ua) = ua_header.to_str() {
                 let client_device_result = get_client_device(ua, &data.ua_parser);
                 client_device_value = client_device_result.display_name.to_string();
@@ -299,7 +297,7 @@ SELECT
 "#,
         )
         .bind(NotificationEntityType::LoginAttempt as i16)
-        .bind(&user_id)
+        .bind(user_id)
         .bind(if let Some(location) = client_location_value {
             format!("{client_device_value}:{location}")
         } else {
@@ -338,8 +336,7 @@ SELECT
         }
     };
 
-    Identity::login(&req.extensions(), user_id)
-        .and_then(|_| Ok(()))
+    Identity::login(&req.extensions(), user_id).map(|_| ())
         .map_err(|err| ExternalAuthError::Other(err.to_string()))?;
 
     Ok(is_first_login)
@@ -359,7 +356,7 @@ async fn get(
             .append_header((
                 header::LOCATION,
                 if is_first_login {
-                    format!("{}?onboarding=true", data.config.web_server_url.to_string())
+                    format!("{}?onboarding=true", data.config.web_server_url)
                 } else {
                     data.config.web_server_url.to_string()
                 },

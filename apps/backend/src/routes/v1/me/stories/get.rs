@@ -124,7 +124,7 @@ async fn get(
 ) -> Result<HttpResponse, AppError> {
     let user_id = user.id()?;
 
-    let page = query.page.clone().unwrap_or(1) - 1;
+    let page = query.page.unwrap_or(1) - 1;
     let sort = query.sort.clone().unwrap_or("recent".to_string());
     let r#type = query.r#type.clone().unwrap_or("published".to_string());
     let search_query = query.query.clone().unwrap_or_default();
@@ -284,7 +284,7 @@ FROM deleted_stories
 
         let result = query_builder
             .build_query_as::<DeletedStory>()
-            .bind(&user_id)
+            .bind(user_id)
             .bind(10_i16)
             .bind((page * 10) as i16)
             .fetch_all(&data.db_pool)

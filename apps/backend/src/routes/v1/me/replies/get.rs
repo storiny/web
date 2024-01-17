@@ -112,7 +112,7 @@ async fn get(
 ) -> Result<HttpResponse, AppError> {
     let user_id = user.id()?;
 
-    let page = query.page.clone().unwrap_or(1) - 1;
+    let page = query.page.unwrap_or(1) - 1;
     let sort = query.sort.clone().unwrap_or("recent".to_string());
     let search_query = query.query.clone().unwrap_or_default();
     let has_search_query = !search_query.trim().is_empty();

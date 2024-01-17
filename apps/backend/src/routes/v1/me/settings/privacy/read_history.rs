@@ -44,7 +44,7 @@ SET disable_read_history = $2
 WHERE id = $1
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .bind(!(&payload.read_history))
     .execute(&data.db_pool)
     .await?

@@ -58,7 +58,7 @@ async fn handle_dribbble_oauth_request(
 
     let reqwest_client = &data.reqwest_client;
     let code = AuthorizationCode::new(params.code.clone());
-    let token_res = (&data.oauth_client_map.dribbble)
+    let token_res = data.oauth_client_map.dribbble
         .exchange_code(code)
         .request_async(async_http_client)
         .await

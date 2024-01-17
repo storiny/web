@@ -1,9 +1,4 @@
-use actix_web::web;
+mod discord;
 
 pub mod callback;
-pub mod discord;
-
-pub fn init_routes(cfg: &mut web::ServiceConfig) {
-    discord::init_routes(cfg);
-    callback::init_routes(cfg);
-}
+pub use discord::*;

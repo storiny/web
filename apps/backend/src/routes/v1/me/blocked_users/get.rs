@@ -55,7 +55,7 @@ async fn get(
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
     let blocker_id = user.id()?;
-    let page = query.page.clone().unwrap_or(1) - 1;
+    let page = query.page.unwrap_or(1) - 1;
 
     let result = sqlx::query_as::<_, BlockedUser>(
         r#"
@@ -81,7 +81,7 @@ ORDER BY
 LIMIT $2 OFFSET $3
 "#,
     )
-    .bind(&blocker_id)
+    .bind(blocker_id)
     .bind(10_i16)
     .bind((page * 10) as i16)
     .fetch_all(&data.db_pool)

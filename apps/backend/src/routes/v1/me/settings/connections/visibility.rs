@@ -60,9 +60,9 @@ WHERE
     AND user_id = $2
 "#,
     )
-    .bind(&connection_id)
-    .bind(&user_id)
-    .bind(&payload.hidden)
+    .bind(connection_id)
+    .bind(user_id)
+    .bind(payload.hidden)
     .execute(&data.db_pool)
     .await?
     .rows_affected()
