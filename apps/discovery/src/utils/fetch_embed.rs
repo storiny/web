@@ -64,7 +64,7 @@ impl Client {
             url.query_pairs_mut().append_pair("format", "json");
 
             // Append Facebook client ID and access token.
-            if is_facebook_graph_dependent(&endpoint.to_string()) {
+            if is_facebook_graph_dependent(endpoint) {
                 query_map.insert(
                     "access_token".to_string(),
                     format!(
@@ -76,11 +76,10 @@ impl Client {
 
             // Custom parameters.
             if let Some(params) = request.params {
-                let primitive_keys = vec!["url", "format", "access_token"];
+                let primitive_keys = ["url", "format", "access_token"];
 
                 let params_not_in_request = url
                     .query_pairs()
-                    .clone()
                     .into_iter()
                     .filter(|(key, _)| {
                         let cloned_key = key.clone();

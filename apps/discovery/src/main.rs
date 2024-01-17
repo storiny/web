@@ -87,17 +87,14 @@ fn main() -> io::Result<()> {
                     format!("redis://{}:{}", &config.redis_host, &config.redis_port);
 
                 println!(
-                    "{}",
-                    format!(
-                        "Starting discovery HTTP server in {} mode at {}:{}",
-                        if config.is_dev {
-                            "development"
-                        } else {
-                            "production"
-                        },
-                        &host,
-                        &port
-                    )
+                    "Starting discovery HTTP server in {} mode at {}:{}",
+                    if config.is_dev {
+                        "development"
+                    } else {
+                        "production"
+                    },
+                    &host,
+                    &port
                 );
 
                 // Rate-limit
@@ -116,7 +113,7 @@ fn main() -> io::Result<()> {
 
                 let rate_limit_backend =
                     middlewares::rate_limiter::RedisBackend::builder(redis_connection_manager)
-                        .key_prefix(Some(&format!("{}:", RedisNamespace::RateLimit.to_string()))) // Add prefix to avoid collisions with other servicse
+                        .key_prefix(Some(&format!("{}:", RedisNamespace::RateLimit))) // Add prefix to avoid collisions with other servicse
                         .build();
 
                 let web_config = web::Data::new(config.clone());
@@ -136,7 +133,7 @@ fn main() -> io::Result<()> {
                             Cors::permissive()
                         } else {
                             Cors::default()
-                                .allowed_origin(&(&config).web_server_url)
+                                .allowed_origin(&config.web_server_url)
                                 .allow_any_header()
                                 .allow_any_method()
                                 .max_age(3600)

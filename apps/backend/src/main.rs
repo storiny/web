@@ -135,17 +135,14 @@ fn main() -> io::Result<()> {
                     format!("redis://{}:{}", &config.redis_host, &config.redis_port);
 
                 println!(
-                    "{}",
-                    format!(
-                        "Starting API HTTP server in {} mode at {}:{}",
-                        if config.is_dev {
-                            "development"
-                        } else {
-                            "production"
-                        },
-                        &host,
-                        &port
-                    )
+                    "Starting API HTTP server in {} mode at {}:{}",
+                    if config.is_dev {
+                        "development"
+                    } else {
+                        "production"
+                    },
+                    &host,
+                    &port
                 );
 
                 // Rate-limit
