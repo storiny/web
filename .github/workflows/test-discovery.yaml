@@ -1,4 +1,4 @@
-name: test-api
+name: test-discovery
 
 on:
   pull_request:
@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./apps/backend
+        working-directory: ./apps/discovery
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -47,10 +47,26 @@ jobs:
   run-tests-partitioned:
     name: Run tests with partitioning
     runs-on: ubuntu-latest
+    env:
+      IS_DEV: false
+      HOST: localhost
+      PORT: 7979
+      WEB_SERVER_URL: http://localhost:3000
+      CDN_SERVER_URL: http://localhost:9000
+      PROXY_KEY_SECRET: abcdef
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      OAUTH_FACEBOOK_CLIENT_ID: _
+      OAUTH_FACEBOOK_CLIENT_SECRET: _
     defaults:
       run:
-        working-directory: ./apps/backend
+        working-directory: ./apps/discovery
     needs: build-test-artifacts
+    services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
     strategy:
       matrix:
         partition: [1, 2]
