@@ -64,12 +64,12 @@ jobs:
     needs: build-test-artifacts
     services:
       redis:
-        image: redis
+        image: redis:7.2.4-alpine
         ports:
           - 6379:6379
     strategy:
       matrix:
-        partition: [1, 2]
+        partition: [ 1, 2 ]
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
