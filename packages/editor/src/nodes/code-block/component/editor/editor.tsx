@@ -144,6 +144,11 @@ const CodeBlockEditor = ({
   React.useEffect(() => {
     if (view !== null) {
       if (language !== null) {
+        if (!(language in CODE_BLOCK_LANGUAGE_MAP)) {
+          set_language_status("loaded");
+          return update_language("none");
+        }
+
         set_language_status("loading");
 
         get_language_support(language as keyof typeof CODE_BLOCK_LANGUAGE_MAP)
@@ -165,7 +170,7 @@ const CodeBlockEditor = ({
         });
       }
     }
-  }, [language, language_compartment, view]);
+  }, [language, language_compartment, update_language, view]);
 
   React.useEffect(() => {
     if (mounted_ref.current) {
