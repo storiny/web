@@ -17,13 +17,34 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
+defaults:
+  run:
+    working-directory: ./apps/discovery
+
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install latest nightly
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+          components: rustfmt, clippy
+
+      - name: Run cargo clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy --all-targets --all-features -- -D warnings
+
   build-test-artifacts:
     name: Build test artifacts
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./apps/discovery
+    needs: lint
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -53,6 +74,7 @@ jobs:
   run-tests-partitioned:
     name: Run tests with partitioning
     runs-on: ubuntu-latest
+    needs: build-test-artifacts
     env:
       IS_DEV: false
       HOST: localhost
@@ -64,10 +86,6 @@ jobs:
       REDIS_PORT: 6379
       OAUTH_FACEBOOK_CLIENT_ID: _
       OAUTH_FACEBOOK_CLIENT_SECRET: _
-    defaults:
-      run:
-        working-directory: ./apps/discovery
-    needs: build-test-artifacts
     services:
       redis:
         image: redis:7.2.4-alpine
