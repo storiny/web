@@ -50,9 +50,9 @@ jobs:
     env:
       IS_DEV: false
       HOST: localhost
-      PORT: 7979
-      WEB_SERVER_URL: http://localhost:3000
-      CDN_SERVER_URL: http://localhost:9000
+      PORT: 8000
+      WEB_SERVER_URL: https://storiny.com
+      CDN_SERVER_URL: https://cdn.storiny.com
       PROXY_KEY_SECRET: abcdef
       REDIS_HOST: localhost
       REDIS_PORT: 6379

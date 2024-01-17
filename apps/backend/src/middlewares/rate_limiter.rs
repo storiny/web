@@ -185,7 +185,7 @@ mod tests {
     async fn make_backend(clear_test_key: &str) -> Builder {
         // Env
         let host = option_env!("REDIS_HOST").unwrap_or("127.0.0.1");
-        let port = option_env!("REDIS_PORT").unwrap_or("7001");
+        let port = option_env!("REDIS_PORT").unwrap_or("6379");
 
         let client = redis::Client::open(format!("redis://{host}:{port}")).unwrap();
         let mut manager = ConnectionManager::new(client).await.unwrap();
