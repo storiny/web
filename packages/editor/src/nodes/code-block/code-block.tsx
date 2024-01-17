@@ -4,9 +4,11 @@ import { Text as YText } from "yjs";
 
 import { BlockNode, SerializedBlockNode } from "../block";
 import CodeBlockComponent from "./component";
+import { CODE_EDITOR_MAX_LENGTH } from "./component/editor/extensions/common";
 
 export interface CodeBlockPayload {
   content?: YText;
+  initial_content?: string;
   key?: NodeKey;
   language?: string | null;
   title?: string;
@@ -30,6 +32,7 @@ export class CodeBlockNode extends BlockNode {
    * Ctor
    * @param language Code language
    * @param content Yjs text type holding the code block content
+   * @param initial_content The initial text content for the code block
    * @param title Title of the code block
    * @param key Node key
    */
@@ -37,15 +40,30 @@ export class CodeBlockNode extends BlockNode {
     {
       title,
       language,
-      content = new YText()
+      content,
+      initial_content
     }: Omit<CodeBlockPayload, "key"> = {} as any,
     key?: NodeKey
   ) {
     super(key);
 
     this.__title = title || "";
-    this.__content = content;
     this.__language = language || null;
+
+    if (content) {
+      this.__content = content;
+    } else {
+      const content = new YText();
+
+      if (
+        typeof initial_content === "string" &&
+        initial_content.length < CODE_EDITOR_MAX_LENGTH
+      ) {
+        content.insert(0, initial_content);
+      }
+
+      this.__content = content;
+    }
   }
 
   /**
@@ -115,6 +133,27 @@ export class CodeBlockNode extends BlockNode {
   }
 
   /**
+   * Returns the text code content
+   */
+  public get_code_content(): string {
+    return this.__content.toString() || "";
+  }
+
+  /**
+   * Returns the language of the code inside the node
+   */
+  public get_language(): string | null {
+    return this.__language;
+  }
+
+  /**
+   * Returns the title of the code block
+   */
+  public get_title(): string {
+    return this.__title;
+  }
+
+  /**
    * Sets the language of the code inside the node
    * @param next_language Language
    */
@@ -151,14 +190,16 @@ export class CodeBlockNode extends BlockNode {
  * Creates a new code block node
  * @param language Language of the code inside the block
  * @param content Yjs text type holding the code block content
+ * @param initial_content The initial text content for the code block
  * @param title Title of the code block
  */
 export const $create_code_block_node = ({
   language,
   content,
+  initial_content,
   title
 }: CodeBlockPayload): CodeBlockNode =>
-  new CodeBlockNode({ content, language, title });
+  new CodeBlockNode({ content, language, title, initial_content });
 
 /**
  * Predicate function for determining code block nodes

@@ -20,10 +20,16 @@ import {
 } from "@lexical/react/LexicalHorizontalRuleNode";
 import {
   $createLineBreakNode as $create_line_break_node,
+  $createParagraphNode as $create_paragraph_node,
   ElementNode,
   LexicalNode
 } from "lexical";
 
+import {
+  $create_code_block_node,
+  $is_code_block_node,
+  CodeBlockNode
+} from "../../nodes/code-block";
 import {
   $create_heading_node,
   $is_heading_node,
@@ -131,6 +137,35 @@ const HR: ElementTransformer = {
   type: "element"
 };
 
+const CODE_BLOCK: ElementTransformer = {
+  dependencies: [CodeBlockNode],
+  export: (node) => {
+    if (!$is_code_block_node(node)) {
+      return null;
+    }
+
+    const code_content = node.get_code_content();
+
+    return (
+      "```" +
+      (node.get_language() || "") +
+      (code_content ? "\n" + code_content : "") +
+      "\n" +
+      "```"
+    );
+  },
+  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+  regExp: /^```(\w{1,10})?\s/,
+  replace: (parent_node, _, match) => {
+    const [, language] = match;
+    const code_block_node = $create_code_block_node({ language });
+    parent_node.replace(code_block_node);
+
+    code_block_node.insertAfter($create_paragraph_node());
+  },
+  type: "element"
+};
+
 export const MD_TRANSFORMERS: Array<Transformer> = [
   HR,
   HEADING,
@@ -145,5 +180,6 @@ export const MD_TRANSFORMERS: Array<Transformer> = [
   ITALIC_STAR,
   ITALIC_UNDERSCORE,
   STRIKETHROUGH,
-  LINK
+  LINK,
+  CODE_BLOCK
 ];
