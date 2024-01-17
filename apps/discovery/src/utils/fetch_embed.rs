@@ -58,8 +58,10 @@ impl Client {
         {
             let mut query_map: HashMap<String, String> = HashMap::new();
 
-            query_map.insert("url".to_string(), request.url.to_string());
-            query_map.insert("format".to_string(), "json".to_string());
+            url.query_pairs_mut().clear();
+
+            url.query_pairs_mut().append_pair("url", request.url);
+            url.query_pairs_mut().append_pair("format", "json");
 
             // Append Facebook client ID and access token.
             if is_facebook_graph_dependent(&endpoint.to_string()) {
@@ -96,10 +98,7 @@ impl Client {
                 }
             }
 
-            url.query_pairs_mut()
-                .clear()
-                .extend_pairs(query_map)
-                .finish();
+            url.query_pairs_mut().extend_pairs(query_map).finish();
         }
 
         Ok(self
@@ -139,14 +138,19 @@ mod tests {
     use super::*;
     use crate::config::get_app_config;
     use mockito::Server;
+    use urlencoding::encode;
 
     #[tokio::test]
     async fn can_fetch_embed() {
         let mut server = Server::new_async().await;
+        let url = server.url();
         let config = get_app_config().unwrap();
 
         let mock = server
-            .mock("GET", "/?url=https%3A%2F%2Fexample.com&format=json")
+            .mock(
+                "GET",
+                format!("/?url={}&format=json", encode("http://example.com")).as_str(),
+            )
             .with_status(200)
             .with_body(r#"{"type": "link"}"#)
             .with_header("content-type", "application/json")
@@ -155,21 +159,21 @@ mod tests {
 
         let result = fetch_embed(
             &config,
-            &server.url(),
+            &url,
             ConsumerRequest {
-                url: "https://example.com",
-                ..ConsumerRequest::default()
+                url: "http://example.com",
+                ..Default::default()
             },
         )
         .await;
 
         assert_eq!(
-            result.ok(),
-            Some(EmbedResponse {
+            result.unwrap(),
+            EmbedResponse {
                 oembed_type: crate::spec::EmbedType::Link,
                 title: None,
                 extra: HashMap::default(),
-            })
+            }
         );
 
         mock.assert_async().await;
@@ -178,19 +182,23 @@ mod tests {
     #[tokio::test]
     async fn can_throw_fetch_error() {
         let mut server = Server::new_async().await;
+        let url = server.url();
         let config = get_app_config().unwrap();
 
         let mock = server
-            .mock("GET", "/?url=https%3A%2F%2Fexample.com&format=json")
+            .mock(
+                "GET",
+                format!("/?url={}&format=json", encode("http://example.com")).as_str(),
+            )
             .with_status(404)
             .create_async()
             .await;
 
         let result = fetch_embed(
             &config,
-            &server.url(),
+            &url,
             ConsumerRequest {
-                url: "https://example.com",
+                url: "http://example.com",
                 ..Default::default()
             },
         )
