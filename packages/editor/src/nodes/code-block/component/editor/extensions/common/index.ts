@@ -9,10 +9,12 @@ import { auto_link_extension } from "../auto-link";
 import { color_preview_extension } from "../color-preview";
 
 // Maximum length of the code block content.
-const MAX_LENGTH = 80_000;
+export const CODE_EDITOR_MAX_LENGTH = 80_000;
 
 export const common_extensions: Extension[] = [
-  EditorState.changeFilter.of((tr) => tr.newDoc.length < MAX_LENGTH),
+  EditorState.changeFilter.of(
+    (tr) => tr.newDoc.length < CODE_EDITOR_MAX_LENGTH
+  ),
   highlight_special_chars(),
   color_preview_extension(),
   auto_link_extension(),
