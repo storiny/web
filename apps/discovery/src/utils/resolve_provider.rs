@@ -15,7 +15,7 @@ pub fn resolve_provider(input_url: &str) -> Option<&'static Provider> {
         provider
             .matchers
             .iter()
-            .any(|matcher| matcher.is_match(&url.to_string()))
+            .any(|matcher| matcher.is_match(url.as_ref()))
     })
 }
 
