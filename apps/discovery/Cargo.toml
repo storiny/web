@@ -42,4 +42,5 @@ visdom = { version = "1.0.0", features = ["insertion", "destroy"] }
 
 [dev-dependencies]
 just = "1.14.0"
-mockito = "1.1.0"
+mockito = "1.2.0"
+urlencoding = "2.1.3"
