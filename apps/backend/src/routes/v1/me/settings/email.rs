@@ -82,7 +82,7 @@ SELECT password FROM users
 WHERE id = $1
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .fetch_one(&mut *txn)
     .await?;
 
@@ -103,7 +103,7 @@ WHERE id = $1
             .map_err(|error| AppError::InternalError(error.to_string()))?;
 
         Argon2::default()
-            .verify_password(&payload.current_password.as_bytes(), &password_hash)
+            .verify_password(payload.current_password.as_bytes(), &password_hash)
             .map_err(|_| {
                 AppError::FormError(FormErrorResponse::new(
                     Some(StatusCode::FORBIDDEN),
@@ -119,7 +119,7 @@ WHERE id = $1
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
     let hashed_token = Argon2::default()
-        .hash_password(&token_id.as_bytes(), &salt)
+        .hash_password(token_id.as_bytes(), &salt)
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
     match sqlx::query(
@@ -139,7 +139,7 @@ INSERT INTO account_activities (type, description, user_id)
 VALUES ($3, 'You changed your e-mail address to <m>' || $2 || '</m>', $1)
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .bind(&payload.new_email)
     .bind(AccountActivityType::Email as i16)
     .bind(hashed_token.to_string())
@@ -168,11 +168,11 @@ VALUES ($3, 'You changed your e-mail address to <m>' || $2 || '</m>', $1)
                 AppError::InternalError(format!("unable to serialize the template data: {error:?}"))
             })?;
 
-            let mut templated_email_job = (&*templated_email_job_storage.into_inner()).clone();
+            let mut templated_email_job = (*templated_email_job_storage.into_inner()).clone();
 
             templated_email_job
                 .push(TemplatedEmailJob {
-                    destination: (&payload.new_email).to_string(),
+                    destination: payload.new_email.to_string(),
                     template: EmailTemplate::NewEmailVerification,
                     template_data,
                 })

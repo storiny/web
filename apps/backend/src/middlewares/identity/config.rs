@@ -8,6 +8,12 @@ use super::middleware::IdentityMiddleware;
 pub struct IdentityMiddlewareBuilder {}
 
 #[allow(dead_code)]
+impl Default for IdentityMiddlewareBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl IdentityMiddlewareBuilder {
     pub fn new() -> Self {
         Self {}

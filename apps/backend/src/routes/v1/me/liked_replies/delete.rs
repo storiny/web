@@ -45,8 +45,8 @@ WHERE
     AND reply_id = $2
 "#,
     )
-    .bind(&user_id)
-    .bind(&reply_id)
+    .bind(user_id)
+    .bind(reply_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

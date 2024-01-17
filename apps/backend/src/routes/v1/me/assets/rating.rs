@@ -61,9 +61,9 @@ WHERE
     AND user_id = $3
 "#,
     )
-    .bind(payload.rating.clone() as i16)
-    .bind(&asset_id)
-    .bind(&user_id)
+    .bind(payload.rating as i16)
+    .bind(asset_id)
+    .bind(user_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()
@@ -133,7 +133,7 @@ SELECT rating FROM assets
 WHERE id = $1
 "#,
         )
-        .bind(&asset_id)
+        .bind(asset_id)
         .fetch_one(&mut *conn)
         .await?;
 

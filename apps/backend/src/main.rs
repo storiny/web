@@ -74,8 +74,8 @@ use tracing_subscriber::{
 };
 use user_agent_parser::UserAgentParser;
 
-const GEOLITE_CITY: &'static [u8] = include_bytes!("../geo/db/GeoLite2-City.mmdb");
-const UA_PARSER_DATA: &'static str = include_str!("../data/ua_parser/regexes.yaml");
+const GEOLITE_CITY: &[u8] = include_bytes!("../geo/db/GeoLite2-City.mmdb");
+const UA_PARSER_DATA: &str = include_str!("../data/ua_parser/regexes.yaml");
 
 /// 404 response
 async fn not_found() -> impl Responder {
@@ -162,13 +162,13 @@ fn main() -> io::Result<()> {
                 let rate_limit_backend = middlewares::rate_limiter::RedisBackend::builder(
                     redis_connection_manager.clone(),
                 )
-                .key_prefix(Some(&format!("{}:", RedisNamespace::RateLimit.to_string()))) // Add prefix to avoid collisions with other servicse
+                .key_prefix(Some(&format!("{}:", RedisNamespace::RateLimit))) // Add prefix to avoid collisions with other servicse
                 .build();
 
                 // Session
-                let secret_key = Key::from(&config.session_secret_key.as_bytes());
+                let secret_key = Key::from(config.session_secret_key.as_bytes());
                 let redis_store = match RedisSessionStore::builder(&redis_connection_string.clone())
-                    .cache_keygen(|key| format!("{}:{}", RedisNamespace::Session.to_string(), key)) // Add prefix to session records
+                    .cache_keygen(|key| format!("{}:{}", RedisNamespace::Session, key)) // Add prefix to session records
                     .build()
                     .await
                 {

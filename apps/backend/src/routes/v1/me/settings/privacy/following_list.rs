@@ -60,7 +60,7 @@ WHERE id = $2
 "#,
     )
     .bind(following_list_visibility as i16)
-    .bind(&user_id)
+    .bind(user_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

@@ -32,7 +32,7 @@ pub async fn get_privacy_settings(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
-    tracing::Span::current().record("user_id", &user_id);
+    tracing::Span::current().record("user_id", user_id);
 
     let user = sqlx::query(
         r#"

@@ -94,10 +94,13 @@ async fn post(
         return Err(ToastErrorResponse::new(None, "You are already logged in").into());
     }
 
-    let conn_info = req.connection_info();
-    let client_ip = conn_info.realip_remote_addr().unwrap_or_default();
+    let client_ip = {
+        let conn_info = req.connection_info();
+        let real_ip = conn_info.realip_remote_addr().unwrap_or_default();
+        real_ip.to_string()
+    };
 
-    if is_resource_locked(&data.redis, ResourceLock::Signup, client_ip).await? {
+    if is_resource_locked(&data.redis, ResourceLock::Signup, &client_ip).await? {
         return Err(ToastErrorResponse::new(
             Some(StatusCode::TOO_MANY_REQUESTS),
             "You are being rate-limited. Try again later.",
@@ -155,7 +158,7 @@ SELECT EXISTS (
 
     let salt = SaltString::generate(&mut OsRng);
     let hashed_password = Argon2::default()
-        .hash_password(&payload.password.as_bytes(), &salt)
+        .hash_password(payload.password.as_bytes(), &salt)
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
     let token_id = nanoid!(TOKEN_LENGTH);
@@ -163,7 +166,7 @@ SELECT EXISTS (
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
     let hashed_token = Argon2::default()
-        .hash_password(&token_id.as_bytes(), &salt)
+        .hash_password(token_id.as_bytes(), &salt)
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
     let pg_pool = &data.db_pool;
@@ -185,7 +188,7 @@ SELECT $6, $7, (SELECT id FROM inserted_user), $8
     .bind(&payload.name)
     .bind(&slugged_username)
     .bind(hashed_password.to_string())
-    .bind((&payload.wpm).clone() as i32)
+    .bind(payload.wpm as i32)
     .bind(hashed_token.to_string())
     .bind(TokenType::EmailVerification as i16)
     .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
@@ -193,19 +196,19 @@ SELECT $6, $7, (SELECT id FROM inserted_user), $8
     .await?;
 
     // Increment the signup attempts.
-    incr_resource_lock_attempts(&data.redis, ResourceLock::Signup, client_ip).await?;
+    incr_resource_lock_attempts(&data.redis, ResourceLock::Signup, &client_ip).await?;
 
     // Push an email job.
 
     let full_name = payload.name.clone();
-    let first_name = full_name.split(" ").collect::<Vec<_>>()[0];
+    let first_name = full_name.split(' ').collect::<Vec<_>>()[0];
     let verification_link = format!(
         "{}/auth/verify-email/{}",
         data.config.web_server_url, token_id
     );
 
     let template_data = serde_json::to_string(&EmailVerificationEmailTemplateData {
-        email: (&payload.email).to_string(),
+        email: payload.email.to_string(),
         link: verification_link,
         name: first_name.to_string(),
     })
@@ -213,11 +216,11 @@ SELECT $6, $7, (SELECT id FROM inserted_user), $8
         AppError::InternalError(format!("unable to serialize the template data: {error:?}"))
     })?;
 
-    let mut templated_email_job = (&*templated_email_job_storage.into_inner()).clone();
+    let mut templated_email_job = (*templated_email_job_storage.into_inner()).clone();
 
     templated_email_job
         .push(TemplatedEmailJob {
-            destination: (&payload.email).to_string(),
+            destination: payload.email.to_string(),
             template: EmailTemplate::EmailVerification,
             template_data,
         })

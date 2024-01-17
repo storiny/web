@@ -75,7 +75,9 @@ async fn handle_youtube_oauth_request(
 
     let reqwest_client = &data.reqwest_client;
     let code = AuthorizationCode::new(params.code.clone());
-    let token_res = (&data.oauth_client_map.youtube)
+    let token_res = data
+        .oauth_client_map
+        .youtube
         .exchange_code(code)
         .request_async(async_http_client)
         .await
@@ -94,11 +96,8 @@ async fn handle_youtube_oauth_request(
     // Fetch the channel details.
     let channel_res = reqwest_client
         .get(&format!(
-            "https://youtube.googleapis.com/youtube/v3/channels?{}&{}&{}&{}",
-            "part=snippet",
-            "maxResults=1",
-            "mine=true",
-            format!("key={}", &data.config.youtube_data_api_key)
+            "https://youtube.googleapis.com/youtube/v3/channels?{}&{}&{}&key={}",
+            "part=snippet", "maxResults=1", "mine=true", &data.config.youtube_data_api_key
         ))
         .header("Content-type", ContentType::json().to_string())
         .header(
@@ -112,7 +111,7 @@ async fn handle_youtube_oauth_request(
         .await
         .map_err(|err| ConnectionError::Other(err.to_string()))?;
 
-    if channel_res.items.len() == 0 {
+    if channel_res.items.is_empty() {
         return Err(ConnectionError::Other(
             "no channel items received from YouTube".to_string(),
         ));

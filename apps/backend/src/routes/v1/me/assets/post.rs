@@ -163,7 +163,7 @@ async fn handle_upload(
         "image/webp".to_string(),
     ];
 
-    tracing::Span::current().record("file_name", &file_name);
+    tracing::Span::current().record("file_name", file_name);
 
     if let Some(mime) = image_mime_type {
         tracing::Span::current().record("mime_type", mime.to_string());
@@ -184,7 +184,7 @@ async fn handle_upload(
 
     tracing::Span::current().record("raw_file_size", img_file.size);
 
-    if img_file.size <= 0 || img_file.size > MAX_FILE_SIZE {
+    if img_file.size == 0 || img_file.size > MAX_FILE_SIZE {
         // TODO: We simply return `Image is too big` for an image with size = 0, which can be
         // improved.
         return Err(ToastErrorResponse::new(None, "Image is too big").into());
@@ -247,7 +247,7 @@ async fn handle_upload(
 
     // We can safely unwrap `image_mime_type` here.
     let is_gif = image_mime_type.clone().unwrap() == IMAGE_GIF
-        || file_name.split(".").last().unwrap_or_default() == "gif";
+        || file_name.split('.').last().unwrap_or_default() == "gif";
 
     // Scale down to 2k.
     if img_width > 2048 || img_height > 2048 {
@@ -285,7 +285,7 @@ async fn handle_upload(
     tracing::Span::current().record("computed_color", format!("#{hex_color}"));
 
     // We device the output format based on the file extension.
-    let (output_format, output_mime) = match file_name.split(".").last() {
+    let (output_format, output_mime) = match file_name.split('.').last() {
         None => (ImageOutputFormat::WebP, "image/webp".to_string()),
         Some(ext) => match ext {
             "jpeg" | "jpg" => (ImageOutputFormat::Jpeg(80), IMAGE_JPEG.to_string()),
@@ -375,7 +375,7 @@ VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING id, rating
 "#,
     )
-    .bind(&object_key)
+    .bind(object_key)
     .bind(&hex_color)
     .bind(img_height as i16)
     .bind(img_width as i16)
@@ -614,7 +614,7 @@ VALUES ($1, $2, $3, $4)
     async fn can_reject_a_non_image_file(pool: PgPool) -> sqlx::Result<()> {
         let (client, generate_url) = init_web_server_for_test(pool, None).await;
 
-        let part = get_image_part("sample.txt", "invalid.jpg", &IMAGE_JPEG.to_string()).await;
+        let part = get_image_part("sample.txt", "invalid.jpg", IMAGE_JPEG.as_ref()).await;
         let form = Form::new().text("alt", "").part("file", part);
 
         let res = client
@@ -633,7 +633,7 @@ VALUES ($1, $2, $3, $4)
     async fn can_reject_an_image_with_large_file_size(pool: PgPool) -> sqlx::Result<()> {
         let (client, generate_url) = init_web_server_for_test(pool, None).await;
 
-        let part = get_image_part("large_size.png", "image.png", &IMAGE_PNG.to_string()).await;
+        let part = get_image_part("large_size.png", "image.png", IMAGE_PNG.as_ref()).await;
         let form = Form::new().text("alt", "").part("file", part);
 
         let res = client
@@ -657,7 +657,7 @@ VALUES ($1, $2, $3, $4)
     async fn can_reject_an_oversized_gif(pool: PgPool) -> sqlx::Result<()> {
         let (client, generate_url) = init_web_server_for_test(pool, None).await;
 
-        let part = get_image_part("large_dims.gif", "image.gif", &IMAGE_GIF.to_string()).await;
+        let part = get_image_part("large_dims.gif", "image.gif", IMAGE_GIF.as_ref()).await;
         let form = Form::new().text("alt", "").part("file", part);
 
         let res = client
@@ -681,7 +681,7 @@ VALUES ($1, $2, $3, $4)
     async fn can_reject_a_png_bomb(pool: PgPool) -> sqlx::Result<()> {
         let (client, generate_url) = init_web_server_for_test(pool, None).await;
 
-        let part = get_image_part("img_bomb.png", "image.png", &IMAGE_PNG.to_string()).await;
+        let part = get_image_part("img_bomb.png", "image.png", IMAGE_PNG.as_ref()).await;
         let form = Form::new().text("alt", "").part("file", part);
 
         let res = client
@@ -707,7 +707,7 @@ VALUES ($1, $2, $3, $4)
             let (client, generate_url) =
                 init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
 
-            let part = get_image_part("normal.jpg", "image.jpg", &IMAGE_JPEG.to_string()).await;
+            let part = get_image_part("normal.jpg", "image.jpg", IMAGE_JPEG.as_ref()).await;
             let form = Form::new().text("alt", "Some alt").part("file", part);
 
             let res = client
@@ -751,7 +751,7 @@ WHERE id = $1
         ) -> sqlx::Result<()> {
             let (client, generate_url) = init_web_server_for_test(pool, None).await;
 
-            let part = get_image_part("normal.jpg", "image.jpg", &IMAGE_JPEG.to_string()).await;
+            let part = get_image_part("normal.jpg", "image.jpg", IMAGE_JPEG.as_ref()).await;
             let form = Form::new().text("alt", "Some alt").part("file", part);
 
             exceed_resource_limit(&ctx.redis_pool, ResourceLimit::CreateAsset, 1_i64).await;
@@ -777,7 +777,7 @@ WHERE id = $1
             let (client, generate_url) =
                 init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
 
-            let part = get_image_part("normal.jpg", "image", &IMAGE_JPEG.to_string()).await;
+            let part = get_image_part("normal.jpg", "image", IMAGE_JPEG.as_ref()).await;
             let form = Form::new().text("alt", "").part("file", part);
 
             let res = client
@@ -801,7 +801,7 @@ WHERE id = $1
             let (client, generate_url) =
                 init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
 
-            let part = get_image_part("large_dims.jpg", "image.jpg", &IMAGE_JPEG.to_string()).await;
+            let part = get_image_part("large_dims.jpg", "image.jpg", IMAGE_JPEG.as_ref()).await;
             let form = Form::new().text("alt", "").part("file", part);
 
             let res = client
@@ -827,7 +827,7 @@ WHERE id = $1
             let (client, generate_url) =
                 init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
 
-            let part = get_image_part("image.png", "image.png", &IMAGE_PNG.to_string()).await;
+            let part = get_image_part("image.png", "image.png", IMAGE_PNG.as_ref()).await;
             let form = Form::new().text("alt", "").part("file", part);
 
             let res = client
@@ -851,7 +851,7 @@ WHERE id = $1
             let (client, generate_url) =
                 init_web_server_for_test(pool, Some(ctx.s3_client.clone())).await;
 
-            let part = get_image_part("image.gif", "image.gif", &IMAGE_GIF.to_string()).await;
+            let part = get_image_part("image.gif", "image.gif", IMAGE_GIF.as_ref()).await;
             let form = Form::new().text("alt", "").part("file", part);
 
             let res = client

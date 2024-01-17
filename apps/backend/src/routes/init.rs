@@ -1,3 +1,8 @@
+use super::{
+    favicon,
+    oauth,
+    robots,
+};
 use actix_web::web;
 
 #[path = "health.rs"]
@@ -6,17 +11,8 @@ mod health;
 #[path = "index.rs"]
 mod index;
 
-#[path = "favicon.rs"]
-mod favicon;
-
-#[path = "robots.rs"]
-mod robots;
-
 #[path = "v1/mod.rs"]
 mod v1;
-
-#[path = "oauth/mod.rs"]
-mod oauth;
 
 /// Registers common API routes.
 ///
@@ -33,10 +29,19 @@ pub fn init_common_routes(cfg: &mut web::ServiceConfig) {
 /// * `cfg` - Web service config
 pub fn init_oauth_routes(cfg: &mut web::ServiceConfig) {
     oauth::youtube::init_routes(cfg);
+    oauth::youtube::callback::init_routes(cfg);
+    //
     oauth::github::init_routes(cfg);
+    oauth::github::callback::init_routes(cfg);
+    //
     oauth::spotify::init_routes(cfg);
+    oauth::spotify::callback::init_routes(cfg);
+    //
     oauth::discord::init_routes(cfg);
+    oauth::discord::callback::init_routes(cfg);
+    //
     oauth::dribbble::init_routes(cfg);
+    oauth::dribbble::callback::init_routes(cfg);
 }
 
 /// Registers v1 API routes.

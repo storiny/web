@@ -60,7 +60,7 @@ FROM users
 WHERE id = $1
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .fetch_one(&mut *txn)
     .await?;
 
@@ -137,7 +137,7 @@ SELECT
     UNNEST($2::TEXT[]), $1
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .bind(&recovery_codes[..])
     .execute(&mut *txn)
     .await?

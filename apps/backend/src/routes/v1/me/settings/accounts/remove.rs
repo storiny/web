@@ -66,7 +66,7 @@ SELECT password FROM users
 WHERE id = $1
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .fetch_one(&data.db_pool)
     .await?;
 
@@ -85,7 +85,7 @@ WHERE id = $1
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
     Argon2::default()
-        .verify_password(&payload.current_password.as_bytes(), &password_hash)
+        .verify_password(payload.current_password.as_bytes(), &password_hash)
         .map_err(|_| {
             AppError::FormError(FormErrorResponse::new(
                 Some(StatusCode::FORBIDDEN),
@@ -105,7 +105,7 @@ INSERT INTO account_activities (type, description, user_id)
 VALUES ($2, 'You removed <m>Apple</m> as a third-party login method.', $1)
 "#,
         )
-        .bind(&user_id)
+        .bind(user_id)
         .bind(AccountActivityType::ThirdPartyLogin as i16)
         .execute(&data.db_pool)
         .await?;
@@ -121,7 +121,7 @@ INSERT INTO account_activities (type, description, user_id)
 VALUES ($2, 'You removed <m>Google</m> as a third-party login method.', $1)
 "#,
         )
-        .bind(&user_id)
+        .bind(user_id)
         .bind(AccountActivityType::ThirdPartyLogin as i16)
         .execute(&data.db_pool)
         .await?;

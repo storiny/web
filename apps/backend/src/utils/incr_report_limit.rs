@@ -21,7 +21,7 @@ pub async fn incr_report_limit(redis_pool: &RedisPool, ip: &str) -> anyhow::Resu
     let increx = redis::Script::new(include_str!("../../lua/increx.lua"));
     let cache_key = format!(
         "{}:{}:{ip}",
-        RedisNamespace::ResourceLimit.to_string(),
+        RedisNamespace::ResourceLimit,
         ResourceLimit::CreateReport as i32
     );
 
@@ -54,7 +54,7 @@ mod tests {
             // Key should be present in the cache.
             let cache_key = format!(
                 "{}:{}:{}",
-                RedisNamespace::ResourceLimit.to_string(),
+                RedisNamespace::ResourceLimit,
                 ResourceLimit::CreateReport as i32,
                 "::1"
             );
@@ -84,7 +84,7 @@ mod tests {
             // Key should be present in the cache with the correct value.
             let cache_key = format!(
                 "{}:{}:{}",
-                RedisNamespace::ResourceLimit.to_string(),
+                RedisNamespace::ResourceLimit,
                 ResourceLimit::CreateReport as i32,
                 "::1"
             );

@@ -21,6 +21,8 @@ use tonic::{
 use tracing::error;
 
 /// Creates a new draft.
+
+#[allow(clippy::blocks_in_if_conditions)]
 #[tracing::instrument(
     name = "GRPC create_draft",
     skip_all,
@@ -38,7 +40,7 @@ pub async fn create_draft(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
-    tracing::Span::current().record("user_id", &user_id);
+    tracing::Span::current().record("user_id", user_id);
 
     if !check_resource_limit(&client.redis_pool, ResourceLimit::CreateStory, user_id)
         .await
@@ -67,7 +69,7 @@ VALUES ($1)
 RETURNING id
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .fetch_one(&mut *txn)
     .await
     .map_err(|error| {

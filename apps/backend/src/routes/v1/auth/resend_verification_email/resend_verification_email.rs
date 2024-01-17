@@ -128,7 +128,7 @@ WHERE
 "#,
         )
         .bind(TokenType::EmailVerification as i16)
-        .bind(&user_id)
+        .bind(user_id)
         .fetch_one(&mut *txn)
         .await
         {
@@ -158,7 +158,7 @@ WHERE
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
     let hashed_token = Argon2::default()
-        .hash_password(&token_id.as_bytes(), &salt)
+        .hash_password(token_id.as_bytes(), &salt)
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
     sqlx::query(
@@ -205,10 +205,10 @@ VALUES ($1, $2, $3, $4)
             template = EmailTemplate::EmailVerification;
 
             let full_name = user.get::<String, _>("name");
-            let first_name = full_name.split(" ").collect::<Vec<_>>()[0];
+            let first_name = full_name.split(' ').collect::<Vec<_>>()[0];
 
             serde_json::to_string(&EmailVerificationEmailTemplateData {
-                email: (&payload.email).to_string(),
+                email: payload.email.to_string(),
                 link: verification_link,
                 name: first_name.to_string(),
             })
@@ -218,11 +218,11 @@ VALUES ($1, $2, $3, $4)
         }
     };
 
-    let mut templated_email_job = (&*templated_email_job_storage.into_inner()).clone();
+    let mut templated_email_job = (*templated_email_job_storage.into_inner()).clone();
 
     templated_email_job
         .push(TemplatedEmailJob {
-            destination: (&payload.email).to_string(),
+            destination: payload.email.to_string(),
             template,
             template_data,
         })
@@ -361,7 +361,7 @@ WHERE id = $1
             let token_id = nanoid!(TOKEN_LENGTH);
             let salt = SaltString::from_b64(&config.token_salt).unwrap();
             let hashed_token = Argon2::default()
-                .hash_password(&token_id.as_bytes(), &salt)
+                .hash_password(token_id.as_bytes(), &salt)
                 .unwrap();
 
             // Insert a verification token for the user.
@@ -523,7 +523,7 @@ WHERE id = $1
             let token_id = nanoid!(TOKEN_LENGTH);
             let salt = SaltString::from_b64(&config.token_salt).unwrap();
             let hashed_token = Argon2::default()
-                .hash_password(&token_id.as_bytes(), &salt)
+                .hash_password(token_id.as_bytes(), &salt)
                 .unwrap();
 
             // Insert a verification token.

@@ -70,8 +70,8 @@ WHERE
     AND deleted_at IS NULL
 "#,
     )
-    .bind(&user_id)
-    .bind(&draft_id)
+    .bind(user_id)
+    .bind(draft_id)
     .execute(&mut *txn)
     .await?
     .rows_affected()

@@ -81,7 +81,7 @@ ORDER BY
 LIMIT $2 OFFSET $3
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     // This route returns 15 items per call.
     .bind(15_i16)
     .bind((page * 15) as i16)

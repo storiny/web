@@ -79,7 +79,7 @@ async fn get(
 ) -> Result<HttpResponse, AppError> {
     let receiver_id = user.id()?;
 
-    let page = query.page.clone().unwrap_or(1) - 1;
+    let page = query.page.unwrap_or(1) - 1;
     let sort = query.sort.clone().unwrap_or("popular".to_string());
     let search_query = query.query.clone().unwrap_or_default();
     let has_search_query = !search_query.trim().is_empty();
@@ -177,7 +177,7 @@ FROM friend_requests
 
     let mut db_query = query_builder
         .build_query_as::<FriendRequest>()
-        .bind(&receiver_id)
+        .bind(receiver_id)
         .bind(10_i16)
         .bind((page * 10) as i16);
 

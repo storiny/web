@@ -37,8 +37,8 @@ pub async fn get_story_responses_info(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`story_id` is invalid"))?;
 
-    tracing::Span::current().record("user_id", &user_id);
-    tracing::Span::current().record("story_id", &user_id);
+    tracing::Span::current().record("user_id", user_id);
+    tracing::Span::current().record("story_id", user_id);
 
     let result = sqlx::query(
         r#"
@@ -73,8 +73,8 @@ SELECT (
     ) AS "hidden_count"    
 "#,
     )
-    .bind(&user_id)
-    .bind(&story_id)
+    .bind(user_id)
+    .bind(story_id)
     .fetch_one(&client.db_pool)
     .await
     .map_err(|error| {

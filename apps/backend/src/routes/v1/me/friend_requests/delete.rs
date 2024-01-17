@@ -49,8 +49,8 @@ WHERE
     AND accepted_at IS NULL
 "#,
     )
-    .bind(&receiver_id)
-    .bind(&transmitter_id)
+    .bind(receiver_id)
+    .bind(transmitter_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

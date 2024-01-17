@@ -86,8 +86,8 @@ WHERE
 RETURNING banner_id, banner_hex
 "#,
         )
-        .bind(&user_id)
-        .bind(&payload.banner_id)
+        .bind(user_id)
+        .bind(payload.banner_id)
         .fetch_one(&data.db_pool)
         .await
         .map_err(|error| {
@@ -137,7 +137,7 @@ VALUES ($1, $2, $3, $4, $5)
 RETURNING id
 "#,
         )
-        .bind(&banner_id)
+        .bind(banner_id)
         .bind("000000".to_string())
         .bind(0)
         .bind(0)
@@ -199,7 +199,7 @@ INSERT INTO assets (key, hex, height, width, user_id)
 VALUES ($1, $2, $3, $4, $5)
 "#,
         )
-        .bind(&banner_id)
+        .bind(banner_id)
         .bind("000000".to_string())
         .bind(0)
         .bind(0)
@@ -219,7 +219,7 @@ WHERE id = $3
 RETURNING banner_id, banner_hex
 "#,
         )
-        .bind(&banner_id)
+        .bind(banner_id)
         .bind("000000".to_string())
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)

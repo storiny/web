@@ -67,9 +67,9 @@ WHERE
     AND r.deleted_at IS NULL
 "#,
     )
-    .bind(&user_id)
-    .bind(&reply_id)
-    .bind(&payload.hidden)
+    .bind(user_id)
+    .bind(reply_id)
+    .bind(payload.hidden)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

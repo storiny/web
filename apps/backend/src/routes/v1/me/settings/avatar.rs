@@ -86,8 +86,8 @@ WHERE
 RETURNING avatar_id, avatar_hex
 "#,
         )
-        .bind(&user_id)
-        .bind(&payload.avatar_id)
+        .bind(user_id)
+        .bind(payload.avatar_id)
         .fetch_one(&data.db_pool)
         .await
         .map_err(|error| {
@@ -137,7 +137,7 @@ VALUES ($1, $2, $3, $4, $5)
 RETURNING id
 "#,
         )
-        .bind(&avatar_id)
+        .bind(avatar_id)
         .bind("000000".to_string())
         .bind(0)
         .bind(0)
@@ -199,7 +199,7 @@ INSERT INTO assets (key, hex, height, width, user_id)
 VALUES ($1, $2, $3, $4, $5)
 "#,
         )
-        .bind(&avatar_id)
+        .bind(avatar_id)
         .bind("000000".to_string())
         .bind(0)
         .bind(0)
@@ -219,7 +219,7 @@ WHERE id = $3
 RETURNING avatar_id, avatar_hex
 "#,
         )
-        .bind(&avatar_id)
+        .bind(avatar_id)
         .bind("000000".to_string())
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)

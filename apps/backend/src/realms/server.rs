@@ -221,10 +221,7 @@ async fn enter_realm(
         })?;
 
         let session_value = redis_conn
-            .get::<_, Option<Vec<u8>>>(format!(
-                "{}:{session_key}",
-                RedisNamespace::Session.to_string()
-            ))
+            .get::<_, Option<Vec<u8>>>(format!("{}:{session_key}", RedisNamespace::Session))
             .await
             .map_err(|error| {
                 error!("unable to fetch the session data from Redis: {error:?}");
@@ -247,7 +244,7 @@ async fn enter_realm(
     trace!("peer authenticated");
 
     let mut realm_guard = realm_map
-        .async_lock(story_id.clone(), AsyncLimit::no_limit())
+        .async_lock(story_id, AsyncLimit::no_limit())
         .await
         // This should never throw
         .map_err(|error| {
@@ -271,8 +268,8 @@ WHERE
     AND deleted_at IS NULL
 "#,
     )
-    .bind(&story_id)
-    .bind(&user_id)
+    .bind(story_id)
+    .bind(user_id)
     .fetch_one(&mut *txn)
     .await
     .map_err(|error| {
@@ -332,7 +329,7 @@ SELECT
     (SELECT key FROM editable_document) AS "editable_doc_key"
 "#,
                 )
-                .bind(&story_id)
+                .bind(story_id)
                 .fetch_one(&mut *txn)
                 .await
                 .map_err(|error| {
@@ -425,7 +422,7 @@ SELECT key FROM documents
 WHERE story_id = $1
 "#,
                 )
-                .bind(&story_id)
+                .bind(story_id)
                 .fetch_one(&mut *txn)
                 .await
                 .map_err(|error| {
@@ -483,6 +480,7 @@ WHERE story_id = $1
 }
 
 /// Incoming realm peer handler.
+#[allow(clippy::too_many_arguments)]
 async fn peer_handler(
     ws: WebSocket,
     config: Arc<Config>,
@@ -542,10 +540,7 @@ pub async fn start_realms_server(
     .parse()
     .expect("unable to parse the socket address");
 
-    println!(
-        "{}",
-        format!("Starting realms server at http://{}:{}", &host, &port)
-    );
+    println!("Starting realms server at http://{}:{}", &host, &port);
 
     let realms_router = warp::get()
         .and(warp::path::end())
@@ -771,11 +766,11 @@ INSERT INTO stories (id, user_id)
 VALUES ($5, $1)
 "#,
             )
-            .bind(&user_id)
+            .bind(user_id)
             .bind("Some user")
             .bind("some_user")
             .bind("someone@example.com")
-            .bind(&story_id)
+            .bind(story_id)
             .execute(&db_pool)
             .await
             .expect("unable to insert the story");
@@ -792,8 +787,8 @@ VALUES ($5, $1)
         // Insert a session.
         if logged_in {
             let mut conn = redis_pool.get().await.unwrap();
-            let session_key = format!("{}:{}", user_id, Uuid::new_v4().to_string());
-            let secret_key = Key::from(&config.session_secret_key.as_bytes());
+            let session_key = format!("{}:{}", user_id, Uuid::new_v4());
+            let secret_key = Key::from(config.session_secret_key.as_bytes());
             let cookie = Cookie::new(SESSION_COOKIE_NAME, session_key.clone());
             let mut jar = CookieJar::new();
 
@@ -803,7 +798,7 @@ VALUES ($5, $1)
 
             let _: () = conn
                 .set(
-                    &format!("{}:{session_key}", RedisNamespace::Session.to_string()),
+                    &format!("{}:{session_key}", RedisNamespace::Session),
                     &rmp_serde::to_vec_named(&UserSession {
                         user_id,
                         ..Default::default()
@@ -1057,7 +1052,7 @@ WHERE
                 .await
                 .unwrap();
 
-            let documents = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
+            let documents = count_s3_objects(s3_client, S3_DOCS_BUCKET, None, None)
                 .await
                 .unwrap();
 
@@ -1088,14 +1083,14 @@ SELECT EXISTS (
 )
 "#,
             )
-            .bind(&story_id)
+            .bind(story_id)
             .fetch_one(&mut *conn)
             .await?;
 
             assert!(result.get::<bool, _>("exists"));
 
             // Should also make a copy of the original document in the object storage.
-            let documents = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
+            let documents = count_s3_objects(s3_client, S3_DOCS_BUCKET, None, None)
                 .await
                 .unwrap();
 
@@ -1162,7 +1157,7 @@ WHERE
                 .await
                 .unwrap();
 
-            let documents = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
+            let documents = count_s3_objects(s3_client, S3_DOCS_BUCKET, None, None)
                 .await
                 .unwrap();
 
