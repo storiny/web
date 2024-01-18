@@ -95,7 +95,7 @@ jobs:
       REDIS_HOST: localhost
       REDIS_PORT: 6379
       PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
-      SESSION_SECRET_KEY: 1234567890abcdef
+      SESSION_SECRET_KEY: T1dVd01XWXpNRGd0WW1aak1DMDBObVJoTFRsa09XUXRNemd6TldGa09XSTVZVFkx
       AWS_ACCESS_KEY_ID: minio_user
       AWS_SECRET_ACCESS_KEY: minio_pass
       # OAuth
@@ -131,6 +131,7 @@ jobs:
         env:
           MINIO_ROOT_USER: minio_user
           MINIO_ROOT_PASSWORD: minio_pass
+          MINIO_DEFAULT_BUCKETS=base,uploads,sitemaps
         ports:
           - 9000:9000
           - 9001:9001
