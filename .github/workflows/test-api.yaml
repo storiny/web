@@ -89,13 +89,13 @@ jobs:
       CDN_SERVER_URL: https://cdn.storiny.com
       SITEMAPS_SERVER_URL: https://sitemaps.storiny.com
       REALMS_SERVER_URL: wss://realms.storiny.com
-      TOKEN_SALT: abcdef
-      GRPC_SECRET_TOKEN: abcdef
+      TOKEN_SALT: 1234567890abcdef
+      GRPC_SECRET_TOKEN: 1234567890abcdef
       DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
       REDIS_HOST: localhost
       REDIS_PORT: 6379
       PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
-      SESSION_SECRET_KEY: abcdef
+      SESSION_SECRET_KEY: 1234567890abcdef
       AWS_ACCESS_KEY_ID: minio_user
       AWS_SECRET_ACCESS_KEY: minio_pass
       # OAuth
