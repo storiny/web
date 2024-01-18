@@ -131,7 +131,7 @@ jobs:
         env:
           MINIO_ROOT_USER: minio_user
           MINIO_ROOT_PASSWORD: minio_pass
-          MINIO_DEFAULT_BUCKETS=base,uploads,sitemaps
+          MINIO_DEFAULT_BUCKETS: base-3939361a,docs-84b42278,uploads-ec0f63c5,sitemaps-1fbc3def
         ports:
           - 9000:9000
           - 9001:9001
