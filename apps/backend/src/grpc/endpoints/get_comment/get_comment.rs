@@ -171,7 +171,7 @@ GROUP BY
     let mut query_result = query_builder.build_query_as::<Comment>().bind(comment_id);
 
     if let Some(current_user_id) = current_user_id {
-        tracing::Span::current().record("user_id", &current_user_id);
+        tracing::Span::current().record("user_id", current_user_id);
 
         query_result = query_result.bind(current_user_id);
     }
@@ -198,7 +198,7 @@ GROUP BY
         story_slug: comment.story_slug,
         story_writer_username: comment.story_writer_username,
         hidden: comment.hidden,
-        edited_at: comment.edited_at.and_then(|value| Some(to_iso8601(&value))),
+        edited_at: comment.edited_at.map(|value| to_iso8601(&value)),
         created_at: to_iso8601(&comment.created_at),
         like_count: comment.like_count as u32,
         reply_count: comment.reply_count as u32,
@@ -208,8 +208,7 @@ GROUP BY
             username: comment.user.username.clone(),
             avatar_id: comment
                 .user
-                .avatar_id
-                .and_then(|value| Some(value.to_string())),
+                .avatar_id.map(|value| value.to_string()),
             avatar_hex: comment.user.avatar_hex.clone(),
             public_flags: comment.user.public_flags as u32,
         }),
@@ -299,7 +298,7 @@ WHERE id = $1
                 let response = client
                     .get_comment(Request::new(GetCommentRequest {
                         id: 3_i64.to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await;
 
@@ -318,7 +317,7 @@ WHERE id = $1
                 let response = client
                     .get_comment(Request::new(GetCommentRequest {
                         id: 3_i64.to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await
                     .unwrap()
@@ -345,7 +344,7 @@ VALUES ($1, $2)
                 let response = client
                     .get_comment(Request::new(GetCommentRequest {
                         id: 3_i64.to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await
                     .unwrap()
@@ -382,7 +381,7 @@ WHERE id = $1
                 let response = client
                     .get_comment(Request::new(GetCommentRequest {
                         id: 3_i64.to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await;
 

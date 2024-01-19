@@ -54,9 +54,9 @@ async fn get(
     data: web::Data<AppState>,
     maybe_user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    let user_id = maybe_user.and_then(|user| Some(user.id())).transpose()?;
+    let user_id = maybe_user.map(|user| user.id()).transpose()?;
 
-    tracing::Span::current().record("user_id", &user_id);
+    tracing::Span::current().record("user_id", user_id);
 
     // Validate tag name.
     if !TAG_REGEX.is_match(&path.tag_name) {

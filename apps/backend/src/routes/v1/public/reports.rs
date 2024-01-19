@@ -52,17 +52,16 @@ async fn post(
     data: web::Data<AppState>,
     maybe_user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    let user_id = maybe_user.and_then(|user| Some(user.id())).transpose()?;
+    let user_id = maybe_user.map(|user| user.id()).transpose()?;
 
-    tracing::Span::current().record("user_id", &user_id);
+    tracing::Span::current().record("user_id", user_id);
 
     let report_limit_identifier = if let Some(user_id) = user_id {
         // Always use `user_id` when logged-in
         Some(user_id.to_string())
     } else {
         req.connection_info()
-            .realip_remote_addr()
-            .and_then(|ip| Some(ip.to_string()))
+            .realip_remote_addr().map(|ip| ip.to_string())
     };
 
     if report_limit_identifier.is_none() {
@@ -104,7 +103,7 @@ INSERT INTO reports (entity_id, type, reason)
 VALUES ($1, $2, $3)
 "#,
     )
-    .bind(&entity_id)
+    .bind(entity_id)
     .bind(&r#type)
     .bind(&reason)
     .execute(&mut *txn)
@@ -202,7 +201,7 @@ WHERE entity_id = $1
         let result = redis_conn
             .get::<_, u32>(&format!(
                 "{}:{}:{}",
-                RedisNamespace::ResourceLimit.to_string(),
+                RedisNamespace::ResourceLimit,
                 ResourceLimit::CreateReport as i32,
                 "8.8.8.8"
             ))
@@ -259,7 +258,7 @@ WHERE entity_id = $1
         let result = redis_conn
             .get::<_, u32>(&format!(
                 "{}:{}:{}",
-                RedisNamespace::ResourceLimit.to_string(),
+                RedisNamespace::ResourceLimit,
                 ResourceLimit::CreateReport as i32,
                 user_id.unwrap()
             ))

@@ -37,6 +37,7 @@ use tower::service_fn;
 /// * `db_pool` - Postgres pool
 /// * `insert_user` - Whether to insert a user to the database
 /// * `test_closure` - A closure with the body containing the test code
+#[allow(clippy::type_complexity)]
 pub async fn test_grpc_service<B>(
     db_pool: PgPool,
     insert_user: bool,

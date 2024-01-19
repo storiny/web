@@ -80,12 +80,12 @@ async fn get(
     // Always validate the URL.
     let url = Url::parse(&decompressed_url)?;
 
-    let provider = resolve_provider(&url.to_string());
+    let provider = resolve_provider(url.as_ref());
 
     if provider.is_none() {
         debug!("provider not found, responding with metadata instead");
 
-        return Ok(respond_with_metadata(&config, &url.to_string()).await);
+        return Ok(respond_with_metadata(&config, url.as_ref()).await);
     }
 
     let provider = provider.unwrap();
@@ -125,9 +125,9 @@ async fn get(
 
             fetch_embed(
                 &config,
-                &provider.endpoint,
+                provider.endpoint,
                 ConsumerRequest {
-                    url: &url.to_string(),
+                    url: url.as_ref(),
                     params: Some(origin_params_cloned),
                 },
             )
@@ -135,9 +135,9 @@ async fn get(
         } else {
             fetch_embed(
                 &config,
-                &provider.endpoint,
+                provider.endpoint,
                 ConsumerRequest {
-                    url: &url.to_string(),
+                    url: url.as_ref(),
                     ..Default::default()
                 },
             )
@@ -171,7 +171,7 @@ async fn get(
             }
 
             // Handle photo embed response.
-            EmbedType::Link => Ok(respond_with_metadata(&config, &url.to_string()).await),
+            EmbedType::Link => Ok(respond_with_metadata(&config, url.as_ref()).await),
 
             // Handle video and rich embed response.
             EmbedType::Video(_) | EmbedType::Rich(_) => {
@@ -259,10 +259,8 @@ async fn get(
 
             iframe_params_cloned.iter_mut().for_each(|(_, value)| {
                 // Replace theme placeholders.
-                if provider.supports_binary_theme {
-                    if *value == "{theme}" {
-                        *value = &theme;
-                    }
+                if provider.supports_binary_theme && *value == "{theme}" {
+                    *value = &theme;
                 }
 
                 // Replace URL placeholders.
@@ -304,14 +302,14 @@ async fn get(
                 theme,
                 iframe_html: format!(
                     r#"<iframe src="{}" loading="lazy" referrerpolicy="strict-origin" {}></iframe>"#,
-                    iframe_src.to_string(),
+                    iframe_src,
                     {
                         // Append iframe attributes.
                         let mut attrs = " ".to_string();
 
                         for (key, value) in provider.iframe_attrs.clone().unwrap_or_default() {
                             attrs.push_str(&format!(r#"{key}="{value}""#));
-                            attrs.push_str(" ");
+                            attrs.push(' ');
                         }
 
                         attrs

@@ -80,7 +80,7 @@ WHERE id = $1
             .map_err(|error| AppError::InternalError(error.to_string()))?;
 
         Argon2::default()
-            .verify_password(&payload.current_password.as_bytes(), &password_hash)
+            .verify_password(payload.current_password.as_bytes(), &password_hash)
             .map_err(|_| {
                 AppError::ToastError(ToastErrorResponse::new(
                     Some(StatusCode::FORBIDDEN),
@@ -91,7 +91,7 @@ WHERE id = $1
 
     let salt = SaltString::generate(&mut OsRng);
     let next_hashed_password = Argon2::default()
-        .hash_password(&payload.new_password.as_bytes(), &salt)
+        .hash_password(payload.new_password.as_bytes(), &salt)
         .map_err(|error| {
             AppError::InternalError(format!("unable to hash the password: {error:?}"))
         })?;
@@ -108,7 +108,7 @@ INSERT INTO account_activities (type, description, user_id)
 VALUES ($3, 'You updated your password.', $1)
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .bind(next_hashed_password.to_string())
     .bind(AccountActivityType::Password as i16)
     .execute(&mut *txn)

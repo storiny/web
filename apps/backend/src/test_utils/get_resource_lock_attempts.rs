@@ -16,7 +16,7 @@ pub async fn get_resource_lock_attempts(
 ) -> Option<u32> {
     let mut conn = redis_pool.get().await.unwrap();
 
-    conn.get::<_, Option<u32>>(&format!("{}:{identifier}", resource_lock.to_string()))
+    conn.get::<_, Option<u32>>(&format!("{}:{identifier}", resource_lock))
         .await
         .unwrap()
 }

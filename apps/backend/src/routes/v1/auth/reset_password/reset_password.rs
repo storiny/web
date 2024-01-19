@@ -108,7 +108,7 @@ WHERE type = $1 AND user_id = $2
 "#,
     )
     .bind(TokenType::PasswordReset as i16)
-    .bind(&user_id)
+    .bind(user_id)
     .fetch_one(&mut *txn)
     .await
     {
@@ -136,7 +136,7 @@ WHERE type = $1 AND user_id = $2
         let hashed_token = PasswordHash::new(&token_id)
             .map_err(|error| AppError::InternalError(error.to_string()))?;
 
-        match Argon2::default().verify_password(&payload.token.as_bytes(), &hashed_token) {
+        match Argon2::default().verify_password(payload.token.as_bytes(), &hashed_token) {
             Ok(_) => {
                 reset_resource_lock(&data.redis, ResourceLock::ResetPassword, &payload.email)
                     .await?;
@@ -172,7 +172,7 @@ WHERE type = $1 AND user_id = $2
 
     let salt = SaltString::generate(&mut OsRng);
     let next_hashed_password = Argon2::default()
-        .hash_password(&payload.password.as_bytes(), &salt)
+        .hash_password(payload.password.as_bytes(), &salt)
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
     sqlx::query(
@@ -187,7 +187,7 @@ WHERE id = $2
 "#,
     )
     .bind(next_hashed_password.to_string())
-    .bind(&user_id)
+    .bind(user_id)
     .bind(token.get::<String, _>("id"))
     .execute(&mut *txn)
     .await?;
@@ -251,7 +251,7 @@ mod tests {
         let token_id = nanoid!(TOKEN_LENGTH);
         let salt = SaltString::from_b64(&config.token_salt).unwrap();
         let hashed_token = Argon2::default()
-            .hash_password(&token_id.as_bytes(), &salt)
+            .hash_password(token_id.as_bytes(), &salt)
             .unwrap();
 
         // Insert the reset password token.
@@ -332,7 +332,7 @@ SELECT EXISTS (
         let token_id = nanoid!(TOKEN_LENGTH);
         let salt = SaltString::from_b64(&config.token_salt).unwrap();
         let hashed_token = Argon2::default()
-            .hash_password(&token_id.as_bytes(), &salt)
+            .hash_password(token_id.as_bytes(), &salt)
             .unwrap();
 
         // Insert the reset password token.
@@ -386,7 +386,7 @@ VALUES ($1, $2, $3, $4)
         let token_id = nanoid!(TOKEN_LENGTH);
         let salt = SaltString::from_b64(&config.token_salt).unwrap();
         let hashed_token = Argon2::default()
-            .hash_password(&token_id.as_bytes(), &salt)
+            .hash_password(token_id.as_bytes(), &salt)
             .unwrap();
 
         // Insert the reset password token.
@@ -524,7 +524,7 @@ VALUES ($1, $2, $3, $4)
             let token_id = nanoid!(TOKEN_LENGTH);
             let salt = SaltString::from_b64(&config.token_salt).unwrap();
             let hashed_token = Argon2::default()
-                .hash_password(&token_id.as_bytes(), &salt)
+                .hash_password(token_id.as_bytes(), &salt)
                 .unwrap();
 
             // Insert the reset password token.
@@ -585,7 +585,7 @@ VALUES ($1, $2, $3, $4)
             let token_id = nanoid!(TOKEN_LENGTH);
             let salt = SaltString::from_b64(&config.token_salt).unwrap();
             let hashed_token = Argon2::default()
-                .hash_password(&token_id.as_bytes(), &salt)
+                .hash_password(token_id.as_bytes(), &salt)
                 .unwrap();
 
             // Insert the reset password token.
@@ -597,7 +597,7 @@ VALUES ($1, $2, $3, $4)
             )
             .bind(hashed_token.to_string())
             .bind(TokenType::PasswordReset as i16)
-            .bind(&user_id)
+            .bind(user_id)
             .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
             .execute(&mut *conn)
             .await?;
@@ -612,7 +612,7 @@ VALUES ($1, $2, $3, $4)
                     .set::<_, _, ()>(
                         &format!(
                             "{}:{user_id}:{}",
-                            RedisNamespace::Session.to_string(),
+                            RedisNamespace::Session,
                             Uuid::new_v4()
                         ),
                         &rmp_serde::to_vec_named(&UserSession {

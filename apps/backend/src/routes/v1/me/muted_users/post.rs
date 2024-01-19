@@ -62,8 +62,8 @@ INSERT INTO mutes (muter_id, muted_id)
 VALUES ($1, $2)
 "#,
     )
-    .bind(&muter_id)
-    .bind(&muted_id)
+    .bind(muter_id)
+    .bind(muted_id)
     .execute(&mut *txn)
     .await
     {

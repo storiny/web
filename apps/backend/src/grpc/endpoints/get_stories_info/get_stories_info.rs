@@ -32,7 +32,7 @@ pub async fn get_stories_info(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
-    tracing::Span::current().record("user_id", &user_id);
+    tracing::Span::current().record("user_id", user_id);
 
     let result = sqlx::query(
         r#"
@@ -54,7 +54,7 @@ SELECT (
     ) AS "deleted_story_count"
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .fetch_one(&client.db_pool)
     .await
     .map_err(|error| {

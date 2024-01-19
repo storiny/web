@@ -104,14 +104,14 @@ ORDER BY created_at DESC
 LIMIT $2 OFFSET $3
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .bind(10_i16)
     .bind((page * 10) as i16)
     .fetch_all(&data.db_pool)
     .await?;
 
     for item in &mut result {
-        (*item).description = Some(get_description_for_activity(&item));
+        item.description = Some(get_description_for_activity(item));
     }
 
     Ok(HttpResponse::Ok().json(result))

@@ -59,7 +59,7 @@ mod tests {
                     .set::<_, _, ()>(
                         &format!(
                             "{}:{user_id}:{}",
-                            RedisNamespace::Session.to_string(),
+                            RedisNamespace::Session,
                             Uuid::new_v4()
                         ),
                         &rmp_serde::to_vec_named(&UserSession {

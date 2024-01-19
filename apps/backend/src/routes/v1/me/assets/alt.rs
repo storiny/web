@@ -62,8 +62,8 @@ WHERE
 "#,
     )
     .bind(&payload.alt)
-    .bind(&asset_id)
-    .bind(&user_id)
+    .bind(asset_id)
+    .bind(user_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

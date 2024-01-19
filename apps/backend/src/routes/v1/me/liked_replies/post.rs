@@ -62,8 +62,8 @@ INSERT INTO reply_likes (user_id, reply_id)
 VALUES ($1, $2)
 "#,
     )
-    .bind(&user_id)
-    .bind(&reply_id)
+    .bind(user_id)
+    .bind(reply_id)
     .execute(&mut *txn)
     .await
     {

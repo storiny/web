@@ -33,14 +33,14 @@ pub async fn validate_story(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
-    tracing::Span::current().record("user_id", &user_id);
+    tracing::Span::current().record("user_id", user_id);
 
     let story_id = request
         .story_id
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`story_id` is invalid"))?;
 
-    tracing::Span::current().record("story_id", &story_id);
+    tracing::Span::current().record("story_id", story_id);
 
     sqlx::query(
         r#"
@@ -52,8 +52,8 @@ WHERE
     AND deleted_at IS NULL
 "#,
     )
-    .bind(&story_id)
-    .bind(&user_id)
+    .bind(story_id)
+    .bind(user_id)
     .fetch_one(&client.db_pool)
     .await
     .map_err(|error| {

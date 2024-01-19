@@ -36,10 +36,10 @@ use tracing::error;
 /// * `token` - The session cookie value received from the client.
 fn is_active_login(session_secret_key: &Key, key: &str, token: &str) -> bool {
     let session_key =
-        extract_session_key_from_cookie(token, &session_secret_key).unwrap_or_default();
+        extract_session_key_from_cookie(token, session_secret_key).unwrap_or_default();
 
     // Add namespace `s` to the session key.
-    key == &format!("{}:{session_key}", RedisNamespace::Session.to_string())
+    *key == format!("{}:{session_key}", RedisNamespace::Session)
 }
 
 /// Converts a user session object into a login object.
@@ -56,7 +56,7 @@ fn convert_user_session_to_login(
 ) -> Login {
     // Get the token part from the session key (`user_id:token`)
     let token_from_key = key
-        .split(":")
+        .split(':')
         .collect::<Vec<_>>()
         .get(2)
         .map(|value| value.to_string())
@@ -64,18 +64,14 @@ fn convert_user_session_to_login(
 
     Login {
         id: token_from_key,
-        device: user_session.device.as_ref().and_then(|value| {
-            Some(Device {
-                display_name: value.display_name.to_string(),
-                r#type: value.r#type,
-            })
+        device: user_session.device.as_ref().map(|value| Device {
+            display_name: value.display_name.to_string(),
+            r#type: value.r#type,
         }),
-        location: user_session.location.as_ref().and_then(|value| {
-            Some(Location {
-                display_name: value.display_name.to_string(),
-                lat: value.lat,
-                lng: value.lng,
-            })
+        location: user_session.location.as_ref().map(|value| Location {
+            display_name: value.display_name.to_string(),
+            lat: value.lat,
+            lng: value.lng,
         }),
         is_active: is_active_login(session_secret_key, key, token),
         created_at: to_iso8601(
@@ -105,7 +101,7 @@ pub async fn get_login_activity(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
-    tracing::Span::current().record("user_id", &user_id);
+    tracing::Span::current().record("user_id", user_id);
 
     let sessions = get_user_sessions(&client.redis_pool, user_id)
         .await
@@ -126,14 +122,8 @@ pub async fn get_login_activity(
         .last(); // Last item with the largest `created_at` value.
 
     Ok(Response::new(GetLoginActivityResponse {
-        recent: maybe_recent_login.and_then(|(key, value)| {
-            Some(convert_user_session_to_login(
-                &secret_key,
-                key,
-                &token,
-                value,
-            ))
-        }),
+        recent: maybe_recent_login
+            .map(|(key, value)| convert_user_session_to_login(&secret_key, key, &token, value)),
         logins: sessions
             .iter()
             .map(|(key, value)| convert_user_session_to_login(&secret_key, key, &token, value))
@@ -187,8 +177,8 @@ mod tests {
 
                     // Insert a session.
                     let session_key =
-                        format!("{}:{}", user_id.unwrap(), Uuid::new_v4().to_string());
-                    let secret_key = Key::from(&config.session_secret_key.as_bytes());
+                        format!("{}:{}", user_id.unwrap(), Uuid::new_v4());
+                    let secret_key = Key::from(config.session_secret_key.as_bytes());
                     let cookie = Cookie::new(SESSION_COOKIE_NAME, session_key.clone());
                     let mut jar = CookieJar::new();
 
@@ -198,7 +188,7 @@ mod tests {
 
                     let _: () = conn
                         .set(
-                            &format!("{}:{session_key}", RedisNamespace::Session.to_string()),
+                            &format!("{}:{session_key}", RedisNamespace::Session),
                             &rmp_serde::to_vec_named(&UserSession {
                                 user_id: user_id.unwrap(),
                                 created_at: OffsetDateTime::now_utc().unix_timestamp(),

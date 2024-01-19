@@ -1,1 +1,1 @@
-pub static PEXELS_API_URL: &'static str = "https://api.pexels.com";
+pub static PEXELS_API_URL: &str = "https://api.pexels.com";

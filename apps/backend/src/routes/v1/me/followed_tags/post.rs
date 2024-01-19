@@ -59,8 +59,8 @@ INSERT INTO tag_followers (user_id, tag_id)
 VALUES ($1, $2)
 "#,
     )
-    .bind(&user_id)
-    .bind(&tag_id)
+    .bind(user_id)
+    .bind(tag_id)
     .execute(&mut *txn)
     .await
     {

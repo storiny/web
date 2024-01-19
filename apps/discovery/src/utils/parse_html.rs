@@ -99,7 +99,7 @@ fn parse_response_impl(
 
         let iframe_width_px = iframe_width.parse::<u16>().unwrap_or(0);
         let iframe_height_px = iframe_height.parse::<u16>().unwrap_or(0);
-        let has_fixed_size = !iframe_width.ends_with("%") && !iframe_height.ends_with("%");
+        let has_fixed_size = !iframe_width.ends_with('%') && !iframe_height.ends_with('%');
 
         if iframe_width_px > 0 && iframe_height_px > 0 {
             height = iframe_height_px;
@@ -113,7 +113,7 @@ fn parse_response_impl(
                 .query_pairs_mut()
                 .extend_pairs(&extra_params.clone())
                 .finish();
-            iframe.set_attr("src", Some(&iframe_src.to_string()));
+            iframe.set_attr("src", Some(iframe_src.as_ref()));
         }
 
         iframe.set_attr("loading", Some("lazy"));
@@ -166,7 +166,7 @@ fn parse_response_impl(
         scripts.for_each(|_, script_node| {
             sources.push(attr_to_string(script_node.get_attribute("src")));
 
-            return true;
+            true
         });
 
         // Remove the script elements.
@@ -174,7 +174,7 @@ fn parse_response_impl(
 
         Some(ParseResult::ScriptResult(ScriptResult {
             embed_type: "sourced_oembed".to_string(),
-            supports_binary_theme: supports_binary_theme.clone(),
+            supports_binary_theme: *supports_binary_theme,
             html: root.outer_html(),
             sources,
         }))

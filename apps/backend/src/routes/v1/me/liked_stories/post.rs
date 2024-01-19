@@ -87,8 +87,8 @@ WHERE
     AND EXISTS (SELECT 1 FROM inserted_notification)
 "#,
     )
-    .bind(&user_id)
-    .bind(&story_id)
+    .bind(user_id)
+    .bind(story_id)
     .bind(NotificationEntityType::StoryLike as i16)
     .execute(&mut *txn)
     .await
