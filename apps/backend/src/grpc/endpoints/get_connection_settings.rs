@@ -12,7 +12,10 @@ use crate::{
         },
         service::GrpcService,
     },
-    utils::generate_connection_url::generate_connection_url,
+    utils::{
+        generate_connection_url::generate_connection_url,
+        to_iso8601::to_iso8601,
+    },
 };
 use sqlx::{
     postgres::PgRow,
@@ -76,7 +79,7 @@ WHERE
         } else {
             "/".to_string()
         },
-        created_at: row.get::<OffsetDateTime, _>("created_at").to_string(),
+        created_at: to_iso8601(&row.get::<OffsetDateTime, _>("created_at")),
     })
     .fetch_all(&client.db_pool)
     .await
@@ -103,7 +106,10 @@ mod tests {
             },
         },
         test_utils::test_grpc_service,
-        utils::generate_connection_url::generate_connection_url,
+        utils::{
+            generate_connection_url::generate_connection_url,
+            to_iso8601::to_iso8601,
+        },
     };
     use sqlx::PgPool;
     use time::OffsetDateTime;
@@ -162,7 +168,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7)
                             hidden: true,
                             display_name: "Storiny".to_string(),
                             url: generate_connection_url(Provider::Github, "storiny"),
-                            created_at: created_at.to_string(),
+                            created_at: to_iso8601(&created_at),
                         }]
                     }
                 );
