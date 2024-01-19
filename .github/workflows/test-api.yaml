@@ -170,8 +170,9 @@ jobs:
   test:
     name: Run tests
     runs-on: ubuntu-latest
-    needs: lint
+#    needs: lint
     env:
+      SQLX_OFFLINE: true
       IS_DEV: false
       HOST: localhost
       PORT: 8080
@@ -247,14 +248,13 @@ jobs:
       - name: Install nextest
         uses: taiki-e/install-action@nextest
 
-      - name: Run cargo install
-        run: cargo install --path .
-
       - name: Setup just
         uses: extractions/setup-just@v1
 
       - name: Run database migrations
-        run: cargo sqlx mig run
+        run: |
+          cargo install sqlx-cli --no-default-features --features migrate,postgres
+          cargo sqlx mig run
 
       - name: Run tests
         run: just test_ci
