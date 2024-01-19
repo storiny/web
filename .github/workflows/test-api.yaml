@@ -80,7 +80,7 @@ jobs:
       IS_DEV: false
       HOST: localhost
       PORT: 8080
-      REALMS_HOST: localhost
+      REALMS_HOST: 127.0.0.1
       REALMS_PORT: 8081
       GRPC_ENDPOINT: 127.0.0.1:50051
       MINIO_ENDPOINT: http://localhost:9000
