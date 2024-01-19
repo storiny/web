@@ -76,10 +76,10 @@ WHERE
     AND deleted_at IS NULL
 "#,
     )
-    .bind(&content)
+    .bind(content)
     .bind(&rendered_content)
-    .bind(&user_id)
-    .bind(&comment_id)
+    .bind(user_id)
+    .bind(comment_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

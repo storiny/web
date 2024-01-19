@@ -51,8 +51,8 @@ WHERE
     AND deleted_at IS NOT NULL
 "#,
     )
-    .bind(&user_id)
-    .bind(&draft_id)
+    .bind(user_id)
+    .bind(draft_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

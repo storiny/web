@@ -106,7 +106,7 @@ pub async fn start_grpc_server(
 
             tonic::transport::Server::builder()
                 .layer(layer)
-                .tls_config(ServerTlsConfig::new().identity(Identity::from_pem(&cert, &key)))
+                .tls_config(ServerTlsConfig::new().identity(Identity::from_pem(cert, key)))
                 .expect("unable to apply the tls config")
                 .add_service(api_service)
         };

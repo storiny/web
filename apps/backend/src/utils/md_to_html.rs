@@ -149,7 +149,7 @@ pub fn md_to_html(md_source: MarkdownSource) -> String {
 mod tests {
     use super::*;
 
-    const MD_TEXT: &'static str = r#"# H1
+    const MD_TEXT: &str = r#"# H1
 ## H2
 ### H3
 #### H4

@@ -10,7 +10,7 @@ use serde::{
 use std::sync::Arc;
 use tracing::debug;
 
-pub const NOTIFY_STORY_ADD_BY_TAG_JOB_NAME: &'static str = "j:n:story_add_by_tag";
+pub const NOTIFY_STORY_ADD_BY_TAG_JOB_NAME: &str = "j:n:story_add_by_tag";
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct NotifyStoryAddByTagJob {
@@ -42,7 +42,7 @@ pub async fn notify_story_add_by_tag(
 
     let state = ctx.data::<Arc<SharedJobState>>()?;
     let result = sqlx::query(r#"SELECT public.notify_tag_followers($1, $2)"#)
-        .bind(&job.story_id)
+        .bind(job.story_id)
         .bind(NotificationEntityType::StoryAddByTag as i16)
         .execute(&state.db_pool)
         .await

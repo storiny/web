@@ -71,8 +71,8 @@ WHERE
     AND deleted_at IS NULL
 "#,
     )
-    .bind(&user_id)
-    .bind(&story_id)
+    .bind(user_id)
+    .bind(story_id)
     .execute(&mut *txn)
     .await?
     .rows_affected()

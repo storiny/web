@@ -1,2 +1,2 @@
 /// Session cookie name (keep in sync with the frontend defs)
-pub static SESSION_COOKIE_NAME: &'static str = "__storiny.auth.v1";
+pub static SESSION_COOKIE_NAME: &str = "__storiny.auth.v1";

@@ -95,7 +95,7 @@ WHERE
   AND s.deleted_at IS NULL
 "#,
     )
-    .bind(&story_id)
+    .bind(story_id)
     .fetch_one(&data.db_pool)
     .await
     .map_err(|error| {

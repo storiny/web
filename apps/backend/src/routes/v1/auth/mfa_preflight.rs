@@ -102,7 +102,7 @@ WHERE email = $1
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
     // Validate the password.
-    match Argon2::default().verify_password(&payload.password.as_bytes(), &password_hash) {
+    match Argon2::default().verify_password(payload.password.as_bytes(), &password_hash) {
         Ok(_) => {
             // The user is validated at this point, so it is safe to reset the login attempts.
             reset_resource_lock(&data.redis, ResourceLock::Login, &payload.email).await?;
@@ -181,7 +181,7 @@ VALUES ($1, $2, $3, $4, TRUE, TRUE)
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .bind(password_hash)
         .execute(&mut *conn)
         .await?;
@@ -223,7 +223,7 @@ VALUES ($1, $2, $3, $4, TRUE, FALSE)
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .bind(password_hash)
         .execute(&mut *conn)
         .await?;
@@ -265,7 +265,7 @@ VALUES ($1, $2, $3, $4)
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .bind(password_hash)
         .execute(&mut *conn)
         .await?;
@@ -303,7 +303,7 @@ VALUES ($1, $2, $3)
         )
         .bind("Sample user".to_string())
         .bind("sample_user".to_string())
-        .bind((&email).to_string())
+        .bind(email.to_string())
         .execute(&mut *conn)
         .await?;
 
@@ -345,7 +345,7 @@ VALUES ($1, $2, $3, $4)
             )
             .bind("Sample user".to_string())
             .bind("sample_user".to_string())
-            .bind((&email).to_string())
+            .bind(email.to_string())
             .bind(password_hash)
             .execute(&mut *conn)
             .await?;
@@ -428,7 +428,7 @@ VALUES ($1, $2, $3, $4, TRUE, TRUE)
             )
             .bind("Sample user".to_string())
             .bind("sample_user".to_string())
-            .bind((&email).to_string())
+            .bind(email.to_string())
             .bind(password_hash)
             .execute(&mut *conn)
             .await?;

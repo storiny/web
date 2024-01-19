@@ -86,8 +86,8 @@ SELECT $2, (SELECT id FROM inserted_notification)
 WHERE EXISTS (SELECT 1 FROM inserted_friend)
 "#,
     )
-    .bind(&transmitter_id)
-    .bind(&receiver_id)
+    .bind(transmitter_id)
+    .bind(receiver_id)
     .bind(NotificationEntityType::FriendReqReceived as i16)
     .execute(&mut *txn)
     .await

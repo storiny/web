@@ -7,7 +7,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md,mdx}\"",
     "storybook:dev": "dotenv -c -- storybook dev -p 6006 --no-open",
     "storybook:build": "storybook build",
-    "test": "jest",
+    "test": "jest --w 2",
     "test:e2e": "dotenv -v E2E_PORT=3000 -- playwright test",
     "test:e2e:chromium": "dotenv -v E2E_PORT=3000 -v E2E_BROWSER=chromium -- playwright test --project=\"chromium\"",
     "test:e2e:firefox": "dotenv -v E2E_PORT=3000 -v E2E_BROWSER=firefox -- playwright test --project=\"firefox\"",

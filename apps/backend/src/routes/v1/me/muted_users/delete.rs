@@ -45,8 +45,8 @@ WHERE
     AND muted_id = $2
 "#,
     )
-    .bind(&muter_id)
-    .bind(&muted_id)
+    .bind(muter_id)
+    .bind(muted_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

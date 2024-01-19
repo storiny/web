@@ -88,7 +88,7 @@ WHERE user_id = $1
     .execute(&mut *txn)
     .await?;
 
-    let status_duration = match StatusDuration::try_from((&payload.duration).clone())
+    let status_duration = match StatusDuration::try_from(payload.duration)
         .unwrap_or(StatusDuration::Day1)
     {
         StatusDuration::Day1 => Some(OffsetDateTime::now_utc() + Duration::days(1)),
@@ -107,11 +107,11 @@ VALUES
 RETURNING duration, emoji, text, visibility, expires_at
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .bind(&status_text)
     .bind(&payload.status_emoji)
-    .bind(&payload.duration)
-    .bind(&payload.visibility)
+    .bind(payload.duration)
+    .bind(payload.visibility)
     .bind(status_duration)
     .fetch_one(&mut *txn)
     .await?;

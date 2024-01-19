@@ -371,7 +371,7 @@ impl DocMetadata {
         parse_document(RcDom::default(), ParseOpts::default())
             .from_utf8()
             .read_from(&mut html.as_bytes())
-            .map(|dom| Self::from_dom(dom))
+            .map(Self::from_dom)
     }
 }
 
@@ -461,7 +461,7 @@ fn text_content(handle: &Handle) -> Option<String> {
 
     for child in handle.children.borrow().iter() {
         if let NodeData::Text { ref contents } = child.data {
-            text_content.push_str(&tendril_to_utf8(&contents.borrow()));
+            text_content.push_str(tendril_to_utf8(&contents.borrow()));
         }
     }
 
@@ -488,11 +488,7 @@ fn process_image_src(src: &str, base: &mut Url) -> Option<String> {
                 base.set_path(""); // Remove paths
                 let joined = base.join(src).ok();
 
-                if let Some(joined) = joined {
-                    Some(joined.to_string())
-                } else {
-                    None
-                }
+                joined.map(|joined| joined.to_string())
             } else {
                 None
             }
@@ -822,7 +818,7 @@ mod tests {
             .create_async()
             .await;
 
-        let result = get_metadata(&config, &server.url().as_str(), true).await;
+        let result = get_metadata(&config, server.url().as_str(), true).await;
 
         assert_eq!(
             result.ok(),
@@ -830,7 +826,7 @@ mod tests {
                 embed_type: "metadata".to_string(),
                 title: "Some title".to_string(),
                 host: "Some site".to_string(),
-                url: format!("{}/", server.url().to_string()),
+                url: format!("{}/", server.url()),
                 description: "Some description".to_string(),
                 image: Some(MetadataImage {
                     src: "https://media.example.com/some.jpg".to_string(),
@@ -872,15 +868,15 @@ mod tests {
             .create_async()
             .await;
 
-        let result = get_metadata(&config, &server.url().as_str(), true).await;
+        let result = get_metadata(&config, server.url().as_str(), true).await;
 
         assert_eq!(
             result.ok(),
             Some(MetadataResult {
                 embed_type: "metadata".to_string(),
                 title: "Some title".to_string(),
-                host: server.host_with_port().split(":").collect::<Vec<_>>()[0].to_string(),
-                url: format!("{}/", server.url().to_string()),
+                host: server.host_with_port().split(':').collect::<Vec<_>>()[0].to_string(),
+                url: format!("{}/", server.url()),
                 description: "Some description".to_string(),
                 image: Some(MetadataImage {
                     src: "https://media.example.com/some.jpg".to_string(),

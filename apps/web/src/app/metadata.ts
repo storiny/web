@@ -40,8 +40,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: `${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/brand/images/social-preview`,
-        width: 630,
-        height: 1200
+        width: 1200,
+        height: 630
       }
     ],
     locale: "en_US",

@@ -28,7 +28,7 @@ SET read_at = NOW()
 WHERE notified_id = $1
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .execute(&data.db_pool)
     .await?;
 

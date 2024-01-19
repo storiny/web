@@ -16,7 +16,7 @@ use tracing::{
     trace,
 };
 
-pub const CLEANUP_DB_JOB_NAME: &'static str = "j:cleanup:db";
+pub const CLEANUP_DB_JOB_NAME: &str = "j:cleanup:db";
 
 #[derive(Debug, Clone)]
 pub struct DatabaseCleanupJob(DateTime<Utc>);
@@ -49,7 +49,7 @@ WHERE
     .execute(db_pool)
     .await
     .map_err(|err| Box::from(err.to_string()))
-    .map_err(|err| JobError::Failed(err))?;
+    .map_err(JobError::Failed)?;
 
     debug!(
         "deleted {} rows from the `users` table",
@@ -84,7 +84,7 @@ WHERE
     .execute(db_pool)
     .await
     .map_err(|err| Box::from(err.to_string()))
-    .map_err(|err| JobError::Failed(err))?;
+    .map_err(JobError::Failed)?;
 
     debug!(
         "deleted {} rows from the `stories` table",
@@ -110,7 +110,7 @@ WHERE expires_at < NOW()
     .execute(db_pool)
     .await
     .map_err(|err| Box::from(err.to_string()))
-    .map_err(|err| JobError::Failed(err))?;
+    .map_err(JobError::Failed)?;
 
     debug!(
         "deleted {} rows from the `tokens` table",
@@ -138,7 +138,7 @@ WHERE
     .execute(db_pool)
     .await
     .map_err(|err| Box::from(err.to_string()))
-    .map_err(|err| JobError::Failed(err))?;
+    .map_err(JobError::Failed)?;
 
     debug!(
         "deleted {} rows from the `user_statuses` table",
@@ -168,7 +168,7 @@ WHERE NOT EXISTS (
     .execute(db_pool)
     .await
     .map_err(|err| Box::from(err.to_string()))
-    .map_err(|err| JobError::Failed(err))?;
+    .map_err(JobError::Failed)?;
 
     debug!(
         "deleted {} rows from the `notifications` table",
@@ -239,7 +239,7 @@ mod tests {
         assert!(!result.is_empty());
 
         let ctx = get_job_ctx_for_test(pool, None).await;
-        let result = cleanup_db(DatabaseCleanupJob { 0: Utc::now() }, ctx).await;
+        let result = cleanup_db(DatabaseCleanupJob(Utc::now()), ctx).await;
 
         assert!(result.is_ok());
 
@@ -282,7 +282,7 @@ WHERE id = (SELECT id FROM selected_user)
         assert_eq!(result.rows_affected(), 1);
 
         let ctx = get_job_ctx_for_test(pool, None).await;
-        let result = cleanup_db(DatabaseCleanupJob { 0: Utc::now() }, ctx).await;
+        let result = cleanup_db(DatabaseCleanupJob(Utc::now()), ctx).await;
 
         assert!(result.is_ok());
 
@@ -327,7 +327,7 @@ WHERE id = (SELECT id FROM selected_user)
         assert_eq!(result.rows_affected(), 1);
 
         let ctx = get_job_ctx_for_test(pool, None).await;
-        let result = cleanup_db(DatabaseCleanupJob { 0: Utc::now() }, ctx).await;
+        let result = cleanup_db(DatabaseCleanupJob(Utc::now()), ctx).await;
 
         assert!(result.is_ok());
 
@@ -355,7 +355,7 @@ WHERE id = (SELECT id FROM selected_user)
         assert!(!result.is_empty());
 
         let ctx = get_job_ctx_for_test(pool, None).await;
-        let result = cleanup_db(DatabaseCleanupJob { 0: Utc::now() }, ctx).await;
+        let result = cleanup_db(DatabaseCleanupJob(Utc::now()), ctx).await;
 
         assert!(result.is_ok());
 
@@ -398,7 +398,7 @@ WHERE id = (SELECT id FROM selected_story)
         assert_eq!(result.rows_affected(), 1);
 
         let ctx = get_job_ctx_for_test(pool, None).await;
-        let result = cleanup_db(DatabaseCleanupJob { 0: Utc::now() }, ctx).await;
+        let result = cleanup_db(DatabaseCleanupJob(Utc::now()), ctx).await;
 
         assert!(result.is_ok());
 
@@ -438,7 +438,7 @@ WHERE id = $1
         assert_eq!(result.rows_affected(), 1);
 
         let ctx = get_job_ctx_for_test(pool, None).await;
-        let result = cleanup_db(DatabaseCleanupJob { 0: Utc::now() }, ctx).await;
+        let result = cleanup_db(DatabaseCleanupJob(Utc::now()), ctx).await;
 
         assert!(result.is_ok());
 
@@ -478,7 +478,7 @@ WHERE id = $1
         assert_eq!(result.rows_affected(), 1);
 
         let ctx = get_job_ctx_for_test(pool, None).await;
-        let result = cleanup_db(DatabaseCleanupJob { 0: Utc::now() }, ctx).await;
+        let result = cleanup_db(DatabaseCleanupJob(Utc::now()), ctx).await;
 
         assert!(result.is_ok());
 
@@ -523,7 +523,7 @@ WHERE id = (SELECT id FROM selected_story)
         assert_eq!(result.rows_affected(), 1);
 
         let ctx = get_job_ctx_for_test(pool, None).await;
-        let result = cleanup_db(DatabaseCleanupJob { 0: Utc::now() }, ctx).await;
+        let result = cleanup_db(DatabaseCleanupJob(Utc::now()), ctx).await;
 
         assert!(result.is_ok());
 
@@ -551,7 +551,7 @@ WHERE id = (SELECT id FROM selected_story)
         assert!(!result.is_empty());
 
         let ctx = get_job_ctx_for_test(pool, None).await;
-        let result = cleanup_db(DatabaseCleanupJob { 0: Utc::now() }, ctx).await;
+        let result = cleanup_db(DatabaseCleanupJob(Utc::now()), ctx).await;
 
         assert!(result.is_ok());
 
@@ -594,7 +594,7 @@ WHERE id = (SELECT id FROM selected_token)
         assert_eq!(result.rows_affected(), 1);
 
         let ctx = get_job_ctx_for_test(pool, None).await;
-        let result = cleanup_db(DatabaseCleanupJob { 0: Utc::now() }, ctx).await;
+        let result = cleanup_db(DatabaseCleanupJob(Utc::now()), ctx).await;
 
         assert!(result.is_ok());
 
@@ -622,7 +622,7 @@ WHERE id = (SELECT id FROM selected_token)
         assert!(!result.is_empty());
 
         let ctx = get_job_ctx_for_test(pool, None).await;
-        let result = cleanup_db(DatabaseCleanupJob { 0: Utc::now() }, ctx).await;
+        let result = cleanup_db(DatabaseCleanupJob(Utc::now()), ctx).await;
 
         assert!(result.is_ok());
 
@@ -665,7 +665,7 @@ WHERE user_id = (SELECT user_id FROM selected_user_status)
         assert_eq!(result.rows_affected(), 1);
 
         let ctx = get_job_ctx_for_test(pool, None).await;
-        let result = cleanup_db(DatabaseCleanupJob { 0: Utc::now() }, ctx).await;
+        let result = cleanup_db(DatabaseCleanupJob(Utc::now()), ctx).await;
 
         assert!(result.is_ok());
 
@@ -693,7 +693,7 @@ WHERE user_id = (SELECT user_id FROM selected_user_status)
         assert!(!result.is_empty());
 
         let ctx = get_job_ctx_for_test(pool, None).await;
-        let result = cleanup_db(DatabaseCleanupJob { 0: Utc::now() }, ctx).await;
+        let result = cleanup_db(DatabaseCleanupJob(Utc::now()), ctx).await;
 
         assert!(result.is_ok());
 
@@ -738,7 +738,7 @@ VALUES (1, (SELECT id FROM selected_notification))
         assert_eq!(result.rows_affected(), 1);
 
         let ctx = get_job_ctx_for_test(pool, None).await;
-        let result = cleanup_db(DatabaseCleanupJob { 0: Utc::now() }, ctx).await;
+        let result = cleanup_db(DatabaseCleanupJob(Utc::now()), ctx).await;
 
         assert!(result.is_ok());
 

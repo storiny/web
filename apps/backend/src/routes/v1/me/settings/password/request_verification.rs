@@ -63,7 +63,7 @@ FROM users
 WHERE id = $1
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .fetch_one(&mut *txn)
     .await?;
 
@@ -79,7 +79,7 @@ WHERE id = $1
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
     let hashed_verification_code = Argon2::default()
-        .hash_password(&verification_code.as_bytes(), &salt)
+        .hash_password(verification_code.as_bytes(), &salt)
         .map_err(|error| {
             AppError::InternalError(format!("unable to hash the verification code: {error:?}"))
         })?;
@@ -99,7 +99,7 @@ VALUES ($1, $2, $3, $4)
     )
     .bind(hashed_verification_code.to_string())
     .bind(TokenType::PasswordAdd as i16)
-    .bind(&user_id)
+    .bind(user_id)
     .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
     .execute(&mut *txn)
     .await?;
@@ -110,7 +110,7 @@ VALUES ($1, $2, $3, $4)
                 AppError::InternalError(format!("unable to serialize the template data: {error:?}"))
             })?;
 
-    let mut templated_email_job = (&*templated_email_job_storage.into_inner()).clone();
+    let mut templated_email_job = (*templated_email_job_storage.into_inner()).clone();
 
     templated_email_job
         .push(TemplatedEmailJob {
@@ -225,7 +225,7 @@ VALUES ($1, $2, $3, $4, $5)
         let token_id = nanoid!(TOKEN_LENGTH);
         let salt = SaltString::from_b64(&config.token_salt).unwrap();
         let hashed_token = Argon2::default()
-            .hash_password(&token_id.as_bytes(), &salt)
+            .hash_password(token_id.as_bytes(), &salt)
             .unwrap();
 
         // Insert a password-add verification token.

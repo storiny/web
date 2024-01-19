@@ -30,7 +30,7 @@ use tracing::{
 };
 use uuid::Uuid;
 
-pub const CLEANUP_S3_JOB_NAME: &'static str = "j:cleanup:s3";
+pub const CLEANUP_S3_JOB_NAME: &str = "j:cleanup:s3";
 const CHUNK_SIZE: u32 = 999;
 
 #[derive(Debug, Clone)]
@@ -337,7 +337,7 @@ SELECT UNNEST($1::UUID[]), $2, $3, $4
 
         future::join_all(put_futures).await;
 
-        let object_count = count_s3_objects(&s3_client, S3_UPLOADS_BUCKET, None, None)
+        let object_count = count_s3_objects(s3_client, S3_UPLOADS_BUCKET, None, None)
             .await
             .unwrap();
 
@@ -380,7 +380,7 @@ SELECT UNNEST($1::UUID[])
 
         future::join_all(put_futures).await;
 
-        let object_count = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
+        let object_count = count_s3_objects(s3_client, S3_DOCS_BUCKET, None, None)
             .await
             .unwrap();
 
@@ -404,7 +404,7 @@ SELECT UNNEST($1::UUID[])
             generate_dummy_assets(5, &pool, s3_client).await;
 
             let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
-            let result = cleanup_s3(S3CleanupJob { 0: Utc::now() }, ctx).await;
+            let result = cleanup_s3(S3CleanupJob(Utc::now()), ctx).await;
 
             assert!(result.is_ok());
 
@@ -416,7 +416,7 @@ SELECT UNNEST($1::UUID[])
             assert!(result.is_empty());
 
             // Objects should not be present in the bucket.
-            let object_count = count_s3_objects(&s3_client, S3_UPLOADS_BUCKET, None, None)
+            let object_count = count_s3_objects(s3_client, S3_UPLOADS_BUCKET, None, None)
                 .await
                 .unwrap();
 
@@ -437,7 +437,7 @@ SELECT UNNEST($1::UUID[])
             generate_dummy_assets(2500, &pool, s3_client).await;
 
             let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
-            let result = cleanup_s3(S3CleanupJob { 0: Utc::now() }, ctx).await;
+            let result = cleanup_s3(S3CleanupJob(Utc::now()), ctx).await;
 
             assert!(result.is_ok());
 
@@ -449,7 +449,7 @@ SELECT UNNEST($1::UUID[])
             assert!(result.is_empty());
 
             // Objects should not be present in the bucket.
-            let object_count = count_s3_objects(&s3_client, S3_UPLOADS_BUCKET, None, None)
+            let object_count = count_s3_objects(s3_client, S3_UPLOADS_BUCKET, None, None)
                 .await
                 .unwrap();
 
@@ -487,7 +487,7 @@ WHERE id = (SELECT id FROM selected_asset)
             assert_eq!(result.rows_affected(), 1);
 
             let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
-            let result = cleanup_s3(S3CleanupJob { 0: Utc::now() }, ctx).await;
+            let result = cleanup_s3(S3CleanupJob(Utc::now()), ctx).await;
 
             assert!(result.is_ok());
 
@@ -499,7 +499,7 @@ WHERE id = (SELECT id FROM selected_asset)
             assert_eq!(result.len(), 1);
 
             // Object should still be present in the bucket.
-            let object_count = count_s3_objects(&s3_client, S3_UPLOADS_BUCKET, None, None)
+            let object_count = count_s3_objects(s3_client, S3_UPLOADS_BUCKET, None, None)
                 .await
                 .unwrap();
 
@@ -522,7 +522,7 @@ WHERE id = (SELECT id FROM selected_asset)
             generate_dummy_documents(5, &pool, s3_client).await;
 
             let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
-            let result = cleanup_s3(S3CleanupJob { 0: Utc::now() }, ctx).await;
+            let result = cleanup_s3(S3CleanupJob(Utc::now()), ctx).await;
 
             assert!(result.is_ok());
 
@@ -534,7 +534,7 @@ WHERE id = (SELECT id FROM selected_asset)
             assert!(result.is_empty());
 
             // Objects should not be present in the bucket.
-            let object_count = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
+            let object_count = count_s3_objects(s3_client, S3_DOCS_BUCKET, None, None)
                 .await
                 .unwrap();
 
@@ -555,7 +555,7 @@ WHERE id = (SELECT id FROM selected_asset)
             generate_dummy_documents(2500, &pool, s3_client).await;
 
             let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
-            let result = cleanup_s3(S3CleanupJob { 0: Utc::now() }, ctx).await;
+            let result = cleanup_s3(S3CleanupJob(Utc::now()), ctx).await;
 
             assert!(result.is_ok());
 
@@ -567,7 +567,7 @@ WHERE id = (SELECT id FROM selected_asset)
             assert!(result.is_empty());
 
             // Objects should not be present in the bucket.
-            let object_count = count_s3_objects(&s3_client, S3_DOCS_BUCKET, None, None)
+            let object_count = count_s3_objects(s3_client, S3_DOCS_BUCKET, None, None)
                 .await
                 .unwrap();
 
@@ -592,7 +592,7 @@ WHERE id = (SELECT id FROM selected_asset)
             assert_eq!(result.len(), 1);
 
             let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
-            let result = cleanup_s3(S3CleanupJob { 0: Utc::now() }, ctx).await;
+            let result = cleanup_s3(S3CleanupJob(Utc::now()), ctx).await;
 
             assert!(result.is_ok());
 

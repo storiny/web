@@ -10,7 +10,7 @@ use serde::{
 use std::sync::Arc;
 use tracing::debug;
 
-pub const NOTIFY_STORY_ADD_BY_USER_JOB_NAME: &'static str = "j:n:story_add_by_user";
+pub const NOTIFY_STORY_ADD_BY_USER_JOB_NAME: &str = "j:n:story_add_by_user";
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct NotifyStoryAddByUserJob {
@@ -92,7 +92,7 @@ FROM
 WHERE EXISTS (SELECT 1 FROM published_story)
 "#,
     )
-    .bind(&job.story_id)
+    .bind(job.story_id)
     .bind(NotificationEntityType::StoryAddByUser as i16)
     .execute(&state.db_pool)
     .await

@@ -15,10 +15,10 @@ lazy_static! {
                 .iter()
                 .map(|schema| {
                     let regex_pattern = schema
-                        .replace(".", "\\.")
-                        .replace("*", "(.+)")
-                        .replace("?", "\\?");
-                    Regex::new(&regex_pattern).expect(&format!("invalid regex pattern: {}", schema))
+                        .replace('.', "\\.")
+                        .replace('*', "(.+)")
+                        .replace('?', "\\?");
+                    Regex::new(&regex_pattern).unwrap_or_else(|_| panic!("invalid regex pattern: {}", schema))
                 })
                 .collect();
 

@@ -44,8 +44,8 @@ SET allow_sensitive_content = $2
 WHERE id = $1
 "#,
     )
-    .bind(&user_id)
-    .bind(&payload.sensitive_content)
+    .bind(user_id)
+    .bind(payload.sensitive_content)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

@@ -44,7 +44,7 @@ ORDER BY
 LIMIT 10
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .fetch_all(&data.db_pool)
     .await?;
 

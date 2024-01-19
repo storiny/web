@@ -64,7 +64,7 @@ async fn handle_google_callback(
     session.remove("oauth_token");
 
     let code = AuthorizationCode::new(params.code.clone());
-    let token_res = (&data.oauth_client_map.google_alt)
+    let token_res = data.oauth_client_map.google_alt
         .exchange_code(code)
         .request_async(async_http_client)
         .await
@@ -81,10 +81,8 @@ async fn handle_google_callback(
 
     debug!(?received_scopes, "scopes received from Google");
 
-    if !vec![
-        "https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/userinfo.profile",
-    ]
+    if !["https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile"]
     .iter()
     .all(|scope| received_scopes.contains(scope))
     {
@@ -110,7 +108,7 @@ async fn handle_google_callback(
         .validate()
         .map_err(|err| AddAccountError::Other(err.to_string()))?;
 
-    handle_google_profile_data(google_data, &data, &user_id).await
+    handle_google_profile_data(google_data, data, &user_id).await
 }
 
 /// Handles Google account profile data response.

@@ -101,11 +101,11 @@ async fn get(
     data: web::Data<AppState>,
     user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    let user_id = user.and_then(|user| Some(user.id())).transpose()?;
+    let user_id = user.map(|user| user.id()).transpose()?;
 
-    tracing::Span::current().record("user_id", &user_id);
+    tracing::Span::current().record("user_id", user_id);
 
-    let page = query.page.clone().unwrap_or(1) - 1;
+    let page = query.page.unwrap_or(1) - 1;
     let r#type = query.r#type.clone().unwrap_or("suggested".to_string());
 
     // Query for logged-in users.
@@ -222,7 +222,7 @@ mod tests {
         let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert!(json.unwrap().len() > 0);
+        assert!(!json.unwrap().is_empty());
 
         Ok(())
     }
@@ -398,7 +398,7 @@ WHERE id = $1
         let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert!(json.unwrap().len() > 0);
+        assert!(!json.unwrap().is_empty());
 
         Ok(())
     }
@@ -862,7 +862,7 @@ WHERE id = $1
         let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert!(json.unwrap().len() > 0);
+        assert!(!json.unwrap().is_empty());
 
         Ok(())
     }

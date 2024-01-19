@@ -27,7 +27,7 @@ DELETE FROM user_statuses
 WHERE user_id = $1
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .execute(&data.db_pool)
     .await?;
 

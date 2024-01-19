@@ -45,8 +45,8 @@ WHERE
     AND tag_id = $2
 "#,
     )
-    .bind(&user_id)
-    .bind(&tag_id)
+    .bind(user_id)
+    .bind(tag_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

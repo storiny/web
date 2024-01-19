@@ -62,20 +62,20 @@ async fn post(
     data: web::Data<AppState>,
     maybe_user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    let user_id = maybe_user.and_then(|user| Some(user.id())).transpose()?;
+    let user_id = maybe_user.map(|user| user.id()).transpose()?;
 
-    tracing::Span::current().record("user_id", &user_id);
+    tracing::Span::current().record("user_id", user_id);
 
     let story_id = path
         .story_id
         .parse::<i64>()
         .map_err(|_| AppError::from("Invalid story ID"))?;
 
-    let mut redis_conn = (&data.redis).get().await?;
+    let mut redis_conn = data.redis.get().await?;
 
     let cache_key = format!(
         "{}:{story_id}:{}",
-        RedisNamespace::ReadingSession.to_string(),
+        RedisNamespace::ReadingSession,
         &query.token
     );
 
@@ -122,7 +122,7 @@ async fn post(
         }
     }
 
-    if let Some(ua_header) = (&req.headers()).get("user-agent") {
+    if let Some(ua_header) = req.headers().get("user-agent") {
         if let Ok(ua) = ua_header.to_str() {
             device = get_client_device(ua, &data.ua_parser).r#type;
         }
@@ -168,11 +168,11 @@ WHERE EXISTS (SELECT 1 FROM target_story)
 "#,
     )
     .bind(&hostname)
-    .bind(&device)
+    .bind(device)
     .bind(&country_code)
-    .bind(&elapsed_reading_duration)
-    .bind(&user_id)
-    .bind(&story_id)
+    .bind(elapsed_reading_duration)
+    .bind(user_id)
+    .bind(story_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()
@@ -241,7 +241,7 @@ mod tests {
             let session_token = Uuid::new_v4();
             let cache_key = format!(
                 "{}:{story_id}:{session_token}",
-                RedisNamespace::ReadingSession.to_string(),
+                RedisNamespace::ReadingSession,
             );
 
             // Start a reading session.
@@ -301,7 +301,7 @@ WHERE story_id = $1
             let session_token = Uuid::new_v4();
             let cache_key = format!(
                 "{}:{story_id}:{session_token}",
-                RedisNamespace::ReadingSession.to_string(),
+                RedisNamespace::ReadingSession,
             );
 
             // Start a reading session.
@@ -339,7 +339,7 @@ WHERE story_id = $1
 
             assert_eq!(result.len(), 1);
             assert_eq!(
-                result.get(0).unwrap().get::<i64, _>("user_id"),
+                result.first().unwrap().get::<i64, _>("user_id"),
                 user_id.unwrap()
             );
 
@@ -366,7 +366,7 @@ WHERE story_id = $1
             let session_token = Uuid::new_v4();
             let cache_key = format!(
                 "{}:{story_id}:{session_token}",
-                RedisNamespace::ReadingSession.to_string(),
+                RedisNamespace::ReadingSession,
             );
 
             // Start a reading session.
@@ -441,7 +441,7 @@ WHERE story_id = $1
             let session_token = Uuid::new_v4();
             let cache_key = format!(
                 "{}:{story_id}:{session_token}",
-                RedisNamespace::ReadingSession.to_string(),
+                RedisNamespace::ReadingSession,
             );
 
             // Start a reading session.
@@ -490,7 +490,7 @@ WHERE story_id = $1
             let session_token = Uuid::new_v4();
             let cache_key = format!(
                 "{}:{story_id}:{session_token}",
-                RedisNamespace::ReadingSession.to_string(),
+                RedisNamespace::ReadingSession,
             );
 
             // Start a reading session.
@@ -529,7 +529,7 @@ WHERE story_id = $1
             let session_token = Uuid::new_v4();
             let cache_key = format!(
                 "{}:{story_id}:{session_token}",
-                RedisNamespace::ReadingSession.to_string(),
+                RedisNamespace::ReadingSession,
             );
 
             // Start a reading session.
@@ -586,7 +586,7 @@ WHERE id = $1
             let session_token = Uuid::new_v4();
             let cache_key = format!(
                 "{}:{story_id}:{session_token}",
-                RedisNamespace::ReadingSession.to_string(),
+                RedisNamespace::ReadingSession,
             );
 
             // Start a reading session.

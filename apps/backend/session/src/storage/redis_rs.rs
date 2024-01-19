@@ -143,7 +143,7 @@ impl SessionStore for RedisSessionStore {
         let body = rmp_serde::to_vec_named(&session_state)
             .map_err(Into::into)
             .map_err(SaveError::Serialization)?;
-        let session_key = generate_session_key(user_id.and_then(|value| Some(value.to_string())));
+        let session_key = generate_session_key(user_id.map(|value| value.to_string()));
         let cache_key = (self.configuration.cache_keygen)(session_key.as_ref());
 
         self.execute_command(
@@ -282,7 +282,7 @@ mod tests {
     use crate::test_helpers::acceptance_test_suite;
 
     async fn redis_store() -> RedisSessionStore {
-        RedisSessionStore::new("redis://127.0.0.1:7001")
+        RedisSessionStore::new("redis://127.0.0.1:6379")
             .await
             .unwrap()
     }

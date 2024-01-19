@@ -49,7 +49,7 @@ FROM users
 WHERE id = $1
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .fetch_one(&mut *txn)
     .await?;
 
@@ -91,7 +91,7 @@ WHERE id = $2
 "#,
     )
     .bind(secret.to_encoded().to_string())
-    .bind(&user_id)
+    .bind(user_id)
     .execute(&mut *txn)
     .await?;
 
