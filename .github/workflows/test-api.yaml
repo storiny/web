@@ -253,7 +253,7 @@ jobs:
 
       - name: Run database migrations
         run: |
-          cargo install sqlx-cli --no-default-features --features migrate,postgres
+          cargo install sqlx-cli --no-default-features --features postgres
           cargo sqlx mig run
 
       - name: Run tests
