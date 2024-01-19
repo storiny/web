@@ -1,16 +1,39 @@
 name: test-web-unit
-on: push
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/**'
+      - 'apps/web/**'
+      - 'packages/**'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/**'
+      - 'apps/backend/**'
+      - 'packages/**'
 
 jobs:
   test-unit:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - run: corepack enable
-    - uses: actions/setup-node@v4
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Enable corepack
+      run: corepack enable
+
+    - name: Setup node
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'yarn'
-    - run: yarn install --immutable
+
+    - name: Run yarn install
+      run: yarn install --immutable
+
     - name: Run tests
       run: yarn test
