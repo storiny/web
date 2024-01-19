@@ -1,0 +1,12 @@
+name: test-web-unit
+on: push
+
+jobs:
+  test-unit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install modules
+      run: yarn
+    - name: Run tests
+      run: yarn test
