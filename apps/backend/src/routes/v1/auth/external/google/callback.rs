@@ -77,7 +77,9 @@ async fn handle_oauth_request(
     session.remove("oauth_token");
 
     let code = AuthorizationCode::new(params.code.clone());
-    let token_res = data.oauth_client_map.google
+    let token_res = data
+        .oauth_client_map
+        .google
         .exchange_code(code)
         .request_async(async_http_client)
         .await
@@ -94,8 +96,10 @@ async fn handle_oauth_request(
 
     debug!(?received_scopes, "scopes received from Google");
 
-    if !["https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/userinfo.profile"]
+    if ![
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile",
+    ]
     .iter()
     .all(|scope| received_scopes.contains(scope))
     {
@@ -173,8 +177,8 @@ WHERE login_google_id = $1
 
                 let insert_result = sqlx::query(
                     r#"
-INSERT INTO users (name, username, email, login_google_id, last_login_at)
-VALUES ($1, $2, $3, $4, NOW())
+INSERT INTO users (name, username, email, login_google_id, last_login_at, email_verified)
+VALUES ($1, $2, $3, $4, NOW(), TRUE)
 RETURNING
     id,
     public_flags
@@ -336,7 +340,8 @@ SELECT
         }
     };
 
-    Identity::login(&req.extensions(), user_id).map(|_| ())
+    Identity::login(&req.extensions(), user_id)
+        .map(|_| ())
         .map_err(|err| ExternalAuthError::Other(err.to_string()))?;
 
     Ok(is_first_login)
@@ -435,17 +440,15 @@ mod tests {
         // New user should be present in the database.
         let result = sqlx::query(
             r#"
-SELECT EXISTS (
-    SELECT 1 FROM users
-    WHERE login_google_id = $1
-)
+SELECT email_verified FROM users
+WHERE login_google_id = $1
 "#,
         )
         .bind("1")
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(result.get::<bool, _>("exists"));
+        assert!(result.get::<bool, _>("email_verified"));
 
         // Should not insert a notification for new user.
         let result = sqlx::query(
