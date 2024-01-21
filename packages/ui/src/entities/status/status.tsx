@@ -18,7 +18,20 @@ import button_styles from "../../components/common/button-reset.module.scss";
 import styles from "./status.module.scss";
 import { StatusProps } from "./status.props";
 
-const StatusModal = dynamic(() => import("./modal"));
+const StatusModal = dynamic(() => import("./modal"), {
+  loading: ({ isLoading: is_loading, error }) => (
+    <Typography
+      aria-busy={Boolean(is_loading)}
+      as={"div"}
+      className={clsx(css["flex-center"], styles.status)}
+      color={"minor"}
+      level={"body2"}
+      style={{ userSelect: "none" }}
+    >
+      {Boolean(error) && !is_loading ? "Unavailable" : "Loading…"}
+    </Typography>
+  )
+});
 
 const ExpiryTime = ({
   expires_at
