@@ -1,6 +1,6 @@
 use strum::Display;
 
-/// User token type.
+/// SQL states. Refer to `sqlstates.md` at the root of this project.
 #[derive(Display, Debug)]
 pub enum SqlState {
     // Class 50
@@ -12,9 +12,13 @@ pub enum SqlState {
     FollowerBlockedByFollowedUser,
     #[strum(serialize = "50003")]
     TransmitterBlockedByReceiverUser,
+    #[strum(serialize = "50004")]
+    ContributorBlockedByStoryWriter,
     // Class 51
     #[strum(serialize = "51000")]
     ReceiverNotAcceptingFriendRequest,
+    #[strum(serialize = "51001")]
+    ContributorNotAcceptingCollaborationRequest,
     // Class 52
     #[strum(serialize = "52000")]
     RelationOverlap,
@@ -22,4 +26,6 @@ pub enum SqlState {
     EntityUnavailable,
     #[strum(serialize = "52002")]
     UsernameCooldown,
+    #[strum(serialize = "52003")]
+    IllegalContributor,
 }

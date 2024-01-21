@@ -58,7 +58,7 @@ const sanitize_range = (
 
 /**
  * Generates a unique color from the text value
- * @param value Value to generate the color fromm
+ * @param value Value to generate the color from
  * @param saturation Saturation bounds
  * @param lightness Lightness bounds
  * @param alpha The alpha value
