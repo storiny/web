@@ -65,6 +65,8 @@ WHERE id = $1
         record_read_history: !user.get::<bool, _>("disable_read_history"),
         allow_sensitive_media: user.get::<bool, _>("allow_sensitive_content"),
         incoming_friend_requests: user.get::<i16, _>("incoming_friend_requests") as i32,
+        incoming_collaboration_requests: user.get::<i16, _>("incoming_collaboration_requests")
+            as i32,
         following_list_visibility: user.get::<i16, _>("following_list_visibility") as i32,
         friend_list_visibility: user.get::<i16, _>("friend_list_visibility") as i32,
     }))
@@ -76,6 +78,7 @@ mod tests {
         grpc::defs::privacy_settings_def::v1::{
             GetPrivacySettingsRequest,
             GetPrivacySettingsResponse,
+            IncomingCollaborationRequest,
             IncomingFriendRequest,
             RelationVisibility,
         },
@@ -104,10 +107,11 @@ INSERT INTO users (
     disable_read_history,
     allow_sensitive_content,
     incoming_friend_requests,
+    incoming_collaboration_requests,
     following_list_visibility,
     friend_list_visibility
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 RETURNING id
 "#,
                 )
@@ -118,6 +122,7 @@ RETURNING id
                 .bind(true)
                 .bind(true)
                 .bind(IncomingFriendRequest::None as i16)
+                .bind(IncomingCollaborationRequest::None as i16)
                 .bind(RelationVisibility::None as i16)
                 .bind(RelationVisibility::None as i16)
                 .fetch_one(&pool)
@@ -141,6 +146,7 @@ RETURNING id
                         record_read_history: false,
                         allow_sensitive_media: true,
                         incoming_friend_requests: IncomingFriendRequest::None as i32,
+                        incoming_collaboration_requests: IncomingCollaborationRequest::None as i32,
                         following_list_visibility: RelationVisibility::None as i32,
                         friend_list_visibility: RelationVisibility::None as i32,
                     }

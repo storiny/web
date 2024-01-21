@@ -170,6 +170,7 @@ BEGIN
 			deleted_at = NULL
 		WHERE
 			  deleted_at IS NOT NULL
+		  AND is_deleted_by_user IS NOT TRUE
 		  AND user_id = NEW.id;
 		--
 		-- Restore comments
