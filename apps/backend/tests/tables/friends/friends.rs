@@ -1143,7 +1143,7 @@ VALUES ($1, $2)
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Set `incoming_friend_requests` to none
+        // Set `incoming_friend_requests` to following
         sqlx::query(
             r#"
 UPDATE users
@@ -1187,7 +1187,7 @@ VALUES ($1, $2)
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Set `incoming_friend_requests` to none
+        // Set `incoming_friend_requests` to following
         sqlx::query(
             r#"
 UPDATE users
@@ -1222,7 +1222,7 @@ VALUES ($1, $2)
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Set `incoming_friend_requests` to none
+        // Set `incoming_friend_requests` to following
         sqlx::query(
             r#"
 UPDATE users
@@ -1268,7 +1268,7 @@ VALUES ($1, $2)
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Set `incoming_friend_requests` to none
+        // Set `incoming_friend_requests` to FOF
         sqlx::query(
             r#"
 UPDATE users
@@ -1312,7 +1312,7 @@ VALUES ($1, $2)
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Set `incoming_friend_requests` to none
+        // Set `incoming_friend_requests` to FOF
         sqlx::query(
             r#"
 UPDATE users
@@ -1356,7 +1356,7 @@ VALUES ($1, $2)
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Set `incoming_friend_requests` to none
+        // Set `incoming_friend_requests` to FOF
         sqlx::query(
             r#"
 UPDATE users
@@ -1455,7 +1455,7 @@ SELECT EXISTS (
     // Hard deletes
 
     #[sqlx::test(fixtures("user"))]
-    async fn can_delete_notification_on_relation_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_delete_notification_on_friend_hard_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
         // Send a friend request

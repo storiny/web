@@ -56,6 +56,60 @@ export function incomingFriendRequestToJSON(object: IncomingFriendRequest): stri
   }
 }
 
+export const IncomingCollaborationRequest = {
+  UNSPECIFIED: 0,
+  EVERYONE: 1,
+  FOLLOWING: 2,
+  FRIENDS: 3,
+  NONE: 4,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type IncomingCollaborationRequest =
+  typeof IncomingCollaborationRequest[keyof typeof IncomingCollaborationRequest];
+
+export function incomingCollaborationRequestFromJSON(object: any): IncomingCollaborationRequest {
+  switch (object) {
+    case 0:
+    case "INCOMING_COLLABORATION_REQUEST_UNSPECIFIED":
+      return IncomingCollaborationRequest.UNSPECIFIED;
+    case 1:
+    case "INCOMING_COLLABORATION_REQUEST_EVERYONE":
+      return IncomingCollaborationRequest.EVERYONE;
+    case 2:
+    case "INCOMING_COLLABORATION_REQUEST_FOLLOWING":
+      return IncomingCollaborationRequest.FOLLOWING;
+    case 3:
+    case "INCOMING_COLLABORATION_REQUEST_FRIENDS":
+      return IncomingCollaborationRequest.FRIENDS;
+    case 4:
+    case "INCOMING_COLLABORATION_REQUEST_NONE":
+      return IncomingCollaborationRequest.NONE;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return IncomingCollaborationRequest.UNRECOGNIZED;
+  }
+}
+
+export function incomingCollaborationRequestToJSON(object: IncomingCollaborationRequest): string {
+  switch (object) {
+    case IncomingCollaborationRequest.UNSPECIFIED:
+      return "INCOMING_COLLABORATION_REQUEST_UNSPECIFIED";
+    case IncomingCollaborationRequest.EVERYONE:
+      return "INCOMING_COLLABORATION_REQUEST_EVERYONE";
+    case IncomingCollaborationRequest.FOLLOWING:
+      return "INCOMING_COLLABORATION_REQUEST_FOLLOWING";
+    case IncomingCollaborationRequest.FRIENDS:
+      return "INCOMING_COLLABORATION_REQUEST_FRIENDS";
+    case IncomingCollaborationRequest.NONE:
+      return "INCOMING_COLLABORATION_REQUEST_NONE";
+    case IncomingCollaborationRequest.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
 export const RelationVisibility = { UNSPECIFIED: 0, EVERYONE: 1, FRIENDS: 2, NONE: 3, UNRECOGNIZED: -1 } as const;
 
 export type RelationVisibility = typeof RelationVisibility[keyof typeof RelationVisibility];
@@ -106,6 +160,7 @@ export interface GetPrivacySettingsResponse {
   record_read_history: boolean;
   allow_sensitive_media: boolean;
   incoming_friend_requests: IncomingFriendRequest;
+  incoming_collaboration_requests: IncomingCollaborationRequest;
   following_list_visibility: RelationVisibility;
   friend_list_visibility: RelationVisibility;
 }
@@ -173,6 +228,7 @@ function createBaseGetPrivacySettingsResponse(): GetPrivacySettingsResponse {
     record_read_history: false,
     allow_sensitive_media: false,
     incoming_friend_requests: 0,
+    incoming_collaboration_requests: 0,
     following_list_visibility: 0,
     friend_list_visibility: 0,
   };
@@ -192,11 +248,14 @@ export const GetPrivacySettingsResponse = {
     if (message.incoming_friend_requests !== 0) {
       writer.uint32(32).int32(message.incoming_friend_requests);
     }
+    if (message.incoming_collaboration_requests !== 0) {
+      writer.uint32(40).int32(message.incoming_collaboration_requests);
+    }
     if (message.following_list_visibility !== 0) {
-      writer.uint32(40).int32(message.following_list_visibility);
+      writer.uint32(48).int32(message.following_list_visibility);
     }
     if (message.friend_list_visibility !== 0) {
-      writer.uint32(48).int32(message.friend_list_visibility);
+      writer.uint32(56).int32(message.friend_list_visibility);
     }
     return writer;
   },
@@ -241,10 +300,17 @@ export const GetPrivacySettingsResponse = {
             break;
           }
 
-          message.following_list_visibility = reader.int32() as any;
+          message.incoming_collaboration_requests = reader.int32() as any;
           continue;
         case 6:
           if (tag !== 48) {
+            break;
+          }
+
+          message.following_list_visibility = reader.int32() as any;
+          continue;
+        case 7:
+          if (tag !== 56) {
             break;
           }
 
@@ -269,6 +335,9 @@ export const GetPrivacySettingsResponse = {
       incoming_friend_requests: isSet(object.incoming_friend_requests)
         ? incomingFriendRequestFromJSON(object.incoming_friend_requests)
         : 0,
+      incoming_collaboration_requests: isSet(object.incoming_collaboration_requests)
+        ? incomingCollaborationRequestFromJSON(object.incoming_collaboration_requests)
+        : 0,
       following_list_visibility: isSet(object.following_list_visibility)
         ? relationVisibilityFromJSON(object.following_list_visibility)
         : 0,
@@ -292,6 +361,9 @@ export const GetPrivacySettingsResponse = {
     if (message.incoming_friend_requests !== 0) {
       obj.incoming_friend_requests = incomingFriendRequestToJSON(message.incoming_friend_requests);
     }
+    if (message.incoming_collaboration_requests !== 0) {
+      obj.incoming_collaboration_requests = incomingCollaborationRequestToJSON(message.incoming_collaboration_requests);
+    }
     if (message.following_list_visibility !== 0) {
       obj.following_list_visibility = relationVisibilityToJSON(message.following_list_visibility);
     }
@@ -310,6 +382,7 @@ export const GetPrivacySettingsResponse = {
     message.record_read_history = object.record_read_history ?? false;
     message.allow_sensitive_media = object.allow_sensitive_media ?? false;
     message.incoming_friend_requests = object.incoming_friend_requests ?? 0;
+    message.incoming_collaboration_requests = object.incoming_collaboration_requests ?? 0;
     message.following_list_visibility = object.following_list_visibility ?? 0;
     message.friend_list_visibility = object.friend_list_visibility ?? 0;
     return message;

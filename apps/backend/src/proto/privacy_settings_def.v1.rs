@@ -16,9 +16,11 @@ pub struct GetPrivacySettingsResponse {
     pub allow_sensitive_media: bool,
     #[prost(enumeration="IncomingFriendRequest", tag="4")]
     pub incoming_friend_requests: i32,
-    #[prost(enumeration="RelationVisibility", tag="5")]
-    pub following_list_visibility: i32,
+    #[prost(enumeration="IncomingCollaborationRequest", tag="5")]
+    pub incoming_collaboration_requests: i32,
     #[prost(enumeration="RelationVisibility", tag="6")]
+    pub following_list_visibility: i32,
+    #[prost(enumeration="RelationVisibility", tag="7")]
     pub friend_list_visibility: i32,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
@@ -52,6 +54,41 @@ impl IncomingFriendRequest {
             "INCOMING_FRIEND_REQUEST_FOLLOWING" => Some(Self::Following),
             "INCOMING_FRIEND_REQUEST_FOF" => Some(Self::Fof),
             "INCOMING_FRIEND_REQUEST_NONE" => Some(Self::None),
+            _ => None,
+        }
+    }
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum IncomingCollaborationRequest {
+    Unspecified = 0,
+    Everyone = 1,
+    Following = 2,
+    Friends = 3,
+    None = 4,
+}
+impl IncomingCollaborationRequest {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            IncomingCollaborationRequest::Unspecified => "INCOMING_COLLABORATION_REQUEST_UNSPECIFIED",
+            IncomingCollaborationRequest::Everyone => "INCOMING_COLLABORATION_REQUEST_EVERYONE",
+            IncomingCollaborationRequest::Following => "INCOMING_COLLABORATION_REQUEST_FOLLOWING",
+            IncomingCollaborationRequest::Friends => "INCOMING_COLLABORATION_REQUEST_FRIENDS",
+            IncomingCollaborationRequest::None => "INCOMING_COLLABORATION_REQUEST_NONE",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "INCOMING_COLLABORATION_REQUEST_UNSPECIFIED" => Some(Self::Unspecified),
+            "INCOMING_COLLABORATION_REQUEST_EVERYONE" => Some(Self::Everyone),
+            "INCOMING_COLLABORATION_REQUEST_FOLLOWING" => Some(Self::Following),
+            "INCOMING_COLLABORATION_REQUEST_FRIENDS" => Some(Self::Friends),
+            "INCOMING_COLLABORATION_REQUEST_NONE" => Some(Self::None),
             _ => None,
         }
     }
