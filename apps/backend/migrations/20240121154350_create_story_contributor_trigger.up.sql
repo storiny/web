@@ -1,4 +1,6 @@
-CREATE OR REPLACE FUNCTION story_contributor_trigger_proc(
+-- Insert
+--
+CREATE OR REPLACE FUNCTION story_contributor_insert_trigger_proc(
 )
 	RETURNS TRIGGER
 AS
@@ -97,9 +99,65 @@ END;
 $$
 	LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER story_contributor_trigger
+CREATE OR REPLACE TRIGGER story_contributor_insert_trigger
 	BEFORE INSERT
 	ON story_contributors
 	FOR EACH ROW
-EXECUTE PROCEDURE story_contributor_trigger_proc();
+EXECUTE PROCEDURE story_contributor_insert_trigger_proc();
 
+-- Update
+--
+CREATE OR REPLACE FUNCTION story_contributor_update_trigger_proc(
+)
+	RETURNS TRIGGER
+AS
+$$
+BEGIN
+	-- Contributor soft-deleted
+	IF (OLD.deleted_at IS NULL AND NEW.deleted_at IS NOT NULL) THEN
+		-- Delete notifications
+		DELETE
+		FROM
+			notifications
+		WHERE
+			entity_id = OLD.id;
+	END IF;
+	--
+	RETURN NEW;
+END;
+$$
+	LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER story_contributor_update_trigger
+	BEFORE UPDATE
+	ON story_contributors
+	FOR EACH ROW
+	WHEN (OLD.deleted_at IS DISTINCT FROM NEW.deleted_at)
+EXECUTE PROCEDURE story_contributor_update_trigger_proc();
+
+-- Delete
+--
+CREATE OR REPLACE FUNCTION story_contributor_delete_trigger_proc(
+)
+	RETURNS TRIGGER
+AS
+$$
+BEGIN
+	-- Delete notifications
+	DELETE
+	FROM
+		notifications
+	WHERE
+		entity_id = OLD.id;
+	--
+	RETURN OLD;
+END;
+$$
+	LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER story_contributor_delete_trigger
+	AFTER DELETE
+	ON story_contributors
+	FOR EACH ROW
+	WHEN (OLD.deleted_at IS NULL) -- Only run when the contributor is directly deleted
+EXECUTE PROCEDURE story_contributor_delete_trigger_proc();

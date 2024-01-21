@@ -16,9 +16,10 @@ message GetNotificationSettingsResponse {
   bool replies /*                  */ = 6;
   bool new_followers /*            */ = 7;
   bool friend_requests /*          */ = 8;
+  bool collaboration_requests /*   */ = 9;
   // Mail notifications
-  bool mail_login_activity /*      */ = 9;
-  bool mail_features_and_updates /**/ = 10;
-  bool mail_newsletters /*         */ = 11;
-  bool mail_digest /*              */ = 12;
+  bool mail_login_activity /*      */ = 10;
+  bool mail_features_and_updates /**/ = 11;
+  bool mail_newsletters /*         */ = 12;
+  bool mail_digest /*              */ = 13;
 }

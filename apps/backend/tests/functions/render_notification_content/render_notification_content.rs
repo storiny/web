@@ -108,6 +108,99 @@ WHERE notification_id = $2;
         Ok(())
     }
 
+    #[sqlx::test(fixtures("collaboration_request_accept"))]
+    async fn can_render_notification_content_for_collaboration_request_accept_type(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let result = sqlx::query(
+            r#"
+SELECT
+    public.render_notification_content($1, notification_outs.*) AS "content"
+FROM notification_outs
+WHERE notification_id = $2;
+"#,
+        )
+        .bind(NotificationEntityType::CollabReqAccept as i16)
+        .bind(5_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(
+            result.get::<String, _>("content"),
+            r#"<a data-fw-bold href="/sample_user_2">Sample user 2</a> accepted your collaboration request"#.to_string()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("collaboration_request_receive"))]
+    async fn can_render_notification_content_for_collaboration_request_receive_type_for_a_draft(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Unpublish the story
+        let result = sqlx::query(
+            r#"
+UPDATE stories
+SET published_at = NULL
+"#,
+        )
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let result = sqlx::query(
+            r#"
+SELECT
+    public.render_notification_content($1, notification_outs.*) AS "content"
+FROM notification_outs
+WHERE notification_id = $2;
+"#,
+        )
+        .bind(NotificationEntityType::CollabReqReceived as i16)
+        .bind(5_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(
+            result.get::<String, _>("content"),
+            r#"<a data-fw-bold href="/sample_user_1">Sample user 1</a> invited you to contribute to their story: <span data-fw-medium>Sample story</span>. <a data-underline href="/me/content/drafts?tab=contributable">View all collaboration requests</a>"#
+                .to_string()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("collaboration_request_receive"))]
+    async fn can_render_notification_content_for_collaboration_request_receive_type_for_a_published_draft(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let result = sqlx::query(
+            r#"
+SELECT
+    public.render_notification_content($1, notification_outs.*) AS "content"
+FROM notification_outs
+WHERE notification_id = $2;
+"#,
+        )
+        .bind(NotificationEntityType::CollabReqReceived as i16)
+        .bind(5_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(
+            result.get::<String, _>("content"),
+            r#"<a data-fw-bold href="/sample_user_1">Sample user 1</a> invited you to contribute to their story: <span data-fw-medium>Sample story</span>. <a data-underline href="/me/content/stories?tab=contributable">View all collaboration requests</a>"#
+                .to_string()
+        );
+
+        Ok(())
+    }
+
     #[sqlx::test(fixtures("friend_request_accept"))]
     async fn can_render_notification_content_for_friend_request_accept_type(
         pool: PgPool,
