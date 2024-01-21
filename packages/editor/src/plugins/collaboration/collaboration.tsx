@@ -43,22 +43,15 @@ const CollaborationPlugin = ({
         name: user.name,
         user_id: user.id,
         role,
-        color: get_user_color(user.username),
-        selection_color: get_user_color(user.username, undefined, 35),
+        color: get_user_color(user.id),
+        selection_color: get_user_color(user.id, undefined, 35),
         avatar_id: user.avatar_id,
         avatar_hex: user.avatar_hex,
         awareness_data
       }) as const,
-    [
-      awareness_data,
-      role,
-      user.avatar_hex,
-      user.avatar_id,
-      user.id,
-      user.name,
-      user.username
-    ]
+    [awareness_data, role, user.avatar_hex, user.avatar_id, user.id, user.name]
   );
+
   const [editor] = use_lexical_composer_context();
   const collab_context = use_collaboration_context(local_state);
   const { yjs_doc_map } = collab_context;
