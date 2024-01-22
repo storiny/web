@@ -45,6 +45,7 @@ use y_sync::{
     },
     net::BroadcastGroup,
     sync::{
+        Error,
         Message,
         Protocol,
     },
@@ -59,6 +60,7 @@ use yrs::{
     ReadTxn,
     StateVector,
     Transact,
+    Update,
 };
 use yrs_warp::ws::{
     WarpSink,
@@ -168,10 +170,54 @@ impl Protocol for RealmProtocol {
 
         Ok(None)
     }
+
+    /// Handles reply for a sync-step-1 sent from this replica previously. By default just apply
+    /// an update to current `awareness` document instance.
+    fn handle_sync_step2(
+        &self,
+        awareness: &mut Awareness,
+        update: Update,
+    ) -> Result<Option<Message>, Error> {
+        let mut txn = awareness.doc().transact_mut();
+        txn.apply_update(update);
+
+        Ok(None)
+    }
+
+    /// Handles continuous updates sent from the client. By default just apply an update to a
+    /// current `awareness` document instance.
+    fn handle_update(
+        &self,
+        awareness: &mut Awareness,
+        update: Update,
+    ) -> Result<Option<Message>, Error> {
+        self.handle_sync_step2(awareness, update)
+    }
+}
+
+/// The role for the peer.
+#[derive(Debug, Copy, Clone, Display)]
+pub enum PeerRole {
+    #[strum(serialize = "viewer")]
+    Viewer,
+    #[strum(serialize = "editor")]
+    Editor,
+}
+
+/// The peer instance.
+#[derive(Debug)]
+struct Peer {
+    /// The user ID of the peer.
+    id: i64,
+    /// The role of the peer.
+    role: PeerRole,
+    /// The abortable subscription task for the peer.
+    subscription: JoinHandle<()>,
 }
 
 /// The realm manager. It handles the broadcasting of messages, peer subscriptions, and document
 /// persistence to the object storage.
+#[derive(Debug)]
 pub struct Realm {
     /// The ID of the document being edited.
     pub doc_id: i64,
@@ -182,9 +228,7 @@ pub struct Realm {
     bc_group: BroadcastGroup,
     /// The realm map. This is used to drop the realm manager.
     realm_map: RealmMap,
-    /// The map with key as the UUID of the peer and value as a tuple with the first element being
-    /// the user ID of the peer and second element being the abortable subscription task for the
-    /// peer.
+    /// The map with key as the UUID of the peer and value as the peer instance.
     ///
     /// Peer UUID is used as the key instead of user ID of the peer as the same user can edit the
     /// same document from multiple devices.
@@ -192,7 +236,7 @@ pub struct Realm {
     /// This map is used when destroying a realm to unsubscribe all the peers by aborting their
     /// individual subscription tasks. This can also be used to force unsubscribe a specific peer
     /// by aborting their subscription task.
-    peer_map: RwLock<HashMap<Uuid, (i64, JoinHandle<()>)>>,
+    peer_map: RwLock<HashMap<Uuid, Peer>>,
     /// The S3 client instance.
     s3_client: S3Client,
     /// The document persistence loop. This is called every [PERSISTENCE_LOOP_DURATION] seconds,
@@ -263,11 +307,52 @@ impl Realm {
         peer_map.len() > 0
     }
 
+    /// Updates the role for an existing peer.
+    ///
+    /// * `user_id` - The user ID of the peer.
+    /// * `next_role` - The next role value for the peer.
+    pub async fn update_role(&self, user_id: i64, next_role: PeerRole) {
+        {
+            let mut peer_map = self.peer_map.write().await;
+
+            for peer in peer_map.values_mut() {
+                if peer.id == user_id {
+                    peer.role = next_role;
+                }
+            }
+        }
+
+        // Broadcast a role update message to the peers.
+        self.broadcast_internal_message(format!("role_update:{user_id}:{next_role}").as_ref())
+            .await;
+    }
+
+    /// Removes a peer from the realm.
+    ///
+    /// * `user_id` - The user ID of the peer.
+    pub async fn remove_peer(&self, user_id: i64) {
+        {
+            let mut peer_map = self.peer_map.write().await;
+
+            for (key, peer) in peer_map.iter() {
+                if peer.id == user_id {
+                    peer.subscription.abort();
+                    peer_map.remove(key);
+                }
+            }
+        }
+
+        // Broadcast a peer remove message to the peers.
+        self.broadcast_internal_message(format!("peer_remove:{user_id}").as_ref())
+            .await;
+    }
+
     /// Subscribes a new peer to the broadcast group and waits until the connection for the peer is
     /// closed.
     ///
     /// * `peer_id` - The UUID of the peer.
     /// * `user_id` - The user ID of the peer.
+    /// * `role` - The role of the peer.
     /// * `sink` - The websocket sink wrapper.
     /// * `stream` - The websocket stream wrapper.
     #[tracing::instrument(
@@ -285,6 +370,7 @@ impl Realm {
         self: Arc<Self>,
         peer_id: Uuid,
         user_id: i64,
+        role: PeerRole,
         sink: Arc<Mutex<WarpSink>>,
         stream: WarpStream,
     ) -> Result<(), SubscribeError> {
@@ -326,7 +412,14 @@ impl Realm {
             }
         });
 
-        peer_map.insert(peer_id, (user_id, sub_handle));
+        peer_map.insert(
+            peer_id,
+            Peer {
+                id: user_id,
+                role,
+                subscription: sub_handle,
+            },
+        );
 
         Ok(())
     }
@@ -371,20 +464,15 @@ impl Realm {
         }
 
         // Broadcast a realm destroy message to the peers with the reason.
-        if self.has_peers().await {
-            let mut encoder = EncoderV1::new();
-            encoder.write_var(MSG_INTERNAL);
-            encoder.write_string(&reason.to_string());
-
-            let _ = self.bc_group.broadcast(encoder.to_vec());
-        }
+        self.broadcast_internal_message(reason.to_string().as_ref())
+            .await;
 
         // Unsubscribe all the peers
         {
             let mut peer_map = self.peer_map.write().await;
 
-            for (_, sub_handle) in peer_map.values() {
-                sub_handle.abort();
+            for peer in peer_map.values() {
+                peer.subscription.abort();
             }
 
             peer_map.clear();
@@ -517,6 +605,19 @@ impl Realm {
 
             // Document has not been updated since the last persistence call.
             Ok(0)
+        }
+    }
+
+    /// Broadcasts an internal message to every connected peer.
+    ///
+    /// * `message` - The message value to broadcast.
+    async fn broadcast_internal_message(&self, message: &str) {
+        if self.has_peers().await {
+            let mut encoder = EncoderV1::new();
+            encoder.write_var(MSG_INTERNAL);
+            encoder.write_string(message);
+
+            let _ = self.bc_group.broadcast(encoder.to_vec());
         }
     }
 

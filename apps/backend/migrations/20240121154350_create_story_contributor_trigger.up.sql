@@ -6,8 +6,9 @@ CREATE OR REPLACE FUNCTION story_contributor_insert_trigger_proc(
 AS
 $$
 DECLARE
-	incoming_collaboration_requests_value SMALLINT;
-	story_writer_id                       BIGINT;
+	contributor                RECORD;
+	story_writer_id            BIGINT;
+	contributor_limit CONSTANT SMALLINT := 3;
 BEGIN
 	-- Check whether the story is soft-deleted or the user is soft-deleted/deactivated
 	IF (EXISTS(SELECT 1
@@ -27,6 +28,12 @@ BEGIN
 			USING ERRCODE = '52001';
 	END IF;
 	--
+	-- Check whether the contributor limit has been reached for the story
+	IF ((SELECT COUNT(*) FROM story_contributors WHERE story_id = NEW.story_id) >= contributor_limit) THEN
+		RAISE 'Maximum number of contributors reached for the story'
+			USING ERRCODE = '52004';
+	END IF;
+	--
 	SELECT user_id
 	INTO story_writer_id
 	FROM
@@ -40,56 +47,71 @@ BEGIN
 			USING ERRCODE = '52003';
 	END IF;
 	--
-	-- Check if the contributor is blocked by the author of the story
+	-- Check if the contributor has blocked the author of the story
 	IF (
 		EXISTS (SELECT 1
 				FROM
 					blocks
 				WHERE
-					  blocker_id = story_writer_id
-				  AND blocked_id = NEW.user_id
+					  blocker_id = NEW.user_id
+				  AND blocked_id = story_writer_id
 				  AND deleted_at IS NULL
 			   )
 		) THEN
-		RAISE 'Contributor is blocked by the author of the story'
+		RAISE 'Contributor has blocked the author of the story'
 			USING ERRCODE = '50004';
 	END IF;
 	--
 	-- Check for `incoming_collaboration_requests` flag on the contributor
-	SELECT incoming_collaboration_requests
-	INTO incoming_collaboration_requests_value
+	SELECT incoming_collaboration_requests, is_private
+	INTO contributor
 	FROM
 		users
 	WHERE
 		id = NEW.user_id;
 	--
 	IF (
-		-- None
-		incoming_collaboration_requests_value = 4 OR
-			--
-			-- Following
-		(incoming_collaboration_requests_value = 2 AND
-		 NOT EXISTS (SELECT 1
-					 FROM
-						 relations
-					 WHERE
-						   followed_id = story_writer_id
-					   AND follower_id = NEW.user_id
-					   AND deleted_at IS NULL
-					)) OR
-			--
-			-- Friends
-		(incoming_collaboration_requests_value = 3 AND
-		 NOT EXISTS (SELECT 1
-					 FROM
-						 friends
-					 WHERE
-						   ((transmitter_id = NEW.user_id AND receiver_id = story_writer_id)
-							   OR (transmitter_id = story_writer_id AND receiver_id = NEW.user_id))
-					   AND accepted_at IS NOT NULL
-					   AND deleted_at IS NULL
-					))
-		) THEN
+		(
+			contributor.is_private
+				AND NOT EXISTS (SELECT 1
+								FROM
+									friends
+								WHERE
+									  (
+										  (transmitter_id = NEW.user_id AND receiver_id = story_writer_id)
+											  OR
+										  (transmitter_id = story_writer_id AND receiver_id = NEW.user_id)
+										  )
+								  AND accepted_at IS NOT NULL
+								  AND deleted_at IS NULL
+							   )
+			) OR (
+			-- None
+			contributor.incoming_collaboration_requests = 4 OR
+				--
+				-- Following
+			(contributor.incoming_collaboration_requests = 2 AND
+			 NOT EXISTS (SELECT 1
+						 FROM
+							 relations
+						 WHERE
+							   followed_id = story_writer_id
+						   AND follower_id = NEW.user_id
+						   AND deleted_at IS NULL
+						)) OR
+				--
+				-- Friends
+			(contributor.incoming_collaboration_requests = 3 AND
+			 NOT EXISTS (SELECT 1
+						 FROM
+							 friends
+						 WHERE
+							   ((transmitter_id = NEW.user_id AND receiver_id = story_writer_id)
+								   OR (transmitter_id = story_writer_id AND receiver_id = NEW.user_id))
+						   AND accepted_at IS NOT NULL
+						   AND deleted_at IS NULL
+						))
+			)) THEN
 		RAISE 'Contributor is not accepting collaboration requests from the author of the story'
 			USING ERRCODE = '51001';
 	END IF;

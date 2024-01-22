@@ -13,7 +13,7 @@ pub enum SqlState {
     #[strum(serialize = "50003")]
     TransmitterBlockedByReceiverUser,
     #[strum(serialize = "50004")]
-    ContributorBlockedByStoryWriter,
+    StoryWriterBlockedByContributor,
     // Class 51
     #[strum(serialize = "51000")]
     ReceiverNotAcceptingFriendRequest,
@@ -28,4 +28,6 @@ pub enum SqlState {
     UsernameCooldown,
     #[strum(serialize = "52003")]
     IllegalContributor,
+    #[strum(serialize = "52004")]
+    ContributorOverflow,
 }

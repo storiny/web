@@ -33,6 +33,8 @@ pub enum ResourceLimit {
     /// The daily limit for creating reports. This is computed on the basis of IP address rather
     /// the user ID as the user need not be logged-in to create a report.
     CreateReport,
+    /// The daily limit for sending collaboration requests.
+    SendCollabRequest,
 }
 
 impl ResourceLimit {
@@ -49,6 +51,7 @@ impl ResourceLimit {
             ResourceLimit::BlockUser => 300,
             ResourceLimit::MuteUser => 300,
             ResourceLimit::SendFriendRequest => 175,
+            ResourceLimit::SendCollabRequest => 50,
             ResourceLimit::FollowUser => 400,
             ResourceLimit::FollowTag => 400,
             ResourceLimit::BookmarkStory => 400,

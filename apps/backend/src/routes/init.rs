@@ -196,6 +196,11 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::stories::unpublish::init_routes(cfg);
     v1::me::stories::delete::init_routes(cfg);
     v1::me::stories::stats::init_routes(cfg);
+    // Me - Stories - Contributors
+    v1::me::stories::contributors::get::init_routes(cfg);
+    v1::me::stories::contributors::invite::init_routes(cfg);
+    v1::me::stories::contributors::update::init_routes(cfg);
+    v1::me::stories::contributors::remove::init_routes(cfg);
     // Me - Subscriptions
     v1::me::subscriptions::post::init_routes(cfg);
     v1::me::subscriptions::delete::init_routes(cfg);
