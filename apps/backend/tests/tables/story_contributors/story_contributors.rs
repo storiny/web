@@ -59,7 +59,124 @@ VALUES ($1, $2)
         Ok(())
     }
 
+    #[sqlx::test(fixtures("user", "story"))]
+    async fn can_reject_overflowing_contributors(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        let result = sqlx::query(
+            r#"
+WITH inserted_users AS (
+    INSERT INTO users (id, name, username, email)
+    VALUES
+        (4, 'Contributor 1', 'contributor_1', 'contributor_1@storiny.com'),
+        (5, 'Contributor 2', 'contributor_2', 'contributor_2@storiny.com'),
+        (6, 'Contributor 3', 'contributor_3', 'contributor_3@storiny.com')
+)
+INSERT INTO story_contributors (user_id, story_id)
+VALUES (4, $1), (5, $1), (6, $1)
+"#,
+        )
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 3);
+
+        // Force overflow.
+        let result = sqlx::query(
+            r#"
+INSERT INTO story_contributors (user_id, story_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(2_i64)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await;
+
+        // Should reject with the correct SQLSTATE.
+        assert_eq!(
+            result
+                .unwrap_err()
+                .into_database_error()
+                .unwrap()
+                .code()
+                .unwrap(),
+            SqlState::ContributorOverflow.to_string()
+        );
+
+        Ok(())
+    }
+
     //
+
+    #[sqlx::test(fixtures("user", "story"))]
+    async fn can_reject_collaboration_request_for_private_contributor(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Make the contributor private.
+        sqlx::query(
+            r#"
+UPDATE users
+SET is_private = TRUE
+WHERE id = $1
+"#,
+        )
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let result = sqlx::query(
+            r#"
+INSERT INTO story_contributors (user_id, story_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(2_i64)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await;
+
+        // Should reject with the correct SQLSTATE.
+        assert_eq!(
+            result
+                .unwrap_err()
+                .into_database_error()
+                .unwrap()
+                .code()
+                .unwrap(),
+            SqlState::ContributorNotAcceptingCollaborationRequest.to_string()
+        );
+
+        // Add the user as friend.
+        sqlx::query(
+            r#"
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
+        )
+        .bind(1_i64)
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let result = sqlx::query(
+            r#"
+INSERT INTO story_contributors (user_id, story_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(2_i64)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        Ok(())
+    }
 
     #[sqlx::test(fixtures("user", "story"))]
     async fn can_reject_collaboration_request_for_soft_deleted_contributor(

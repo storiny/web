@@ -17,9 +17,10 @@
 
 # Class 52—Others
 
-| Class | Action              | Description                                                                |
-|-------|---------------------|----------------------------------------------------------------------------|
-| 52000 | Relation overlap    | Target user ID is equivalent to the source user ID                         | 
-| 52001 | Entity unavailable  | Entity has been soft-deleted (or deactivated in case of a user)            |
-| 52002 | Username cooldown   | Username was updated recently and is currently on a cooldown period        |
-| 52003 | Illegal contributor | Raised when trying to add the author of a story as one of its contributors |
+| Class | Action               | Description                                                                |
+|-------|----------------------|----------------------------------------------------------------------------|
+| 52000 | Relation overlap     | Target user ID is equivalent to the source user ID                         | 
+| 52001 | Entity unavailable   | Entity has been soft-deleted (or deactivated in case of a user)            |
+| 52002 | Username cooldown    | Username was updated recently and is currently on a cooldown period        |
+| 52003 | Illegal contributor  | Raised when trying to add the author of a story as one of its contributors |
+| 52004 | Contributor overflow | Maximum limit for contributors on a particular story has been reached      |

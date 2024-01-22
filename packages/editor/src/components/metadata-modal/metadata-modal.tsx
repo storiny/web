@@ -100,6 +100,10 @@ const StoryMetadataModalImpl = (
           // used anywhere in the editor.
           tags: values.tags.map((tag) => ({ id: tag, name: tag }))
         });
+
+        // Update document title
+        document.title = `Editing ${values.title || story.title} — Storiny`;
+
         reset(values);
         toast("Story metadata updated", "success");
       })
