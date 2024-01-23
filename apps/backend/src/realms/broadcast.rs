@@ -1,9 +1,6 @@
 use super::{
     awareness,
-    awareness::{
-        Awareness,
-        AwarenessRef,
-    },
+    awareness::AwarenessRef,
     connection::handle_message,
     protocol::{
         Error,
@@ -16,10 +13,7 @@ use futures_util::{
     SinkExt,
     StreamExt,
 };
-use std::{
-    cell::BorrowMutError,
-    sync::Arc,
-};
+use std::sync::Arc;
 use tokio::{
     select,
     sync::{
@@ -30,7 +24,6 @@ use tokio::{
             Sender,
         },
         Mutex,
-        RwLock,
     },
     task::JoinHandle,
 };
@@ -52,6 +45,7 @@ use yrs::{
 /// structures in a binary form that conforms to a y-sync protocol.
 ///
 /// New receivers can subscribe to a broadcasting group via [BroadcastGroup::subscribe] method.
+#[allow(dead_code)]
 pub struct BroadcastGroup {
     awareness_sub: awareness::UpdateSubscription,
     doc_sub: UpdateSubscription,
@@ -76,7 +70,7 @@ impl BroadcastGroup {
     pub async fn new(
         awareness: AwarenessRef,
         buffer_capacity: usize,
-    ) -> Result<Self, BorrowMutError> {
+    ) -> Result<Self, atomic_refcell::BorrowMutError> {
         let (sender, receiver) = channel(buffer_capacity);
 
         let (doc_sub, awareness_sub) = {
@@ -92,7 +86,7 @@ impl BroadcastGroup {
 
                 let msg = encoder.to_vec();
 
-                if let Err(_) = sink.send(msg) {
+                if sink.send(msg).is_err() {
                     // Current broadcast group is being closed
                 }
             })?;
@@ -110,7 +104,7 @@ impl BroadcastGroup {
                 if let Ok(update) = awareness.update_with_clients(changed) {
                     let msg = Message::Awareness(update).encode_v1();
 
-                    if let Err(_) = sink.send(msg) {
+                    if sink.send(msg).is_err() {
                         // Current broadcast group is being closed
                     }
                 }
@@ -198,7 +192,7 @@ impl BroadcastGroup {
 
             tokio::spawn(async move {
                 while let Some(res) = stream.next().await {
-                    let data = res.map_err(Box::new).map_err(Error::Other)?;
+                    let data = res.map_err(Box::new).map_err(|error| Error::Other(error))?;
                     let message = Message::decode_v1(&data)?;
                     let reply = handle_message(&awareness, message, read_only).await?;
 
@@ -210,7 +204,7 @@ impl BroadcastGroup {
                             sink.send(reply.encode_v1())
                                 .await
                                 .map_err(Box::new)
-                                .map_err(Error::Other)?;
+                                .map_err(|error| Error::Other(error))?;
                         }
                     }
                 }
@@ -237,16 +231,17 @@ pub struct Subscription {
 }
 
 impl Subscription {
-    /// Consumes current subscription, waiting for it to complete. If an underlying connection was
-    /// closed because of failure, an error which caused it to happen will be returned.
+    /// Consumes the current subscription, waiting for it to complete. If an underlying connection
+    /// was closed because of failure, an error which caused it to happen will be returned.
     ///
-    /// This method doesn't invoke close procedure. If you need that, drop current subscription
-    /// instead.
+    /// This method doesn't invoke the close procedure. If we need that, we need to drop the current
+    /// subscription instead.
     pub async fn completed(self) -> Result<(), Error> {
         let res = select! {
             r1 = self.sink_task => r1?,
             r2 = self.stream_task => r2?,
         };
+
         res
     }
 }
@@ -302,7 +297,7 @@ mod test {
     }
 
     impl<T> ReceiverStream<T> {
-        /// Create a new `ReceiverStream`.
+        /// Creates a new [ReceiverStream] instance.
         pub fn new(recv: tokio::sync::mpsc::Receiver<T>) -> Self {
             Self { inner: recv }
         }
@@ -319,48 +314,55 @@ mod test {
         }
     }
 
+    /// Creates a test channel with the provided capacity.
+    ///
+    /// * `channel` - The channel capacity.
     fn test_channel(capacity: usize) -> (PollSender<Vec<u8>>, ReceiverStream<Vec<u8>>) {
-        let (s, r) = tokio::sync::mpsc::channel::<Vec<u8>>(capacity);
-        let s = PollSender::new(s);
-        let r = ReceiverStream::new(r);
-        (s, r)
+        let (tx, rx) = tokio::sync::mpsc::channel::<Vec<u8>>(capacity);
+        let tx = PollSender::new(tx);
+        let rx = ReceiverStream::new(rx);
+
+        (tx, rx)
     }
 
     #[tokio::test]
-    async fn broadcast_changes() -> Result<(), Box<dyn std::error::Error>> {
+    async fn can_broadcast_changes() -> Result<(), Box<dyn std::error::Error>> {
         let doc = Doc::with_client_id(1);
         let text = doc.get_or_insert_text("test");
         let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
-        let group = BroadcastGroup::new(awareness.clone(), 1).await;
+        let group = BroadcastGroup::new(awareness.clone(), 1).await.unwrap();
 
         let (server_sender, mut client_receiver) = test_channel(1);
         let (mut client_sender, server_receiver) = test_channel(1);
-        let _sub1 = group.subscribe(Arc::new(Mutex::new(server_sender)), server_receiver);
+        let _ = group.subscribe(Arc::new(Mutex::new(server_sender)), server_receiver, false);
 
-        // check update propagation
+        // Check update propagation
         {
-            let a = awareness.write().await;
-            text.push(&mut a.doc().transact_mut(), "a");
+            let awareness = awareness.write().await;
+            text.push(&mut awareness.doc().transact_mut(), "a");
         }
-        let msg = client_receiver.next().await;
-        let msg = msg.map(|x| Message::decode_v1(&x.unwrap()).unwrap());
+
+        let message = client_receiver.next().await;
+        let message = message.map(|x| Message::decode_v1(&x.unwrap()).unwrap());
+
         assert_eq!(
-            msg,
+            message,
             Some(Message::Sync(SyncMessage::Update(vec![
                 1, 1, 1, 0, 4, 1, 4, 116, 101, 115, 116, 1, 97, 0,
             ])))
         );
 
-        // check awareness update propagation
+        // Check the awareness update propagation.
         {
-            let mut a = awareness.write().await;
-            a.set_local_state(r#"{"key":"value"}"#)
+            let mut awareness = awareness.write().await;
+            awareness.set_local_state(r#"{"key":"value"}"#)
         }
 
-        let msg = client_receiver.next().await;
-        let msg = msg.map(|x| Message::decode_v1(&x.unwrap()).unwrap());
+        let message = client_receiver.next().await;
+        let message = message.map(|x| Message::decode_v1(&x.unwrap()).unwrap());
+
         assert_eq!(
-            msg,
+            message,
             Some(Message::Awareness(AwarenessUpdate {
                 clients: HashMap::from([(
                     1,
@@ -372,19 +374,31 @@ mod test {
             }))
         );
 
-        // check sync state request/response
+        // Check the sync state request/response.
         {
             client_sender
                 .send(Message::Sync(SyncMessage::SyncStep1(StateVector::default())).encode_v1())
                 .await?;
-            let msg = client_receiver.next().await;
-            let msg = msg.map(|x| Message::decode_v1(&x.unwrap()).unwrap());
+
+            let message = client_receiver.next().await;
+            let message = message.map(|x| Message::decode_v1(&x.unwrap()).unwrap());
+
             assert_eq!(
-                msg,
+                message,
                 Some(Message::Sync(SyncMessage::SyncStep2(vec![
                     1, 1, 1, 0, 4, 1, 4, 116, 101, 115, 116, 1, 97, 0,
                 ])))
             );
+        }
+
+        // Check the internal message handler.
+        {
+            group.broadcast_internal_message("test").unwrap();
+
+            let message = client_receiver.next().await;
+            let message = message.map(|x| Message::decode_v1(&x.unwrap()).unwrap());
+
+            assert_eq!(message, Some(Message::Internal("test".to_string())));
         }
 
         Ok(())

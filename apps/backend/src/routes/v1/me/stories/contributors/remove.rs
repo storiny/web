@@ -49,7 +49,7 @@ async fn delete(
         .parse::<i64>()
         .map_err(|_| AppError::from("Invalid user ID"))?;
 
-    let mut realm = realm_map
+    let realm = realm_map
         .async_lock(story_id, AsyncLimit::no_limit())
         .await
         .map_err(|error| {
@@ -84,7 +84,7 @@ WHERE
             if let Some(realm_inner) = realm.value() {
                 debug!("realm is present in the map, removing the peer");
 
-                realm_inner.remove_peer(contributor_user_id).await;
+                realm_inner.remove_peer(contributor_user_id, false).await;
             }
 
             txn.commit().await?;

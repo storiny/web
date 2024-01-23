@@ -1,265 +1,29 @@
 use super::{
-    awareness::{
-        Awareness,
-        AwarenessRef,
-    },
+    awareness::AwarenessRef,
     protocol::{
         Error,
         Message as ProtocolMessage,
-        MessageReader,
         RealmProtocol,
         SyncMessage,
     },
 };
 use futures_core::Stream;
-use futures_util::{
-    sink::SinkExt,
-    stream::{
-        SplitSink,
-        SplitStream,
-    },
-    StreamExt,
+use futures_util::stream::{
+    SplitSink,
+    SplitStream,
 };
 use std::{
-    future::Future,
-    marker::PhantomData,
     pin::Pin,
-    sync::{
-        Arc,
-        Weak,
-    },
     task::{
         Context,
         Poll,
     },
 };
-use tokio::{
-    spawn,
-    sync::{
-        Mutex,
-        RwLock,
-    },
-    task::JoinHandle,
-};
-use tracing::warn;
 use warp::ws::WebSocket;
 use yrs::{
-    encoding::read::Cursor,
-    updates::{
-        decoder::{
-            Decode,
-            DecoderV1,
-        },
-        encoder::{
-            Encode,
-            Encoder,
-            EncoderV1,
-        },
-    },
+    updates::decoder::Decode,
     Update,
 };
-
-/// The connection handler over a pair of message streams, which implements an awareness and update
-/// exchange protocol.
-///
-/// This connection implements Future pattern and can be awaited upon in order for a caller to
-/// recognize whether underlying websocket connection has been finished gracefully or abruptly.
-#[derive(Debug)]
-pub struct Connection<Sink, Stream> {
-    processing_loop: JoinHandle<Result<(), Error>>,
-    awareness: AwarenessRef,
-    inbox: Arc<Mutex<Sink>>,
-    _stream: PhantomData<Stream>,
-}
-
-impl<Sink, Stream, E> Connection<Sink, Stream>
-where
-    Sink: SinkExt<Vec<u8>, Error = E> + Send + Sync + Unpin + 'static,
-    E: Into<Error> + Send + Sync,
-{
-    pub async fn send(&self, msg: Vec<u8>) -> Result<(), Error> {
-        let mut inbox = self.inbox.lock().await;
-
-        match inbox.send(msg).await {
-            Ok(_) => Ok(()),
-            Err(err) => Err(err.into()),
-        }
-    }
-
-    pub async fn close(self) -> Result<(), E> {
-        let mut inbox = self.inbox.lock().await;
-        inbox.close().await
-    }
-
-    pub fn sink(&self) -> Weak<Mutex<Sink>> {
-        Arc::downgrade(&self.inbox)
-    }
-}
-
-impl<Sink, Stream, E> Connection<Sink, Stream>
-where
-    Stream: StreamExt<Item = Result<Vec<u8>, E>> + Send + Sync + Unpin + 'static,
-    Sink: SinkExt<Vec<u8>, Error = E> + Send + Sync + Unpin + 'static,
-    E: Into<Error> + Send + Sync,
-{
-    /// Wraps an incoming [WebSocket] connection and supplied [Awareness] accessor into a new
-    /// connection handler capable of exchanging realm messages.
-    ///
-    /// While the creation of new [WarpConn] always succeeds, a connection itself can possibly fail
-    /// while processing incoming input/output. This can be detected by awaiting for returned
-    /// [WarpConn] and handling the awaited result.
-    ///
-    /// * `awareness` - The awareness instance.
-    /// * `sink` - The sink part.
-    /// * `stream` - The stream part.
-    pub fn new(awareness: AwarenessRef, sink: Sink, mut stream: Stream) -> Self {
-        let sink = Arc::new(Mutex::new(sink));
-        let inbox = sink.clone();
-        let loop_sink = Arc::downgrade(&sink);
-        let loop_awareness = Arc::downgrade(&awareness);
-
-        let processing_loop: JoinHandle<Result<(), Error>> = spawn(async move {
-            // At the beginning send SyncStep1 and AwarenessUpdate.
-            let payload = {
-                let mut encoder = EncoderV1::new();
-
-                if let Some(awareness) = loop_awareness.upgrade() {
-                    let awareness = awareness.read().await;
-                    RealmProtocol.start(&awareness, &mut encoder)?;
-                }
-
-                encoder.to_vec()
-            };
-
-            if !payload.is_empty() {
-                if let Some(sink) = loop_sink.upgrade() {
-                    let mut sink = sink.lock().await;
-
-                    if let Err(error) = sink.send(payload).await {
-                        return Err(error.into());
-                    }
-                } else {
-                    // Parent connection handler has been dropped.
-                    return Ok(());
-                }
-            }
-
-            while let Some(input) = stream.next().await {
-                match input {
-                    Ok(data) => {
-                        if let Some(mut sink) = loop_sink.upgrade() {
-                            if let Some(awareness) = loop_awareness.upgrade() {
-                                match Self::process(&awareness, &mut sink, data).await {
-                                    Ok(()) => { /* Continue */ }
-                                    Err(error) => return Err(error),
-                                }
-                            } else {
-                                // Parent connection handler has been dropped.
-                                return Ok(());
-                            }
-                        } else {
-                            // Parent connection handler has been dropped.
-                            return Ok(());
-                        }
-                    }
-                    Err(error) => return Err(error.into()),
-                }
-            }
-
-            Ok(())
-        });
-
-        Connection {
-            processing_loop,
-            awareness,
-            inbox,
-            _stream: PhantomData::default(),
-        }
-    }
-
-    /// Input handler.
-    ///
-    /// * `awareness` - The awareness instance.
-    /// * `sink` - The sink part.
-    /// * `input` - The binary input payload.
-    async fn process(
-        awareness: &AwarenessRef,
-        sink: &mut Arc<Mutex<Sink>>,
-        input: Vec<u8>,
-    ) -> Result<(), Error> {
-        let mut decoder = DecoderV1::new(Cursor::new(&input));
-        let reader = MessageReader::new(&mut decoder);
-
-        for message_result in reader {
-            let message = message_result?;
-
-            // TODO: Check if the read only flag can be dynamic
-            if let Some(reply) = handle_message(&awareness, message, false).await? {
-                let mut sender = sink.lock().await;
-
-                if let Err(error) = sender.send(reply.encode_v1()).await {
-                    warn!("failed to send back the reply");
-                    return Err(error.into());
-                }
-            }
-        }
-
-        Ok(())
-    }
-
-    /// Returns the underlying [Awareness] structure, that contains the client state of the
-    /// connection.
-    pub fn awareness(&self) -> &AwarenessRef {
-        &self.awareness
-    }
-}
-
-impl<Sink, Stream> Unpin for Connection<Sink, Stream> {}
-
-impl<Sink, Stream> Future for Connection<Sink, Stream> {
-    type Output = Result<(), Error>;
-
-    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-        match Pin::new(&mut self.processing_loop).poll(cx) {
-            Poll::Pending => Poll::Pending,
-            Poll::Ready(Err(e)) => Poll::Ready(Err(e.into())),
-            Poll::Ready(Ok(r)) => Poll::Ready(r),
-        }
-    }
-}
-
-/// Connection Wrapper over a [WebSocket], which implements an awareness and update exchange
-/// protocol.
-///
-/// This connection implements Future pattern and can be awaited upon in order for a caller to
-/// recognize whether underlying websocket connection has been finished gracefully or abruptly.
-#[repr(transparent)]
-#[derive(Debug)]
-pub struct RealmConn(Connection<RealmSink, RealmStream>);
-
-impl RealmConn {
-    /// Creates a new [RealmConn] instance.
-    ///
-    /// * `awareness` - The awareness instance.
-    /// * `socket` - The websocket instance.
-    pub fn new(awareness: Arc<RwLock<Awareness>>, socket: WebSocket) -> Self {
-        let (sink, stream) = socket.split();
-        let conn = Connection::new(awareness, RealmSink(sink), RealmStream(stream));
-        RealmConn(conn)
-    }
-}
-
-impl core::future::Future for RealmConn {
-    type Output = Result<(), Error>;
-
-    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-        match Pin::new(&mut self.0).poll(cx) {
-            Poll::Pending => Poll::Pending,
-            Poll::Ready(Err(e)) => Poll::Ready(Err(Error::Other(e.into()))),
-            Poll::Ready(Ok(_)) => Poll::Ready(Ok(())),
-        }
-    }
-}
 
 /// A warp websocket sink wrapper, that implements futures `Sink` in a way, that makes it
 /// compatible with the [super::protocol::RealmProtocol].
@@ -273,9 +37,9 @@ impl From<SplitSink<WebSocket, warp::ws::Message>> for RealmSink {
     }
 }
 
-impl Into<SplitSink<WebSocket, warp::ws::Message>> for RealmSink {
-    fn into(self) -> SplitSink<WebSocket, warp::ws::Message> {
-        self.0
+impl From<RealmSink> for SplitSink<WebSocket, warp::ws::Message> {
+    fn from(val: RealmSink) -> Self {
+        val.0
     }
 }
 
@@ -326,9 +90,9 @@ impl From<SplitStream<WebSocket>> for RealmStream {
     }
 }
 
-impl Into<SplitStream<WebSocket>> for RealmStream {
-    fn into(self) -> SplitStream<WebSocket> {
-        self.0
+impl From<RealmStream> for SplitStream<WebSocket> {
+    fn from(val: RealmStream) -> Self {
+        val.0
     }
 }
 
@@ -366,19 +130,19 @@ pub async fn handle_message(
             }
             SyncMessage::SyncStep2(update) => {
                 if read_only {
-                    return Ok(None);
+                    Ok(None)
+                } else {
+                    let mut awareness = awareness.write().await;
+                    RealmProtocol.handle_sync_step2(&mut awareness, Update::decode_v1(&update)?)
                 }
-
-                let mut awareness = awareness.write().await;
-                RealmProtocol.handle_sync_step2(&mut awareness, Update::decode_v1(&update)?)
             }
             SyncMessage::Update(update) => {
                 if read_only {
-                    return Ok(None);
+                    Ok(None)
+                } else {
+                    let mut awareness = awareness.write().await;
+                    RealmProtocol.handle_update(&mut awareness, Update::decode_v1(&update)?)
                 }
-
-                let mut awareness = awareness.write().await;
-                RealmProtocol.handle_update(&mut awareness, Update::decode_v1(&update)?)
             }
         },
         ProtocolMessage::Auth(reason) => {
@@ -405,7 +169,11 @@ pub async fn handle_message(
 #[cfg(test)]
 mod test {
     use super::{
-        super::broadcast::BroadcastGroup,
+        super::{
+            awareness::Awareness,
+            broadcast::BroadcastGroup,
+            protocol::MessageReader,
+        },
         *,
     };
     use futures_util::{
@@ -423,10 +191,15 @@ mod test {
         Serialize,
     };
     use std::{
+        future::Future,
+        marker::PhantomData,
         net::SocketAddr,
         pin::Pin,
         str::FromStr,
-        sync::Arc,
+        sync::{
+            Arc,
+            Weak,
+        },
         task::{
             Context,
             Poll,
@@ -435,6 +208,7 @@ mod test {
     };
     use tokio::{
         net::TcpStream,
+        spawn,
         sync::{
             Mutex,
             Notify,
@@ -463,13 +237,191 @@ mod test {
         Sink,
     };
     use yrs::{
-        updates::encoder::Encode,
+        encoding::read::Cursor,
+        updates::{
+            decoder::DecoderV1,
+            encoder::{
+                Encode,
+                Encoder,
+                EncoderV1,
+            },
+        },
         Doc,
         GetString,
         Text,
         Transact,
         UpdateSubscription,
     };
+
+    /// The connection handler over a pair of message streams, which implements an awareness and
+    /// update exchange protocol.
+    ///
+    /// This connection implements Future pattern and can be awaited upon in order for a caller to
+    /// recognize whether underlying websocket connection has been finished gracefully or abruptly.
+    #[derive(Debug)]
+    struct Connection<Sink, Stream> {
+        processing_loop: JoinHandle<Result<(), Error>>,
+        awareness: AwarenessRef,
+        inbox: Arc<Mutex<Sink>>,
+        _stream: PhantomData<Stream>,
+    }
+
+    impl<Sink, Stream, E> Connection<Sink, Stream>
+    where
+        Sink: SinkExt<Vec<u8>, Error = E> + Send + Sync + Unpin + 'static,
+        E: Into<Error> + Send + Sync,
+    {
+        #[allow(dead_code)]
+        async fn send(&self, msg: Vec<u8>) -> Result<(), Error> {
+            let mut inbox = self.inbox.lock().await;
+
+            match inbox.send(msg).await {
+                Ok(_) => Ok(()),
+                Err(err) => Err(err.into()),
+            }
+        }
+
+        #[allow(dead_code)]
+        async fn close(self) -> Result<(), E> {
+            let mut inbox = self.inbox.lock().await;
+            inbox.close().await
+        }
+
+        fn sink(&self) -> Weak<Mutex<Sink>> {
+            Arc::downgrade(&self.inbox)
+        }
+    }
+
+    impl<Sink, Stream, E> Connection<Sink, Stream>
+    where
+        Stream: StreamExt<Item = Result<Vec<u8>, E>> + Send + Sync + Unpin + 'static,
+        Sink: SinkExt<Vec<u8>, Error = E> + Send + Sync + Unpin + 'static,
+        E: Into<Error> + Send + Sync,
+    {
+        /// Wraps an incoming [WebSocket] connection and supplied [Awareness] accessor into a new
+        /// connection handler capable of exchanging realm messages.
+        ///
+        /// While the creation of new [WarpConn] always succeeds, a connection itself can possibly
+        /// fail while processing incoming input/output. This can be detected by awaiting
+        /// for returned [WarpConn] and handling the awaited result.
+        ///
+        /// * `awareness` - The awareness instance.
+        /// * `sink` - The sink part.
+        /// * `stream` - The stream part.
+        pub fn new(awareness: AwarenessRef, sink: Sink, mut stream: Stream) -> Self {
+            let sink = Arc::new(Mutex::new(sink));
+            let inbox = sink.clone();
+            let loop_sink = Arc::downgrade(&sink);
+            let loop_awareness = Arc::downgrade(&awareness);
+
+            let processing_loop: JoinHandle<Result<(), Error>> = spawn(async move {
+                // At the beginning send SyncStep1 and AwarenessUpdate.
+                let payload = {
+                    let mut encoder = EncoderV1::new();
+
+                    if let Some(awareness) = loop_awareness.upgrade() {
+                        let awareness = awareness.read().await;
+                        RealmProtocol.start(&awareness, &mut encoder)?;
+                    }
+
+                    encoder.to_vec()
+                };
+
+                if !payload.is_empty() {
+                    if let Some(sink) = loop_sink.upgrade() {
+                        let mut sink = sink.lock().await;
+
+                        if let Err(error) = sink.send(payload).await {
+                            return Err(error.into());
+                        }
+                    } else {
+                        // Parent connection handler has been dropped.
+                        return Ok(());
+                    }
+                }
+
+                while let Some(input) = stream.next().await {
+                    match input {
+                        Ok(data) => {
+                            if let Some(mut sink) = loop_sink.upgrade() {
+                                if let Some(awareness) = loop_awareness.upgrade() {
+                                    match Self::process(&awareness, &mut sink, data).await {
+                                        Ok(()) => { /* Continue */ }
+                                        Err(error) => return Err(error),
+                                    }
+                                } else {
+                                    // Parent connection handler has been dropped.
+                                    return Ok(());
+                                }
+                            } else {
+                                // Parent connection handler has been dropped.
+                                return Ok(());
+                            }
+                        }
+                        Err(error) => return Err(error.into()),
+                    }
+                }
+
+                Ok(())
+            });
+
+            Connection {
+                processing_loop,
+                awareness,
+                inbox,
+                _stream: PhantomData,
+            }
+        }
+
+        /// Input handler.
+        ///
+        /// * `awareness` - The awareness instance.
+        /// * `sink` - The sink part.
+        /// * `input` - The binary input payload.
+        async fn process(
+            awareness: &AwarenessRef,
+            sink: &mut Arc<Mutex<Sink>>,
+            input: Vec<u8>,
+        ) -> Result<(), Error> {
+            let mut decoder = DecoderV1::new(Cursor::new(&input));
+            let reader = MessageReader::new(&mut decoder);
+
+            for message_result in reader {
+                let message = message_result?;
+
+                if let Some(reply) = handle_message(awareness, message, false).await? {
+                    let mut sender = sink.lock().await;
+
+                    if let Err(error) = sender.send(reply.encode_v1()).await {
+                        eprintln!("failed to send back the reply");
+                        return Err(error.into());
+                    }
+                }
+            }
+
+            Ok(())
+        }
+
+        /// Returns the underlying [Awareness] structure, that contains the client state of the
+        /// connection.
+        pub fn awareness(&self) -> &AwarenessRef {
+            &self.awareness
+        }
+    }
+
+    impl<Sink, Stream> Unpin for Connection<Sink, Stream> {}
+
+    impl<Sink, Stream> Future for Connection<Sink, Stream> {
+        type Output = Result<(), Error>;
+
+        fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+            match Pin::new(&mut self.processing_loop).poll(cx) {
+                Poll::Pending => Poll::Pending,
+                Poll::Ready(Err(e)) => Poll::Ready(Err(e.into())),
+                Poll::Ready(Ok(r)) => Poll::Ready(r),
+            }
+        }
+    }
 
     #[derive(Serialize, Deserialize)]
     struct ConnQuery {
@@ -632,9 +584,25 @@ mod test {
         (notify, sub)
     }
 
-    const TIMEOUT: Duration = Duration::from_secs(5);
+    /// Asserts text present in the document on a client.
+    ///
+    /// * `conn` - The client connection.
+    /// * `name` - The name that holds the text structure inside the document.
+    /// * `expected` - The expected value of the text structure.
+    async fn assert_doc_text(
+        conn: &Connection<TungsteniteSink, TungsteniteStream>,
+        name: &str,
+        expected: &str,
+    ) {
+        let awareness = conn.awareness().read().await;
+        let doc = awareness.doc();
+        let text = doc.get_or_insert_text(name);
+        let str = text.get_string(&doc.transact());
 
-    // TODO: Read-only tests
+        assert_eq!(str, expected.to_string());
+    }
+
+    const TIMEOUT: Duration = Duration::from_secs(5);
 
     #[tokio::test]
     async fn can_propagate_changes_introduced_by_server_to_subscribed_clients()
@@ -643,26 +611,32 @@ mod test {
         let text = doc.get_or_insert_text("test");
         let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
         let bcast = BroadcastGroup::new(awareness.clone(), 10).await.unwrap();
-        let server = start_server("0.0.0.0:6600", Arc::new(bcast)).await?;
+        let _server = start_server("0.0.0.0:6600", Arc::new(bcast)).await?;
 
-        let doc = Doc::new();
-        let (notify, sub) = create_notifier(&doc);
-        let c1 = client("ws://localhost:6600/test-realm", doc, false).await?;
+        // Client with read-write permission.
+
+        let d1 = Doc::with_client_id(2);
+        let (_n1, _sub1) = create_notifier(&d1);
+        let c1 = client("ws://localhost:6600/test-realm", d1, false).await?;
+
+        // Client with read-only permission.
+
+        let d2 = Doc::with_client_id(3);
+        let (_n2, _sub2) = create_notifier(&d2);
+        let c2 = client("ws://localhost:6600/test-realm", d2, true).await?;
 
         {
             let lock = awareness.write().await;
             text.push(&mut lock.doc().transact_mut(), "abc");
         }
 
-        timeout(TIMEOUT, notify.notified()).await?;
+        sleep(TIMEOUT).await;
 
-        {
-            let awareness = c1.awareness().read().await;
-            let doc = awareness.doc();
-            let text = doc.get_or_insert_text("test");
-            let str = text.get_string(&doc.transact());
-            assert_eq!(str, "abc".to_string());
-        }
+        // For C1 (read-write)
+        assert_doc_text(&c1, "test", "abc").await;
+
+        // For C2 (read-only)
+        assert_doc_text(&c2, "test", "abc").await;
 
         Ok(())
     }
@@ -677,22 +651,27 @@ mod test {
 
         let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
         let bcast = BroadcastGroup::new(awareness.clone(), 10).await.unwrap();
-        let server = start_server("0.0.0.0:6601", Arc::new(bcast)).await?;
+        let _server = start_server("0.0.0.0:6601", Arc::new(bcast)).await?;
 
-        let doc = Doc::new();
-        let (notify, sub) = create_notifier(&doc);
-        let c1 = client("ws://localhost:6601/test-realm", doc, false).await?;
+        // Client with read-write permission.
 
-        timeout(TIMEOUT, notify.notified()).await?;
+        let d1 = Doc::new();
+        let (_n1, _sub1) = create_notifier(&d1);
+        let c1 = client("ws://localhost:6601/test-realm", d1, false).await?;
 
-        {
-            let awareness = c1.awareness().read().await;
-            let doc = awareness.doc();
-            let text = doc.get_or_insert_text("test");
-            let str = text.get_string(&doc.transact());
+        // Client with read-only permission.
 
-            assert_eq!(str, "abc".to_string());
-        }
+        let d2 = Doc::new();
+        let (_n2, _sub2) = create_notifier(&d2);
+        let c2 = client("ws://localhost:6601/test-realm", d2, true).await?;
+
+        sleep(TIMEOUT).await;
+
+        // For C1 (read-write)
+        assert_doc_text(&c1, "test", "abc").await;
+
+        // For C2 (read-only)
+        assert_doc_text(&c2, "test", "abc").await;
 
         Ok(())
     }
@@ -701,22 +680,22 @@ mod test {
     async fn can_propagate_changes_from_one_client_to_others()
     -> Result<(), Box<dyn std::error::Error>> {
         let doc = Doc::with_client_id(1);
-        let text = doc.get_or_insert_text("test");
+        doc.get_or_insert_text("test");
 
         let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
         let bcast = BroadcastGroup::new(awareness.clone(), 10).await.unwrap();
-        let server = start_server("0.0.0.0:6602", Arc::new(bcast)).await?;
+        let _server = start_server("0.0.0.0:6602", Arc::new(bcast)).await?;
 
         let d1 = Doc::with_client_id(2);
         let c1 = client("ws://localhost:6602/test-realm", d1, false).await?;
 
         // By default, changes made on document on the client side are not propagated automatically.
-        let _ = {
+        let _observer = {
             let sink = c1.sink();
             let awareness = c1.awareness().write().await;
             let doc = awareness.doc();
 
-            doc.observe_update_v1(move |txn, event| {
+            doc.observe_update_v1(move |_, event| {
                 let update = event.update.to_owned();
 
                 if let Some(sink) = sink.upgrade() {
@@ -732,9 +711,17 @@ mod test {
             .unwrap()
         };
 
+        // Client with read-write permission.
+
         let d2 = Doc::with_client_id(3);
-        let (n2, sub2) = create_notifier(&d2);
+        let (_n2, _sub2) = create_notifier(&d2);
         let c2 = client("ws://localhost:6602/test-realm", d2, false).await?;
+
+        // Client with read-only permission.
+
+        let d3 = Doc::with_client_id(4);
+        let (_n3, _sub3) = create_notifier(&d3);
+        let c3 = client("ws://localhost:6602/test-realm", d3, true).await?;
 
         {
             let awareness = c1.awareness().write().await;
@@ -743,16 +730,66 @@ mod test {
             text.push(&mut doc.transact_mut(), "def");
         }
 
-        timeout(TIMEOUT, n2.notified()).await?;
+        sleep(TIMEOUT).await;
+
+        // For C2 (read-write)
+        assert_doc_text(&c2, "test", "def").await;
+
+        // For C3 (read-only)
+        assert_doc_text(&c3, "test", "def").await;
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn should_not_propagate_changes_from_a_read_only_client_to_others()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let doc = Doc::with_client_id(1);
+        doc.get_or_insert_text("test");
+
+        let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
+        let bcast = BroadcastGroup::new(awareness.clone(), 10).await.unwrap();
+        let _server = start_server("0.0.0.0:6603", Arc::new(bcast)).await?;
+
+        let d1 = Doc::with_client_id(2);
+        let c1 = client("ws://localhost:6603/test-realm", d1, true).await?;
+
+        // By default, changes made on document on the client side are not propagated automatically.
+        let _observer = {
+            let sink = c1.sink();
+            let awareness = c1.awareness().write().await;
+            let doc = awareness.doc();
+
+            doc.observe_update_v1(move |_, event| {
+                let update = event.update.to_owned();
+
+                if let Some(sink) = sink.upgrade() {
+                    task::spawn(async move {
+                        let message =
+                            ProtocolMessage::Sync(SyncMessage::Update(update)).encode_v1();
+                        let mut sink = sink.lock().await;
+
+                        sink.send(message).await.unwrap();
+                    });
+                }
+            })
+            .unwrap()
+        };
+
+        let d2 = Doc::with_client_id(3);
+        let (_n2, _sub2) = create_notifier(&d2);
+        let c2 = client("ws://localhost:6603/test-realm", d2, false).await?;
 
         {
-            let awareness = c2.awareness().read().await;
+            let awareness = c1.awareness().write().await;
             let doc = awareness.doc();
             let text = doc.get_or_insert_text("test");
-            let str = text.get_string(&doc.transact());
-
-            assert_eq!(str, "def".to_string());
+            text.push(&mut doc.transact_mut(), "def");
         }
+
+        sleep(TIMEOUT).await;
+
+        assert_doc_text(&c2, "test", "").await;
 
         Ok(())
     }
@@ -760,22 +797,22 @@ mod test {
     #[tokio::test]
     async fn can_handle_a_client_failure() -> Result<(), Box<dyn std::error::Error>> {
         let doc = Doc::with_client_id(1);
-        let text = doc.get_or_insert_text("test");
+        doc.get_or_insert_text("test");
 
         let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
         let bcast = BroadcastGroup::new(awareness.clone(), 10).await.unwrap();
-        let server = start_server("0.0.0.0:6603", Arc::new(bcast)).await?;
+        let _server = start_server("0.0.0.0:6604", Arc::new(bcast)).await?;
 
         let d1 = Doc::with_client_id(2);
-        let c1 = client("ws://localhost:6603/test-realm", d1, false).await?;
+        let c1 = client("ws://localhost:6604/test-realm", d1, false).await?;
 
         // By default, changes made on document on the client side are not propagated automatically.
-        let _ = {
+        let _observer = {
             let sink = c1.sink();
             let awareness = c1.awareness().write().await;
             let doc = awareness.doc();
 
-            doc.observe_update_v1(move |txn, event| {
+            doc.observe_update_v1(move |_, event| {
                 let update = event.update.to_owned();
 
                 if let Some(sink) = sink.upgrade() {
@@ -793,11 +830,11 @@ mod test {
 
         let d2 = Doc::with_client_id(3);
         let (n2, sub2) = create_notifier(&d2);
-        let c2 = client("ws://localhost:6603/test-realm", d2, false).await?;
+        let c2 = client("ws://localhost:6604/test-realm", d2, false).await?;
 
         let d3 = Doc::with_client_id(4);
         let (n3, sub3) = create_notifier(&d3);
-        let c3 = client("ws://localhost:6603/test-realm", d3, false).await?;
+        let c3 = client("ws://localhost:6604/test-realm", d3, false).await?;
 
         {
             let awareness = c1.awareness().write().await;
@@ -806,39 +843,21 @@ mod test {
             text.push(&mut doc.transact_mut(), "abc");
         }
 
-        // TODO:
-        // on the first try both C2 and C3 should receive the update
-        //timeout(TIMEOUT, n2.notified()).await.unwrap();
-        //timeout(TIMEOUT, n3.notified()).await.unwrap();
         sleep(TIMEOUT).await;
 
-        {
-            let awareness = c2.awareness().read().await;
-            let doc = awareness.doc();
-            let text = doc.get_or_insert_text("test");
-            let str = text.get_string(&doc.transact());
-
-            assert_eq!(str, "abc".to_string());
-        }
-
-        {
-            let awareness = c3.awareness().read().await;
-            let doc = awareness.doc();
-            let text = doc.get_or_insert_text("test");
-            let str = text.get_string(&doc.transact());
-
-            assert_eq!(str, "abc".to_string());
-        }
+        assert_doc_text(&c2, "test", "abc").await;
+        assert_doc_text(&c3, "test", "abc").await;
 
         // Drop the client, causing an abrupt ending.
         drop(c3);
         drop(n3);
         drop(sub3);
 
-        // C2 notification subscription has been realized, we need to refresh it.
+        // C2 notification subscription has been released, we need to refresh it.
         drop(n2);
         drop(sub2);
 
+        #[allow(unused_variables)]
         let (n2, sub2) = {
             let awareness = c2.awareness().write().await;
             let doc = awareness.doc();
@@ -854,14 +873,7 @@ mod test {
 
         timeout(TIMEOUT, n2.notified()).await.unwrap();
 
-        {
-            let awareness = c2.awareness().read().await;
-            let doc = awareness.doc();
-            let text = doc.get_or_insert_text("test");
-            let str = text.get_string(&doc.transact());
-
-            assert_eq!(str, "abcdef".to_string());
-        }
+        assert_doc_text(&c2, "test", "abcdef").await;
 
         Ok(())
     }

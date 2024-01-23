@@ -31,7 +31,7 @@ const NULL_STR: &str = "null";
 
 /// Whenever a new callback is being registered, a [Subscription] is made. Whenever this
 /// subscription is dropped, the registered callback is cancelled and will not be called any more.
-pub type UpdateSubscription = Subscription<Arc<dyn Fn(&Awareness, &Event) -> () + 'static>>;
+pub type UpdateSubscription = Subscription<Arc<dyn Fn(&Awareness, &Event) + 'static>>;
 
 /// Awareness ref type alias.
 pub type AwarenessRef = Arc<RwLock<Awareness>>;
@@ -162,7 +162,8 @@ pub struct Awareness {
     doc: Doc,
     states: HashMap<ClientID, String>,
     meta: HashMap<ClientID, MetaClientState>,
-    on_update: Option<Observer<Arc<dyn Fn(&Awareness, &Event) -> () + 'static>>>,
+    #[allow(clippy::type_complexity)]
+    on_update: Option<Observer<Arc<dyn Fn(&Awareness, &Event) + 'static>>>,
 }
 
 unsafe impl Send for Awareness {}
@@ -188,7 +189,7 @@ impl Awareness {
     /// * `callback` - The update callback.
     pub fn on_update<F>(&mut self, cb: F) -> UpdateSubscription
     where
-        F: Fn(&Awareness, &Event) -> () + 'static,
+        F: Fn(&Awareness, &Event) + 'static,
     {
         let observer = self.on_update.get_or_insert_with(Observer::default);
         observer.subscribe(Arc::new(cb))
@@ -468,7 +469,7 @@ mod test {
     }
 
     #[test]
-    fn awareness() -> Result<(), Box<dyn std::error::Error>> {
+    fn can_update_awareness() -> Result<(), Box<dyn std::error::Error>> {
         let (s1, mut o_local) = channel();
         let mut local = Awareness::new(Doc::with_client_id(1));
         let _sub_local = local.on_update(move |_, e| {

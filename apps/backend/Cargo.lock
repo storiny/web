@@ -4544,6 +4544,7 @@ dependencies = [
  "async-compression 0.4.5",
  "async-recursion",
  "async-trait",
+ "atomic_refcell",
  "aws-config",
  "aws-sdk-s3",
  "aws-sdk-sesv2",
