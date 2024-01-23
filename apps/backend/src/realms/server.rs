@@ -1,3 +1,15 @@
+use super::{
+    awareness::Awareness,
+    broadcast::BroadcastGroup,
+    connection::{
+        RealmSink,
+        RealmStream,
+    },
+    realm::{
+        Realm,
+        RealmMap,
+    },
+};
 use crate::{
     config::{
         get_app_config,
@@ -8,10 +20,7 @@ use crate::{
         redis_namespaces::RedisNamespace,
         session_cookie::SESSION_COOKIE_NAME,
     },
-    realms::realm::{
-        Realm,
-        RealmMap,
-    },
+    realms::realm::PeerRole,
     utils::{
         extract_session_key_from_cookie::extract_session_key_from_cookie,
         get_user_sessions::UserSession,
@@ -75,19 +84,11 @@ use warp::{
     Rejection,
     Reply,
 };
-use y_sync::{
-    awareness::Awareness,
-    net::BroadcastGroup,
-};
 use yrs::{
     updates::decoder::Decode,
     Doc,
     Transact,
     Update,
-};
-use yrs_warp::ws::{
-    WarpSink,
-    WarpStream,
 };
 
 /// The maximum number of overflowing messages that are buffered in the memory for the broadcast
@@ -464,7 +465,14 @@ WHERE story_id = $1
         }
 
         let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
-        let bc_group = BroadcastGroup::new(awareness, BUFFER_CAP).await;
+        let bc_group = BroadcastGroup::new(awareness, BUFFER_CAP)
+            .await
+            .map_err(|error| {
+                error!("unable to create a broadcast group: {error:?}");
+
+                EnterRealmError::Internal
+            })?;
+
         let realm = Arc::new(Realm::new(
             realm_map.clone(),
             s3_client.clone(),
@@ -505,9 +513,13 @@ async fn peer_handler(
         Ok((user_id, realm)) => {
             let peer_id = Uuid::new_v4();
             let (sink, stream) = ws.split();
-            let sink = Arc::new(Mutex::new(WarpSink::from(sink)));
-            let stream = WarpStream::from(stream);
-            let _ = realm.subscribe(peer_id, user_id, sink, stream).await;
+            let sink = Arc::new(Mutex::new(RealmSink::from(sink)));
+            let stream = RealmStream::from(stream);
+
+            // TODO:
+            let _ = realm
+                .subscribe(peer_id, user_id, PeerRole::Editor, sink, stream)
+                .await;
         }
         Err(error) => {
             let (mut tx, _) = ws.split();
