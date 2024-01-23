@@ -1,3 +1,12 @@
+use super::{
+    awareness::Awareness,
+    broadcast::BroadcastGroup,
+    connection::{
+        RealmSink,
+        RealmStream,
+    },
+    protocol::Error,
+};
 use crate::{
     constants::buckets::S3_DOCS_BUCKET,
     utils::deflate_bytes_gzip::{
@@ -5,6 +14,10 @@ use crate::{
         CompressionLevel,
     },
     S3Client,
+};
+use futures_util::{
+    SinkExt,
+    StreamExt,
 };
 use hashbrown::HashMap;
 use lockable::{
@@ -38,18 +51,6 @@ use tracing::{
     warn,
 };
 use uuid::Uuid;
-use y_sync::{
-    awareness::{
-        Awareness,
-        AwarenessUpdate,
-    },
-    net::BroadcastGroup,
-    sync::{
-        Error,
-        Message,
-        Protocol,
-    },
-};
 use yrs::{
     encoding::write::Write,
     updates::encoder::{
@@ -60,11 +61,6 @@ use yrs::{
     ReadTxn,
     StateVector,
     Transact,
-    Update,
-};
-use yrs_warp::ws::{
-    WarpSink,
-    WarpStream,
 };
 
 /// The realm map. Key corresponds to the document ID, while values are the respective realm manager
@@ -144,54 +140,6 @@ pub enum SubscribeError {
 impl fmt::Display for SubscribeError {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{:?}", self)
-    }
-}
-
-/// The realm sync protocol.
-struct RealmProtocol;
-
-impl Protocol for RealmProtocol {
-    /// Reply to awareness query or just incoming [AwarenessUpdate], where the current `awareness`
-    /// instance is being updated with incoming data.
-    fn handle_awareness_update(
-        &self,
-        awareness: &mut Awareness,
-        update: AwarenessUpdate,
-    ) -> Result<Option<Message>, y_sync::sync::Error> {
-        let update_size = update.encode_v2().len();
-
-        if update_size < MAX_AWARENESS_PAYLOAD_SIZE {
-            awareness.apply_update(update)?;
-        } else {
-            warn!(
-                "aborted awareness update due to unexpectedly large update size: {update_size} bytes"
-            );
-        }
-
-        Ok(None)
-    }
-
-    /// Handles reply for a sync-step-1 sent from this replica previously. By default just apply
-    /// an update to current `awareness` document instance.
-    fn handle_sync_step2(
-        &self,
-        awareness: &mut Awareness,
-        update: Update,
-    ) -> Result<Option<Message>, Error> {
-        let mut txn = awareness.doc().transact_mut();
-        txn.apply_update(update);
-
-        Ok(None)
-    }
-
-    /// Handles continuous updates sent from the client. By default just apply an update to a
-    /// current `awareness` document instance.
-    fn handle_update(
-        &self,
-        awareness: &mut Awareness,
-        update: Update,
-    ) -> Result<Option<Message>, Error> {
-        self.handle_sync_step2(awareness, update)
     }
 }
 
@@ -362,7 +310,8 @@ impl Realm {
             doc_id = self.doc_id,
             doc_key = self.doc_key,
             peer_id,
-            user_id
+            user_id,
+            role
         ),
         err
     )]
@@ -371,11 +320,13 @@ impl Realm {
         peer_id: Uuid,
         user_id: i64,
         role: PeerRole,
-        sink: Arc<Mutex<WarpSink>>,
-        stream: WarpStream,
+        sink: Arc<Mutex<RealmSink>>,
+        stream: RealmStream,
     ) -> Result<(), SubscribeError> {
+        let read_only = role != PeerRole::Editor;
+
         debug!(
-            "[{}] peer join request with ID: {peer_id} and user_id: {user_id}",
+            "[{}] peer join request with ID: {peer_id}, user_id: {user_id}, and read_only: {read_only}",
             self.doc_id
         );
 
@@ -389,7 +340,7 @@ impl Realm {
         );
 
         let mut peer_map = self.peer_map.write().await;
-        let subscription = self.bc_group.subscribe_with(sink, stream, RealmProtocol);
+        let subscription = self.bc_group.subscribe(sink, stream, read_only);
 
         if !self.is_persistence_loop_task_running().await {
             self.clone().start_persistence_loop().await;
@@ -758,7 +709,7 @@ mod tests {
         let realm_map: RealmMap = Arc::new(LockableHashMap::new());
         let doc = Doc::new();
         let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
-        let bc_group = BroadcastGroup::new(awareness, 10).await;
+        let bc_group = BroadcastGroup::new(awareness, 10).await.unwrap();
         let realm = Arc::new(Realm::new(
             realm_map.clone(),
             s3_client.clone(),
