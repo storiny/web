@@ -78,6 +78,11 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::bookmarks::get::init_routes(cfg);
     v1::me::bookmarks::post::init_routes(cfg);
     v1::me::bookmarks::delete::init_routes(cfg);
+    // Me - Collaboration requests
+    v1::me::collaboration_requests::get::init_routes(cfg);
+    v1::me::collaboration_requests::post::init_routes(cfg);
+    v1::me::collaboration_requests::cancel::init_routes(cfg);
+    v1::me::collaboration_requests::delete::init_routes(cfg);
     // Me - Comments
     v1::me::comments::get::init_routes(cfg);
     v1::me::comments::post::init_routes(cfg);
@@ -120,6 +125,8 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::gallery::post::init_routes(cfg);
     // Me - History
     v1::me::history::init_routes(cfg);
+    // Me - Leave story
+    v1::me::leave_story::init_routes(cfg);
     // Me - Liked comments
     v1::me::liked_comments::post::init_routes(cfg);
     v1::me::liked_comments::delete::init_routes(cfg);
