@@ -70,7 +70,7 @@ async fn patch(
         .parse::<i64>()
         .map_err(|_| AppError::from("Invalid user ID"))?;
 
-    let mut realm = realm_map
+    let realm = realm_map
         .async_lock(story_id, AsyncLimit::no_limit())
         .await
         .map_err(|error| {
@@ -111,9 +111,9 @@ WHERE
                 debug!("realm is present in the map, updating");
 
                 realm_inner
-                    .update_role(
+                    .update_peer_role(
                         contributor_user_id,
-                        if payload.role == "viewer".to_string() {
+                        if payload.role == *"viewer" {
                             PeerRole::Viewer
                         } else {
                             PeerRole::Editor

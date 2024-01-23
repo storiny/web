@@ -394,7 +394,7 @@ WHERE id = $1
     async fn should_not_allow_the_user_to_send_friend_request_to_itself(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
@@ -417,7 +417,7 @@ WHERE id = $1
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
         // Insert some contributors.
         let result = sqlx::query(

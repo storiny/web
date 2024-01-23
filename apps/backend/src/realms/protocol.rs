@@ -112,7 +112,7 @@ impl Encode for Message {
             }
             Message::Custom(tag, data) => {
                 encoder.write_u8(*tag);
-                encoder.write_buf(&data);
+                encoder.write_buf(data);
             }
         }
     }
@@ -245,6 +245,7 @@ impl RealmProtocol {
     ///
     /// * `awareness` - The awareness instance.
     /// * `encoder` - The message encoder.
+    #[allow(dead_code)]
     pub fn start<E: Encoder>(&self, awareness: &Awareness, encoder: &mut E) -> Result<(), Error> {
         let (sv, update) = {
             let sv = awareness.doc().transact().state_vector();
@@ -372,6 +373,7 @@ impl<'a, D: Decoder> MessageReader<'a, D> {
     /// Creates a new [MessageReader] instance.
     ///
     /// * `decoder` - The decoder to use for decoding the messages.
+    #[allow(dead_code)]
     pub fn new(decoder: &'a mut D) -> Self {
         MessageReader(decoder)
     }
@@ -394,7 +396,7 @@ impl<'a, D: Decoder> Iterator for MessageReader<'a, D> {
 pub enum Error {
     /// Incoming message couldn't be deserialized.
     #[error("failed to deserialize message: {0}")]
-    DecodingError(#[from] read::Error),
+    Decoding(#[from] read::Error),
     /// Applying incoming awareness update has failed.
     #[error("failed to process awareness update: {0}")]
     AwarenessEncoding(#[from] awareness::Error),
@@ -451,13 +453,16 @@ mod test {
 
         let mut awareness = Awareness::new(doc);
 
-        awareness.set_local_state(serde_json::json!({
-            "user": {
-                "name": "Test user",
-                "username": "test_user",
-                "color": "#000000"
-            }
-        }));
+        awareness.set_local_state(
+            serde_json::json!({
+                "user": {
+                    "name": "Test user",
+                    "username": "test_user",
+                    "color": "#000000"
+                }
+            })
+            .to_string(),
+        );
 
         let messages = [
             Message::Sync(SyncMessage::SyncStep1(
@@ -477,8 +482,8 @@ mod test {
 
         for message in messages {
             let encoded = message.encode_v1();
-            let decoded =
-                Message::decode_v1(&encoded).expect(&format!("failed to decode {:?}", message));
+            let decoded = Message::decode_v1(&encoded)
+                .unwrap_or_else(|_| panic!("failed to decode {:?}", message));
 
             assert_eq!(decoded, message);
         }

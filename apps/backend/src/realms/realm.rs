@@ -1,11 +1,9 @@
 use super::{
-    awareness::Awareness,
     broadcast::BroadcastGroup,
     connection::{
         RealmSink,
         RealmStream,
     },
-    protocol::Error,
 };
 use crate::{
     constants::buckets::S3_DOCS_BUCKET,
@@ -14,10 +12,6 @@ use crate::{
         CompressionLevel,
     },
     S3Client,
-};
-use futures_util::{
-    SinkExt,
-    StreamExt,
 };
 use hashbrown::HashMap;
 use lockable::{
@@ -30,6 +24,7 @@ use std::{
     sync::Arc,
 };
 use strum::Display;
+use strum_macros::EnumString;
 use thiserror::Error;
 use time::OffsetDateTime;
 use tokio::{
@@ -52,12 +47,6 @@ use tracing::{
 };
 use uuid::Uuid;
 use yrs::{
-    encoding::write::Write,
-    updates::encoder::{
-        Encode,
-        Encoder,
-        EncoderV1,
-    },
     ReadTxn,
     StateVector,
     Transact,
@@ -71,7 +60,7 @@ pub type RealmMap = Arc<LockableHashMap<i64, Arc<Realm>>>;
 pub type RealmData = actix_web::web::Data<LockableHashMap<i64, Arc<Realm>>>;
 
 /// The maximum number of peers that can connect to a single realm.
-pub const MAX_PEERS_PER_REALM: u16 = 3;
+pub const MAX_PEERS_PER_REALM: u16 = 5;
 
 /// The loop interval duration (in seconds) after which the document gets persisted to the object
 /// storage.
@@ -80,11 +69,6 @@ const PERSISTENCE_LOOP_DURATION: u64 = 60; // 1 minute
 /// The maximum size (in bytes) of the binary document data after compression.
 const MAX_DOCUMENT_SIZE: u32 = 8_000_000; // 8 megabytes
 
-/// The maximum size (in bytes) of the individual incoming awareness update. Awareness updates
-/// should normally never overflow this limit unless the peer is sending malformed updates, in
-/// which case we simply reject them.
-const MAX_AWARENESS_PAYLOAD_SIZE: usize = 1_000_000; // 1 megabyte
-
 /// The timeout (in seconds) for uploading a document to the object storage.
 const DOC_UPLOAD_TIMEOUT: u64 = 25; // 25 seconds
 
@@ -92,9 +76,6 @@ const DOC_UPLOAD_TIMEOUT: u64 = 25; // 25 seconds
 /// need to subscribe again. This can happen when the peer leaves the connection open for an
 /// absurdly large duration of time.
 const REALM_LIFETIME: i64 = 28_800; // 8 hours
-
-/// Tag id for an internal message.
-const MSG_INTERNAL: u8 = 4;
 
 /// The reason for destroying a [Realm] instance.
 #[derive(Display, Debug, PartialEq)]
@@ -144,7 +125,7 @@ impl fmt::Display for SubscribeError {
 }
 
 /// The role for the peer.
-#[derive(Debug, Copy, Clone, Display)]
+#[derive(Debug, Copy, Clone, Display, PartialEq, EnumString)]
 pub enum PeerRole {
     #[strum(serialize = "viewer")]
     Viewer,
@@ -165,7 +146,6 @@ struct Peer {
 
 /// The realm manager. It handles the broadcasting of messages, peer subscriptions, and document
 /// persistence to the object storage.
-#[derive(Debug)]
 pub struct Realm {
     /// The ID of the document being edited.
     pub doc_id: i64,
@@ -255,44 +235,54 @@ impl Realm {
         peer_map.len() > 0
     }
 
+    /// Returns the role of the peer using the user ID if present.
+    ///
+    /// * `user_id` - The user ID of the peer.
+    pub async fn get_peer_role(&self, user_id: i64) -> Option<PeerRole> {
+        let peer_map = self.peer_map.read().await;
+        let (_, peer) = peer_map.iter().find(|&(_, peer)| peer.id == user_id)?;
+        Some(peer.role)
+    }
+
     /// Updates the role for an existing peer.
     ///
     /// * `user_id` - The user ID of the peer.
     /// * `next_role` - The next role value for the peer.
-    pub async fn update_role(&self, user_id: i64, next_role: PeerRole) {
-        {
-            let mut peer_map = self.peer_map.write().await;
-
-            for peer in peer_map.values_mut() {
-                if peer.id == user_id {
-                    peer.role = next_role;
-                }
-            }
-        }
-
+    pub async fn update_peer_role(&self, user_id: i64, next_role: PeerRole) {
         // Broadcast a role update message to the peers.
         self.broadcast_internal_message(format!("role_update:{user_id}:{next_role}").as_ref())
             .await;
+
+        // The peer needs to reload the document on role mutation.
+        self.remove_peer(user_id, true).await;
     }
 
     /// Removes a peer from the realm.
     ///
     /// * `user_id` - The user ID of the peer.
-    pub async fn remove_peer(&self, user_id: i64) {
+    /// * `skip_broadcast` - If `true`, does not broadcasts a peer remove message.
+    pub async fn remove_peer(&self, user_id: i64, skip_broadcast: bool) {
         {
             let mut peer_map = self.peer_map.write().await;
+            let mut peers_to_remove = Vec::new();
 
             for (key, peer) in peer_map.iter() {
                 if peer.id == user_id {
                     peer.subscription.abort();
-                    peer_map.remove(key);
+                    peers_to_remove.push(*key);
                 }
+            }
+
+            for peer_id in peers_to_remove {
+                peer_map.remove(&peer_id);
             }
         }
 
-        // Broadcast a peer remove message to the peers.
-        self.broadcast_internal_message(format!("peer_remove:{user_id}").as_ref())
-            .await;
+        if !skip_broadcast {
+            // Broadcast a peer remove message to the peers.
+            self.broadcast_internal_message(format!("peer_remove:{user_id}").as_ref())
+                .await;
+        }
     }
 
     /// Subscribes a new peer to the broadcast group and waits until the connection for the peer is
@@ -335,7 +325,7 @@ impl Realm {
         }
 
         debug!(
-            "[{}] peer joined with ID: {peer_id} and user_id: {user_id}",
+            "[{}] peer joined with ID: {peer_id}, user_id: {user_id}, and read_only: {read_only}",
             self.doc_id
         );
 
@@ -564,11 +554,7 @@ impl Realm {
     /// * `message` - The message value to broadcast.
     async fn broadcast_internal_message(&self, message: &str) {
         if self.has_peers().await {
-            let mut encoder = EncoderV1::new();
-            encoder.write_var(MSG_INTERNAL);
-            encoder.write_string(message);
-
-            let _ = self.bc_group.broadcast(encoder.to_vec());
+            let _ = self.bc_group.broadcast_internal_message(message);
         }
     }
 
@@ -673,12 +659,18 @@ impl Drop for Realm {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::{
-        realms::server::tests::{
-            init_realms_server_for_test,
-            peer,
+    use super::{
+        super::{
+            awareness::Awareness,
+            protocol::MSG_INTERNAL,
+            server::tests::{
+                init_realms_server_for_test,
+                peer,
+            },
         },
+        *,
+    };
+    use crate::{
         test_utils::{
             get_s3_client,
             TestContext,
@@ -772,7 +764,7 @@ mod tests {
             let s3_client = &ctx.s3_client;
             let (endpoint, realm_map, _, story_id) =
                 init_realms_server_for_test(pool, Some(s3_client.clone()), true, true).await;
-            let _ = peer(endpoint).await;
+            let (_tx, _rx) = peer(endpoint).await;
 
             tokio::time::sleep(Duration::from_secs(5)).await;
 
@@ -783,6 +775,69 @@ mod tests {
             let realm = realm_outer.value();
 
             assert!(realm.is_some())
+        }
+
+        #[test_context(LocalTestContext)]
+        #[sqlx::test]
+        async fn can_remove_a_peer_from_realm(ctx: &mut LocalTestContext, pool: PgPool) {
+            let s3_client = &ctx.s3_client;
+            let (endpoint, realm_map, user_id, story_id) =
+                init_realms_server_for_test(pool, Some(s3_client.clone()), true, true).await;
+            let (_tx, _rx) = peer(endpoint).await;
+
+            tokio::time::sleep(Duration::from_secs(5)).await;
+
+            let realm_outer = realm_map
+                .async_lock(story_id, AsyncLimit::no_limit())
+                .await
+                .unwrap();
+            let realm = realm_outer.value().expect("realm not found");
+
+            assert!(realm.has_peers().await);
+
+            realm.remove_peer(user_id, false).await;
+
+            assert!(!realm.has_peers().await);
+        }
+
+        #[test_context(LocalTestContext)]
+        #[sqlx::test]
+        async fn can_update_the_role_of_a_peer(ctx: &mut LocalTestContext, pool: PgPool) {
+            let s3_client = &ctx.s3_client;
+            let (endpoint, realm_map, user_id, story_id) =
+                init_realms_server_for_test(pool, Some(s3_client.clone()), true, true).await;
+            let (mut tx, mut rx) = peer(endpoint).await;
+
+            tokio::time::sleep(Duration::from_secs(5)).await;
+
+            let realm_outer = realm_map
+                .async_lock(story_id, AsyncLimit::no_limit())
+                .await
+                .unwrap();
+            let realm = realm_outer.value().expect("realm not found");
+
+            assert_eq!(realm.get_peer_role(user_id).await, Some(PeerRole::Editor));
+
+            realm.update_peer_role(user_id, PeerRole::Viewer).await;
+
+            // The peer should receive an internal destroy message
+            if let Ok(message) = rx.next().await.unwrap() {
+                assert!(message.is_binary());
+
+                let message_data = message.into_data();
+                let mut decoder = DecoderV1::new(Cursor::new(&message_data));
+
+                assert_eq!(decoder.read_var::<u8>().unwrap(), MSG_INTERNAL);
+                assert_eq!(
+                    decoder.read_string().unwrap().to_string(),
+                    format!("role_update:{user_id}:{}", PeerRole::Viewer)
+                );
+            }
+
+            tx.close().await.unwrap();
+
+            // Should also remove the peer.
+            assert!(!realm.has_peers().await);
         }
 
         #[test_context(LocalTestContext)]

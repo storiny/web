@@ -1,4 +1,3 @@
-#![forbid(unsafe_code)]
 #![allow(clippy::module_inception)]
 //
 #[cfg(target_has_atomic = "ptr")]
