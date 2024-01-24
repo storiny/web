@@ -68,6 +68,7 @@ pub async fn cleanup_cache(_: CacheCleanupJob, ctx: JobContext) -> Result<(), Jo
                 return Err(JobError::Failed(Box::from(err.to_string())));
             }
 
+            #[allow(clippy::unwrap_used)]
             let iter = iter.unwrap();
 
             let collected_keys: Vec<String> = iter.collect().await;

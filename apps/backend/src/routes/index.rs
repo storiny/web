@@ -14,13 +14,16 @@ use tracing_actix_web::RequestId;
 #[get("/")]
 #[tracing::instrument(name = "GET /", skip_all, err)]
 async fn get(id: RequestId) -> Result<HttpResponse, AppError> {
-    Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
-        IndexTemplate {
-            req_id: id.to_string(),
-        }
-        .render_once()
-        .unwrap(),
-    ))
+    IndexTemplate {
+        req_id: id.to_string(),
+    }
+    .render_once()
+    .map(|body| {
+        HttpResponse::Ok()
+            .content_type(ContentType::html())
+            .body(body)
+    })
+    .map_err(|error| AppError::InternalError(error.to_string()))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {

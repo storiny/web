@@ -24,7 +24,10 @@ use uuid::Uuid;
 use validator::Validate;
 
 lazy_static! {
-    static ref TYPE_REGEX: Regex = Regex::new(r"^(received|sent)$").unwrap();
+    static ref TYPE_REGEX: Regex = {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"^(received|sent)$").unwrap()
+    };
 }
 
 #[derive(Serialize, Deserialize, Validate)]
@@ -186,9 +189,7 @@ FROM sent_collaboration_requests
     .bind(10_i16)
     .bind((page * 10) as i16)
     .fetch_all(&data.db_pool)
-    // TODO
-    .await
-    .unwrap();
+    .await?;
 
     Ok(HttpResponse::Ok().json(result))
 }

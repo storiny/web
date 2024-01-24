@@ -58,7 +58,9 @@ async fn handle_discord_oauth_request(
 
     let reqwest_client = &data.reqwest_client;
     let code = AuthorizationCode::new(params.code.clone());
-    let token_res = data.oauth_client_map.discord
+    let token_res = data
+        .oauth_client_map
+        .discord
         .exchange_code(code)
         .request_async(async_http_client)
         .await
@@ -153,20 +155,23 @@ async fn get(
     session: Session,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
-        ConnectionTemplate {
-            error: match user.id() {
-                Ok(user_id) => handle_discord_oauth_request(&data, &session, &params, user_id)
-                    .await
-                    .err(),
-                Err(error) => Some(ConnectionError::Other(error.to_string())),
-            },
-            provider_icon: DISCORD_LOGO.to_string(),
-            provider_name: "Discord".to_string(),
-        }
-        .render_once()
-        .unwrap(),
-    ))
+    ConnectionTemplate {
+        error: match user.id() {
+            Ok(user_id) => handle_discord_oauth_request(&data, &session, &params, user_id)
+                .await
+                .err(),
+            Err(error) => Some(ConnectionError::Other(error.to_string())),
+        },
+        provider_icon: DISCORD_LOGO.to_string(),
+        provider_name: "Discord".to_string(),
+    }
+    .render_once()
+    .map(|body| {
+        HttpResponse::Ok()
+            .content_type(ContentType::html())
+            .body(body)
+    })
+    .map_err(|error| AppError::InternalError(error.to_string()))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {

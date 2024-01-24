@@ -77,7 +77,7 @@ fn parse_response_impl(
 ) -> Option<ParseResult> {
     let mut width = width_prop.unwrap_or(DEFAULT_WIDTH);
     let mut height = height_prop.unwrap_or(DEFAULT_HEIGHT);
-    let root = Vis::load(html).unwrap();
+    let root = Vis::load(html).ok()?;
 
     // Get the first iframe.
     let mut iframe = root.find("iframe").first();
@@ -108,12 +108,19 @@ fn parse_response_impl(
 
         // Set the extra params.
         if let Some(extra_params) = iframe_params {
-            let mut iframe_src = Url::parse(&iframe.attr("src").unwrap().to_string()).unwrap();
-            iframe_src
-                .query_pairs_mut()
-                .extend_pairs(&extra_params.clone())
-                .finish();
-            iframe.set_attr("src", Some(iframe_src.as_ref()));
+            let iframe_src = iframe
+                .attr("src")
+                .map(|value| value.to_string())
+                .unwrap_or_default();
+
+            if let Ok(mut iframe_src) = Url::parse(iframe_src.as_str()) {
+                iframe_src
+                    .query_pairs_mut()
+                    .extend_pairs(&extra_params.clone())
+                    .finish();
+
+                iframe.set_attr("src", Some(iframe_src.as_ref()));
+            }
         }
 
         iframe.set_attr("loading", Some("lazy"));

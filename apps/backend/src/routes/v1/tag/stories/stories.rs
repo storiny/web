@@ -26,7 +26,10 @@ use uuid::Uuid;
 use validator::Validate;
 
 lazy_static! {
-    static ref SORT_REGEX: Regex = Regex::new(r"^(recent|popular)$").unwrap();
+    static ref SORT_REGEX: Regex = {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"^(recent|popular)$").unwrap()
+    };
 }
 
 #[derive(Deserialize, Validate)]

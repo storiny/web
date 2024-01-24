@@ -1,4 +1,5 @@
 #![allow(clippy::module_inception)]
+#![deny(clippy::expect_used, clippy::unwrap_used)]
 //
 #[cfg(target_has_atomic = "ptr")]
 //
@@ -34,6 +35,7 @@ pub mod models;
 pub mod oauth;
 pub mod realms;
 pub mod routes;
+pub mod snowflake_id;
 pub mod telemetry;
 pub mod utils;
 
@@ -114,88 +116,4 @@ pub fn get_aws_behavior_version() -> BehaviorVersion {
 /// Returns the region for AWS services.
 pub fn get_aws_region() -> Region {
     Region::new("us-east-1")
-}
-
-/// Snowflake ID serializer and deserializer. This enables the deserialization of Snowflake IDs
-/// from an integer or string value, as well as the serialization of Snowflake IDs into a string
-/// value to prevent the big-int values from losing precision when they are sent to the client.
-pub mod snowflake_id {
-    use serde::{
-        de,
-        Deserialize,
-        Deserializer,
-        Serializer,
-    };
-    use std::fmt;
-
-    pub fn serialize<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        T: fmt::Display,
-        S: Serializer,
-    {
-        serializer.collect_str(value)
-    }
-
-    pub fn deserialize<'de, D>(deserializer: D) -> Result<i64, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        #[derive(Deserialize)]
-        #[serde(untagged)]
-        enum StringOrInt {
-            String(String),
-            Int(i64),
-        }
-
-        match StringOrInt::deserialize(deserializer)? {
-            StringOrInt::String(val) => val.parse().map_err(de::Error::custom),
-            StringOrInt::Int(int) => Ok(int),
-        }
-    }
-
-    pub mod option {
-        use serde::{
-            de,
-            Deserialize,
-            Deserializer,
-            Serializer,
-        };
-        use std::fmt;
-
-        pub fn serialize<T, S>(value: &Option<T>, serializer: S) -> Result<S::Ok, S::Error>
-        where
-            T: fmt::Display,
-            S: Serializer,
-        {
-            match value {
-                Some(value) => serializer.collect_str(value),
-                None => serializer.serialize_none(),
-            }
-        }
-
-        pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<i64>, D::Error>
-        where
-            D: Deserializer<'de>,
-        {
-            #[derive(Deserialize)]
-            #[serde(untagged)]
-            enum StringOrIntOrNull {
-                String(String),
-                Int(i64),
-                None,
-            }
-
-            match StringOrIntOrNull::deserialize(deserializer)? {
-                StringOrIntOrNull::String(val) => {
-                    let parsed: Result<i64, _> = val.parse().map_err(de::Error::custom);
-                    match parsed {
-                        Ok(value) => Ok(Some(value)),
-                        Err(error) => Err(error),
-                    }
-                }
-                StringOrIntOrNull::Int(int) => Ok(Some(int)),
-                StringOrIntOrNull::None => Ok(None),
-            }
-        }
-    }
 }

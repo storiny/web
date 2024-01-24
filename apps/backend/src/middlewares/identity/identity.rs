@@ -42,6 +42,7 @@ pub struct IdentityInner {
 
 impl IdentityInner {
     fn extract(ext: &Extensions) -> Self {
+        #[allow(clippy::expect_used)]
         ext.get::<Self>()
             .expect(
                 "No `IdentityInner` instance was found in the extensions attached to the \

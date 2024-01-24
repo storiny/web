@@ -196,7 +196,7 @@ async fn fetch_doc_from_s3(s3_client: &S3Client, doc_key: &str) -> Result<Vec<u8
 /// * `db_pool` - The Postgres connection pool.
 /// * `redis_pool` - The Redis connection pool.
 /// * `s3_client` - The S3 client instance.
-#[tracing::instrument(name = "REALM enter_realm", skip_all, fields(story_id), err)]
+#[tracing::instrument(skip_all, fields(story_id), err)]
 async fn enter_realm(
     config: Arc<Config>,
     story_id: i64,
@@ -213,7 +213,7 @@ async fn enter_realm(
 
         let secret_key = Key::from(config.session_secret_key.as_bytes());
         let session_key =
-            extract_session_key_from_cookie(&session_cookie_value.unwrap(), &secret_key)
+            extract_session_key_from_cookie(&session_cookie_value.unwrap_or_default(), &secret_key)
                 .ok_or(EnterRealmError::Unauthorized)?;
 
         let mut redis_conn = redis_pool.get().await.map_err(|error| {
@@ -379,13 +379,14 @@ SELECT
                     }
                 };
 
-                if final_doc_key.is_none() {
-                    error!("unable to resolve the final document key");
+                let final_doc_key = match final_doc_key {
+                    Some(value) => value,
+                    None => {
+                        error!("unable to resolve the final document key");
 
-                    return Err(EnterRealmError::Internal);
-                }
-
-                let final_doc_key = final_doc_key.unwrap();
+                        return Err(EnterRealmError::Internal);
+                    }
+                };
 
                 // Copy the original story data to a new editable document.
                 if let Some(inserted_doc_key) = inserted_doc_key {
@@ -555,15 +556,25 @@ async fn peer_handler(
 /// * `db_pool` - The Postgres connection pool.
 /// * `redis_pool` - The Redis connection pool.
 /// * `s3_client` - The S3 client instance.
+#[tracing::instrument(skip_all, err)]
 pub async fn start_realms_server(
     realm_map: RealmMap,
     db_pool: Pool<Postgres>,
     redis_pool: RedisPool,
     s3_client: S3Client,
 ) -> std::io::Result<()> {
-    let config = Arc::new(get_app_config().expect("Unable to load the environment configuration"));
+    #[allow(clippy::expect_used)]
+    let config = Arc::new(get_app_config().expect("unable to load the environment configuration"));
+
     let host = config.realms_host.to_string();
-    let port = config.realms_port.clone().parse::<u16>().unwrap();
+    #[allow(clippy::expect_used)]
+    let port = config
+        .realms_port
+        .clone()
+        .parse::<u16>()
+        .expect("unable to parse the port");
+
+    #[allow(clippy::expect_used)]
     let socket_addr: SocketAddr = format!(
         "{}:{}",
         if config.is_dev { "127.0.0.1" } else { &host },
@@ -613,7 +624,8 @@ pub async fn start_realms_server(
                 },
             ))
         .with({
-            let config = get_app_config().unwrap();
+            #[allow(clippy::expect_used)]
+            let config = get_app_config().expect("unable to read the environment configuration");
 
             if config.is_dev {
                 warp::cors().allow_any_origin()
@@ -627,13 +639,23 @@ pub async fn start_realms_server(
         .with(warp::compression::gzip())
         .recover(handle_rejection);
 
-    let mut stream = signal(SignalKind::terminate()).unwrap();
-    let (_, server) =
-        warp::serve(realms_router).bind_with_graceful_shutdown(socket_addr, async move {
-            stream.recv().await;
-        });
+    match signal(SignalKind::terminate()) {
+        Ok(mut stream) => {
+            let (_, server) =
+                warp::serve(realms_router).bind_with_graceful_shutdown(socket_addr, async move {
+                    stream.recv().await;
+                });
 
-    tokio::task::spawn(server);
+            tokio::task::spawn(server);
+        }
+        Err(error) => {
+            warn!("starting the realms server without graceful shutdown: {error:?}");
+
+            let server = warp::serve(realms_router).bind(socket_addr);
+
+            tokio::task::spawn(server);
+        }
+    };
 
     Ok(())
 }
@@ -737,7 +759,7 @@ pub mod tests {
                     let _: String = redis::cmd("FLUSHDB")
                         .query_async(&mut conn)
                         .await
-                        .expect("Failed to FLUSHDB");
+                        .expect("failed to FLUSHDB");
                 },
                 async {
                     delete_s3_objects(&self.s3_client, S3_DOCS_BUCKET, None, None)

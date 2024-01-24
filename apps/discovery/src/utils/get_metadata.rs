@@ -226,6 +226,7 @@ impl Opengraph {
             self.image = Some(OpengraphImage::new("".to_string()));
         }
 
+        #[allow(clippy::unwrap_used)]
         self.image.as_mut().unwrap()
     }
 
@@ -269,6 +270,7 @@ impl TwitterCard {
             self.image = Some(TwitterImage::new("".to_string()));
         }
 
+        #[allow(clippy::unwrap_used)]
         self.image.as_mut().unwrap()
     }
 
@@ -539,6 +541,8 @@ pub async fn get_metadata(
         image: if has_opengraph_image || has_twitter_card_image {
             let og_image = doc_metadata.opengraph.image;
             let tc_image = doc_metadata.twitter_card.image;
+
+            #[allow(clippy::unwrap_used)]
             let is_large = if has_twitter_card_image && tc_image.clone().unwrap().is_large {
                 true
             } else if has_opengraph_image {
@@ -553,9 +557,11 @@ pub async fn get_metadata(
                 src: {
                     let src = {
                         if has_opengraph_image {
+                            #[allow(clippy::unwrap_used)]
                             process_image_src(&og_image.clone().unwrap().url, &mut url.clone())
                                 .unwrap_or_default()
                         } else {
+                            #[allow(clippy::unwrap_used)]
                             process_image_src(&tc_image.clone().unwrap().url, &mut url.clone())
                                 .unwrap_or_default()
                         }
@@ -573,18 +579,22 @@ pub async fn get_metadata(
                     }
                 },
                 width: if has_opengraph_image {
+                    #[allow(clippy::unwrap_used)]
                     og_image.clone().unwrap().width
                 } else {
                     None
                 },
                 height: if has_opengraph_image {
+                    #[allow(clippy::unwrap_used)]
                     og_image.clone().unwrap().height
                 } else {
                     None
                 },
                 alt: if has_opengraph_image {
+                    #[allow(clippy::unwrap_used)]
                     og_image.clone().unwrap().alt
                 } else {
+                    #[allow(clippy::unwrap_used)]
                     tc_image.clone().unwrap().alt
                 },
                 is_large,
@@ -592,8 +602,8 @@ pub async fn get_metadata(
         } else {
             None
         },
-        favicon: if doc_metadata.favicon.is_some() {
-            if let Some(src) = process_image_src(&doc_metadata.favicon.unwrap(), &mut url.clone()) {
+        favicon: if let Some(favicon) = doc_metadata.favicon {
+            if let Some(src) = process_image_src(favicon.as_str(), &mut url.clone()) {
                 if skip_encoding_image {
                     Some(src)
                 } else {

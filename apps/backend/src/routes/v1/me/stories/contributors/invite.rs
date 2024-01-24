@@ -32,7 +32,10 @@ use serde::{
 use validator::Validate;
 
 lazy_static! {
-    static ref ROLE_REGEX: Regex = Regex::new(r"^(editor|viewer)$").unwrap();
+    static ref ROLE_REGEX: Regex = {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"^(editor|viewer)$").unwrap()
+    };
 }
 
 #[derive(Deserialize, Validate)]

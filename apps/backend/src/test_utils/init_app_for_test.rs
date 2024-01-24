@@ -104,7 +104,7 @@ pub async fn init_app_for_test(
     Option<Cookie<'static>>,
     Option<i64>, // User ID
 ) {
-    let config = get_app_config().expect("Unable to load environment configuration");
+    let config = get_app_config().expect("unable to load environment configuration");
     let redis_connection_string = format!("redis://{}:{}", config.redis_host, config.redis_port);
 
     // Session

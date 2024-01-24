@@ -69,7 +69,7 @@ WHERE id = $1
         .into());
     }
 
-    let mfa_secret = mfa_secret.unwrap();
+    let mfa_secret = mfa_secret.unwrap_or_default();
 
     let secret_as_bytes = Secret::Encoded(mfa_secret).to_bytes().map_err(|error| {
         AppError::InternalError(format!("unable to parse totp secret: {error:?}"))

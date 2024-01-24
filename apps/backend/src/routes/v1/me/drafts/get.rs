@@ -25,8 +25,14 @@ use uuid::Uuid;
 use validator::Validate;
 
 lazy_static! {
-    static ref SORT_REGEX: Regex = Regex::new(r"^(recent|old)$").unwrap();
-    static ref TYPE_REGEX: Regex = Regex::new(r"^(pending|deleted)$").unwrap();
+    static ref SORT_REGEX: Regex = {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"^(recent|old)$").unwrap()
+    };
+    static ref TYPE_REGEX: Regex = {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"^(pending|deleted)$").unwrap()
+    };
 }
 
 #[derive(Serialize, Deserialize, Validate)]
