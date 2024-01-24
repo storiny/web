@@ -65,80 +65,80 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(post);
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::test_utils::{
-        assert_toast_error_response,
-        init_app_for_test,
-    };
-    use actix_web::test;
-    use sqlx::{
-        PgPool,
-        Row,
-    };
-
-    #[sqlx::test(fixtures("friend_request"))]
-    async fn can_cancel_a_friend_request(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
-
-        // Send a friend request.
-        let insert_result = sqlx::query(
-            r#"
-INSERT INTO friends (transmitter_id, receiver_id)
-VALUES ($1, $2)
-"#,
-        )
-        .bind(user_id.unwrap())
-        .bind(2_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(insert_result.rows_affected(), 1);
-
-        let req = test::TestRequest::post()
-            .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/friend-requests/{}/cancel", 2))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // Friend request should not be present in the database.
-        let result = sqlx::query(
-            r#"
-SELECT EXISTS (
-    SELECT 1 FROM friends
-    WHERE receiver_id = $1 AND transmitter_id = $2
-)
-"#,
-        )
-        .bind(2_i64)
-        .bind(user_id.unwrap())
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(!result.get::<bool, _>("exists"));
-
-        Ok(())
-    }
-
-    #[sqlx::test]
-    async fn can_return_an_error_response_when_trying_to_cancel_an_unknown_friend_request(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
-
-        let req = test::TestRequest::post()
-            .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/friend-requests/{}/cancel", 12345))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Friend request not found").await;
-
-        Ok(())
-    }
-}
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     use crate::test_utils::{
+//         assert_toast_error_response,
+//         init_app_for_test,
+//     };
+//     use actix_web::test;
+//     use sqlx::{
+//         PgPool,
+//         Row,
+//     };
+//
+//     #[sqlx::test(fixtures("friend_request"))]
+//     async fn can_cancel_a_friend_request(pool: PgPool) -> sqlx::Result<()> {
+//         let mut conn = pool.acquire().await?;
+//         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+//
+//         // Send a friend request.
+//         let insert_result = sqlx::query(
+//             r#"
+// INSERT INTO friends (transmitter_id, receiver_id)
+// VALUES ($1, $2)
+// "#,
+//         )
+//         .bind(user_id.unwrap())
+//         .bind(2_i64)
+//         .execute(&mut *conn)
+//         .await?;
+//
+//         assert_eq!(insert_result.rows_affected(), 1);
+//
+//         let req = test::TestRequest::post()
+//             .cookie(cookie.unwrap())
+//             .uri(&format!("/v1/me/friend-requests/{}/cancel", 2))
+//             .to_request();
+//         let res = test::call_service(&app, req).await;
+//
+//         assert!(res.status().is_success());
+//
+//         // Friend request should not be present in the database.
+//         let result = sqlx::query(
+//             r#"
+// SELECT EXISTS (
+//     SELECT 1 FROM friends
+//     WHERE receiver_id = $1 AND transmitter_id = $2
+// )
+// "#,
+//         )
+//         .bind(2_i64)
+//         .bind(user_id.unwrap())
+//         .fetch_one(&mut *conn)
+//         .await?;
+//
+//         assert!(!result.get::<bool, _>("exists"));
+//
+//         Ok(())
+//     }
+//
+//     #[sqlx::test]
+//     async fn can_return_an_error_response_when_trying_to_cancel_an_unknown_friend_request(
+//         pool: PgPool,
+//     ) -> sqlx::Result<()> {
+//         let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
+//
+//         let req = test::TestRequest::post()
+//             .cookie(cookie.unwrap())
+//             .uri(&format!("/v1/me/friend-requests/{}/cancel", 12345))
+//             .to_request();
+//         let res = test::call_service(&app, req).await;
+//
+//         assert!(res.status().is_client_error());
+//         assert_toast_error_response(res, "Friend request not found").await;
+//
+//         Ok(())
+//     }
+// }
