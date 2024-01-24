@@ -83,6 +83,7 @@ SELECT
 	"is_bookmarked!",
 	"is_liked!",
 	-- Joins
+	NULL AS "user!: Option<Json<User>>",
 	"tags!: Vec<Tag>"
 FROM
 	stories_result

@@ -21,6 +21,15 @@ WITH stories_result AS (SELECT
 							-- Boolean flags
 							"s->is_liked".story_id IS NOT NULL      AS "is_liked!",
 							"s->is_bookmarked".story_id IS NOT NULL AS "is_bookmarked!",
+							-- User
+							JSON_BUILD_OBJECT(
+									'id', su.id,
+									'name', su.name,
+									'username', su.username,
+									'avatar_id', su.avatar_id,
+									'avatar_hex', su.avatar_hex,
+									'public_flags', su.public_flags
+							)                                       AS "user!: Option<Json<User>>",
 							-- Tags
 							COALESCE(
 											ARRAY_AGG(
@@ -31,6 +40,15 @@ WITH stories_result AS (SELECT
 							)                                       AS "tags!: Vec<Tag>"
 						FROM
 							stories s
+								-- Join user
+								INNER JOIN users AS su
+										   ON su.id = s.user_id
+								-- Join contributor
+								INNER JOIN story_contributors AS sc
+										   ON sc.story_id = s.id
+											   AND sc.user_id = $1
+											   AND sc.accepted_at IS NOT NULL
+											   AND sc.deleted_at IS NULL
 								-- Join story tags
 								LEFT OUTER JOIN (story_tags AS "s->story_tags"
 								-- Join tags
@@ -48,18 +66,15 @@ WITH stories_result AS (SELECT
 													AND "s->is_bookmarked".user_id = $1
 													AND "s->is_bookmarked".deleted_at IS NULL
 						WHERE
-							  s.user_id = $1
-						  AND s.published_at IS NOT NULL
+							  s.published_at IS NOT NULL
 						  AND s.deleted_at IS NULL
 						GROUP BY
 							s.id,
-							s.read_count,
 							s.published_at,
+							su.id,
 							"s->is_liked".story_id,
 							"s->is_bookmarked".story_id
-						ORDER BY
-							s.read_count   DESC,
-							s.published_at DESC
+						ORDER BY s.published_at DESC
 						LIMIT $2 OFFSET $3
 					   )
 SELECT
@@ -86,7 +101,7 @@ SELECT
 	"is_bookmarked!",
 	"is_liked!",
 	-- Joins
-	NULL AS "user!: Option<Json<User>>",
+	"user!: Option<Json<User>>",
 	"tags!: Vec<Tag>"
 FROM
 	stories_result

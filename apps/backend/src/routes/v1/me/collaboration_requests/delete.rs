@@ -16,16 +16,16 @@ use validator::Validate;
 
 #[derive(Deserialize, Validate)]
 struct Fragments {
-    transmitter_id: String,
+    id: String,
 }
 
-#[delete("/v1/me/friend-requests/{transmitter_id}")]
+#[delete("/v1/me/collaboration-requests/{id}")]
 #[tracing::instrument(
-    name = "DELETE /v1/me/friend-requests/{transmitter_id}",
+    name = "DELETE /v1/me/collaboration-requests/{id}",
     skip_all,
     fields(
-        receiver_id = user.id().ok(),
-        transmitter_id = %path.transmitter_id
+        user_id = user.id().ok(),
+        id = %path.id
     ),
     err
 )]
@@ -34,28 +34,28 @@ async fn delete(
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    let receiver_id = user.id()?;
-    let transmitter_id = path
-        .transmitter_id
+    let user_id = user.id()?;
+    let id = path
+        .id
         .parse::<i64>()
-        .map_err(|_| AppError::from("Invalid user ID"))?;
+        .map_err(|_| AppError::from("Invalid ID"))?;
 
     match sqlx::query(
         r#"
-DELETE FROM friends
+DELETE FROM story_contributors
 WHERE
-    receiver_id = $1
-    AND transmitter_id = $2
+    user_id = $1
+    AND id = $2
     AND accepted_at IS NULL
 "#,
     )
-    .bind(receiver_id)
-    .bind(transmitter_id)
+    .bind(user_id)
+    .bind(id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()
     {
-        0 => Err(ToastErrorResponse::new(None, "Friend request not found").into()),
+        0 => Err(ToastErrorResponse::new(None, "Collaboration request not found").into()),
         _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
@@ -64,80 +64,116 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(delete);
 }
 
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-//     use crate::test_utils::{
-//         assert_toast_error_response,
-//         init_app_for_test,
-//     };
-//     use actix_web::test;
-//     use sqlx::{
-//         PgPool,
-//         Row,
-//     };
-//
-//     #[sqlx::test(fixtures("friend_request"))]
-//     async fn can_reject_a_friend_request(pool: PgPool) -> sqlx::Result<()> {
-//         let mut conn = pool.acquire().await?;
-//         let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
-//
-//         // Receive a friend request.
-//         let insert_result = sqlx::query(
-//             r#"
-// INSERT INTO friends (transmitter_id, receiver_id)
-// VALUES ($1, $2)
-// "#,
-//         )
-//         .bind(2_i64)
-//         .bind(user_id.unwrap())
-//         .execute(&mut *conn)
-//         .await?;
-//
-//         assert_eq!(insert_result.rows_affected(), 1);
-//
-//         let req = test::TestRequest::delete()
-//             .cookie(cookie.unwrap())
-//             .uri(&format!("/v1/me/friend-requests/{}", 2))
-//             .to_request();
-//         let res = test::call_service(&app, req).await;
-//
-//         assert!(res.status().is_success());
-//
-//         // Friend request should not be present in the database.
-//         let result = sqlx::query(
-//             r#"
-// SELECT EXISTS (
-//     SELECT 1 FROM friends
-//     WHERE receiver_id = $1 AND transmitter_id = $2
-// )
-// "#,
-//         )
-//         .bind(user_id.unwrap())
-//         .bind(2_i64)
-//         .fetch_one(&mut *conn)
-//         .await?;
-//
-//         assert!(!result.get::<bool, _>("exists"));
-//
-//         Ok(())
-//     }
-//
-//     #[sqlx::test]
-//     async fn can_return_an_error_response_when_trying_to_reject_an_unknown_friend_request(
-//         pool: PgPool,
-//     ) -> sqlx::Result<()> {
-//         let (app, cookie, _) = init_app_for_test(delete, pool, true, false, None).await;
-//
-//         let req = test::TestRequest::delete()
-//             .cookie(cookie.unwrap())
-//             .uri(&format!("/v1/me/friend-requests/{}", 12345))
-//             .to_request();
-//         let res = test::call_service(&app, req).await;
-//
-//         assert!(res.status().is_client_error());
-//         assert_toast_error_response(res, "Friend request not found").await;
-//
-//         Ok(())
-//     }
-// }
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::test_utils::{
+        assert_toast_error_response,
+        init_app_for_test,
+    };
+    use actix_web::test;
+    use sqlx::{
+        PgPool,
+        Row,
+    };
+
+    #[sqlx::test(fixtures("collaboration_request"))]
+    async fn can_reject_a_collaboration_request(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
+
+        // Receive a collaboration request.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO story_contributors (user_id, story_id)
+VALUES ($1, $2)
+RETURNING id
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::delete()
+            .cookie(cookie.unwrap())
+            .uri(&format!(
+                "/v1/me/collaboration-requests/{}",
+                insert_result.get::<i64, _>("id")
+            ))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        // Collaboration request should not be present in the database.
+        let result = sqlx::query(
+            r#"
+SELECT EXISTS (
+    SELECT 1 FROM story_contributors
+    WHERE user_id = $1
+)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("collaboration_request"))]
+    async fn can_return_an_error_response_when_trying_to_reject_an_accepted_collaboration_request(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
+
+        // Receive an accepted collaboration request.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO story_contributors (user_id, story_id, accepted_at)
+VALUES ($1, $2, NOW())
+RETURNING id
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::delete()
+            .cookie(cookie.unwrap())
+            .uri(&format!(
+                "/v1/me/collaboration-requests/{}",
+                insert_result.get::<i64, _>("id")
+            ))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Collaboration request not found").await;
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_return_an_error_response_when_trying_to_reject_an_unknown_collaboration_request(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(delete, pool, true, false, None).await;
+
+        let req = test::TestRequest::delete()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/collaboration-requests/{}", 12345))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Collaboration request not found").await;
+
+        Ok(())
+    }
+}

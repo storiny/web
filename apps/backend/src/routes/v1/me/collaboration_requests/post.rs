@@ -109,36 +109,37 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Receive a friend request.
+        // Receive a collaboration request.
         let insert_result = sqlx::query(
             r#"
-INSERT INTO friends (transmitter_id, receiver_id)
+INSERT INTO story_contributors (user_id, story_id)
 VALUES ($1, $2)
+RETURNING id
 "#,
         )
-        .bind(2_i64)
         .bind(user_id.unwrap())
-        .execute(&mut *conn)
+        .bind(3_i64)
+        .fetch_one(&mut *conn)
         .await?;
-
-        assert_eq!(insert_result.rows_affected(), 1);
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/friend-requests/{}", 2))
+            .uri(&format!(
+                "/v1/me/collaboration-requests/{}",
+                insert_result.get::<i64, _>("id")
+            ))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
 
-        // Friend request should get updated in the database.
+        // Collaboration request should get updated in the database.
         let result = sqlx::query(
             r#"
-SELECT accepted_at FROM friends
-WHERE transmitter_id = $1 AND receiver_id = $2
+SELECT accepted_at FROM story_contributors
+WHERE user_id = $1
 "#,
         )
-        .bind(2_i64)
         .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
         .await?;
@@ -158,7 +159,7 @@ SELECT EXISTS (
 )
 "#,
         )
-        .bind(user_id.unwrap())
+        .bind(insert_result.get::<i64, _>("id"))
         .fetch_one(&mut *conn)
         .await?;
 
@@ -174,49 +175,53 @@ SELECT EXISTS (
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Receive a soft-deleted friend request.
+        // Receive a soft-deleted collaboration request.
         let insert_result = sqlx::query(
             r#"
-INSERT INTO friends (transmitter_id, receiver_id, deleted_at)
+INSERT INTO story_contributors (user_id, story_id, deleted_at)
 VALUES ($1, $2, NOW())
+RETURNING id
 "#,
         )
-        .bind(2_i64)
         .bind(user_id.unwrap())
-        .execute(&mut *conn)
+        .bind(3_i64)
+        .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(insert_result.rows_affected(), 1);
-
-        // Try accepting the friend request.
+        // Try accepting the collaboration request.
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/me/friend-requests/{}", 2))
+            .uri(&format!(
+                "/v1/me/collaboration-requests/{}",
+                insert_result.get::<i64, _>("id")
+            ))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Friend request not found").await;
+        assert_toast_error_response(res, "Collaboration request not found").await;
 
-        // Recover the friend request.
+        // Recover the collaboration request.
         let result = sqlx::query(
             r#"
-UPDATE friends
+UPDATE story_contributors
 SET deleted_at = NULL
-WHERE transmitter_id = $1 AND receiver_id = $2
+WHERE user_id = $1
 "#,
         )
-        .bind(2_i64)
         .bind(user_id.unwrap())
         .execute(&mut *conn)
         .await?;
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Try accepting the friend request again.
+        // Try accepting the collaboration request again.
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/me/friend-requests/{}", 2))
+            .uri(&format!(
+                "/v1/me/collaboration-requests/{}",
+                insert_result.get::<i64, _>("id")
+            ))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -232,38 +237,43 @@ WHERE transmitter_id = $1 AND receiver_id = $2
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Receive a friend request.
+        // Receive a collaboration request.
         let insert_result = sqlx::query(
             r#"
-INSERT INTO friends (transmitter_id, receiver_id)
+INSERT INTO story_contributors (user_id, story_id)
 VALUES ($1, $2)
+RETURNING id
 "#,
         )
-        .bind(2_i64)
         .bind(user_id.unwrap())
-        .execute(&mut *conn)
+        .bind(3_i64)
+        .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(insert_result.rows_affected(), 1);
-
-        // Accept the friend request for the first time.
+        // Accept the collaboration request for the first time.
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/me/friend-requests/{}", 2))
+            .uri(&format!(
+                "/v1/me/collaboration-requests/{}",
+                insert_result.get::<i64, _>("id")
+            ))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
 
-        // Try accepting the friend request again.
+        // Try accepting the collaboration request again.
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/me/friend-requests/{}", 2))
+            .uri(&format!(
+                "/v1/me/collaboration-requests/{}",
+                insert_result.get::<i64, _>("id")
+            ))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Friend request not found").await;
+        assert_toast_error_response(res, "Collaboration request not found").await;
 
         Ok(())
     }
