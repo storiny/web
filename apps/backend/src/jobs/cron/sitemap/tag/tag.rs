@@ -72,13 +72,13 @@ LIMIT $1 OFFSET $2
     .map_err(Box::new)
     .map_err(|err| JobError::Failed(err))?
     .iter()
-    .map(|row| {
+    .filter_map(|row| {
         Url::builder(format!("{web_server_url}/tag/{}", row.name))
             .change_frequency(ChangeFrequency::Monthly)
             .priority(0.4)
             .build()
-            // This should never panic as the priority is a constant value and there are no images.
-            .unwrap()
+            // This should never error as the priority is a constant value and there are no images.
+            .ok()
     })
     .collect::<Vec<_>>();
 
@@ -94,8 +94,11 @@ LIMIT $1 OFFSET $2
             result_length -= 1;
         }
 
-        // This should never panic as the number of rows are always <= 50,000
-        let url_set: UrlSet = UrlSet::new(result).unwrap();
+        // This should never error as the number of rows are always <= 50,000
+        let url_set = UrlSet::new(result)
+            .map_err(Box::new)
+            .map_err(|err| JobError::Failed(err))?;
+
         let mut buffer = Vec::new();
 
         url_set

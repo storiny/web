@@ -169,8 +169,11 @@ async fn handle_upload(
         tracing::Span::current().record("mime_type", mime.to_string());
     }
 
+    #[allow(clippy::unwrap_used)]
     if image_mime_type.is_none()
-        || !supported_image_mimes.contains(&image_mime_type.clone().unwrap().to_string())
+        ||
+        // This will never panic
+        !supported_image_mimes.contains(&image_mime_type.clone().unwrap().to_string())
     {
         debug!("received an image with unknown format: {image_mime_type:?}",);
 
@@ -246,6 +249,7 @@ async fn handle_upload(
     }
 
     // We can safely unwrap `image_mime_type` here.
+    #[allow(clippy::unwrap_used)]
     let is_gif = image_mime_type.clone().unwrap() == IMAGE_GIF
         || file_name.split('.').last().unwrap_or_default() == "gif";
 
@@ -575,7 +579,7 @@ VALUES ($1, $2, $3, $4)
                     let _: String = redis::cmd("FLUSHDB")
                         .query_async(&mut conn)
                         .await
-                        .expect("Failed to FLUSHDB");
+                        .expect("failed to FLUSHDB");
                 },
                 async {
                     delete_s3_objects(&self.s3_client, S3_UPLOADS_BUCKET, None, None)

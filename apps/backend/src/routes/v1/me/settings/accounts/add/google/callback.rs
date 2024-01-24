@@ -64,7 +64,9 @@ async fn handle_google_callback(
     session.remove("oauth_token");
 
     let code = AuthorizationCode::new(params.code.clone());
-    let token_res = data.oauth_client_map.google_alt
+    let token_res = data
+        .oauth_client_map
+        .google_alt
         .exchange_code(code)
         .request_async(async_http_client)
         .await
@@ -81,8 +83,10 @@ async fn handle_google_callback(
 
     debug!(?received_scopes, "scopes received from Google");
 
-    if !["https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/userinfo.profile"]
+    if ![
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile",
+    ]
     .iter()
     .all(|scope| received_scopes.contains(scope))
     {
@@ -206,17 +210,20 @@ async fn get(
     params: QsQuery<AuthRequest>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
-        AddAccountTemplate {
-            provider_name: "Google".to_string(),
-            provider_icon: GOOGLE_LOGO.to_string(),
-            error: handle_google_callback(&data, &session, &params, &user)
-                .await
-                .err(),
-        }
-        .render_once()
-        .unwrap(),
-    ))
+    AddAccountTemplate {
+        provider_name: "Google".to_string(),
+        provider_icon: GOOGLE_LOGO.to_string(),
+        error: handle_google_callback(&data, &session, &params, &user)
+            .await
+            .err(),
+    }
+    .render_once()
+    .map(|body| {
+        HttpResponse::Ok()
+            .content_type(ContentType::html())
+            .body(body)
+    })
+    .map_err(|error| AppError::InternalError(error.to_string()))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {

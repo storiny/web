@@ -20,10 +20,13 @@ pub fn get_dribbble_oauth_client(
     BasicClient::new(
         ClientId::new(dribbble_client_id.to_string()),
         Some(ClientSecret::new(dribbble_client_secret.to_string())),
+        #[allow(clippy::unwrap_used)]
         AuthUrl::new("https://dribbble.com/oauth/authorize".to_string()).unwrap(),
+        #[allow(clippy::unwrap_used)]
         Some(TokenUrl::new("https://dribbble.com/oauth/token".to_string()).unwrap()),
     )
     .set_redirect_uri(
+        #[allow(clippy::unwrap_used)]
         RedirectUrl::new(format!("{}/{}", api_server_url, "oauth/dribbble/callback")).unwrap(),
     )
 }

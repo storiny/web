@@ -20,10 +20,13 @@ pub fn get_spotify_oauth_client(
     BasicClient::new(
         ClientId::new(spotify_client_id.to_string()),
         Some(ClientSecret::new(spotify_client_secret.to_string())),
+        #[allow(clippy::unwrap_used)]
         AuthUrl::new("https://accounts.spotify.com/authorize".to_string()).unwrap(),
+        #[allow(clippy::unwrap_used)]
         Some(TokenUrl::new("https://accounts.spotify.com/api/token".to_string()).unwrap()),
     )
     .set_redirect_uri(
+        #[allow(clippy::unwrap_used)]
         RedirectUrl::new(format!("{}/{}", api_server_url, "oauth/spotify/callback")).unwrap(),
     )
 }

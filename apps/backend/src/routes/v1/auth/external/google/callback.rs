@@ -367,15 +367,18 @@ async fn get(
                 },
             ))
             .finish()),
-        Err(error) => Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
-            ExternalAuthTemplate {
-                provider_name: "Google".to_string(),
-                provider_icon: GOOGLE_LOGO.to_string(),
-                error,
-            }
-            .render_once()
-            .unwrap(),
-        )),
+        Err(error) => ExternalAuthTemplate {
+            provider_name: "Google".to_string(),
+            provider_icon: GOOGLE_LOGO.to_string(),
+            error,
+        }
+        .render_once()
+        .map(|body| {
+            HttpResponse::Ok()
+                .content_type(ContentType::html())
+                .body(body)
+        })
+        .map_err(|error| AppError::InternalError(error.to_string())),
     }
 }
 

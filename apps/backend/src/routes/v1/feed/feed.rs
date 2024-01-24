@@ -24,7 +24,10 @@ use uuid::Uuid;
 use validator::Validate;
 
 lazy_static! {
-    static ref TYPE_REGEX: Regex = Regex::new(r"^(suggested|friends-and-following)$").unwrap();
+    static ref TYPE_REGEX: Regex = {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"^(suggested|friends-and-following)$").unwrap()
+    };
 }
 
 #[derive(Serialize, Deserialize, Validate)]
