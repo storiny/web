@@ -1,12 +1,14 @@
-WITH stories_result AS (SELECT
+WITH stories_result AS (WITH search_query AS (SELECT PLAINTO_TSQUERY('english', $1) AS tsq
+											 )
+						SELECT
 							-- Story
 							s.id,
 							s.title,
-							s.slug                                  AS "slug!",
+							s.slug                                                   AS "slug!",
 							s.description,
 							s.splash_id,
 							s.splash_hex,
-							s.category::TEXT                        AS "category!",
+							s.category::TEXT                                         AS "category!",
 							s.age_restriction,
 							s.license,
 							s.user_id,
@@ -16,11 +18,20 @@ WITH stories_result AS (SELECT
 							s.like_count,
 							s.comment_count,
 							-- Timestamps
-							s.published_at                          AS "published_at!",
+							s.published_at                                           AS "published_at!",
 							s.edited_at,
 							-- Boolean flags
-							"s->is_liked".story_id IS NOT NULL      AS "is_liked!",
-							"s->is_bookmarked".story_id IS NOT NULL AS "is_bookmarked!",
+							"s->is_liked".story_id IS NOT NULL                       AS "is_liked!",
+							"s->is_bookmarked".story_id IS NOT NULL                  AS "is_bookmarked!",
+							-- User
+							JSON_BUILD_OBJECT(
+									'id', su.id,
+									'name', su.name,
+									'username', su.username,
+									'avatar_id', su.avatar_id,
+									'avatar_hex', su.avatar_hex,
+									'public_flags', su.public_flags
+							)                                                        AS "user!: Option<Json<User>>",
 							-- Tags
 							COALESCE(
 											ARRAY_AGG(
@@ -28,9 +39,20 @@ WITH stories_result AS (SELECT
 													 ) FILTER (
 												WHERE "s->story_tags->tag".id IS NOT NULL
 												), '{}'
-							)                                       AS "tags!: Vec<Tag>"
+							)                                                        AS "tags!: Vec<Tag>",
+							-- Query score
+							TS_RANK_CD(s.search_vec, (SELECT tsq FROM search_query)) AS "query_score"
 						FROM
 							stories s
+								-- Join user
+								INNER JOIN users AS su
+										   ON su.id = s.user_id
+								-- Join contributor
+								INNER JOIN story_contributors AS sc
+										   ON sc.story_id = s.id
+											   AND sc.user_id = $2
+											   AND sc.accepted_at IS NOT NULL
+											   AND sc.deleted_at IS NULL
 								-- Join story tags
 								LEFT OUTER JOIN (story_tags AS "s->story_tags"
 								-- Join tags
@@ -40,27 +62,27 @@ WITH stories_result AS (SELECT
 								-- Boolean story like flag
 								LEFT OUTER JOIN story_likes AS "s->is_liked"
 												ON "s->is_liked".story_id = s.id
-													AND "s->is_liked".user_id = $1
+													AND "s->is_liked".user_id = $2
 													AND "s->is_liked".deleted_at IS NULL
 								-- Boolean bookmark flag
 								LEFT OUTER JOIN bookmarks AS "s->is_bookmarked"
 												ON "s->is_bookmarked".story_id = s.id
-													AND "s->is_bookmarked".user_id = $1
+													AND "s->is_bookmarked".user_id = $2
 													AND "s->is_bookmarked".deleted_at IS NULL
 						WHERE
-							  s.user_id = $1
+							  s.search_vec @@ (SELECT tsq FROM search_query)
 						  AND s.published_at IS NOT NULL
 						  AND s.deleted_at IS NULL
 						GROUP BY
 							s.id,
-							s.read_count,
 							s.published_at,
+							su.id,
 							"s->is_liked".story_id,
 							"s->is_bookmarked".story_id
 						ORDER BY
-							s.read_count   DESC,
+							query_score    DESC,
 							s.published_at DESC
-						LIMIT $2 OFFSET $3
+						LIMIT $3 OFFSET $4
 					   )
 SELECT
 	-- Story
@@ -86,7 +108,7 @@ SELECT
 	"is_bookmarked!",
 	"is_liked!",
 	-- Joins
-	NULL AS "user!: Option<Json<User>>",
+	"user!: Option<Json<User>>",
 	"tags!: Vec<Tag>"
 FROM
 	stories_result

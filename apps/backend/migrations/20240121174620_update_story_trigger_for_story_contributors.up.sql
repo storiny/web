@@ -96,27 +96,27 @@ BEGIN
 		--
 	END IF;
 	--
+	-- Restore story contributors when the story is recovered
+	IF (OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL) THEN
+		UPDATE story_contributors AS sc
+		SET
+			deleted_at = NULL
+		WHERE
+			  sc.deleted_at IS NOT NULL
+		  AND sc.story_id = NEW.id
+		  AND EXISTS(SELECT 1
+					 FROM
+						 users AS u
+					 WHERE
+						   u.id = sc.user_id
+					   AND u.deleted_at IS NULL
+					   AND u.deactivated_at IS NULL
+					);
+	END IF;
+	--
 	-- Story (published) recovered or published
 	IF ((NEW.published_at IS NOT NULL AND OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL) OR
 		(OLD.published_at IS NULL AND NEW.published_at IS NOT NULL)) THEN
-		-- Restore story contributors when the story is recovered
-		IF (OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL) THEN
-			UPDATE story_contributors AS sc
-			SET
-				deleted_at = NULL
-			WHERE
-				  sc.deleted_at IS NOT NULL
-			  AND sc.story_id = NEW.id
-			  AND EXISTS(SELECT 1
-						 FROM
-							 users AS u
-						 WHERE
-							   u.id = sc.user_id
-						   AND u.deleted_at IS NULL
-						   AND u.deactivated_at IS NULL
-						);
-		END IF;
-		--
 		-- Restore comments
 		UPDATE
 			comments AS c
