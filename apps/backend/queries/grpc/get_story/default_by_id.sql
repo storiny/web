@@ -78,7 +78,7 @@ SELECT s.id,
 	   )                            AS "tags!: Vec<Tag>",
 	   -- Contributors
 	   COALESCE(
-					   JSON_AGG(
+					   JSONB_AGG(
 					   DISTINCT JSONB_BUILD_OBJECT(
 							   'id', "s->contributors->user".id,
 							   'name', "s->contributors->user".name,
@@ -87,8 +87,8 @@ SELECT s.id,
 							   'avatar_hex', "s->contributors->user".avatar_hex,
 							   'public_flags', "s->contributors->user".public_flags
 								)
-							   ) FILTER ( WHERE "s->contributors->user".id IS NOT NULL )
-		   , '[]')                  AS "contributors!: Vec<Json<User>>"
+								) FILTER ( WHERE "s->contributors->user".id IS NOT NULL )
+		   , '[]')                  AS "contributors!: Json<Vec<User>>"
 FROM
 	stories s
 		-- Join document

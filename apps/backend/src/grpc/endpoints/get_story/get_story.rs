@@ -86,7 +86,7 @@ struct Story {
     deleted_at: Option<OffsetDateTime>,
     doc_key: Uuid,
     // Joins
-    contributors: Vec<Json<User>>,
+    contributors: Json<Vec<User>>,
     tags: Vec<Tag>,
     // Boolean flags
     is_bookmarked: bool,
