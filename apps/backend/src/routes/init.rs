@@ -93,6 +93,8 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::replies::post::init_routes(cfg);
     v1::me::replies::patch::init_routes(cfg);
     v1::me::replies::delete::init_routes(cfg);
+    // Me - Contributions
+    v1::me::contributions::init_routes(cfg);
     // Me - Drafts
     v1::me::drafts::get::init_routes(cfg);
     v1::me::drafts::recover::init_routes(cfg);

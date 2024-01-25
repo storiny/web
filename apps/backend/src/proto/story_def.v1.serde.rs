@@ -383,6 +383,212 @@ impl<'de> serde::Deserialize<'de> for Draft {
         deserializer.deserialize_struct("story_def.v1.Draft", FIELDS, GeneratedVisitor)
     }
 }
+impl serde::Serialize for GetContributionsInfoRequest {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if !self.user_id.is_empty() {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("story_def.v1.GetContributionsInfoRequest", len)?;
+        if !self.user_id.is_empty() {
+            struct_ser.serialize_field("userId", &self.user_id)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for GetContributionsInfoRequest {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "user_id",
+            "userId",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            UserId,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "userId" | "user_id" => Ok(GeneratedField::UserId),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = GetContributionsInfoRequest;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct story_def.v1.GetContributionsInfoRequest")
+            }
+
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetContributionsInfoRequest, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut user_id__ = None;
+                while let Some(k) = map.next_key()? {
+                    match k {
+                        GeneratedField::UserId => {
+                            if user_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("userId"));
+                            }
+                            user_id__ = Some(map.next_value()?);
+                        }
+                    }
+                }
+                Ok(GetContributionsInfoRequest {
+                    user_id: user_id__.unwrap_or_default(),
+                })
+            }
+        }
+        deserializer.deserialize_struct("story_def.v1.GetContributionsInfoRequest", FIELDS, GeneratedVisitor)
+    }
+}
+impl serde::Serialize for GetContributionsInfoResponse {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if self.contributable_story_count != 0 {
+            len += 1;
+        }
+        if self.pending_collaboration_request_count != 0 {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("story_def.v1.GetContributionsInfoResponse", len)?;
+        if self.contributable_story_count != 0 {
+            struct_ser.serialize_field("contributableStoryCount", &self.contributable_story_count)?;
+        }
+        if self.pending_collaboration_request_count != 0 {
+            struct_ser.serialize_field("pendingCollaborationRequestCount", &self.pending_collaboration_request_count)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for GetContributionsInfoResponse {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "contributable_story_count",
+            "contributableStoryCount",
+            "pending_collaboration_request_count",
+            "pendingCollaborationRequestCount",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            ContributableStoryCount,
+            PendingCollaborationRequestCount,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "contributableStoryCount" | "contributable_story_count" => Ok(GeneratedField::ContributableStoryCount),
+                            "pendingCollaborationRequestCount" | "pending_collaboration_request_count" => Ok(GeneratedField::PendingCollaborationRequestCount),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = GetContributionsInfoResponse;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct story_def.v1.GetContributionsInfoResponse")
+            }
+
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetContributionsInfoResponse, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut contributable_story_count__ = None;
+                let mut pending_collaboration_request_count__ = None;
+                while let Some(k) = map.next_key()? {
+                    match k {
+                        GeneratedField::ContributableStoryCount => {
+                            if contributable_story_count__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("contributableStoryCount"));
+                            }
+                            contributable_story_count__ = 
+                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
+                            ;
+                        }
+                        GeneratedField::PendingCollaborationRequestCount => {
+                            if pending_collaboration_request_count__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("pendingCollaborationRequestCount"));
+                            }
+                            pending_collaboration_request_count__ = 
+                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
+                            ;
+                        }
+                    }
+                }
+                Ok(GetContributionsInfoResponse {
+                    contributable_story_count: contributable_story_count__.unwrap_or_default(),
+                    pending_collaboration_request_count: pending_collaboration_request_count__.unwrap_or_default(),
+                })
+            }
+        }
+        deserializer.deserialize_struct("story_def.v1.GetContributionsInfoResponse", FIELDS, GeneratedVisitor)
+    }
+}
 impl serde::Serialize for GetDraftsInfoRequest {
     #[allow(deprecated)]
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
@@ -1667,6 +1873,9 @@ impl serde::Serialize for GetStoryResponse {
         if self.user.is_some() {
             len += 1;
         }
+        if !self.contributors.is_empty() {
+            len += 1;
+        }
         if !self.tags.is_empty() {
             len += 1;
         }
@@ -1773,6 +1982,9 @@ impl serde::Serialize for GetStoryResponse {
         if let Some(v) = self.user.as_ref() {
             struct_ser.serialize_field("user", v)?;
         }
+        if !self.contributors.is_empty() {
+            struct_ser.serialize_field("contributors", &self.contributors)?;
+        }
         if !self.tags.is_empty() {
             struct_ser.serialize_field("tags", &self.tags)?;
         }
@@ -1845,6 +2057,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
             "deleted_at",
             "deletedAt",
             "user",
+            "contributors",
             "tags",
             "is_bookmarked",
             "isBookmarked",
@@ -1885,6 +2098,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
             FirstPublishedAt,
             DeletedAt,
             User,
+            Contributors,
             Tags,
             IsBookmarked,
             IsLiked,
@@ -1939,6 +2153,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                             "firstPublishedAt" | "first_published_at" => Ok(GeneratedField::FirstPublishedAt),
                             "deletedAt" | "deleted_at" => Ok(GeneratedField::DeletedAt),
                             "user" => Ok(GeneratedField::User),
+                            "contributors" => Ok(GeneratedField::Contributors),
                             "tags" => Ok(GeneratedField::Tags),
                             "isBookmarked" | "is_bookmarked" => Ok(GeneratedField::IsBookmarked),
                             "isLiked" | "is_liked" => Ok(GeneratedField::IsLiked),
@@ -1991,6 +2206,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                 let mut first_published_at__ = None;
                 let mut deleted_at__ = None;
                 let mut user__ = None;
+                let mut contributors__ = None;
                 let mut tags__ = None;
                 let mut is_bookmarked__ = None;
                 let mut is_liked__ = None;
@@ -2179,6 +2395,12 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                             }
                             user__ = map.next_value()?;
                         }
+                        GeneratedField::Contributors => {
+                            if contributors__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("contributors"));
+                            }
+                            contributors__ = Some(map.next_value()?);
+                        }
                         GeneratedField::Tags => {
                             if tags__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("tags"));
@@ -2235,6 +2457,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                     first_published_at: first_published_at__,
                     deleted_at: deleted_at__,
                     user: user__,
+                    contributors: contributors__.unwrap_or_default(),
                     tags: tags__.unwrap_or_default(),
                     is_bookmarked: is_bookmarked__.unwrap_or_default(),
                     is_liked: is_liked__.unwrap_or_default(),

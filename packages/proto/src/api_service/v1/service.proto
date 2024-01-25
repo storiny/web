@@ -74,6 +74,10 @@ service ApiService {
    */
   rpc GetStoriesInfo(story_def.v1.GetStoriesInfoRequest) returns (story_def.v1.GetStoriesInfoResponse) {}
   /**
+   * Returns the user's contributions details
+   */
+  rpc GetContributionsInfo(story_def.v1.GetContributionsInfoRequest) returns (story_def.v1.GetContributionsInfoResponse) {}
+  /**
    * Returns the user's responses details
    */
   rpc GetResponsesInfo(response_def.v1.GetResponsesInfoRequest) returns (response_def.v1.GetResponsesInfoResponse) {}

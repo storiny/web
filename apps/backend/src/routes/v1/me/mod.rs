@@ -4,6 +4,7 @@ pub mod blocked_users;
 pub mod bookmarks;
 pub mod collaboration_requests;
 pub mod comments;
+pub mod contributions;
 pub mod drafts;
 pub mod flow;
 pub mod followed_tags;

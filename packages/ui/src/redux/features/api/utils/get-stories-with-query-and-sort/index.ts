@@ -15,7 +15,14 @@ export type ApiQueryBuilder = EndpointBuilder<
     object,
     FetchBaseQueryMeta
   >,
-  "Notification" | "Asset" | "Story" | "Comment" | "Reply" | "FriendRequest", // Tags
+  // Tags
+  | "Notification"
+  | "Asset"
+  | "Story"
+  | "Comment"
+  | "Reply"
+  | "FriendRequest"
+  | "CollaborationRequest",
   "api"
 >;
 

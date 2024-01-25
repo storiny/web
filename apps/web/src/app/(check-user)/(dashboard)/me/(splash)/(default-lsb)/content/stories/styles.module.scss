@@ -29,6 +29,8 @@
     @include breakpoints.media(">tablet") {
       border-radius: 0;
       height: 100%;
+      border-left: 1px solid var(--divider);
+      padding-right: 20px;
     }
   }
 }

@@ -12,6 +12,7 @@ use crate::{
             tag_def::v1::Tag as StoryTag,
             user_def::v1::{
                 BareStatus,
+                BareUser,
                 ExtendedUser,
             },
         },
@@ -20,7 +21,11 @@ use crate::{
     utils::to_iso8601::to_iso8601,
 };
 use redis::AsyncCommands;
-use sqlx::FromRow;
+use serde::Deserialize;
+use sqlx::{
+    types::Json,
+    FromRow,
+};
 use time::OffsetDateTime;
 use tonic::{
     Request,
@@ -34,6 +39,16 @@ use uuid::Uuid;
 struct Tag {
     id: i64,
     name: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct User {
+    id: i64,
+    name: String,
+    username: String,
+    avatar_id: Option<Uuid>,
+    avatar_hex: Option<String>,
+    public_flags: i32,
 }
 
 #[derive(Debug, FromRow)]
@@ -69,8 +84,9 @@ struct Story {
     published_at: Option<OffsetDateTime>,
     edited_at: Option<OffsetDateTime>,
     deleted_at: Option<OffsetDateTime>,
-    // Joins
     doc_key: Uuid,
+    // Joins
+    contributors: Vec<Json<User>>,
     tags: Vec<Tag>,
     // Boolean flags
     is_bookmarked: bool,
@@ -200,24 +216,27 @@ SET created_at = NOW()
     // Start a reading session.
 
     let reading_session_token = Uuid::new_v4();
-    let redis_pool = &client.redis_pool;
 
-    if let Ok(ref mut redis_conn) = redis_pool.get().await {
-        let cache_key = format!(
-            "{}:{}:{reading_session_token}",
-            RedisNamespace::ReadingSession,
-            story.id,
-        );
+    if story.published_at.is_some() && story.deleted_at.is_none() {
+        let redis_pool = &client.redis_pool;
 
-        redis_conn
-            .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
-            .await
-            .map_err(|error| {
-                error!("unable to start a reading session for the user: {error:?}");
+        if let Ok(ref mut redis_conn) = redis_pool.get().await {
+            let cache_key = format!(
+                "{}:{}:{reading_session_token}",
+                RedisNamespace::ReadingSession,
+                story.id,
+            );
 
-                Status::internal("Failed to start a reading session")
-            })?;
-    };
+            redis_conn
+                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
+                .await
+                .map_err(|error| {
+                    error!("unable to start a reading session for the user: {error:?}");
+
+                    Status::internal("Failed to start a reading session")
+                })?;
+        };
+    }
 
     txn.commit().await.map_err(|error| {
         error!("unable to commit the transaction: {error:?}");
@@ -248,22 +267,18 @@ SET created_at = NOW()
         canonical_url: story.canonical_url,
         seo_description: story.seo_description,
         seo_title: story.seo_title,
-        preview_image: story
-            .preview_image.map(|value| value.to_string()),
+        preview_image: story.preview_image.map(|value| value.to_string()),
         created_at: to_iso8601(&story.created_at),
         edited_at: story.edited_at.map(|value| to_iso8601(&value)),
-        published_at: story
-            .published_at.map(|value| to_iso8601(&value)),
-        first_published_at: story
-            .first_published_at.map(|value| to_iso8601(&value)),
+        published_at: story.published_at.map(|value| to_iso8601(&value)),
+        first_published_at: story.first_published_at.map(|value| to_iso8601(&value)),
         deleted_at: story.deleted_at.map(|value| to_iso8601(&value)),
         user: Some(ExtendedUser {
             id: story.user_id.to_string(),
             name: story.user_name,
             username: story.user_username,
             rendered_bio: story.user_rendered_bio,
-            avatar_id: story
-                .user_avatar_id.map(|value| value.to_string()),
+            avatar_id: story.user_avatar_id.map(|value| value.to_string()),
             avatar_hex: story.user_avatar_hex,
             public_flags: story.user_public_flags as u32,
             is_private: story.user_is_private,
@@ -274,8 +289,7 @@ SET created_at = NOW()
                 Some(BareStatus {
                     emoji: story.user_status_emoji,
                     text: story.user_status_text,
-                    expires_at: story
-                        .user_status_expires_at.map(|value| to_iso8601(&value)),
+                    expires_at: story.user_status_expires_at.map(|value| to_iso8601(&value)),
                 })
             } else {
                 None
@@ -292,6 +306,18 @@ SET created_at = NOW()
             .map(|tag| StoryTag {
                 id: tag.id.to_string(),
                 name: tag.name.clone(),
+            })
+            .collect::<Vec<_>>(),
+        contributors: story
+            .contributors
+            .iter()
+            .map(|user| BareUser {
+                id: user.id.to_string(),
+                name: user.name.clone(),
+                username: user.username.clone(),
+                avatar_id: user.avatar_id.map(|value| value.to_string()),
+                avatar_hex: user.avatar_hex.clone(),
+                public_flags: user.public_flags as u32,
             })
             .collect::<Vec<_>>(),
         is_bookmarked: story.is_bookmarked,
@@ -380,6 +406,55 @@ WHERE id = $1
                     assert!(!user.is_friend);
                     assert!(!user.is_blocked_by_user);
                     assert!(!user.is_self);
+
+                    assert!(response.contributors.is_empty());
+                }),
+            )
+            .await;
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_a_story_with_contributors_by_id(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                false,
+                Box::new(|mut client, pool, _, _| async move {
+                    // Insert some contributors.
+                    let result = sqlx::query(
+                        r#"
+WITH inserted_users AS (
+    INSERT INTO users (id, name, username, email)
+    VALUES
+        ($1, 'Test user 1', 'test_user_1', 'test_user_1@storiny.com'),
+        ($2, 'Test user 2', 'test_user_2', 'test_user_2@storiny.com')
+)
+INSERT INTO story_contributors (user_id, story_id, accepted_at)
+VALUES ($1, $3, NOW()), ($2, $3, NOW())
+"#,
+                    )
+                    .bind(5_i64)
+                    .bind(6_i64)
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 2);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: None,
+                        }))
+                        .await;
+
+                    let response = response.unwrap().into_inner();
+
+                    assert_eq!(response.contributors.len(), 2);
                 }),
             )
             .await;
@@ -487,6 +562,160 @@ WHERE id = $1
 
         #[test_context(RedisTestContext)]
         #[sqlx::test(fixtures("get_story"))]
+        async fn should_not_include_pending_contributors_in_story_by_id(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                false,
+                Box::new(|mut client, pool, _, _| async move {
+                    // Insert some contributors.
+                    let result = sqlx::query(
+                        r#"
+WITH inserted_users AS (
+    INSERT INTO users (id, name, username, email)
+    VALUES
+        ($1, 'Test user 1', 'test_user_1', 'test_user_1@storiny.com'),
+        ($2, 'Test user 2', 'test_user_2', 'test_user_2@storiny.com')
+)
+INSERT INTO story_contributors (user_id, story_id, accepted_at)
+VALUES ($1, $3, NOW()), ($2, $3, NOW())
+"#,
+                    )
+                    .bind(5_i64)
+                    .bind(6_i64)
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 2);
+
+                    // Should return all the contributors initially.
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: None,
+                        }))
+                        .await;
+
+                    let response = response.unwrap().into_inner();
+
+                    assert_eq!(response.contributors.len(), 2);
+
+                    // Reset one of the contributors.
+                    let result = sqlx::query(
+                        r#"
+UPDATE story_contributors
+SET accepted_at = NULL
+WHERE user_id = $1
+"#,
+                    )
+                    .bind(5_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    // Should only one contributor.
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: None,
+                        }))
+                        .await;
+
+                    let response = response.unwrap().into_inner();
+
+                    assert_eq!(response.contributors.len(), 1);
+                    assert_eq!(response.contributors[0].id, 6_i64.to_string());
+                }),
+            )
+            .await;
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn should_not_include_soft_deleted_contributors_in_story_by_id(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                false,
+                Box::new(|mut client, pool, _, _| async move {
+                    // Insert some contributors.
+                    let result = sqlx::query(
+                        r#"
+WITH inserted_users AS (
+    INSERT INTO users (id, name, username, email)
+    VALUES
+        ($1, 'Test user 1', 'test_user_1', 'test_user_1@storiny.com'),
+        ($2, 'Test user 2', 'test_user_2', 'test_user_2@storiny.com')
+)
+INSERT INTO story_contributors (user_id, story_id, accepted_at)
+VALUES ($1, $3, NOW()), ($2, $3, NOW())
+"#,
+                    )
+                    .bind(5_i64)
+                    .bind(6_i64)
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 2);
+
+                    // Should return all the contributors initially.
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: None,
+                        }))
+                        .await;
+
+                    let response = response.unwrap().into_inner();
+
+                    assert_eq!(response.contributors.len(), 2);
+
+                    // Soft-delete one of the contributors.
+                    let result = sqlx::query(
+                        r#"
+UPDATE story_contributors
+SET deleted_at = NOW()
+WHERE user_id = $1
+"#,
+                    )
+                    .bind(5_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    // Should only one contributor.
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: None,
+                        }))
+                        .await;
+
+                    let response = response.unwrap().into_inner();
+
+                    assert_eq!(response.contributors.len(), 1);
+                    assert_eq!(response.contributors[0].id, 6_i64.to_string());
+                }),
+            )
+            .await;
+        }
+
+        //
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
         async fn can_return_a_story_by_slug(_ctx: &mut RedisTestContext, pool: PgPool) {
             test_grpc_service(
                 pool,
@@ -515,6 +744,53 @@ WHERE slug = $1
                     .unwrap();
 
                     assert_eq!(result.get::<i64, _>("view_count"), 1_i64);
+                }),
+            )
+            .await;
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_a_story_with_contributors_by_slug(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                false,
+                Box::new(|mut client, pool, _, _| async move {
+                    // Insert some contributors.
+                    let result = sqlx::query(
+                        r#"
+WITH inserted_users AS (
+    INSERT INTO users (id, name, username, email)
+    VALUES
+        ($1, 'Test user 1', 'test_user_1', 'test_user_1@storiny.com'),
+        ($2, 'Test user 2', 'test_user_2', 'test_user_2@storiny.com')
+)
+INSERT INTO story_contributors (user_id, story_id, accepted_at)
+VALUES ($1, $3, NOW()), ($2, $3, NOW())
+"#,
+                    )
+                    .bind(5_i64)
+                    .bind(6_i64)
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 2);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: None,
+                        }))
+                        .await;
+
+                    let response = response.unwrap().into_inner();
+
+                    assert_eq!(response.contributors.len(), 2);
                 }),
             )
             .await;
@@ -621,6 +897,158 @@ WHERE slug = $1
                     .unwrap();
 
                     assert_eq!(result.get::<i64, _>("view_count"), 0);
+                }),
+            )
+            .await;
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn should_not_include_pending_contributors_in_story_by_slug(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                false,
+                Box::new(|mut client, pool, _, _| async move {
+                    // Insert some contributors.
+                    let result = sqlx::query(
+                        r#"
+WITH inserted_users AS (
+    INSERT INTO users (id, name, username, email)
+    VALUES
+        ($1, 'Test user 1', 'test_user_1', 'test_user_1@storiny.com'),
+        ($2, 'Test user 2', 'test_user_2', 'test_user_2@storiny.com')
+)
+INSERT INTO story_contributors (user_id, story_id, accepted_at)
+VALUES ($1, $3, NOW()), ($2, $3, NOW())
+"#,
+                    )
+                    .bind(5_i64)
+                    .bind(6_i64)
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 2);
+
+                    // Should return all the contributors initially.
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: None,
+                        }))
+                        .await;
+
+                    let response = response.unwrap().into_inner();
+
+                    assert_eq!(response.contributors.len(), 2);
+
+                    // Reset one of the contributors.
+                    let result = sqlx::query(
+                        r#"
+UPDATE story_contributors
+SET accepted_at = NULL
+WHERE user_id = $1
+"#,
+                    )
+                    .bind(5_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    // Should only one contributor.
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: None,
+                        }))
+                        .await;
+
+                    let response = response.unwrap().into_inner();
+
+                    assert_eq!(response.contributors.len(), 1);
+                    assert_eq!(response.contributors[0].id, 6_i64.to_string());
+                }),
+            )
+            .await;
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn should_not_include_soft_deleted_contributors_in_story_by_slug(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                false,
+                Box::new(|mut client, pool, _, _| async move {
+                    // Insert some contributors.
+                    let result = sqlx::query(
+                        r#"
+WITH inserted_users AS (
+    INSERT INTO users (id, name, username, email)
+    VALUES
+        ($1, 'Test user 1', 'test_user_1', 'test_user_1@storiny.com'),
+        ($2, 'Test user 2', 'test_user_2', 'test_user_2@storiny.com')
+)
+INSERT INTO story_contributors (user_id, story_id, accepted_at)
+VALUES ($1, $3, NOW()), ($2, $3, NOW())
+"#,
+                    )
+                    .bind(5_i64)
+                    .bind(6_i64)
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 2);
+
+                    // Should return all the contributors initially.
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: None,
+                        }))
+                        .await;
+
+                    let response = response.unwrap().into_inner();
+
+                    assert_eq!(response.contributors.len(), 2);
+
+                    // Soft-delete one of the contributors.
+                    let result = sqlx::query(
+                        r#"
+UPDATE story_contributors
+SET deleted_at = NOW()
+WHERE user_id = $1
+"#,
+                    )
+                    .bind(5_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    // Should only one contributor.
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: None,
+                        }))
+                        .await;
+
+                    let response = response.unwrap().into_inner();
+
+                    assert_eq!(response.contributors.len(), 1);
+                    assert_eq!(response.contributors[0].id, 6_i64.to_string());
                 }),
             )
             .await;

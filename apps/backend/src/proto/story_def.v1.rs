@@ -79,6 +79,22 @@ pub struct GetStoriesInfoResponse {
     #[prost(uint32, tag="2")]
     pub deleted_story_count: u32,
 }
+// Contributions information request
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetContributionsInfoRequest {
+    #[prost(string, tag="1")]
+    pub user_id: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetContributionsInfoResponse {
+    #[prost(uint32, tag="1")]
+    pub contributable_story_count: u32,
+    #[prost(uint32, tag="2")]
+    pub pending_collaboration_request_count: u32,
+}
 // Main story request
 
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -154,14 +170,16 @@ pub struct GetStoryResponse {
     #[prost(message, optional, tag="29")]
     pub user: ::core::option::Option<super::super::user_def::v1::ExtendedUser>,
     #[prost(message, repeated, tag="30")]
+    pub contributors: ::prost::alloc::vec::Vec<super::super::user_def::v1::BareUser>,
+    #[prost(message, repeated, tag="31")]
     pub tags: ::prost::alloc::vec::Vec<super::super::tag_def::v1::Tag>,
     /// User specific props
-    #[prost(bool, tag="31")]
-    pub is_bookmarked: bool,
     #[prost(bool, tag="32")]
+    pub is_bookmarked: bool,
+    #[prost(bool, tag="33")]
     pub is_liked: bool,
     /// Reading session token
-    #[prost(string, tag="33")]
+    #[prost(string, tag="34")]
     pub reading_session_token: ::prost::alloc::string::String,
 }
 // Story metadata request

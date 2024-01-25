@@ -273,11 +273,12 @@ const Splash = (props: StoryProps): React.ReactElement => {
             </React.Fragment>
           )}
           {is_deleted ? (
-            <RestoreAction is_draft={is_draft} story={story} />
+            <RestoreAction is_draft={is_draft} overlay story={story} />
           ) : (
             <Actions
               is_draft={is_draft}
               is_extended={is_extended}
+              overlay
               story={story}
             />
           )}
@@ -549,7 +550,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
               </React.Fragment>
             )}
             {is_deleted ? (
-              <RestoreAction is_draft={is_draft} story={story} />
+              <RestoreAction is_draft={is_draft} overlay story={story} />
             ) : (
               <Actions
                 is_draft={is_draft}
@@ -580,6 +581,7 @@ const Story = (props: StoryProps): React.ReactElement => {
     (state) => state.entities.blocks[story.user_id]
   );
   const [collapsed, set_collapsed] = React.useState(is_user_blocked);
+  const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const story_url = get_story_url(props);
   const is_small = is_extended || is_deleted || is_draft;
 
@@ -625,18 +627,34 @@ const Story = (props: StoryProps): React.ReactElement => {
         >
           <div className={clsx(css["flex"], styles.main)}>
             <div className={clsx(css["flex-col"], styles.meta)}>
-              <Typography
-                as={NextLink}
-                className={clsx(
-                  css["focusable"],
-                  styles.title,
-                  is_small && styles.small
-                )}
-                href={story_url}
-                level={"h2"}
-              >
-                {story.title}
-              </Typography>
+              <div className={css.flex}>
+                <Typography
+                  as={NextLink}
+                  className={clsx(
+                    css["focusable"],
+                    styles.title,
+                    is_small && styles.small
+                  )}
+                  href={story_url}
+                  level={"h2"}
+                >
+                  {story.title}
+                </Typography>
+                {is_mobile && !story.splash_id ? (
+                  <>
+                    <Spacer className={css["f-grow"]} size={1.5} />
+                    {is_deleted ? (
+                      <RestoreAction is_draft={is_draft} story={story} />
+                    ) : (
+                      <Actions
+                        is_draft={is_draft}
+                        is_extended={is_extended}
+                        story={story}
+                      />
+                    )}
+                  </>
+                ) : null}
+              </div>
               <Meta {...props} />
               <Typography
                 as={NextLink}

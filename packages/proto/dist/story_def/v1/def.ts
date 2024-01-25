@@ -199,6 +199,15 @@ export interface GetStoriesInfoResponse {
   deleted_story_count: number;
 }
 
+export interface GetContributionsInfoRequest {
+  user_id: string;
+}
+
+export interface GetContributionsInfoResponse {
+  contributable_story_count: number;
+  pending_collaboration_request_count: number;
+}
+
 export interface GetStoryRequest {
   id_or_slug: string;
   current_user_id?: string | undefined;
@@ -239,6 +248,7 @@ export interface GetStoryResponse {
     | undefined;
   /** Joins */
   user: ExtendedUser | undefined;
+  contributors: BareUser[];
   tags: Tag[];
   /** User specific props */
   is_bookmarked: boolean;
@@ -952,6 +962,141 @@ export const GetStoriesInfoResponse = {
   },
 };
 
+function createBaseGetContributionsInfoRequest(): GetContributionsInfoRequest {
+  return { user_id: "" };
+}
+
+export const GetContributionsInfoRequest = {
+  encode(message: GetContributionsInfoRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.user_id !== "") {
+      writer.uint32(10).string(message.user_id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetContributionsInfoRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetContributionsInfoRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.user_id = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetContributionsInfoRequest {
+    return { user_id: isSet(object.user_id) ? globalThis.String(object.user_id) : "" };
+  },
+
+  toJSON(message: GetContributionsInfoRequest): unknown {
+    const obj: any = {};
+    if (message.user_id !== "") {
+      obj.user_id = message.user_id;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetContributionsInfoRequest>, I>>(base?: I): GetContributionsInfoRequest {
+    return GetContributionsInfoRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetContributionsInfoRequest>, I>>(object: I): GetContributionsInfoRequest {
+    const message = createBaseGetContributionsInfoRequest();
+    message.user_id = object.user_id ?? "";
+    return message;
+  },
+};
+
+function createBaseGetContributionsInfoResponse(): GetContributionsInfoResponse {
+  return { contributable_story_count: 0, pending_collaboration_request_count: 0 };
+}
+
+export const GetContributionsInfoResponse = {
+  encode(message: GetContributionsInfoResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.contributable_story_count !== 0) {
+      writer.uint32(8).uint32(message.contributable_story_count);
+    }
+    if (message.pending_collaboration_request_count !== 0) {
+      writer.uint32(16).uint32(message.pending_collaboration_request_count);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetContributionsInfoResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetContributionsInfoResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.contributable_story_count = reader.uint32();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.pending_collaboration_request_count = reader.uint32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetContributionsInfoResponse {
+    return {
+      contributable_story_count: isSet(object.contributable_story_count)
+        ? globalThis.Number(object.contributable_story_count)
+        : 0,
+      pending_collaboration_request_count: isSet(object.pending_collaboration_request_count)
+        ? globalThis.Number(object.pending_collaboration_request_count)
+        : 0,
+    };
+  },
+
+  toJSON(message: GetContributionsInfoResponse): unknown {
+    const obj: any = {};
+    if (message.contributable_story_count !== 0) {
+      obj.contributable_story_count = Math.round(message.contributable_story_count);
+    }
+    if (message.pending_collaboration_request_count !== 0) {
+      obj.pending_collaboration_request_count = Math.round(message.pending_collaboration_request_count);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetContributionsInfoResponse>, I>>(base?: I): GetContributionsInfoResponse {
+    return GetContributionsInfoResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetContributionsInfoResponse>, I>>(object: I): GetContributionsInfoResponse {
+    const message = createBaseGetContributionsInfoResponse();
+    message.contributable_story_count = object.contributable_story_count ?? 0;
+    message.pending_collaboration_request_count = object.pending_collaboration_request_count ?? 0;
+    return message;
+  },
+};
+
 function createBaseGetStoryRequest(): GetStoryRequest {
   return { id_or_slug: "", current_user_id: undefined };
 }
@@ -1057,6 +1202,7 @@ function createBaseGetStoryResponse(): GetStoryResponse {
     first_published_at: undefined,
     deleted_at: undefined,
     user: undefined,
+    contributors: [],
     tags: [],
     is_bookmarked: false,
     is_liked: false,
@@ -1153,17 +1299,20 @@ export const GetStoryResponse = {
     if (message.user !== undefined) {
       ExtendedUser.encode(message.user, writer.uint32(234).fork()).ldelim();
     }
+    for (const v of message.contributors) {
+      BareUser.encode(v!, writer.uint32(242).fork()).ldelim();
+    }
     for (const v of message.tags) {
-      Tag.encode(v!, writer.uint32(242).fork()).ldelim();
+      Tag.encode(v!, writer.uint32(250).fork()).ldelim();
     }
     if (message.is_bookmarked === true) {
-      writer.uint32(248).bool(message.is_bookmarked);
+      writer.uint32(256).bool(message.is_bookmarked);
     }
     if (message.is_liked === true) {
-      writer.uint32(256).bool(message.is_liked);
+      writer.uint32(264).bool(message.is_liked);
     }
     if (message.reading_session_token !== "") {
-      writer.uint32(266).string(message.reading_session_token);
+      writer.uint32(274).string(message.reading_session_token);
     }
     return writer;
   },
@@ -1383,24 +1532,31 @@ export const GetStoryResponse = {
             break;
           }
 
-          message.tags.push(Tag.decode(reader, reader.uint32()));
+          message.contributors.push(BareUser.decode(reader, reader.uint32()));
           continue;
         case 31:
-          if (tag !== 248) {
+          if (tag !== 250) {
             break;
           }
 
-          message.is_bookmarked = reader.bool();
+          message.tags.push(Tag.decode(reader, reader.uint32()));
           continue;
         case 32:
           if (tag !== 256) {
             break;
           }
 
-          message.is_liked = reader.bool();
+          message.is_bookmarked = reader.bool();
           continue;
         case 33:
-          if (tag !== 266) {
+          if (tag !== 264) {
+            break;
+          }
+
+          message.is_liked = reader.bool();
+          continue;
+        case 34:
+          if (tag !== 274) {
             break;
           }
 
@@ -1448,6 +1604,9 @@ export const GetStoryResponse = {
       first_published_at: isSet(object.first_published_at) ? globalThis.String(object.first_published_at) : undefined,
       deleted_at: isSet(object.deleted_at) ? globalThis.String(object.deleted_at) : undefined,
       user: isSet(object.user) ? ExtendedUser.fromJSON(object.user) : undefined,
+      contributors: globalThis.Array.isArray(object?.contributors)
+        ? object.contributors.map((e: any) => BareUser.fromJSON(e))
+        : [],
       tags: globalThis.Array.isArray(object?.tags) ? object.tags.map((e: any) => Tag.fromJSON(e)) : [],
       is_bookmarked: isSet(object.is_bookmarked) ? globalThis.Boolean(object.is_bookmarked) : false,
       is_liked: isSet(object.is_liked) ? globalThis.Boolean(object.is_liked) : false,
@@ -1544,6 +1703,9 @@ export const GetStoryResponse = {
     if (message.user !== undefined) {
       obj.user = ExtendedUser.toJSON(message.user);
     }
+    if (message.contributors?.length) {
+      obj.contributors = message.contributors.map((e) => BareUser.toJSON(e));
+    }
     if (message.tags?.length) {
       obj.tags = message.tags.map((e) => Tag.toJSON(e));
     }
@@ -1595,6 +1757,7 @@ export const GetStoryResponse = {
     message.user = (object.user !== undefined && object.user !== null)
       ? ExtendedUser.fromPartial(object.user)
       : undefined;
+    message.contributors = object.contributors?.map((e) => BareUser.fromPartial(e)) || [];
     message.tags = object.tags?.map((e) => Tag.fromPartial(e)) || [];
     message.is_bookmarked = object.is_bookmarked ?? false;
     message.is_liked = object.is_liked ?? false;

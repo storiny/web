@@ -365,9 +365,12 @@ BEGIN
 												 -- Join notifier
 												 INNER JOIN users AS notifier
 															ON notifier.id = n.notifier_id
-												 -- Join story
+												 -- Join contributor relation
+												 INNER JOIN story_contributors AS sc
+															ON sc.id = n.entity_id
+												 -- Join contributor story
 												 INNER JOIN stories s
-															ON s.id = n.entity_id
+															ON s.id = sc.story_id
 										 WHERE
 											   n_out.notification_id = nu.notification_id
 										   AND n_out.notified_id = nu.notified_id
@@ -376,8 +379,9 @@ BEGIN
 									 FORMAT(
 											 '<a data-fw-bold href="/%s">%s</a>'
 												 || ' invited you to contribute to their story: '
-												 || '<span data-fw-medium>%s</span>.',
-											 || ' <a data-underline href="/me/content/%s?tab=contributable">View all collaboration requests</a>',
+												 || '<span data-fw-medium>%s</span>.'
+												 ||
+											 ' <a data-underline href="/me/content/%s?tab=contributable">View all collaboration requests</a>',
 											 (SELECT username FROM story),
 											 (SELECT public.truncate_str(name, 32) FROM story),
 											 (SELECT public.truncate_str(title, 96) FROM story),

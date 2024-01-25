@@ -175,7 +175,7 @@ WHERE notification_id = $2;
     }
 
     #[sqlx::test(fixtures("collaboration_request_receive"))]
-    async fn can_render_notification_content_for_collaboration_request_receive_type_for_a_published_draft(
+    async fn can_render_notification_content_for_collaboration_request_receive_type_for_a_published_story(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
