@@ -43,10 +43,12 @@ import { handle_api_error } from "~/utils/handle-api-error";
 const StoryActions = ({
   story,
   is_draft,
-  is_extended
+  is_extended,
+  overlay
 }: {
   is_draft?: boolean;
   is_extended?: boolean;
+  overlay?: boolean;
   story: Story;
 }): React.ReactElement => {
   const toast = use_toast();
@@ -231,10 +233,10 @@ const StoryActions = ({
         <IconButton
           aria-label={"More options"}
           auto_size
-          className={clsx(is_mobile && "force-light-mode")}
+          className={clsx(overlay && is_mobile && "force-light-mode")}
           onClick={(event): void => event.stopPropagation()}
           title={"More options"}
-          variant={is_mobile ? "rigid" : "ghost"}
+          variant={overlay && is_mobile ? "rigid" : "ghost"}
         >
           <DotsIcon />
         </IconButton>

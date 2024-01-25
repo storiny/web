@@ -41,6 +41,7 @@ SELECT
     disable_read_history,
     allow_sensitive_content,
     incoming_friend_requests,
+    incoming_collaboration_requests,
     following_list_visibility,
     friend_list_visibility
 FROM users

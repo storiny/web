@@ -16,7 +16,6 @@ use serde::{
     Serialize,
 };
 use sqlx::{
-    types::Json,
     FromRow,
     Postgres,
     QueryBuilder,
@@ -32,7 +31,7 @@ lazy_static! {
     };
     static ref TYPE_REGEX: Regex = {
         #[allow(clippy::unwrap_used)]
-        Regex::new(r"^(pending|contributable|deleted)$").unwrap()
+        Regex::new(r"^(pending|deleted)$").unwrap()
     };
 }
 
@@ -81,9 +80,6 @@ struct Draft {
     edited_at: Option<OffsetDateTime>,
     #[serde(with = "crate::iso8601::time::option")]
     deleted_at: Option<OffsetDateTime>,
-    // Joins
-    /// The writer of the story. Only present for the `contributable` type.
-    user: Option<Json<User>>,
 }
 
 #[get("/v1/me/drafts")]
@@ -146,28 +142,9 @@ SELECT
     -- Timestamps
     d.created_at,
     d.edited_at,
-    d.deleted_at,
+    d.deleted_at
 "#,
     );
-
-    query_builder.push(if r#type == "contributable" {
-        r#"
--- User
-JSON_BUILD_OBJECT(
-    'id', du.id,
-    'name', du.name,
-    'username', du.username,
-    'avatar_id', du.avatar_id,
-    'avatar_hex', du.avatar_hex,
-    'public_flags', du.public_flags
-) AS "_user" -- Underscore is intentional
-"#
-    } else {
-        r#"
--- User
-NULL AS "_user" -- Underscore is intentional
-"#
-    });
 
     if has_search_query {
         query_builder.push(",");
@@ -179,32 +156,15 @@ TS_RANK_CD(d.search_vec, (SELECT tsq FROM search_query)) AS "query_score"
         );
     }
 
-    query_builder.push(if r#type == "contributable" {
-        r#"
-FROM
-    stories d
-        INNER JOIN users AS du
-            ON du.id = d.user_id
-        INNER JOIN story_contributors AS sc
-            ON sc.story_id = d.id
-            AND sc.user_id = $1
-            AND sc.accepted_at IS NOT NULL
-            AND sc.deleted_at IS NULL
-"#
-    } else {
+    query_builder.push(
         r#"
 FROM
     stories d
 WHERE
     d.user_id = $1
-"#
-    });
-
-    query_builder.push(
-        r#"
--- Use `first_published_at` instead of `published_at` to ensure
--- that soft-deleted published stories are excluded from results
-AND d.first_published_at IS NULL
+    -- Use `first_published_at` instead of `published_at` to ensure
+    -- that soft-deleted published stories are excluded from results
+    AND d.first_published_at IS NULL
 "#,
     );
 
@@ -231,7 +191,7 @@ AND d.first_published_at IS NULL
             _ => "d.deleted_at DESC",
         });
     } else {
-        // Pending or contributable
+        // Pending
         query_builder.push(match sort.as_str() {
             "old" => "d.created_at",
             _ => {
@@ -263,9 +223,7 @@ SELECT
     -- Timestamps
     created_at,
     edited_at,
-    deleted_at,
-    -- Joins
-    _user AS "user"
+    deleted_at
 FROM drafts
 "#,
     );
@@ -331,7 +289,6 @@ VALUES ($1), ($1)
         let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await).unwrap();
 
         assert_eq!(json.len(), 2);
-        assert!(json.iter().all(|story| story.user.is_none()));
 
         Ok(())
     }
@@ -556,440 +513,6 @@ WHERE id = $1
         Ok(())
     }
 
-    // Contributable
-
-    #[sqlx::test(fixtures("draft"))]
-    async fn can_return_contributable_drafts(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Add the current user as a contributor.
-        let insert_result = sqlx::query(
-            r#"
-INSERT INTO story_contributors (user_id, story_id, accepted_at)
-VALUES ($1, $2, NOW()), ($1, $3, NOW())
-"#,
-        )
-        .bind(user_id.unwrap())
-        .bind(2_i64)
-        .bind(3_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(insert_result.rows_affected(), 2);
-
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/drafts?type=contributable")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await).unwrap();
-
-        assert_eq!(json.len(), 2);
-        assert!(json.iter().all(|story| story.user.is_some()));
-
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("draft"))]
-    async fn can_return_contributable_drafts_in_asc_order(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Add the current user as a contributor.
-        let insert_result = sqlx::query(
-            r#"
-INSERT INTO story_contributors (user_id, story_id, accepted_at)
-VALUES ($1, $2, NOW()), ($1, $3, NOW())
-"#,
-        )
-        .bind(user_id.unwrap())
-        .bind(2_i64)
-        .bind(3_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(insert_result.rows_affected(), 2);
-
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/drafts?type=contributable&sort=old")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await).unwrap();
-
-        assert_eq!(json[0].id, 3_i64);
-        assert_eq!(json[1].id, 2_i64);
-
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("draft"))]
-    async fn can_return_contributable_drafts_in_desc_order(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Add the current user as a contributor.
-        let insert_result = sqlx::query(
-            r#"
-INSERT INTO story_contributors (user_id, story_id, accepted_at)
-VALUES ($1, $2, NOW()), ($1, $3, NOW())
-"#,
-        )
-        .bind(user_id.unwrap())
-        .bind(2_i64)
-        .bind(3_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(insert_result.rows_affected(), 2);
-
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/drafts?type=contributable&sort=recent")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await).unwrap();
-
-        assert_eq!(json[0].id, 2_i64);
-        assert_eq!(json[1].id, 3_i64);
-
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("draft"))]
-    async fn can_search_contributable_drafts(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Add the current user as a contributor.
-        let insert_result = sqlx::query(
-            r#"
-INSERT INTO story_contributors (user_id, story_id, accepted_at)
-VALUES ($1, $2, NOW()), ($1, $3, NOW())
-"#,
-        )
-        .bind(user_id.unwrap())
-        .bind(2_i64)
-        .bind(3_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(insert_result.rows_affected(), 2);
-
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri(&format!(
-                "/v1/me/drafts?type=contributable&query={}",
-                encode("two")
-            ))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await).unwrap();
-
-        assert_eq!(json.len(), 1);
-        assert_eq!(json[0].title, "two".to_string());
-
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("draft"))]
-    async fn should_not_include_deleted_drafts_in_contributable_drafts(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Add the current user as a contributor.
-        let insert_result = sqlx::query(
-            r#"
-INSERT INTO story_contributors (user_id, story_id, accepted_at)
-VALUES ($1, $2, NOW()), ($1, $3, NOW())
-"#,
-        )
-        .bind(user_id.unwrap())
-        .bind(2_i64)
-        .bind(3_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(insert_result.rows_affected(), 2);
-
-        // Should return all the contributable drafts initially.
-        let req = test::TestRequest::get()
-            .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/drafts?type=contributable")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await);
-
-        assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
-
-        // Soft-delete one of the drafts.
-        let result = sqlx::query(
-            r#"
-UPDATE stories
-SET deleted_at = NOW()
-WHERE id = $1
-"#,
-        )
-        .bind(2_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        // Should return only one draft.
-        let req = test::TestRequest::get()
-            .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/drafts?type=contributable")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await);
-
-        assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 1);
-
-        // Recover the draft.
-        let result = sqlx::query(
-            r#"
-UPDATE stories
-SET deleted_at = NULL
-WHERE id = $1
-"#,
-        )
-        .bind(2_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        // Should return all the contributable drafts again.
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/drafts?type=contributable")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await);
-
-        assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
-
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("draft"))]
-    async fn should_not_include_contributable_drafts_having_pending_collaboration_request(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Add the current user as a contributor.
-        let insert_result = sqlx::query(
-            r#"
-INSERT INTO story_contributors (user_id, story_id, accepted_at)
-VALUES ($1, $2, NOW()), ($1, $3, NOW())
-"#,
-        )
-        .bind(user_id.unwrap())
-        .bind(2_i64)
-        .bind(3_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(insert_result.rows_affected(), 2);
-
-        // Should return all the contributable drafts initially.
-        let req = test::TestRequest::get()
-            .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/drafts?type=contributable")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await);
-
-        assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
-
-        // Reset one of the collaboration requests.
-        let result = sqlx::query(
-            r#"
-UPDATE story_contributors
-SET accepted_at = NULL
-WHERE story_id = $1
-"#,
-        )
-        .bind(2_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        // Should return only one draft.
-        let req = test::TestRequest::get()
-            .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/drafts?type=contributable")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await);
-
-        assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 1);
-
-        // Accept the collaboration request again.
-        let result = sqlx::query(
-            r#"
-UPDATE story_contributors
-SET accepted_at = NOW()
-WHERE story_id = $1
-"#,
-        )
-        .bind(2_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        // Should return all the contributable drafts again.
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/drafts?type=contributable")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await);
-
-        assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
-
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("draft"))]
-    async fn should_not_include_contributable_drafts_having_soft_deleted_collaboration_request(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Add the current user as a contributor.
-        let insert_result = sqlx::query(
-            r#"
-INSERT INTO story_contributors (user_id, story_id, accepted_at)
-VALUES ($1, $2, NOW()), ($1, $3, NOW())
-"#,
-        )
-        .bind(user_id.unwrap())
-        .bind(2_i64)
-        .bind(3_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(insert_result.rows_affected(), 2);
-
-        // Should return all the contributable drafts initially.
-        let req = test::TestRequest::get()
-            .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/drafts?type=contributable")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await);
-
-        assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
-
-        // Soft-delete one of the collaboration requests.
-        let result = sqlx::query(
-            r#"
-UPDATE story_contributors
-SET deleted_at = NOW()
-WHERE story_id = $1
-"#,
-        )
-        .bind(2_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        // Should return only one draft.
-        let req = test::TestRequest::get()
-            .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/drafts?type=contributable")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await);
-
-        assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 1);
-
-        // Recover the collaboration request.
-        let result = sqlx::query(
-            r#"
-UPDATE story_contributors
-SET deleted_at = NULL
-WHERE story_id = $1
-"#,
-        )
-        .bind(2_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        // Should return all the contributable drafts again.
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/drafts?type=contributable")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await);
-
-        assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
-
-        Ok(())
-    }
-
     // Deleted
 
     #[sqlx::test]
@@ -1021,7 +544,6 @@ VALUES ($1, NOW()), ($1, NOW())
         let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await).unwrap();
 
         assert_eq!(json.len(), 2);
-        assert!(json.iter().all(|story| story.user.is_none()));
 
         Ok(())
     }

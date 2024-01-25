@@ -65,9 +65,9 @@ message GetDraftsInfoRequest {
 }
 
 message GetDraftsInfoResponse {
-  uint32 pending_draft_count = 1;
-  uint32 deleted_draft_count = 2;
-  optional Draft latest_draft = 3;
+  uint32 pending_draft_count /* */ = 1;
+  uint32 deleted_draft_count /* */ = 2;
+  optional Draft latest_draft /**/ = 3;
 }
 
 // Stories information request
@@ -81,6 +81,17 @@ message GetStoriesInfoResponse {
   uint32 deleted_story_count /*  */ = 2;
 }
 
+// Contributions information request
+
+message GetContributionsInfoRequest {
+  string user_id = 1;
+}
+
+message GetContributionsInfoResponse {
+  uint32 contributable_story_count /*          */ = 1;
+  uint32 pending_collaboration_request_count /**/ = 2;
+}
+
 // Main story request
 
 message GetStoryRequest {
@@ -89,44 +100,45 @@ message GetStoryRequest {
 }
 
 message GetStoryResponse {
-  string id /*                           */ = 1;
-  string title /*                        */ = 2;
-  optional string slug /*                */ = 3;
-  optional string description /*         */ = 4;
-  optional string splash_id /*           */ = 5;
-  optional string splash_hex /*          */ = 6;
-  string doc_key /*                      */ = 7;
-  string category /*                     */ = 8;
-  string user_id /*                      */ = 9;
+  string id /*                                 */ = 1;
+  string title /*                              */ = 2;
+  optional string slug /*                      */ = 3;
+  optional string description /*               */ = 4;
+  optional string splash_id /*                 */ = 5;
+  optional string splash_hex /*                */ = 6;
+  string doc_key /*                            */ = 7;
+  string category /*                           */ = 8;
+  string user_id /*                            */ = 9;
   // Replace `uint32` with `uint64` when the read count overflows.
-  uint32 like_count /*                   */ = 10;
-  uint32 read_count /*                   */ = 11;
-  uint32 word_count /*                   */ = 12;
-  uint32 comment_count /*                */ = 13;
-  StoryAgeRestriction age_restriction /* */ = 14;
-  StoryLicense license /*                */ = 15;
-  StoryVisibility visibility /*          */ = 16;
-  bool disable_comments /*               */ = 17;
-  bool disable_public_revision_history /**/ = 18;
-  bool disable_toc /*                    */ = 19;
+  uint32 like_count /*                         */ = 10;
+  uint32 read_count /*                         */ = 11;
+  uint32 word_count /*                         */ = 12;
+  uint32 comment_count /*                      */ = 13;
+  StoryAgeRestriction age_restriction /*       */ = 14;
+  StoryLicense license /*                      */ = 15;
+  StoryVisibility visibility /*                */ = 16;
+  bool disable_comments /*                     */ = 17;
+  bool disable_public_revision_history /*      */ = 18;
+  bool disable_toc /*                          */ = 19;
   // SEO
-  optional string canonical_url /*       */ = 20;
-  optional string seo_description /*     */ = 21;
-  optional string seo_title /*           */ = 22;
-  optional string preview_image /*       */ = 23;
-  string created_at /*                   */ = 24;
-  optional string edited_at /*           */ = 25;
-  optional string published_at /*        */ = 26;
-  optional string first_published_at /*  */ = 27;
-  optional string deleted_at /*          */ = 28;
+  optional string canonical_url /*             */ = 20;
+  optional string seo_description /*           */ = 21;
+  optional string seo_title /*                 */ = 22;
+  optional string preview_image /*             */ = 23;
+  string created_at /*                         */ = 24;
+  optional string edited_at /*                 */ = 25;
+  optional string published_at /*              */ = 26;
+  optional string first_published_at /*        */ = 27;
+  optional string deleted_at /*                */ = 28;
   // Joins
-  user_def.v1.ExtendedUser user /*       */ = 29;
-  repeated tag_def.v1.Tag tags /*        */ = 30;
+  user_def.v1.ExtendedUser user /*             */ = 29;
+  repeated user_def.v1.BareUser contributors /**/ = 30;
+  repeated tag_def.v1.Tag tags /*              */ = 31;
   // User specific props
-  bool is_bookmarked /*                  */ = 31;
-  bool is_liked /*                       */ = 32;
+  bool is_bookmarked /*                        */ = 32;
+  bool is_liked /*                             */ = 33;
   // Reading session token
-  string reading_session_token /*        */ = 33;
+  string reading_session_token /*              */ = 34;
 }
 
 // Story metadata request
