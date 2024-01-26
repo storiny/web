@@ -129,11 +129,13 @@ const CodeBlockEditor = ({
     if (view !== null) {
       view.dispatch({
         effects: theme_compartment.reconfigure(
-          theme === "light" ? CODE_BLOCK_LIGHT_THEME : CODE_BLOCK_DARK_THEME
+          (theme === "light" ? CODE_BLOCK_LIGHT_THEME : CODE_BLOCK_DARK_THEME)(
+            is_reader || is_viewer
+          )
         )
       });
     }
-  }, [theme, theme_compartment, view]);
+  }, [is_reader, is_viewer, theme, theme_compartment, view]);
 
   // Listen for code gutter preference changes
   React.useEffect(() => {
@@ -190,7 +192,9 @@ const CodeBlockEditor = ({
       ...common_extensions,
       gutter_compartment.of(enable_code_gutters ? gutter_extensions : []),
       theme_compartment.of(
-        theme === "light" ? CODE_BLOCK_LIGHT_THEME : CODE_BLOCK_DARK_THEME
+        (theme === "light" ? CODE_BLOCK_LIGHT_THEME : CODE_BLOCK_DARK_THEME)(
+          is_reader || is_viewer
+        )
       ),
       language_compartment.of([]),
       wrap_compartment.of([])

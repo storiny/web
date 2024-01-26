@@ -129,7 +129,7 @@ export const MOCK_USERS: User[] = [
     wpm: 199,
     name: "Brennan Austin",
     username: "loulou",
-    id: "1662662933439021056",
+    id: "1662662933439001046",
     friend_count: 0,
     follower_count: 0,
     following_count: 0,

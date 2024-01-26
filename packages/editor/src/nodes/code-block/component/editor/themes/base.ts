@@ -16,6 +16,7 @@ export type ExtensionStyles = Record<string, StyleSpec>;
 
 export interface ExtendCodeBlockThemeOptions {
   mode: CodeBlockThemeMode;
+  read_only: boolean;
   styles: TagStyle[];
 }
 
@@ -24,10 +25,12 @@ export interface ExtendCodeBlockThemeOptions {
  * @param mode The mode of the theme
  * @param settings The theme settings
  * @param styles The theme styles object
+ * @param read_only The read-only flag
  */
 export const extend_code_block_theme = ({
   mode,
-  styles
+  styles,
+  read_only
 }: ExtendCodeBlockThemeOptions): Extension => {
   const theme_options: ExtensionStyles = {
     /* eslint-disable prefer-snakecase/prefer-snakecase */
@@ -98,11 +101,10 @@ export const extend_code_block_theme = ({
         boxShadow: "none"
       }
     },
-    "& .cm-content ::selection, & .cm-selectionBackground, & .cm-selectionLayer .cm-selectionBackground":
-      {
+    "&.cm-focused": {
+      "& .cm-selectionBackground, ::selection": {
         backgroundColor: "var(--bg-selection) !important"
       },
-    "&.cm-focused": {
       "& .cm-selectionMatch, & .cm-matchingBracket": {
         backgroundColor: "var(--inverted-50)",
         borderRadius: "var(--radius-xs)",
@@ -113,6 +115,11 @@ export const extend_code_block_theme = ({
     "&:not(.cm-focused)": {
       "& .cm-selectionMatch, & .cm-matchingBracket": {
         backgroundColor: "transparent"
+      },
+      "& .cm-selectionBackground, ::selection": {
+        backgroundColor: `${
+          !read_only ? "transparent" : "var(--bg-selection)"
+        } !important`
       }
     },
     ...auto_link_extension_styles,
