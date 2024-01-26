@@ -4,66 +4,48 @@
   bottom: 0;
   right: -2px;
   width: 2px;
-  background-color: var(--color);
+  background-color: var(--color-bg);
+  border-radius: 0 0 2px 2px;
   z-index: calc(var(--z-index-header) - 3);
-}
 
-.wrapper {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  width: fit-content;
-  max-width: var(--offset-width, 114px);
-  padding: 2px;
-  pointer-events: none;
-  border-radius: var(--radius-sm);
-  background-color: var(--color);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-50%);
-
-  /* Horizontally flipped */
-  &.flipped {
-    transform: translate(calc(-100% - 12px), -50%);
-    left: 100%;
-    right: 12px;
-
-    &::before {
-      left: 100%;
-      right: -10px;
+  &.mini {
+    &::after {
+      position: absolute;
+      content: "";
+      width: 8px;
+      height: 8px;
+      top: -4px;
+      left: 50%;
+      background-color: var(--color-bg);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
     }
   }
-
-  &::before {
-    content: "";
-    position: absolute;
-    width: 12px;
-    height: 2px;
-    top: 50%;
-    left: -10px;
-    background-color: var(--color);
-    transform: translateY(-50%);
-  }
-}
-
-.avatar {
-  height: 20px;
-  width: 21px; // +1px border
-  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
-  border-right: 1px solid var(--divider);
-  background-color: var(--hex);
 }
 
 .name {
-  max-width: 100%;
-  align-self: stretch;
-  padding: 3px 8px;
-  color: var(--fg-major);
+  position: absolute;
+  left: 0;
+  top: calc(-50% - 10px);
+  color: var(--color-fg, var(--fg-major));
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
+  font-family: var(--font-secondary);
   line-height: 100%;
-  box-shadow: var(--ridge-xs);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  background-color: var(--bg-body);
+  max-width: var(--offset-width, 114px);
+  padding: 5px 8px;
+  pointer-events: none;
+  border-radius: var(--radius-xs);
+  background-color: var(--color-bg);
+
+  &:not(.flipped) {
+    border-bottom-left-radius: 0;
+  }
+
+  &.flipped {
+    transform: translateX(calc(-100% + 2px));
+    border-bottom-right-radius: 0;
+  }
 }
 
 .selection,

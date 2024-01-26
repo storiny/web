@@ -80,7 +80,7 @@ const EditorPresence = (): React.ReactElement => {
       ))}
       {!is_smaller_than_tablet && viewers.length ? (
         <React.Fragment>
-          <Divider orientation={"vertical"} />
+          {Boolean(editors.length) && <Divider orientation={"vertical"} />}
           <AvatarGroup>
             {viewers.map((viewer) => (
               <Participant key={String(viewer.client_id)} presence={viewer} />

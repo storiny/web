@@ -5,10 +5,9 @@ import { WebsocketProvider } from "../websocket";
 
 export interface UserState {
   anchor_pos: null | RelativePosition;
-  avatar_hex: string | null;
-  avatar_id: string | null;
   awareness_data: object;
-  color: string;
+  color_bg: string;
+  color_fg: string;
   focus_pos: null | RelativePosition;
   focusing: boolean;
   name: string;

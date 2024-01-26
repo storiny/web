@@ -2,6 +2,7 @@
 
 import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
 import { DocUserRole, User } from "@storiny/types";
+import { default as invert_color } from "invert-color";
 import React from "react";
 import { Doc } from "yjs";
 
@@ -37,20 +38,21 @@ const CollaborationPlugin = ({
   awareness_data
 }: Props): React.ReactElement => {
   const user = use_app_selector(select_user) || ({} as User);
-  const local_state = React.useMemo(
-    () =>
-      ({
-        name: user.name,
-        user_id: user.id,
-        role,
-        color: get_user_color(user.id),
-        selection_color: get_user_color(user.id, undefined, 35),
-        avatar_id: user.avatar_id,
-        avatar_hex: user.avatar_hex,
-        awareness_data
-      }) as const,
-    [awareness_data, role, user.avatar_hex, user.avatar_id, user.id, user.name]
-  );
+  const local_state = React.useMemo(() => {
+    const color_bg = get_user_color(user.id);
+    const color_fg = invert_color(color_bg, true);
+
+    return {
+      name: user.name,
+      user_id: user.id,
+      role,
+      color_bg,
+      color_fg,
+      selection_color: get_user_color(user.id, undefined, 35),
+      cursor_type: "default",
+      awareness_data
+    } as const;
+  }, [awareness_data, role, user.id, user.name]);
 
   const [editor] = use_lexical_composer_context();
   const collab_context = use_collaboration_context(local_state);
