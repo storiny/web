@@ -8,7 +8,6 @@ Disallow: /handler$
 Disallow: /new$
 Disallow: /api/
 Disallow: /doc/
-Disallow: /_next/
 Disallow: /gateway-error
 
 User-agent: Mediapartners-Google

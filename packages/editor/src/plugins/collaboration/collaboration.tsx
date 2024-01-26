@@ -1,7 +1,7 @@
 "use client";
 
 import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
-import { User } from "@storiny/types";
+import { DocUserRole, User } from "@storiny/types";
 import React from "react";
 import { Doc } from "yjs";
 
@@ -24,7 +24,7 @@ interface Props {
   excluded_properties?: ExcludedProperties;
   id: string;
   provider_factory?: (id: string, yjs_doc_map: Map<string, Doc>) => Provider;
-  role: "editor" | "viewer";
+  role: Exclude<DocUserRole, "reader">;
   should_bootstrap: boolean;
 }
 

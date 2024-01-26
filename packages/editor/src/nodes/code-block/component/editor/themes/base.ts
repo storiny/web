@@ -98,14 +98,11 @@ export const extend_code_block_theme = ({
         boxShadow: "none"
       }
     },
-    "& .cm-content ::selection": {
-      backgroundColor: "var(--bg-selection) !important"
-    },
+    "& .cm-content ::selection, & .cm-selectionBackground, & .cm-selectionLayer .cm-selectionBackground":
+      {
+        backgroundColor: "var(--bg-selection) !important"
+      },
     "&.cm-focused": {
-      "& .cm-selectionBackground, & .cm-selectionLayer .cm-selectionBackground":
-        {
-          backgroundColor: "var(--bg-selection) !important"
-        },
       "& .cm-selectionMatch, & .cm-matchingBracket": {
         backgroundColor: "var(--inverted-50)",
         borderRadius: "var(--radius-xs)",

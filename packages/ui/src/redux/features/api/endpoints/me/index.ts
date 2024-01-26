@@ -4,6 +4,7 @@ export * from "./blocked-users";
 export * from "./bookmarks";
 export * from "./collaboration-requests";
 export * from "./comments";
+export * from "./contributions";
 export * from "./drafts";
 export * from "./flow";
 export * from "./followed-tags";

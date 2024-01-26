@@ -34,16 +34,18 @@ const StoryMetadataBar = (): React.ReactElement | null => {
         {story.title}
       </Typography>
       <Spacer className={css["f-grow"]} />
-      <StoryMetadataModal set_story={set_story} story={story}>
-        <IconButton
-          aria-label={"Edit metadata"}
-          size={"lg"}
-          title={"Edit metadata"}
-          variant={"ghost"}
-        >
-          <EditIcon />
-        </IconButton>
-      </StoryMetadataModal>
+      {story.is_writer && (
+        <StoryMetadataModal set_story={set_story} story={story}>
+          <IconButton
+            aria-label={"Edit metadata"}
+            size={"lg"}
+            title={"Edit metadata"}
+            variant={"ghost"}
+          >
+            <EditIcon />
+          </IconButton>
+        </StoryMetadataModal>
+      )}
     </div>
   );
 };

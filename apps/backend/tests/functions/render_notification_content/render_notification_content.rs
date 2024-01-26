@@ -167,7 +167,7 @@ WHERE notification_id = $2;
 
         assert_eq!(
             result.get::<String, _>("content"),
-            r#"<a data-fw-bold href="/sample_user_1">Sample user 1</a> invited you to contribute to their story: <span data-fw-medium>Sample story</span>. <a data-underline href="/me/content/drafts?tab=contributable">View all collaboration requests</a>"#
+            r#"<a data-fw-bold href="/sample_user_1">Sample user 1</a> invited you to contribute to their story: <span data-fw-medium>Sample story</span>. <a data-underline href="/me/content/contributions">View all collaboration requests</a>"#
                 .to_string()
         );
 
@@ -194,7 +194,7 @@ WHERE notification_id = $2;
 
         assert_eq!(
             result.get::<String, _>("content"),
-            r#"<a data-fw-bold href="/sample_user_1">Sample user 1</a> invited you to contribute to their story: <span data-fw-medium>Sample story</span>. <a data-underline href="/me/content/stories?tab=contributable">View all collaboration requests</a>"#
+            r#"<a data-fw-bold href="/sample_user_1">Sample user 1</a> invited you to contribute to their story: <span data-fw-medium>Sample story</span>. <a data-underline href="/me/content/contributions">View all collaboration requests</a>"#
                 .to_string()
         );
 

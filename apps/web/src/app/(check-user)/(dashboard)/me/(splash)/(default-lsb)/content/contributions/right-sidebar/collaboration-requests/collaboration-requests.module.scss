@@ -1,0 +1,29 @@
+@use "breakpoints";
+
+/* Modal content */
+.content {
+  height: 100%;
+
+  @include breakpoints.media(">mobile") {
+    height: 400px;
+  }
+}
+
+.control-bar {
+  align-items: stretch;
+  border-bottom: 1px solid var(--divider);
+}
+
+.x {
+  &.scroll-area {
+    overflow: hidden;
+    height: 100%;
+    padding-inline: 16px;
+    padding-top: 12px;
+  }
+
+  &.tabs-list {
+    display: flex;
+    justify-content: space-around;
+  }
+}

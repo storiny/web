@@ -17,7 +17,8 @@ import {
   DOC_STATUS,
   doc_status_atom,
   overflowing_figures_atom,
-  sidebars_collapsed_atom
+  sidebars_collapsed_atom,
+  story_metadata_atom
 } from "../../../../atoms";
 import { SPRING_CONFIG } from "../../../../constants";
 import { is_doc_editable } from "../../../../utils/is-doc-editable";
@@ -42,6 +43,7 @@ const SuspendedEditorRightSidebarContent = (
   const is_collapsed = use_atom_value(sidebars_collapsed_atom);
   const doc_status = use_atom_value(doc_status_atom);
   const overflowing_figures = use_atom_value(overflowing_figures_atom);
+  const story_metadata = use_atom_value(story_metadata_atom);
   const transitions = use_transition(!is_collapsed, {
     from: { opacity: 0, transform: "translate3d(10%,0,0) scale(0.97)" },
     enter: { opacity: 1, transform: "translate3d(0%,0,0) scale(1)" },
@@ -95,6 +97,15 @@ const SuspendedEditorRightSidebarContent = (
             You are currently viewing a static version of this deleted story. If
             you do not restore it, the story will be permanently pruned within
             30 days from the date of deletion.
+          </Typography>
+        ) : story_metadata.role === "viewer" ? (
+          <Typography className={css["t-minor"]} level={"body2"}>
+            You are currently viewing a live version of this story in read-only
+            mode.
+            <br />
+            <br />
+            If you wish to view to contribute, kindly ask the author of the
+            story to send you an invitation with edit access.
           </Typography>
         ) : (
           <SuspendedEditorRightSidebarEditableContent />

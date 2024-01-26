@@ -3,7 +3,7 @@ import { nanoid } from "nanoid";
 
 const { worker, rest } = window.msw;
 const MOCK_COLLABORATION_REQUESTS = MOCK_USERS.map((user, index) => ({
-  user,
+  user: index % 2 == 0 ? null : user,
   id: nanoid(),
   role: "editor",
   story: MOCK_STORIES[index],

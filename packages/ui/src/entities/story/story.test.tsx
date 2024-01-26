@@ -44,6 +44,15 @@ describe("<Story />", () => {
     );
   });
 
+  it("renders contributable mode", () => {
+    render_test_with_provider(
+      <Story enable_ssr is_contributable story={TEST_STORY} />,
+      {
+        logged_in: true
+      }
+    );
+  });
+
   it("does not have any accessibility violations", async () => {
     const { container } = render_test_with_provider(
       <Story enable_ssr story={TEST_STORY} />
@@ -87,6 +96,17 @@ describe("<Story />", () => {
   it("does not have any accessibility violations in deleted mode", async () => {
     const { container } = render_test_with_provider(
       <Story enable_ssr is_deleted story={TEST_STORY} />,
+      {
+        logged_in: true
+      }
+    );
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("does not have any accessibility violations in contributable mode", async () => {
+    const { container } = render_test_with_provider(
+      <Story enable_ssr is_contributable story={TEST_STORY} />,
       {
         logged_in: true
       }

@@ -127,7 +127,7 @@ const Publish = ({
     publish_story({ id: story.id, status, word_count: word_count_ref.current })
       .unwrap()
       .then(() =>
-        router.replace(`/${story.user?.username || "view"}/${story.id}`)
+        router.replace(`/${story.user?.username || "story"}/${story.id}`)
       )
       .catch((error) => {
         set_doc_status(DOC_STATUS.connected);
@@ -271,7 +271,11 @@ const EditorNavbar = ({
   return (
     <header className={styles["editor-navbar"]} role={"banner"}>
       <div className={clsx(css["flex-center"], styles["full-height"])}>
-        <EditorMenubar disabled={status === "deleted" || document_loading} />
+        <EditorMenubar
+          disabled={
+            status === "deleted" || document_loading || story.role === "viewer"
+          }
+        />
         {!is_smaller_than_tablet && status !== "deleted" ? (
           <React.Fragment>
             <Tooltip content={"Version history"}>
@@ -316,9 +320,7 @@ const EditorNavbar = ({
         {status !== "deleted" ? (
           <React.Fragment>
             <Button
-              disabled
-              // TODO: disabled={document_loading}
-              // Share story
+              disabled={document_loading || !story.is_writer}
               variant={"hollow"}
             >
               Share
@@ -329,7 +331,10 @@ const EditorNavbar = ({
         {status === "deleted" ? (
           <Recover is_draft={!story.published_at} />
         ) : (
-          <Publish disabled={document_loading} status={status} />
+          <Publish
+            disabled={document_loading || !story.is_writer}
+            status={status}
+          />
         )}
       </div>
     </header>

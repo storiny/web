@@ -1,4 +1,4 @@
-import { Story } from "@storiny/types";
+import { DocUserRole, Story } from "@storiny/types";
 
 export type StoryStatus = "draft" | "published" | "deleted";
 
@@ -12,6 +12,10 @@ export interface EditorProps {
    */
   initial_doc?: Uint8Array;
   /**
+   * Whether the current user is the writer of the story
+   */
+  is_writer?: boolean;
+  /**
    * Whether to render a read-only editor
    * @default false
    */
@@ -19,7 +23,7 @@ export interface EditorProps {
   /**
    * Role of the user
    */
-  role: "editor" | "viewer";
+  role: DocUserRole;
   /**
    * Document status
    * @default 'draft'

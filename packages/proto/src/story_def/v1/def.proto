@@ -158,23 +158,24 @@ message GetStoryMetadataResponse {
   string doc_key /*                      */ = 7;
   string category /*                     */ = 8;
   string user_id /*                      */ = 9;
-  StoryAgeRestriction age_restriction /* */ = 10;
-  StoryLicense license /*                */ = 11;
-  StoryVisibility visibility /*          */ = 12;
-  bool disable_comments /*               */ = 13;
-  bool disable_public_revision_history /**/ = 14;
-  bool disable_toc /*                    */ = 15;
+  string role /*                         */ = 10;
+  StoryAgeRestriction age_restriction /* */ = 11;
+  StoryLicense license /*                */ = 12;
+  StoryVisibility visibility /*          */ = 13;
+  bool disable_comments /*               */ = 14;
+  bool disable_public_revision_history /**/ = 15;
+  bool disable_toc /*                    */ = 16;
   // SEO
-  optional string canonical_url /*       */ = 16;
-  optional string seo_description /*     */ = 17;
-  optional string seo_title /*           */ = 18;
-  optional string preview_image /*       */ = 19;
-  string created_at /*                   */ = 20;
-  optional string edited_at /*           */ = 21;
-  optional string published_at /*        */ = 22;
-  optional string first_published_at /*  */ = 23;
-  optional string deleted_at /*          */ = 24;
+  optional string canonical_url /*       */ = 17;
+  optional string seo_description /*     */ = 18;
+  optional string seo_title /*           */ = 19;
+  optional string preview_image /*       */ = 20;
+  string created_at /*                   */ = 21;
+  optional string edited_at /*           */ = 22;
+  optional string published_at /*        */ = 23;
+  optional string first_published_at /*  */ = 24;
+  optional string deleted_at /*          */ = 25;
   // Joins
-  user_def.v1.BareUser user /*           */ = 25;
-  repeated tag_def.v1.Tag tags /*        */ = 26;
+  user_def.v1.BareUser user /*           */ = 26;
+  repeated tag_def.v1.Tag tags /*        */ = 27;
 }
