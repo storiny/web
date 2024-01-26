@@ -48,13 +48,13 @@ import { StoryProps } from "./story.props";
  * @param props Story props
  */
 const get_story_url = (props: StoryProps): string => {
-  const { story, is_deleted, is_draft } = props;
+  const { story, is_deleted, is_contributable, is_draft } = props;
 
-  if (is_draft || is_deleted) {
+  if (is_draft || is_contributable || is_deleted) {
     return `/doc/${story.id}`;
   }
 
-  return `/${story.user?.username || "view"}/${story.slug ?? story.id}`;
+  return `/${story.user?.username || "story"}/${story.slug ?? story.id}`;
 };
 
 // Meta
@@ -88,7 +88,7 @@ const Meta = (props: StoryProps): React.ReactElement | null => {
         </Typography>
       </NoSsr>
     )
-  ) : is_extended ? (
+  ) : is_extended && !is_draft ? (
     is_mobile ? (
       <Spacer orientation={"vertical"} size={0.5} />
     ) : (
@@ -179,8 +179,14 @@ const Meta = (props: StoryProps): React.ReactElement | null => {
 // Splash
 
 const Splash = (props: StoryProps): React.ReactElement => {
-  const { is_extended, is_deleted, is_draft, show_unlike_button, story } =
-    props;
+  const {
+    is_extended,
+    is_contributable,
+    is_deleted,
+    is_draft,
+    show_unlike_button,
+    story
+  } = props;
   const router = use_app_router();
   const dispatch = use_app_dispatch();
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
@@ -191,9 +197,9 @@ const Splash = (props: StoryProps): React.ReactElement => {
     (state) => state.entities.liked_stories[story.id]
   );
   const story_url = get_story_url(props);
-  const is_small = is_extended || is_deleted || is_draft;
+  const is_small = is_extended || is_contributable || is_deleted || is_draft;
   const show_interactive_buttons = Boolean(
-    !is_extended && !is_deleted && !is_draft
+    !is_extended && !is_contributable && !is_deleted && !is_draft
   );
 
   return (
@@ -234,7 +240,7 @@ const Splash = (props: StoryProps): React.ReactElement => {
       />
       {is_mobile && (
         <span className={clsx(css["flex"], styles["mobile-actions"])}>
-          {!is_extended && (
+          {!is_extended && !is_contributable ? (
             <React.Fragment>
               {show_interactive_buttons && show_unlike_button && is_liked ? (
                 <IconButton
@@ -271,11 +277,12 @@ const Splash = (props: StoryProps): React.ReactElement => {
                 </IconButton>
               )}
             </React.Fragment>
-          )}
+          ) : null}
           {is_deleted ? (
             <RestoreAction is_draft={is_draft} overlay story={story} />
           ) : (
             <Actions
+              is_contributable={is_contributable}
               is_draft={is_draft}
               is_extended={is_extended}
               overlay
@@ -291,8 +298,14 @@ const Splash = (props: StoryProps): React.ReactElement => {
 // Footer
 
 const Footer = (props: StoryProps): React.ReactElement => {
-  const { is_extended, is_deleted, is_draft, story, show_unlike_button } =
-    props;
+  const {
+    is_extended,
+    is_contributable,
+    is_deleted,
+    is_draft,
+    story,
+    show_unlike_button
+  } = props;
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const dispatch = use_app_dispatch();
   const user = use_app_selector(select_user);
@@ -305,7 +318,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
   const show_word_count = is_draft || is_deleted;
   const show_tags = Boolean(!is_draft && !is_deleted);
   const show_interactive_buttons = Boolean(
-    !is_extended && !is_deleted && !is_draft
+    !is_extended && !is_contributable && !is_deleted && !is_draft
   );
 
   return (
@@ -368,7 +381,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
         </Typography>
       ) : (
         <React.Fragment>
-          {!is_extended && (
+          {!is_extended && !is_contributable ? (
             <React.Fragment>
               <Typography
                 aria-label={`${get_read_time(
@@ -397,7 +410,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
                 &bull;
               </Typography>
             </React.Fragment>
-          )}
+          ) : null}
           <Typography
             aria-label={`${story.read_count} reads`}
             as={"span"}
@@ -553,6 +566,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
               <RestoreAction is_draft={is_draft} overlay story={story} />
             ) : (
               <Actions
+                is_contributable={is_contributable}
                 is_draft={is_draft}
                 is_extended={is_extended}
                 story={story}
@@ -567,23 +581,25 @@ const Footer = (props: StoryProps): React.ReactElement => {
 
 const Story = (props: StoryProps): React.ReactElement => {
   const {
-    is_extended,
-    is_deleted,
-    is_draft,
     className,
     story,
+    is_extended,
+    is_deleted,
+    is_draft: is_draft_prop,
+    is_contributable,
     enable_ssr,
     virtual,
     ...rest
   } = props;
+  const is_draft = is_draft_prop ?? story.published_at === null;
   const dispatch = use_app_dispatch();
   const is_user_blocked = use_app_selector(
     (state) => state.entities.blocks[story.user_id]
   );
   const [collapsed, set_collapsed] = React.useState(is_user_blocked);
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const story_url = get_story_url(props);
-  const is_small = is_extended || is_deleted || is_draft;
+  const story_url = get_story_url({ ...props, is_draft });
+  const is_small = is_extended || is_contributable || is_deleted || is_draft;
 
   React.useEffect(() => {
     dispatch(sync_with_story(story));
@@ -647,6 +663,7 @@ const Story = (props: StoryProps): React.ReactElement => {
                       <RestoreAction is_draft={is_draft} story={story} />
                     ) : (
                       <Actions
+                        is_contributable={is_contributable}
                         is_draft={is_draft}
                         is_extended={is_extended}
                         story={story}
@@ -655,7 +672,7 @@ const Story = (props: StoryProps): React.ReactElement => {
                   </>
                 ) : null}
               </div>
-              <Meta {...props} />
+              <Meta {...props} is_draft={is_draft} />
               <Typography
                 as={NextLink}
                 className={clsx(css["t-minor"], styles.description)}
@@ -668,7 +685,7 @@ const Story = (props: StoryProps): React.ReactElement => {
             </div>
             {story.splash_id && <Splash {...props} />}
           </div>
-          <Footer {...props} />
+          <Footer {...props} is_draft={is_draft} />
         </article>
       )}
     </NoSsr>

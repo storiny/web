@@ -20,16 +20,20 @@ const EditorLayout = ({
   children,
   read_only,
   story,
-  status = "draft"
+  status = "draft",
+  role,
+  is_writer
 }: {
   children: React.ReactNode;
 } & Pick<
   EditorProps,
-  "read_only" | "story" | "status"
+  "read_only" | "story" | "status" | "role" | "is_writer"
 >): React.ReactElement => (
   <Provider>
-    <HydrateMetadata story={story}>
-      <EditorComposer read_only={status === "deleted" || read_only}>
+    <HydrateMetadata is_writer={Boolean(is_writer)} role={role} story={story}>
+      <EditorComposer
+        read_only={status === "deleted" || read_only || role === "viewer"}
+      >
         <React.Fragment>
           {read_only ? <Navbar /> : <EditorNavbar status={status} />}
           <EditorLeftSidebar read_only={read_only} status={status} />

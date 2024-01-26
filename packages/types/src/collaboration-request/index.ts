@@ -1,10 +1,10 @@
-import { Story } from "../story";
-import { PeerRole, User } from "../user";
+import { DocUserRole, Story } from "../story";
+import { User } from "../user";
 
 export type CollaborationRequest = {
   created_at: string;
   id: string;
-  role: PeerRole;
+  role: Exclude<DocUserRole, "reader">;
   story: Pick<Story, "id" | "title">;
   user: User | null; // Can be null if the user is soft-deleted or deactivated
 };

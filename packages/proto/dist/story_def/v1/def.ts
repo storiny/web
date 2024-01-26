@@ -272,6 +272,7 @@ export interface GetStoryMetadataResponse {
   doc_key: string;
   category: string;
   user_id: string;
+  role: string;
   age_restriction: StoryAgeRestriction;
   license: StoryLicense;
   visibility: StoryVisibility;
@@ -1851,6 +1852,7 @@ function createBaseGetStoryMetadataResponse(): GetStoryMetadataResponse {
     doc_key: "",
     category: "",
     user_id: "",
+    role: "",
     age_restriction: 0,
     license: 0,
     visibility: 0,
@@ -1900,56 +1902,59 @@ export const GetStoryMetadataResponse = {
     if (message.user_id !== "") {
       writer.uint32(74).string(message.user_id);
     }
+    if (message.role !== "") {
+      writer.uint32(82).string(message.role);
+    }
     if (message.age_restriction !== 0) {
-      writer.uint32(80).int32(message.age_restriction);
+      writer.uint32(88).int32(message.age_restriction);
     }
     if (message.license !== 0) {
-      writer.uint32(88).int32(message.license);
+      writer.uint32(96).int32(message.license);
     }
     if (message.visibility !== 0) {
-      writer.uint32(96).int32(message.visibility);
+      writer.uint32(104).int32(message.visibility);
     }
     if (message.disable_comments === true) {
-      writer.uint32(104).bool(message.disable_comments);
+      writer.uint32(112).bool(message.disable_comments);
     }
     if (message.disable_public_revision_history === true) {
-      writer.uint32(112).bool(message.disable_public_revision_history);
+      writer.uint32(120).bool(message.disable_public_revision_history);
     }
     if (message.disable_toc === true) {
-      writer.uint32(120).bool(message.disable_toc);
+      writer.uint32(128).bool(message.disable_toc);
     }
     if (message.canonical_url !== undefined) {
-      writer.uint32(130).string(message.canonical_url);
+      writer.uint32(138).string(message.canonical_url);
     }
     if (message.seo_description !== undefined) {
-      writer.uint32(138).string(message.seo_description);
+      writer.uint32(146).string(message.seo_description);
     }
     if (message.seo_title !== undefined) {
-      writer.uint32(146).string(message.seo_title);
+      writer.uint32(154).string(message.seo_title);
     }
     if (message.preview_image !== undefined) {
-      writer.uint32(154).string(message.preview_image);
+      writer.uint32(162).string(message.preview_image);
     }
     if (message.created_at !== "") {
-      writer.uint32(162).string(message.created_at);
+      writer.uint32(170).string(message.created_at);
     }
     if (message.edited_at !== undefined) {
-      writer.uint32(170).string(message.edited_at);
+      writer.uint32(178).string(message.edited_at);
     }
     if (message.published_at !== undefined) {
-      writer.uint32(178).string(message.published_at);
+      writer.uint32(186).string(message.published_at);
     }
     if (message.first_published_at !== undefined) {
-      writer.uint32(186).string(message.first_published_at);
+      writer.uint32(194).string(message.first_published_at);
     }
     if (message.deleted_at !== undefined) {
-      writer.uint32(194).string(message.deleted_at);
+      writer.uint32(202).string(message.deleted_at);
     }
     if (message.user !== undefined) {
-      BareUser.encode(message.user, writer.uint32(202).fork()).ldelim();
+      BareUser.encode(message.user, writer.uint32(210).fork()).ldelim();
     }
     for (const v of message.tags) {
-      Tag.encode(v!, writer.uint32(210).fork()).ldelim();
+      Tag.encode(v!, writer.uint32(218).fork()).ldelim();
     }
     return writer;
   },
@@ -2025,119 +2030,126 @@ export const GetStoryMetadataResponse = {
           message.user_id = reader.string();
           continue;
         case 10:
-          if (tag !== 80) {
+          if (tag !== 82) {
             break;
           }
 
-          message.age_restriction = reader.int32() as any;
+          message.role = reader.string();
           continue;
         case 11:
           if (tag !== 88) {
             break;
           }
 
-          message.license = reader.int32() as any;
+          message.age_restriction = reader.int32() as any;
           continue;
         case 12:
           if (tag !== 96) {
             break;
           }
 
-          message.visibility = reader.int32() as any;
+          message.license = reader.int32() as any;
           continue;
         case 13:
           if (tag !== 104) {
             break;
           }
 
-          message.disable_comments = reader.bool();
+          message.visibility = reader.int32() as any;
           continue;
         case 14:
           if (tag !== 112) {
             break;
           }
 
-          message.disable_public_revision_history = reader.bool();
+          message.disable_comments = reader.bool();
           continue;
         case 15:
           if (tag !== 120) {
             break;
           }
 
-          message.disable_toc = reader.bool();
+          message.disable_public_revision_history = reader.bool();
           continue;
         case 16:
-          if (tag !== 130) {
+          if (tag !== 128) {
             break;
           }
 
-          message.canonical_url = reader.string();
+          message.disable_toc = reader.bool();
           continue;
         case 17:
           if (tag !== 138) {
             break;
           }
 
-          message.seo_description = reader.string();
+          message.canonical_url = reader.string();
           continue;
         case 18:
           if (tag !== 146) {
             break;
           }
 
-          message.seo_title = reader.string();
+          message.seo_description = reader.string();
           continue;
         case 19:
           if (tag !== 154) {
             break;
           }
 
-          message.preview_image = reader.string();
+          message.seo_title = reader.string();
           continue;
         case 20:
           if (tag !== 162) {
             break;
           }
 
-          message.created_at = reader.string();
+          message.preview_image = reader.string();
           continue;
         case 21:
           if (tag !== 170) {
             break;
           }
 
-          message.edited_at = reader.string();
+          message.created_at = reader.string();
           continue;
         case 22:
           if (tag !== 178) {
             break;
           }
 
-          message.published_at = reader.string();
+          message.edited_at = reader.string();
           continue;
         case 23:
           if (tag !== 186) {
             break;
           }
 
-          message.first_published_at = reader.string();
+          message.published_at = reader.string();
           continue;
         case 24:
           if (tag !== 194) {
             break;
           }
 
-          message.deleted_at = reader.string();
+          message.first_published_at = reader.string();
           continue;
         case 25:
           if (tag !== 202) {
             break;
           }
 
-          message.user = BareUser.decode(reader, reader.uint32());
+          message.deleted_at = reader.string();
           continue;
         case 26:
           if (tag !== 210) {
+            break;
+          }
+
+          message.user = BareUser.decode(reader, reader.uint32());
+          continue;
+        case 27:
+          if (tag !== 218) {
             break;
           }
 
@@ -2163,6 +2175,7 @@ export const GetStoryMetadataResponse = {
       doc_key: isSet(object.doc_key) ? globalThis.String(object.doc_key) : "",
       category: isSet(object.category) ? globalThis.String(object.category) : "",
       user_id: isSet(object.user_id) ? globalThis.String(object.user_id) : "",
+      role: isSet(object.role) ? globalThis.String(object.role) : "",
       age_restriction: isSet(object.age_restriction) ? storyAgeRestrictionFromJSON(object.age_restriction) : 0,
       license: isSet(object.license) ? storyLicenseFromJSON(object.license) : 0,
       visibility: isSet(object.visibility) ? storyVisibilityFromJSON(object.visibility) : 0,
@@ -2213,6 +2226,9 @@ export const GetStoryMetadataResponse = {
     }
     if (message.user_id !== "") {
       obj.user_id = message.user_id;
+    }
+    if (message.role !== "") {
+      obj.role = message.role;
     }
     if (message.age_restriction !== 0) {
       obj.age_restriction = storyAgeRestrictionToJSON(message.age_restriction);
@@ -2282,6 +2298,7 @@ export const GetStoryMetadataResponse = {
     message.doc_key = object.doc_key ?? "";
     message.category = object.category ?? "";
     message.user_id = object.user_id ?? "";
+    message.role = object.role ?? "";
     message.age_restriction = object.age_restriction ?? 0;
     message.license = object.license ?? 0;
     message.visibility = object.visibility ?? 0;

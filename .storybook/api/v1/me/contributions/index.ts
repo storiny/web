@@ -10,8 +10,9 @@ worker.use(
       res(
         ctx.delay(1200),
         ctx.json(
-          MOCK_STORIES.slice(0, 10).map((story) => ({
+          MOCK_STORIES.slice(0, 10).map((story, index) => ({
             ...story,
+            published_at: index % 2 === 0 ? null : story.published_at,
             id: nanoid(),
           })),
         ),

@@ -15,7 +15,8 @@ import css from "~/theme/main.module.scss";
 import {
   doc_status_atom,
   overflowing_figures_atom,
-  sidebars_collapsed_atom
+  sidebars_collapsed_atom,
+  story_metadata_atom
 } from "../../atoms";
 import { SPRING_CONFIG } from "../../constants";
 import { is_doc_editable } from "../../utils/is-doc-editable";
@@ -40,6 +41,7 @@ const EditorToolbar = (): React.ReactElement | null => {
   const sidebars_collapsed = use_atom_value(sidebars_collapsed_atom);
   const doc_status = use_atom_value(doc_status_atom);
   const overflowing_figures = use_atom_value(overflowing_figures_atom);
+  const story = use_atom_value(story_metadata_atom);
   const transitions = use_transition(
     sidebars_collapsed ||
       is_smaller_than_desktop ||
@@ -52,7 +54,7 @@ const EditorToolbar = (): React.ReactElement | null => {
     }
   );
 
-  if (!is_doc_editable(doc_status)) {
+  if (!is_doc_editable(doc_status) || story.role === "viewer") {
     return null;
   }
 

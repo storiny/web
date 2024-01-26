@@ -8,6 +8,7 @@ import BooksIcon from "~/icons/books";
 import BrushIcon from "~/icons/brush";
 import CommentIcon from "~/icons/comment";
 import ConnectionsIcon from "~/icons/connections";
+import ContributionIcon from "~/icons/contribution";
 import KeyIcon from "~/icons/key";
 import LoginIcon from "~/icons/login";
 import MuteIcon from "~/icons/mute";
@@ -102,6 +103,11 @@ const CONTENT_GROUP: Group = {
       title: "Published stories",
       value: "content/stories",
       decorator: <StoryIcon />
+    },
+    {
+      title: "Contributions",
+      value: "content/contributions",
+      decorator: <ContributionIcon />
     },
     {
       title: "Responses",

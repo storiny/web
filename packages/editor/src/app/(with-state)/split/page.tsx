@@ -5,6 +5,8 @@ import React from "react";
 
 const Page = (): React.ReactElement => {
   const collab_id = use_search_params().get("collab_id") || "";
+  const right_frame_role =
+    use_search_params().get("right_frame_role") || "editor";
   return (
     <React.Fragment>
       <iframe
@@ -21,7 +23,7 @@ const Page = (): React.ReactElement => {
       />
       <iframe
         name={"right"}
-        src={`/?collab_id=${collab_id}`}
+        src={`/?collab_id=${collab_id}&role=${right_frame_role}`}
         style={{
           position: "fixed",
           border: 0,

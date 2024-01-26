@@ -1164,6 +1164,9 @@ impl serde::Serialize for GetStoryMetadataResponse {
         if !self.user_id.is_empty() {
             len += 1;
         }
+        if !self.role.is_empty() {
+            len += 1;
+        }
         if self.age_restriction != 0 {
             len += 1;
         }
@@ -1242,6 +1245,9 @@ impl serde::Serialize for GetStoryMetadataResponse {
         }
         if !self.user_id.is_empty() {
             struct_ser.serialize_field("userId", &self.user_id)?;
+        }
+        if !self.role.is_empty() {
+            struct_ser.serialize_field("role", &self.role)?;
         }
         if self.age_restriction != 0 {
             let v = StoryAgeRestriction::from_i32(self.age_restriction)
@@ -1323,6 +1329,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryMetadataResponse {
             "category",
             "user_id",
             "userId",
+            "role",
             "age_restriction",
             "ageRestriction",
             "license",
@@ -1366,6 +1373,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryMetadataResponse {
             DocKey,
             Category,
             UserId,
+            Role,
             AgeRestriction,
             License,
             Visibility,
@@ -1413,6 +1421,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryMetadataResponse {
                             "docKey" | "doc_key" => Ok(GeneratedField::DocKey),
                             "category" => Ok(GeneratedField::Category),
                             "userId" | "user_id" => Ok(GeneratedField::UserId),
+                            "role" => Ok(GeneratedField::Role),
                             "ageRestriction" | "age_restriction" => Ok(GeneratedField::AgeRestriction),
                             "license" => Ok(GeneratedField::License),
                             "visibility" => Ok(GeneratedField::Visibility),
@@ -1458,6 +1467,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryMetadataResponse {
                 let mut doc_key__ = None;
                 let mut category__ = None;
                 let mut user_id__ = None;
+                let mut role__ = None;
                 let mut age_restriction__ = None;
                 let mut license__ = None;
                 let mut visibility__ = None;
@@ -1530,6 +1540,12 @@ impl<'de> serde::Deserialize<'de> for GetStoryMetadataResponse {
                                 return Err(serde::de::Error::duplicate_field("userId"));
                             }
                             user_id__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::Role => {
+                            if role__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("role"));
+                            }
+                            role__ = Some(map.next_value()?);
                         }
                         GeneratedField::AgeRestriction => {
                             if age_restriction__.is_some() {
@@ -1645,6 +1661,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryMetadataResponse {
                     doc_key: doc_key__.unwrap_or_default(),
                     category: category__.unwrap_or_default(),
                     user_id: user_id__.unwrap_or_default(),
+                    role: role__.unwrap_or_default(),
                     age_restriction: age_restriction__.unwrap_or_default(),
                     license: license__.unwrap_or_default(),
                     visibility: visibility__.unwrap_or_default(),

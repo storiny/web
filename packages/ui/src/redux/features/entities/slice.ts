@@ -44,6 +44,7 @@ interface EntitiesIntegralState {
 interface EntitiesSelfState {
   self_block_count: number;
   self_comment_count: number;
+  self_contributable_story_count: number;
   self_deleted_draft_count: number;
   self_deleted_story_count: number;
   self_followed_tag_count: number;
@@ -86,6 +87,7 @@ export const entities_initial_state: EntitiesState = {
   self_comment_count: /*                      */ 0,
   self_deleted_draft_count: /*                */ 0,
   self_deleted_story_count: /*                */ 0,
+  self_contributable_story_count: /*          */ 0,
   self_followed_tag_count: /*                 */ 0,
   self_mute_count: /*                         */ 0,
   self_pending_draft_count: /*                */ 0,

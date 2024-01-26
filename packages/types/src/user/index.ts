@@ -2,8 +2,6 @@ import { StatusDuration, StatusVisibility } from "@storiny/shared";
 
 import { Connection } from "../connection";
 
-export type PeerRole = "editor" | "viewer";
-
 export interface UserStatus {
   duration: StatusDuration;
   emoji: string | null;

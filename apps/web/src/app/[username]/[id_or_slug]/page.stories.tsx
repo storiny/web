@@ -157,6 +157,14 @@ export const Blocked: Story = {
   ]
 };
 
+export const WithContributors: Story = {
+  ...Default,
+  args: {
+    doc: READ_ONLY_DATA,
+    story: { ...MOCK_STORIES[5], contributors: MOCK_USERS.slice(0, 3) }
+  }
+};
+
 export const CommentsDisabled: Story = {
   ...Default,
   args: {

@@ -20,7 +20,8 @@ const meta: Meta<typeof Editor> = {
   args: {
     doc_id: "demo",
     role: "editor",
-    story: MOCK_STORIES[5]
+    story: MOCK_STORIES[5],
+    is_writer: true
   },
   tags: ["autodocs"]
 };
@@ -134,6 +135,7 @@ export const ReadOnly: Story = {
   args: {
     ...Default.args,
     read_only: true,
+    is_writer: true,
     initial_doc: READ_ONLY_DATA
   }
 };
@@ -143,6 +145,7 @@ export const Published: Story = {
   args: {
     ...Default.args,
     status: "published",
+    is_writer: true,
     initial_doc: READ_ONLY_DATA
   }
 };
@@ -152,6 +155,27 @@ export const Deleted: Story = {
   args: {
     ...Default.args,
     status: "deleted",
+    is_writer: true,
+    initial_doc: READ_ONLY_DATA
+  }
+};
+
+export const Contributor: Story = {
+  ...Default,
+  args: {
+    ...Default.args,
+    is_writer: false,
+    role: "editor",
+    initial_doc: READ_ONLY_DATA
+  }
+};
+
+export const Viewer: Story = {
+  ...Default,
+  args: {
+    ...Default.args,
+    is_writer: false,
+    role: "viewer",
     initial_doc: READ_ONLY_DATA
   }
 };

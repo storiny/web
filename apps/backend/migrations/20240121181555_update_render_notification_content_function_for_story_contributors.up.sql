@@ -350,11 +350,6 @@ BEGIN
 				WHEN
 					entity_type = 13
 					THEN (WITH story AS (SELECT s.title,
-												CASE
-													WHEN s.published_at IS NOT NULL
-														THEN 'stories'
-													ELSE 'drafts'
-												END               AS "path_slug",
 												notifier.username AS "username",
 												notifier.name     AS "name"
 										 FROM
@@ -381,11 +376,10 @@ BEGIN
 												 || ' invited you to contribute to their story: '
 												 || '<span data-fw-medium>%s</span>.'
 												 ||
-											 ' <a data-underline href="/me/content/%s?tab=contributable">View all collaboration requests</a>',
+											 ' <a data-underline href="/me/content/contributions">View all collaboration requests</a>',
 											 (SELECT username FROM story),
 											 (SELECT public.truncate_str(name, 32) FROM story),
-											 (SELECT public.truncate_str(title, 96) FROM story),
-											 (SELECT path_slug FROM story)
+											 (SELECT public.truncate_str(title, 96) FROM story)
 									 )
 									 )
 				)

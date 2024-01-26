@@ -113,10 +113,12 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
       {read_only && <StoryHeader />}
       <RichTextPlugin
         ErrorBoundary={EditorErrorBoundary}
-        content_editable={<EditorContentEditable editable={!read_only} />}
-        placeholder={read_only ? null : <EditorPlaceholder />}
+        content_editable={<EditorContentEditable read_only={read_only} />}
+        placeholder={
+          read_only || role === "viewer" ? null : <EditorPlaceholder />
+        }
       />
-      {read_only ? (
+      {read_only || role === "reader" ? (
         <ReadOnlyPlugin
           initial_doc={initial_doc!}
           reading_session_token={props.story.reading_session_token || ""}
@@ -124,7 +126,6 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
         />
       ) : (
         <React.Fragment>
-          <RegisterTools />
           <NoSsr>
             <CollaborationPlugin
               id={doc_id}
@@ -145,17 +146,20 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
           <ListMaxIndentLevelPlugin />
           <MaxLengthPlugin />
           <MarkdownPlugin />
-          {is_doc_editable(doc_status) && (
+          {is_doc_editable(doc_status) && role !== "viewer" ? (
             <React.Fragment>
+              <RegisterTools />
               <TabFocusPlugin />
               <AutoFocusPlugin />
               <FloatingTextStylePlugin />
               <FloatingLinkEditorPlugin />
             </React.Fragment>
-          )}
+          ) : null}
         </React.Fragment>
       )}
-      {!is_editable || read_only ? <ClickableLinkPlugin /> : null}
+      {!is_editable || read_only || role === "viewer" ? (
+        <ClickableLinkPlugin />
+      ) : null}
       {!read_only &&
       ![DOC_STATUS.syncing, DOC_STATUS.synced].includes(doc_status) ? (
         <EditorLoader
@@ -179,12 +183,7 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
           }
         />
       ) : null}
-      {read_only && (
-        <React.Fragment>
-          <StoryFooter />
-          {/* TODO: <FontSettings /> */}
-        </React.Fragment>
-      )}
+      {read_only && <StoryFooter />}
     </article>
   );
 };

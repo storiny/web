@@ -26,9 +26,10 @@ export const {
       ],
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
         queryFulfilled.then(() => {
-          dispatch(
+          [
+            self_action("self_contributable_story_count", "increment"),
             self_action("self_pending_collaboration_request_count", "decrement")
-          );
+          ].forEach(dispatch);
         });
       }
     })
