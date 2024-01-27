@@ -164,9 +164,8 @@ MESSAGE_HANDLERS[Message.AUTH] = (_, decoder, provider): void => {
  */
 MESSAGE_HANDLERS[Message.INTERNAL] = (_, decoder, provider): void => {
   const event_message = decoding.readVarString(decoder);
-  const [slug, reason] = event_message.split(":");
-  provider.emit("internal-message", [slug, reason ?? event_message]);
-  provider.destroy();
+  const [slug, ...rest] = event_message.split(":");
+  provider.emit("internal-message", [slug, (rest || []).join(":")]);
 };
 
 /**

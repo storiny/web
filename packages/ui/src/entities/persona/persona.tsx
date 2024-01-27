@@ -33,6 +33,7 @@ const Persona = React.forwardRef<HTMLDivElement, PersonaProps>((props, ref) => {
     secondary_text,
     className,
     component_props,
+    render_avatar = (avatar): React.ReactNode => avatar,
     ...rest
   } = props;
   const first_avatar = Array.isArray(avatar) ? avatar[0] : avatar;
@@ -51,16 +52,22 @@ const Persona = React.forwardRef<HTMLDivElement, PersonaProps>((props, ref) => {
           )}
           size={size}
         >
-          {avatar.map((avatar_props, index) => (
-            <Avatar {...avatar_props} key={index} size={undefined} />
-          ))}
+          {avatar.map((avatar_props, index) =>
+            render_avatar(
+              <Avatar {...avatar_props} key={index} size={undefined} />,
+              index
+            )
+          )}
         </AvatarGroup>
       ) : (
-        <Avatar
-          {...first_avatar}
-          className={clsx(styles["avatar-item"], first_avatar.className)}
-          size={size}
-        />
+        render_avatar(
+          <Avatar
+            {...first_avatar}
+            className={clsx(styles["avatar-item"], first_avatar.className)}
+            size={size}
+          />,
+          0
+        )
       )}
       <Typography
         {...component_props?.primary_text}

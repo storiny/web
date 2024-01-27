@@ -180,6 +180,7 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::settings::privacy::following_list::init_routes(cfg);
     v1::me::settings::privacy::friend_list::init_routes(cfg);
     v1::me::settings::privacy::incoming_friend_requests::init_routes(cfg);
+    v1::me::settings::privacy::incoming_collaboration_requests::init_routes(cfg);
     v1::me::settings::privacy::private_account::init_routes(cfg);
     v1::me::settings::privacy::read_history::init_routes(cfg);
     v1::me::settings::privacy::sensitive_content::init_routes(cfg);

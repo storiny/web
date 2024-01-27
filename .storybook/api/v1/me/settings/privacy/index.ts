@@ -7,3 +7,4 @@ import "./following-list";
 import "./export-data";
 import "./delete-account";
 import "./disable-account";
+import "./incoming-collaboration-requests";

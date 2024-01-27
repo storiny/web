@@ -12,7 +12,6 @@ import Badge from "~/components/badge";
 import Button from "~/components/button";
 import Divider from "~/components/divider";
 import Grow from "~/components/grow";
-import Link from "~/components/link";
 import NoSsr from "~/components/no-ssr";
 import Spacer from "~/components/spacer";
 import Tooltip from "~/components/tooltip";

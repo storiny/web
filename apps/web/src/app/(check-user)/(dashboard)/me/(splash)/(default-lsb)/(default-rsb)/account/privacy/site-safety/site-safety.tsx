@@ -9,6 +9,7 @@ import TitleBlock from "~/entities/title-block";
 import DashboardGroup from "../../../../dashboard-group";
 import AccountHistory from "./account-history";
 import AccountRemovalGroup from "./account-removal";
+import CollaborationRequests from "./collaboration-requests";
 import ExportDataGroup from "./export-data-group";
 import FollowingList from "./following-list";
 import FriendList from "./friend-list";
@@ -23,6 +24,7 @@ const SiteSafety = ({
   following_list_visibility,
   friend_list_visibility,
   incoming_friend_requests,
+  incoming_collaboration_requests,
   allow_sensitive_media
 }: SiteSafetyProps): React.ReactElement => (
   <React.Fragment>
@@ -36,6 +38,10 @@ const SiteSafety = ({
       <AccountHistory record_read_history={record_read_history} />
       <Spacer orientation={"vertical"} size={3.5} />
       <FriendRequests incoming_friend_requests={incoming_friend_requests} />
+      <Spacer orientation={"vertical"} size={3.5} />
+      <CollaborationRequests
+        incoming_collaboration_requests={incoming_collaboration_requests}
+      />
       <Spacer orientation={"vertical"} size={3.5} />
       <FollowingList following_list_visibility={following_list_visibility} />
       <Spacer orientation={"vertical"} size={3.5} />

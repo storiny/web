@@ -115,7 +115,7 @@ const ButtonAction = ({
         }
       }}
     >
-      Continue
+      {typeof href === "string" ? "Home" : "Continue"}
     </Button>
   );
 };

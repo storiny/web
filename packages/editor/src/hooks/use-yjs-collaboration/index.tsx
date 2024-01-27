@@ -1,4 +1,5 @@
 import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import { DocUserRole } from "@storiny/types";
 import { useAtom as use_atom, useSetAtom as use_set_atom } from "jotai";
 import { $getRoot as $get_root, LexicalEditor } from "lexical";
 import React from "react";
@@ -99,13 +100,15 @@ const clear_editor_skip_collab = (
  * @param should_bootstrap Whether to bootstrap
  * @param excluded_properties Excluded properties
  * @param local_state Local collab state
+ * @param role The role of the peer
  */
 export const use_yjs_collaboration = ({
   doc_map,
   provider,
   excluded_properties,
   should_bootstrap,
-  local_state
+  local_state,
+  role
 }: {
   doc_map: Map<string, Doc>;
   excluded_properties?: ExcludedProperties;
@@ -115,6 +118,7 @@ export const use_yjs_collaboration = ({
   > &
     Partial<Pick<CollabLocalState, "awareness_data">>;
   provider: Provider;
+  role: Exclude<DocUserRole, "reader">;
   should_bootstrap: boolean;
 }): [React.ReactPortal, Binding] => {
   const [editor] = use_lexical_composer_context();
@@ -234,6 +238,8 @@ export const use_yjs_collaboration = ({
         "internal-message"
       > = (slug, reason) => {
         if (slug === "destroy") {
+          provider.destroy();
+
           set_doc_status(
             DESTROY_REASON_TO_DOC_STATUS_MAP[reason] ??
               DOC_STATUS.internal_error
@@ -242,6 +248,8 @@ export const use_yjs_collaboration = ({
           const [user_id, next_role] = reason.split(":");
 
           if (local_state.user_id === user_id) {
+            provider.destroy();
+
             set_doc_status(
               next_role === "editor"
                 ? DOC_STATUS.role_upgraded
@@ -252,6 +260,8 @@ export const use_yjs_collaboration = ({
           const [user_id] = reason.split(":");
 
           if (local_state.user_id === user_id) {
+            provider.destroy();
+
             set_doc_status(DOC_STATUS.peer_removed);
           }
         }
@@ -356,7 +366,8 @@ export const use_yjs_collaboration = ({
               tags,
               normalized_nodes,
               prev_editor_state,
-              curr_editor_state
+              curr_editor_state,
+              role
             });
           }
         }
