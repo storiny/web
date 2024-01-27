@@ -231,7 +231,7 @@ export class YRemoteSelectionsPluginValue {
 
       // Update decorations (remote selections)
       awareness_states.forEach((state, client_id) => {
-        if (client_id === local_client_id) {
+        if (client_id === local_client_id || state.role === "viewer") {
           return;
         }
 

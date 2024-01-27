@@ -290,7 +290,9 @@ export const sync_cursor_positions = (
   binding: Binding,
   provider: Provider
 ): void => {
-  const awareness_states = Array.from(provider.awareness.getStates());
+  const awareness_states = Array.from(provider.awareness.getStates()).filter(
+    (peer) => peer.role !== "viewer"
+  );
   const local_client_id = binding.client_id;
   const cursors = binding.cursors;
   const editor = binding.editor;

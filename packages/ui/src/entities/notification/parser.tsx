@@ -20,6 +20,21 @@ const is_defined = (value: unknown): boolean => typeof value !== "undefined";
  */
 const transform = (node: HTMLElement, children: Node[]): React.ReactNode => {
   switch (node.tagName.toLowerCase()) {
+    case "span":
+      return (
+        <span
+          className={clsx(
+            node.className,
+            is_defined(node.dataset.fwBold)
+              ? css["t-bold"]
+              : is_defined(node.dataset.fwMedium)
+                ? css["t-medium"]
+                : null
+          )}
+        >
+          {children}
+        </span>
+      );
     case "a":
       return (
         <Link
@@ -28,8 +43,8 @@ const transform = (node: HTMLElement, children: Node[]): React.ReactNode => {
             is_defined(node.dataset.fwBold)
               ? css["t-bold"]
               : is_defined(node.dataset.fwMedium)
-              ? css["t-medium"]
-              : null
+                ? css["t-medium"]
+                : null
           )}
           href={node.getAttribute("href") || "/"}
           style={{ color: "var(--fg-major)" }}

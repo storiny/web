@@ -79,6 +79,7 @@ const CollaborationPlugin = ({
         ? false
         : should_bootstrap,
     excluded_properties,
+    role,
     local_state
   });
   use_yjs_history(editor, binding);
