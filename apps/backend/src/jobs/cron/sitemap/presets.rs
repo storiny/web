@@ -26,12 +26,12 @@ fn build_url_entry(
     priority: f32,
     change_frequency: Option<ChangeFrequency>,
 ) -> Result<Url, JobError> {
-    Ok(Url::builder(format!("{web_server_url}{}", path))
+    Url::builder(format!("{web_server_url}{}", path))
         .change_frequency(change_frequency.unwrap_or(ChangeFrequency::Yearly))
         .priority(priority)
         .build()
         .map_err(Box::new)
-        .map_err(|err| JobError::Failed(err))?)
+        .map_err(|err| JobError::Failed(err))
 }
 
 /// Generates the preset sitemap.
@@ -141,13 +141,13 @@ mod tests {
         async fn can_generate_preset_sitemap(ctx: &mut LocalTestContext) {
             let config = get_app_config().unwrap();
             let s3_client = &ctx.s3_client;
-            let result = generate_preset_sitemap(&s3_client, &config.web_server_url).await;
+            let result = generate_preset_sitemap(s3_client, &config.web_server_url).await;
 
             assert!(result.is_ok());
 
             // Sitemap file should be present in the bucket.
             let sitemap_count = count_s3_objects(
-                &s3_client,
+                s3_client,
                 S3_SITEMAPS_BUCKET,
                 Some("presets.xml".to_string()),
                 None,

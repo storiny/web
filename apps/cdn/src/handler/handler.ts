@@ -45,9 +45,17 @@ export const handler = (r: Request): void | undefined => {
   try {
     const uri = r.uri || "";
 
+    // Root
     if (uri === "/") {
       prepare_text_response(r);
       r.return(200, "Storiny media service");
+      return;
+    }
+
+    // robots.txt
+    if (uri === "/robots.txt") {
+      prepare_text_response(r);
+      r.return(200, "User-agent: *\nDisallow: /$\nDisallow: /health\n");
       return;
     }
 
@@ -89,6 +97,7 @@ export const handler = (r: Request): void | undefined => {
 
     // Serve raw assets as-is
     if (/\/web-assets\/raw/.test(uri)) {
+      r.headersOut["X-Robots-Tag"] = "noindex";
       return pass_to_proxy(r, `internal/plain/${BASE_BUCKET}/${key}`);
     }
 
@@ -106,6 +115,7 @@ export const handler = (r: Request): void | undefined => {
     }
 
     // Use base bucket
+    r.headersOut["X-Robots-Tag"] = "noindex";
     return pass_to_proxy(
       r,
       `internal${resize_option || "/"}plain/${BASE_BUCKET}/${key}`

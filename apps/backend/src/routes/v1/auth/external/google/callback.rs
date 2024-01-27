@@ -67,20 +67,19 @@ async fn handle_oauth_request(
 
     let oauth_token = session
         .get::<String>("oauth_token")
-        .map_err(|error| ExternalAuthError::Other(error.to_string()))?
-        .ok_or(ExternalAuthError::Other(
-            "unable to extract the oauth token from the session".to_string(),
-        ))?;
+        .map_err(|error| ExternalAuthError::Other(error.to_string()))?;
 
-    // Check whether the CSRF token has been tampered.
-    if oauth_token != params.state {
+    // Check whether the CSRF token is missing or has been tampered.
+    if oauth_token.is_none() || oauth_token.unwrap_or_default() != params.state {
         return Err(ExternalAuthError::StateMismatch);
     }
 
     session.remove("oauth_token");
 
     let code = AuthorizationCode::new(params.code.clone());
-    let token_res = (&data.oauth_client_map.google)
+    let token_res = data
+        .oauth_client_map
+        .google
         .exchange_code(code)
         .request_async(async_http_client)
         .await
@@ -97,7 +96,7 @@ async fn handle_oauth_request(
 
     debug!(?received_scopes, "scopes received from Google");
 
-    if !vec![
+    if ![
         "https://www.googleapis.com/auth/userinfo.email",
         "https://www.googleapis.com/auth/userinfo.profile",
     ]
@@ -178,8 +177,8 @@ WHERE login_google_id = $1
 
                 let insert_result = sqlx::query(
                     r#"
-INSERT INTO users (name, username, email, login_google_id, last_login_at)
-VALUES ($1, $2, $3, $4, NOW())
+INSERT INTO users (name, username, email, login_google_id, last_login_at, email_verified)
+VALUES ($1, $2, $3, $4, NOW(), TRUE)
 RETURNING
     id,
     public_flags
@@ -210,7 +209,7 @@ RETURNING
                         }
                     }
 
-                    return ExternalAuthError::Other(error.to_string());
+                    ExternalAuthError::Other(error.to_string())
                 })?;
 
                 (
@@ -265,7 +264,7 @@ RETURNING
             }
         }
 
-        if let Some(ua_header) = (&req.headers()).get("user-agent") {
+        if let Some(ua_header) = req.headers().get("user-agent") {
             if let Ok(ua) = ua_header.to_str() {
                 let client_device_result = get_client_device(ua, &data.ua_parser);
                 client_device_value = client_device_result.display_name.to_string();
@@ -302,7 +301,7 @@ SELECT
 "#,
         )
         .bind(NotificationEntityType::LoginAttempt as i16)
-        .bind(&user_id)
+        .bind(user_id)
         .bind(if let Some(location) = client_location_value {
             format!("{client_device_value}:{location}")
         } else {
@@ -342,7 +341,7 @@ SELECT
     };
 
     Identity::login(&req.extensions(), user_id)
-        .and_then(|_| Ok(()))
+        .map(|_| ())
         .map_err(|err| ExternalAuthError::Other(err.to_string()))?;
 
     Ok(is_first_login)
@@ -362,21 +361,24 @@ async fn get(
             .append_header((
                 header::LOCATION,
                 if is_first_login {
-                    format!("{}?onboarding=true", data.config.web_server_url.to_string())
+                    format!("{}?onboarding=true", data.config.web_server_url)
                 } else {
                     data.config.web_server_url.to_string()
                 },
             ))
             .finish()),
-        Err(error) => Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
-            ExternalAuthTemplate {
-                provider_name: "Google".to_string(),
-                provider_icon: GOOGLE_LOGO.to_string(),
-                error,
-            }
-            .render_once()
-            .unwrap(),
-        )),
+        Err(error) => ExternalAuthTemplate {
+            provider_name: "Google".to_string(),
+            provider_icon: GOOGLE_LOGO.to_string(),
+            error,
+        }
+        .render_once()
+        .map(|body| {
+            HttpResponse::Ok()
+                .content_type(ContentType::html())
+                .body(body)
+        })
+        .map_err(|error| AppError::InternalError(error.to_string())),
     }
 }
 
@@ -441,17 +443,15 @@ mod tests {
         // New user should be present in the database.
         let result = sqlx::query(
             r#"
-SELECT EXISTS (
-    SELECT 1 FROM users
-    WHERE login_google_id = $1
-)
+SELECT email_verified FROM users
+WHERE login_google_id = $1
 "#,
         )
         .bind("1")
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(result.get::<bool, _>("exists"));
+        assert!(result.get::<bool, _>("email_verified"));
 
         // Should not insert a notification for new user.
         let result = sqlx::query(

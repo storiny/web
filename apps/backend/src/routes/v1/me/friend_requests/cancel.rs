@@ -50,8 +50,8 @@ WHERE
     AND deleted_at IS NULL
 "#,
     )
-    .bind(&receiver_id)
-    .bind(&transmitter_id)
+    .bind(receiver_id)
+    .bind(transmitter_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()
@@ -120,6 +120,39 @@ SELECT EXISTS (
         .await?;
 
         assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("friend_request"))]
+    async fn can_return_an_error_response_when_trying_to_cancel_an_accepted_friend_request(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
+        // Send a friend request.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO friends (transmitter_id, receiver_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/friend-requests/{}/cancel", 2))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Friend request not found").await;
 
         Ok(())
     }

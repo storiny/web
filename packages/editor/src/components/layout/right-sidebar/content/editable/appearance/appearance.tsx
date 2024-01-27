@@ -1,18 +1,24 @@
 import { get_shortcut_label } from "@storiny/shared/src/utils/get-shortcut-label";
 import { clsx } from "clsx";
-import { useSetAtom as use_set_atom } from "jotai";
+import {
+  useAtomValue as use_atom_value,
+  useSetAtom as use_set_atom
+} from "jotai";
 import React from "react";
 
 import IconButton from "~/components/icon-button";
+import Option from "~/components/option";
 import Select from "~/components/select";
 import Spacer from "~/components/spacer";
 import Tooltip from "~/components/tooltip";
 import Typography from "~/components/typography";
-import CaretDefaultIcon from "~/icons/caret-default";
 import SidebarCollapseIcon from "~/icons/sidebar-collapse";
 import css from "~/theme/main.module.scss";
 
-import { sidebars_collapsed_atom } from "../../../../../../atoms";
+import {
+  awareness_atom,
+  sidebars_collapsed_atom
+} from "../../../../../../atoms";
 import { EDITOR_SHORTCUTS } from "../../../../../../constants/shortcuts";
 
 const Appearance = ({
@@ -21,6 +27,8 @@ const Appearance = ({
   disabled?: boolean;
 }): React.ReactElement => {
   const set_sidebars_collapsed = use_set_atom(sidebars_collapsed_atom);
+  const awareness = use_atom_value(awareness_atom);
+
   return (
     <div className={css["flex-col"]}>
       <Typography
@@ -31,31 +39,24 @@ const Appearance = ({
       </Typography>
       <Spacer orientation={"vertical"} size={2} />
       <div className={css["flex-center"]}>
-        {/* TODO: Implement */}
-        <Tooltip content={"Available soon"}>
-          <div className={css["f-grow"]}>
-            <Select
-              defaultValue={"default"}
-              disabled
-              slot_props={{
-                trigger: {
-                  className: css["full-w"],
-                  "aria-label": "Caret style"
-                },
-                value: {
-                  placeholder: "Caret style"
-                }
-              }}
-              value_children={
-                <span className={css["flex-center"]}>
-                  <CaretDefaultIcon />
-                  <Spacer />
-                  Default caret
-                </span>
-              }
-            />
-          </div>
-        </Tooltip>
+        <Select
+          defaultValue={"default"}
+          onValueChange={(next_value): void =>
+            awareness?.setLocalStateField("cursor_type", next_value)
+          }
+          slot_props={{
+            trigger: {
+              className: css["f-grow"],
+              "aria-label": "Caret style"
+            },
+            value: {
+              placeholder: "Caret style"
+            }
+          }}
+        >
+          <Option value={"default"}>Default caret</Option>
+          <Option value={"mini"}>Mini caret</Option>
+        </Select>
         <Spacer />
         <Tooltip
           content={"Collapse sidebars"}

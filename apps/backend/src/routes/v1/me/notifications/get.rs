@@ -27,7 +27,10 @@ use uuid::Uuid;
 use validator::Validate;
 
 lazy_static! {
-    static ref TYPE_REGEX: Regex = Regex::new(r"^(unread|following|friends|all)$").unwrap();
+    static ref TYPE_REGEX: Regex = {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"^(unread|following|friends|all)$").unwrap()
+    };
 }
 
 #[derive(Serialize, Deserialize, Validate)]
@@ -84,7 +87,7 @@ async fn get(
 ) -> Result<HttpResponse, AppError> {
     let user_id = user.id()?;
 
-    let page = query.page.clone().unwrap_or(1) - 1;
+    let page = query.page.unwrap_or(1) - 1;
     let r#type = query.r#type.clone().unwrap_or("unread".to_string());
 
     let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
@@ -206,7 +209,7 @@ ORDER BY
 
     let result = query_builder
         .build_query_as::<Notification>()
-        .bind(&user_id)
+        .bind(user_id)
         .bind(10_i16)
         .bind((page * 10) as i16)
         .fetch_all(&data.db_pool)

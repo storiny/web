@@ -25,8 +25,14 @@ use uuid::Uuid;
 use validator::Validate;
 
 lazy_static! {
-    static ref SORT_REGEX: Regex = Regex::new(r"^(recent|old)$").unwrap();
-    static ref TYPE_REGEX: Regex = Regex::new(r"^(pending|deleted)$").unwrap();
+    static ref SORT_REGEX: Regex = {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"^(recent|old)$").unwrap()
+    };
+    static ref TYPE_REGEX: Regex = {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"^(pending|deleted)$").unwrap()
+    };
 }
 
 #[derive(Serialize, Deserialize, Validate)]
@@ -39,6 +45,17 @@ struct QueryParams {
     r#type: Option<String>,
     #[validate(length(min = 0, max = 160, message = "Invalid query length"))]
     query: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct User {
+    #[serde(with = "crate::snowflake_id")]
+    id: i64,
+    name: String,
+    username: String,
+    avatar_id: Option<Uuid>,
+    avatar_hex: Option<String>,
+    public_flags: i32,
 }
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
@@ -85,7 +102,7 @@ async fn get(
 ) -> Result<HttpResponse, AppError> {
     let user_id = user.id()?;
 
-    let page = query.page.clone().unwrap_or(1) - 1;
+    let page = query.page.unwrap_or(1) - 1;
     let sort = query.sort.clone().unwrap_or("recent".to_string());
     let r#type = query.r#type.clone().unwrap_or("pending".to_string());
     let search_query = query.query.clone().unwrap_or_default();
@@ -241,39 +258,7 @@ mod tests {
     use sqlx::PgPool;
     use urlencoding::encode;
 
-    #[sqlx::test]
-    async fn can_return_drafts(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Insert some drafts.
-        let insert_result = sqlx::query(
-            r#"
-INSERT INTO stories (user_id)
-VALUES ($1), ($1)
-"#,
-        )
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(insert_result.rows_affected(), 2);
-
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/drafts")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await);
-
-        assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
-
-        Ok(())
-    }
+    // Pending
 
     #[sqlx::test]
     async fn can_return_pending_drafts(pool: PgPool) -> sqlx::Result<()> {
@@ -301,44 +286,9 @@ VALUES ($1), ($1)
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await);
+        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await).unwrap();
 
-        assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
-
-        Ok(())
-    }
-
-    #[sqlx::test]
-    async fn can_return_deleted_drafts(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Insert some deleted drafts.
-        let insert_result = sqlx::query(
-            r#"
-INSERT INTO stories (user_id, deleted_at)
-VALUES ($1, NOW()), ($1, NOW())
-"#,
-        )
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(insert_result.rows_affected(), 2);
-
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/drafts?type=deleted")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await);
-
-        assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
+        assert_eq!(json.len(), 2);
 
         Ok(())
     }
@@ -432,94 +382,6 @@ VALUES ($1, $2)
     }
 
     #[sqlx::test]
-    async fn can_return_deleted_drafts_in_asc_order(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Insert some deleted drafts.
-        sqlx::query(
-            r#"
-INSERT INTO stories(id, user_id, deleted_at)
-VALUES ($1, $2, now())
-"#,
-        )
-        .bind(2_i64)
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        sqlx::query(
-            r#"
-INSERT INTO stories(id, user_id, deleted_at)
-VALUES ($1, $2, now())
-"#,
-        )
-        .bind(3_i64)
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/drafts?type=deleted&sort=old")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await).unwrap();
-
-        assert_eq!(json[0].id, 2_i64);
-        assert_eq!(json[1].id, 3_i64);
-
-        Ok(())
-    }
-
-    #[sqlx::test]
-    async fn can_return_deleted_drafts_in_desc_order(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Insert some deleted drafts.
-        sqlx::query(
-            r#"
-INSERT INTO stories(id, user_id, deleted_at)
-VALUES ($1, $2, now())
-"#,
-        )
-        .bind(2_i64)
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        sqlx::query(
-            r#"
-INSERT INTO stories(id, user_id, deleted_at)
-VALUES ($1, $2, now())
-"#,
-        )
-        .bind(3_i64)
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/drafts?type=deleted&sort=recent")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await).unwrap();
-
-        assert_eq!(json[0].id, 3_i64);
-        assert_eq!(json[1].id, 2_i64);
-
-        Ok(())
-    }
-
-    #[sqlx::test]
     async fn can_search_pending_drafts(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
@@ -543,45 +405,6 @@ VALUES ($1, $3), ($2, $3)
             .cookie(cookie.unwrap())
             .uri(&format!(
                 "/v1/me/drafts?type=pending&query={}",
-                encode("two")
-            ))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await).unwrap();
-
-        assert_eq!(json.len(), 1);
-        assert_eq!(json[0].title, "two".to_string());
-
-        Ok(())
-    }
-
-    #[sqlx::test]
-    async fn can_search_deleted_drafts(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Insert some deleted drafts.
-        let insert_result = sqlx::query(
-            r#"
-INSERT INTO stories (title, user_id, deleted_at)
-VALUES ($1, $3, NOW()), ($2, $3, NOW())
-"#,
-        )
-        .bind("one")
-        .bind("two")
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(insert_result.rows_affected(), 2);
-
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri(&format!(
-                "/v1/me/drafts?type=deleted&query={}",
                 encode("two")
             ))
             .to_request();
@@ -686,6 +509,168 @@ WHERE id = $1
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
+
+        Ok(())
+    }
+
+    // Deleted
+
+    #[sqlx::test]
+    async fn can_return_deleted_drafts(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Insert some deleted drafts.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO stories (user_id, deleted_at)
+VALUES ($1, NOW()), ($1, NOW())
+"#,
+        )
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/drafts?type=deleted")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await).unwrap();
+
+        assert_eq!(json.len(), 2);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_return_deleted_drafts_in_asc_order(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Insert some deleted drafts.
+        sqlx::query(
+            r#"
+INSERT INTO stories(id, user_id, deleted_at)
+VALUES ($1, $2, now())
+"#,
+        )
+        .bind(2_i64)
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        sqlx::query(
+            r#"
+INSERT INTO stories(id, user_id, deleted_at)
+VALUES ($1, $2, now())
+"#,
+        )
+        .bind(3_i64)
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/drafts?type=deleted&sort=old")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await).unwrap();
+
+        assert_eq!(json[0].id, 2_i64);
+        assert_eq!(json[1].id, 3_i64);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_return_deleted_drafts_in_desc_order(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Insert some deleted drafts.
+        sqlx::query(
+            r#"
+INSERT INTO stories(id, user_id, deleted_at)
+VALUES ($1, $2, now())
+"#,
+        )
+        .bind(2_i64)
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        sqlx::query(
+            r#"
+INSERT INTO stories(id, user_id, deleted_at)
+VALUES ($1, $2, now())
+"#,
+        )
+        .bind(3_i64)
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/drafts?type=deleted&sort=recent")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await).unwrap();
+
+        assert_eq!(json[0].id, 3_i64);
+        assert_eq!(json[1].id, 2_i64);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_search_deleted_drafts(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Insert some deleted drafts.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO stories (title, user_id, deleted_at)
+VALUES ($1, $3, NOW()), ($2, $3, NOW())
+"#,
+        )
+        .bind("one")
+        .bind("two")
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri(&format!(
+                "/v1/me/drafts?type=deleted&query={}",
+                encode("two")
+            ))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Draft>>(&res_to_string(res).await).unwrap();
+
+        assert_eq!(json.len(), 1);
+        assert_eq!(json[0].title, "two".to_string());
 
         Ok(())
     }

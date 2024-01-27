@@ -28,6 +28,8 @@ import {
 import {
   CreateDraftRequest,
   CreateDraftResponse,
+  GetContributionsInfoRequest,
+  GetContributionsInfoResponse,
   GetDraftsInfoRequest,
   GetDraftsInfoResponse,
   GetStoriesInfoRequest,
@@ -36,6 +38,8 @@ import {
   GetStoryMetadataResponse,
   GetStoryRequest,
   GetStoryResponse,
+  ValidateStoryRequest,
+  ValidateStoryResponse,
 } from "../../story_def/v1/def";
 import {
   GetFollowedTagCountRequest,
@@ -228,6 +232,16 @@ export const ApiServiceService = {
       Buffer.from(GetLoginActivityResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetLoginActivityResponse.decode(value),
   },
+  /** Validates a story */
+  validateStory: {
+    path: "/api_service.v1.ApiService/ValidateStory",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: ValidateStoryRequest) => Buffer.from(ValidateStoryRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => ValidateStoryRequest.decode(value),
+    responseSerialize: (value: ValidateStoryResponse) => Buffer.from(ValidateStoryResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => ValidateStoryResponse.decode(value),
+  },
   /** Returns the user's drafts details */
   getDraftsInfo: {
     path: "/api_service.v1.ApiService/GetDraftsInfo",
@@ -247,6 +261,18 @@ export const ApiServiceService = {
     requestDeserialize: (value: Buffer) => GetStoriesInfoRequest.decode(value),
     responseSerialize: (value: GetStoriesInfoResponse) => Buffer.from(GetStoriesInfoResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetStoriesInfoResponse.decode(value),
+  },
+  /** Returns the user's contributions details */
+  getContributionsInfo: {
+    path: "/api_service.v1.ApiService/GetContributionsInfo",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetContributionsInfoRequest) =>
+      Buffer.from(GetContributionsInfoRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetContributionsInfoRequest.decode(value),
+    responseSerialize: (value: GetContributionsInfoResponse) =>
+      Buffer.from(GetContributionsInfoResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetContributionsInfoResponse.decode(value),
   },
   /** Returns the user's responses details */
   getResponsesInfo: {
@@ -383,10 +409,14 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getConnectionSettings: handleUnaryCall<GetConnectionSettingsRequest, GetConnectionSettingsResponse>;
   /** Returns the user's login activity */
   getLoginActivity: handleUnaryCall<GetLoginActivityRequest, GetLoginActivityResponse>;
+  /** Validates a story */
+  validateStory: handleUnaryCall<ValidateStoryRequest, ValidateStoryResponse>;
   /** Returns the user's drafts details */
   getDraftsInfo: handleUnaryCall<GetDraftsInfoRequest, GetDraftsInfoResponse>;
   /** Returns the user's stories details */
   getStoriesInfo: handleUnaryCall<GetStoriesInfoRequest, GetStoriesInfoResponse>;
+  /** Returns the user's contributions details */
+  getContributionsInfo: handleUnaryCall<GetContributionsInfoRequest, GetContributionsInfoResponse>;
   /** Returns the user's responses details */
   getResponsesInfo: handleUnaryCall<GetResponsesInfoRequest, GetResponsesInfoResponse>;
   /** Returns the story's responses details */
@@ -586,6 +616,22 @@ export interface ApiServiceClient extends Client {
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetLoginActivityResponse) => void,
   ): ClientUnaryCall;
+  /** Validates a story */
+  validateStory(
+    request: ValidateStoryRequest,
+    callback: (error: ServiceError | null, response: ValidateStoryResponse) => void,
+  ): ClientUnaryCall;
+  validateStory(
+    request: ValidateStoryRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: ValidateStoryResponse) => void,
+  ): ClientUnaryCall;
+  validateStory(
+    request: ValidateStoryRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: ValidateStoryResponse) => void,
+  ): ClientUnaryCall;
   /** Returns the user's drafts details */
   getDraftsInfo(
     request: GetDraftsInfoRequest,
@@ -617,6 +663,22 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetStoriesInfoResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the user's contributions details */
+  getContributionsInfo(
+    request: GetContributionsInfoRequest,
+    callback: (error: ServiceError | null, response: GetContributionsInfoResponse) => void,
+  ): ClientUnaryCall;
+  getContributionsInfo(
+    request: GetContributionsInfoRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetContributionsInfoResponse) => void,
+  ): ClientUnaryCall;
+  getContributionsInfo(
+    request: GetContributionsInfoRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetContributionsInfoResponse) => void,
   ): ClientUnaryCall;
   /** Returns the user's responses details */
   getResponsesInfo(

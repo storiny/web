@@ -54,20 +54,19 @@ async fn handle_google_callback(
 
     let oauth_token = session
         .get::<String>("oauth_token")
-        .map_err(|error| AddAccountError::Other(error.to_string()))?
-        .ok_or(AddAccountError::Other(
-            "unable to extract the oauth token from the session".to_string(),
-        ))?;
+        .map_err(|error| AddAccountError::Other(error.to_string()))?;
 
-    // Check whether the CSRF token has been tampered.
-    if oauth_token != params.state {
+    // Check whether the CSRF token is missing or has been tampered.
+    if oauth_token.is_none() || oauth_token.unwrap_or_default() != params.state {
         return Err(AddAccountError::StateMismatch);
     }
 
     session.remove("oauth_token");
 
     let code = AuthorizationCode::new(params.code.clone());
-    let token_res = (&data.oauth_client_map.google_alt)
+    let token_res = data
+        .oauth_client_map
+        .google_alt
         .exchange_code(code)
         .request_async(async_http_client)
         .await
@@ -84,7 +83,7 @@ async fn handle_google_callback(
 
     debug!(?received_scopes, "scopes received from Google");
 
-    if !vec![
+    if ![
         "https://www.googleapis.com/auth/userinfo.email",
         "https://www.googleapis.com/auth/userinfo.profile",
     ]
@@ -113,7 +112,7 @@ async fn handle_google_callback(
         .validate()
         .map_err(|err| AddAccountError::Other(err.to_string()))?;
 
-    handle_google_profile_data(google_data, &data, &user_id).await
+    handle_google_profile_data(google_data, data, &user_id).await
 }
 
 /// Handles Google account profile data response.
@@ -211,17 +210,20 @@ async fn get(
     params: QsQuery<AuthRequest>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
-        AddAccountTemplate {
-            provider_name: "Google".to_string(),
-            provider_icon: GOOGLE_LOGO.to_string(),
-            error: handle_google_callback(&data, &session, &params, &user)
-                .await
-                .err(),
-        }
-        .render_once()
-        .unwrap(),
-    ))
+    AddAccountTemplate {
+        provider_name: "Google".to_string(),
+        provider_icon: GOOGLE_LOGO.to_string(),
+        error: handle_google_callback(&data, &session, &params, &user)
+            .await
+            .err(),
+    }
+    .render_once()
+    .map(|body| {
+        HttpResponse::Ok()
+            .content_type(ContentType::html())
+            .body(body)
+    })
+    .map_err(|error| AppError::InternalError(error.to_string()))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {

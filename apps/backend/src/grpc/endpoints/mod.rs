@@ -1,6 +1,7 @@
 pub mod create_draft;
 pub mod get_comment;
 pub mod get_connection_settings;
+pub mod get_contributions_info;
 pub mod get_credential_settings;
 pub mod get_drafts_info;
 pub mod get_followed_tag_count;
@@ -20,4 +21,5 @@ pub mod get_user_id;
 pub mod get_user_mute_count;
 pub mod get_user_relations_info;
 pub mod get_username;
+pub mod validate_story;
 pub mod verify_email;

@@ -52,7 +52,7 @@ pub async fn get_drafts_info(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
-    tracing::Span::current().record("user_id", &user_id);
+    tracing::Span::current().record("user_id", user_id);
 
     let pg_pool = &client.db_pool;
     let mut txn = pg_pool.begin().await.map_err(|error| {
@@ -82,7 +82,7 @@ SELECT
 ) AS "deleted_draft_count"
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .fetch_one(&mut *txn)
     .await
     .map_err(|error| {
@@ -113,7 +113,7 @@ ORDER BY
 LIMIT 1
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .fetch_one(&mut *txn)
     .await;
 
@@ -135,17 +135,15 @@ LIMIT 1
     Ok(Response::new(GetDraftsInfoResponse {
         pending_draft_count: result.get::<i64, _>("pending_draft_count") as u32,
         deleted_draft_count: result.get::<i64, _>("deleted_draft_count") as u32,
-        latest_draft: latest_draft.ok().and_then(|draft| {
-            Some(DraftDef {
+        latest_draft: latest_draft.ok().map(|draft| DraftDef {
                 id: draft.id.to_string(),
                 title: draft.title,
-                splash_id: draft.splash_id.and_then(|value| Some(value.to_string())),
+                splash_id: draft.splash_id.map(|value| value.to_string()),
                 splash_hex: draft.splash_hex,
                 word_count: draft.word_count as u32,
                 created_at: to_iso8601(&draft.created_at),
-                edited_at: draft.edited_at.and_then(|value| Some(to_iso8601(&value))),
-            })
-        }),
+                edited_at: draft.edited_at.map(|value| to_iso8601(&value)),
+            }),
     }))
 }
 

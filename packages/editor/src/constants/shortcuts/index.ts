@@ -8,8 +8,8 @@ export const EDITOR_SHORTCUTS = {
   strikethrough /**/: { key: "x", ctrl: true, shift: true },
   link /*         */: { key: "k", ctrl: true },
   code /*         */: { key: "j", ctrl: true },
-  superscript /*  */: { key: ";", ctrl: true },
-  subscript /*    */: { key: "'", ctrl: true },
+  superscript /*  */: { key: "9", ctrl: true, shift: true },
+  subscript /*    */: { key: "0", ctrl: true, shift: true },
   // Text nodes
   paragraph /*    */: { key: "p", ctrl: true, shift: true },
   heading /*      */: { key: "h", ctrl: true, shift: true },

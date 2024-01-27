@@ -12,7 +12,7 @@ pub fn decode_uri_encoded_story_categories(
         None => Err(anyhow!("failed to decode the encoded categories")),
         Some(decoded_categories) => {
             let categories_str = String::from_utf16(&decoded_categories)?;
-            let categories_vec: Vec<&str> = categories_str.split("|").collect();
+            let categories_vec: Vec<&str> = categories_str.split('|').collect();
 
             if categories_vec.len() > STORY_CATEGORY_VEC.len() {
                 return Err(anyhow!("too many categories"));
@@ -41,13 +41,11 @@ mod tests {
 
     #[test]
     fn can_decode_uri_encoded_story_categories() {
-        let categories_str = vec![
-            StoryCategory::Travel.to_string(),
+        let categories_str = [StoryCategory::Travel.to_string(),
             StoryCategory::Entertainment.to_string(),
             StoryCategory::DigitalGraphics.to_string(),
             StoryCategory::Gaming.to_string(),
-            StoryCategory::Lifestyle.to_string(),
-        ]
+            StoryCategory::Lifestyle.to_string()]
         .join("|");
         let uri_encoded = lz_str::compress_to_encoded_uri_component(&categories_str);
         let decoded = decode_uri_encoded_story_categories(&uri_encoded);
@@ -73,8 +71,8 @@ mod tests {
     fn can_throw_on_large_number_of_encoded_categories() {
         let categories_str = format!(
             "{}{}",
-            StoryCategory::Travel.to_string(),
-            format!("|{}", StoryCategory::Travel.to_string()).repeat(STORY_CATEGORY_VEC.len() + 1)
+            StoryCategory::Travel,
+            format!("|{}", StoryCategory::Travel).repeat(STORY_CATEGORY_VEC.len() + 1)
         );
         let uri_encoded = lz_str::compress_to_encoded_uri_component(&categories_str);
         let decoded = decode_uri_encoded_story_categories(&uri_encoded);

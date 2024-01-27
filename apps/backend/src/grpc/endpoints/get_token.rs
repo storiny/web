@@ -49,7 +49,7 @@ pub async fn get_token(
     let token_type = TokenType::try_from(request.r#type)
         .map_err(|_| Status::invalid_argument("`type` is invalid"))?;
 
-    tracing::Span::current().record("token_type", &(token_type as i32));
+    tracing::Span::current().record("token_type", token_type as i32);
 
     let salt = SaltString::from_b64(&client.config.token_salt).map_err(|error| {
         error!("unable to parse the salt string: {error:?}");
@@ -57,7 +57,7 @@ pub async fn get_token(
     })?;
 
     let hashed_token = Argon2::default()
-        .hash_password(&token_id.as_bytes(), &salt)
+        .hash_password(token_id.as_bytes(), &salt)
         .map_err(|error| {
             error!("unable to generate token hash: {error:?}");
             Status::internal("unable to verify the token")
@@ -138,7 +138,7 @@ mod tests {
                 let token_id = nanoid!(TOKEN_LENGTH);
                 let salt = SaltString::from_b64(&config.token_salt).unwrap();
                 let hashed_token = Argon2::default()
-                    .hash_password(&token_id.as_bytes(), &salt)
+                    .hash_password(token_id.as_bytes(), &salt)
                     .unwrap();
 
                 // Insert the token.
@@ -185,7 +185,7 @@ VALUES ($1, $2, $3, $4)
                 let token_id = nanoid!(TOKEN_LENGTH);
                 let salt = SaltString::from_b64(&config.token_salt).unwrap();
                 let hashed_token = Argon2::default()
-                    .hash_password(&token_id.as_bytes(), &salt)
+                    .hash_password(token_id.as_bytes(), &salt)
                     .unwrap();
 
                 // Insert an expired token.

@@ -3,6 +3,7 @@ import clsx from "clsx";
 import React from "react";
 
 import Button from "~/components/button";
+import IconButton from "~/components/icon-button";
 import { use_toast } from "~/components/toast";
 import { use_media_query } from "~/hooks/use-media-query";
 import RestoreIcon from "~/icons/restore";
@@ -17,9 +18,11 @@ import { handle_api_error } from "~/utils/handle-api-error";
 
 const RestoreAction = ({
   story,
-  is_draft
+  is_draft,
+  overlay
 }: {
   is_draft?: boolean;
+  overlay?: boolean;
   story: Story;
 }): React.ReactElement => {
   const toast = use_toast();
@@ -53,6 +56,22 @@ const RestoreAction = ({
         )
       );
   };
+
+  if (is_mobile && !overlay) {
+    return (
+      <IconButton
+        auto_size
+        loading={is_loading}
+        onClick={(event): void => {
+          event.stopPropagation();
+          handle_delete();
+        }}
+        variant={"ghost"}
+      >
+        <RestoreIcon />
+      </IconButton>
+    );
+  }
 
   return (
     <Button

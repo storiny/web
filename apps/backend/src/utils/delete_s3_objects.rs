@@ -36,7 +36,7 @@ pub async fn delete_s3_objects(
 
     let objects_to_delete = list_objects_result
         .contents()
-        .into_iter()
+        .iter()
         .filter_map(|obj| {
             ObjectIdentifier::builder()
                 .set_key(obj.key.clone())
@@ -137,7 +137,7 @@ mod tests {
             assert!(result.is_ok());
 
             let result = delete_s3_objects(
-                &s3_client,
+                s3_client,
                 S3_BASE_BUCKET,
                 Some("test-fruits/".to_string()),
                 None,
@@ -179,7 +179,7 @@ mod tests {
             future::join_all(put_futures).await;
 
             let result = delete_s3_objects(
-                &s3_client,
+                s3_client,
                 S3_BASE_BUCKET,
                 Some("test-integers/".to_string()),
                 None,
@@ -218,7 +218,7 @@ mod tests {
             assert!(result.is_ok());
 
             let result = delete_s3_objects(
-                &s3_client,
+                s3_client,
                 S3_BASE_BUCKET,
                 Some("test-trees/".to_string()),
                 None,

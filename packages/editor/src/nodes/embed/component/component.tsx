@@ -1,6 +1,7 @@
 import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection as use_lexical_node_selection } from "@lexical/react/useLexicalNodeSelection";
 import { mergeRegister as merge_register } from "@lexical/utils";
+import { captureException as capture_exception } from "@sentry/nextjs";
 import { clsx } from "clsx";
 import { useSetAtom as use_set_atom } from "jotai";
 import {
@@ -21,7 +22,7 @@ import use_resize_observer from "use-resize-observer";
 import Popover from "~/components/popover";
 import Spinner from "~/components/spinner";
 import Typography from "~/components/typography";
-import { select_theme } from "~/redux/features";
+import { select_resolved_theme } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 
@@ -44,21 +45,6 @@ const EmbedNodeControls = dynamic(() => import("./node-controls"), {
 const DATA_REGEX =
   /<script type="application\/storiny\.embed\.(rich|photo)\+json">(.+)<\/script>/i;
 
-/**
- * Returns the system color scheme
- */
-const parse_system_theme = (): "dark" | "light" => {
-  if (
-    window &&
-    window.matchMedia &&
-    window.matchMedia("(prefers-color-scheme: light)").matches
-  ) {
-    return "light";
-  }
-
-  return "dark";
-};
-
 const EmbedComponent = ({
   node_key,
   layout,
@@ -68,7 +54,7 @@ const EmbedComponent = ({
   node_key: NodeKey;
   url: string;
 }): React.ReactElement | null => {
-  const theme = use_app_selector(select_theme);
+  const theme = use_app_selector(select_resolved_theme);
   const [editor] = use_lexical_composer_context();
   const set_overflowing_figures = use_set_atom(overflowing_figures_atom);
   const [loading, set_loading] = React.useState<boolean>(true);
@@ -115,8 +101,7 @@ const EmbedComponent = ({
    * Generates the embed
    */
   const generate_embed = React.useCallback(() => {
-    const parsed_theme = theme === "system" ? parse_system_theme() : theme;
-    const embed_url = `${process.env.NEXT_PUBLIC_DISCOVERY_URL}/embed/${url}?theme=${parsed_theme}`;
+    const embed_url = `${process.env.NEXT_PUBLIC_DISCOVERY_URL}/embed/${url}?theme=${theme}`;
 
     fetch(embed_url)
       .then(async (response) => {
@@ -193,7 +178,8 @@ const EmbedComponent = ({
                     embed_data.supports_binary_theme
                   );
                 }
-              } catch {
+              } catch (error) {
+                capture_exception(`embed node error: ${error}`);
                 set_error(true);
               }
             }
@@ -202,7 +188,7 @@ const EmbedComponent = ({
               <iframe
                 loading="lazy"
                 style="${Object.entries({
-                  "color-scheme": parsed_theme,
+                  "color-scheme": theme,
                   border: "none",
                   outline: "none",
                   position: "absolute",
@@ -215,7 +201,8 @@ const EmbedComponent = ({
                   .map(([key, value]) => `${key}:${value}`)
                   .join(";")}" 
                 src="${embed_url}"></iframe>`;
-          } catch {
+          } catch (error) {
+            capture_exception(`embed node error: ${error}`);
             set_error(true);
           }
         }

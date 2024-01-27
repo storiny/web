@@ -50,8 +50,8 @@ WHERE
     AND user_id = $2
 "#,
     )
-    .bind(&asset_id)
-    .bind(&user_id)
+    .bind(asset_id)
+    .bind(user_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()
@@ -91,8 +91,8 @@ WHERE
     AND user_id = $2
 "#,
     )
-    .bind(&asset_id)
-    .bind(&user_id)
+    .bind(asset_id)
+    .bind(user_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

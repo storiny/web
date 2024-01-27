@@ -47,8 +47,8 @@ WHERE
     AND deleted_at IS NULL
 "#,
     )
-    .bind(&follower_id)
-    .bind(&followed_id)
+    .bind(follower_id)
+    .bind(followed_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

@@ -19,7 +19,10 @@ use serde::{
 use validator::Validate;
 
 lazy_static! {
-    static ref FOLLOWING_LIST_REGEX: Regex = Regex::new(r"^(1|2|3)$").unwrap();
+    static ref FOLLOWING_LIST_REGEX: Regex = {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"^(1|2|3)$").unwrap()
+    };
 }
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
@@ -60,7 +63,7 @@ WHERE id = $2
 "#,
     )
     .bind(following_list_visibility as i16)
-    .bind(&user_id)
+    .bind(user_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

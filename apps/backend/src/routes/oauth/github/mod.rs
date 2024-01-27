@@ -1,9 +1,4 @@
-use actix_web::web;
+mod github;
 
 pub mod callback;
-pub mod github;
-
-pub fn init_routes(cfg: &mut web::ServiceConfig) {
-    github::init_routes(cfg);
-    callback::init_routes(cfg);
-}
+pub use github::*;

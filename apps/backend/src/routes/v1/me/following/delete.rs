@@ -45,8 +45,8 @@ WHERE
     AND followed_id = $2
 "#,
     )
-    .bind(&follower_id)
-    .bind(&followed_id)
+    .bind(follower_id)
+    .bind(followed_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

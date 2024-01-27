@@ -1,0 +1,27 @@
+.list {
+  align-items: flex-start;
+  padding-block: 4px;
+  gap: 16px;
+}
+
+.skeleton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+}
+
+.skeleton-meta {
+  gap: 6px;
+}
+
+.x {
+  &.right-sidebar {
+    gap: 12px;
+  }
+
+  &.primary-text {
+    max-width: 100%;
+    min-width: 0;
+  }
+}

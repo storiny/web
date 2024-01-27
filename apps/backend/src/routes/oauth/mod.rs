@@ -22,7 +22,13 @@ pub enum ConnectionError {
     /// A duplicate entry already exists in the database.
     Duplicate,
     /// Other connection error.
-    Other,
+    Other(String),
+}
+
+impl From<sqlx::Error> for ConnectionError {
+    fn from(value: sqlx::Error) -> Self {
+        ConnectionError::Other(value.to_string())
+    }
 }
 
 impl fmt::Display for ConnectionError {

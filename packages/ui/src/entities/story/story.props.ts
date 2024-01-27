@@ -7,6 +7,10 @@ export interface StoryProps extends React.ComponentPropsWithoutRef<"article"> {
    */
   enable_ssr?: boolean;
   /**
+   * If `true`, renders with contributable properties
+   */
+  is_contributable?: boolean;
+  /**
    * If `true`, renders with deleted story properties
    */
   is_deleted?: boolean;

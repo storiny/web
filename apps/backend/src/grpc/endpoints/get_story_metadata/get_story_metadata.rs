@@ -41,6 +41,7 @@ struct Story {
     visibility: i16,
     license: i16,
     user_id: i64,
+    role: String,
     // SEO
     canonical_url: Option<String>,
     seo_title: Option<String>,
@@ -89,7 +90,7 @@ pub async fn get_story_metadata(
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
 
-    tracing::Span::current().record("user_id", &user_id);
+    tracing::Span::current().record("user_id", user_id);
 
     let story = {
         if let Some(story_id) = maybe_story_id {
@@ -127,11 +128,12 @@ pub async fn get_story_metadata(
         title: story.title,
         slug: story.slug,
         description: story.description,
-        splash_id: story.splash_id.and_then(|value| Some(value.to_string())),
+        splash_id: story.splash_id.map(|value| value.to_string()),
         splash_hex: story.splash_hex,
         doc_key: story.doc_key.to_string(),
         category: story.category,
         user_id: story.user_id.to_string(),
+        role: story.role,
         age_restriction: story.age_restriction as i32,
         license: story.license as i32,
         visibility: story.visibility as i32,
@@ -141,25 +143,17 @@ pub async fn get_story_metadata(
         canonical_url: story.canonical_url,
         seo_description: story.seo_description,
         seo_title: story.seo_title,
-        preview_image: story
-            .preview_image
-            .and_then(|value| Some(value.to_string())),
+        preview_image: story.preview_image.map(|value| value.to_string()),
         created_at: to_iso8601(&story.created_at),
-        edited_at: story.edited_at.and_then(|value| Some(to_iso8601(&value))),
-        published_at: story
-            .published_at
-            .and_then(|value| Some(to_iso8601(&value))),
-        first_published_at: story
-            .first_published_at
-            .and_then(|value| Some(to_iso8601(&value))),
-        deleted_at: story.deleted_at.and_then(|value| Some(to_iso8601(&value))),
+        edited_at: story.edited_at.map(|value| to_iso8601(&value)),
+        published_at: story.published_at.map(|value| to_iso8601(&value)),
+        first_published_at: story.first_published_at.map(|value| to_iso8601(&value)),
+        deleted_at: story.deleted_at.map(|value| to_iso8601(&value)),
         user: Some(BareUser {
             id: story.user_id.to_string(),
             name: story.user_name,
             username: story.user_username,
-            avatar_id: story
-                .user_avatar_id
-                .and_then(|value| Some(value.to_string())),
+            avatar_id: story.user_avatar_id.map(|value| value.to_string()),
             avatar_hex: story.user_avatar_hex,
             public_flags: story.user_public_flags as u32,
         }),
@@ -272,6 +266,41 @@ WHERE id = $1
     }
 
     #[sqlx::test(fixtures("get_story_metadata"))]
+    async fn can_return_a_story_metadata_for_a_contributor_by_id(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                // Add the current user as contributor.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO story_contributors (user_id, story_id, role, accepted_at)
+VALUES ($1, $2, 'viewer', NOW())
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(3_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_story_metadata(Request::new(GetStoryMetadataRequest {
+                        id_or_slug: 3_i64.to_string(),
+                        user_id: user_id.unwrap().to_string(),
+                    }))
+                    .await;
+
+                assert!(response.is_ok());
+                assert_eq!(response.unwrap().into_inner().role, "viewer".to_string());
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_story_metadata"))]
     async fn can_reject_a_story_metadata_by_id_request_for_an_invalid_user_id(pool: PgPool) {
         test_grpc_service(
             pool,
@@ -281,6 +310,89 @@ WHERE id = $1
                     .get_story_metadata(Request::new(GetStoryMetadataRequest {
                         id_or_slug: 3_i64.to_string(),
                         user_id: 12345.to_string(),
+                    }))
+                    .await;
+
+                assert_eq!(response.unwrap_err().code(), Code::NotFound);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_story_metadata"))]
+    async fn can_reject_a_story_metadata_by_id_request_for_a_pending_contributor(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                // Add the current user as contributor.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO story_contributors (user_id, story_id, role)
+VALUES ($1, $2, 'viewer')
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(3_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_story_metadata(Request::new(GetStoryMetadataRequest {
+                        id_or_slug: 3_i64.to_string(),
+                        user_id: user_id.unwrap().to_string(),
+                    }))
+                    .await;
+
+                assert_eq!(response.unwrap_err().code(), Code::NotFound);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_story_metadata"))]
+    async fn should_not_return_a_soft_deleted_story_metadata_for_a_contributor_by_id(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                // Add the current user as contributor.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO story_contributors (user_id, story_id, role, accepted_at)
+VALUES ($1, $2, 'viewer', NOW())
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(3_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                // Soft-delete the story.
+                let result = sqlx::query(
+                    r#"
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+                )
+                .bind(3_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_story_metadata(Request::new(GetStoryMetadataRequest {
+                        id_or_slug: 3_i64.to_string(),
+                        user_id: user_id.unwrap().to_string(),
                     }))
                     .await;
 
@@ -380,6 +492,41 @@ WHERE id = $1
     }
 
     #[sqlx::test(fixtures("get_story_metadata"))]
+    async fn can_return_a_story_metadata_for_a_contributor_by_slug(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                // Add the current user as contributor.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO story_contributors (user_id, story_id, role, accepted_at)
+VALUES ($1, $2, 'viewer', NOW())
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(3_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_story_metadata(Request::new(GetStoryMetadataRequest {
+                        id_or_slug: "some-story".to_string(),
+                        user_id: user_id.unwrap().to_string(),
+                    }))
+                    .await;
+
+                assert!(response.is_ok());
+                assert_eq!(response.unwrap().into_inner().role, "viewer".to_string());
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_story_metadata"))]
     async fn can_reject_a_story_metadata_by_slug_request_for_an_invalid_user_id(pool: PgPool) {
         test_grpc_service(
             pool,
@@ -389,6 +536,91 @@ WHERE id = $1
                     .get_story_metadata(Request::new(GetStoryMetadataRequest {
                         id_or_slug: "some-story".to_string(),
                         user_id: 12345.to_string(),
+                    }))
+                    .await;
+
+                assert_eq!(response.unwrap_err().code(), Code::NotFound);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_story_metadata"))]
+    async fn can_reject_a_story_metadata_by_slug_request_for_a_pending_contributor(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                // Add the current user as contributor.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO story_contributors (user_id, story_id, role)
+VALUES ($1, $2, 'viewer')
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(3_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_story_metadata(Request::new(GetStoryMetadataRequest {
+                        id_or_slug: "some-story".to_string(),
+                        user_id: user_id.unwrap().to_string(),
+                    }))
+                    .await;
+
+                assert_eq!(response.unwrap_err().code(), Code::NotFound);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_story_metadata"))]
+    async fn should_not_return_a_soft_deleted_story_metadata_for_a_contributor_by_slug(
+        pool: PgPool,
+    ) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                // Add the current user as contributor.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO story_contributors (user_id, story_id, role, accepted_at)
+VALUES ($1, $2, 'viewer', NOW())
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(3_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                // Soft-delete the story.
+                let result = sqlx::query(
+                    r#"
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+                )
+                .bind(3_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_story_metadata(Request::new(GetStoryMetadataRequest {
+                        id_or_slug: "some-story".to_string(),
+                        user_id: user_id.unwrap().to_string(),
                     }))
                     .await;
 

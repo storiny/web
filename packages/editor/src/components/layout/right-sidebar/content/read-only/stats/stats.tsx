@@ -1,11 +1,14 @@
 import { clsx } from "clsx";
 import { useAtomValue as use_atom_value } from "jotai";
+import NextLink from "next/link";
 import React from "react";
 
 import Button from "~/components/button";
 import Divider from "~/components/divider";
 import Separator from "~/components/separator";
+import Tooltip from "~/components/tooltip";
 import Typography from "~/components/typography";
+import Persona from "~/entities/persona";
 import CommentIcon from "~/icons/comment";
 import { use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
@@ -28,6 +31,36 @@ const StoryStats = (): React.ReactElement => {
       <div className={styles["padded-separator"]}>
         <Separator />
       </div>
+      {story.contributors?.length ? (
+        <React.Fragment>
+          <div className={clsx(css["full-w"], css.flex)}>
+            <Persona
+              avatar={story.contributors.map((user) => ({
+                alt: "",
+                avatar_id: user.avatar_id,
+                hex: user.avatar_hex,
+                label: user.name,
+                as: "a",
+                href: `/${user.username}`,
+                target: "_blank"
+              }))}
+              primary_text={`${story.contributors.length} ${
+                story.contributors.length === 1 ? "contributor" : "contributors"
+              }`}
+              render_avatar={(avatar, index): React.ReactNode => (
+                <Tooltip
+                  content={story.contributors[index]?.name ?? "Unknown user"}
+                >
+                  {avatar}
+                </Tooltip>
+              )}
+            />
+          </div>
+          <div className={styles["padded-separator"]}>
+            <Separator />
+          </div>
+        </React.Fragment>
+      ) : null}
       <div className={clsx(css["flex-center"], styles.main)}>
         <Typography
           className={css["t-medium"]}

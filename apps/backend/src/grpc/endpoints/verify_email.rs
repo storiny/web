@@ -50,7 +50,7 @@ pub async fn verify_email(
     })?;
 
     let hashed_token = Argon2::default()
-        .hash_password(&token_id.as_bytes(), &salt)
+        .hash_password(token_id.as_bytes(), &salt)
         .map_err(|error| {
             error!("unable to generate token hash: {error:?}");
             Status::internal("unable to verify the token")
@@ -160,7 +160,7 @@ mod tests {
                 let token_id = nanoid!(TOKEN_LENGTH);
                 let salt = SaltString::from_b64(&config.token_salt).unwrap();
                 let hashed_token = Argon2::default()
-                    .hash_password(&token_id.as_bytes(), &salt)
+                    .hash_password(token_id.as_bytes(), &salt)
                     .unwrap();
 
                 // Insert token.
@@ -217,7 +217,7 @@ WHERE id = $1
                 let token_id = nanoid!(TOKEN_LENGTH);
                 let salt = SaltString::from_b64(&config.token_salt).unwrap();
                 let hashed_token = Argon2::default()
-                    .hash_password(&token_id.as_bytes(), &salt)
+                    .hash_password(token_id.as_bytes(), &salt)
                     .unwrap();
 
                 // Insert an expired token.

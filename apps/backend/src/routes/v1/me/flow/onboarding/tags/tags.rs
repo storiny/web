@@ -95,8 +95,8 @@ mod tests {
         let (app, cookie, _) = init_app_for_test(get, pool, true, false, None).await;
         let encoded_categories = lz_str::compress_to_encoded_uri_component(&format!(
             "{}|{}",
-            StoryCategory::Travel.to_string(),
-            StoryCategory::DIY.to_string()
+            StoryCategory::Travel,
+            StoryCategory::DIY
         ));
 
         let req = test::TestRequest::get()

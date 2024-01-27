@@ -6,13 +6,7 @@
   border: 0;
   outline: 0;
   height: 100%;
-
-  /**
-   * 100vh is needed here as the sidebars would never be
-   * visible if an overflowing node was inserted at the end
-   * of the editor.
-   */
-  padding: 32px 48px 100vh;
+  padding: 32px 48px;
 
   h2,
   h3 {

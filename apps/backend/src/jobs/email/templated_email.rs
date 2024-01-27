@@ -19,7 +19,7 @@ use serde::{
 use std::sync::Arc;
 use tracing::debug;
 
-pub const TEMPLATED_EMAIL_JOB_NAME: &'static str = "j:n:tmpl_email";
+pub const TEMPLATED_EMAIL_JOB_NAME: &str = "j:n:tmpl_email";
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct TemplatedEmailJob {

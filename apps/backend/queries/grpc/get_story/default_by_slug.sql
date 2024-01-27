@@ -75,7 +75,20 @@ SELECT s.id,
 								) FILTER (
 						   WHERE "s->story_tags->tag".id IS NOT NULL
 						   ), '{}'
-	   )                            AS "tags!: Vec<Tag>"
+	   )                            AS "tags!: Vec<Tag>",
+	   -- Contributors
+	   COALESCE(
+					   JSONB_AGG(
+					   DISTINCT JSONB_BUILD_OBJECT(
+							   'id', "s->contributors->user".id,
+							   'name', "s->contributors->user".name,
+							   'username', "s->contributors->user".username,
+							   'avatar_id', "s->contributors->user".avatar_id,
+							   'avatar_hex', "s->contributors->user".avatar_hex,
+							   'public_flags', "s->contributors->user".public_flags
+								)
+								) FILTER ( WHERE "s->contributors->user".id IS NOT NULL )
+		   , '[]')                  AS "contributors!: Json<Vec<User>>"
 FROM
 	stories s
 		-- Join document
@@ -90,11 +103,20 @@ FROM
 						ON "s->user".id = "s->user->status".user_id
 							AND ("s->user->status".expires_at IS NULL
 								OR "s->user->status".expires_at > NOW())
-		-- Join tags
+		-- Join contributors
+		LEFT OUTER JOIN (story_contributors AS "s->contributors"
+		INNER JOIN users AS "s->contributors->user"
+						 ON "s->contributors->user".id = "s->contributors".user_id
+		)
+						ON "s->contributors".story_id = s.id
+							AND "s->contributors".role = 'editor'
+							AND "s->contributors".accepted_at IS NOT NULL
+							AND "s->contributors".deleted_at IS NULL
+		-- Join story tags
 		LEFT OUTER JOIN (story_tags AS "s->story_tags"
-		-- Join tags
 		INNER JOIN tags AS "s->story_tags->tag"
-						 ON "s->story_tags->tag".id = "s->story_tags".tag_id)
+						 ON "s->story_tags->tag".id = "s->story_tags".tag_id
+		)
 						ON "s->story_tags".story_id = s.id
 WHERE
 	s.slug = $1
@@ -115,4 +137,3 @@ GROUP BY
 	"user_status_text?",
 	"user_status_expires_at?",
 	"s->user->status".user_id
-LIMIT 1

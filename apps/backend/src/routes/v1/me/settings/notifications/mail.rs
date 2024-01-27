@@ -51,11 +51,11 @@ SET
 WHERE user_id = $1
 "#,
     )
-    .bind(&user_id)
-    .bind(&payload.login_activity)
-    .bind(&payload.features_and_updates)
-    .bind(&payload.newsletters)
-    .bind(&payload.digest)
+    .bind(user_id)
+    .bind(payload.login_activity)
+    .bind(payload.features_and_updates)
+    .bind(payload.newsletters)
+    .bind(payload.digest)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

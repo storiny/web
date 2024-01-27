@@ -93,7 +93,7 @@ LIMIT $1 OFFSET $2
     .map_err(Box::new)
     .map_err(|err| JobError::Failed(err))?
     .iter()
-    .map(|row| {
+    .filter_map(|row| {
         let mut url_builder = Url::builder(format!("{web_server_url}/{}", row.username));
         let mut images = vec![];
 
@@ -125,9 +125,9 @@ LIMIT $1 OFFSET $2
             url_builder.images(images);
         }
 
-        // This should never panic as the priority is a constant value and there are at-most 2
+        // This should never error as the priority is a constant value and there are at-most 2
         // images.
-        url_builder.build().unwrap()
+        url_builder.build().ok()
     })
     .collect::<Vec<_>>();
 
@@ -140,11 +140,14 @@ LIMIT $1 OFFSET $2
     if !result.is_empty() {
         if has_more_rows {
             result.pop(); // Remove the extra row
-            result_length = result_length - 1;
+            result_length -= 1;
         }
 
-        // This should never panic as the number of rows are always <= 50,000
-        let url_set: UrlSet = UrlSet::new(result).unwrap();
+        // This should never error as the number of rows are always <= 50,000
+        let url_set = UrlSet::new(result)
+            .map_err(Box::new)
+            .map_err(|err| JobError::Failed(err))?;
+
         let mut buffer = Vec::new();
 
         url_set
@@ -253,7 +256,7 @@ mod tests {
             let s3_client = &ctx.s3_client;
             let result = generate_user_sitemap(
                 &pool,
-                &s3_client,
+                s3_client,
                 &config.web_server_url,
                 &config.cdn_server_url,
                 None,
@@ -272,7 +275,7 @@ mod tests {
 
             // Sitemaps should be present in the bucket.
             let sitemap_count = count_s3_objects(
-                &s3_client,
+                s3_client,
                 S3_SITEMAPS_BUCKET,
                 Some("users-".to_string()),
                 None,
@@ -295,7 +298,7 @@ mod tests {
             let s3_client = &ctx.s3_client;
             let result = generate_user_sitemap(
                 &pool,
-                &s3_client,
+                s3_client,
                 &config.web_server_url,
                 &config.cdn_server_url,
                 None,
@@ -314,7 +317,7 @@ mod tests {
 
             // Sitemaps should be present in the bucket.
             let sitemap_count = count_s3_objects(
-                &s3_client,
+                s3_client,
                 S3_SITEMAPS_BUCKET,
                 Some("users-".to_string()),
                 None,

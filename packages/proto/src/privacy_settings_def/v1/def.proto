@@ -10,6 +10,14 @@ enum IncomingFriendRequest {
   INCOMING_FRIEND_REQUEST_NONE /*       */ = 4;
 }
 
+enum IncomingCollaborationRequest {
+  INCOMING_COLLABORATION_REQUEST_UNSPECIFIED /**/ = 0;
+  INCOMING_COLLABORATION_REQUEST_EVERYONE /*   */ = 1;
+  INCOMING_COLLABORATION_REQUEST_FOLLOWING /*  */ = 2;
+  INCOMING_COLLABORATION_REQUEST_FRIENDS /*    */ = 3;
+  INCOMING_COLLABORATION_REQUEST_NONE /*       */ = 4;
+}
+
 enum RelationVisibility {
   RELATION_VISIBILITY_UNSPECIFIED /**/ = 0;
   RELATION_VISIBILITY_EVERYONE /*   */ = 1;
@@ -22,10 +30,11 @@ message GetPrivacySettingsRequest {
 }
 
 message GetPrivacySettingsResponse {
-  bool is_private_account /*                       */ = 1;
-  bool record_read_history /*                      */ = 2;
-  bool allow_sensitive_media /*                    */ = 3;
-  IncomingFriendRequest incoming_friend_requests /**/ = 4;
-  RelationVisibility following_list_visibility /*  */ = 5;
-  RelationVisibility friend_list_visibility /*     */ = 6;
+  bool is_private_account /*                                     */ = 1;
+  bool record_read_history /*                                    */ = 2;
+  bool allow_sensitive_media /*                                  */ = 3;
+  IncomingFriendRequest incoming_friend_requests /*              */ = 4;
+  IncomingCollaborationRequest incoming_collaboration_requests /**/ = 5;
+  RelationVisibility following_list_visibility /*                */ = 6;
+  RelationVisibility friend_list_visibility /*                   */ = 7;
 }

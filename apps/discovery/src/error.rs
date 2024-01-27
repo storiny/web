@@ -57,7 +57,7 @@ impl Display for AppError {
 impl ResponseError for AppError {
     /// Returns the HTTP [StatusCode] for the error.
     fn status_code(&self) -> StatusCode {
-        match &*self {
+        match self {
             AppError::InternalError(_) | AppError::SerdeError(_) | AppError::ReqwestError(_) => {
                 StatusCode::INTERNAL_SERVER_ERROR
             }
@@ -70,7 +70,7 @@ impl ResponseError for AppError {
     fn error_response(&self) -> HttpResponse {
         let mut response_builder = HttpResponse::build(self.status_code());
 
-        match &*self {
+        match self {
             AppError::InternalError(_) | AppError::SerdeError(_) | AppError::ReqwestError(_) => {
                 response_builder.body("Internal server error")
             }

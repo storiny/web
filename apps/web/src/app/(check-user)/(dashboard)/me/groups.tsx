@@ -8,6 +8,7 @@ import BooksIcon from "~/icons/books";
 import BrushIcon from "~/icons/brush";
 import CommentIcon from "~/icons/comment";
 import ConnectionsIcon from "~/icons/connections";
+import ContributionIcon from "~/icons/contribution";
 import KeyIcon from "~/icons/key";
 import LoginIcon from "~/icons/login";
 import MuteIcon from "~/icons/mute";
@@ -104,6 +105,11 @@ const CONTENT_GROUP: Group = {
       decorator: <StoryIcon />
     },
     {
+      title: "Contributions",
+      value: "content/contributions",
+      decorator: <ContributionIcon />
+    },
+    {
       title: "Responses",
       value: "content/responses",
       decorator: <CommentIcon />
@@ -127,12 +133,12 @@ const STATS_GROUP: Group = {
   title: "Your stats",
   items: [
     {
-      title: "Account metrics",
+      title: "Account stats",
       value: "stats/account",
       decorator: <UserMetricsIcon />
     },
     {
-      title: "Stories metrics",
+      title: "Stories stats",
       value: "stats/stories",
       decorator: <StoriesMetricsIcon />
     }
@@ -223,6 +229,6 @@ export const search_dashboard_groups = async (
             result.matches &&
             result.matches.some((match) => match.value === item.title)
         )
-      } as Group)
+      }) as Group
   );
 };

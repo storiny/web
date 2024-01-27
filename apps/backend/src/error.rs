@@ -164,13 +164,13 @@ impl Display for AppError {
 impl ResponseError for AppError {
     /// Returns the HTTP [StatusCode] for the error.
     fn status_code(&self) -> StatusCode {
-        match &*self {
+        match self {
             AppError::InternalError(_) | AppError::SqlxError(_) | AppError::RedisPoolError(_) => {
                 StatusCode::INTERNAL_SERVER_ERROR
             }
             AppError::ClientError(status_code, _) => *status_code,
-            AppError::ToastError(error) => error.status_code.clone(),
-            AppError::FormError(error) => error.status_code.clone(),
+            AppError::ToastError(error) => error.status_code,
+            AppError::FormError(error) => error.status_code,
         }
     }
 
@@ -178,7 +178,7 @@ impl ResponseError for AppError {
     fn error_response(&self) -> HttpResponse {
         let mut response_builder = HttpResponse::build(self.status_code());
 
-        match &*self {
+        match self {
             AppError::InternalError(_) | AppError::SqlxError(_) | AppError::RedisPoolError(_) => {
                 response_builder.body("Internal server error")
             }

@@ -31,7 +31,7 @@ use tracing::{
     info,
 };
 
-pub const SITEMAP_JOB_NAME: &'static str = "j:sitemap";
+pub const SITEMAP_JOB_NAME: &str = "j:sitemap";
 
 #[derive(Debug, Clone)]
 pub struct SitemapJob(DateTime<Utc>);
@@ -60,7 +60,7 @@ pub async fn refresh_sitemap(
     let deleted_sitemaps = delete_s3_objects(s3_client, S3_SITEMAPS_BUCKET, None, None)
         .await
         .map_err(|err| Box::from(err.to_string()))
-        .map_err(|err| JobError::Failed(err))?;
+        .map_err(JobError::Failed)?;
 
     debug!("deleted {} old sitemap files", deleted_sitemaps);
 
@@ -257,7 +257,7 @@ mod tests {
         async fn can_generate_sitemap(ctx: &mut LocalTestContext, pool: PgPool) {
             let s3_client = &ctx.s3_client;
             let ctx = get_job_ctx_for_test(pool, Some(s3_client.clone())).await;
-            let result = refresh_sitemap(SitemapJob { 0: Utc::now() }, ctx).await;
+            let result = refresh_sitemap(SitemapJob(Utc::now()), ctx).await;
             // 1 preset file + 1 story file + 1 user file + 1 tag file + 1 index sitemap file.
             let expected_sitemap_file_count = 5;
 
@@ -265,7 +265,7 @@ mod tests {
             assert_eq!(result.unwrap().file_count, expected_sitemap_file_count);
 
             // Sitemaps should be present in the bucket.
-            let sitemap_count = count_s3_objects(&s3_client, S3_SITEMAPS_BUCKET, None, None)
+            let sitemap_count = count_s3_objects(s3_client, S3_SITEMAPS_BUCKET, None, None)
                 .await
                 .unwrap();
 
@@ -277,7 +277,7 @@ mod tests {
         async fn can_generate_sitemap_for_large_dataset(ctx: &mut LocalTestContext, pool: PgPool) {
             let s3_client = &ctx.s3_client;
             let ctx = get_job_ctx_for_test(pool, Some(s3_client.clone())).await;
-            let result = refresh_sitemap(SitemapJob { 0: Utc::now() }, ctx).await;
+            let result = refresh_sitemap(SitemapJob(Utc::now()), ctx).await;
             // 1 preset file + 3 story files + 3 user files + 3 tag files + 1 index sitemap file.
             let expected_sitemap_file_count = 11;
 
@@ -285,7 +285,7 @@ mod tests {
             assert_eq!(result.unwrap().file_count, expected_sitemap_file_count);
 
             // Sitemaps should be present in the bucket.
-            let sitemap_count = count_s3_objects(&s3_client, S3_SITEMAPS_BUCKET, None, None)
+            let sitemap_count = count_s3_objects(s3_client, S3_SITEMAPS_BUCKET, None, None)
                 .await
                 .unwrap();
 

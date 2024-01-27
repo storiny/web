@@ -1,4 +1,5 @@
 import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import { DocUserRole } from "@storiny/types";
 import { useAtom as use_atom, useSetAtom as use_set_atom } from "jotai";
 import { $getRoot as $get_root, LexicalEditor } from "lexical";
 import React from "react";
@@ -13,6 +14,7 @@ import {
   init_local_state,
   Provider
 } from "../../collaboration/provider";
+import { ProviderEventHandler } from "../../collaboration/websocket";
 import { initialize_editor } from "../../utils/initialize-editor";
 import { sync_cursor_positions } from "../../utils/sync-cursor-positions";
 import { sync_lexical_update_to_yjs } from "../../utils/sync-lexical-update-to-yjs";
@@ -29,7 +31,17 @@ const ERROR_CODE_TO_DOC_STATUS_MAP: Record<
   "3003": DOC_STATUS.join_unauthorized,
   "3004": DOC_STATUS.join_unauthorized,
   "3005": DOC_STATUS.doc_corrupted,
-  "4000": DOC_STATUS.internal
+  "4000": DOC_STATUS.internal_error
+};
+
+// Realms destroy reason to document status map.
+const DESTROY_REASON_TO_DOC_STATUS_MAP: Record<string, number> = {
+  story_published: DOC_STATUS.published,
+  story_unpublished: DOC_STATUS.unpublished,
+  story_deleted: DOC_STATUS.deleted,
+  lifetime_exceeded: DOC_STATUS.lifetime_exceeded,
+  doc_overloaded: DOC_STATUS.overloaded,
+  internal: DOC_STATUS.internal_error
 };
 
 /**
@@ -88,13 +100,15 @@ const clear_editor_skip_collab = (
  * @param should_bootstrap Whether to bootstrap
  * @param excluded_properties Excluded properties
  * @param local_state Local collab state
+ * @param role The role of the peer
  */
 export const use_yjs_collaboration = ({
   doc_map,
   provider,
   excluded_properties,
   should_bootstrap,
-  local_state
+  local_state,
+  role
 }: {
   doc_map: Map<string, Doc>;
   excluded_properties?: ExcludedProperties;
@@ -104,6 +118,7 @@ export const use_yjs_collaboration = ({
   > &
     Partial<Pick<CollabLocalState, "awareness_data">>;
   provider: Provider;
+  role: Exclude<DocUserRole, "reader">;
   should_bootstrap: boolean;
 }): [React.ReactPortal, Binding] => {
   const [editor] = use_lexical_composer_context();
@@ -138,11 +153,7 @@ export const use_yjs_collaboration = ({
        * Handles the websocket connection status updates.
        * @param status The next connection status.
        */
-      const handle_status = ({
-        status
-      }: {
-        status: "connecting" | "connected" | "disconnected";
-      }): void => {
+      const handle_status: ProviderEventHandler<"status"> = ({ status }) => {
         set_doc_status((prev_value) =>
           status === "connecting"
             ? connected_once_ref.current
@@ -174,7 +185,7 @@ export const use_yjs_collaboration = ({
        * request and the rejection is catched by examining the event code
        * of the websocket `connection-close` event.
        */
-      const handle_auth = (): void => {
+      const handle_auth: ProviderEventHandler<"auth"> = () => {
         set_doc_status(DOC_STATUS.join_unauthorized);
       };
 
@@ -182,7 +193,7 @@ export const use_yjs_collaboration = ({
        * Handles the sync event.
        * @param is_synced The synced boolean flag.
        */
-      const handle_sync = (is_synced: boolean): void => {
+      const handle_sync: ProviderEventHandler<"sync"> = (is_synced) => {
         if (
           should_bootstrap &&
           is_synced &&
@@ -201,7 +212,7 @@ export const use_yjs_collaboration = ({
        * Handles the reload event.
        * @param next_doc The next document instance.
        */
-      const handle_reload = (next_doc: Doc): void => {
+      const handle_reload: ProviderEventHandler<"reload"> = (next_doc) => {
         clear_editor_skip_collab(editor, binding);
         set_doc(next_doc);
 
@@ -219,36 +230,48 @@ export const use_yjs_collaboration = ({
       };
 
       /**
-       * Handles an internal realm destroy event.
-       * @param reason The destroy reason.
+       * Handles an internal realm message.
+       * @param slug The message slug.
+       * @param reason The message reason.
        */
-      const handle_destroy = (
-        reason:
-          | "story_published"
-          | "story_unpublished"
-          | "story_deleted"
-          | "doc_overload"
-          | "lifetime_exceeded"
-          | "internal"
-      ): void => {
-        set_doc_status(
-          reason === "story_published"
-            ? DOC_STATUS.published
-            : reason === "story_unpublished"
-              ? DOC_STATUS.unpublished
-              : reason === "story_deleted"
-                ? DOC_STATUS.deleted
-                : reason === "lifetime_exceeded"
-                  ? DOC_STATUS.lifetime_exceeded
-                  : DOC_STATUS.internal
-        );
+      const handle_internal_message: ProviderEventHandler<
+        "internal-message"
+      > = (slug, reason) => {
+        if (slug === "destroy") {
+          provider.destroy();
+
+          set_doc_status(
+            DESTROY_REASON_TO_DOC_STATUS_MAP[reason] ??
+              DOC_STATUS.internal_error
+          );
+        } else if (slug === "role_update") {
+          const [user_id, next_role] = reason.split(":");
+
+          if (local_state.user_id === user_id) {
+            provider.destroy();
+
+            set_doc_status(
+              next_role === "editor"
+                ? DOC_STATUS.role_upgraded
+                : DOC_STATUS.role_downgraded
+            );
+          }
+        } else if (slug === "peer_remove") {
+          const [user_id] = reason.split(":");
+
+          if (local_state.user_id === user_id) {
+            provider.destroy();
+
+            set_doc_status(DOC_STATUS.peer_removed);
+          }
+        }
       };
 
       /**
        * Handles an event fired when the current peer has been
        * disconnceted for being inactive for too long.
        */
-      const handle_stale = (): void => {
+      const handle_stale: ProviderEventHandler<"stale"> = () => {
         set_doc_status(DOC_STATUS.stale_peer);
       };
 
@@ -256,23 +279,28 @@ export const use_yjs_collaboration = ({
        * Handles errors received while joining the realm.
        * @param event The connection close event from the handshake request.
        */
-      const handle_connection_close = (event: CloseEvent): void => {
+      const handle_connection_close: ProviderEventHandler<
+        "connection-close"
+      > = (event) => {
         const error_code = event.code;
         set_doc_status(
-          ERROR_CODE_TO_DOC_STATUS_MAP[error_code] || DOC_STATUS.internal
+          ERROR_CODE_TO_DOC_STATUS_MAP[error_code] ?? DOC_STATUS.internal_error
         );
       };
 
       /**
        * Handles the websocket connection errors.
        */
-      const handle_connection_error = (): void => {
+      const handle_connection_error: ProviderEventHandler<
+        "connection-error"
+      > = () => {
         if (
           [
             DOC_STATUS.connecting,
             DOC_STATUS.connected,
             DOC_STATUS.reconnecting,
-            DOC_STATUS.syncing
+            DOC_STATUS.syncing,
+            DOC_STATUS.synced
           ].includes(doc_status)
         ) {
           set_doc_status(DOC_STATUS.disconnected);
@@ -292,7 +320,7 @@ export const use_yjs_collaboration = ({
       provider.on("sync", handle_sync);
       provider.on("auth", handle_auth);
       provider.on("stale", handle_stale);
-      provider.on("destroy", handle_destroy);
+      provider.on("internal-message", handle_internal_message);
       provider.on("connection-close", handle_connection_close);
       provider.on("connection-error", handle_connection_error);
 
@@ -338,7 +366,8 @@ export const use_yjs_collaboration = ({
               tags,
               normalized_nodes,
               prev_editor_state,
-              curr_editor_state
+              curr_editor_state,
+              role
             });
           }
         }
@@ -358,7 +387,7 @@ export const use_yjs_collaboration = ({
         provider.off("sync", handle_sync);
         provider.off("auth", handle_auth);
         provider.off("stale", handle_stale);
-        provider.off("destroy", handle_destroy);
+        provider.off("internal-message", handle_internal_message);
         provider.off("connection-close", handle_connection_close);
         provider.off("connection-error", handle_connection_error);
 

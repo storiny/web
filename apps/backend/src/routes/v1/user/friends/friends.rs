@@ -24,7 +24,10 @@ use uuid::Uuid;
 use validator::Validate;
 
 lazy_static! {
-    static ref SORT_REGEX: Regex = Regex::new(r"^(recent|old|popular)$").unwrap();
+    static ref SORT_REGEX: Regex = {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"^(recent|old|popular)$").unwrap()
+    };
 }
 
 #[derive(Deserialize, Validate)]
@@ -82,16 +85,16 @@ async fn get(
     data: web::Data<AppState>,
     maybe_user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    let current_user_id = maybe_user.and_then(|user| Some(user.id())).transpose()?;
+    let current_user_id = maybe_user.map(|user| user.id()).transpose()?;
 
-    tracing::Span::current().record("current_user_id", &current_user_id);
+    tracing::Span::current().record("current_user_id", current_user_id);
 
     let user_id = path
         .user_id
         .parse::<i64>()
         .map_err(|_| AppError::from("Invalid user ID"))?;
 
-    let page = query.page.clone().unwrap_or(1) - 1;
+    let page = query.page.unwrap_or(1) - 1;
     let sort = query.sort.clone().unwrap_or("popular".to_string());
     let search_query = query.query.clone().unwrap_or_default();
     let has_search_query = !search_query.trim().is_empty();
@@ -372,7 +375,7 @@ FROM user_friends
 
     let mut db_query = query_builder
         .build_query_as::<Friend>()
-        .bind(&user_id)
+        .bind(user_id)
         .bind(10_i16)
         .bind((page * 10) as i16);
 

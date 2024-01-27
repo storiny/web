@@ -52,9 +52,9 @@ async fn post(
     data: web::Data<AppState>,
     maybe_user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    let user_id = maybe_user.and_then(|user| Some(user.id())).transpose()?;
+    let user_id = maybe_user.map(|user| user.id()).transpose()?;
 
-    tracing::Span::current().record("user_id", &user_id);
+    tracing::Span::current().record("user_id", user_id);
 
     let report_limit_identifier = if let Some(user_id) = user_id {
         // Always use `user_id` when logged-in
@@ -62,16 +62,17 @@ async fn post(
     } else {
         req.connection_info()
             .realip_remote_addr()
-            .and_then(|ip| Some(ip.to_string()))
+            .map(|ip| ip.to_string())
     };
 
-    if report_limit_identifier.is_none() {
-        // TODO: If the client IP cannot be parsed and the user is not logged-in, we simple
-        // fake the report creation here for now.
-        return Ok(HttpResponse::Created().finish());
-    }
-
-    let report_limit_identifier = report_limit_identifier.unwrap();
+    let report_limit_identifier = match report_limit_identifier {
+        Some(value) => value,
+        None => {
+            // TODO: If the client IP cannot be parsed and the user is not logged-in, we simply
+            // fake the report creation here for now.
+            return Ok(HttpResponse::Created().finish());
+        }
+    };
 
     if !check_report_limit(&data.redis, &report_limit_identifier).await? {
         return Err(ToastErrorResponse::new(
@@ -104,7 +105,7 @@ INSERT INTO reports (entity_id, type, reason)
 VALUES ($1, $2, $3)
 "#,
     )
-    .bind(&entity_id)
+    .bind(entity_id)
     .bind(&r#type)
     .bind(&reason)
     .execute(&mut *txn)
@@ -202,7 +203,7 @@ WHERE entity_id = $1
         let result = redis_conn
             .get::<_, u32>(&format!(
                 "{}:{}:{}",
-                RedisNamespace::ResourceLimit.to_string(),
+                RedisNamespace::ResourceLimit,
                 ResourceLimit::CreateReport as i32,
                 "8.8.8.8"
             ))
@@ -259,7 +260,7 @@ WHERE entity_id = $1
         let result = redis_conn
             .get::<_, u32>(&format!(
                 "{}:{}:{}",
-                RedisNamespace::ResourceLimit.to_string(),
+                RedisNamespace::ResourceLimit,
                 ResourceLimit::CreateReport as i32,
                 user_id.unwrap()
             ))

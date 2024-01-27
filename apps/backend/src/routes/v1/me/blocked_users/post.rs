@@ -62,8 +62,8 @@ INSERT INTO blocks (blocker_id, blocked_id)
 VALUES ($1, $2)
 "#,
     )
-    .bind(&blocker_id)
-    .bind(&blocked_id)
+    .bind(blocker_id)
+    .bind(blocked_id)
     .execute(&mut *txn)
     .await
     {

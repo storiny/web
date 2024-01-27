@@ -6,7 +6,7 @@ use actix_web::{
 };
 use tracing::error;
 
-const FAVICON: &'static [u8] = include_bytes!("../../static/favicon.ico");
+const FAVICON: &[u8] = include_bytes!("../../static/favicon.ico");
 
 #[get("/favicon.ico")]
 #[tracing::instrument(name = "GET /favicon.ico", skip_all, err)]

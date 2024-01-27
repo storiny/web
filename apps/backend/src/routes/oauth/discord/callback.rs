@@ -47,11 +47,10 @@ async fn handle_discord_oauth_request(
 ) -> Result<(), ConnectionError> {
     let oauth_token = session
         .get::<String>("oauth_token")
-        .map_err(|_| ConnectionError::Other)?
-        .ok_or(ConnectionError::Other)?;
+        .map_err(|error| ConnectionError::Other(error.to_string()))?;
 
-    // Check whether the CSRF token has been tampered.
-    if oauth_token != params.state {
+    // Check whether the CSRF token is missing or has been tampered.
+    if oauth_token.is_none() || oauth_token.unwrap_or_default() != params.state {
         return Err(ConnectionError::StateMismatch);
     }
 
@@ -59,11 +58,13 @@ async fn handle_discord_oauth_request(
 
     let reqwest_client = &data.reqwest_client;
     let code = AuthorizationCode::new(params.code.clone());
-    let token_res = (&data.oauth_client_map.discord)
+    let token_res = data
+        .oauth_client_map
+        .discord
         .exchange_code(code)
         .request_async(async_http_client)
         .await
-        .map_err(|_| ConnectionError::Other)?;
+        .map_err(|error| ConnectionError::Other(error.to_string()))?;
 
     // Check if the `identify` scope is granted, required for obtaining the account details.
     if !token_res
@@ -85,10 +86,10 @@ async fn handle_discord_oauth_request(
         )
         .send()
         .await
-        .map_err(|_| ConnectionError::Other)?
+        .map_err(|err| ConnectionError::Other(err.to_string()))?
         .json::<Response>()
         .await
-        .map_err(|_| ConnectionError::Other)?;
+        .map_err(|err| ConnectionError::Other(err.to_string()))?;
 
     handle_discord_data(account_res, data, &user_id).await
 }
@@ -123,17 +124,19 @@ VALUES ($1, $2, $3, $4)
     .await
     {
         Ok(result) => match result.rows_affected() {
-            0 => Err(ConnectionError::Other),
+            0 => Err(ConnectionError::Other(
+                "no connection row was inserted into the database".to_string(),
+            )),
             _ => Ok(()),
         },
         Err(err) => {
-            if let Some(db_err) = err.into_database_error() {
+            if let Some(db_err) = err.as_database_error() {
                 match db_err.kind() {
                     sqlx::error::ErrorKind::UniqueViolation => Err(ConnectionError::Duplicate),
-                    _ => Err(ConnectionError::Other),
+                    _ => Err(ConnectionError::Other(err.to_string())),
                 }
             } else {
-                Err(ConnectionError::Other)
+                Err(ConnectionError::Other(err.to_string()))
             }
         }
     }
@@ -152,21 +155,23 @@ async fn get(
     session: Session,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
-        ConnectionTemplate {
-            error: if let Ok(user_id) = user.id() {
-                handle_discord_oauth_request(&data, &session, &params, user_id)
-                    .await
-                    .err()
-            } else {
-                Some(ConnectionError::Other)
-            },
-            provider_icon: DISCORD_LOGO.to_string(),
-            provider_name: "Discord".to_string(),
-        }
-        .render_once()
-        .unwrap(),
-    ))
+    ConnectionTemplate {
+        error: match user.id() {
+            Ok(user_id) => handle_discord_oauth_request(&data, &session, &params, user_id)
+                .await
+                .err(),
+            Err(error) => Some(ConnectionError::Other(error.to_string())),
+        },
+        provider_icon: DISCORD_LOGO.to_string(),
+        provider_name: "Discord".to_string(),
+    }
+    .render_once()
+    .map(|body| {
+        HttpResponse::Ok()
+            .content_type(ContentType::html())
+            .body(body)
+    })
+    .map_err(|error| AppError::InternalError(error.to_string()))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {

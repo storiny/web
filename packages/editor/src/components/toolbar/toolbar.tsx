@@ -12,7 +12,12 @@ import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 
-import { doc_status_atom, sidebars_collapsed_atom } from "../../atoms";
+import {
+  doc_status_atom,
+  overflowing_figures_atom,
+  sidebars_collapsed_atom,
+  story_metadata_atom
+} from "../../atoms";
 import { SPRING_CONFIG } from "../../constants";
 import { is_doc_editable } from "../../utils/is-doc-editable";
 import styles from "./toolbar.module.scss";
@@ -35,8 +40,12 @@ const EditorToolbar = (): React.ReactElement | null => {
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
   const sidebars_collapsed = use_atom_value(sidebars_collapsed_atom);
   const doc_status = use_atom_value(doc_status_atom);
+  const overflowing_figures = use_atom_value(overflowing_figures_atom);
+  const story = use_atom_value(story_metadata_atom);
   const transitions = use_transition(
-    sidebars_collapsed || is_smaller_than_desktop,
+    sidebars_collapsed ||
+      is_smaller_than_desktop ||
+      Boolean(overflowing_figures.size),
     {
       from: { opacity: 1, transform: "translate3d(0,100%,0)" },
       enter: { opacity: 1, transform: "translate3d(0,0%,0)" },
@@ -45,7 +54,7 @@ const EditorToolbar = (): React.ReactElement | null => {
     }
   );
 
-  if (!is_doc_editable(doc_status)) {
+  if (!is_doc_editable(doc_status) || story.role === "viewer") {
     return null;
   }
 

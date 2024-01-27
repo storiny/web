@@ -19,7 +19,6 @@ const ModalSidebarItem = React.forwardRef<
       {...rest}
       className={clsx(
         styles.reset,
-        css["flex-center"],
         css["focusable"],
         styles["sidebar-item"],
         className

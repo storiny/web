@@ -41,14 +41,14 @@ pub async fn get_user_sessions(
     let iter: AsyncIter<String> = conn
         .scan_match(format!(
             "{}:{user_id}:*",
-            RedisNamespace::Session.to_string()
+            RedisNamespace::Session
         ))
         .await
         .map_err(|error| anyhow!("unable to scan for session keys: {error:?}"))?;
 
     let keys: Vec<String> = iter.collect().await;
 
-    if keys.len() == 0 {
+    if keys.is_empty() {
         return Ok(vec![]);
     }
 
@@ -61,7 +61,7 @@ pub async fn get_user_sessions(
     Ok(keys
         .iter()
         .enumerate()
-        .filter_map(|(index, &ref key)| {
+        .filter_map(|(index, key)| {
             Some((
                 key.to_string(),
                 values
@@ -101,7 +101,7 @@ mod tests {
                     .set::<_, _, ()>(
                         &format!(
                             "{}:{user_id}:{}",
-                            RedisNamespace::Session.to_string(),
+                            RedisNamespace::Session,
                             Uuid::new_v4()
                         ),
                         &rmp_serde::to_vec_named(&UserSession {

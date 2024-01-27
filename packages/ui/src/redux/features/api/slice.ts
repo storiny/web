@@ -17,7 +17,8 @@ export const api_slice = create_api({
     "Story",
     "Comment",
     "Reply",
-    "FriendRequest"
+    "FriendRequest",
+    "CollaborationRequest"
   ],
   endpoints: () => ({})
   /* eslint-enable prefer-snakecase/prefer-snakecase */

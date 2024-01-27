@@ -10,7 +10,9 @@ const EditorAuxiliaryContent = dynamic(() => import("../auxiliary-content"));
 
 const Editor = (props: EditorProps): React.ReactElement => (
   <EditorLayout
+    is_writer={props.is_writer}
     read_only={props.read_only}
+    role={props.role}
     status={props.status}
     story={props.story}
   >

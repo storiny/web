@@ -186,7 +186,7 @@ async fn post(
     let image_size = image_response.content_length().unwrap_or_default();
 
     debug!("photo response `content-length` value: {image_size}");
-    tracing::Span::current().record("content_length", &image_size);
+    tracing::Span::current().record("content_length", image_size);
 
     if image_size == 0 {
         warn!("unexpected image size (0 bytes) from response: {image_response:?}");
@@ -360,7 +360,7 @@ VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING id, rating
 "#,
     )
-    .bind(&object_key)
+    .bind(object_key)
     .bind(&hex_color)
     .bind(img_height as i16)
     .bind(img_width as i16)
@@ -452,7 +452,7 @@ mod tests {
                     let _: String = redis::cmd("FLUSHDB")
                         .query_async(&mut conn)
                         .await
-                        .expect("Failed to FLUSHDB");
+                        .expect("failed to FLUSHDB");
                 },
                 async {
                     delete_s3_objects(&self.s3_client, S3_UPLOADS_BUCKET, None, None)

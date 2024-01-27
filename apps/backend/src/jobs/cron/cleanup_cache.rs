@@ -18,7 +18,7 @@ use tracing::info;
 
 // TODO: Remove this cron job once https://github.com/geofmureithi/apalis/issues/149 is implemented.
 
-pub const CLEANUP_CACHE_JOB_NAME: &'static str = "j:cleanup:cache";
+pub const CLEANUP_CACHE_JOB_NAME: &str = "j:cleanup:cache";
 
 /// Duration of the expiry (in seconds).
 const EXPIRY_DURATION: usize = 259200; // 3 days
@@ -56,7 +56,7 @@ pub async fn cleanup_cache(_: CacheCleanupJob, ctx: JobContext) -> Result<(), Jo
         .get()
         .await
         .map_err(|err| Box::from(err.to_string()))
-        .map_err(|err| JobError::Failed(err))?;
+        .map_err(JobError::Failed)?;
 
     for prefix in &job_prefixes {
         for suffix in &job_suffixes {
@@ -68,6 +68,7 @@ pub async fn cleanup_cache(_: CacheCleanupJob, ctx: JobContext) -> Result<(), Jo
                 return Err(JobError::Failed(Box::from(err.to_string())));
             }
 
+            #[allow(clippy::unwrap_used)]
             let iter = iter.unwrap();
 
             let collected_keys: Vec<String> = iter.collect().await;

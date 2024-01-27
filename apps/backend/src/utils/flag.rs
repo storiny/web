@@ -195,7 +195,7 @@ mod tests {
 
         flags.add_flag(UserFlag::Staff);
         assert!(flags.has_any_of(Mask::Single(UserFlag::Staff)));
-        assert_eq!(flags.has_any_of(Mask::Single(UserFlag::Verified)), false);
+        assert!(!flags.has_any_of(Mask::Single(UserFlag::Verified)));
     }
 
     #[test]
@@ -213,13 +213,12 @@ mod tests {
         flags.add_flag(UserFlag::Verified);
 
         assert!(flags.has_all_of(Mask::Multiple(vec![UserFlag::Staff, UserFlag::Verified])));
-        assert_eq!(
-            flags.has_all_of(Mask::Multiple(vec![
+        assert!(
+            !flags.has_all_of(Mask::Multiple(vec![
                 UserFlag::Staff,
                 UserFlag::Verified,
                 UserFlag::EarlyUser
-            ])),
-            false
+            ]))
         );
     }
 
@@ -229,7 +228,7 @@ mod tests {
 
         flags.add_flag(UserFlag::Staff);
         assert!(flags.not_any_of(Mask::Single(UserFlag::Verified)));
-        assert_eq!(flags.not_any_of(Mask::Single(UserFlag::Staff)), false);
+        assert!(!flags.not_any_of(Mask::Single(UserFlag::Staff)));
     }
 
     #[test]
@@ -250,9 +249,8 @@ mod tests {
         flags.add_flag(UserFlag::Staff);
         flags.add_flag(UserFlag::Verified);
 
-        assert_eq!(
-            flags.not_all_of(Mask::Multiple(vec![UserFlag::Staff, UserFlag::Verified])),
-            false
+        assert!(
+            !flags.not_all_of(Mask::Multiple(vec![UserFlag::Staff, UserFlag::Verified]))
         );
         assert!(flags.not_all_of(Mask::Multiple(vec![
             UserFlag::Staff,

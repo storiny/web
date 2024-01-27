@@ -77,7 +77,7 @@ fn parse_response_impl(
 ) -> Option<ParseResult> {
     let mut width = width_prop.unwrap_or(DEFAULT_WIDTH);
     let mut height = height_prop.unwrap_or(DEFAULT_HEIGHT);
-    let root = Vis::load(html).unwrap();
+    let root = Vis::load(html).ok()?;
 
     // Get the first iframe.
     let mut iframe = root.find("iframe").first();
@@ -99,7 +99,7 @@ fn parse_response_impl(
 
         let iframe_width_px = iframe_width.parse::<u16>().unwrap_or(0);
         let iframe_height_px = iframe_height.parse::<u16>().unwrap_or(0);
-        let has_fixed_size = !iframe_width.ends_with("%") && !iframe_height.ends_with("%");
+        let has_fixed_size = !iframe_width.ends_with('%') && !iframe_height.ends_with('%');
 
         if iframe_width_px > 0 && iframe_height_px > 0 {
             height = iframe_height_px;
@@ -108,12 +108,19 @@ fn parse_response_impl(
 
         // Set the extra params.
         if let Some(extra_params) = iframe_params {
-            let mut iframe_src = Url::parse(&iframe.attr("src").unwrap().to_string()).unwrap();
-            iframe_src
-                .query_pairs_mut()
-                .extend_pairs(&extra_params.clone())
-                .finish();
-            iframe.set_attr("src", Some(&iframe_src.to_string()));
+            let iframe_src = iframe
+                .attr("src")
+                .map(|value| value.to_string())
+                .unwrap_or_default();
+
+            if let Ok(mut iframe_src) = Url::parse(iframe_src.as_str()) {
+                iframe_src
+                    .query_pairs_mut()
+                    .extend_pairs(&extra_params.clone())
+                    .finish();
+
+                iframe.set_attr("src", Some(iframe_src.as_ref()));
+            }
         }
 
         iframe.set_attr("loading", Some("lazy"));
@@ -166,7 +173,7 @@ fn parse_response_impl(
         scripts.for_each(|_, script_node| {
             sources.push(attr_to_string(script_node.get_attribute("src")));
 
-            return true;
+            true
         });
 
         // Remove the script elements.
@@ -174,7 +181,7 @@ fn parse_response_impl(
 
         Some(ParseResult::ScriptResult(ScriptResult {
             embed_type: "sourced_oembed".to_string(),
-            supports_binary_theme: supports_binary_theme.clone(),
+            supports_binary_theme: *supports_binary_theme,
             html: root.outer_html(),
             sources,
         }))

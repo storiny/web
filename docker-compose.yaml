@@ -48,7 +48,7 @@ services:
       REDIS_PORT_NUMBER: 7000
       REDIS_ACLFILE: "/opt/bitnami/redis/mounted-etc/users.acl"
     ports:
-      - "7001:7000"
+      - "6379:7000"
     volumes:
       - ./docker/tmp/redis:/bitnami/redis/data
       - ./docker/redis/overrides.conf:/opt/bitnami/redis/mounted-etc/overrides.conf

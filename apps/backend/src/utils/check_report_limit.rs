@@ -21,7 +21,7 @@ pub async fn check_report_limit(redis_pool: &RedisPool, ip: &str) -> anyhow::Res
     let limit = conn
         .get::<_, Option<u32>>(&format!(
             "{}:{}:{ip}",
-            RedisNamespace::ResourceLimit.to_string(),
+            RedisNamespace::ResourceLimit,
             ResourceLimit::CreateReport as i32,
         ))
         .await

@@ -64,11 +64,11 @@ SET
 WHERE id = $5
 "#,
     )
-    .bind(&bio)
+    .bind(bio)
     .bind(&rendered_bio)
     .bind(&payload.name)
     .bind(&payload.location)
-    .bind(&user_id)
+    .bind(user_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

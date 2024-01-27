@@ -69,7 +69,7 @@ mod tests {
                     .set::<_, _, ()>(
                         &format!(
                             "{}:{}:{}",
-                            RedisNamespace::Session.to_string(),
+                            RedisNamespace::Session,
                             user_id.unwrap(),
                             Uuid::new_v4()
                         ),
@@ -83,7 +83,7 @@ mod tests {
                     .unwrap();
             }
 
-            let sessions = get_user_sessions(&redis_pool, user_id.unwrap())
+            let sessions = get_user_sessions(redis_pool, user_id.unwrap())
                 .await
                 .unwrap();
 
@@ -98,7 +98,7 @@ mod tests {
             assert!(res.status().is_success());
 
             // Sessions should not be present in the cache.
-            let sessions = get_user_sessions(&redis_pool, user_id.unwrap())
+            let sessions = get_user_sessions(redis_pool, user_id.unwrap())
                 .await
                 .unwrap();
 

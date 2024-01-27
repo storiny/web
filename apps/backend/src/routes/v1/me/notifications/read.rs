@@ -46,8 +46,8 @@ WHERE
     AND notification_id = $2
 "#,
     )
-    .bind(&user_id)
-    .bind(&notification_id)
+    .bind(user_id)
+    .bind(notification_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()
