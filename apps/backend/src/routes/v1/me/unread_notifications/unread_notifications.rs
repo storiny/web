@@ -31,7 +31,7 @@ WHERE
     AND read_at IS NULL
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .fetch_one(&data.db_pool)
     .await?;
 

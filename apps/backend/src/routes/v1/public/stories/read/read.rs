@@ -18,7 +18,7 @@ use actix_web::{
     HttpRequest,
     HttpResponse,
 };
-use actix_web_validator::Json;
+use actix_web_validator::QsQuery;
 use redis::AsyncCommands;
 use serde::{
     Deserialize,
@@ -36,8 +36,8 @@ struct Fragments {
     story_id: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Validate)]
-struct Request {
+#[derive(Serialize, Deserialize, Validate)]
+struct QueryParams {
     #[validate(length(min = 12, max = 64, message = "Invalid reading session"))]
     token: String,
     #[validate(length(max = 256, message = "Invalid referrer length"))]
@@ -57,26 +57,26 @@ struct Request {
 )]
 async fn post(
     req: HttpRequest,
-    payload: Json<Request>,
+    query: QsQuery<QueryParams>,
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     maybe_user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    let user_id = maybe_user.and_then(|user| Some(user.id())).transpose()?;
+    let user_id = maybe_user.map(|user| user.id()).transpose()?;
 
-    tracing::Span::current().record("user_id", &user_id);
+    tracing::Span::current().record("user_id", user_id);
 
     let story_id = path
         .story_id
         .parse::<i64>()
         .map_err(|_| AppError::from("Invalid story ID"))?;
 
-    let mut redis_conn = (&data.redis).get().await?;
+    let mut redis_conn = data.redis.get().await?;
 
     let cache_key = format!(
         "{}:{story_id}:{}",
-        RedisNamespace::ReadingSession.to_string(),
-        &payload.token
+        RedisNamespace::ReadingSession,
+        &query.token
     );
 
     let session_ttl = redis_conn
@@ -122,14 +122,14 @@ async fn post(
         }
     }
 
-    if let Some(ua_header) = (&req.headers()).get("user-agent") {
+    if let Some(ua_header) = req.headers().get("user-agent") {
         if let Ok(ua) = ua_header.to_str() {
             device = get_client_device(ua, &data.ua_parser).r#type;
         }
     }
 
     let hostname = {
-        if let Some(referrer) = &payload.referrer {
+        if let Some(referrer) = &query.referrer {
             let referrer_url = url::Url::parse(referrer).ok();
             referrer_url.and_then(|ref_url| ref_url.host_str().map(|host| host.to_string()))
         } else {
@@ -141,7 +141,7 @@ async fn post(
         if host.contains("storiny.com") {
             None
         } else {
-            Some(host)
+            Some(host.replace("www.", ""))
         }
     });
 
@@ -168,11 +168,11 @@ WHERE EXISTS (SELECT 1 FROM target_story)
 "#,
     )
     .bind(&hostname)
-    .bind(&device)
+    .bind(device)
     .bind(&country_code)
-    .bind(&elapsed_reading_duration)
-    .bind(&user_id)
-    .bind(&story_id)
+    .bind(elapsed_reading_duration)
+    .bind(user_id)
+    .bind(story_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()
@@ -212,11 +212,10 @@ mod tests {
         let (app, _, _) = init_app_for_test(post, pool, false, false, None).await;
 
         let req = test::TestRequest::post()
-            .uri(&format!("/v1/public/stories/{}/read", 12345))
-            .set_json(Request {
-                referrer: None,
-                token: "invalid_token".to_string(),
-            })
+            .uri(&format!(
+                "/v1/public/stories/{}/read?token=invalid_token",
+                12345
+            ))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -228,6 +227,7 @@ mod tests {
 
     mod serial {
         use super::*;
+        use urlencoding::encode;
 
         #[test_context(RedisTestContext)]
         #[sqlx::test(fixtures("read"))]
@@ -241,7 +241,7 @@ mod tests {
             let session_token = Uuid::new_v4();
             let cache_key = format!(
                 "{}:{story_id}:{session_token}",
-                RedisNamespace::ReadingSession.to_string(),
+                RedisNamespace::ReadingSession,
             );
 
             // Start a reading session.
@@ -257,11 +257,9 @@ mod tests {
             .await;
 
             let req = test::TestRequest::post()
-                .uri(&format!("/v1/public/stories/{story_id}/read"))
-                .set_json(Request {
-                    referrer: None,
-                    token: session_token.to_string(),
-                })
+                .uri(&format!(
+                    "/v1/public/stories/{story_id}/read?token={session_token}"
+                ))
                 .to_request();
             let res = test::call_service(&app, req).await;
 
@@ -303,7 +301,7 @@ WHERE story_id = $1
             let session_token = Uuid::new_v4();
             let cache_key = format!(
                 "{}:{story_id}:{session_token}",
-                RedisNamespace::ReadingSession.to_string(),
+                RedisNamespace::ReadingSession,
             );
 
             // Start a reading session.
@@ -320,11 +318,9 @@ WHERE story_id = $1
 
             let req = test::TestRequest::post()
                 .cookie(cookie.unwrap())
-                .uri(&format!("/v1/public/stories/{story_id}/read"))
-                .set_json(Request {
-                    referrer: None,
-                    token: session_token.to_string(),
-                })
+                .uri(&format!(
+                    "/v1/public/stories/{story_id}/read?token={session_token}"
+                ))
                 .to_request();
             let res = test::call_service(&app, req).await;
 
@@ -343,7 +339,7 @@ WHERE story_id = $1
 
             assert_eq!(result.len(), 1);
             assert_eq!(
-                result.get(0).unwrap().get::<i64, _>("user_id"),
+                result.first().unwrap().get::<i64, _>("user_id"),
                 user_id.unwrap()
             );
 
@@ -370,7 +366,7 @@ WHERE story_id = $1
             let session_token = Uuid::new_v4();
             let cache_key = format!(
                 "{}:{story_id}:{session_token}",
-                RedisNamespace::ReadingSession.to_string(),
+                RedisNamespace::ReadingSession,
             );
 
             // Start a reading session.
@@ -391,11 +387,7 @@ WHERE story_id = $1
                     8080,
                 )))
                 .append_header(("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:40.0) Gecko/20100101 Firefox/40.0"))
-                .uri(&format!("/v1/public/stories/{story_id}/read"))
-                .set_json(Request {
-                    referrer: Some("https://example.com/some_path".to_string()),
-                   token: session_token.to_string(),
-                })
+                .uri(&format!("/v1/public/stories/{story_id}/read?token={session_token}&referrer={}", encode("https://example.com")))
                 .to_request();
             let res = test::call_service(&app, req).await;
 
@@ -449,7 +441,7 @@ WHERE story_id = $1
             let session_token = Uuid::new_v4();
             let cache_key = format!(
                 "{}:{story_id}:{session_token}",
-                RedisNamespace::ReadingSession.to_string(),
+                RedisNamespace::ReadingSession,
             );
 
             // Start a reading session.
@@ -460,11 +452,9 @@ WHERE story_id = $1
 
             // Read immediately.
             let req = test::TestRequest::post()
-                .uri(&format!("/v1/public/stories/{story_id}/read"))
-                .set_json(Request {
-                    referrer: None,
-                    token: session_token.to_string(),
-                })
+                .uri(&format!(
+                    "/v1/public/stories/{story_id}/read?token={session_token}"
+                ))
                 .to_request();
             let res = test::call_service(&app, req).await;
 
@@ -500,7 +490,7 @@ WHERE story_id = $1
             let session_token = Uuid::new_v4();
             let cache_key = format!(
                 "{}:{story_id}:{session_token}",
-                RedisNamespace::ReadingSession.to_string(),
+                RedisNamespace::ReadingSession,
             );
 
             // Start a reading session.
@@ -511,11 +501,10 @@ WHERE story_id = $1
 
             let req = test::TestRequest::post()
                 // Use an invalid story ID with a valid token value.
-                .uri(&format!("/v1/public/stories/{}/read", 4))
-                .set_json(Request {
-                    referrer: None,
-                    token: session_token.to_string(),
-                })
+                .uri(&format!(
+                    "/v1/public/stories/{}/read?token={session_token}",
+                    4
+                ))
                 .to_request();
             let res = test::call_service(&app, req).await;
 
@@ -540,7 +529,7 @@ WHERE story_id = $1
             let session_token = Uuid::new_v4();
             let cache_key = format!(
                 "{}:{story_id}:{session_token}",
-                RedisNamespace::ReadingSession.to_string(),
+                RedisNamespace::ReadingSession,
             );
 
             // Start a reading session.
@@ -570,11 +559,9 @@ WHERE id = $1
             assert_eq!(result.rows_affected(), 1);
 
             let req = test::TestRequest::post()
-                .uri(&format!("/v1/public/stories/{story_id}/read"))
-                .set_json(Request {
-                    referrer: None,
-                    token: session_token.to_string(),
-                })
+                .uri(&format!(
+                    "/v1/public/stories/{story_id}/read?token={session_token}"
+                ))
                 .to_request();
             let res = test::call_service(&app, req).await;
 
@@ -599,7 +586,7 @@ WHERE id = $1
             let session_token = Uuid::new_v4();
             let cache_key = format!(
                 "{}:{story_id}:{session_token}",
-                RedisNamespace::ReadingSession.to_string(),
+                RedisNamespace::ReadingSession,
             );
 
             // Start a reading session.
@@ -629,11 +616,9 @@ WHERE id = $1
             assert_eq!(result.rows_affected(), 1);
 
             let req = test::TestRequest::post()
-                .uri(&format!("/v1/public/stories/{story_id}/read",))
-                .set_json(Request {
-                    referrer: None,
-                    token: session_token.to_string(),
-                })
+                .uri(&format!(
+                    "/v1/public/stories/{story_id}/read?token={session_token}"
+                ))
                 .to_request();
             let res = test::call_service(&app, req).await;
 

@@ -1,9 +1,11 @@
 /// List of reserved usernames.
-pub static RESERVED_USERNAMES: &'static [&'static str] = &[
+pub static RESERVED_USERNAMES: &[&str] = &[
     "401",
     "404",
     "500",
     "_",
+    "_next",
+    "_static",
     "about",
     "access",
     "account",
@@ -228,6 +230,9 @@ pub static RESERVED_USERNAMES: &'static [&'static str] = &[
     "gift",
     "gifts",
     "gist",
+    "gateway",
+    "gateway-error",
+    "gateway-timeout",
     "github",
     "google",
     "graph",

@@ -62,8 +62,8 @@ INSERT INTO bookmarks (user_id, story_id)
 VALUES ($1, $2)
 "#,
     )
-    .bind(&user_id)
-    .bind(&story_id)
+    .bind(user_id)
+    .bind(story_id)
     .execute(&mut *txn)
     .await
     {

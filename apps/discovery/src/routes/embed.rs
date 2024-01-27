@@ -79,16 +79,16 @@ async fn get(
 
     // Always validate the URL.
     let url = Url::parse(&decompressed_url)?;
+    let provider = resolve_provider(url.as_ref());
 
-    let provider = resolve_provider(&url.to_string());
+    let provider = match provider {
+        Some(value) => value,
+        None => {
+            debug!("provider not found, responding with metadata instead");
 
-    if provider.is_none() {
-        debug!("provider not found, responding with metadata instead");
-
-        return Ok(respond_with_metadata(&config, &url.to_string()).await);
-    }
-
-    let provider = provider.unwrap();
+            return Ok(respond_with_metadata(&config, url.as_ref()).await);
+        }
+    };
 
     tracing::Span::current().record("resolved_provider", provider.name);
 
@@ -125,9 +125,9 @@ async fn get(
 
             fetch_embed(
                 &config,
-                &provider.endpoint,
+                provider.endpoint,
                 ConsumerRequest {
-                    url: &url.to_string(),
+                    url: url.as_ref(),
                     params: Some(origin_params_cloned),
                 },
             )
@@ -135,9 +135,9 @@ async fn get(
         } else {
             fetch_embed(
                 &config,
-                &provider.endpoint,
+                provider.endpoint,
                 ConsumerRequest {
-                    url: &url.to_string(),
+                    url: url.as_ref(),
                     ..Default::default()
                 },
             )
@@ -153,25 +153,28 @@ async fn get(
                     photo_res.url,
                 );
 
-                Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
-                    PhotoTemplate {
-                        theme,
-                        photo_html: photo_embed_html,
-                        title: embed_title,
-                        embed_data: PhotoEmbedData {
-                            embed_type: "photo".to_string(),
-                            provider: provider.name.to_string(),
-                            width: photo_res.width,
-                            height: photo_res.height,
-                        },
-                    }
-                    .render_once()
-                    .unwrap(),
-                ))
+                PhotoTemplate {
+                    theme,
+                    photo_html: photo_embed_html,
+                    title: embed_title,
+                    embed_data: PhotoEmbedData {
+                        embed_type: "photo".to_string(),
+                        provider: provider.name.to_string(),
+                        width: photo_res.width,
+                        height: photo_res.height,
+                    },
+                }
+                .render_once()
+                .map(|body| {
+                    HttpResponse::Ok()
+                        .content_type(ContentType::html())
+                        .body(body)
+                })
+                .map_err(|error| AppError::InternalError(error.to_string()))
             }
 
             // Handle photo embed response.
-            EmbedType::Link => Ok(respond_with_metadata(&config, &url.to_string()).await),
+            EmbedType::Link => Ok(respond_with_metadata(&config, url.as_ref()).await),
 
             // Handle video and rich embed response.
             EmbedType::Video(_) | EmbedType::Rich(_) => {
@@ -199,38 +202,41 @@ async fn get(
                     &provider.supports_binary_theme,
                 );
 
-                // We simply return the provider response data if the HTML can not be parsed.
-                if parse_result.is_none() {
-                    return Ok(HttpResponse::Ok().json(response));
-                }
-
-                let parse_result = parse_result.unwrap();
+                let parse_result = match parse_result {
+                    Some(value) => value,
+                    None => {
+                        // We simply return the provider response data if the HTML can not be
+                        // parsed.
+                        return Ok(HttpResponse::Ok().json(response));
+                    }
+                };
 
                 match parse_result {
                     // Handle iframe embed response.
-                    ParseResult::IframeResult(result) => {
-                        Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
-                            IframeTemplate {
-                                theme: theme.clone(),
-                                iframe_html: result.iframe_html,
-                                title: result.title,
-                                wrapper_styles: result.wrapper_styles.to_string(),
-                                embed_data: IframeEmbedData {
-                                    embed_type: "rich".to_string(),
-                                    sources: vec![],
-                                    styles: if !padding_styles.is_empty() {
-                                        padding_styles
-                                    } else {
-                                        result.wrapper_styles.to_string()
-                                    },
-                                    provider: provider.name.to_string(),
-                                    supports_binary_theme: provider.supports_binary_theme,
-                                },
-                            }
-                            .render_once()
-                            .unwrap(),
-                        ))
+                    ParseResult::IframeResult(result) => IframeTemplate {
+                        theme: theme.clone(),
+                        iframe_html: result.iframe_html,
+                        title: result.title,
+                        wrapper_styles: result.wrapper_styles.to_string(),
+                        embed_data: IframeEmbedData {
+                            embed_type: "rich".to_string(),
+                            sources: vec![],
+                            styles: if !padding_styles.is_empty() {
+                                padding_styles
+                            } else {
+                                result.wrapper_styles.to_string()
+                            },
+                            provider: provider.name.to_string(),
+                            supports_binary_theme: provider.supports_binary_theme,
+                        },
                     }
+                    .render_once()
+                    .map(|body| {
+                        HttpResponse::Ok()
+                            .content_type(ContentType::html())
+                            .body(body)
+                    })
+                    .map_err(|error| AppError::InternalError(error.to_string())),
 
                     // Handle scripted embed response. The response contains scripts that are
                     // executed on the client side to embed the content.
@@ -259,10 +265,8 @@ async fn get(
 
             iframe_params_cloned.iter_mut().for_each(|(_, value)| {
                 // Replace theme placeholders.
-                if provider.supports_binary_theme {
-                    if *value == "{theme}" {
-                        *value = &theme;
-                    }
+                if provider.supports_binary_theme && *value == "{theme}" {
+                    *value = &theme;
                 }
 
                 // Replace URL placeholders.
@@ -299,37 +303,40 @@ async fn get(
             }
         }
 
-        Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
-            IframeTemplate {
-                theme,
-                iframe_html: format!(
-                    r#"<iframe src="{}" loading="lazy" referrerpolicy="strict-origin" {}></iframe>"#,
-                    iframe_src.to_string(),
-                    {
-                        // Append iframe attributes.
-                        let mut attrs = " ".to_string();
+        IframeTemplate {
+            theme,
+            iframe_html: format!(
+                r#"<iframe src="{}" loading="lazy" referrerpolicy="strict-origin" {}></iframe>"#,
+                iframe_src,
+                {
+                    // Append iframe attributes.
+                    let mut attrs = " ".to_string();
 
-                        for (key, value) in provider.iframe_attrs.clone().unwrap_or_default() {
-                            attrs.push_str(&format!(r#"{key}="{value}""#));
-                            attrs.push_str(" ");
-                        }
-
-                        attrs
+                    for (key, value) in provider.iframe_attrs.clone().unwrap_or_default() {
+                        attrs.push_str(&format!(r#"{key}="{value}""#));
+                        attrs.push(' ');
                     }
-                ),
-                title: provider.name.to_string(),
-                wrapper_styles: padding_styles.clone(),
-                embed_data:IframeEmbedData {
-                    embed_type: "rich".to_string(),
-                    sources: vec![],
-                    styles: padding_styles,
-                    provider: provider.name.to_string(),
-                    supports_binary_theme: provider.supports_binary_theme,
-                },
-            }
-            .render_once()
-            .unwrap(),
-        ))
+
+                    attrs
+                }
+            ),
+            title: provider.name.to_string(),
+            wrapper_styles: padding_styles.clone(),
+            embed_data: IframeEmbedData {
+                embed_type: "rich".to_string(),
+                sources: vec![],
+                styles: padding_styles,
+                provider: provider.name.to_string(),
+                supports_binary_theme: provider.supports_binary_theme,
+            },
+        }
+        .render_once()
+        .map(|body| {
+            HttpResponse::Ok()
+                .content_type(ContentType::html())
+                .body(body)
+        })
+        .map_err(|error| AppError::InternalError(error.to_string()))
     }
 }
 

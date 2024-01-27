@@ -1,1 +1,3 @@
-pub mod history;
+mod history;
+
+pub use history::*;

@@ -26,7 +26,10 @@ use uuid::Uuid;
 use validator::Validate;
 
 lazy_static! {
-    static ref SORT_REGEX: Regex = Regex::new(r"^(recent|popular)$").unwrap();
+    static ref SORT_REGEX: Regex = {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"^(recent|popular)$").unwrap()
+    };
 }
 
 #[derive(Deserialize, Validate)]
@@ -113,16 +116,16 @@ async fn get(
     data: web::Data<AppState>,
     maybe_user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    let user_id = maybe_user.and_then(|user| Some(user.id())).transpose()?;
+    let user_id = maybe_user.map(|user| user.id()).transpose()?;
 
-    tracing::Span::current().record("user_id", &user_id);
+    tracing::Span::current().record("user_id", user_id);
 
     // Validate tag name.
     if !TAG_REGEX.is_match(&path.tag_name) {
         return Err(AppError::from("Invalid tag name"));
     }
 
-    let page = query.page.clone().unwrap_or(1) - 1;
+    let page = query.page.unwrap_or(1) - 1;
     let sort = query.sort.clone().unwrap_or("popular".to_string());
     let search_query = query.query.clone().unwrap_or_default();
     let has_search_query = !search_query.trim().is_empty();
@@ -169,45 +172,43 @@ async fn get(
 
             Ok(HttpResponse::Ok().json(result))
         }
+    } else if has_search_query {
+        let result = sqlx::query_file_as!(
+            Story,
+            "queries/tag/stories/with_query.sql",
+            search_query,
+            &path.tag_name,
+            10 as i16,
+            (page * 10) as i16,
+        )
+        .fetch_all(&data.db_pool)
+        .await?;
+
+        Ok(HttpResponse::Ok().json(result))
+    } else if sort == "recent" {
+        let result = sqlx::query_file_as!(
+            Story,
+            "queries/tag/stories/recent.sql",
+            &path.tag_name,
+            10 as i16,
+            (page * 10) as i16,
+        )
+        .fetch_all(&data.db_pool)
+        .await?;
+
+        Ok(HttpResponse::Ok().json(result))
     } else {
-        if has_search_query {
-            let result = sqlx::query_file_as!(
-                Story,
-                "queries/tag/stories/with_query.sql",
-                search_query,
-                &path.tag_name,
-                10 as i16,
-                (page * 10) as i16,
-            )
-            .fetch_all(&data.db_pool)
-            .await?;
+        let result = sqlx::query_file_as!(
+            Story,
+            "queries/tag/stories/popular.sql",
+            &path.tag_name,
+            10 as i16,
+            (page * 10) as i16,
+        )
+        .fetch_all(&data.db_pool)
+        .await?;
 
-            Ok(HttpResponse::Ok().json(result))
-        } else if sort == "recent" {
-            let result = sqlx::query_file_as!(
-                Story,
-                "queries/tag/stories/recent.sql",
-                &path.tag_name,
-                10 as i16,
-                (page * 10) as i16,
-            )
-            .fetch_all(&data.db_pool)
-            .await?;
-
-            Ok(HttpResponse::Ok().json(result))
-        } else {
-            let result = sqlx::query_file_as!(
-                Story,
-                "queries/tag/stories/popular.sql",
-                &path.tag_name,
-                10 as i16,
-                (page * 10) as i16,
-            )
-            .fetch_all(&data.db_pool)
-            .await?;
-
-            Ok(HttpResponse::Ok().json(result))
-        }
+        Ok(HttpResponse::Ok().json(result))
     }
 }
 

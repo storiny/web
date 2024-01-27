@@ -78,8 +78,8 @@ pub fn md_to_html(md_source: MarkdownSource) -> String {
                 },
             };
 
-            // Can be safely unwrapped unless using MDX
-            to_html_with_options(md_str, &options).unwrap()
+            // Does not panic unless using MDX.
+            to_html_with_options(md_str, &options).unwrap_or_default()
         }
         MarkdownSource::Response(md_str) => {
             let options = Options {
@@ -139,8 +139,8 @@ pub fn md_to_html(md_source: MarkdownSource) -> String {
                 },
             };
 
-            // Can be safely unwrapped unless using MDX.
-            to_html_with_options(md_str, &options).unwrap()
+            // Does not panic unless using MDX.
+            to_html_with_options(md_str, &options).unwrap_or_default()
         }
     }
 }
@@ -149,7 +149,7 @@ pub fn md_to_html(md_source: MarkdownSource) -> String {
 mod tests {
     use super::*;
 
-    const MD_TEXT: &'static str = r#"# H1
+    const MD_TEXT: &str = r#"# H1
 ## H2
 ### H3
 #### H4

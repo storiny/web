@@ -63,7 +63,7 @@ FROM
 "#,
     )
     .bind(user_id)
-    .bind(&payload.private_account)
+    .bind(payload.private_account)
     .bind(AccountActivityType::Privacy as i16)
     .execute(&data.db_pool)
     .await?;

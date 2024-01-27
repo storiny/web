@@ -27,6 +27,12 @@ export interface PersonaProps extends React.ComponentPropsWithRef<"div"> {
    */
   primary_text: React.ReactNode;
   /**
+   * Avatar element rendering function.
+   * @param avatar Avatar element
+   * @param index The current index in the avatar array
+   */
+  render_avatar?: (avatar: React.ReactNode, index: number) => React.ReactNode;
+  /**
    * The secondary text for the entity.
    */
   secondary_text?: React.ReactNode;

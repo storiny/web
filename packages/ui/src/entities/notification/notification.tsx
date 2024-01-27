@@ -14,6 +14,7 @@ import NotificationParser from "~/entities/notification/parser";
 import { use_media_query } from "~/hooks/use-media-query";
 import AtIcon from "~/icons/at";
 import CommentIcon from "~/icons/comment";
+import ContributionIcon from "~/icons/contribution";
 import HeartIcon from "~/icons/heart";
 import LoginIcon from "~/icons/login";
 import ReplyIcon from "~/icons/reply";
@@ -42,6 +43,8 @@ const NOTIFICATION_BADGE_CONTENT_MAP: Record<
   [NotificationType.STORY_LIKE /*         */]: <HeartIcon no_stroke />,
   [NotificationType.FRIEND_REQ_ACCEPT /*  */]: <UserCheckIcon />,
   [NotificationType.FRIEND_REQ_RECEIVED /**/]: <UserHeartIcon />,
+  [NotificationType.COLLAB_REQ_ACCEPT /*  */]: <ContributionIcon />,
+  [NotificationType.COLLAB_REQ_RECEIVED /**/]: <ContributionIcon />,
   [NotificationType.FOLLOWER_ADD /*       */]: <UserPlusIcon />,
   [NotificationType.STORY_MENTION /*      */]: <AtIcon />,
   [NotificationType.COMMENT_ADD /*        */]: <CommentIcon no_stroke />,
@@ -56,6 +59,8 @@ const NOTIFICATION_BADGE_COLOR_MAP: Record<NotificationType, string> = {
   [NotificationType.STORY_LIKE /*         */]: "var(--blush-100)",
   [NotificationType.FRIEND_REQ_ACCEPT /*  */]: "var(--blush-100)",
   [NotificationType.FRIEND_REQ_RECEIVED /**/]: "var(--beryl-200)",
+  [NotificationType.COLLAB_REQ_ACCEPT /*  */]: "var(--blush-100)",
+  [NotificationType.COLLAB_REQ_RECEIVED /**/]: "var(--beryl-200)",
   [NotificationType.FOLLOWER_ADD /*       */]: "var(--beryl-200)",
   [NotificationType.STORY_MENTION /*      */]: "var(--beryl-200)",
   [NotificationType.COMMENT_ADD /*        */]: "var(--melon-100)",

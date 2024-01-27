@@ -6,7 +6,7 @@ use actix_web::{
     HttpResponse,
 };
 
-const ROBOTS_TXT: &'static str = include_str!("../../static/robots.txt");
+const ROBOTS_TXT: &str = include_str!("../../static/robots.txt");
 
 #[get("/robots.txt")]
 async fn get() -> Result<HttpResponse, AppError> {

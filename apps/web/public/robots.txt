@@ -1,0 +1,25 @@
+User-agent: *
+Disallow: /auth$
+Disallow: /logout$
+Disallow: /login$
+Disallow: /signup$
+Disallow: /profile$
+Disallow: /handler$
+Disallow: /new$
+Disallow: /api/
+Disallow: /doc/
+Disallow: /gateway-error
+
+User-agent: Mediapartners-Google
+Disallow: /
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+Sitemap: https://sitemaps.storiny.com/index.xml

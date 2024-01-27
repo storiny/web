@@ -12,7 +12,7 @@ const EditorContentEditable = ({
   role = "textbox",
   spellCheck: spell_check = true,
   className,
-  editable,
+  read_only,
   ...rest
 }: EditorContentEditableProps): React.ReactElement => {
   const [editor] = use_lexical_composer_context();
@@ -52,7 +52,7 @@ const EditorContentEditable = ({
         css["t-legible"],
         css["t-legible-fg"],
         styles["content-editable"],
-        editable && styles.editable,
+        !read_only && styles.editable,
         className
       )}
       contentEditable={is_editable}

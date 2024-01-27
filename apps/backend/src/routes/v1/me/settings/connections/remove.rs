@@ -48,8 +48,8 @@ WHERE
     AND user_id = $2
 "#,
     )
-    .bind(&connection_id)
-    .bind(&user_id)
+    .bind(connection_id)
+    .bind(user_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

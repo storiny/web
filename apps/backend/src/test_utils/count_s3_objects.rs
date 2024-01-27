@@ -100,7 +100,7 @@ mod tests {
             assert!(result.is_ok());
 
             let result = count_s3_objects(
-                &s3_client,
+                s3_client,
                 S3_BASE_BUCKET,
                 Some("test-fruits/".to_string()),
                 None,
@@ -131,7 +131,7 @@ mod tests {
             future::join_all(put_futures).await;
 
             let result = count_s3_objects(
-                &s3_client,
+                s3_client,
                 S3_BASE_BUCKET,
                 Some("test-integers/".to_string()),
                 None,
@@ -168,7 +168,7 @@ mod tests {
             assert!(result.is_ok());
 
             let result = count_s3_objects(
-                &s3_client,
+                s3_client,
                 S3_BASE_BUCKET,
                 Some("test-trees/".to_string()),
                 None,

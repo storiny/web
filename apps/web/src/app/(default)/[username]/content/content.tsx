@@ -12,11 +12,11 @@ import Badge from "~/components/badge";
 import Button from "~/components/button";
 import Divider from "~/components/divider";
 import Grow from "~/components/grow";
-import Link from "~/components/link";
 import NoSsr from "~/components/no-ssr";
 import Spacer from "~/components/spacer";
 import Tooltip from "~/components/tooltip";
 import Typography from "~/components/typography";
+import { BadgeSkeleton } from "~/entities/badges";
 import BioParser from "~/entities/bio-parser";
 import Status from "~/entities/status";
 import { use_media_query } from "~/hooks/use-media-query";
@@ -41,8 +41,13 @@ import ProfileActions from "../actions";
 import Connections from "../connections";
 import styles from "./content.module.scss";
 
-const EarlyUserBadge = dynamic(() => import("~/entities/badges/early-user"));
-const StaffBadge = dynamic(() => import("~/entities/badges/staff"));
+const EarlyUserBadge = dynamic(() => import("~/entities/badges/early-user"), {
+  loading: () => <BadgeSkeleton />
+});
+
+const StaffBadge = dynamic(() => import("~/entities/badges/staff"), {
+  loading: () => <BadgeSkeleton />
+});
 
 interface Props {
   is_inside_sidebar?: boolean;
@@ -164,13 +169,7 @@ const Badges = ({
         Badges
         <Tooltip
           content={
-            <>
-              Badges represent a user&apos;s achievements, affiliations, or
-              accomplishments.{" "}
-              <Link href={"/docs/badges"} underline={"always"}>
-                Learn more
-              </Link>
-            </>
+            "Badges represent a user&apos;s achievements, affiliations, or accomplishments."
           }
           delayDuration={0}
         >

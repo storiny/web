@@ -4,12 +4,36 @@
 
 .line-selection {
   padding: 0;
-  margin: 0 2px 0 4px;
 }
 
 .selection-caret {
   display: inline;
   position: relative;
-  border-inline: 1px solid var(--color);
-  font-family: var(--font-secondary);
+  width: 0;
+
+  &::before {
+    content: "";
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    border-radius: 0 0 2px 2px;
+    background-color: var(--color-bg);
+  }
+
+  &.mini {
+    &::after {
+      position: absolute;
+      content: "";
+      width: 8px;
+      height: 8px;
+      top: -8px;
+      left: -3px;
+      background-color: var(--color-bg);
+      border-radius: 50%;
+    }
+  }
+}
+
+.name {
+  top: calc(-100% - 8px) !important;
 }

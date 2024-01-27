@@ -67,8 +67,8 @@ SELECT
 WHERE EXISTS (SELECT 1 FROM inserted_notification)
 "#,
     )
-    .bind(&receiver_id)
-    .bind(&transmitter_id)
+    .bind(receiver_id)
+    .bind(transmitter_id)
     .bind(NotificationEntityType::FriendReqAccept as i16)
     .execute(&data.db_pool)
     .await?

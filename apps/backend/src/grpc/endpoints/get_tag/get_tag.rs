@@ -106,7 +106,7 @@ GROUP BY
     let mut db_query = query_builder.build_query_as::<Tag>().bind(tag_name);
 
     if let Some(current_user_id) = current_user_id {
-        tracing::Span::current().record("user_id", &current_user_id);
+        tracing::Span::current().record("user_id", current_user_id);
 
         db_query = db_query.bind(current_user_id);
     }
@@ -172,7 +172,7 @@ mod tests {
                 let response = client
                     .get_tag(Request::new(GetTagRequest {
                         name: "sample".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await;
 
@@ -191,7 +191,7 @@ mod tests {
                 let response = client
                     .get_tag(Request::new(GetTagRequest {
                         name: "sample".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await
                     .unwrap()
@@ -218,7 +218,7 @@ VALUES ($1, $2)
                 let response = client
                     .get_tag(Request::new(GetTagRequest {
                         name: "sample".to_string(),
-                        current_user_id: user_id.and_then(|value| Some(value.to_string())),
+                        current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await
                     .unwrap()

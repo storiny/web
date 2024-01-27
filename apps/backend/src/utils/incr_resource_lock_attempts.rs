@@ -58,13 +58,14 @@ fn get_next_backoff_duration(attempts: u32) -> i32 {
 /// * `redis_pool` - The Redis connection pool.
 /// * `resource_lock` - The resource lock variant.
 /// * `identifier` - The resource identifier.
+#[allow(clippy::unit_arg)]
 pub async fn incr_resource_lock_attempts(
     redis_pool: &RedisPool,
     resource_lock: ResourceLock,
     identifier: &str,
 ) -> Result<(), IncrResourceLockError> {
     let mut conn = redis_pool.get().await?;
-    let cache_key = format!("{}:{identifier}", resource_lock.to_string());
+    let cache_key = format!("{}:{identifier}", resource_lock);
 
     Ok(async_transaction!(&mut conn, &[cache_key.clone()], {
         let mut pipe = redis::pipe();
@@ -76,6 +77,7 @@ pub async fn incr_resource_lock_attempts(
             // Increase the expiry if the key already exists with the sufficient amount of
             // incorrect attempts. We use the difference of the incorrect attempts and the maximum
             // limit to compute the backoff duration.
+            #[allow(clippy::unwrap_used)]
             let attempts = current_value.unwrap() - resource_lock.get_max_attempts();
             let next_expiry = get_next_backoff_duration(attempts);
 
@@ -117,7 +119,7 @@ mod tests {
                 .unwrap();
 
             // Key should be present in the cache.
-            let cache_key = format!("{}:{}", ResourceLock::Signup.to_string(), "::1");
+            let cache_key = format!("{}:{}", ResourceLock::Signup, "::1");
 
             let result: String = conn.get(&cache_key).await.unwrap();
 
@@ -137,7 +139,7 @@ mod tests {
             let redis_pool = &ctx.redis_pool;
             let mut conn = redis_pool.get().await.unwrap();
 
-            let cache_key = format!("{}:{}", ResourceLock::Signup.to_string(), "::1");
+            let cache_key = format!("{}:{}", ResourceLock::Signup, "::1");
 
             // Increment for the first time.
             incr_resource_lock_attempts(redis_pool, ResourceLock::Signup, "::1")
@@ -171,7 +173,7 @@ mod tests {
             let redis_pool = &ctx.redis_pool;
             let mut conn = redis_pool.get().await.unwrap();
 
-            let cache_key = format!("{}:{}", ResourceLock::Signup.to_string(), "::1");
+            let cache_key = format!("{}:{}", ResourceLock::Signup, "::1");
 
             // Set the maximum attempts for the key.
             conn.set::<_, _, ()>(&cache_key, ResourceLock::Signup.get_max_attempts())
@@ -204,7 +206,7 @@ mod tests {
             let redis_pool = &ctx.redis_pool;
             let mut conn = redis_pool.get().await.unwrap();
 
-            let cache_key = format!("{}:{}", ResourceLock::Signup.to_string(), "::1");
+            let cache_key = format!("{}:{}", ResourceLock::Signup, "::1");
 
             // Set the maximum attempts for the key.
             conn.set::<_, _, ()>(&cache_key, ResourceLock::Signup.get_max_attempts() + 1)

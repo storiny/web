@@ -22,7 +22,7 @@ pub async fn is_resource_locked(
     })?;
 
     let current_attempts = conn
-        .get::<_, Option<u32>>(&format!("{}:{identifier}", resource_lock.to_string()))
+        .get::<_, Option<u32>>(&format!("{}:{identifier}", resource_lock))
         .await
         .map_err(|error| anyhow!("unable to fetch the lock attempts from Redis: {error:?}"))?;
 

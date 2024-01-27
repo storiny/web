@@ -43,12 +43,11 @@ const EditorStoryCard = (props: EditorStoryCardProps): React.ReactElement => {
             size={ImageSize.W_320}
           />
         )}
-        {status !== "deleted" && (
+        {!story.is_writer || status === "deleted" || publishing ? null : (
           <StoryMetadataModal set_story={set_story} story={story}>
             <IconButton
               aria-label={"Set banner"}
               className={clsx("force-light-mode", styles["overlay-button"])}
-              disabled={publishing}
               title={"Set banner"}
             >
               <PhotoEditIcon />
@@ -64,7 +63,7 @@ const EditorStoryCard = (props: EditorStoryCardProps): React.ReactElement => {
         >
           {story.title}
         </Typography>
-        {status !== "deleted" && (
+        {status !== "deleted" && story.is_writer ? (
           <footer>
             <StoryMetadataModal set_story={set_story} story={story}>
               <Button
@@ -77,7 +76,7 @@ const EditorStoryCard = (props: EditorStoryCardProps): React.ReactElement => {
               </Button>
             </StoryMetadataModal>
           </footer>
-        )}
+        ) : null}
       </div>
     </article>
   );

@@ -60,7 +60,9 @@ async fn delete(
     match sqlx::query(
         r#"
 UPDATE stories
-SET deleted_at = NOW()
+SET
+    deleted_at = NOW(),
+    is_deleted_by_user = TRUE
 WHERE
     user_id = $1
     AND id = $2
@@ -68,8 +70,8 @@ WHERE
     AND deleted_at IS NULL
 "#,
     )
-    .bind(&user_id)
-    .bind(&draft_id)
+    .bind(user_id)
+    .bind(draft_id)
     .execute(&mut *txn)
     .await?
     .rows_affected()
@@ -140,7 +142,7 @@ VALUES ($1, $2)
         // Draft should get soft-deleted.
         let result = sqlx::query(
             r#"
-SELECT deleted_at FROM stories
+SELECT deleted_at, is_deleted_by_user FROM stories
 WHERE id = $1
 "#,
         )
@@ -153,6 +155,7 @@ WHERE id = $1
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
                 .is_some()
         );
+        assert!(result.get::<Option<bool>, _>("is_deleted_by_user").unwrap());
 
         Ok(())
     }

@@ -112,8 +112,8 @@ WHERE
     AND key = $2
 "#,
             )
-            .bind(&user_id)
-            .bind(&payload.splash_id)
+            .bind(user_id)
+            .bind(payload.splash_id)
             .fetch_one(&mut *txn)
             .await
             .map_err(|error| {
@@ -138,7 +138,7 @@ WHERE
 "#,
         )
         .bind(user_id)
-        .bind(&payload.preview_image)
+        .bind(payload.preview_image)
         .fetch_one(&mut *txn)
         .await
         .map_err(|error| {
@@ -179,23 +179,23 @@ WHERE
   AND EXISTS (SELECT 1 FROM updated_tags)
 "#,
     )
-    .bind(&user_id)
-    .bind(&story_id)
+    .bind(user_id)
+    .bind(story_id)
     .bind(&payload.title)
     .bind(&payload.description)
-    .bind(&payload.splash_id)
+    .bind(payload.splash_id)
     .bind(&splash_hex)
-    .bind(&payload.license)
-    .bind(&payload.visibility)
-    .bind(&payload.age_restriction)
+    .bind(payload.license)
+    .bind(payload.visibility)
+    .bind(payload.age_restriction)
     .bind(&payload.category)
-    .bind(&payload.disable_toc)
-    .bind(&payload.disable_comments)
-    .bind(&payload.disable_public_revision_history)
+    .bind(payload.disable_toc)
+    .bind(payload.disable_comments)
+    .bind(payload.disable_public_revision_history)
     .bind(&payload.seo_title)
     .bind(&payload.seo_description)
     .bind(&payload.canonical_url)
-    .bind(&payload.preview_image)
+    .bind(payload.preview_image)
     .bind(&payload.tags)
     .execute(&mut *txn)
     .await
@@ -317,9 +317,9 @@ WHERE id = $1
         assert_eq!(result.age_restriction, StoryAgeRestriction::NotRated as i16);
         assert_eq!(result.category, StoryCategory::Others.to_string());
 
-        assert_eq!(result.disable_toc, false);
-        assert_eq!(result.disable_comments, false);
-        assert_eq!(result.disable_public_revision_history, false);
+        assert!(!result.disable_toc);
+        assert!(!result.disable_comments);
+        assert!(!result.disable_public_revision_history);
 
         assert!(result.seo_title.is_none());
         assert!(result.seo_description.is_none());
@@ -334,7 +334,7 @@ INSERT INTO assets (key, hex, height, width, user_id)
 VALUES ($1, $2, $3, $4, $5)
 "#,
         )
-        .bind(&asset_key)
+        .bind(asset_key)
         .bind("000000")
         .bind(0)
         .bind(0)
@@ -406,9 +406,9 @@ WHERE id = $1
         assert_eq!(result.age_restriction, StoryAgeRestriction::Rated as i16);
         assert_eq!(result.category, StoryCategory::DIY.to_string());
 
-        assert_eq!(result.disable_toc, true);
-        assert_eq!(result.disable_comments, true);
-        assert_eq!(result.disable_public_revision_history, true);
+        assert!(result.disable_toc);
+        assert!(result.disable_comments);
+        assert!(result.disable_public_revision_history);
 
         assert_eq!(result.seo_title.unwrap(), "New SEO title".to_string());
         assert_eq!(

@@ -2,6 +2,7 @@
 
 import { clsx } from "clsx";
 import { useSetAtom as use_set_atom } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai/index";
 import React from "react";
 
 import Divider from "~/components/divider";
@@ -14,7 +15,10 @@ import SidebarExpandIcon from "~/icons/sidebar-expand";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 
-import { sidebars_collapsed_atom } from "../../../atoms";
+import {
+  overflowing_figures_atom,
+  sidebars_collapsed_atom
+} from "../../../atoms";
 import toolbar_styles from "../toolbar.module.scss";
 import ToolbarAlignmentItem from "./alignment";
 import styles from "./content.module.scss";
@@ -25,6 +29,7 @@ import ToolbarTextStyleItem from "./text-style";
 const SuspendedEditorToolbarContent = (): React.ReactElement => {
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
+  const overflowing_figures = use_atom_value(overflowing_figures_atom);
   const set_sidebars_collapsed = use_set_atom(sidebars_collapsed_atom);
 
   return (
@@ -51,6 +56,7 @@ const SuspendedEditorToolbarContent = (): React.ReactElement => {
                 toolbar_styles.x,
                 toolbar_styles.button
               )}
+              disabled={Boolean(overflowing_figures.size)}
               onClick={(): void => set_sidebars_collapsed(false)}
               size={"lg"}
               variant={"ghost"}

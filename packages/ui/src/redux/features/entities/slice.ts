@@ -44,10 +44,12 @@ interface EntitiesIntegralState {
 interface EntitiesSelfState {
   self_block_count: number;
   self_comment_count: number;
+  self_contributable_story_count: number;
   self_deleted_draft_count: number;
   self_deleted_story_count: number;
   self_followed_tag_count: number;
   self_mute_count: number;
+  self_pending_collaboration_request_count: number;
   self_pending_draft_count: number;
   self_pending_friend_request_count: number;
   self_published_story_count: number;
@@ -59,39 +61,41 @@ export type EntitiesState = EntitiesPredicateState &
   EntitiesSelfState & { rate_limits: Record<string, boolean> };
 
 export const entities_initial_state: EntitiesState = {
-  blocks: /*                           */ {},
-  bookmarks: /*                        */ {},
-  comment_like_counts: /*              */ {},
-  comment_reply_counts: /*             */ {},
-  followed_tags: /*                    */ {},
-  follower_counts: /*                  */ {},
-  followers: /*                        */ {},
-  following: /*                        */ {},
-  following_counts: /*                 */ {},
-  friend_counts: /*                    */ {},
-  friends: /*                          */ {},
-  liked_comments: /*                   */ {},
-  liked_replies: /*                    */ {},
-  liked_stories: /*                    */ {},
-  mutes: /*                            */ {},
-  reply_like_counts: /*                */ {},
-  sent_requests: /*                    */ {},
-  story_comment_counts: /*             */ {},
-  story_hidden_comment_counts: /*      */ {},
-  story_like_counts: /*                */ {},
-  subscriptions: /*                    */ {},
-  tag_follower_counts: /*              */ {},
-  self_block_count: /*                 */ 0,
-  self_comment_count: /*               */ 0,
-  self_deleted_draft_count: /*         */ 0,
-  self_deleted_story_count: /*         */ 0,
-  self_followed_tag_count: /*          */ 0,
-  self_mute_count: /*                  */ 0,
-  self_pending_draft_count: /*         */ 0,
-  self_pending_friend_request_count: /**/ 0,
-  self_published_story_count: /*       */ 0,
-  self_reply_count: /*                 */ 0,
-  rate_limits: /*                      */ {}
+  blocks: /*                                  */ {},
+  bookmarks: /*                               */ {},
+  comment_like_counts: /*                     */ {},
+  comment_reply_counts: /*                    */ {},
+  followed_tags: /*                           */ {},
+  follower_counts: /*                         */ {},
+  followers: /*                               */ {},
+  following: /*                               */ {},
+  following_counts: /*                        */ {},
+  friend_counts: /*                           */ {},
+  friends: /*                                 */ {},
+  liked_comments: /*                          */ {},
+  liked_replies: /*                           */ {},
+  liked_stories: /*                           */ {},
+  mutes: /*                                   */ {},
+  reply_like_counts: /*                       */ {},
+  sent_requests: /*                           */ {},
+  story_comment_counts: /*                    */ {},
+  story_hidden_comment_counts: /*             */ {},
+  story_like_counts: /*                       */ {},
+  subscriptions: /*                           */ {},
+  tag_follower_counts: /*                     */ {},
+  self_block_count: /*                        */ 0,
+  self_comment_count: /*                      */ 0,
+  self_deleted_draft_count: /*                */ 0,
+  self_deleted_story_count: /*                */ 0,
+  self_contributable_story_count: /*          */ 0,
+  self_followed_tag_count: /*                 */ 0,
+  self_mute_count: /*                         */ 0,
+  self_pending_draft_count: /*                */ 0,
+  self_pending_friend_request_count: /*       */ 0,
+  self_pending_collaboration_request_count: /**/ 0,
+  self_published_story_count: /*              */ 0,
+  self_reply_count: /*                        */ 0,
+  rate_limits: /*                             */ {}
 };
 
 export const entities_slice = create_slice({

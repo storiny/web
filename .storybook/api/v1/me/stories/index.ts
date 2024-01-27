@@ -2,6 +2,8 @@ import "./metadata";
 import "./publish";
 import "./recover";
 import "./unpublish";
+import "./stats";
+import "./contributors";
 import { MOCK_STORIES } from "@storiny/ui/src/mocks";
 import { nanoid } from "nanoid";
 

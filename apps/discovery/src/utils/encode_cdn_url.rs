@@ -15,7 +15,11 @@ type HmacSha1 = Hmac<Sha1>;
 /// * `proxy_key` - The private proxy key secret.
 /// * `size` - The desired image size.
 pub fn encode_cdn_url(cdn_url: &str, image_url: &str, proxy_key: &str, size: &str) -> String {
-    let mut mac = HmacSha1::new_from_slice(proxy_key.as_bytes()).unwrap();
+    let mut mac = match HmacSha1::new_from_slice(proxy_key.as_bytes()) {
+        Ok(value) => value,
+        Err(_) => return "".to_string(),
+    };
+
     mac.update(image_url.as_bytes());
 
     let result = mac.finalize();

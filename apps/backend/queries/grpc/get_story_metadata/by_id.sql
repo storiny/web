@@ -24,6 +24,11 @@ SELECT s.id,
 	   s.first_published_at,
 	   -- Joins
 	   "s->document".key      AS "doc_key",
+	   CASE
+		   WHEN "s->contributor".id IS NOT NULL
+			   THEN "s->contributor".role
+		   ELSE 'editor'
+	   END                    AS "role!",
 	   -- User
 	   "s->user".name         AS user_name,
 	   "s->user".username     AS user_username,
@@ -58,21 +63,28 @@ FROM
 		-- Join user
 		INNER JOIN users "s->user"
 				   ON "s->user".id = s.user_id
+		-- Join contributor
+		LEFT OUTER JOIN story_contributors "s->contributor"
+						ON "s->contributor".story_id = s.id
+							AND "s->contributor".user_id = $2
+							AND "s->contributor".accepted_at IS NOT NULL
+							AND "s->contributor".deleted_at IS NULL
 		-- Join draft tags
 		LEFT OUTER JOIN draft_tags AS "s->draft_tags"
 						ON "s->draft_tags".story_id = s.id
 		--
 		-- Join story tags
 		LEFT OUTER JOIN (story_tags AS "s->story_tags"
-		-- Join tags
 		INNER JOIN tags AS "s->story_tags->tag"
-						 ON "s->story_tags->tag".id = "s->story_tags".tag_id)
+						 ON "s->story_tags->tag".id = "s->story_tags".tag_id
+		)
 						ON "s->story_tags".story_id = s.id
 WHERE
 	  s.id = $1
-  AND s.user_id = $2
+  AND (s.user_id = $2 OR "s->contributor".id IS NOT NULL)
 GROUP BY
 	s.id,
+	"s->contributor".id,
 	doc_key,
 	user_name,
 	user_username,

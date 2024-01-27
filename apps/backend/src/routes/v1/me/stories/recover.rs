@@ -53,8 +53,8 @@ WHERE
     AND deleted_at IS NOT NULL
 "#,
     )
-    .bind(&user_id)
-    .bind(&story_id)
+    .bind(user_id)
+    .bind(story_id)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

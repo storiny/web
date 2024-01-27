@@ -174,6 +174,7 @@ const StatusHeader = ({
           className={clsx(styles.x, styles["header-button"])}
           decorator={<PlusIcon />}
           href={"/new"}
+          variant={"ghost"}
         >
           New draft
         </Button>

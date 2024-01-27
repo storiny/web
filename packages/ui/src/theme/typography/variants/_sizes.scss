@@ -152,6 +152,8 @@
     &-slim {
       --t-legible-font-size: var(--font-size-md) !important;
       --t-legible-line-height: 26px !important;
+      --t-legible-font-size-sm: var(--t-legible-font-size) !important;
+      --t-legible-line-height-sm: var(--t-legible-line-height) !important;
     }
 
     /* Used to force regular size */

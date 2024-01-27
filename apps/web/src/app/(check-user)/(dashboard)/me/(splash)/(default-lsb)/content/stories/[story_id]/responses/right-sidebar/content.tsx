@@ -26,11 +26,11 @@ const ContentStoryResponsesRightSidebarContent = (
 
   return is_error ? (
     <ErrorState
-      auto_size
       component_props={{
         button: { loading: is_fetching }
       }}
       retry={refetch}
+      size={"sm"}
       type={get_query_error_type(error)}
     />
   ) : !data || is_loading || is_fetching ? (

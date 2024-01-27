@@ -17,6 +17,20 @@ pub struct Draft {
     #[prost(string, optional, tag="7")]
     pub edited_at: ::core::option::Option<::prost::alloc::string::String>,
 }
+// Story validation request
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ValidateStoryRequest {
+    #[prost(string, tag="1")]
+    pub user_id: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub story_id: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ValidateStoryResponse {
+}
 // Create draft request
 
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -64,6 +78,22 @@ pub struct GetStoriesInfoResponse {
     pub published_story_count: u32,
     #[prost(uint32, tag="2")]
     pub deleted_story_count: u32,
+}
+// Contributions information request
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetContributionsInfoRequest {
+    #[prost(string, tag="1")]
+    pub user_id: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetContributionsInfoResponse {
+    #[prost(uint32, tag="1")]
+    pub contributable_story_count: u32,
+    #[prost(uint32, tag="2")]
+    pub pending_collaboration_request_count: u32,
 }
 // Main story request
 
@@ -140,14 +170,16 @@ pub struct GetStoryResponse {
     #[prost(message, optional, tag="29")]
     pub user: ::core::option::Option<super::super::user_def::v1::ExtendedUser>,
     #[prost(message, repeated, tag="30")]
+    pub contributors: ::prost::alloc::vec::Vec<super::super::user_def::v1::BareUser>,
+    #[prost(message, repeated, tag="31")]
     pub tags: ::prost::alloc::vec::Vec<super::super::tag_def::v1::Tag>,
     /// User specific props
-    #[prost(bool, tag="31")]
-    pub is_bookmarked: bool,
     #[prost(bool, tag="32")]
+    pub is_bookmarked: bool,
+    #[prost(bool, tag="33")]
     pub is_liked: bool,
     /// Reading session token
-    #[prost(string, tag="33")]
+    #[prost(string, tag="34")]
     pub reading_session_token: ::prost::alloc::string::String,
 }
 // Story metadata request
@@ -181,41 +213,43 @@ pub struct GetStoryMetadataResponse {
     pub category: ::prost::alloc::string::String,
     #[prost(string, tag="9")]
     pub user_id: ::prost::alloc::string::String,
-    #[prost(enumeration="StoryAgeRestriction", tag="10")]
+    #[prost(string, tag="10")]
+    pub role: ::prost::alloc::string::String,
+    #[prost(enumeration="StoryAgeRestriction", tag="11")]
     pub age_restriction: i32,
-    #[prost(enumeration="StoryLicense", tag="11")]
+    #[prost(enumeration="StoryLicense", tag="12")]
     pub license: i32,
-    #[prost(enumeration="StoryVisibility", tag="12")]
+    #[prost(enumeration="StoryVisibility", tag="13")]
     pub visibility: i32,
-    #[prost(bool, tag="13")]
-    pub disable_comments: bool,
     #[prost(bool, tag="14")]
-    pub disable_public_revision_history: bool,
+    pub disable_comments: bool,
     #[prost(bool, tag="15")]
+    pub disable_public_revision_history: bool,
+    #[prost(bool, tag="16")]
     pub disable_toc: bool,
     /// SEO
-    #[prost(string, optional, tag="16")]
-    pub canonical_url: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="17")]
-    pub seo_description: ::core::option::Option<::prost::alloc::string::String>,
+    pub canonical_url: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="18")]
-    pub seo_title: ::core::option::Option<::prost::alloc::string::String>,
+    pub seo_description: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="19")]
+    pub seo_title: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="20")]
     pub preview_image: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, tag="20")]
+    #[prost(string, tag="21")]
     pub created_at: ::prost::alloc::string::String,
-    #[prost(string, optional, tag="21")]
-    pub edited_at: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="22")]
-    pub published_at: ::core::option::Option<::prost::alloc::string::String>,
+    pub edited_at: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="23")]
-    pub first_published_at: ::core::option::Option<::prost::alloc::string::String>,
+    pub published_at: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="24")]
+    pub first_published_at: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="25")]
     pub deleted_at: ::core::option::Option<::prost::alloc::string::String>,
     /// Joins
-    #[prost(message, optional, tag="25")]
+    #[prost(message, optional, tag="26")]
     pub user: ::core::option::Option<super::super::user_def::v1::BareUser>,
-    #[prost(message, repeated, tag="26")]
+    #[prost(message, repeated, tag="27")]
     pub tags: ::prost::alloc::vec::Vec<super::super::tag_def::v1::Tag>,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]

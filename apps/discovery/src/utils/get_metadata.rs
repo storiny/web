@@ -226,6 +226,7 @@ impl Opengraph {
             self.image = Some(OpengraphImage::new("".to_string()));
         }
 
+        #[allow(clippy::unwrap_used)]
         self.image.as_mut().unwrap()
     }
 
@@ -269,6 +270,7 @@ impl TwitterCard {
             self.image = Some(TwitterImage::new("".to_string()));
         }
 
+        #[allow(clippy::unwrap_used)]
         self.image.as_mut().unwrap()
     }
 
@@ -371,7 +373,7 @@ impl DocMetadata {
         parse_document(RcDom::default(), ParseOpts::default())
             .from_utf8()
             .read_from(&mut html.as_bytes())
-            .map(|dom| Self::from_dom(dom))
+            .map(Self::from_dom)
     }
 }
 
@@ -461,7 +463,7 @@ fn text_content(handle: &Handle) -> Option<String> {
 
     for child in handle.children.borrow().iter() {
         if let NodeData::Text { ref contents } = child.data {
-            text_content.push_str(&tendril_to_utf8(&contents.borrow()));
+            text_content.push_str(tendril_to_utf8(&contents.borrow()));
         }
     }
 
@@ -488,11 +490,7 @@ fn process_image_src(src: &str, base: &mut Url) -> Option<String> {
                 base.set_path(""); // Remove paths
                 let joined = base.join(src).ok();
 
-                if let Some(joined) = joined {
-                    Some(joined.to_string())
-                } else {
-                    None
-                }
+                joined.map(|joined| joined.to_string())
             } else {
                 None
             }
@@ -543,6 +541,8 @@ pub async fn get_metadata(
         image: if has_opengraph_image || has_twitter_card_image {
             let og_image = doc_metadata.opengraph.image;
             let tc_image = doc_metadata.twitter_card.image;
+
+            #[allow(clippy::unwrap_used)]
             let is_large = if has_twitter_card_image && tc_image.clone().unwrap().is_large {
                 true
             } else if has_opengraph_image {
@@ -557,9 +557,11 @@ pub async fn get_metadata(
                 src: {
                     let src = {
                         if has_opengraph_image {
+                            #[allow(clippy::unwrap_used)]
                             process_image_src(&og_image.clone().unwrap().url, &mut url.clone())
                                 .unwrap_or_default()
                         } else {
+                            #[allow(clippy::unwrap_used)]
                             process_image_src(&tc_image.clone().unwrap().url, &mut url.clone())
                                 .unwrap_or_default()
                         }
@@ -577,18 +579,22 @@ pub async fn get_metadata(
                     }
                 },
                 width: if has_opengraph_image {
+                    #[allow(clippy::unwrap_used)]
                     og_image.clone().unwrap().width
                 } else {
                     None
                 },
                 height: if has_opengraph_image {
+                    #[allow(clippy::unwrap_used)]
                     og_image.clone().unwrap().height
                 } else {
                     None
                 },
                 alt: if has_opengraph_image {
+                    #[allow(clippy::unwrap_used)]
                     og_image.clone().unwrap().alt
                 } else {
+                    #[allow(clippy::unwrap_used)]
                     tc_image.clone().unwrap().alt
                 },
                 is_large,
@@ -596,8 +602,8 @@ pub async fn get_metadata(
         } else {
             None
         },
-        favicon: if doc_metadata.favicon.is_some() {
-            if let Some(src) = process_image_src(&doc_metadata.favicon.unwrap(), &mut url.clone()) {
+        favicon: if let Some(favicon) = doc_metadata.favicon {
+            if let Some(src) = process_image_src(favicon.as_str(), &mut url.clone()) {
                 if skip_encoding_image {
                     Some(src)
                 } else {
@@ -822,7 +828,7 @@ mod tests {
             .create_async()
             .await;
 
-        let result = get_metadata(&config, &server.url().as_str(), true).await;
+        let result = get_metadata(&config, server.url().as_str(), true).await;
 
         assert_eq!(
             result.ok(),
@@ -830,7 +836,7 @@ mod tests {
                 embed_type: "metadata".to_string(),
                 title: "Some title".to_string(),
                 host: "Some site".to_string(),
-                url: format!("{}/", server.url().to_string()),
+                url: format!("{}/", server.url()),
                 description: "Some description".to_string(),
                 image: Some(MetadataImage {
                     src: "https://media.example.com/some.jpg".to_string(),
@@ -872,15 +878,15 @@ mod tests {
             .create_async()
             .await;
 
-        let result = get_metadata(&config, &server.url().as_str(), true).await;
+        let result = get_metadata(&config, server.url().as_str(), true).await;
 
         assert_eq!(
             result.ok(),
             Some(MetadataResult {
                 embed_type: "metadata".to_string(),
                 title: "Some title".to_string(),
-                host: server.host_with_port().split(":").collect::<Vec<_>>()[0].to_string(),
-                url: format!("{}/", server.url().to_string()),
+                host: server.host_with_port().split(':').collect::<Vec<_>>()[0].to_string(),
+                url: format!("{}/", server.url()),
                 description: "Some description".to_string(),
                 image: Some(MetadataImage {
                     src: "https://media.example.com/some.jpg".to_string(),

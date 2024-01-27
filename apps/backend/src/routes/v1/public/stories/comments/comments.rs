@@ -27,9 +27,14 @@ use uuid::Uuid;
 use validator::Validate;
 
 lazy_static! {
-    static ref SORT_REGEX: Regex =
-        Regex::new(r"^(recent|old|(least|most)-(replied|liked))$").unwrap();
-    static ref TYPE_REGEX: Regex = Regex::new(r"^(all|hidden)$").unwrap();
+    static ref SORT_REGEX: Regex = {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"^(recent|old|(least|most)-(replied|liked))$").unwrap()
+    };
+    static ref TYPE_REGEX: Regex = {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"^(all|hidden)$").unwrap()
+    };
 }
 
 #[derive(Serialize, Deserialize, Validate)]
@@ -128,15 +133,15 @@ async fn get(
         .story_id
         .parse::<i64>()
         .map_err(|_| AppError::from("Invalid story ID"))?;
-    let user_id = maybe_user.and_then(|user| Some(user.id())).transpose()?;
+    let user_id = maybe_user.map(|user| user.id()).transpose()?;
 
-    tracing::Span::current().record("user_id", &user_id);
+    tracing::Span::current().record("user_id", user_id);
 
     let sort = query.sort.clone().unwrap_or("recent".to_string());
     let r#type = query.r#type.clone().unwrap_or("all".to_string());
     let search_query = query.query.clone().unwrap_or_default();
     let has_search_query = !search_query.trim().is_empty();
-    let page = query.page.clone().unwrap_or(1) - 1;
+    let page = query.page.unwrap_or(1) - 1;
 
     let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
         r#"
@@ -330,7 +335,7 @@ FROM comments_result
 
     let mut db_query = query_builder
         .build_query_as::<Comment>()
-        .bind(&story_id)
+        .bind(story_id)
         .bind(10_i16)
         .bind((page * 10) as i16);
 

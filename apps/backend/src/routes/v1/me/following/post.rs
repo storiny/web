@@ -77,8 +77,8 @@ SELECT
 WHERE EXISTS (SELECT 1 FROM inserted_relation)
 "#,
     )
-    .bind(&follower_id)
-    .bind(&followed_id)
+    .bind(follower_id)
+    .bind(followed_id)
     .bind(NotificationEntityType::FollowerAdd as i16)
     .execute(&mut *txn)
     .await

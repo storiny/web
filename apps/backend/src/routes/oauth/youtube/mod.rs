@@ -1,9 +1,4 @@
-use actix_web::web;
+mod youtube;
 
 pub mod callback;
-pub mod youtube;
-
-pub fn init_routes(cfg: &mut web::ServiceConfig) {
-    youtube::init_routes(cfg);
-    callback::init_routes(cfg);
-}
+pub use youtube::*;

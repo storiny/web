@@ -113,10 +113,10 @@ WHERE
     AND EXISTS (SELECT 1 FROM inserted_notification)
 "#,
     )
-    .bind(&content)
+    .bind(content)
     .bind(&rendered_content)
-    .bind(&user_id)
-    .bind(&comment_id)
+    .bind(user_id)
+    .bind(comment_id)
     .bind(NotificationEntityType::ReplyAdd as i16)
     .execute(&mut *txn)
     .await

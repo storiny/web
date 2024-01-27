@@ -60,7 +60,7 @@ FROM users
 WHERE id = $1
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .fetch_one(&mut *txn)
     .await?;
 
@@ -82,15 +82,17 @@ WHERE id = $1
 
     let mfa_secret = user.get::<Option<String>, _>("mfa_secret");
 
-    if mfa_secret.is_none() {
-        return Err(ToastErrorResponse::new(
-            None,
-            "2-factor authentication has not been requested for your account",
-        )
-        .into());
-    }
+    let mfa_secret = match mfa_secret {
+        Some(value) => value,
+        None => {
+            return Err(ToastErrorResponse::new(
+                None,
+                "2-factor authentication has not been requested for your account",
+            )
+            .into());
+        }
+    };
 
-    let mfa_secret = mfa_secret.unwrap();
     let secret_as_bytes = Secret::Encoded(mfa_secret).to_bytes().map_err(|error| {
         AppError::InternalError(format!("unable to parse totp secret: {error:?}"))
     })?;
@@ -137,7 +139,7 @@ SELECT
     UNNEST($2::TEXT[]), $1
 "#,
     )
-    .bind(&user_id)
+    .bind(user_id)
     .bind(&recovery_codes[..])
     .execute(&mut *txn)
     .await?

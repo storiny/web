@@ -83,8 +83,10 @@ pub async fn start_grpc_server(
                     .accept_compressed(CompressionEncoding::Gzip),
                 )
         } else {
+            #[allow(clippy::expect_used)]
             let cert = std::fs::read_to_string("certs/grpc-server.pem")
                 .expect("cannot read `certs/grpc-server.pem`");
+            #[allow(clippy::expect_used)]
             let key = std::fs::read_to_string("certs/grpc-server.key")
                 .expect("cannot read `certs/grpc-server.key`");
 
@@ -96,21 +98,26 @@ pub async fn start_grpc_server(
                     db_pool,
                 },
                 move |req: Request<()>| {
-                    let auth_token: MetadataValue<_> = format!("Bearer {secret_token}")
+                    let auth_token: MetadataValue<_> = match format!("Bearer {secret_token}")
                         .parse()
-                        .expect("unable to parse the auth token");
+                    {
+                        Ok(value) => value,
+                        Err(_) => return Err(Status::unauthenticated("missing_client_auth_token")),
+                    };
 
                     check_auth(auth_token, req)
                 },
             );
 
+            #[allow(clippy::expect_used)]
             tonic::transport::Server::builder()
                 .layer(layer)
-                .tls_config(ServerTlsConfig::new().identity(Identity::from_pem(&cert, &key)))
+                .tls_config(ServerTlsConfig::new().identity(Identity::from_pem(cert, key)))
                 .expect("unable to apply the tls config")
                 .add_service(api_service)
         };
 
+        #[allow(clippy::expect_used)]
         builder
             .add_service(
                 health_service

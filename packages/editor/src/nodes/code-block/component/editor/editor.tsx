@@ -18,11 +18,15 @@ import Tooltip from "~/components/tooltip";
 import Typography from "~/components/typography";
 import TerminalIcon from "~/icons/terminal";
 import WarningIcon from "~/icons/warning";
-import { select_theme } from "~/redux/features";
+import { select_resolved_theme } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 
-import { awareness_atom, undo_manager_atom } from "../../../../atoms";
+import {
+  awareness_atom,
+  story_metadata_atom,
+  undo_manager_atom
+} from "../../../../atoms";
 import { $is_code_block_node } from "../../code-block";
 import CopyCodeAction from "./components/copy-code-action";
 import CodeBlockTitle from "./components/title";
@@ -49,7 +53,8 @@ const CodeBlockEditor = ({
   const code_block_id = React.useId();
   const undo_manager = use_atom_value(undo_manager_atom);
   const awareness = use_atom_value(awareness_atom);
-  const theme = use_app_selector(select_theme);
+  const story = use_atom_value(story_metadata_atom);
+  const theme = use_app_selector(select_resolved_theme);
   const enable_code_gutters = use_app_selector(
     (state) => state.preferences.enable_code_gutters
   );
@@ -58,7 +63,8 @@ const CodeBlockEditor = ({
   const ref = React.useRef<HTMLDivElement | null>(null);
   const [view, set_view] = React.useState<EditorView | null>(null);
   const mounted_ref = React.useRef<boolean>(false);
-  const read_only_ref = React.useRef<boolean>(!editor.isEditable());
+  const is_reader = story.role === "reader";
+  const is_viewer = story.role === "viewer";
   const [loading, set_loading] = React.useState<boolean>(editor.isEditable());
   const [language_status, set_language_status] = React.useState<
     "loading" | "loaded" | "error"
@@ -123,11 +129,13 @@ const CodeBlockEditor = ({
     if (view !== null) {
       view.dispatch({
         effects: theme_compartment.reconfigure(
-          theme === "light" ? CODE_BLOCK_LIGHT_THEME : CODE_BLOCK_DARK_THEME
+          (theme === "light" ? CODE_BLOCK_LIGHT_THEME : CODE_BLOCK_DARK_THEME)(
+            is_reader || is_viewer
+          )
         )
       });
     }
-  }, [theme, theme_compartment, view]);
+  }, [is_reader, is_viewer, theme, theme_compartment, view]);
 
   // Listen for code gutter preference changes
   React.useEffect(() => {
@@ -144,6 +152,11 @@ const CodeBlockEditor = ({
   React.useEffect(() => {
     if (view !== null) {
       if (language !== null) {
+        if (!(language in CODE_BLOCK_LANGUAGE_MAP)) {
+          set_language_status("loaded");
+          return update_language("none");
+        }
+
         set_language_status("loading");
 
         get_language_support(language as keyof typeof CODE_BLOCK_LANGUAGE_MAP)
@@ -165,7 +178,7 @@ const CodeBlockEditor = ({
         });
       }
     }
-  }, [language, language_compartment, view]);
+  }, [language, language_compartment, update_language, view]);
 
   React.useEffect(() => {
     if (mounted_ref.current) {
@@ -179,16 +192,21 @@ const CodeBlockEditor = ({
       ...common_extensions,
       gutter_compartment.of(enable_code_gutters ? gutter_extensions : []),
       theme_compartment.of(
-        theme === "light" ? CODE_BLOCK_LIGHT_THEME : CODE_BLOCK_DARK_THEME
+        (theme === "light" ? CODE_BLOCK_LIGHT_THEME : CODE_BLOCK_DARK_THEME)(
+          is_reader || is_viewer
+        )
       ),
       language_compartment.of([]),
       wrap_compartment.of([])
     ];
 
-    if (read_only_ref.current) {
-      extensions.push(
-        ...[EditorState.readOnly.of(true), EditorView.editable.of(false)]
-      );
+    const read_only_extensions: Extension[] = [
+      EditorState.readOnly.of(true),
+      EditorView.editable.of(false)
+    ];
+
+    if (is_reader) {
+      extensions.push(...read_only_extensions);
 
       set_view(
         new EditorView({
@@ -215,9 +233,12 @@ const CodeBlockEditor = ({
           make_editor_editable
         });
 
-        extensions.push(
-          ...[
-            ...editable_extensions,
+        extensions.push(...editable_extensions);
+
+        if (is_viewer) {
+          extensions.push(...read_only_extensions);
+        } else {
+          extensions.push(
             EditorView.updateListener.of((update: ViewUpdate) => {
               if (update.focusChanged) {
                 if (update.view.hasFocus) {
@@ -252,8 +273,8 @@ const CodeBlockEditor = ({
                 }
               }
             })
-          ]
-        );
+          );
+        }
 
         set_view(
           new EditorView({
@@ -283,7 +304,9 @@ const CodeBlockEditor = ({
     theme_compartment,
     wrap_compartment,
     language_compartment,
-    gutter_compartment
+    gutter_compartment,
+    is_reader,
+    is_viewer
   ]);
 
   return (
@@ -304,7 +327,7 @@ const CodeBlockEditor = ({
           <div className={clsx(css["flex-center"], styles.header)}>
             <div className={clsx(css.flex, styles.info)}>
               <span className={clsx(css["flex-center"], styles.icon)}>
-                {read_only_ref.current ? (
+                {is_reader ? (
                   language_status === "loading" ? (
                     <Spinner size={"sm"} />
                   ) : language_status === "error" ? (
@@ -320,12 +343,12 @@ const CodeBlockEditor = ({
               </span>
               <CodeBlockTitle
                 node_key={node_key}
-                read_only={read_only_ref.current}
+                read_only={is_reader || is_viewer}
                 title={title}
               />
             </div>
             <div className={clsx(css["flex-center"], styles.actions)}>
-              {read_only_ref.current ? (
+              {is_reader || is_viewer ? (
                 language === null ||
                 !(language in CODE_BLOCK_LANGUAGE_MAP) ? null : (
                   <>

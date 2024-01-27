@@ -14,19 +14,20 @@
   &::before {
     content: "";
     position: absolute;
-    width: 200vw;
+    width: 100vw;
     height: 100%;
     top: 0;
+    left: 50%;
     z-index: -1;
-    left: -50vw;
     speak: none;
+    transform: translateX(-50%);
     box-shadow: var(--shadow-sm);
     background-color: var(--bg-elevation-sm);
     border-bottom: 1px solid var(--divider);
   }
 
   &.dashboard {
-    @include breakpoints.media("<desktop") {
+    @include breakpoints.media("<=desktop") {
       & .wordmark {
         display: none;
       }

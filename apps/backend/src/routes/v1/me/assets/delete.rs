@@ -54,8 +54,8 @@ WHERE
     AND user_id = $2
 "#,
     )
-    .bind(&asset_id)
-    .bind(&user_id)
+    .bind(asset_id)
+    .bind(user_id)
     .fetch_one(&mut *txn)
     .await
     .map_err(|error| {

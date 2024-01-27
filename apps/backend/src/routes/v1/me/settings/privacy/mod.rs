@@ -2,6 +2,7 @@ pub mod delete_account;
 pub mod disable_account;
 pub mod following_list;
 pub mod friend_list;
+pub mod incoming_collaboration_requests;
 pub mod incoming_friend_requests;
 pub mod private_account;
 pub mod read_history;

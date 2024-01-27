@@ -39,7 +39,8 @@ where
 ///
 /// This should only be called once.
 pub fn init_subscriber(subscriber: impl Subscriber + Sync + Send) {
-    set_global_default(subscriber).expect("Failed to set subscriber");
+    #[allow(clippy::expect_used)]
+    set_global_default(subscriber).expect("failed to set subscriber");
 }
 
 pub fn spawn_blocking_with_tracing<F, R>(f: F) -> JoinHandle<R>
