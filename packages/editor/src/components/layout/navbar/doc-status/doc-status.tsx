@@ -24,7 +24,7 @@ const DOC_STATUS_TOOLTIP_MAP: Partial<Record<TDocStatus, string>> = {
   DOC_STATUS.lifetime_exceeded ||
   DOC_STATUS.deleted ||
   DOC_STATUS.published ||
-  DOC_STATUS.internal /*      */]: "Disconnected"
+  DOC_STATUS.internal_error /**/]: "Disconnected"
 };
 
 const DOC_STATUS_ICON_MAP: Partial<Record<TDocStatus, React.ReactElement>> = {
@@ -36,7 +36,7 @@ const DOC_STATUS_ICON_MAP: Partial<Record<TDocStatus, React.ReactElement>> = {
   DOC_STATUS.lifetime_exceeded ||
   DOC_STATUS.deleted ||
   DOC_STATUS.published ||
-  DOC_STATUS.internal /*      */]: <CloudOffIcon />
+  DOC_STATUS.internal_error /**/]: <CloudOffIcon />
 };
 
 const DocStatus = (): React.ReactElement | null => {

@@ -39,6 +39,8 @@ struct User {
 struct Contributor {
     #[serde(with = "crate::snowflake_id")]
     id: i64,
+    #[serde(with = "crate::snowflake_id")]
+    user_id: i64,
     has_accepted: bool,
     role: String,
     // Joins
@@ -78,7 +80,8 @@ WITH target_story AS (
 contributors AS (
     SELECT
         -- Contributor
-        sc.id AS "id",
+        sc.id,
+        sc.user_id,
         CASE WHEN
             sc.accepted_at IS NOT NULL THEN
                 TRUE
@@ -117,6 +120,7 @@ SELECT
     id,
     role,
     has_accepted,
+    user_id,
     -- This underscore prevents selecting the actual `user` from Postgres
     _user as "user"
 FROM contributors
@@ -162,19 +166,21 @@ mod tests {
         let json = serde_json::from_str::<Vec<Contributor>>(&res_to_string(res).await);
         let list = vec![
             Contributor {
-                id: 7,
+                id: 7_i64,
                 role: "editor".to_string(),
                 has_accepted: true,
                 user: None,
+                user_id: 3_i64,
             },
             Contributor {
-                id: 8,
+                id: 8_i64,
                 role: "editor".to_string(),
                 has_accepted: true,
                 user: None,
+                user_id: 4_i64,
             },
             Contributor {
-                id: 6,
+                id: 6_i64,
                 role: "viewer".to_string(),
                 has_accepted: false,
                 user: Some(sqlx::types::Json::from(User {
@@ -185,6 +191,7 @@ mod tests {
                     avatar_id: None,
                     avatar_hex: None,
                 })),
+                user_id: 2_i64,
             },
         ];
 

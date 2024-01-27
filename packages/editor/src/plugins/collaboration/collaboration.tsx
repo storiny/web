@@ -48,11 +48,20 @@ const CollaborationPlugin = ({
       role,
       color_bg,
       color_fg,
+      avatar_id: user.avatar_id,
+      avatar_hex: user.avatar_hex,
       selection_color: get_user_color(user.id, undefined, 35),
       cursor_type: "default",
       awareness_data
     } as const;
-  }, [awareness_data, role, user.id, user.name]);
+  }, [
+    awareness_data,
+    role,
+    user.id,
+    user.name,
+    user.avatar_id,
+    user.avatar_hex
+  ]);
 
   const [editor] = use_lexical_composer_context();
   const collab_context = use_collaboration_context(local_state);

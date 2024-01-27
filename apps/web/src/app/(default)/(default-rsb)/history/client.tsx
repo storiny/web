@@ -58,7 +58,7 @@ const PageHeader = ({
       as={NextLink}
       check_auth
       className={clsx(css["focus-invert"], styles.x, styles["icon-button"])}
-      href={"/me/privacy"}
+      href={"/me/account/privacy"}
       size={"lg"}
       title={"History settings"}
       variant={"ghost"}

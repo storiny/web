@@ -25,17 +25,25 @@ export const DOC_STATUS = {
   deleted /*           */: 11,
   // The realm has been destroyed as it was active for too long.
   lifetime_exceeded /* */: 12,
+  // The realm is having too many members.
+  overloaded /*        */: 13,
   // The story was not found while joining the realm.
-  join_missing_story /**/: 13,
+  join_missing_story /**/: 14,
   // The join request was rejected because the realm is full.
-  join_realm_full /*   */: 14,
+  join_realm_full /*   */: 15,
   // The join request was rejected because the user is not authorized.
   // The client should be redirected to the login page.
-  join_unauthorized /* */: 15,
+  join_unauthorized /* */: 16,
   // The peer has been disconnected due to inactivity.
-  stale_peer /*        */: 16,
-  // The realm was destroyed for an internal reason.
-  internal /*          */: 0
+  stale_peer /*        */: 17,
+  // The role of the peer has been upgraded from viewer to editor.
+  role_upgraded /*     */: 18,
+  // The role of the peer has been downgraded from editor to viewer.
+  role_downgraded /*   */: 19,
+  // The peer has been removed by the writer of the story.
+  peer_removed /*      */: 20,
+  // The peer was unable to connect due to an internal error.
+  internal_error /*    */: 0
 };
 
 export type DocStatus = (typeof DOC_STATUS)[keyof typeof DOC_STATUS];

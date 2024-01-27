@@ -47,6 +47,7 @@ import { StoryStatus } from "../../editor";
 import DocStatus from "./doc-status";
 import MusicItem from "./music-item";
 import styles from "./navbar.module.scss";
+import ShareItem from "./share-item";
 
 const EditorPresence = dynamic(() => import("./presence"));
 const EditorMenubarItems = dynamic(() => import("./menubar-items"), {
@@ -319,12 +320,13 @@ const EditorNavbar = ({
         <Spacer size={2} />
         {status !== "deleted" ? (
           <React.Fragment>
-            <Button
-              disabled={document_loading || !story.is_writer}
-              variant={"hollow"}
-            >
-              Share
-            </Button>
+            <ShareItem
+              disabled={
+                document_loading ||
+                !story.is_writer ||
+                !is_doc_editable(doc_status)
+              }
+            />
             <Spacer />
           </React.Fragment>
         ) : null}

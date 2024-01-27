@@ -22,8 +22,30 @@ export const CollaborationContext =
     color_fg: "",
     name: "",
     role: "viewer",
-    user_id: ""
+    user_id: "",
+    avatar_id: null,
+    avatar_hex: null
   });
+
+/**
+ * Sets context key-value if they are defined.
+ * @param context The context instance.
+ * @param key The key.
+ * @param value The value at the key.
+ */
+const set_if_defined = <
+  T extends CollaborationContextType,
+  K extends keyof T,
+  V extends T[K]
+>(
+  context: T,
+  key: K,
+  value: V | undefined
+): void => {
+  if (value !== undefined) {
+    context[key] = value;
+  }
+};
 
 /**
  * Hook for using collaboration context
@@ -33,34 +55,30 @@ export const use_collaboration_context = ({
   color_fg,
   color_bg,
   role,
-  user_id
+  user_id,
+  avatar_id,
+  avatar_hex
 }: Partial<
   Pick<
     CollaborationContextType,
-    "user_id" | "name" | "color_bg" | "color_fg" | "role"
+    | "user_id"
+    | "name"
+    | "color_bg"
+    | "color_fg"
+    | "role"
+    | "avatar_id"
+    | "avatar_hex"
   >
 >): CollaborationContextType => {
   const context = React.useContext(CollaborationContext);
 
-  if (user_id !== undefined) {
-    context.user_id = user_id;
-  }
-
-  if (role !== undefined) {
-    context.role = role;
-  }
-
-  if (name !== undefined) {
-    context.name = name;
-  }
-
-  if (color_bg !== undefined) {
-    context.color_bg = color_bg;
-  }
-
-  if (color_fg !== undefined) {
-    context.color_fg = color_fg;
-  }
+  set_if_defined(context, "user_id", user_id);
+  set_if_defined(context, "role", role);
+  set_if_defined(context, "name", name);
+  set_if_defined(context, "color_bg", color_bg);
+  set_if_defined(context, "color_fg", color_fg);
+  set_if_defined(context, "avatar_id", avatar_id);
+  set_if_defined(context, "avatar_hex", avatar_hex);
 
   return context;
 };
