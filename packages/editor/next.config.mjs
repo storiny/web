@@ -14,6 +14,9 @@ const nextConfig = {
   sassOptions: {
     includePaths: [path.join(__dirname, "../ui/src/theme")]
   },
+  experimental: {
+    missingSuspenseWithCSRBailout: false
+  },
   poweredByHeader: false,
   reactStrictMode: true,
   transpilePackages: ["@storiny/ui"]

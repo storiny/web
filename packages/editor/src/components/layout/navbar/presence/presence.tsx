@@ -36,7 +36,7 @@ const Participant = ({
       )}
       hex={presence.avatar_hex}
       label={presence.name}
-      style={{ "--color": presence.color } as React.CSSProperties}
+      style={{ "--color": presence.color_bg } as React.CSSProperties}
     />
   </Tooltip>
 );

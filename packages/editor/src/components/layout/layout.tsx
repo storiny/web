@@ -37,7 +37,7 @@ const EditorLayout = ({
         <React.Fragment>
           {read_only ? <Navbar /> : <EditorNavbar status={status} />}
           <EditorLeftSidebar read_only={read_only} status={status} />
-          <main data-root={"true"}>
+          <main data-editor={"true"} data-root={"true"}>
             {status !== "deleted" && !read_only ? <StoryMetadataBar /> : null}
             {children}
             {status !== "deleted" && !read_only ? <EditorToolbar /> : null}

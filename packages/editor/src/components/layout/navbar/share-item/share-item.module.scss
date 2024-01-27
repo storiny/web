@@ -1,0 +1,54 @@
+@use "breakpoints";
+
+/* Modal content */
+.content {
+  height: 100%;
+
+  @include breakpoints.media(">mobile") {
+    height: 250px;
+  }
+}
+
+.actions {
+  width: 100%;
+  padding-block: 8px;
+  gap: 8px;
+}
+
+.contributor {
+  padding-block: 9px;
+
+  &:first-of-type {
+    padding-top: 0;
+  }
+
+  &:last-of-type {
+    padding-bottom: 0;
+  }
+}
+
+.contributor-actions {
+  min-width: fit-content;
+  gap: 6px;
+}
+
+.avatar {
+  --icon-size: 14px;
+}
+
+.x {
+  &.scroll-area {
+    border: 1px solid var(--divider);
+    border-radius: var(--radius-xs);
+    max-height: 250px;
+    width: 100%;
+  }
+
+  &.viewport {
+    padding: 12px;
+  }
+
+  &.button {
+    height: 34px;
+  }
+}

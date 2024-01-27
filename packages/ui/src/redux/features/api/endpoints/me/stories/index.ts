@@ -1,3 +1,4 @@
+export * from "./contributors";
 export * from "./delete";
 export * from "./get";
 export * from "./metadata";

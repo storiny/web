@@ -21,41 +21,46 @@ export type ProviderEvent =
   | "connection-error"
   | "connection-close"
   | "auth"
-  | "destroy";
+  | "internal-message";
 
 type AnyFunction = (...args: any) => any;
 
+export type ProviderEventHandler<N extends ProviderEvent> = N extends
+  | "sync"
+  | "synced"
+  ? (is_synced: boolean) => void
+  : N extends "auth"
+    ? (reason: "forbidden") => void
+    : N extends "internal-message"
+      ? <S extends "destroy" | "role_update" | "peer_remove">(
+          slug: S,
+          reason: S extends "destroy"
+            ?
+                | "story_published"
+                | "story_unpublished"
+                | "story_deleted"
+                | "doc_overload"
+                | "lifetime_exceeded"
+                | "internal"
+            : string
+        ) => void
+      : N extends "status"
+        ? (arg: { status: "connecting" | "connected" | "disconnected" }) => void
+        : N extends "update"
+          ? (arg: unknown) => void
+          : N extends "reload"
+            ? (doc: Doc) => void
+            : N extends "connection-error"
+              ? (event: Event) => void
+              : N extends "connection-close"
+                ? (event: CloseEvent) => void
+                : N extends "stale"
+                  ? () => void
+                  : AnyFunction;
+
 type ProviderEventHandle = <N extends ProviderEvent>(
   name: N,
-  fn: N extends "sync" | "synced"
-    ? (is_synced: boolean) => void
-    : N extends "auth"
-      ? (reason: "forbidden") => void
-      : N extends "destroy"
-        ? (
-            reason:
-              | "story_published"
-              | "story_unpublished"
-              | "story_deleted"
-              | "doc_overload"
-              | "lifetime_exceeded"
-              | "internal"
-          ) => void
-        : N extends "status"
-          ? (arg: {
-              status: "connecting" | "connected" | "disconnected";
-            }) => void
-          : N extends "update"
-            ? (arg: unknown) => void
-            : N extends "reload"
-              ? (doc: Doc) => void
-              : N extends "connection-error"
-                ? (event: Event) => void
-                : N extends "connection-close"
-                  ? (event: CloseEvent) => void
-                  : N extends "stale"
-                    ? () => void
-                    : AnyFunction
+  fn: ProviderEventHandler<N>
 ) => void;
 
 type MessageHandler = (
@@ -159,8 +164,8 @@ MESSAGE_HANDLERS[Message.AUTH] = (_, decoder, provider): void => {
  */
 MESSAGE_HANDLERS[Message.INTERNAL] = (_, decoder, provider): void => {
   const event_message = decoding.readVarString(decoder);
-  const reason = event_message.split(":")[1] || event_message;
-  provider.emit("destroy", [reason]);
+  const [slug, reason] = event_message.split(":");
+  provider.emit("internal-message", [slug, reason ?? event_message]);
   provider.destroy();
 };
 
@@ -221,6 +226,8 @@ const setup_ws = (provider: WebsocketProvider): void => {
       provider.ws = null;
       provider.wsconnecting = false;
 
+      const is_storybook = process.env.STORYBOOK_FLAG === "1";
+
       if (provider.wsconnected) {
         provider.wsconnected = false;
         provider.synced = false;
@@ -243,7 +250,7 @@ const setup_ws = (provider: WebsocketProvider): void => {
         // server.
       } else if (
         (event.code < 3000 && event.code !== 1006) ||
-        process.env.NODE_ENV === "development"
+        (process.env.NODE_ENV === "development" && !is_storybook)
       ) {
         provider.ws_unsuccessful_reconnects++;
       }
@@ -251,7 +258,7 @@ const setup_ws = (provider: WebsocketProvider): void => {
       // Do not reconnect for client or internal server sent errors.
       if (
         (event.code < 3000 && event.code !== 1006) ||
-        process.env.NODE_ENV === "development"
+        (process.env.NODE_ENV === "development" && !is_storybook)
       ) {
         // Start with no reconnect timeout and increase the timeout by
         // Using exponential backoff starting with 100ms

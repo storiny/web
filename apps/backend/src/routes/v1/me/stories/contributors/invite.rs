@@ -3,6 +3,7 @@ use crate::{
         notification_entity_type::NotificationEntityType,
         resource_limit::ResourceLimit,
         sql_states::SqlState,
+        username_regex::USERNAME_REGEX,
     },
     error::{
         AppError,
@@ -29,6 +30,7 @@ use serde::{
     Deserialize,
     Serialize,
 };
+use sqlx::Row;
 use validator::Validate;
 
 lazy_static! {
@@ -41,23 +43,24 @@ lazy_static! {
 #[derive(Deserialize, Validate)]
 struct Fragments {
     story_id: String,
-    user_id: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
 struct Request {
     #[validate(regex = "ROLE_REGEX")]
     role: String,
+    #[validate(regex = "USERNAME_REGEX")]
+    #[validate(length(min = 3, max = 24, message = "Invalid username length"))]
+    username: String,
 }
 
-#[post("/v1/me/stories/{story_id}/contributors/{user_id}")]
+#[post("/v1/me/stories/{story_id}/contributors")]
 #[tracing::instrument(
-    name = "POST /v1/me/stories/{story_id}/contributors/{user_id}",
+    name = "POST /v1/me/stories/{story_id}/contributors",
     skip_all,
     fields(
         current_user_id = user.id().ok(),
         story_id = %path.story_id,
-        contributor_user_id = %path.user_id,
         payload
     ),
     err
@@ -75,11 +78,6 @@ async fn post(
         .parse::<i64>()
         .map_err(|_| AppError::from("Invalid story ID"))?;
 
-    let contributor_user_id = path
-        .user_id
-        .parse::<i64>()
-        .map_err(|_| AppError::from("Invalid user ID"))?;
-
     if !check_resource_limit(
         &data.redis,
         ResourceLimit::SendCollabRequest,
@@ -95,6 +93,23 @@ async fn post(
 
     let pg_pool = &data.db_pool;
     let mut txn = pg_pool.begin().await?;
+
+    let user_result = sqlx::query(
+        r#"
+SELECT id FROM users
+WHERE username = $1
+"#,
+    )
+    .bind(&payload.username)
+    .fetch_one(&mut *txn)
+    .await
+    .map_err(|error| {
+        if matches!(error, sqlx::Error::RowNotFound) {
+            AppError::ToastError(ToastErrorResponse::new(None, "Unknown user, try again"))
+        } else {
+            AppError::SqlxError(error)
+        }
+    })?;
 
     match sqlx::query(
         r#"                        
@@ -131,7 +146,7 @@ WHERE
 "#,
     )
     .bind(current_user_id)
-    .bind(contributor_user_id)
+    .bind(user_result.get::<i64, _>("id"))
     .bind(story_id)
     .bind(&payload.role)
     .bind(NotificationEntityType::CollabReqReceived as i16)
@@ -163,9 +178,9 @@ WHERE
                     )));
                 }
 
-                // Target story or user is not present in the table.
+                // Target story is not present in the table.
                 if matches!(error_kind, sqlx::error::ErrorKind::ForeignKeyViolation) {
-                    return Err(AppError::from("Story or user does not exist"));
+                    return Err(AppError::from("Story does not exist"));
                 }
 
                 let error_code = db_err.code().unwrap_or_default();
@@ -266,8 +281,9 @@ WHERE id = $1
             .cookie(cookie.unwrap())
             .set_json(Request {
                 role: "editor".to_string(),
+                username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/stories/{}/contributors/{}", 3, 2))
+            .uri(&format!("/v1/me/stories/{}/contributors", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -303,8 +319,9 @@ WHERE id = $1
             .cookie(cookie.unwrap())
             .set_json(Request {
                 role: "editor".to_string(),
+                username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/stories/{}/contributors/{}", 3, 2))
+            .uri(&format!("/v1/me/stories/{}/contributors", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -340,8 +357,9 @@ WHERE id = $1
             .cookie(cookie.unwrap())
             .set_json(Request {
                 role: "editor".to_string(),
+                username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/stories/{}/contributors/{}", 3, 2))
+            .uri(&format!("/v1/me/stories/{}/contributors", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -361,13 +379,14 @@ WHERE id = $1
             .cookie(cookie.unwrap())
             .set_json(Request {
                 role: "editor".to_string(),
+                username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/stories/{}/contributors/{}", 12345, 2))
+            .uri(&format!("/v1/me/stories/{}/contributors", 12345))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Story or user does not exist").await;
+        assert_response_body_text(res, "Story does not exist").await;
 
         Ok(())
     }
@@ -382,13 +401,14 @@ WHERE id = $1
             .cookie(cookie.unwrap())
             .set_json(Request {
                 role: "editor".to_string(),
+                username: "random_user".to_string(),
             })
-            .uri(&format!("/v1/me/stories/{}/contributors/{}", 3, 12345))
+            .uri(&format!("/v1/me/stories/{}/contributors", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Story or user does not exist").await;
+        assert_toast_error_response(res, "Unknown user, try again").await;
 
         Ok(())
     }
@@ -403,8 +423,9 @@ WHERE id = $1
             .cookie(cookie.unwrap())
             .set_json(Request {
                 role: "editor".to_string(),
+                username: "test_user_1".to_string(),
             })
-            .uri(&format!("/v1/me/stories/{}/contributors/{}", 3, 1))
+            .uri(&format!("/v1/me/stories/{}/contributors", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -446,8 +467,9 @@ VALUES (4, $1), (5, $1), (6, $1)
             .cookie(cookie.unwrap())
             .set_json(Request {
                 role: "editor".to_string(),
+                username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/stories/{}/contributors/{}", 3, 2))
+            .uri(&format!("/v1/me/stories/{}/contributors", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -480,8 +502,9 @@ WHERE id = $1
             .cookie(cookie.unwrap())
             .set_json(Request {
                 role: "editor".to_string(),
+                username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/stories/{}/contributors/{}", 3, 2))
+            .uri(&format!("/v1/me/stories/{}/contributors", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -515,8 +538,9 @@ VALUES ($1, $2)
             .cookie(cookie.unwrap())
             .set_json(Request {
                 role: "editor".to_string(),
+                username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/stories/{}/contributors/{}", 3, 2))
+            .uri(&format!("/v1/me/stories/{}/contributors", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -550,8 +574,9 @@ WHERE id = $2
             .cookie(cookie.unwrap())
             .set_json(Request {
                 role: "editor".to_string(),
+                username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/stories/{}/contributors/{}", 3, 2))
+            .uri(&format!("/v1/me/stories/{}/contributors", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -579,8 +604,9 @@ WHERE id = $2
                 .cookie(cookie.unwrap())
                 .set_json(Request {
                     role: "editor".to_string(),
+                    username: "test_user_2".to_string(),
                 })
-                .uri(&format!("/v1/me/stories/{}/contributors/{}", 3, 2))
+                .uri(&format!("/v1/me/stories/{}/contributors", 3))
                 .to_request();
             let res = test::call_service(&app, req).await;
 
@@ -647,8 +673,9 @@ SELECT EXISTS (
                 .cookie(cookie.unwrap())
                 .set_json(Request {
                     role: "editor".to_string(),
+                    username: "test_user_2".to_string(),
                 })
-                .uri(&format!("/v1/me/stories/{}/contributors/{}", 3, 2))
+                .uri(&format!("/v1/me/stories/{}/contributors", 3))
                 .to_request();
             let res = test::call_service(&app, req).await;
 
