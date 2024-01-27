@@ -78,8 +78,8 @@ pub fn md_to_html(md_source: MarkdownSource) -> String {
                 },
             };
 
-            // Can be safely unwrapped unless using MDX
-            to_html_with_options(md_str, &options).unwrap()
+            // Does not panic unless using MDX.
+            to_html_with_options(md_str, &options).unwrap_or_default()
         }
         MarkdownSource::Response(md_str) => {
             let options = Options {
@@ -139,8 +139,8 @@ pub fn md_to_html(md_source: MarkdownSource) -> String {
                 },
             };
 
-            // Can be safely unwrapped unless using MDX.
-            to_html_with_options(md_str, &options).unwrap()
+            // Does not panic unless using MDX.
+            to_html_with_options(md_str, &options).unwrap_or_default()
         }
     }
 }

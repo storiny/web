@@ -2882,24 +2882,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "multer"
-version = "2.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "01acbdc23469fd8fe07ab135923371d5f5a422fbf9c522158677c8eb15bc51c2"
-dependencies = [
- "bytes",
- "encoding_rs",
- "futures-util",
- "http 0.2.9",
- "httparse",
- "log",
- "memchr",
- "mime",
- "spin 0.9.8",
- "version_check",
-]
-
-[[package]]
 name = "mutually_exclusive_features"
 version = "0.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4562,9 +4544,11 @@ dependencies = [
  "async-compression 0.4.5",
  "async-recursion",
  "async-trait",
+ "atomic_refcell",
  "aws-config",
  "aws-sdk-s3",
  "aws-sdk-sesv2",
+ "bytes",
  "chrono",
  "colors-transform",
  "cookie 0.18.0",
@@ -4629,9 +4613,7 @@ dependencies = [
  "uuid",
  "validator",
  "warp",
- "y-sync",
  "yrs",
- "yrs-warp",
 ]
 
 [[package]]
@@ -5506,7 +5488,6 @@ dependencies = [
  "log",
  "mime",
  "mime_guess",
- "multer",
  "percent-encoding",
  "pin-project",
  "rustls-pemfile",
@@ -5863,18 +5844,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "66fee0b777b0f5ac1c69bb06d361268faafa61cd4682ae064a171c16c433e9e4"
 
 [[package]]
-name = "y-sync"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "52e3675a497cde881a71e7e5c2ae1d087dfc7733ddece9b24a9a61408e969d3b"
-dependencies = [
- "futures-util",
- "thiserror",
- "tokio",
- "yrs",
-]
-
-[[package]]
 name = "yaml-rust"
 version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5896,22 +5865,6 @@ dependencies = [
  "smallstr",
  "smallvec",
  "thiserror",
-]
-
-[[package]]
-name = "yrs-warp"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "16cf0f0e44c9e9338a24292253c5f96e996fc9fe5f30039e32c77dc3982082e0"
-dependencies = [
- "futures-util",
- "log",
- "serde",
- "serde_json",
- "tokio",
- "warp",
- "y-sync",
- "yrs",
 ]
 
 [[package]]

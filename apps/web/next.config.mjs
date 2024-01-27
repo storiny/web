@@ -55,9 +55,6 @@ const next_config = {
   sassOptions: {
     includePaths: [path.join(__dirname, "../../packages/ui/src/theme")]
   },
-  experimental: {
-    windowHistorySupport: true
-  },
   poweredByHeader: false,
   reactStrictMode: true,
   webpack: webpack_config,

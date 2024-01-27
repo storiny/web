@@ -1,3 +1,4 @@
+import { DocUserRole } from "@storiny/types";
 import { RelativePosition } from "yjs";
 
 import { WebsocketProvider } from "../websocket";
@@ -7,11 +8,12 @@ export interface UserState {
   avatar_hex: string | null;
   avatar_id: string | null;
   awareness_data: object;
-  color: string;
+  color_bg: string;
+  color_fg: string;
   focus_pos: null | RelativePosition;
   focusing: boolean;
   name: string;
-  role: "editor" | "viewer";
+  role: DocUserRole;
   user_id: string;
 }
 

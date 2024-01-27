@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 #![allow(clippy::module_inception)]
+#![deny(clippy::expect_used, clippy::unwrap_used)]
 //
 #[cfg(target_has_atomic = "ptr")]
 //

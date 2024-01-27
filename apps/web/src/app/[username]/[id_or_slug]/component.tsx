@@ -99,6 +99,21 @@ const generate_json_ld = (story: Props["story"]): Graph => ({
         name: story.user?.name,
         url: `${process.env.NEXT_PUBLIC_WEB_URL}/${story.user?.username}`
       },
+      contributor: (story.contributors || []).map((user) => ({
+        "@type": "Person",
+        alternateName: `@${user.username}`,
+        identifier: user.id,
+        image: user.avatar_id
+          ? {
+              "@type": "ImageObject",
+              height: 64 as unknown as string,
+              url: get_cdn_url(user.avatar_id, ImageSize.W_64),
+              width: 64 as unknown as string
+            }
+          : undefined,
+        name: user.name,
+        url: `${process.env.NEXT_PUBLIC_WEB_URL}/${user.username}`
+      })),
       genre: CATEGORY_LABEL_MAP[story.category],
       license: (
         [
@@ -179,7 +194,7 @@ const Component = (props: Props): React.ReactElement => {
         doc_id={story.id}
         initial_doc={decompress_sync(Uint8Array.from(doc))}
         read_only
-        role={"viewer"}
+        role={"reader"}
         story={story}
       />
       <SplashScreen />

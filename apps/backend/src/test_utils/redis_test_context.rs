@@ -25,6 +25,6 @@ impl TestContext for RedisTestContext {
         let _: String = redis::cmd("FLUSHDB")
             .query_async(&mut conn)
             .await
-            .expect("Failed to FLUSHDB");
+            .expect("failed to FLUSHDB");
     }
 }

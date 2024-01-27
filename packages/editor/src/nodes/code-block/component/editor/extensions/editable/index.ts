@@ -17,12 +17,10 @@ import { lintKeymap as lint_keymap } from "@codemirror/lint";
 import { highlightSelectionMatches as highlight_selection_matches } from "@codemirror/search";
 import { EditorState, Extension } from "@codemirror/state";
 import {
-  crosshairCursor as crosshair_cursor,
   drawSelection as draw_selection,
   dropCursor as drop_cursor,
   EditorView,
-  keymap,
-  rectangularSelection as rectangular_selection
+  keymap
 } from "@codemirror/view";
 import {
   $getNodeByKey as $get_node_by_key,
@@ -125,8 +123,6 @@ export const get_editable_extensions = ({
     bracket_matching(),
     close_brackets(),
     autocompletion({ closeOnBlur: true }),
-    rectangular_selection(),
-    crosshair_cursor(),
     highlight_selection_matches(),
     EditorState.allowMultipleSelections.of(true),
     keymap.of([

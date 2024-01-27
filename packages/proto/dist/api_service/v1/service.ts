@@ -28,6 +28,8 @@ import {
 import {
   CreateDraftRequest,
   CreateDraftResponse,
+  GetContributionsInfoRequest,
+  GetContributionsInfoResponse,
   GetDraftsInfoRequest,
   GetDraftsInfoResponse,
   GetStoriesInfoRequest,
@@ -260,6 +262,18 @@ export const ApiServiceService = {
     responseSerialize: (value: GetStoriesInfoResponse) => Buffer.from(GetStoriesInfoResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetStoriesInfoResponse.decode(value),
   },
+  /** Returns the user's contributions details */
+  getContributionsInfo: {
+    path: "/api_service.v1.ApiService/GetContributionsInfo",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetContributionsInfoRequest) =>
+      Buffer.from(GetContributionsInfoRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetContributionsInfoRequest.decode(value),
+    responseSerialize: (value: GetContributionsInfoResponse) =>
+      Buffer.from(GetContributionsInfoResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetContributionsInfoResponse.decode(value),
+  },
   /** Returns the user's responses details */
   getResponsesInfo: {
     path: "/api_service.v1.ApiService/GetResponsesInfo",
@@ -401,6 +415,8 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getDraftsInfo: handleUnaryCall<GetDraftsInfoRequest, GetDraftsInfoResponse>;
   /** Returns the user's stories details */
   getStoriesInfo: handleUnaryCall<GetStoriesInfoRequest, GetStoriesInfoResponse>;
+  /** Returns the user's contributions details */
+  getContributionsInfo: handleUnaryCall<GetContributionsInfoRequest, GetContributionsInfoResponse>;
   /** Returns the user's responses details */
   getResponsesInfo: handleUnaryCall<GetResponsesInfoRequest, GetResponsesInfoResponse>;
   /** Returns the story's responses details */
@@ -647,6 +663,22 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetStoriesInfoResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the user's contributions details */
+  getContributionsInfo(
+    request: GetContributionsInfoRequest,
+    callback: (error: ServiceError | null, response: GetContributionsInfoResponse) => void,
+  ): ClientUnaryCall;
+  getContributionsInfo(
+    request: GetContributionsInfoRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetContributionsInfoResponse) => void,
+  ): ClientUnaryCall;
+  getContributionsInfo(
+    request: GetContributionsInfoRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetContributionsInfoResponse) => void,
   ): ClientUnaryCall;
   /** Returns the user's responses details */
   getResponsesInfo(

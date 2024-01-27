@@ -5,6 +5,7 @@ use regex::Regex;
 lazy_static! {
     pub static ref PROVIDERS: Vec<Provider> = {
         let json_data = include_bytes!("./providers.json");
+        #[allow(clippy::expect_used)]
         let mut providers: Vec<Provider> =
             serde_json::from_slice(json_data).expect("failed to read providers from the JSON file");
 

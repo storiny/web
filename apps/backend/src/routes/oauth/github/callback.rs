@@ -82,8 +82,7 @@ async fn github_async_http_client(
         // GitHub returns 200 status code for errors, with a JSON body describing the error details.
         // It needs to be mapped to a 400 error code to remain compliant with the OAuth spec.
         // https://github.com/ramosbugs/oauth2-rs/issues/218
-        status_code: if serde_json::from_slice::<GitHubTokenErrorResponse>(&chunks).is_ok()
-        {
+        status_code: if serde_json::from_slice::<GitHubTokenErrorResponse>(&chunks).is_ok() {
             StatusCode::BAD_REQUEST
         } else {
             status_code
@@ -113,7 +112,9 @@ async fn handle_github_oauth_request(
 
     let reqwest_client = &data.reqwest_client;
     let code = AuthorizationCode::new(params.code.clone());
-    let token_res = data.oauth_client_map.github
+    let token_res = data
+        .oauth_client_map
+        .github
         .exchange_code(code)
         .request_async(github_async_http_client)
         .await
@@ -214,20 +215,23 @@ async fn get(
     session: Session,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
-    Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
-        ConnectionTemplate {
-            error: match user.id() {
-                Ok(user_id) => handle_github_oauth_request(&data, &session, &params, user_id)
-                    .await
-                    .err(),
-                Err(error) => Some(ConnectionError::Other(error.to_string())),
-            },
-            provider_icon: GITHUB_LOGO.to_string(),
-            provider_name: "GitHub".to_string(),
-        }
-        .render_once()
-        .unwrap(),
-    ))
+    ConnectionTemplate {
+        error: match user.id() {
+            Ok(user_id) => handle_github_oauth_request(&data, &session, &params, user_id)
+                .await
+                .err(),
+            Err(error) => Some(ConnectionError::Other(error.to_string())),
+        },
+        provider_icon: GITHUB_LOGO.to_string(),
+        provider_name: "GitHub".to_string(),
+    }
+    .render_once()
+    .map(|body| {
+        HttpResponse::Ok()
+            .content_type(ContentType::html())
+            .body(body)
+    })
+    .map_err(|error| AppError::InternalError(error.to_string()))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {

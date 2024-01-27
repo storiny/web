@@ -2,7 +2,7 @@
   position: relative;
   overflow: hidden;
   background: var(--inverted-100);
-  border-radius: 1px;
+  border-radius: var(--radius);
   height: var(--height);
   box-shadow: var(--ridge-slider);
 
@@ -21,8 +21,10 @@
 /* Sizes */
 .lg {
   --height: 6px;
+  --radius: 1px;
 }
 
 .md {
   --height: 4px;
+  --radius: 4px;
 }

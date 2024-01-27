@@ -44,6 +44,8 @@ import {
 import {
   CreateDraftRequest,
   CreateDraftResponse,
+  GetContributionsInfoRequest,
+  GetContributionsInfoResponse,
   GetDraftsInfoRequest,
   GetDraftsInfoResponse,
   GetStoriesInfoRequest,
@@ -136,6 +138,7 @@ export {
   CreateDraftResponse,
   GetCommentResponse,
   GetConnectionSettingsResponse,
+  GetContributionsInfoResponse,
   GetCredentialSettingsResponse,
   GetDraftsInfoResponse,
   GetFollowedTagCountResponse,
@@ -208,6 +211,12 @@ export const get_drafts_info = cache(
 export const get_stories_info = cache(
   promisify<GetStoriesInfoRequest, GetStoriesInfoResponse>(
     global.grpc_client.getStoriesInfo
+  )
+);
+
+export const get_contributions_info = cache(
+  promisify<GetContributionsInfoRequest, GetContributionsInfoResponse>(
+    global.grpc_client.getContributionsInfo
   )
 );
 

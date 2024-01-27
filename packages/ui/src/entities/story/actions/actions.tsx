@@ -20,6 +20,7 @@ import CopyIcon from "~/icons/copy";
 import DotsIcon from "~/icons/dots";
 import EditIcon from "~/icons/edit";
 import EyeOffIcon from "~/icons/eye-off";
+import LogoutIcon from "~/icons/logout";
 import MuteIcon from "~/icons/mute";
 import ReportIcon from "~/icons/report";
 import ShareIcon from "~/icons/share";
@@ -28,11 +29,13 @@ import TrashIcon from "~/icons/trash";
 import UserBlockIcon from "~/icons/user-block";
 import {
   boolean_action,
+  get_contributions_api,
   get_drafts_api,
   get_stories_api,
   select_user,
   use_delete_draft_mutation,
   use_delete_story_mutation,
+  use_leave_story_mutation,
   use_unpublish_story_mutation
 } from "~/redux/features";
 import { select_is_logged_in } from "~/redux/features/auth/selectors";
@@ -43,10 +46,14 @@ import { handle_api_error } from "~/utils/handle-api-error";
 const StoryActions = ({
   story,
   is_draft,
-  is_extended
+  is_extended,
+  is_contributable,
+  overlay
 }: {
+  is_contributable?: boolean;
   is_draft?: boolean;
   is_extended?: boolean;
+  overlay?: boolean;
   story: Story;
 }): React.ReactElement => {
   const toast = use_toast();
@@ -67,6 +74,7 @@ const StoryActions = ({
   const [delete_draft] = use_delete_draft_mutation();
   const [delete_story] = use_delete_story_mutation();
   const [unpublish_story] = use_unpublish_story_mutation();
+  const [leave_story] = use_leave_story_mutation();
 
   const [block_element] = use_confirmation(
     ({ open_confirmation }) => (
@@ -174,7 +182,7 @@ const StoryActions = ({
   );
 
   /**
-   * Deletes a draft
+   * Unpublishes a draft
    */
   const handle_story_unpublish = (): void => {
     unpublish_story({ id: story.id })
@@ -225,23 +233,66 @@ const StoryActions = ({
     }
   );
 
+  /**
+   * Leaves a story
+   */
+  const handle_story_leave = (): void => {
+    leave_story({ id: story.id })
+      .unwrap()
+      .then(() => {
+        toast("You left the story", "success");
+        dispatch(get_contributions_api.util.resetApiState());
+      })
+      .catch((error) =>
+        handle_api_error(error, toast, null, "Could not leave the story")
+      );
+  };
+
+  const [leave_story_element] = use_confirmation(
+    ({ open_confirmation }) => (
+      <MenuItem
+        check_auth
+        decorator={<LogoutIcon />}
+        onSelect={(event): void => {
+          event.preventDefault(); // Do not auto-close the menu
+          event.stopPropagation();
+          open_confirmation();
+        }}
+      >
+        Leave this story
+      </MenuItem>
+    ),
+    {
+      color: "ruby",
+      on_confirm: handle_story_leave,
+      title: "Leave this story?",
+      decorator: <LogoutIcon />,
+      description:
+        "You will not be able to contribute to this story any longer, unless you are invited again."
+    }
+  );
+
   return (
     <Menu
       trigger={
         <IconButton
           aria-label={"More options"}
           auto_size
-          className={clsx(is_mobile && "force-light-mode")}
+          className={clsx(overlay && is_mobile && "force-light-mode")}
           onClick={(event): void => event.stopPropagation()}
           title={"More options"}
-          variant={is_mobile ? "rigid" : "ghost"}
+          variant={overlay && is_mobile ? "rigid" : "ghost"}
         >
           <DotsIcon />
         </IconButton>
       }
     >
       {is_draft ? (
-        delete_draft_element
+        is_contributable ? (
+          leave_story_element
+        ) : (
+          delete_draft_element
+        )
       ) : (
         <React.Fragment>
           <MenuItem
@@ -253,7 +304,7 @@ const StoryActions = ({
                 `${process.env.NEXT_PUBLIC_WEB_URL}/${
                   is_self && current_user
                     ? current_user.username
-                    : story.user?.username || "view"
+                    : story.user?.username || "story"
                 }/${story.slug || story.id}`
               );
             }}
@@ -268,14 +319,14 @@ const StoryActions = ({
                 `${process.env.NEXT_PUBLIC_WEB_URL}/${
                   is_self && current_user
                     ? current_user.username
-                    : story.user?.username || "view"
+                    : story.user?.username || "story"
                 }/${story.slug || story.id}`
               );
             }}
           >
             Copy link to story
           </MenuItem>
-          {!is_self && <Separator />}
+          {!is_self || is_contributable ? <Separator /> : null}
           {is_extended ? (
             <React.Fragment>
               <MenuItem
@@ -309,6 +360,8 @@ const StoryActions = ({
               {unpublish_story_element}
               {delete_story_element}
             </React.Fragment>
+          ) : is_contributable ? (
+            leave_story_element
           ) : is_self ? null : (
             <React.Fragment>
               <ReportModal

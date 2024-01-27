@@ -40,6 +40,8 @@ use crate::{
             story_def::v1::{
                 CreateDraftRequest,
                 CreateDraftResponse,
+                GetContributionsInfoRequest,
+                GetContributionsInfoResponse,
                 GetDraftsInfoRequest,
                 GetDraftsInfoResponse,
                 GetStoriesInfoRequest,
@@ -192,6 +194,13 @@ impl ApiService for GrpcService {
         request: Request<GetStoriesInfoRequest>,
     ) -> Result<Response<GetStoriesInfoResponse>, Status> {
         endpoints::get_stories_info::get_stories_info(self, request).await
+    }
+
+    async fn get_contributions_info(
+        &self,
+        request: Request<GetContributionsInfoRequest>,
+    ) -> Result<Response<GetContributionsInfoResponse>, Status> {
+        endpoints::get_contributions_info::get_contributions_info(self, request).await
     }
 
     async fn get_responses_info(

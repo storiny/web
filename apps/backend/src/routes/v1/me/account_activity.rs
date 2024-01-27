@@ -46,7 +46,7 @@ struct AccountActivity {
 /// * `activity` - Account activity.
 fn get_description_for_activity(activity: &AccountActivity) -> String {
     if activity.description.is_some() {
-        return activity.description.clone().unwrap();
+        return activity.description.clone().unwrap_or_default();
     }
 
     match AccountActivityType::try_from(activity.r#type) {

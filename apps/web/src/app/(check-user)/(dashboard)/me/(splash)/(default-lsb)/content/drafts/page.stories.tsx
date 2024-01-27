@@ -20,7 +20,6 @@ const meta: Meta<typeof ContentDraftsPage> = {
     latest_draft: {
       ...MOCK_STORIES[0],
       edited_at: MOCK_STORIES[0].edited_at || undefined,
-      published_at: MOCK_STORIES[0].published_at || undefined,
       splash_hex: MOCK_STORIES[0].splash_hex || undefined,
       splash_id: MOCK_STORIES[0].splash_id || undefined
     }

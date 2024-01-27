@@ -7,7 +7,7 @@ import CodeBlockComponent from "./component";
 import { CODE_EDITOR_MAX_LENGTH } from "./component/editor/extensions/common";
 
 export interface CodeBlockPayload {
-  content?: YText;
+  content?: YText | string;
   initial_content?: string;
   key?: NodeKey;
   language?: string | null;
@@ -51,7 +51,14 @@ export class CodeBlockNode extends BlockNode {
     this.__language = language || null;
 
     if (content) {
-      this.__content = content;
+      // Content is casted into a string by the `clone` method.
+      if (typeof content === "string") {
+        const text = new YText();
+        text.insert(0, content);
+        this.__content = text;
+      } else {
+        this.__content = content;
+      }
     } else {
       const content = new YText();
 
