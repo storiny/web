@@ -530,6 +530,40 @@ pub mod api_service_client {
             self.inner.unary(req, path, codec).await
         }
         /** *
+ Returns the user's contributions details
+*/
+        pub async fn get_contributions_info(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::super::story_def::v1::GetContributionsInfoRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<
+                super::super::super::story_def::v1::GetContributionsInfoResponse,
+            >,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/api_service.v1.ApiService/GetContributionsInfo",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("api_service.v1.ApiService", "GetContributionsInfo"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        /** *
  Returns the user's responses details
 */
         pub async fn get_responses_info(
@@ -1034,6 +1068,20 @@ pub mod api_service_server {
             >,
         ) -> std::result::Result<
             tonic::Response<super::super::super::story_def::v1::GetStoriesInfoResponse>,
+            tonic::Status,
+        >;
+        /** *
+ Returns the user's contributions details
+*/
+        async fn get_contributions_info(
+            &self,
+            request: tonic::Request<
+                super::super::super::story_def::v1::GetContributionsInfoRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<
+                super::super::super::story_def::v1::GetContributionsInfoResponse,
+            >,
             tonic::Status,
         >;
         /** *
@@ -1911,6 +1959,55 @@ pub mod api_service_server {
                     let fut = async move {
                         let inner = inner.0;
                         let method = GetStoriesInfoSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/api_service.v1.ApiService/GetContributionsInfo" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetContributionsInfoSvc<T: ApiService>(pub Arc<T>);
+                    impl<
+                        T: ApiService,
+                    > tonic::server::UnaryService<
+                        super::super::super::story_def::v1::GetContributionsInfoRequest,
+                    > for GetContributionsInfoSvc<T> {
+                        type Response = super::super::super::story_def::v1::GetContributionsInfoResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<
+                                super::super::super::story_def::v1::GetContributionsInfoRequest,
+                            >,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                (*inner).get_contributions_info(request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = GetContributionsInfoSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

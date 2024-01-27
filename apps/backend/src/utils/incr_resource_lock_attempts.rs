@@ -77,6 +77,7 @@ pub async fn incr_resource_lock_attempts(
             // Increase the expiry if the key already exists with the sufficient amount of
             // incorrect attempts. We use the difference of the incorrect attempts and the maximum
             // limit to compute the backoff duration.
+            #[allow(clippy::unwrap_used)]
             let attempts = current_value.unwrap() - resource_lock.get_max_attempts();
             let next_expiry = get_next_backoff_duration(attempts);
 

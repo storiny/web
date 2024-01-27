@@ -47,6 +47,7 @@ import { StoryStatus } from "../../editor";
 import DocStatus from "./doc-status";
 import MusicItem from "./music-item";
 import styles from "./navbar.module.scss";
+import ShareItem from "./share-item";
 
 const EditorPresence = dynamic(() => import("./presence"));
 const EditorMenubarItems = dynamic(() => import("./menubar-items"), {
@@ -127,7 +128,7 @@ const Publish = ({
     publish_story({ id: story.id, status, word_count: word_count_ref.current })
       .unwrap()
       .then(() =>
-        router.replace(`/${story.user?.username || "view"}/${story.id}`)
+        router.replace(`/${story.user?.username || "story"}/${story.id}`)
       )
       .catch((error) => {
         set_doc_status(DOC_STATUS.connected);
@@ -271,7 +272,11 @@ const EditorNavbar = ({
   return (
     <header className={styles["editor-navbar"]} role={"banner"}>
       <div className={clsx(css["flex-center"], styles["full-height"])}>
-        <EditorMenubar disabled={status === "deleted" || document_loading} />
+        <EditorMenubar
+          disabled={
+            status === "deleted" || document_loading || story.role === "viewer"
+          }
+        />
         {!is_smaller_than_tablet && status !== "deleted" ? (
           <React.Fragment>
             <Tooltip content={"Version history"}>
@@ -315,21 +320,23 @@ const EditorNavbar = ({
         <Spacer size={2} />
         {status !== "deleted" ? (
           <React.Fragment>
-            <Button
-              disabled
-              // TODO: disabled={document_loading}
-              // Share story
-              variant={"hollow"}
-            >
-              Share
-            </Button>
+            <ShareItem
+              disabled={
+                document_loading ||
+                !story.is_writer ||
+                !is_doc_editable(doc_status)
+              }
+            />
             <Spacer />
           </React.Fragment>
         ) : null}
         {status === "deleted" ? (
           <Recover is_draft={!story.published_at} />
         ) : (
-          <Publish disabled={document_loading} status={status} />
+          <Publish
+            disabled={document_loading || !story.is_writer}
+            status={status}
+          />
         )}
       </div>
     </header>

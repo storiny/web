@@ -33,7 +33,7 @@
     "little-state-machine": "^4.8.0",
     "maplibre-gl": "^3.3.0",
     "nanoid": "^4.0.2",
-    "next": "^14.0.4",
+    "next": "14.1",
     "nprogress": "^0.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

@@ -452,7 +452,7 @@ mod tests {
                     let _: String = redis::cmd("FLUSHDB")
                         .query_async(&mut conn)
                         .await
-                        .expect("Failed to FLUSHDB");
+                        .expect("failed to FLUSHDB");
                 },
                 async {
                     delete_s3_objects(&self.s3_client, S3_UPLOADS_BUCKET, None, None)

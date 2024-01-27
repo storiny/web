@@ -63,7 +63,7 @@ pub async fn get_user_id(
         return Err(Status::not_found("Session not found"));
     }
 
-    let user_id = rmp_serde::from_slice::<CacheResponse>(&result.unwrap())
+    let user_id = rmp_serde::from_slice::<CacheResponse>(&result.unwrap_or_default())
         .map_err(|error| {
             // This can happen when we manually insert a key value pair into the session while the
             // user has not logged-in.

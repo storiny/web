@@ -13,7 +13,7 @@ const SplashScreen = (props: SplashScreenProps): React.ReactElement | null => {
   const { className, force_mount, children, ...rest } = props;
   const [visible, set_visible] = React.useState<boolean>(true);
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     set_visible(false);
   }, []);
 

@@ -39,8 +39,13 @@ pub fn get_google_oauth_client(
     BasicClient::new(
         ClientId::new(google_client_id.to_string()),
         Some(ClientSecret::new(google_client_secret.to_string())),
+        #[allow(clippy::unwrap_used)]
         AuthUrl::new("https://accounts.google.com/o/oauth2/v2/auth".to_string()).unwrap(),
+        #[allow(clippy::unwrap_used)]
         Some(TokenUrl::new("https://www.googleapis.com/oauth2/v3/token".to_string()).unwrap()),
     )
-    .set_redirect_uri(RedirectUrl::new(format!("{api_server_url}/{redirect_path}",)).unwrap())
+    .set_redirect_uri(
+        #[allow(clippy::unwrap_used)]
+        RedirectUrl::new(format!("{api_server_url}/{redirect_path}",)).unwrap(),
+    )
 }

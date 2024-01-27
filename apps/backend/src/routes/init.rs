@@ -78,6 +78,11 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::bookmarks::get::init_routes(cfg);
     v1::me::bookmarks::post::init_routes(cfg);
     v1::me::bookmarks::delete::init_routes(cfg);
+    // Me - Collaboration requests
+    v1::me::collaboration_requests::get::init_routes(cfg);
+    v1::me::collaboration_requests::post::init_routes(cfg);
+    v1::me::collaboration_requests::cancel::init_routes(cfg);
+    v1::me::collaboration_requests::delete::init_routes(cfg);
     // Me - Comments
     v1::me::comments::get::init_routes(cfg);
     v1::me::comments::post::init_routes(cfg);
@@ -88,6 +93,8 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::replies::post::init_routes(cfg);
     v1::me::replies::patch::init_routes(cfg);
     v1::me::replies::delete::init_routes(cfg);
+    // Me - Contributions
+    v1::me::contributions::init_routes(cfg);
     // Me - Drafts
     v1::me::drafts::get::init_routes(cfg);
     v1::me::drafts::recover::init_routes(cfg);
@@ -120,6 +127,8 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::gallery::post::init_routes(cfg);
     // Me - History
     v1::me::history::init_routes(cfg);
+    // Me - Leave story
+    v1::me::leave_story::init_routes(cfg);
     // Me - Liked comments
     v1::me::liked_comments::post::init_routes(cfg);
     v1::me::liked_comments::delete::init_routes(cfg);
@@ -171,6 +180,7 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::settings::privacy::following_list::init_routes(cfg);
     v1::me::settings::privacy::friend_list::init_routes(cfg);
     v1::me::settings::privacy::incoming_friend_requests::init_routes(cfg);
+    v1::me::settings::privacy::incoming_collaboration_requests::init_routes(cfg);
     v1::me::settings::privacy::private_account::init_routes(cfg);
     v1::me::settings::privacy::read_history::init_routes(cfg);
     v1::me::settings::privacy::sensitive_content::init_routes(cfg);
@@ -196,6 +206,11 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::stories::unpublish::init_routes(cfg);
     v1::me::stories::delete::init_routes(cfg);
     v1::me::stories::stats::init_routes(cfg);
+    // Me - Stories - Contributors
+    v1::me::stories::contributors::get::init_routes(cfg);
+    v1::me::stories::contributors::invite::init_routes(cfg);
+    v1::me::stories::contributors::update::init_routes(cfg);
+    v1::me::stories::contributors::remove::init_routes(cfg);
     // Me - Subscriptions
     v1::me::subscriptions::post::init_routes(cfg);
     v1::me::subscriptions::delete::init_routes(cfg);

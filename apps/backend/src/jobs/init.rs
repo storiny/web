@@ -81,8 +81,10 @@ pub async fn start_jobs(
     ses_client: SesClient,
     s3_client: S3Client,
 ) {
+    #[allow(clippy::expect_used)]
+    let config = get_app_config().expect("unable to load the environment configuration");
     let state = Arc::new(SharedJobState {
-        config: get_app_config().unwrap(),
+        config,
         redis: redis_pool,
         db_pool,
         ses_client,
@@ -134,8 +136,9 @@ pub async fn start_jobs(
                     .stream(
                         CronStream::new(
                             // Run every night at 2 AM
+                            #[allow(clippy::expect_used)]
                             Schedule::from_str("0 0 02 * * *")
-                                .expect("Unable to parse the cron schedule"),
+                                .expect("unable to parse the cron schedule"),
                         )
                         .timer(TokioTimer)
                         .to_stream(),
@@ -149,8 +152,9 @@ pub async fn start_jobs(
                     .stream(
                         CronStream::new(
                             // Run every month
+                            #[allow(clippy::expect_used)]
                             Schedule::from_str("0 0 0 1 * *")
-                                .expect("Unable to parse the cron schedule"),
+                                .expect("unable to parse the cron schedule"),
                         )
                         .timer(TokioTimer)
                         .to_stream(),
@@ -164,8 +168,9 @@ pub async fn start_jobs(
                     .stream(
                         CronStream::new(
                             // Run every monday
+                            #[allow(clippy::expect_used)]
                             Schedule::from_str("0 0 0 * * 1")
-                                .expect("Unable to parse the cron schedule"),
+                                .expect("unable to parse the cron schedule"),
                         )
                         .timer(TokioTimer)
                         .to_stream(),
@@ -179,8 +184,9 @@ pub async fn start_jobs(
                     .stream(
                         CronStream::new(
                             // Run every tuesday
+                            #[allow(clippy::expect_used)]
                             Schedule::from_str("0 0 0 * * 2")
-                                .expect("Unable to parse the cron schedule"),
+                                .expect("unable to parse the cron schedule"),
                         )
                         .timer(TokioTimer)
                         .to_stream(),

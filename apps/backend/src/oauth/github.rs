@@ -20,10 +20,13 @@ pub fn get_github_oauth_client(
     BasicClient::new(
         ClientId::new(github_client_id.to_string()),
         Some(ClientSecret::new(github_client_secret.to_string())),
+        #[allow(clippy::unwrap_used)]
         AuthUrl::new("https://github.com/login/oauth/authorize".to_string()).unwrap(),
+        #[allow(clippy::unwrap_used)]
         Some(TokenUrl::new("https://github.com/login/oauth/access_token".to_string()).unwrap()),
     )
     .set_redirect_uri(
+        #[allow(clippy::unwrap_used)]
         RedirectUrl::new(format!("{}/{}", api_server_url, "oauth/github/callback")).unwrap(),
     )
 }

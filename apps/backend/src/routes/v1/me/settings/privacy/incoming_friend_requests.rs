@@ -19,7 +19,10 @@ use serde::{
 use validator::Validate;
 
 lazy_static! {
-    static ref FRIEND_REQUESTS_REGEX: Regex = Regex::new(r"^(1|2|3|4)$").unwrap();
+    static ref FRIEND_REQUESTS_REGEX: Regex = {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"^(1|2|3|4)$").unwrap()
+    };
 }
 
 #[derive(Debug, Serialize, Deserialize, Validate)]

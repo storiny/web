@@ -139,7 +139,7 @@ body {
   }
 
   &:not(.footer) {
-    & main[data-root="true"] {
+    & main[data-root="true"]:not([data-editor="true"]) {
       padding-bottom: calc(var(--global-bottom-gutter, 0px) + 196px);
     }
   }

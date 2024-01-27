@@ -7,13 +7,11 @@ import {
   ViewUpdate,
   WidgetType
 } from "@codemirror/view";
-import { ImageSize } from "@storiny/shared";
 import { clsx } from "clsx";
 import { Awareness } from "y-protocols/awareness";
 import * as Y from "yjs";
 
 import css from "~/theme/main.module.scss";
-import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import cursor_styles from "../../utils/sync-cursor-positions/styles.module.scss";
 import styles from "./styles.module.scss";
@@ -25,92 +23,69 @@ const code_block_remote_selections_annotation =
 class CodeBlockRemoteCaretWidget extends WidgetType {
   /**
    * Ctor
-   * @param color User color
    * @param name User name
-   * @param avatar_id User avatar ID
-   * @param avatar_hex User avatar hex
-   *
+   * @param color_bg Background color
+   * @param color_fg Foreground color
+   * @param type Caret type
    */
-  constructor(
-    color: string,
-    name: string,
-    avatar_id: string | null,
-    avatar_hex: string | null
-  ) {
+  constructor(name: string, color_fg: string, color_bg: string, type: string) {
     super();
 
-    this.color = color;
     this.name = name;
-    this.avatar_id = avatar_id;
-    this.avatar_hex = avatar_hex;
+    this.color_fg = color_fg;
+    this.color_bg = color_bg;
+    this.type = type;
   }
 
   /**
-   * User color
+   * Background color
    * @private
    */
-  private readonly color: string;
+  private readonly color_bg: string;
+
+  /**
+   * Foreground color
+   * @private
+   */
+  private readonly color_fg: string;
+
   /**
    * User name
    * @private
    */
   private readonly name: string;
+
   /**
-   * User avatar ID
+   * Caret type
    * @private
    */
-  private readonly avatar_id: string | null;
-  /**
-   * User avatar hex
-   * @private
-   */
-  private readonly avatar_hex: string | null;
+  private readonly type: string;
 
   toDOM(): HTMLElement {
     const caret = document.createElement("span");
     caret.className = styles["selection-caret"];
-    caret.style.setProperty("--color", this.color);
+    caret.style.setProperty("--color-bg", this.color_bg);
+    caret.style.setProperty("--color-fg", this.color_fg);
 
-    const wrapper = document.createElement("span");
-    wrapper.className = clsx(css["flex-center"], cursor_styles.wrapper);
+    if (this.type === "mini") {
+      caret.classList.add(styles.mini);
+    } else {
+      const name = document.createElement("span");
+      name.textContent = this.name;
+      name.className = clsx(css.ellipsis, cursor_styles.name, styles.name);
 
-    if (this.avatar_id) {
-      const avatar = document.createElement("img");
-      avatar.alt = "";
-      avatar.src = get_cdn_url(this.avatar_id, ImageSize.W_32);
-      avatar.className = cursor_styles.avatar;
-      avatar.style.setProperty(
-        "--hex",
-        this.avatar_hex ? `#${this.avatar_hex}` : "transparent"
-      );
-
-      avatar.onload = (): void => {
-        avatar.style.removeProperty("--hex");
-      };
-
-      avatar.onerror = (): void => {
-        avatar.style.display = "none";
-      };
-
-      wrapper.appendChild(avatar);
+      caret.appendChild(name);
     }
-
-    const name = document.createElement("span");
-    name.textContent = this.name;
-    name.className = clsx(css["ellipsis"], css["f-grow"], cursor_styles.name);
-
-    wrapper.appendChild(name);
-    caret.appendChild(wrapper);
 
     return caret;
   }
 
   eq(widget: CodeBlockRemoteCaretWidget): boolean {
-    return widget.color === this.color;
+    return widget.color_bg === this.color_bg && widget.type === this.type;
   }
 
   compare(widget: CodeBlockRemoteCaretWidget): boolean {
-    return widget.color === this.color;
+    return widget.color_bg === this.color_bg && widget.type === this.type;
   }
 
   // eslint-disable-next-line prefer-snakecase/prefer-snakecase
@@ -237,24 +212,26 @@ export class YRemoteSelectionsPluginValue {
             !Y.compareRelativePositions(current_anchor, anchor) ||
             !Y.compareRelativePositions(current_head, head)
           ) {
+            awareness.setLocalStateField("focus_pos", null);
+            awareness.setLocalStateField("anchor_pos", null);
             awareness.setLocalStateField("code_block_cursor", {
               anchor,
               head
             });
           }
-        } else if (
-          local_awareness_state.code_block_cursor != null &&
-          hasFocus
-        ) {
+        } else if (local_awareness_state.code_block_cursor != null) {
           awareness.setLocalStateField("code_block_cursor", null);
         }
       }
 
       const decorations: Range<Decoration>[] = [];
+      const local_client_id = awareness.doc.clientID;
+      const awareness_states = awareness.getStates();
+      const { cursor_type } = awareness_states.get(local_client_id) || {};
 
       // Update decorations (remote selections)
-      awareness.getStates().forEach((state, client_id) => {
-        if (client_id === awareness.doc.clientID) {
+      awareness_states.forEach((state, client_id) => {
+        if (client_id === local_client_id || state.role === "viewer") {
           return;
         }
 
@@ -282,8 +259,7 @@ export class YRemoteSelectionsPluginValue {
           return;
         }
 
-        const { name, color, selection_color, avatar_id, avatar_hex } = state;
-
+        const { name, color_bg, color_fg, selection_color } = state;
         const start = Math.min(anchor.index, head.index);
         const end = Math.max(anchor.index, head.index);
         const start_line = update.view.state.doc.lineAt(start);
@@ -343,10 +319,10 @@ export class YRemoteSelectionsPluginValue {
             side: head.index - anchor.index > 0 ? -1 : 1, // The local cursor should be rendered outside the remote selection.
             block: false,
             widget: new CodeBlockRemoteCaretWidget(
-              color,
               name,
-              avatar_id,
-              avatar_hex
+              color_fg,
+              color_bg,
+              cursor_type
             )
           })
         });

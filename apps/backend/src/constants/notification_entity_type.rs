@@ -19,6 +19,8 @@ pub enum NotificationEntityType {
     StoryLike = 9,
     StoryAddByUser = 10,
     StoryAddByTag = 11,
+    CollabReqAccept = 12,
+    CollabReqReceived = 13,
 }
 
 impl TryFrom<u16> for NotificationEntityType {

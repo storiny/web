@@ -1,3 +1,4 @@
+pub mod contributors;
 pub mod delete;
 pub mod get;
 pub mod metadata;

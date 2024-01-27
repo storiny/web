@@ -1,7 +1,7 @@
 import "server-only";
 
 import Editor from "@storiny/editor";
-import { Story } from "@storiny/types";
+import { DocUserRole, Story } from "@storiny/types";
 import { decompressSync as decompress_sync } from "fflate";
 import { redirect } from "next/navigation";
 import React from "react";
@@ -27,16 +27,21 @@ const Page = async ({
       id_or_slug: doc_id_or_slug,
       user_id
     });
+    const is_writer = user_id === story_metadata_response.user_id;
 
-    if (typeof story_metadata_response.deleted_at !== "undefined") {
+    if (
+      is_writer &&
+      typeof story_metadata_response.deleted_at !== "undefined"
+    ) {
       const doc = await get_doc_by_key(story_metadata_response.doc_key);
       return (
         <Editor
           doc_id={story_metadata_response.id}
           initial_doc={decompress_sync(doc)}
+          is_writer
           role={"editor"}
           status={"deleted"}
-          story={story_metadata_response as Story}
+          story={story_metadata_response as unknown as Story}
         />
       );
     }
@@ -44,13 +49,14 @@ const Page = async ({
     return (
       <Editor
         doc_id={story_metadata_response.id}
-        role={"editor"}
+        is_writer={is_writer}
+        role={story_metadata_response.role as DocUserRole}
         status={
           typeof story_metadata_response.published_at !== "undefined"
             ? "published"
             : "draft"
         }
-        story={story_metadata_response as Story}
+        story={story_metadata_response as unknown as Story}
       />
     );
   } catch (e) {

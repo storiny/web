@@ -1,3 +1,4 @@
+#[allow(clippy::unwrap_used)]
 pub mod grpc_service {
     pub mod v1 {
         include!("../proto/api_service.v1.rs");

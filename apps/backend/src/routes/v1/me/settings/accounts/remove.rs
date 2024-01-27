@@ -29,10 +29,12 @@ use serde::{
 use sqlx::Row;
 use validator::Validate;
 
+// TODO: Modify once we support Apple as an identity provider.
 lazy_static! {
-    // TODO: Uncomment once we support Apple as an identity provider.
-    // static ref VENDOR_REGEX: Regex = Regex::new(r"^(apple|google)$").unwrap();
-    static ref VENDOR_REGEX: Regex = Regex::new(r"^(google)$").unwrap();
+    static ref VENDOR_REGEX: Regex = {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"^(google)$").unwrap()
+    };
 }
 
 #[derive(Debug, Serialize, Deserialize, Validate)]

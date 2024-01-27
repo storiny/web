@@ -6,7 +6,11 @@ import { useAtomValue as use_atom_value } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
+import { use_app_router } from "~/common/utils";
+import Button from "~/components/button";
 import NoSsr from "~/components/no-ssr";
+import ConnectionCloseIcon from "~/icons/connection-close";
+import InfoSquareIcon from "~/icons/info-square";
 
 import { DOC_STATUS, doc_status_atom, DocStatus } from "../../atoms";
 import ReadOnlyPlugin from "../../plugins/read-only";
@@ -70,18 +74,50 @@ const DOC_STATUS_TO_LABEL_MAP: Partial<Record<DocStatus, string>> = {
   [DOC_STATUS.unpublished]: "This story has been unpublished.",
   [DOC_STATUS.deleted]: "This story has been deleted.",
   [DOC_STATUS.disconnected]: "Connection lost",
-  [DOC_STATUS.join_realm_full]:
-    "This story has reached the maximum number of editors.",
+  [DOC_STATUS.join_realm_full | DOC_STATUS.overloaded]:
+    "This story has reached the maximum number of live members.",
   [DOC_STATUS.join_missing_story]: "This story does not exist",
   [DOC_STATUS.join_unauthorized]:
     "You are not authorized to access this story.",
   [DOC_STATUS.doc_corrupted]: "This document has been corrupted",
   [DOC_STATUS.lifetime_exceeded]:
     "This document has been terminated due to inactivity. Reload this window to reconnect.",
-  [DOC_STATUS.internal]:
+  [DOC_STATUS.internal_error]:
     "Unable to connect to the server. Please check your network connection and try again later",
   [DOC_STATUS.stale_peer]:
-    "You have been disconnected due to inactivity. Reload this window to reconnect."
+    "You have been disconnected due to inactivity. Reload this window to reconnect.",
+  [DOC_STATUS.role_upgraded]:
+    "The writer of this story has upgraded your access. You can now make changes to this story.",
+  [DOC_STATUS.role_downgraded]:
+    "The writer of this story has downgraded your access. You can now only view this story.",
+  [DOC_STATUS.peer_removed]: "Your access to this story has been revoked."
+};
+
+const ButtonAction = ({
+  href
+}: {
+  href?: string | undefined;
+}): React.ReactElement => {
+  const router = use_app_router();
+  const [loading, set_loading] = React.useState<boolean>(false);
+
+  return (
+    <Button
+      auto_size
+      loading={loading}
+      onClick={(): void => {
+        set_loading(true);
+
+        if (typeof href === "string") {
+          router.replace(href);
+        } else {
+          window.location.reload();
+        }
+      }}
+    >
+      {typeof href === "string" ? "Home" : "Continue"}
+    </Button>
+  );
 };
 
 const EditorBody = (props: EditorProps): React.ReactElement => {
@@ -90,21 +126,21 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
   const [editor] = use_lexical_composer_context();
   const is_editable = editor.isEditable();
   const doc_status = use_atom_value(doc_status_atom);
+  const show_overlay =
+    !read_only && ![DOC_STATUS.syncing, DOC_STATUS.synced].includes(doc_status);
 
   return (
     <article
       className={clsx(styles.body, read_only && styles["read-only"])}
       data-testid={"editor-container"}
-      {...(!read_only &&
-      ![DOC_STATUS.syncing, DOC_STATUS.synced].includes(doc_status)
+      {...(show_overlay
         ? /* eslint-disable prefer-snakecase/prefer-snakecase */
           {
             style: {
-              pointerEvents: "none",
               userSelect: "none",
-              overflowY: "hidden",
+              overflow: "hidden",
               minHeight: "0px",
-              maxHeight: "calc(100vh - calc(2 * var(--header-height)))"
+              maxHeight: "1px"
             }
           }
         : /* eslint-enable prefer-snakecase/prefer-snakecase */
@@ -113,10 +149,17 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
       {read_only && <StoryHeader />}
       <RichTextPlugin
         ErrorBoundary={EditorErrorBoundary}
-        content_editable={<EditorContentEditable editable={!read_only} />}
-        placeholder={read_only ? null : <EditorPlaceholder />}
+        content_editable={
+          <EditorContentEditable
+            read_only={read_only}
+            style={{ pointerEvents: show_overlay ? "none" : "auto" }}
+          />
+        }
+        placeholder={
+          read_only || role === "viewer" ? null : <EditorPlaceholder />
+        }
       />
-      {read_only ? (
+      {read_only || role === "reader" ? (
         <ReadOnlyPlugin
           initial_doc={initial_doc!}
           reading_session_token={props.story.reading_session_token || ""}
@@ -124,7 +167,6 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
         />
       ) : (
         <React.Fragment>
-          <RegisterTools />
           <NoSsr>
             <CollaborationPlugin
               id={doc_id}
@@ -145,20 +187,33 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
           <ListMaxIndentLevelPlugin />
           <MaxLengthPlugin />
           <MarkdownPlugin />
-          {is_doc_editable(doc_status) && (
+          {is_doc_editable(doc_status) && role !== "viewer" ? (
             <React.Fragment>
+              <RegisterTools />
               <TabFocusPlugin />
               <AutoFocusPlugin />
               <FloatingTextStylePlugin />
               <FloatingLinkEditorPlugin />
             </React.Fragment>
-          )}
+          ) : null}
         </React.Fragment>
       )}
-      {!is_editable || read_only ? <ClickableLinkPlugin /> : null}
-      {!read_only &&
-      ![DOC_STATUS.syncing, DOC_STATUS.synced].includes(doc_status) ? (
+      {!is_editable || read_only || role === "viewer" ? (
+        <ClickableLinkPlugin />
+      ) : null}
+      {show_overlay && (
         <EditorLoader
+          action={
+            [
+              DOC_STATUS.role_downgraded,
+              DOC_STATUS.role_upgraded,
+              DOC_STATUS.peer_removed
+            ].includes(doc_status) ? (
+              <ButtonAction
+                href={doc_status === DOC_STATUS.peer_removed ? "/" : undefined}
+              />
+            ) : null
+          }
           hide_progress={
             ![
               DOC_STATUS.connecting,
@@ -167,24 +222,28 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
               DOC_STATUS.publishing
             ].includes(doc_status)
           }
+          icon={
+            [
+              DOC_STATUS.role_downgraded,
+              DOC_STATUS.role_upgraded,
+              DOC_STATUS.peer_removed,
+              DOC_STATUS.published
+            ].includes(doc_status) ? (
+              <InfoSquareIcon />
+            ) : ![
+                DOC_STATUS.connecting,
+                DOC_STATUS.connected,
+                DOC_STATUS.reconnecting,
+                DOC_STATUS.publishing
+              ].includes(doc_status) ? (
+              <ConnectionCloseIcon />
+            ) : null
+          }
           label={DOC_STATUS_TO_LABEL_MAP[doc_status] || "Internal error"}
           overlay
-          show_icon={
-            ![
-              DOC_STATUS.connecting,
-              DOC_STATUS.connected,
-              DOC_STATUS.reconnecting,
-              DOC_STATUS.publishing
-            ].includes(doc_status)
-          }
         />
-      ) : null}
-      {read_only && (
-        <React.Fragment>
-          <StoryFooter />
-          {/* TODO: <FontSettings /> */}
-        </React.Fragment>
       )}
+      {read_only && <StoryFooter />}
     </article>
   );
 };

@@ -1,3 +1,4 @@
+import { DocUserRole } from "@storiny/types";
 import {
   $getNodeByKey as $get_node_by_key,
   $getRoot as $get_root,
@@ -79,6 +80,7 @@ const handle_normalization_merge_conflicts = (
  * @param dirty_elements Dirty elements
  * @param binding Binding
  * @param provider Provider
+ * @param role The role of the peer
  */
 export const sync_lexical_update_to_yjs = ({
   curr_editor_state,
@@ -88,7 +90,8 @@ export const sync_lexical_update_to_yjs = ({
   dirty_leaves,
   dirty_elements,
   binding,
-  provider
+  provider,
+  role
 }: {
   binding: Binding;
   curr_editor_state: EditorState;
@@ -97,6 +100,7 @@ export const sync_lexical_update_to_yjs = ({
   normalized_nodes: Set<NodeKey>;
   prev_editor_state: EditorState;
   provider: Provider;
+  role: Exclude<DocUserRole, "reader">;
   tags: Set<string>;
 }): void => {
   sync_with_transaction(binding, () => {
@@ -137,14 +141,16 @@ export const sync_lexical_update_to_yjs = ({
         );
       }
 
-      const selection = $get_selection();
-      const prev_selection = prev_editor_state._selection;
-      sync_lexical_selection_to_yjs(
-        binding,
-        provider,
-        prev_selection,
-        selection
-      );
+      if (role !== "viewer") {
+        const selection = $get_selection();
+        const prev_selection = prev_editor_state._selection;
+        sync_lexical_selection_to_yjs(
+          binding,
+          provider,
+          prev_selection,
+          selection
+        );
+      }
     });
   });
 };

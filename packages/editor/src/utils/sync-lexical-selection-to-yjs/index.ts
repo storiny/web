@@ -1,4 +1,5 @@
 import {
+  $isElementNode as $is_element_node,
   $isRangeSelection as $is_range_selection,
   $isTextNode as $is_text_node,
   BaseSelection,
@@ -48,21 +49,24 @@ const create_relative_position = (
     point.type === "element"
   ) {
     const parent = point.getNode();
-    let accumulated_offset = 0;
-    let i = 0;
-    let node = parent.getFirstChild();
 
-    while (node !== null && i++ < offset) {
-      if ($is_text_node(node)) {
-        accumulated_offset += node.getTextContentSize() + 1;
-      } else {
-        accumulated_offset++;
+    if ($is_element_node(parent)) {
+      let accumulated_offset = 0;
+      let i = 0;
+      let node = parent.getFirstChild();
+
+      while (node !== null && i++ < offset) {
+        if ($is_text_node(node)) {
+          accumulated_offset += node.getTextContentSize() + 1;
+        } else {
+          accumulated_offset++;
+        }
+
+        node = node.getNextSibling();
       }
 
-      node = node.getNextSibling();
+      offset = accumulated_offset;
     }
-
-    offset = accumulated_offset;
   }
 
   return create_relative_position_from_type_index(shared_type, offset);

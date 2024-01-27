@@ -17,7 +17,7 @@ exports[`<ModalSidebarItem /> matches snapshot 1`] = `
     <button
       aria-controls="radix-:r0:-content-test"
       aria-selected="false"
-      class="reset flex-center focusable sidebar-item"
+      class="reset focusable sidebar-item"
       data-orientation="horizontal"
       data-radix-collection-item=""
       data-state="inactive"

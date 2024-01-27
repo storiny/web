@@ -61,16 +61,18 @@ async fn post(
         Some(user_id.to_string())
     } else {
         req.connection_info()
-            .realip_remote_addr().map(|ip| ip.to_string())
+            .realip_remote_addr()
+            .map(|ip| ip.to_string())
     };
 
-    if report_limit_identifier.is_none() {
-        // TODO: If the client IP cannot be parsed and the user is not logged-in, we simple
-        // fake the report creation here for now.
-        return Ok(HttpResponse::Created().finish());
-    }
-
-    let report_limit_identifier = report_limit_identifier.unwrap();
+    let report_limit_identifier = match report_limit_identifier {
+        Some(value) => value,
+        None => {
+            // TODO: If the client IP cannot be parsed and the user is not logged-in, we simply
+            // fake the report creation here for now.
+            return Ok(HttpResponse::Created().finish());
+        }
+    };
 
     if !check_report_limit(&data.redis, &report_limit_identifier).await? {
         return Err(ToastErrorResponse::new(

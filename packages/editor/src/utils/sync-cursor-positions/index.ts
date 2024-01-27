@@ -2,7 +2,6 @@ import {
   createDOMRange as create_dom_range,
   createRectsFromDOMRange as create_rects_from_dom_range
 } from "@lexical/selection";
-import { ImageSize } from "@storiny/shared";
 import { clsx } from "clsx";
 import {
   $isLineBreakNode as $is_line_break_node,
@@ -12,7 +11,6 @@ import {
 import { Map as YMap, XmlElement, XmlText } from "yjs";
 
 import css from "~/theme/main.module.scss";
-import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import { Binding } from "../../collaboration/bindings";
 import { Provider } from "../../collaboration/provider";
@@ -31,18 +29,17 @@ export interface CursorSelection {
     key: NodeKey;
     offset: number;
   };
-  name: HTMLSpanElement;
   selection_color: string;
   selections: Array<HTMLElement>;
 }
 
 export interface Cursor {
-  avatar_hex: string | null;
-  avatar_id: string | null;
-  color: string;
+  color_bg: string;
+  color_fg: string;
   name: string;
   selection: null | CursorSelection;
   selection_color: string;
+  type: string;
 }
 
 /**
@@ -52,7 +49,7 @@ export interface Cursor {
 const create_cursor = (
   props: Pick<
     Cursor,
-    "color" | "selection_color" | "name" | "avatar_hex" | "avatar_id"
+    "color_bg" | "color_fg" | "selection_color" | "name" | "type"
   >
 ): Cursor => ({
   ...props,
@@ -107,40 +104,20 @@ const create_cursor_selection = (
   focus_key: NodeKey,
   focus_offset: number
 ): CursorSelection => {
-  const color = cursor.color;
   const caret = document.createElement("span");
   caret.className = styles.caret;
-  caret.style.setProperty("--color", color);
-  const wrapper = document.createElement("span");
-  wrapper.className = clsx(css["flex-center"], styles.wrapper);
+  caret.style.setProperty("--color-bg", cursor.color_bg);
+  caret.style.setProperty("--color-fg", cursor.color_fg);
 
-  if (cursor.avatar_id) {
-    const avatar = document.createElement("img");
-    avatar.alt = "";
-    avatar.src = get_cdn_url(cursor.avatar_id, ImageSize.W_32);
-    avatar.className = styles.avatar;
-    avatar.style.setProperty(
-      "--hex",
-      cursor.avatar_hex ? `#${cursor.avatar_hex}` : "transparent"
-    );
+  if (cursor.type !== "mini") {
+    const name = document.createElement("span");
+    name.textContent = cursor.name;
+    name.className = clsx(css.ellipsis, styles.name);
 
-    avatar.onload = (): void => {
-      avatar.style.removeProperty("--hex");
-    };
-
-    avatar.onerror = (): void => {
-      avatar.style.display = "none";
-    };
-
-    wrapper.appendChild(avatar);
+    caret.appendChild(name);
+  } else {
+    caret.classList.add(styles.mini);
   }
-
-  const name = document.createElement("span");
-  name.textContent = cursor.name;
-  name.className = clsx(css["ellipsis"], css["f-grow"], styles.name);
-
-  wrapper.appendChild(name);
-  caret.appendChild(wrapper);
 
   return {
     anchor: {
@@ -148,13 +125,12 @@ const create_cursor_selection = (
       offset: anchor_offset
     },
     caret,
-    color,
+    color: cursor.color_bg,
     selection_color: cursor.selection_color,
     focus: {
       key: focus_key,
       offset: focus_offset
     },
-    name,
     selections: []
   };
 };
@@ -176,8 +152,8 @@ const update_cursor = (
   const root_element = editor.getRootElement();
   const cursors_container = binding.cursors_container;
   const cursors_container_offset_parent = cursors_container?.offsetParent;
-  const section_rect = document
-    .querySelector("section")
+  const editor_rect = document
+    .querySelector("div[data-editor-content]")
     ?.getBoundingClientRect();
 
   if (
@@ -275,18 +251,21 @@ const update_cursor = (
     selection.style.width = `${selection_rect.width}px`;
 
     if (i === selection_rects_length - 1) {
-      if (presence_child && section_rect) {
+      if (presence_child && editor_rect) {
         const presence_rect = presence_child.getBoundingClientRect();
+
         // Flip horizontally
-        presence_child.classList.toggle(
-          styles.flipped,
+        if (
           presence_rect.right +
             (presence_child.classList.contains(styles.flipped)
-              ? presence_rect.width + 18 // Compensate 12px transform with 6px offset
-              : 0) -
-            section_rect.right >
-            0
-        );
+              ? presence_rect.width + 3
+              : 0) >=
+          editor_rect.right
+        ) {
+          presence_child.classList.add(styles.flipped);
+        } else {
+          presence_child.classList.remove(styles.flipped);
+        }
       }
 
       if (caret.parentNode !== selection) {
@@ -311,12 +290,17 @@ export const sync_cursor_positions = (
   binding: Binding,
   provider: Provider
 ): void => {
-  const awareness_states = Array.from(provider.awareness.getStates());
+  const awareness_states = Array.from(provider.awareness.getStates()).filter(
+    (peer) => peer.role !== "viewer"
+  );
   const local_client_id = binding.client_id;
   const cursors = binding.cursors;
   const editor = binding.editor;
   const node_map = editor._editorState._nodeMap;
   const visited_client_ids = new Set();
+  const [, local_state] =
+    awareness_states.find(([client_id]) => client_id === local_client_id) || [];
+  const cursor_type = local_state?.cursor_type;
 
   for (let i = 0; i < awareness_states.length; i++) {
     const awareness_state = awareness_states[i];
@@ -329,23 +313,28 @@ export const sync_cursor_positions = (
         anchor_pos,
         focus_pos,
         name,
-        color,
+        color_bg,
+        color_fg,
         selection_color,
-        avatar_id,
-        avatar_hex,
         focusing
       } = awareness;
       let selection = null;
       let cursor = cursors.get(client_id);
 
-      if (cursor === undefined) {
+      if (cursor === undefined || cursor.type !== cursor_type) {
+        if (cursor !== undefined) {
+          destroy_cursor(binding, cursor);
+          cursors.delete(client_id);
+        }
+
         cursor = create_cursor({
           name,
-          color,
+          color_bg,
+          color_fg,
           selection_color,
-          avatar_id,
-          avatar_hex
+          type: cursor_type
         });
+
         cursors.set(client_id, cursor);
       }
 

@@ -27,9 +27,14 @@ use uuid::Uuid;
 use validator::Validate;
 
 lazy_static! {
-    static ref SORT_REGEX: Regex =
-        Regex::new(r"^(recent|old|(least|most)-(replied|liked))$").unwrap();
-    static ref TYPE_REGEX: Regex = Regex::new(r"^(all|hidden)$").unwrap();
+    static ref SORT_REGEX: Regex = {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"^(recent|old|(least|most)-(replied|liked))$").unwrap()
+    };
+    static ref TYPE_REGEX: Regex = {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"^(all|hidden)$").unwrap()
+    };
 }
 
 #[derive(Serialize, Deserialize, Validate)]

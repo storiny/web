@@ -18,7 +18,6 @@ use chrono::{
 };
 use futures::future;
 use sqlx::{
-    postgres::PgRow,
     Pool,
     Postgres,
     Row,
@@ -96,17 +95,19 @@ RETURNING key
         // Return a maximum of 999 rows per invocation. (+1) is added to determine whether
         // there are more rows to return.
         .bind((CHUNK_SIZE + 1) as i32)
-        .map(|row: PgRow| {
-            ObjectIdentifier::builder()
-                .set_key(Some(row.get::<Uuid, _>("key").to_string()))
-                .build()
-                // This will never panic as the key is always set.
-                .unwrap()
-        })
         .fetch_all(&mut *txn)
         .await
         .map_err(Box::new)
-        .map_err(|err| JobError::Failed(err))?;
+        .map_err(|err| JobError::Failed(err))?
+        .iter()
+        .filter_map(|row| {
+            ObjectIdentifier::builder()
+                .set_key(Some(row.get::<Uuid, _>("key").to_string()))
+                .build()
+                // This will never error as the key is always set.
+                .ok()
+        })
+        .collect::<Vec<_>>();
 
         debug!("received {} rows from the database", result.len());
 
@@ -194,17 +195,19 @@ RETURNING key
         // Return a maximum of 999 rows per invocation. (+1) is added to determine whether
         // there are more rows to return.
         .bind((CHUNK_SIZE + 1) as i32)
-        .map(|row: PgRow| {
-            ObjectIdentifier::builder()
-                .set_key(Some(row.get::<Uuid, _>("key").to_string()))
-                .build()
-                // This will never panic as the key is always set.
-                .unwrap()
-        })
         .fetch_all(&mut *txn)
         .await
         .map_err(Box::new)
-        .map_err(|err| JobError::Failed(err))?;
+        .map_err(|err| JobError::Failed(err))?
+        .iter()
+        .filter_map(|row| {
+            ObjectIdentifier::builder()
+                .set_key(Some(row.get::<Uuid, _>("key").to_string()))
+                .build()
+                // This will never error as the key is always set.
+                .ok()
+        })
+        .collect::<Vec<_>>();
 
         debug!("received {} rows from the database", result.len());
 

@@ -1,3 +1,15 @@
+use super::{
+    awareness::Awareness,
+    broadcast::BroadcastGroup,
+    connection::{
+        RealmSink,
+        RealmStream,
+    },
+    realm::{
+        Realm,
+        RealmMap,
+    },
+};
 use crate::{
     config::{
         get_app_config,
@@ -8,10 +20,7 @@ use crate::{
         redis_namespaces::RedisNamespace,
         session_cookie::SESSION_COOKIE_NAME,
     },
-    realms::realm::{
-        Realm,
-        RealmMap,
-    },
+    realms::realm::PeerRole,
     utils::{
         extract_session_key_from_cookie::extract_session_key_from_cookie,
         get_user_sessions::UserSession,
@@ -40,6 +49,7 @@ use sqlx::{
 use std::{
     convert::Infallible,
     net::SocketAddr,
+    str::FromStr,
     sync::Arc,
 };
 use strum_macros::Display;
@@ -75,19 +85,11 @@ use warp::{
     Rejection,
     Reply,
 };
-use y_sync::{
-    awareness::Awareness,
-    net::BroadcastGroup,
-};
 use yrs::{
     updates::decoder::Decode,
     Doc,
     Transact,
     Update,
-};
-use yrs_warp::ws::{
-    WarpSink,
-    WarpStream,
 };
 
 /// The maximum number of overflowing messages that are buffered in the memory for the broadcast
@@ -185,7 +187,7 @@ async fn fetch_doc_from_s3(s3_client: &S3Client, doc_key: &str) -> Result<Vec<u8
 }
 
 /// Joins an existing realm or creates a new one for the provided document ID. Returns a tuple
-/// containing of the user ID and the realm reference.
+/// containing of the user ID, the role, and the realm reference.
 ///
 /// * `config` - The environment configuration.
 /// * `story_id` - The document (story) ID.
@@ -194,7 +196,7 @@ async fn fetch_doc_from_s3(s3_client: &S3Client, doc_key: &str) -> Result<Vec<u8
 /// * `db_pool` - The Postgres connection pool.
 /// * `redis_pool` - The Redis connection pool.
 /// * `s3_client` - The S3 client instance.
-#[tracing::instrument(name = "REALM enter_realm", skip_all, fields(story_id), err)]
+#[tracing::instrument(skip_all, fields(story_id), err)]
 async fn enter_realm(
     config: Arc<Config>,
     story_id: i64,
@@ -203,7 +205,7 @@ async fn enter_realm(
     db_pool: Pool<Postgres>,
     redis_pool: RedisPool,
     s3_client: S3Client,
-) -> Result<(i64, Arc<Realm>), EnterRealmError> {
+) -> Result<(i64, PeerRole, Arc<Realm>), EnterRealmError> {
     let user_id = {
         if session_cookie_value.is_none() {
             return Err(EnterRealmError::Unauthorized);
@@ -211,7 +213,7 @@ async fn enter_realm(
 
         let secret_key = Key::from(config.session_secret_key.as_bytes());
         let session_key =
-            extract_session_key_from_cookie(&session_cookie_value.unwrap(), &secret_key)
+            extract_session_key_from_cookie(&session_cookie_value.unwrap_or_default(), &secret_key)
                 .ok_or(EnterRealmError::Unauthorized)?;
 
         let mut redis_conn = redis_pool.get().await.map_err(|error| {
@@ -261,11 +263,29 @@ async fn enter_realm(
 
     let story = sqlx::query(
         r#"
-SELECT id, published_at FROM stories
+WITH maybe_contributor AS (
+    SELECT role
+    FROM story_contributors
+    WHERE
+        story_id = $1
+        AND user_id = $2
+        AND deleted_at IS NULL
+        AND accepted_at IS NOT NULL
+)
+SELECT
+    id,
+    published_at,
+    COALESCE(
+        (SELECT role FROM maybe_contributor), 'editor'
+    ) AS "role"
+FROM stories
 WHERE
     id = $1
-    AND user_id = $2
     AND deleted_at IS NULL
+    AND (
+        user_id = $2
+        OR EXISTS(SELECT 1 FROM maybe_contributor)
+    )
 "#,
     )
     .bind(story_id)
@@ -282,6 +302,10 @@ WHERE
         }
     })?;
 
+    // Resolve the peer role.
+    let role = story.get::<String, _>("role");
+    let role = PeerRole::from_str(role.as_str()).unwrap_or(PeerRole::Viewer);
+
     if let Some(realm) = realm_guard.value() {
         txn.commit().await.map_err(|error| {
             error!("unable to commit the transaction: {error:?}");
@@ -295,7 +319,7 @@ WHERE
 
         debug!("[{story_id}] joining realm…");
 
-        Ok((user_id, realm.clone()))
+        Ok((user_id, role, realm.clone()))
     } else {
         let doc_key = {
             if story
@@ -355,13 +379,14 @@ SELECT
                     }
                 };
 
-                if final_doc_key.is_none() {
-                    error!("unable to resolve the final document key");
+                let final_doc_key = match final_doc_key {
+                    Some(value) => value,
+                    None => {
+                        error!("unable to resolve the final document key");
 
-                    return Err(EnterRealmError::Internal);
-                }
-
-                let final_doc_key = final_doc_key.unwrap();
+                        return Err(EnterRealmError::Internal);
+                    }
+                };
 
                 // Copy the original story data to a new editable document.
                 if let Some(inserted_doc_key) = inserted_doc_key {
@@ -464,7 +489,14 @@ WHERE story_id = $1
         }
 
         let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
-        let bc_group = BroadcastGroup::new(awareness, BUFFER_CAP).await;
+        let bc_group = BroadcastGroup::new(awareness, BUFFER_CAP)
+            .await
+            .map_err(|error| {
+                error!("unable to create a broadcast group: {error:?}");
+
+                EnterRealmError::Internal
+            })?;
+
         let realm = Arc::new(Realm::new(
             realm_map.clone(),
             s3_client.clone(),
@@ -475,7 +507,7 @@ WHERE story_id = $1
 
         realm_guard.insert(realm.clone());
 
-        Ok((user_id, realm))
+        Ok((user_id, role, realm))
     }
 }
 
@@ -502,12 +534,13 @@ async fn peer_handler(
     )
     .await
     {
-        Ok((user_id, realm)) => {
+        Ok((user_id, role, realm)) => {
             let peer_id = Uuid::new_v4();
             let (sink, stream) = ws.split();
-            let sink = Arc::new(Mutex::new(WarpSink::from(sink)));
-            let stream = WarpStream::from(stream);
-            let _ = realm.subscribe(peer_id, user_id, sink, stream).await;
+            let sink = Arc::new(Mutex::new(RealmSink::from(sink)));
+            let stream = RealmStream::from(stream);
+
+            let _ = realm.subscribe(peer_id, user_id, role, sink, stream).await;
         }
         Err(error) => {
             let (mut tx, _) = ws.split();
@@ -523,15 +556,25 @@ async fn peer_handler(
 /// * `db_pool` - The Postgres connection pool.
 /// * `redis_pool` - The Redis connection pool.
 /// * `s3_client` - The S3 client instance.
+#[tracing::instrument(skip_all, err)]
 pub async fn start_realms_server(
     realm_map: RealmMap,
     db_pool: Pool<Postgres>,
     redis_pool: RedisPool,
     s3_client: S3Client,
 ) -> std::io::Result<()> {
-    let config = Arc::new(get_app_config().expect("Unable to load the environment configuration"));
+    #[allow(clippy::expect_used)]
+    let config = Arc::new(get_app_config().expect("unable to load the environment configuration"));
+
     let host = config.realms_host.to_string();
-    let port = config.realms_port.clone().parse::<u16>().unwrap();
+    #[allow(clippy::expect_used)]
+    let port = config
+        .realms_port
+        .clone()
+        .parse::<u16>()
+        .expect("unable to parse the port");
+
+    #[allow(clippy::expect_used)]
     let socket_addr: SocketAddr = format!(
         "{}:{}",
         if config.is_dev { "127.0.0.1" } else { &host },
@@ -581,7 +624,8 @@ pub async fn start_realms_server(
                 },
             ))
         .with({
-            let config = get_app_config().unwrap();
+            #[allow(clippy::expect_used)]
+            let config = get_app_config().expect("unable to read the environment configuration");
 
             if config.is_dev {
                 warp::cors().allow_any_origin()
@@ -595,13 +639,23 @@ pub async fn start_realms_server(
         .with(warp::compression::gzip())
         .recover(handle_rejection);
 
-    let mut stream = signal(SignalKind::terminate()).unwrap();
-    let (_, server) =
-        warp::serve(realms_router).bind_with_graceful_shutdown(socket_addr, async move {
-            stream.recv().await;
-        });
+    match signal(SignalKind::terminate()) {
+        Ok(mut stream) => {
+            let (_, server) =
+                warp::serve(realms_router).bind_with_graceful_shutdown(socket_addr, async move {
+                    stream.recv().await;
+                });
 
-    tokio::task::spawn(server);
+            tokio::task::spawn(server);
+        }
+        Err(error) => {
+            warn!("starting the realms server without graceful shutdown: {error:?}");
+
+            let server = warp::serve(realms_router).bind(socket_addr);
+
+            tokio::task::spawn(server);
+        }
+    };
 
     Ok(())
 }
@@ -705,7 +759,7 @@ pub mod tests {
                     let _: String = redis::cmd("FLUSHDB")
                         .query_async(&mut conn)
                         .await
-                        .expect("Failed to FLUSHDB");
+                        .expect("failed to FLUSHDB");
                 },
                 async {
                     delete_s3_objects(&self.s3_client, S3_DOCS_BUCKET, None, None)
@@ -835,6 +889,7 @@ VALUES ($5, $1)
 
     mod serial {
         use super::*;
+        use crate::realms::realm::PeerRole;
         use std::time::Duration;
         use tokio::time::timeout;
 
@@ -864,6 +919,202 @@ VALUES ($5, $1)
         #[sqlx::test]
         async fn can_accept_authorized_peers(_ctx: &mut RedisTestContext, pool: PgPool) {
             let (endpoint, _, _, _) = init_realms_server_for_test(pool, None, true, false).await;
+            let (mut tx, mut rx) = peer(endpoint).await;
+
+            timeout(Duration::from_secs(10), async {
+                if let Ok(message) = rx.next().await.unwrap() {
+                    assert_eq!(
+                        message.to_string(),
+                        EnterRealmError::MissingStory.to_string()
+                    );
+                }
+            })
+            .await
+            .expect("no message received");
+
+            tx.close().await.unwrap();
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_accept_editors(_ctx: &mut RedisTestContext, pool: PgPool) {
+            let mut conn = pool.acquire().await.unwrap();
+
+            let (endpoint, realm_map, user_id, story_id) =
+                init_realms_server_for_test(pool, None, true, true).await;
+
+            // Change the user of the story.
+            let result = sqlx::query(
+                r#"
+WITH new_user AS (
+    INSERT INTO users (name, username, email)
+    VALUES ('Example user', 'example_user', 'example_user@storiny.com')
+    RETURNING id
+)
+UPDATE stories
+SET user_id = (
+    SELECT id FROM new_user
+)
+WHERE id = $1
+"#,
+            )
+            .bind(story_id)
+            .execute(&mut *conn)
+            .await
+            .unwrap();
+
+            assert_eq!(result.rows_affected(), 1);
+
+            // Insert a contributor with editor role.
+            let result = sqlx::query(
+                r#"
+INSERT INTO story_contributors
+    (user_id, story_id, role, accepted_at)
+VALUES ($1, $2, 'editor', NOW())
+"#,
+            )
+            .bind(user_id)
+            .bind(story_id)
+            .execute(&mut *conn)
+            .await
+            .unwrap();
+
+            assert_eq!(result.rows_affected(), 1);
+
+            let (mut tx, _) = peer(endpoint).await;
+
+            tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+
+            // Realm should be present in the map.
+            let realm = realm_map
+                .async_lock(story_id, AsyncLimit::no_limit())
+                .await
+                .unwrap();
+
+            assert!(realm.value().is_some());
+
+            // Peer should have the correct role.
+            let realm = realm.value().unwrap();
+            let role = realm.get_peer_role(user_id).await.expect("peer not found");
+
+            assert_eq!(role, PeerRole::Editor);
+
+            tx.close().await.unwrap();
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_accept_viewers(_ctx: &mut RedisTestContext, pool: PgPool) {
+            let mut conn = pool.acquire().await.unwrap();
+
+            let (endpoint, realm_map, user_id, story_id) =
+                init_realms_server_for_test(pool, None, true, true).await;
+
+            // Change the user of the story.
+            let result = sqlx::query(
+                r#"
+WITH new_user AS (
+    INSERT INTO users (name, username, email)
+    VALUES ('Example user', 'example_user', 'example_user@storiny.com')
+    RETURNING id
+)
+UPDATE stories
+SET user_id = (
+    SELECT id FROM new_user
+)
+WHERE id = $1
+"#,
+            )
+            .bind(story_id)
+            .execute(&mut *conn)
+            .await
+            .unwrap();
+
+            assert_eq!(result.rows_affected(), 1);
+
+            // Insert a contributor with viewer role.
+            let result = sqlx::query(
+                r#"
+INSERT INTO story_contributors
+    (user_id, story_id, role, accepted_at)
+VALUES ($1, $2, 'viewer', NOW())
+"#,
+            )
+            .bind(user_id)
+            .bind(story_id)
+            .execute(&mut *conn)
+            .await
+            .unwrap();
+
+            assert_eq!(result.rows_affected(), 1);
+
+            let (mut tx, _) = peer(endpoint).await;
+
+            tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+
+            // Realm should be present in the map.
+            let realm = realm_map
+                .async_lock(story_id, AsyncLimit::no_limit())
+                .await
+                .unwrap();
+
+            assert!(realm.value().is_some());
+
+            // Peer should have the correct role.
+            let realm = realm.value().unwrap();
+            let role = realm.get_peer_role(user_id).await.expect("peer not found");
+
+            assert_eq!(role, PeerRole::Viewer);
+
+            tx.close().await.unwrap();
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_reject_pending_contributors(_ctx: &mut RedisTestContext, pool: PgPool) {
+            let mut conn = pool.acquire().await.unwrap();
+
+            let (endpoint, _, user_id, story_id) =
+                init_realms_server_for_test(pool, None, true, true).await;
+
+            // Change the user of the story.
+            let result = sqlx::query(
+                r#"
+WITH new_user AS (
+    INSERT INTO users (name, username, email)
+    VALUES ('Example user', 'example_user', 'example_user@storiny.com')
+    RETURNING id
+)
+UPDATE stories
+SET user_id = (
+    SELECT id FROM new_user
+)
+WHERE id = $1
+"#,
+            )
+            .bind(story_id)
+            .execute(&mut *conn)
+            .await
+            .unwrap();
+
+            assert_eq!(result.rows_affected(), 1);
+
+            // Insert a contributor.
+            let result = sqlx::query(
+                r#"
+INSERT INTO story_contributors
+    (user_id, story_id)
+VALUES ($1, $2)
+"#,
+            )
+            .bind(user_id)
+            .bind(story_id)
+            .execute(&mut *conn)
+            .await
+            .unwrap();
+
+            assert_eq!(result.rows_affected(), 1);
+
             let (mut tx, mut rx) = peer(endpoint).await;
 
             timeout(Duration::from_secs(10), async {

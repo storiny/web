@@ -36,7 +36,7 @@ const Participant = ({
       )}
       hex={presence.avatar_hex}
       label={presence.name}
-      style={{ "--color": presence.color } as React.CSSProperties}
+      style={{ "--color": presence.color_bg } as React.CSSProperties}
     />
   </Tooltip>
 );
@@ -80,7 +80,7 @@ const EditorPresence = (): React.ReactElement => {
       ))}
       {!is_smaller_than_tablet && viewers.length ? (
         <React.Fragment>
-          <Divider orientation={"vertical"} />
+          {Boolean(editors.length) && <Divider orientation={"vertical"} />}
           <AvatarGroup>
             {viewers.map((viewer) => (
               <Participant key={String(viewer.client_id)} presence={viewer} />
