@@ -12,7 +12,7 @@
     "test:e2e:chromium": "dotenv -v E2E_PORT=3000 -v E2E_BROWSER=chromium -- playwright test --project=\"chromium\"",
     "test:e2e:firefox": "dotenv -v E2E_PORT=3000 -v E2E_BROWSER=firefox -- playwright test --project=\"firefox\"",
     "test:e2e:webkit": "dotenv -v E2E_PORT=3000 -v E2E_BROWSER=webkit -- playwright test --project=\"webkit\"",
-    "build:web": "docker build --platform linux/amd64 -t storiny_web ."
+    "build:web": "docker build --platform linux/arm64 -t storiny_web ."
   },
   "workspaces": [
     "apps/*",
