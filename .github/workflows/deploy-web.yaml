@@ -41,7 +41,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           docker build \
-            --platform linux/amd64 \
+            --platform linux/arm64 \
             -t $ECR_REGISTRY/storiny_web:latest .
           docker push $ECR_REGISTRY/storiny_web:latest
           echo "web-image=$ECR_REGISTRY/storiny_web:latest" >> $GITHUB_OUTPUT
