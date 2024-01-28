@@ -27,6 +27,7 @@ RUN yarn install
 
 # Build the project
 COPY --from=builder /app/out/full/ .
+ENV NODE_OPTIONS="--max-old-space-size=5120"
 RUN yarn turbo run build:prod --filter=@storiny/web
 
 # Runner

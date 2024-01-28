@@ -78,7 +78,7 @@ const generate_json_ld = (story: Props["story"]): Graph => ({
         ? {
             "@type": "ImageObject",
             height: 630 as unknown as string,
-            url: get_cdn_url(story.splash_id, ImageSize.W_64),
+            url: get_cdn_url(story.splash_id, ImageSize.W_1440),
             width: 1200 as unknown as string
           }
         : undefined,
