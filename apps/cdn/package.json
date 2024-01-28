@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "docker compose up",
-    "build": "rollup -c && docker build --platform linux/amd64 -t storiny_nginx nginx",
+    "build": "rollup -c && docker build --platform linux/arm64 -t storiny_nginx nginx",
     "rollup": "rollup -c",
     "sync": "aws s3 sync buckets/base s3://base-3939361a --delete --exclude '.DS_Store'",
     "sync:local": "cross-env AWS_ACCESS_KEY_ID=minio_user AWS_SECRET_ACCESS_KEY=minio_pass aws --endpoint-url=http://localhost:9000 s3 sync buckets/base s3://base-3939361a --delete --exclude '.DS_Store'",

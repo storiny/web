@@ -35,7 +35,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           docker build \
-            --platform linux/amd64 \
+            --platform linux/arm64 \
             -f apps/cdn/nginx/Dockerfile \
             -t $ECR_REGISTRY/storiny_nginx:latest apps/cdn/nginx
           docker push $ECR_REGISTRY/storiny_nginx:latest
