@@ -108,8 +108,8 @@ const BannerSettings = (): React.ReactElement => {
               // eslint-disable-next-line prefer-snakecase/prefer-snakecase
               srcSet: [
                 `${get_cdn_url(user.banner_id, ImageSize.W_1440)} 1440w`,
-                `${get_cdn_url(user.banner_id, ImageSize.W_1024)} 1024w`,
-                `${get_cdn_url(user.banner_id, ImageSize.W_860)} 860w`,
+                `${get_cdn_url(user.banner_id, ImageSize.W_1200)} 1200w`,
+                `${get_cdn_url(user.banner_id, ImageSize.W_960)} 960w`,
                 `${get_cdn_url(user.banner_id, ImageSize.W_640)} 640w`,
                 `${get_cdn_url(user.banner_id, ImageSize.W_320)} 320w`
               ].join(",")
