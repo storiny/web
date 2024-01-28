@@ -328,11 +328,11 @@ const ImageComponent = ({
                         sizes: get_image_sizes(layout, images.length, index),
                         // eslint-disable-next-line prefer-snakecase/prefer-snakecase
                         srcSet: [
-                          `${get_cdn_url(image.key, ImageSize.W_2048)} 2048w`,
+                          `${get_cdn_url(image.key, ImageSize.W_2440)} 2440w`,
                           `${get_cdn_url(image.key, ImageSize.W_1920)} 1920w`,
                           `${get_cdn_url(image.key, ImageSize.W_1440)} 1440w`,
-                          `${get_cdn_url(image.key, ImageSize.W_1024)} 1024w`,
-                          `${get_cdn_url(image.key, ImageSize.W_860)} 860w`,
+                          `${get_cdn_url(image.key, ImageSize.W_1200)} 1200w`,
+                          `${get_cdn_url(image.key, ImageSize.W_960)} 960w`,
                           `${get_cdn_url(image.key, ImageSize.W_640)} 640w`,
                           `${get_cdn_url(image.key, ImageSize.W_320)} 320w`
                         ].join(",")

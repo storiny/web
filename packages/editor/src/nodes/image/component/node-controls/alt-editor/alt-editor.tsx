@@ -44,7 +44,7 @@ const ImageAltEditorModal = (
               ].join(","),
               // eslint-disable-next-line prefer-snakecase/prefer-snakecase
               srcSet: [
-                `${get_cdn_url(image.key, ImageSize.W_860)} 860w`,
+                `${get_cdn_url(image.key, ImageSize.W_960)} 960w`,
                 `${get_cdn_url(image.key, ImageSize.W_640)} 640w`,
                 `${get_cdn_url(image.key, ImageSize.W_320)} 320w`
               ].join(",")

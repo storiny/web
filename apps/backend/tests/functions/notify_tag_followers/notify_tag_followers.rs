@@ -8,7 +8,7 @@ mod tests {
         let mut conn = pool.acquire().await?;
 
         sqlx::query(r#"SELECT public.notify_tag_followers($1, $2)"#)
-            .bind(5_i64)
+            .bind(6_i64)
             .bind(NotificationEntityType::StoryAddByTag as i16)
             .execute(&mut *conn)
             .await?;
@@ -16,20 +16,17 @@ mod tests {
         // Notifications should be present in the database.
         let result = sqlx::query(
             r#"
-WITH notification AS (
-    SELECT id FROM notifications
-    WHERE entity_id = $1 AND entity_type = $2
-)
-SELECT 1 FROM notification_outs
-WHERE notification_id = (SELECT id FROM notification)
+SELECT 1 FROM notification_outs n_out
+    INNER JOIN notifications n
+        ON n.id = n_out.notification_id
+        AND n.entity_type = $1
 "#,
         )
-        .bind(6_i64)
         .bind(NotificationEntityType::StoryAddByTag as i16)
         .fetch_all(&mut *conn)
         .await?;
 
-        assert_eq!(result.len(), 2);
+        assert_eq!(result.len(), 3);
 
         Ok(())
     }

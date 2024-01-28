@@ -224,16 +224,11 @@ const Splash = (props: StoryProps): React.ReactElement => {
         slot_props={{
           image: {
             loading: "lazy",
-            sizes: [
-              "(min-width: 800px) 320px",
-              "(min-width: 650px) 256px",
-              "100vw"
-            ].join(","),
+            sizes: ["(min-width: 650px) 320px", "100vw"].join(","),
             // eslint-disable-next-line prefer-snakecase/prefer-snakecase
             srcSet: [
-              `${get_cdn_url(story.splash_id, ImageSize.W_256)} 256w`,
               `${get_cdn_url(story.splash_id, ImageSize.W_320)} 320w`,
-              `${get_cdn_url(story.splash_id, ImageSize.W_860)} 860w`
+              `${get_cdn_url(story.splash_id, ImageSize.W_960)} 960w`
             ].join(",")
           }
         }}
