@@ -24,9 +24,7 @@ export const zoom_to_objects = (
   if (!group) {
     group = new Group(canvas.getObjects() as any, {
       selectable: false,
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       originY: "center",
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       originX: "center"
     });
 

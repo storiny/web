@@ -1,13 +1,13 @@
 import { Canvas, FabricObject, TPointerEventInfo } from "fabric";
 
 import { CURSORS, DrawableLayerType, LayerType } from "../../../../constants";
-import { Arrow, Diamond, Ellipse, Line, Rect } from "../../../../lib";
+import { Arrow, Diamond, Ellipse, Line, Rect, Text } from "../../../../lib";
 import { is_linear_object } from "../../../../utils";
 
 type DrawEvent = "draw:start" | "draw:end" | "draw:scaling";
 type LinearShape = typeof Arrow | typeof Line;
 type SolidShape = typeof Diamond | typeof Ellipse | typeof Rect;
-type Shape = LinearShape | SolidShape;
+type Shape = LinearShape | SolidShape | typeof Text;
 
 const LAYER_TYPE_SHAPE_MAP: {
   [k in DrawableLayerType]: Shape;
@@ -16,7 +16,8 @@ const LAYER_TYPE_SHAPE_MAP: {
   [LayerType.DIAMOND /*  */]: Diamond,
   [LayerType.ELLIPSE /*  */]: Ellipse,
   [LayerType.LINE /*     */]: Line,
-  [LayerType.RECTANGLE /**/]: Rect
+  [LayerType.RECTANGLE /**/]: Rect,
+  [LayerType.TEXT /*     */]: Text
 };
 
 /**
@@ -147,15 +148,17 @@ export class DrawPlugin {
     this.set_default_cursor();
 
     if (this.object) {
-      this.object.set({
-        hasBorders: true,
-        isDrawing: false,
-        originX: "center",
-        originY: "center",
-        // Compensate origin mutation
-        left: this.object.left + this.object.width / 2,
-        top: this.object.top + this.object.height / 2
-      });
+      if (this.layer_type !== LayerType.TEXT) {
+        this.object.set({
+          hasBorders: true,
+          isDrawing: false,
+          originX: "center",
+          originY: "center",
+          // Compensate origin mutation
+          left: this.object.left + this.object.width / 2,
+          top: this.object.top + this.object.height / 2
+        });
+      }
 
       this.canvas.setActiveObject(this.object as any);
       this.fire_event("draw:end");
@@ -225,7 +228,18 @@ export class DrawPlugin {
     this.x = mouse.x;
     this.y = mouse.y;
 
-    if ([LayerType.LINE, LayerType.ARROW].includes(this.layer_type)) {
+    if (this.layer_type === LayerType.TEXT) {
+      const text = new Text("", { left: this.x, top: this.y });
+
+      this.object = text;
+      this.canvas.add(this.object);
+      this.end_drawing();
+
+      text.enterEditing();
+      text.hiddenTextarea?.focus();
+
+      return;
+    } else if ([LayerType.LINE, LayerType.ARROW].includes(this.layer_type)) {
       const Class = LAYER_TYPE_SHAPE_MAP[this.layer_type] as LinearShape;
 
       this.object = new Class({

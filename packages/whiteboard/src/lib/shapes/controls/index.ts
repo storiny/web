@@ -8,7 +8,12 @@ import {
 } from "fabric";
 
 import { CURSORS } from "../../../constants";
-import { is_linear_object, recover_object } from "../../../utils";
+import {
+  compute_object_bounding_rect,
+  is_linear_object,
+  is_text_object,
+  recover_object
+} from "../../../utils";
 import { CLONE_PROPS } from "../common";
 
 const DISABLED_CONTROLS = ["ml", "mt", "mr", "mb"];
@@ -20,6 +25,7 @@ const ALLOWED_LINEAR_CONTROLS = [
   "cl",
   "cr"
 ];
+const ALLOWED_TEXT_CONTROLS = ["cl", "cr"];
 const CLONE_CONTROL_SIZE = 14;
 const MOVE_CONTROL_SIZE = 16;
 
@@ -116,7 +122,8 @@ class ObjectControls {
         if (
           DISABLED_CONTROLS.includes(key) ||
           (is_linear_object(this.object) &&
-            !ALLOWED_LINEAR_CONTROLS.includes(key))
+            !ALLOWED_LINEAR_CONTROLS.includes(key)) ||
+          (is_text_object(this.object) && !ALLOWED_TEXT_CONTROLS.includes(key))
         ) {
           control.visible = false;
         }
@@ -145,7 +152,7 @@ class ObjectControls {
           const p = this.object.oCoords[key];
 
           if (control.actionName === "linear-move") {
-            const bounding_rect = this.object.getBoundingRect();
+            const bounding_rect = compute_object_bounding_rect(this.object);
             const flipped_x1 = this.object.get("x1") > this.object.left;
             const flipped_y1 = this.object.get("y1") > this.object.top;
             const flipped_x2 = this.object.get("x2") > this.object.left;
@@ -180,7 +187,7 @@ class ObjectControls {
             ctx.fill();
             ctx.stroke();
           } else if (control.actionName === "clone") {
-            const bounding_rect = this.object.getBoundingRect();
+            const bounding_rect = compute_object_bounding_rect(this.object);
             const margin = 24; // (px)
             const x =
               key === "cl"

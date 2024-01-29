@@ -1,31 +1,40 @@
 import { classRegistry as class_registry } from "fabric";
-import { ITextProps } from "fabric/src/shapes/IText/IText";
 
 import { LayerType } from "../../../constants";
 import { TextLayer } from "../../../types";
 import { TextPrimitive } from "../object";
 
-export type TextProps = Partial<ITextProps> & Omit<TextLayer, "id" | "_type">;
+export type TextProps = ConstructorParameters<typeof TextPrimitive>[1] &
+  Omit<TextLayer, "id" | "_type">;
 
 const DEFAULT_TEXT_PROPS: Partial<TextProps> = {
   interactive: true,
-  ["cursorDelay" as any]: 1750,
+  ["cursorDelay" as any]: 1060,
   ["cursorDuration" as any]: 500
 };
 
-// TODO: Implement
-
-export class Text extends TextPrimitive {
+export class Text extends TextPrimitive<TextProps> {
   /**
    * Ctor
+   * @param text The text value
    * @param props Text props
    */
-  constructor(props: TextProps) {
-    super(props.text, {
+  constructor(text: string, props: TextProps) {
+    super(text, {
       ...DEFAULT_TEXT_PROPS,
       ...props,
       _type: LayerType.TEXT,
       objectCaching: true
+    });
+
+    this.on("mousedblclick", () => {
+      this.editable = true;
+      this.enterEditing();
+      this.hiddenTextarea?.focus();
+    });
+
+    this.on("deselected", () => {
+      this.editable = false;
     });
   }
 

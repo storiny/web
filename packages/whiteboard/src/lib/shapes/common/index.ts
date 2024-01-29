@@ -1,6 +1,6 @@
-import { FabricObject, TProps } from "fabric";
+import { TFabricObjectProps } from "fabric";
 
-export const COMMON_OBJECT_PROPS: TProps<FabricObject> = {
+export const COMMON_OBJECT_PROPS: TFabricObjectProps = {
   /* eslint-disable prefer-snakecase/prefer-snakecase */
   borderColor: "#1371ec",
   borderOpacityWhenMoving: 0.25,
