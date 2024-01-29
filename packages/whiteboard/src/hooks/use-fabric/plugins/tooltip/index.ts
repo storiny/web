@@ -1,6 +1,9 @@
 import { Canvas, FabricObject } from "fabric";
 
-import { is_interactive_object } from "../../../../utils";
+import {
+  compute_object_bounding_rect,
+  is_interactive_object
+} from "../../../../utils";
 
 /**
  * Renders tooltips for a selected object
@@ -65,6 +68,7 @@ class TooltipPlugin {
    */
   private render_tooltip(text: string, x: number, y: number): void {
     const ctx = this.ctx;
+
     ctx.save();
     ctx.font = this.font;
     ctx.textBaseline = "top";
@@ -83,6 +87,7 @@ class TooltipPlugin {
     ctx.fill();
     ctx.fillStyle = this.foreground_color;
     ctx.fillText(text, x - width / 2, y + 4);
+
     ctx.restore();
   }
 
@@ -124,7 +129,7 @@ class TooltipPlugin {
         !this.active_object.get("isMoving") &&
         !this.active_object.get("isDrawing")
       ) {
-        const bounding_rect = this.active_object.getBoundingRect();
+        const bounding_rect = compute_object_bounding_rect(this.active_object);
         const x = bounding_rect.left + bounding_rect.width / 2;
         const y =
           bounding_rect.top + bounding_rect.height + this.vertical_margin;

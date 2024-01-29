@@ -117,14 +117,12 @@ const ShapeTools = (): React.ReactElement => (
         value={Tool.ARROW}
       />
     </PositionedTooltip>
-    <PositionedTooltip content={"Text tool (available soon)"}>
-      {/* TODO: Implement */}
+    <PositionedTooltip content={"Text tool"} shortcut_key={"Shift+T"}>
       <Tab
         aria-controls={undefined}
         aria-label={"Text tool"}
         className={clsx(styles.x, styles.tool)}
         decorator={<TypographyIcon className={clsx(styles.x, styles.icon)} />}
-        disabled
         role={undefined}
         value={Tool.TEXT}
       />
@@ -262,6 +260,9 @@ const Tools = (): React.ReactElement => {
         break;
       case Tool.ARROW:
         toggle_draw_mode(LayerType.ARROW);
+        break;
+      case Tool.TEXT:
+        toggle_draw_mode(LayerType.TEXT);
         break;
       default:
         toggle_draw_mode(null);

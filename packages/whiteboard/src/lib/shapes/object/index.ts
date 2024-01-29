@@ -6,7 +6,7 @@ import {
   Path,
   Rect,
   Textbox,
-  TProps
+  TFabricObjectProps
 } from "fabric";
 
 import { COMMON_OBJECT_PROPS } from "../common";
@@ -24,7 +24,7 @@ export const WithPrimitive = <TBase extends Constructor>(Base: TBase): TBase =>
       this.set({
         ...COMMON_OBJECT_PROPS,
         originX: "center",
-        originY: "center"
+        originY: this.isType("text") ? "top" : "center"
       });
 
       register_controls(this);
@@ -32,31 +32,33 @@ export const WithPrimitive = <TBase extends Constructor>(Base: TBase): TBase =>
   };
 
 export class RectPrimitive<
-  Props extends TProps<FabricObject>
+  Props extends TFabricObjectProps
 > extends WithPrimitive(Rect)<Props> {}
 
 export class EllipsePrimitive<
-  Props extends TProps<FabricObject>
+  Props extends TFabricObjectProps
 > extends WithPrimitive(Ellipse)<Props> {}
 
 export class DiamondPrimitve<
-  Props extends TProps<FabricObject>
+  Props extends TFabricObjectProps
 > extends WithPrimitive(FabricObject)<Props> {}
 
 export class LinePrimitive<
-  Props extends TProps<FabricObject>
+  Props extends TFabricObjectProps
 > extends WithPrimitive(Line)<Props> {}
 
 export class ArrowPrimitive<
-  Props extends TProps<FabricObject>
+  Props extends TFabricObjectProps
 > extends WithPrimitive(Line)<Props> {}
 
 export class PenPrimitive<
-  Props extends TProps<FabricObject>
+  Props extends TFabricObjectProps
 > extends WithPrimitive(Path)<Props> {}
 
-export class TextPrimitive extends WithPrimitive(Textbox) {}
+export class TextPrimitive<
+  Props extends TFabricObjectProps
+> extends WithPrimitive(Textbox)<Props> {}
 
 export class ImagePrimitive<
-  Props extends TProps<FabricObject>
+  Props extends TFabricObjectProps
 > extends WithPrimitive(Image)<Props> {}

@@ -7146,7 +7146,7 @@ __metadata:
     "@types/react-dom": ^18.2.17
     clsx: ^1.2.1
     eslint: ^8.51.0
-    fabric: beta
+    fabric: 6.0.0-beta18
     hotkeys-js: ^3.11.2
     image-blob-reduce: ^4.1.0
     jotai: ^2.2.2
@@ -14677,9 +14677,9 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
-"fabric@npm:beta":
-  version: 6.0.0-beta17
-  resolution: "fabric@npm:6.0.0-beta17"
+"fabric@npm:6.0.0-beta18":
+  version: 6.0.0-beta18
+  resolution: "fabric@npm:6.0.0-beta18"
   dependencies:
     canvas: ^2.11.2
     jsdom: ^20.0.1
@@ -14688,7 +14688,7 @@ eslint-config-turbo@latest:
       optional: true
     jsdom:
       optional: true
-  checksum: 991bd8c1e2571380eeafb4a939eca894fa246cc4ffe7cffbe03fc16e2efac32d12a2224d9b35924f0d640f9473dfede8505d834154859179d55576f91627aa63
+  checksum: 46873b673ab57ad951fde2ac68b6e981c8231be01d75a3926729dee5252556d6b2403f970629eb29a65acda14427c6548dd0f690f895b27ae09fde848e48d3b6
   languageName: node
   linkType: hard
 

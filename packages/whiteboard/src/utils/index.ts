@@ -1,3 +1,4 @@
+export * from "./compute-object-bounding-rect";
 export * from "./contains-only-image-objects";
 export * from "./data-url-to-file";
 export * from "./export-to-file";

@@ -26,7 +26,7 @@
     "@storiny/shared": "*",
     "@storiny/ui": "*",
     "clsx": "^1.2.1",
-    "fabric": "beta",
+    "fabric": "6.0.0-beta18",
     "hotkeys-js": "^3.11.2",
     "image-blob-reduce": "^4.1.0",
     "jotai": "^2.2.2",
