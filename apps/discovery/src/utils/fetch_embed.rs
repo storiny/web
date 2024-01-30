@@ -1,5 +1,4 @@
 use crate::{
-    config::Config,
     error::AppError,
     request::{
         REQUEST_CLIENT,
@@ -26,14 +25,6 @@ pub struct ConsumerRequest<'a> {
 #[derive(Debug, Clone)]
 pub struct Client(reqwest::Client);
 
-/// Predicate function for determining endpoints that depend on the Facebook graph API, thus
-/// requiring a Facebook graph token to work.
-///
-/// * `endpoint` - The embed endpoint.
-fn is_facebook_graph_dependent(endpoint: &str) -> bool {
-    endpoint.starts_with("https://graph.facebook.com")
-}
-
 impl Client {
     /// Creates a new request client.
     ///
@@ -44,12 +35,10 @@ impl Client {
 
     /// Fetches the oembed data from the endpoint of the provider.
     ///
-    /// * `config` - The environment configuration.
     /// * `endpoint` - The provider endpoint.
     /// * `request` - The consumer request data.
     pub async fn fetch(
         &self,
-        config: &Config,
         endpoint: &str,
         request: ConsumerRequest<'_>,
     ) -> Result<EmbedResponse, AppError> {
@@ -62,17 +51,6 @@ impl Client {
 
             url.query_pairs_mut().append_pair("url", request.url);
             url.query_pairs_mut().append_pair("format", "json");
-
-            // Append Facebook client ID and access token.
-            if is_facebook_graph_dependent(endpoint) {
-                query_map.insert(
-                    "access_token".to_string(),
-                    format!(
-                        "{}|{}",
-                        config.oauth_facebook_client_id, config.oauth_facebook_client_secret
-                    ),
-                );
-            }
 
             // Custom parameters.
             if let Some(params) = request.params {
@@ -119,23 +97,20 @@ impl Client {
 
 /// Fetches oembed data from the endpoint of the provider.
 ///
-/// * `config` - The environment configuration.
 /// * `endpoint` - The provider oEmbed endpoint.
 /// * `request` - The consumer request data.
 pub async fn fetch_embed(
-    config: &Config,
     endpoint: &str,
     request: ConsumerRequest<'_>,
 ) -> Result<EmbedResponse, AppError> {
     Client::new(REQUEST_CLIENT.clone())
-        .fetch(config, endpoint, request)
+        .fetch(endpoint, request)
         .await
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::config::get_app_config;
     use mockito::Server;
     use urlencoding::encode;
 
@@ -143,7 +118,6 @@ mod tests {
     async fn can_fetch_embed() {
         let mut server = Server::new_async().await;
         let url = server.url();
-        let config = get_app_config().unwrap();
 
         let mock = server
             .mock(
@@ -157,7 +131,6 @@ mod tests {
             .await;
 
         let result = fetch_embed(
-            &config,
             &url,
             ConsumerRequest {
                 url: "http://example.com",
@@ -182,7 +155,6 @@ mod tests {
     async fn can_throw_fetch_error() {
         let mut server = Server::new_async().await;
         let url = server.url();
-        let config = get_app_config().unwrap();
 
         let mock = server
             .mock(
@@ -194,7 +166,6 @@ mod tests {
             .await;
 
         let result = fetch_embed(
-            &config,
             &url,
             ConsumerRequest {
                 url: "http://example.com",

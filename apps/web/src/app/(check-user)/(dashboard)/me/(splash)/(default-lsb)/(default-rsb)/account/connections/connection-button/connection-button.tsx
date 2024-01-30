@@ -9,8 +9,7 @@ import { handle_api_error } from "~/utils/handle-api-error";
 
 import {
   PROVIDER_DISPLAY_NAME_MAP,
-  PROVIDER_ICON_MAP,
-  PROVIDER_KEY_MAP
+  PROVIDER_ICON_MAP
 } from "../../../../../../../../../providers";
 import { ConnectionButtonProps } from "./connection-button.props";
 
@@ -84,7 +83,7 @@ const ConnectionButton = ({
       as={NextLink}
       auto_size
       check_auth
-      href={`${process.env.NEXT_PUBLIC_API_URL}/oauth/${PROVIDER_KEY_MAP[provider]}`}
+      href={`${process.env.NEXT_PUBLIC_API_URL}/oauth/${provider}`}
     >
       Connect
     </Button>

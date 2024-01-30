@@ -124,7 +124,6 @@ async fn get(
             debug!("origin parameters: {origin_params_cloned:?}");
 
             fetch_embed(
-                &config,
                 provider.endpoint,
                 ConsumerRequest {
                     url: url.as_ref(),
@@ -134,7 +133,6 @@ async fn get(
             .await
         } else {
             fetch_embed(
-                &config,
                 provider.endpoint,
                 ConsumerRequest {
                     url: url.as_ref(),

@@ -189,10 +189,22 @@ fn main() -> io::Result<()> {
                 {
                     Ok(pool) => {
                         println!("Connected to Postgres");
+
+                        // Run migrations.
+                        match sqlx::migrate!("./migrations").run(&pool).await {
+                            Ok(_) => {
+                                println!("Successfully ran database migrations");
+                            }
+                            Err(err) => {
+                                error!("failed to run database migrations: {:?}", err);
+                                std::process::exit(1);
+                            }
+                        }
+
                         pool
                     }
                     Err(err) => {
-                        error!("Failed to connect to Postgres: {:?}", err);
+                        error!("failed to connect to Postgres: {:?}", err);
                         std::process::exit(1);
                     }
                 };

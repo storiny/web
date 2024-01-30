@@ -1,7 +1,7 @@
 // noinspection JSUnusedGlobalSymbols
 
 import { GetProfileResponse } from "@storiny/proto/dist/profile_def/v1/def";
-import { Provider, UserFlag } from "@storiny/shared";
+import { ConnectionProvider, UserFlag } from "@storiny/shared";
 import { MOCK_USERS } from "@storiny/ui/src/mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
@@ -25,7 +25,7 @@ const MOCK_RESPONSE = {
   connections: [
     {
       url: "https://github.com/storiny",
-      provider: Provider.GITHUB,
+      provider: ConnectionProvider.GITHUB,
       display_name: "Some user"
     }
   ]
