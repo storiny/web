@@ -1,4 +1,4 @@
-import { Canvas, FabricObject, Point, util } from "fabric";
+import { Canvas, FabricObject, Point } from "fabric";
 
 import { is_interactive_object } from "../../../../utils";
 
@@ -109,14 +109,8 @@ class GuidesPlugin {
    */
   private draw_line(x1: number, y1: number, x2: number, y2: number): void {
     const ctx = this.ctx;
-    const point1 = util.transformPoint(
-      new Point(x1, y1),
-      this.canvas.viewportTransform
-    );
-    const point2 = util.transformPoint(
-      new Point(x2, y2),
-      this.canvas.viewportTransform
-    );
+    const point1 = new Point(x1, y1).transform(this.canvas.viewportTransform);
+    const point2 = new Point(x2, y2).transform(this.canvas.viewportTransform);
 
     ctx.save();
     ctx.lineWidth = this.aligning_line_width;

@@ -1,5 +1,6 @@
 export * from "./account-activity-type";
 export * from "./asset-rating";
+export * from "./connection-provider";
 export * from "./content-type";
 export * from "./grpc";
 export * from "./image-size";

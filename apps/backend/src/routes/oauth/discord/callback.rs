@@ -1,6 +1,6 @@
 use crate::{
+    constants::connection_provider::ConnectionProvider,
     error::AppError,
-    grpc::defs::connection_def::v1::Provider,
     middlewares::identity::identity::Identity,
     oauth::icons::discord::DISCORD_LOGO,
     routes::oauth::{
@@ -116,7 +116,7 @@ INSERT INTO connections
 VALUES ($1, $2, $3, $4)
 "#,
     )
-    .bind(Provider::Discord as i16)
+    .bind(ConnectionProvider::Discord.to_string())
     .bind(provider_identifier)
     .bind(display_name)
     .bind(user_id)
@@ -241,7 +241,7 @@ SELECT EXISTS (
 "#,
         )
         .bind(user_id.unwrap())
-        .bind(Provider::Discord as i16)
+        .bind(ConnectionProvider::Discord.to_string())
         .fetch_one(&mut *conn)
         .await?;
 
@@ -263,7 +263,7 @@ INSERT INTO connections
 VALUES ($1, $2, $3, $4)
 "#,
         )
-        .bind(Provider::Discord as i16)
+        .bind(ConnectionProvider::Discord.to_string())
         .bind("0")
         .bind("discord_user")
         .bind(user_id.unwrap())

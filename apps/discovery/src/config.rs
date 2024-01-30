@@ -20,9 +20,6 @@ pub struct Config {
     pub redis_host: String,
     /// Redis port
     pub redis_port: String,
-    /// Facebook OAuth
-    pub oauth_facebook_client_id: String,
-    pub oauth_facebook_client_secret: String,
 }
 
 /// Returns the application environment configuration.

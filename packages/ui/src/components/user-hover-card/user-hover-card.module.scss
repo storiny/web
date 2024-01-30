@@ -1,0 +1,122 @@
+.content {
+  padding: 12px 16px;
+  background-color: var(--bg-elevation-sm);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--ridge-md), var(--shadow-md);
+  width: 270px;
+  max-height: var(--radix-hover-card-content-available-height);
+  max-width: var(--radix-hover-card-content-available-width);
+  z-index: var(--z-index-popover);
+  overflow: hidden;
+  animation-duration: 300ms;
+  animation-timing-function: var(--easing-short);
+  will-change: transform, opacity;
+
+  &[data-side="top"] {
+    animation-name: slide-down-and-fade;
+  }
+
+  &[data-side="right"] {
+    animation-name: slide-left-and-fade;
+  }
+
+  &[data-side="bottom"] {
+    animation-name: slide-top-and-fade;
+  }
+
+  &[data-side="left"] {
+    animation-name: slide-right-and-fade;
+  }
+}
+
+.details {
+  position: relative;
+}
+
+.stats {
+  gap: 10px;
+}
+
+.arrow {
+  fill: var(--bg-elevation-lg);
+}
+
+.x {
+  &.banner {
+    margin-block: -11px 10px;
+    margin-inline: -14px;
+    width: auto;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, hsl(0deg 0% 0% / 0%) 70%, hsl(0deg 0% 16% / 20%) 100%);
+    }
+  }
+
+  &.avatar {
+    &.has-banner {
+      border: 3px solid var(--bg-elevation-sm);
+      margin-top: -44px;
+    }
+  }
+
+  &.action {
+    position: absolute;
+    right: 0;
+    top: -16px;
+  }
+}
+
+/* Animations */
+@keyframes slide-up-and-fade {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-right-and-fade {
+  from {
+    opacity: 0;
+    transform: translateX(-2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-down-and-fade {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-left-and-fade {
+  from {
+    opacity: 0;
+    transform: translateX(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

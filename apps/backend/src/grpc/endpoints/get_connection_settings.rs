@@ -1,10 +1,7 @@
 use crate::{
     grpc::{
         defs::{
-            connection_def::v1::{
-                ConnectionSetting,
-                Provider,
-            },
+            connection_def::v1::ConnectionSetting,
             connection_settings_def::v1::{
                 GetConnectionSettingsRequest,
                 GetConnectionSettingsResponse,
@@ -68,17 +65,13 @@ WHERE
     .bind(user_id)
     .map(|row: PgRow| ConnectionSetting {
         id: row.get::<i64, _>("id").to_string(),
-        provider: row.get::<i16, _>("provider") as i32,
+        provider: row.get::<String, _>("provider"),
         hidden: row.get::<bool, _>("hidden"),
         display_name: row.get("display_name"),
-        url: if let Ok(provider) = Provider::try_from(row.get::<i16, _>("provider") as i32) {
-            generate_connection_url(
-                provider,
-                row.get::<String, _>("provider_identifier").as_str(),
-            )
-        } else {
-            "/".to_string()
-        },
+        url: generate_connection_url(
+            row.get::<String, _>("provider").as_str(),
+            row.get::<String, _>("provider_identifier").as_str(),
+        ),
         created_at: to_iso8601(&row.get::<OffsetDateTime, _>("created_at")),
     })
     .fetch_all(&client.db_pool)
@@ -95,11 +88,9 @@ WHERE
 #[cfg(test)]
 mod tests {
     use crate::{
+        constants::connection_provider::ConnectionProvider,
         grpc::defs::{
-            connection_def::v1::{
-                ConnectionSetting,
-                Provider,
-            },
+            connection_def::v1::ConnectionSetting,
             connection_settings_def::v1::{
                 GetConnectionSettingsRequest,
                 GetConnectionSettingsResponse,
@@ -139,7 +130,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7)
 "#,
                 )
                 .bind(2_i64)
-                .bind(Provider::Github as i16)
+                .bind(ConnectionProvider::GitHub.to_string())
                 .bind("storiny")
                 .bind("Storiny")
                 .bind(true)
@@ -164,10 +155,10 @@ VALUES ($1, $2, $3, $4, $5, $6, $7)
                     GetConnectionSettingsResponse {
                         connections: vec![ConnectionSetting {
                             id: 2_i64.to_string(),
-                            provider: Provider::Github as i32,
+                            provider: ConnectionProvider::GitHub.to_string(),
                             hidden: true,
                             display_name: "Storiny".to_string(),
-                            url: generate_connection_url(Provider::Github, "storiny"),
+                            url: generate_connection_url("github", "storiny"),
                             created_at: to_iso8601(&created_at),
                         }]
                     }

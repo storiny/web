@@ -59,7 +59,7 @@ const Alignment = (): React.ReactElement | null => {
       }
 
       for (const object of group.getObjects()) {
-        const bounding_rect = object.getBoundingRect(true);
+        const bounding_rect = object.getBoundingRect();
 
         switch (next_alignemnt) {
           case "top":

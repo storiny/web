@@ -1,10 +1,7 @@
 use crate::{
     grpc::{
         defs::{
-            connection_def::v1::{
-                Connection,
-                Provider,
-            },
+            connection_def::v1::Connection,
             profile_def::v1::{
                 GetProfileRequest,
                 GetProfileResponse,
@@ -35,7 +32,7 @@ use uuid::Uuid;
 
 #[derive(sqlx::Type, Debug, Deserialize)]
 struct ProfileConnection {
-    provider: i16,
+    provider: String,
     provider_identifier: String,
     display_name: String,
 }
@@ -138,8 +135,7 @@ pub async fn get_profile(
             Some(UserStatus {
                 emoji: profile.status_emoji,
                 text: profile.status_text,
-                expires_at: profile
-                    .status_expires_at.map(|value| to_iso8601(&value)),
+                expires_at: profile.status_expires_at.map(|value| to_iso8601(&value)),
                 duration: profile
                     .status_duration
                     .unwrap_or(StatusDuration::Day1 as i16) as i32,
@@ -168,11 +164,8 @@ pub async fn get_profile(
             .connections
             .iter()
             .map(|connection| Connection {
-                provider: connection.provider as i32,
-                url: generate_connection_url(
-                    Provider::try_from(connection.provider as i32).unwrap_or(Provider::Unspecified),
-                    &connection.provider_identifier,
-                ),
+                provider: connection.provider.to_string(),
+                url: generate_connection_url(&connection.provider, &connection.provider_identifier),
                 display_name: connection.display_name.to_string(),
             })
             .collect::<Vec<_>>(),

@@ -11,7 +11,17 @@ export const selection_updated_event = (canvas: Canvas): void => {
 
     for (const object of options.selected) {
       if (object.group) {
-        object.group.setControlsVisibility({ mtr: false });
+        object.group.setControlsVisibility({
+          mtr: false,
+          bl: false,
+          br: false,
+          tr: false,
+          tl: false,
+          ml: false,
+          mr: false,
+          mt: false,
+          mb: false
+        });
         object.group.set(COMMON_GROUP_PROPS);
       }
 
