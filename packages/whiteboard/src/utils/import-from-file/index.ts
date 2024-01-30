@@ -17,11 +17,14 @@ export const import_from_file = (canvas: Canvas, data: Uint8Array): void => {
   canvas
     .loadFromJSON(json, (prop, object) => {
       recover_object(object, prop);
-      object.set({
-        id: prop.id,
-        name: prop.name,
-        seed: prop.seed
-      });
+
+      if ("set" in object) {
+        object.set({
+          id: prop.id,
+          name: prop.name,
+          seed: prop.seed
+        });
+      }
     })
     .then(() => canvas.renderAll());
 };

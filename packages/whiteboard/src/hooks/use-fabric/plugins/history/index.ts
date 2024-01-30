@@ -255,13 +255,17 @@ export class HistoryPlugin {
 
     hotkeys(
       [undo_key, redo_key, redo_lat_key].join(","),
-      (_, hotkeys_event) => {
+      (keyboard_event, hotkeys_event) => {
         switch (hotkeys_event.key) {
           case undo_key:
+            keyboard_event.preventDefault();
+
             this.undo();
             break;
           case redo_key:
           case redo_lat_key:
+            keyboard_event.preventDefault();
+
             this.redo();
             break;
           default:

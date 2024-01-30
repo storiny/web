@@ -11,6 +11,7 @@ import {
 } from "./families/source-code-pro";
 import { FONT_SOURCE_SERIF } from "./families/source-serif";
 import { FONT_SYNONYM } from "./families/synonym";
+import { FONT_VIRGIL } from "./families/virgil";
 import { get_font_families_css } from "./get-font-families-css";
 
 const FONT_FAMILIES: Record<string, string> = {
@@ -19,6 +20,7 @@ const FONT_FAMILIES: Record<string, string> = {
   lora: FONT_LORA.style.fontFamily,
   erode: FONT_ERODE.style.fontFamily,
   recia: FONT_RECIA.style.fontFamily,
+  virgil: FONT_VIRGIL.style.fontFamily,
   "source-serif": FONT_SOURCE_SERIF.style.fontFamily,
   "plex-mono": FONT_PLEX_MONO.style.fontFamily,
   "plex-mono-lig": FONT_PLEX_MONO_LIGATURES.style.fontFamily,

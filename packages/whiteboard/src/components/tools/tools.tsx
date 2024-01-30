@@ -14,7 +14,6 @@ import Tooltip, { TooltipProps } from "~/components/tooltip";
 import ArrowIcon from "~/icons/arrow";
 import CircleIcon from "~/icons/circle";
 import DiamondIcon from "~/icons/diamond";
-import FiltersIcon from "~/icons/filters";
 import HandIcon from "~/icons/hand";
 import ImageIcon from "~/icons/image";
 import LineIcon from "~/icons/line";
@@ -330,19 +329,6 @@ const Tools = (): React.ReactElement => {
           </PositionedTooltip>
           <Separator />
           <ImageTool />
-          <PositionedTooltip content={"Filters tool (available soon)"}>
-            <Tab
-              aria-controls={undefined}
-              aria-label={"Filters tool"}
-              className={clsx(styles.x, styles.tool)}
-              decorator={
-                <FiltersIcon className={clsx(styles.x, styles.icon)} />
-              }
-              disabled
-              role={undefined}
-              value={Tool.FILTERS}
-            />
-          </PositionedTooltip>
           <Separator />
           <ShapeTools />
         </TabsList>

@@ -4,6 +4,7 @@ export * from "./data-url-to-file";
 export * from "./export-to-file";
 export * from "./generate-rough-options";
 export * from "./get-corner-radius";
+export * from "./get-css-variable-value";
 export * from "./get-dashed-dash-array";
 export * from "./get-dotted-dash-array";
 export * from "./get-new-layer-name";

@@ -19,8 +19,9 @@ import Position from "./items/position";
 import Shadow from "./items/shadow";
 import Skew from "./items/skew";
 import Stroke from "./items/stroke";
+import TextProps from "./items/text-props";
 
-const SpacerWithDivider = (): React.ReactElement => (
+export const SpacerWithDivider = (): React.ReactElement => (
   <React.Fragment>
     <Spacer orientation={"vertical"} size={2} />
     <Divider />
@@ -111,6 +112,28 @@ const get_active_object_tools = (
           <ObjectProps disable_corner_radius />
           <SpacerWithDivider />
           <LayerProps disable_roughness />
+          <SpacerWithDivider />
+          <Stroke disable_stroke_style />
+          <SpacerWithDivider />
+          <Shadow />
+          <Spacer orientation={"vertical"} size={2} />
+          <Divider />
+        </React.Fragment>
+      );
+    case LayerType.TEXT:
+      return (
+        <React.Fragment>
+          <Spacer orientation={"vertical"} size={1.5} />
+          <Position />
+          <Dimensions />
+          <Skew />
+          <ObjectProps disable_corner_radius />
+          <SpacerWithDivider />
+          <LayerProps disable_roughness />
+          <SpacerWithDivider />
+          <TextProps />
+          <SpacerWithDivider />
+          <Fill disable_fill_style />
           <SpacerWithDivider />
           <Stroke disable_stroke_style />
           <SpacerWithDivider />

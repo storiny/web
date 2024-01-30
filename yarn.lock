@@ -7139,6 +7139,7 @@ __metadata:
     "@storiny/tsconfig": "*"
     "@storiny/types": "*"
     "@storiny/ui": "*"
+    "@types/fontfaceobserver": ^2.1.3
     "@types/image-blob-reduce": ^4.1.1
     "@types/pako": ^2.0.0
     "@types/pica": ^9.0.1
@@ -7147,6 +7148,7 @@ __metadata:
     clsx: ^1.2.1
     eslint: ^8.51.0
     fabric: 6.0.0-beta18
+    fontfaceobserver: ^2.3.0
     hotkeys-js: ^3.11.2
     image-blob-reduce: ^4.1.0
     jotai: ^2.2.2
@@ -9006,6 +9008,13 @@ __metadata:
   version: 3.2.1
   resolution: "@types/find-cache-dir@npm:3.2.1"
   checksum: bf5c4e96da40247cd9e6327f54dfccda961a0fb2d70e3c71bd05def94de4c2e6fb310fe8ecb0f04ecf5dbc52214e184b55a2337b0f87250d4ae1e2e7d58321e4
+  languageName: node
+  linkType: hard
+
+"@types/fontfaceobserver@npm:^2.1.3":
+  version: 2.1.3
+  resolution: "@types/fontfaceobserver@npm:2.1.3"
+  checksum: 1eaa54c31d9ac792961662e4735740e9247514c7ad31e35cc8fba949ab6cacab7632da6fa412a3e8a953a717f243d14969e0bb2544db8d5856e8b9d3fc8741a2
   languageName: node
   linkType: hard
 
@@ -14994,6 +15003,13 @@ eslint-config-turbo@latest:
   version: 0.226.0
   resolution: "flow-parser@npm:0.226.0"
   checksum: 88addf65749a6322fa54b6ed807d3d26e8f899ff6e9f644407149f9cc0e3729d1aa4d2312dbc6f93011a7becb7679aa61a682d0441f32f95a02d56b45d464c8d
+  languageName: node
+  linkType: hard
+
+"fontfaceobserver@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "fontfaceobserver@npm:2.3.0"
+  checksum: 5f14715974203b9d68f299f93a7623afd9d5701572d683e861cdbb7514573ac556f56e9b5d07d2d534e01aed19a3b0bbe568e735e0e5494cbea913fc3f12b856
   languageName: node
   linkType: hard
 
