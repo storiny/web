@@ -297,7 +297,11 @@ const FillStyleControl = ({
   );
 };
 
-const Fill = (): React.ReactElement | null => {
+const Fill = ({
+  disable_fill_style
+}: {
+  disable_fill_style?: boolean;
+}): React.ReactElement | null => {
   const active_object = use_active_object();
 
   if (!active_object) {
@@ -307,7 +311,9 @@ const Fill = (): React.ReactElement | null => {
   return (
     <DrawItem key={active_object.get("id")} label={"Fill"}>
       <FillControl active_object={active_object} />
-      <FillStyleControl active_object={active_object} />
+      {!disable_fill_style && (
+        <FillStyleControl active_object={active_object} />
+      )}
     </DrawItem>
   );
 };

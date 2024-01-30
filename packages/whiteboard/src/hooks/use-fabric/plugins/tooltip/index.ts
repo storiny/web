@@ -47,7 +47,7 @@ class TooltipPlugin {
    * Tooltip background color
    * @private
    */
-  private readonly background_color = "#505050";
+  private readonly background_color = "#3d3d3d";
   /**
    * Tooltip foreground color
    * @private

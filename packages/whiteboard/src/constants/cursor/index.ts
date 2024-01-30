@@ -91,6 +91,7 @@ export const CURSORS = {
     ),
     "grabbing"
   ),
+  text: "text",
   pen: (fill?: string) =>
     get_cursor_style(get_pen_cursor(fill), "crosshair", "8 24"),
   rotate: (angle?: number) =>

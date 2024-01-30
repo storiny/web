@@ -4,7 +4,8 @@ import {
   controlsUtils as control_utils,
   FabricObject,
   Point,
-  Transform
+  Transform,
+  util
 } from "fabric";
 
 import { CURSORS } from "../../../constants";
@@ -16,7 +17,8 @@ import {
 } from "../../../utils";
 import { CLONE_PROPS } from "../common";
 
-const DISABLED_CONTROLS = ["ml", "mt", "mr", "mb"];
+const DISABLED_CONTROLS = ["ml", "mr", "mt", "mb"];
+const ROTATION_CONTROLS = ["r_ul", "r_ur", "r_ll", "r_lr"];
 const ALLOWED_LINEAR_CONTROLS = [
   // Move
   "linear_1",
@@ -25,7 +27,17 @@ const ALLOWED_LINEAR_CONTROLS = [
   "cl",
   "cr"
 ];
-const ALLOWED_TEXT_CONTROLS = ["cl", "cr"];
+const ALLOWED_TEXT_CONTROLS = [
+  "cl",
+  "cr",
+  "tl",
+  "tr",
+  "br",
+  "bl",
+  "mr",
+  "ml",
+  ...ROTATION_CONTROLS
+];
 const CLONE_CONTROL_SIZE = 14;
 const MOVE_CONTROL_SIZE = 16;
 
@@ -120,7 +132,7 @@ class ObjectControls {
 
       this.object.forEachControl((control, key) => {
         if (
-          DISABLED_CONTROLS.includes(key) ||
+          (DISABLED_CONTROLS.includes(key) && !is_text_object(this.object)) ||
           (is_linear_object(this.object) &&
             !ALLOWED_LINEAR_CONTROLS.includes(key)) ||
           (is_text_object(this.object) && !ALLOWED_TEXT_CONTROLS.includes(key))
@@ -207,17 +219,36 @@ class ObjectControls {
             ctx.fill();
             ctx.stroke();
           } else {
-            control.render(
-              ctx,
-              p.x,
-              p.y,
-              {
-                cornerStrokeColor: this.object.cornerStrokeColor,
-                cornerDashArray: this.object.cornerDashArray,
-                cornerColor: this.object.cornerColor
-              },
-              this.object
-            );
+            // Draw a rectangle for width controls.
+            if (["ml", "mr"].includes(key)) {
+              const x_size = 6;
+              const y_size = 12;
+              const angle = this.object.getTotalAngle();
+
+              ctx.save();
+
+              ctx.fillStyle = this.object.cornerColor;
+              ctx.strokeStyle = this.object.cornerStrokeColor;
+              ctx.lineWidth = 1;
+              ctx.translate(p.x, p.y);
+              ctx.rotate(util.degreesToRadians(angle));
+              ctx.fillRect(-(x_size / 2), -(y_size / 2), x_size, y_size);
+              ctx.strokeRect(-(x_size / 2), -(y_size / 2), x_size, y_size);
+
+              ctx.restore();
+            } else {
+              control.render(
+                ctx,
+                p.x,
+                p.y,
+                {
+                  cornerStrokeColor: this.object.cornerStrokeColor,
+                  cornerDashArray: this.object.cornerDashArray,
+                  cornerColor: this.object.cornerColor
+                },
+                this.object
+              );
+            }
           }
         }
       });

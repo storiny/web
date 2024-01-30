@@ -20,6 +20,7 @@ const Toggle = forward_ref<ToggleProps, "button">((props, ref) => {
     children,
     tooltip_content,
     slot_props,
+    disabled,
     ...rest
   } = props;
   const Container = tooltip_content ? Tooltip : React.Fragment;
@@ -29,6 +30,9 @@ const Toggle = forward_ref<ToggleProps, "button">((props, ref) => {
       {...(tooltip_content && {
         ...slot_props?.tooltip,
         content: tooltip_content
+      })}
+      {...(disabled && {
+        open: false
       })}
     >
       {/*
@@ -53,6 +57,7 @@ const Toggle = forward_ref<ToggleProps, "button">((props, ref) => {
             toggle_styles[size],
             className
           )}
+          disabled={disabled}
           ref={ref}
         >
           <Component>{children}</Component>

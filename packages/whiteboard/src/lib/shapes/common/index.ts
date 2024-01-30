@@ -33,10 +33,10 @@ const FILL_PROPS = ["fill", "fillStyle", "fillWeight"];
 const ROUGH_PROPS = ["hachureGap", "roughness"];
 const LINEAR_PROPS = ["x1", "x2", "y1", "y2"];
 const ARROW_PROPS = ["startArrowhead", "endArrowhead"];
-const IMAGE_PROPS = ["filters"];
 const PEN_PROPS = ["penWidth", "penStyle", "points"];
 const TEXT_PROPS = [
   "fontFamily",
+  "fontName",
   "fontSize",
   "lineHeight",
   "text",
@@ -51,7 +51,6 @@ export const CLONE_PROPS = [
   ...ROUGH_PROPS,
   ...LINEAR_PROPS,
   ...ARROW_PROPS,
-  ...IMAGE_PROPS,
   ...PEN_PROPS,
   ...TEXT_PROPS
 ];

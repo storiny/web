@@ -2,7 +2,6 @@ export enum Tool {
   ARROW /*    */ = "arrow",
   DIAMOND /*  */ = "diamond",
   ELLIPSE /*  */ = "ellipse",
-  FILTERS /*  */ = "filters",
   HAND /*     */ = "hand",
   IMAGE /*    */ = "image",
   LINE /*     */ = "line",
