@@ -6,3 +6,4 @@ import "./stories";
 import "./preview";
 import "./tags";
 import "./reports";
+import "./cards";

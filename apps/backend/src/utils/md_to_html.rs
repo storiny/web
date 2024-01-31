@@ -1,3 +1,4 @@
+use lazy_static::lazy_static;
 use markdown::{
     to_html_with_options,
     CompileOptions,
@@ -5,6 +6,22 @@ use markdown::{
     Options,
     ParseOptions,
 };
+use regex::{
+    Captures,
+    Regex,
+    Replacer,
+};
+
+lazy_static! {
+    static ref USERNAME_REGEX: Regex = {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"@(?<username>[\w_]{3,24})").unwrap()
+    };
+    static ref TAG_REGEX: Regex = {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"#(?<tag>[a-z0-9-]{1,32})").unwrap()
+    };
+}
 
 /// The source of the markdown string. Decides how the markdown is parsed and rendered into
 /// the HTML string and which features are enabled for the specific source.
@@ -15,11 +32,31 @@ pub enum MarkdownSource<'a> {
     Response(&'a str),
 }
 
+// Mentions
+struct MentionReplacer;
+
+impl Replacer for MentionReplacer {
+    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut String) {
+        let username = &caps["username"];
+        dst.push_str(format!(r#"<a data-mention href="/{username}">@{username}</a>"#).as_str());
+    }
+}
+
+// Tags
+struct TagReplacer;
+
+impl Replacer for TagReplacer {
+    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut String) {
+        let tag = &caps["tag"];
+        dst.push_str(format!(r#"<a data-tag href="/tag/{tag}">#{tag}</a>"#).as_str());
+    }
+}
+
 /// Parses and renders markdown string to HTML string.
 ///
 /// * `md_source` - The markdown source string.
 pub fn md_to_html(md_source: MarkdownSource) -> String {
-    match md_source {
+    let mut html = match md_source {
         MarkdownSource::Bio(md_str) => {
             let options = Options {
                 parse: ParseOptions {
@@ -86,7 +123,7 @@ pub fn md_to_html(md_source: MarkdownSource) -> String {
                 parse: ParseOptions {
                     constructs: Constructs {
                         attention: true,
-                        autolink: false,
+                        autolink: true,
                         block_quote: false,
                         character_escape: true,
                         gfm_autolink_literal: true,
@@ -114,8 +151,8 @@ pub fn md_to_html(md_source: MarkdownSource) -> String {
                         mdx_jsx_text: false,
                         code_text: true,
                         definition: false,
-                        code_indented: true,
-                        code_fenced: true,
+                        code_indented: false,
+                        code_fenced: false,
                         character_reference: false,
                         frontmatter: false,
                         thematic_break: false,
@@ -142,7 +179,17 @@ pub fn md_to_html(md_source: MarkdownSource) -> String {
             // Does not panic unless using MDX.
             to_html_with_options(md_str, &options).unwrap_or_default()
         }
-    }
+    };
+
+    html = USERNAME_REGEX
+        .replace_all(html.as_str(), MentionReplacer)
+        .to_string();
+
+    html = TAG_REGEX
+        .replace_all(html.as_str(), TagReplacer)
+        .to_string();
+
+    html
 }
 
 #[cfg(test)]
@@ -161,6 +208,8 @@ mod tests {
 - **Bold text** is created with double asterisks or double underscores.
 - *Italic text* is created with single asterisks or single underscores.
 - ~~Strikethrough text~~ is created with double tildes.
+- @mention, @no, @this_mention_text_is_too_large, @inv-alid
+- #tag, #this-tag-text-is-too-long-to-render, #inval_id
 
 ## Lists
 
@@ -210,7 +259,9 @@ fn main() {
 <p>## Text Formatting</p>
 <p>- <strong>Bold text</strong> is created with double asterisks or double underscores.
 - <em>Italic text</em> is created with single asterisks or single underscores.
-- <del>Strikethrough text</del> is created with double tildes.</p>
+- <del>Strikethrough text</del> is created with double tildes.
+- <a data-mention href="/mention">@mention</a>, @no, <a data-mention href="/this_mention_text_is_too">@this_mention_text_is_too</a>_large, <a data-mention href="/inv">@inv</a>-alid
+- <a data-tag href="/tag/tag">#tag</a>, <a data-tag href="/tag/this-tag-text-is-too-long-to-ren">#this-tag-text-is-too-long-to-ren</a>der, <a data-tag href="/tag/inval">#inval</a>_id</p>
 <p>## Lists</p>
 <p>1. Ordered list item 1
 2. Ordered list item 2
@@ -249,7 +300,9 @@ println!(&quot;Hello&quot;);
 <p>## Text Formatting</p>
 <p>- <strong>Bold text</strong> is created with double asterisks or double underscores.
 - <em>Italic text</em> is created with single asterisks or single underscores.
-- <del>Strikethrough text</del> is created with double tildes.</p>
+- <del>Strikethrough text</del> is created with double tildes.
+- <a data-mention href="/mention">@mention</a>, @no, <a data-mention href="/this_mention_text_is_too">@this_mention_text_is_too</a>_large, <a data-mention href="/inv">@inv</a>-alid
+- <a data-tag href="/tag/tag">#tag</a>, <a data-tag href="/tag/this-tag-text-is-too-long-to-ren">#this-tag-text-is-too-long-to-ren</a>der, <a data-tag href="/tag/inval">#inval</a>_id</p>
 <p>## Lists</p>
 <p>1. Ordered list item 1
 2. Ordered list item 2
@@ -265,10 +318,7 @@ println!(&quot;Hello&quot;);
 <p>## Code</p>
 <p>Inline code can be created with backticks like <code>code</code>.</p>
 <p>Create code blocks by wrapping the code in triple backticks:</p>
-<pre><code class="language-rust">fn main() {
-    println!(&quot;Hello&quot;);
-}
-</code></pre>
+<p><code>rust fn main() {     println!(&quot;Hello&quot;); } </code></p>
 <p>## Raw HTML</p>
 <p>&lt;img alt=&quot;raw html image&quot; src=&quot;<a href="https://example.com/image.png">https://example.com/image.png</a>&quot; /&gt;</p>
 "#;

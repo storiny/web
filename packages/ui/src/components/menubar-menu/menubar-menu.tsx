@@ -25,7 +25,7 @@ const MenubarMenu = forward_ref<MenubarMenuProps, "div">((props, ref) => {
       </Trigger>
       <Portal {...slot_props?.portal}>
         <Content
-          collisionPadding={8}
+          collisionPadding={12}
           sideOffset={5}
           {...slot_props?.content}
           asChild

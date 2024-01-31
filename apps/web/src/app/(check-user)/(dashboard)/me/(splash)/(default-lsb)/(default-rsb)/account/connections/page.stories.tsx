@@ -1,6 +1,6 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { Provider } from "@storiny/shared";
+import { ConnectionProvider } from "@storiny/shared";
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
@@ -19,7 +19,7 @@ const meta: Meta<typeof AccountConnectionsPage> = {
     connections: [
       {
         id: "0",
-        provider: Provider.GITHUB,
+        provider: ConnectionProvider.GITHUB,
         url: "/",
         created_at: new Date().toJSON(),
         display_name: "zignis",

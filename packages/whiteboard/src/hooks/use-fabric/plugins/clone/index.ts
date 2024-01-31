@@ -73,13 +73,8 @@ class ClonePlugin {
   private clone(object?: NonNullable<typeof this.cache>): void {
     const active_object = object || this.canvas.getActiveObject();
 
-    if (active_object) {
-      if (is_active_selection(active_object)) {
-        // TODO: Implement active selection cloning
-        return;
-      } else {
-        this.clone_object(active_object);
-      }
+    if (active_object && !is_active_selection(active_object)) {
+      this.clone_object(active_object);
     }
   }
 

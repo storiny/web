@@ -1,3 +1,5 @@
+/* eslint-disable no-case-declarations */
+
 "use client";
 
 import clsx from "clsx";
@@ -5,6 +7,7 @@ import { Interweave, InterweaveProps, Node } from "interweave";
 import React from "react";
 
 import Link from "~/components/link";
+import UserHoverCard from "~/components/user-hover-card";
 import css from "~/theme/main.module.scss";
 
 /**
@@ -36,7 +39,7 @@ const transform = (node: HTMLElement, children: Node[]): React.ReactNode => {
         </span>
       );
     case "a":
-      return (
+      const component = (
         <Link
           className={clsx(
             node.className,
@@ -53,6 +56,18 @@ const transform = (node: HTMLElement, children: Node[]): React.ReactNode => {
           {children}
         </Link>
       );
+
+      if (is_defined(node.dataset.user)) {
+        return (
+          <UserHoverCard
+            identifier={(node.getAttribute("href") || "/").replace("/", "")}
+          >
+            {component}
+          </UserHoverCard>
+        );
+      }
+
+      return component;
   }
 };
 
@@ -62,7 +77,7 @@ const NotificationParser = ({
 }: InterweaveProps): React.ReactElement => (
   <Interweave
     {...rest}
-    allowList={["a", "b", "em", "p", "span", "div"]}
+    allowList={["a", "b", "del", "em", "p", "span", "div"]}
     containerTagName={"div"}
     content={content}
     transform={transform}

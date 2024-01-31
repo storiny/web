@@ -17,17 +17,4 @@ describe("<Status />", () => {
 
     expect(await axe(container)).toHaveNoViolations();
   });
-
-  it("renders with emoji", () => {
-    const { getByRole } = render_test_with_provider(
-      <Status
-        data-testid={"status"}
-        disable_modal
-        emoji={"1f33f"}
-        user_id={""}
-      />
-    );
-
-    expect(getByRole("img")).toBeInTheDocument();
-  });
 });

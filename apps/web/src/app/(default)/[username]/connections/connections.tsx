@@ -22,26 +22,29 @@ const Connections = ({
   is_inside_sidebar
 }: Props): React.ReactElement => (
   <div className={clsx(css["flex"], styles.connections)}>
-    {connections.map((connection) => (
-      <IconButton
-        aria-label={`${connection.display_name} on ${
-          PROVIDER_DISPLAY_NAME_MAP[connection.provider]
-        }`}
-        as={"a"}
-        className={clsx(styles.x, styles.connection)}
-        href={connection.url}
-        key={connection.provider}
-        rel={"noreferrer"}
-        size={is_inside_sidebar ? "md" : "lg"}
-        target={"_blank"}
-        title={`${connection.display_name} on ${
-          PROVIDER_DISPLAY_NAME_MAP[connection.provider]
-        }`}
-        variant={"ghost"}
-      >
-        {React.createElement(PROVIDER_ICON_MAP[connection.provider])}
-      </IconButton>
-    ))}
+    {connections.map((connection) =>
+      !PROVIDER_DISPLAY_NAME_MAP[connection.provider] ||
+      !PROVIDER_ICON_MAP[connection.provider] ? null : (
+        <IconButton
+          aria-label={`${connection.display_name} on ${
+            PROVIDER_DISPLAY_NAME_MAP[connection.provider]
+          }`}
+          as={"a"}
+          className={clsx(styles.x, styles.connection)}
+          href={connection.url}
+          key={connection.provider}
+          rel={"noreferrer"}
+          size={is_inside_sidebar ? "md" : "lg"}
+          target={"_blank"}
+          title={`${connection.display_name} on ${
+            PROVIDER_DISPLAY_NAME_MAP[connection.provider]
+          }`}
+          variant={"ghost"}
+        >
+          {React.createElement(PROVIDER_ICON_MAP[connection.provider])}
+        </IconButton>
+      )
+    )}
   </div>
 );
 

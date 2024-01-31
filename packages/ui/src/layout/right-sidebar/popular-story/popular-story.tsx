@@ -5,6 +5,7 @@ import React from "react";
 
 import Link from "~/components/link";
 import Typography from "~/components/typography";
+import UserHoverCard from "~/components/user-hover-card";
 import Persona from "~/entities/persona";
 import TrendingUpIcon from "~/icons/trending-up";
 import css from "~/theme/main.module.scss";
@@ -41,14 +42,16 @@ const PopularStory = (props: PopularStoryProps): React.ReactElement | null => {
         }}
         primary_text={
           <span className={clsx(css["flex-center"], styles["primary-text"])}>
-            <Link
-              className={clsx(css["t-medium"], css.ellipsis)}
-              fixed_color
-              href={`/${user.username}`}
-              level={"body2"}
-            >
-              {user.name}
-            </Link>
+            <UserHoverCard identifier={user.id}>
+              <Link
+                className={clsx(css["t-medium"], css.ellipsis)}
+                fixed_color
+                href={`/${user.username}`}
+                level={"body2"}
+              >
+                {user.name}
+              </Link>
+            </UserHoverCard>
             <Typography
               aria-hidden
               as={"span"}

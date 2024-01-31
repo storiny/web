@@ -49,12 +49,6 @@ const ToolsPanel = (): React.ReactElement => {
           } as React.CSSProperties
         }
       >
-        {/* TODO: Implement */}
-        {/*{tool === Tool.FILTERS && is_image_objectActive ? (*/}
-        {/*  <FiltersTools key={active_object?.get("id")} />*/}
-        {/*) : (*/}
-        {/*  <DrawTools />*/}
-        {/*)}*/}
         {active_object ||
         is_pen_mode ||
         canvas.current?.isDrawingMode ||

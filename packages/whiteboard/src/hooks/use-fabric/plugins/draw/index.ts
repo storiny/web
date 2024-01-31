@@ -1,13 +1,13 @@
 import { Canvas, FabricObject, TPointerEventInfo } from "fabric";
 
 import { CURSORS, DrawableLayerType, LayerType } from "../../../../constants";
-import { Arrow, Diamond, Ellipse, Line, Rect } from "../../../../lib";
-import { is_linear_object } from "../../../../utils";
+import { Arrow, Diamond, Ellipse, Line, Rect, Text } from "../../../../lib";
+import { is_linear_object, is_text_object } from "../../../../utils";
 
 type DrawEvent = "draw:start" | "draw:end" | "draw:scaling";
 type LinearShape = typeof Arrow | typeof Line;
 type SolidShape = typeof Diamond | typeof Ellipse | typeof Rect;
-type Shape = LinearShape | SolidShape;
+type Shape = LinearShape | SolidShape | typeof Text;
 
 const LAYER_TYPE_SHAPE_MAP: {
   [k in DrawableLayerType]: Shape;
@@ -16,7 +16,8 @@ const LAYER_TYPE_SHAPE_MAP: {
   [LayerType.DIAMOND /*  */]: Diamond,
   [LayerType.ELLIPSE /*  */]: Ellipse,
   [LayerType.LINE /*     */]: Line,
-  [LayerType.RECTANGLE /**/]: Rect
+  [LayerType.RECTANGLE /**/]: Rect,
+  [LayerType.TEXT /*     */]: Text
 };
 
 /**
@@ -95,11 +96,11 @@ export class DrawPlugin {
     this.enabled = enabled;
 
     if (enabled) {
-      this.set_crosshair_cursor();
+      this.set_cursor();
       this.canvas.discardActiveObject();
       this.canvas.requestRenderAll();
     } else if (!this.canvas.pan_manager?.get_enabled()) {
-      this.set_default_cursor();
+      this.set_cursor();
     }
   }
 
@@ -126,7 +127,7 @@ export class DrawPlugin {
   private start_drawing(): void {
     this.canvas.selection = false;
     this.started = true;
-    this.set_crosshair_cursor();
+    this.set_cursor();
     this.fire_event("draw:start");
   }
 
@@ -144,18 +145,20 @@ export class DrawPlugin {
     this.enabled = false;
     this.x = 0;
     this.y = 0;
-    this.set_default_cursor();
+    this.reset_cursor();
 
     if (this.object) {
-      this.object.set({
-        hasBorders: true,
-        isDrawing: false,
-        originX: "center",
-        originY: "center",
-        // Compensate origin mutation
-        left: this.object.left + this.object.width / 2,
-        top: this.object.top + this.object.height / 2
-      });
+      if (this.layer_type !== LayerType.TEXT) {
+        this.object.set({
+          hasBorders: true,
+          isDrawing: false,
+          originX: "center",
+          originY: "center",
+          // Compensate origin mutation
+          left: this.object.left + this.object.width / 2,
+          top: this.object.top + this.object.height / 2
+        });
+      }
 
       this.canvas.setActiveObject(this.object as any);
       this.fire_event("draw:end");
@@ -177,20 +180,23 @@ export class DrawPlugin {
   }
 
   /**
-   * Sets crosshair cursor
+   * Sets the specified cursor
+   * @param type The CSS cursor type
    * @private
    */
-  private set_crosshair_cursor(): void {
-    this.canvas.defaultCursor = CURSORS.crosshair;
-    this.canvas.hoverCursor = CURSORS.crosshair;
-    this.canvas.setCursor(CURSORS.crosshair);
+  private set_cursor(
+    type = this.layer_type === LayerType.TEXT ? CURSORS.text : CURSORS.crosshair
+  ): void {
+    this.canvas.defaultCursor = type;
+    this.canvas.hoverCursor = type;
+    this.canvas.setCursor(type);
   }
 
   /**
    * Sets default cursor
    * @private
    */
-  private set_default_cursor(): void {
+  private reset_cursor(): void {
     this.canvas.defaultCursor = CURSORS.default;
     this.canvas.hoverCursor = CURSORS.default;
     this.canvas.setCursor(CURSORS.default);
@@ -225,7 +231,27 @@ export class DrawPlugin {
     this.x = mouse.x;
     this.y = mouse.y;
 
-    if ([LayerType.LINE, LayerType.ARROW].includes(this.layer_type)) {
+    if (this.layer_type === LayerType.TEXT) {
+      const text = new Text("", { left: this.x, top: this.y });
+
+      this.object = text;
+      this.canvas.add(this.object);
+      this.end_drawing();
+
+      text.enterEditing();
+      text.hiddenTextarea?.focus();
+
+      // Remove the text node if it is empty after first deselection.
+      text.once("deselected", (event) => {
+        const text = event.target;
+
+        if (is_text_object(text) && !text.text.length) {
+          this.canvas.remove(event.target);
+        }
+      });
+
+      return;
+    } else if ([LayerType.LINE, LayerType.ARROW].includes(this.layer_type)) {
       const Class = LAYER_TYPE_SHAPE_MAP[this.layer_type] as LinearShape;
 
       this.object = new Class({

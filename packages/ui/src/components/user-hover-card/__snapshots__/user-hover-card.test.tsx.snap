@@ -1,0 +1,95 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<UserHoverCard /> matches snapshot 1`] = `
+<body>
+  <div />
+  <div
+    data-radix-popper-content-wrapper=""
+    style="position: fixed; left: 0px; top: 0px; transform: translate(0, -200%); min-width: max-content;"
+  >
+    <div
+      class="content"
+      data-align="center"
+      data-side="top"
+      data-state="open"
+      style="--radix-hover-card-content-transform-origin: var(--radix-popper-transform-origin); --radix-hover-card-content-available-width: var(--radix-popper-available-width); --radix-hover-card-content-available-height: var(--radix-popper-available-height); --radix-hover-card-trigger-width: var(--radix-popper-anchor-width); --radix-hover-card-trigger-height: var(--radix-popper-anchor-height); animation: none;"
+    >
+      <div
+        aria-busy="true"
+        class="flex-col"
+        style="cursor: progress;"
+      >
+        <div
+          class="header"
+        >
+          <span
+            aria-hidden="true"
+            class="skeleton circular x avatar"
+            style="--width: 48px; --height: 48px;"
+          />
+          <span
+            aria-hidden="true"
+            class="skeleton rectangular x action"
+            style="--width: 30px; --height: 30px;"
+          />
+        </div>
+        <div
+          class="flex-col"
+          style="margin-block: 2px;"
+        >
+          <span
+            aria-hidden="true"
+            class="skeleton rectangular"
+            style="--width: 96px; --height: 14px;"
+          />
+          <span
+            aria-hidden="true"
+            class="spacer vertical"
+            style="--size: 0.75;"
+          />
+          <span
+            aria-hidden="true"
+            class="skeleton rectangular"
+            style="--width: 48px; --height: 12px;"
+          />
+          <span
+            aria-hidden="true"
+            class="spacer vertical"
+            style="--size: 2.5;"
+          />
+          <div
+            class="flex stats"
+          >
+            <span
+              aria-hidden="true"
+              class="skeleton rectangular"
+              style="--width: 52px; --height: 12px;"
+            />
+            <span
+              aria-hidden="true"
+              class="skeleton rectangular"
+              style="--width: 52px; --height: 12px;"
+            />
+          </div>
+        </div>
+      </div>
+      <span
+        style="position: absolute; bottom: 0px; transform: translateY(100%); visibility: hidden;"
+      >
+        <svg
+          class="arrow"
+          height="5"
+          preserveAspectRatio="none"
+          style="display: block;"
+          viewBox="0 0 30 10"
+          width="10"
+        >
+          <polygon
+            points="0,0 30,0 15,10"
+          />
+        </svg>
+      </span>
+    </div>
+  </div>
+</body>
+`;

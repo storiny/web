@@ -4,14 +4,21 @@ import {
   controlsUtils as control_utils,
   FabricObject,
   Point,
-  Transform
+  Transform,
+  util
 } from "fabric";
 
 import { CURSORS } from "../../../constants";
-import { is_linear_object, recover_object } from "../../../utils";
+import {
+  compute_object_bounding_rect,
+  is_linear_object,
+  is_text_object,
+  recover_object
+} from "../../../utils";
 import { CLONE_PROPS } from "../common";
 
-const DISABLED_CONTROLS = ["ml", "mt", "mr", "mb"];
+const DISABLED_CONTROLS = ["ml", "mr", "mt", "mb"];
+const ROTATION_CONTROLS = ["r_ul", "r_ur", "r_ll", "r_lr"];
 const ALLOWED_LINEAR_CONTROLS = [
   // Move
   "linear_1",
@@ -19,6 +26,17 @@ const ALLOWED_LINEAR_CONTROLS = [
   // Clone
   "cl",
   "cr"
+];
+const ALLOWED_TEXT_CONTROLS = [
+  "cl",
+  "cr",
+  "tl",
+  "tr",
+  "br",
+  "bl",
+  "mr",
+  "ml",
+  ...ROTATION_CONTROLS
 ];
 const CLONE_CONTROL_SIZE = 14;
 const MOVE_CONTROL_SIZE = 16;
@@ -114,9 +132,10 @@ class ObjectControls {
 
       this.object.forEachControl((control, key) => {
         if (
-          DISABLED_CONTROLS.includes(key) ||
+          (DISABLED_CONTROLS.includes(key) && !is_text_object(this.object)) ||
           (is_linear_object(this.object) &&
-            !ALLOWED_LINEAR_CONTROLS.includes(key))
+            !ALLOWED_LINEAR_CONTROLS.includes(key)) ||
+          (is_text_object(this.object) && !ALLOWED_TEXT_CONTROLS.includes(key))
         ) {
           control.visible = false;
         }
@@ -145,7 +164,7 @@ class ObjectControls {
           const p = this.object.oCoords[key];
 
           if (control.actionName === "linear-move") {
-            const bounding_rect = this.object.getBoundingRect();
+            const bounding_rect = compute_object_bounding_rect(this.object);
             const flipped_x1 = this.object.get("x1") > this.object.left;
             const flipped_y1 = this.object.get("y1") > this.object.top;
             const flipped_x2 = this.object.get("x2") > this.object.left;
@@ -180,7 +199,7 @@ class ObjectControls {
             ctx.fill();
             ctx.stroke();
           } else if (control.actionName === "clone") {
-            const bounding_rect = this.object.getBoundingRect();
+            const bounding_rect = compute_object_bounding_rect(this.object);
             const margin = 24; // (px)
             const x =
               key === "cl"
@@ -200,17 +219,36 @@ class ObjectControls {
             ctx.fill();
             ctx.stroke();
           } else {
-            control.render(
-              ctx,
-              p.x,
-              p.y,
-              {
-                cornerStrokeColor: this.object.cornerStrokeColor,
-                cornerDashArray: this.object.cornerDashArray,
-                cornerColor: this.object.cornerColor
-              },
-              this.object
-            );
+            // Draw a rectangle for width controls.
+            if (["ml", "mr"].includes(key)) {
+              const x_size = 6;
+              const y_size = 12;
+              const angle = this.object.getTotalAngle();
+
+              ctx.save();
+
+              ctx.fillStyle = this.object.cornerColor;
+              ctx.strokeStyle = this.object.cornerStrokeColor;
+              ctx.lineWidth = 1;
+              ctx.translate(p.x, p.y);
+              ctx.rotate(util.degreesToRadians(angle));
+              ctx.fillRect(-(x_size / 2), -(y_size / 2), x_size, y_size);
+              ctx.strokeRect(-(x_size / 2), -(y_size / 2), x_size, y_size);
+
+              ctx.restore();
+            } else {
+              control.render(
+                ctx,
+                p.x,
+                p.y,
+                {
+                  cornerStrokeColor: this.object.cornerStrokeColor,
+                  cornerDashArray: this.object.cornerDashArray,
+                  cornerColor: this.object.cornerColor
+                },
+                this.object
+              );
+            }
           }
         }
       });

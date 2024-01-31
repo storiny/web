@@ -37,11 +37,11 @@ const get_name_initials = (name: string): string =>
 
 const AVATAR_IMAGE_SIZE_MAP: Record<AvatarSize, ImageSize> = {
   xl2: ImageSize.W_128,
-  xl: ImageSize.W_64,
-  lg: ImageSize.W_64,
-  md: ImageSize.W_32,
-  sm: ImageSize.W_24,
-  xs: ImageSize.W_24
+  xl: ImageSize.W_128,
+  lg: ImageSize.W_128,
+  md: ImageSize.W_64,
+  sm: ImageSize.W_64,
+  xs: ImageSize.W_64
 };
 
 const Avatar = forward_ref<AvatarProps, "span">((props, ref) => {

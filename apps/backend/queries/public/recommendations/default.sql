@@ -61,8 +61,10 @@ WITH recommended_stories AS (SELECT
 																AND source_s.deleted_at IS NULL
 															 )
 							 WHERE
+								   -- Ignore current story
+								   s.id <> $1
 								   -- Public
-								   s.visibility = 2
+							   AND s.visibility = 2
 							   AND s.published_at IS NOT NULL
 							   AND s.deleted_at IS NULL
 							 GROUP BY

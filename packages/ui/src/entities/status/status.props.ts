@@ -7,6 +7,11 @@ export interface StatusProps extends PolymorphicProps<"span"> {
    */
   disable_modal?: boolean;
   /**
+   * The editable flag. If `true`, the status can be modified if it belongs to the user.
+   * @default true
+   */
+  editable?: boolean;
+  /**
    * The emoji place before the status text.
    */
   emoji?: string | null;

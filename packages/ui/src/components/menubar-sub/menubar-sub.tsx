@@ -41,7 +41,7 @@ const MenubarSub = forward_ref<MenubarSubProps, "div">((props, ref) => {
       <Portal {...slot_props?.portal}>
         <SubContent
           alignOffset={-5}
-          collisionPadding={8}
+          collisionPadding={12}
           sideOffset={5}
           {...slot_props?.content}
           asChild

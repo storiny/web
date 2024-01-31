@@ -33,8 +33,8 @@ const Page = (): React.ReactElement => (
         src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/presentational/about-splash`}
         srcSet={[
           `${process.env.NEXT_PUBLIC_CDN_URL}/w@${ImageSize.W_640}/web-assets/presentational/about-splash 640w`,
-          `${process.env.NEXT_PUBLIC_CDN_URL}/w@${ImageSize.W_860}/web-assets/presentational/about-splash 860w`,
-          `${process.env.NEXT_PUBLIC_CDN_URL}/w@${ImageSize.W_1024}/web-assets/presentational/about-splash 1024w`,
+          `${process.env.NEXT_PUBLIC_CDN_URL}/w@${ImageSize.W_960}/web-assets/presentational/about-splash 960w`,
+          `${process.env.NEXT_PUBLIC_CDN_URL}/w@${ImageSize.W_1200}/web-assets/presentational/about-splash 1200w`,
           `${process.env.NEXT_PUBLIC_CDN_URL}/w@${ImageSize.W_1440}/web-assets/presentational/about-splash 1440w`
         ].join(",")}
       />

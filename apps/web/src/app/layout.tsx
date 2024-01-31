@@ -58,18 +58,6 @@ const RootLayout = ({
           title="Storiny"
           type="application/opensearchdescription+xml"
         />
-        {/* Preload emoji spritesheet */}
-        <link
-          as="image"
-          href={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/raw/spritesheets/emoji-sprite`}
-          rel="preload"
-        />
-        {/* Preload background noise */}
-        <link
-          as="image"
-          href={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/background/noise`}
-          rel="preload"
-        />
         <CriticalStyles />
         <CriticalFonts />
         <LazyFonts />

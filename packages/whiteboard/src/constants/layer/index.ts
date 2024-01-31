@@ -38,10 +38,9 @@ export enum LayerType {
   TEXT /*     */ = "text"
 }
 
-// TODO: Remove text once implemented
 export type DrawableLayerType = Exclude<
   LayerType,
-  LayerType.PEN | LayerType.IMAGE | LayerType.TEXT
+  LayerType.PEN | LayerType.IMAGE
 >;
 
 export const MIN_LAYER_SIZE = 1;

@@ -4,6 +4,7 @@ import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
+import UserHoverCard from "~/components/user-hover-card";
 import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 import { is_hex_color } from "~/utils/is-hex-color";
@@ -16,14 +17,8 @@ import {
 } from "../common/typography";
 import typography_styles from "../common/typography.module.scss";
 import styles from "./typography.module.scss";
-import {
-  TypographyElement,
-  TypographyLevel,
-  TypographyProps
-} from "./typography.props";
+import { TypographyElement, TypographyProps } from "./typography.props";
 import { TypographyNestedContext } from "./typography-context";
-
-// TODO(future): Add hover-cards for mention and tag types
 
 const Typography = forward_ref<TypographyProps, TypographyElement>(
   (props, ref) => {
@@ -76,7 +71,7 @@ const Typography = forward_ref<TypographyProps, TypographyElement>(
               }
             : {})}
         >
-          {(["mention", "tag"] as TypographyLevel[]).includes(level) ? (
+          {level === "tag" ? (
             <NextLink
               {...slot_props?.link}
               className={clsx(
@@ -85,11 +80,27 @@ const Typography = forward_ref<TypographyProps, TypographyElement>(
                 ellipsis && typography_styles["ellipsis-child"],
                 slot_props?.link?.className
               )}
-              href={`${level === "tag" ? "/tag/" : "/"}${children}`}
+              href={`/tag/${children}`}
             >
               {TYPOGRAPHY_PREFIX_MAP[level] || ""}
               {children}
             </NextLink>
+          ) : level === "mention" ? (
+            <UserHoverCard identifier={String(children)}>
+              <NextLink
+                {...slot_props?.link}
+                className={clsx(
+                  styles.link,
+                  ellipsis && css["ellipsis"],
+                  ellipsis && typography_styles["ellipsis-child"],
+                  slot_props?.link?.className
+                )}
+                href={`/${children}`}
+              >
+                {TYPOGRAPHY_PREFIX_MAP[level] || ""}
+                {children}
+              </NextLink>
+            </UserHoverCard>
           ) : ellipsis ? (
             <span
               {...slot_props?.ellipsis_cell}

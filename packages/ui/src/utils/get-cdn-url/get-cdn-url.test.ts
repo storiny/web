@@ -10,8 +10,8 @@ describe("get_cdn_url", () => {
   });
 
   it("returns a valid image size", () => {
-    expect(get_cdn_url("test", ImageSize.W_32)).toEqual(
-      `${process.env.NEXT_PUBLIC_CDN_URL}/uploads/w@32/test`
+    expect(get_cdn_url("test", ImageSize.W_64)).toEqual(
+      `${process.env.NEXT_PUBLIC_CDN_URL}/uploads/w@64/test`
     );
   });
 });
