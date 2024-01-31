@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT u.id,\n\t   u.name,\n\t   u.username,\n\t   u.avatar_id,\n\t   u.avatar_hex,\n\t   u.public_flags,\n\t   u.rendered_bio as \"rendered_bio!\"\nFROM\n\tusers u\n\t\t-- Join stories\n\t\tINNER JOIN stories AS \"u->story\"\n\t\t\t\t   ON \"u->story\".user_id = u.id\n\t\t\t\t\t   AND \"u->story\".deleted_at IS NULL\n\t\t\t\t\t   AND \"u->story\".published_at IS NOT NULL\nWHERE\n\t\"u->story\".category::TEXT = ANY ($1)\nORDER BY\n\tu.follower_count DESC\nLIMIT 25",
+  "query": "SELECT u.id,\n\t   u.name,\n\t   u.username,\n\t   u.avatar_id,\n\t   u.avatar_hex,\n\t   u.public_flags,\n\t   u.rendered_bio AS \"rendered_bio!\"\nFROM\n\tusers u\n\t\t-- Join stories\n\t\tINNER JOIN stories AS \"u->story\"\n\t\t\t\t   ON \"u->story\".user_id = u.id\n\t\t\t\t\t   AND \"u->story\".deleted_at IS NULL\n\t\t\t\t\t   AND \"u->story\".published_at IS NOT NULL\nWHERE\n\t\"u->story\".category::TEXT = ANY ($1)\nORDER BY\n\tu.follower_count DESC\nLIMIT 25",
   "describe": {
     "columns": [
       {
@@ -54,5 +54,5 @@
       true
     ]
   },
-  "hash": "d9c7feff8a3ab2fcc2f5b8c03645cf6807c0f29e26901a0f742fb2f0f2ea98ef"
+  "hash": "da1b024c5d7c361cd38be03d486402c16cf39b8a8d7e17455fceb93b5cd520d1"
 }

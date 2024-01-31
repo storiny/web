@@ -100,6 +100,12 @@ const UserHoverCardContent = ({
           hex={user.avatar_hex}
           label={user.name}
           size={"lg"}
+          slot_props={{
+            image: {
+              // For transparent avatars over the banner.
+              style: { background: "var(--bg-elevation-sm)" }
+            }
+          }}
         />
         {!is_self && (
           <IconButton
