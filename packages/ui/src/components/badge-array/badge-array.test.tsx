@@ -7,7 +7,7 @@ import { render_test_with_provider } from "~/redux/test-utils";
 import BadgeArray from "./badge-array";
 import { BadgeArrayProps } from "./badge-array.props";
 
-describe("<Stepper />", () => {
+describe("<BadgeArray />", () => {
   it("matches snapshot", () => {
     const { container } = render_test_with_provider(
       <BadgeArray flags={UserFlag.STAFF} />
@@ -47,6 +47,6 @@ describe("<Stepper />", () => {
       />
     );
 
-    expect(getByTestId("bage")).toBeInTheDocument();
+    expect(getByTestId("badge")).toBeInTheDocument();
   });
 });
