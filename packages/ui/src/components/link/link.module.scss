@@ -5,6 +5,7 @@
   text-underline-offset: 3px; // Underline offset
   border-radius: var(--radius-sm); // Focus outline radius
   cursor: pointer;
+  width: fit-content;
 
   &.inherit {
     font-size: inherit;

@@ -15,6 +15,7 @@ import Link from "~/components/link";
 import NoSsr from "~/components/no-ssr";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import UserHoverCard from "~/components/user-hover-card";
 import Persona from "~/entities/persona";
 import { use_media_query } from "~/hooks/use-media-query";
 import ExternalLinkIcon from "~/icons/external-link";
@@ -173,13 +174,17 @@ const Comment = (props: CommentProps): React.ReactElement => {
                   hex: comment.user?.avatar_hex
                 }}
                 primary_text={
-                  <Link
-                    ellipsis
-                    fixed_color
-                    href={`/${comment.user?.username || ""}`}
+                  <UserHoverCard
+                    identifier={comment.user?.id || comment.user_id}
                   >
-                    {comment.user?.name}
-                  </Link>
+                    <Link
+                      ellipsis
+                      fixed_color
+                      href={`/${comment.user?.username || ""}`}
+                    >
+                      {comment.user?.name}
+                    </Link>
+                  </UserHoverCard>
                 }
                 secondary_text={
                   <Typography

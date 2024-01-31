@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT \"t->story_tag->story\".category::TEXT AS \"category!\",\n\t   COALESCE(\n\t\t\t\t\t   ARRAY_AGG(\n\t\t\t\t\t   DISTINCT (t.id, t.name)\n\t\t\t\t\t\t\t\t) FILTER (\n\t\t\t\t\t\t   WHERE t.id IS NOT NULL\n\t\t\t\t\t\t   ), '{}'\n\t   )                                    AS \"tags!: Vec<Tag>\"\nFROM\n\ttags t\n\t\t-- Join story tags\n\t\tINNER JOIN story_tags AS \"t->story_tag\"\n\t\t\t\t   ON \"t->story_tag\".tag_id = t.id\n\t\t-- Join stories\n\t\tINNER JOIN stories AS \"t->story_tag->story\"\n\t\t\t\t   ON \"t->story_tag->story\".id = \"t->story_tag\".story_id\n\t\t\t\t\t   AND \"t->story_tag->story\".deleted_at IS NULL\n\t\t\t\t\t   AND \"t->story_tag->story\".published_at IS NOT NULL\nWHERE\n\t\"t->story_tag->story\".category::TEXT = ANY ($1)\nGROUP BY\n\t\"t->story_tag->story\".category\nLIMIT 25",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "category!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "tags!: Vec<Tag>",
+        "type_info": "RecordArray"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "TextArray"
+      ]
+    },
+    "nullable": [
+      null,
+      null
+    ]
+  },
+  "hash": "093fd5bdf58f0a9e30be5897a05011af7b9880ae1967d9ef4bf4ab2171fd7add"
+}

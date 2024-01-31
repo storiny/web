@@ -241,7 +241,7 @@ mod tests {
         let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 3);
+        assert_eq!(json.unwrap().len(), 2);
 
         // Soft-delete one of the stories.
         let result = sqlx::query(
@@ -259,7 +259,7 @@ WHERE id = $1
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only two stories.
+        // Should return only one story.
         let req = test::TestRequest::get()
             .uri(&format!("/v1/public/stories/{}/recommendations", 4))
             .to_request();
@@ -270,7 +270,7 @@ WHERE id = $1
         let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
+        assert_eq!(json.unwrap().len(), 1);
 
         // Recover the soft-deleted story.
         let result = sqlx::query(
@@ -299,7 +299,7 @@ WHERE id = $1
         let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 3);
+        assert_eq!(json.unwrap().len(), 2);
 
         Ok(())
     }
@@ -322,7 +322,7 @@ WHERE id = $1
         let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 3);
+        assert_eq!(json.unwrap().len(), 2);
 
         // Unpublish one of the stories.
         let result = sqlx::query(
@@ -338,7 +338,7 @@ WHERE id = $1
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only two stories.
+        // Should return only one story.
         let req = test::TestRequest::get()
             .uri(&format!("/v1/public/stories/{}/recommendations", 4))
             .to_request();
@@ -349,7 +349,7 @@ WHERE id = $1
         let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
+        assert_eq!(json.unwrap().len(), 1);
 
         // Republish the unpublished story.
         let result = sqlx::query(
@@ -376,7 +376,7 @@ WHERE id = $1
         let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 3);
+        assert_eq!(json.unwrap().len(), 2);
 
         Ok(())
     }
@@ -423,17 +423,16 @@ WHERE id = $1
         let result = sqlx::query(
             r#"
 INSERT INTO story_likes (user_id, story_id)
-VALUES ($1, $2), ($1, $3), ($1, $4)
+VALUES ($1, $2), ($1, $3)
 "#,
         )
         .bind(user_id.unwrap())
-        .bind(4_i64)
         .bind(5_i64)
         .bind(6_i64)
         .execute(&mut *conn)
         .await?;
 
-        assert_eq!(result.rows_affected(), 3);
+        assert_eq!(result.rows_affected(), 2);
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
@@ -469,17 +468,16 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
         let result = sqlx::query(
             r#"
 INSERT INTO bookmarks (user_id, story_id)
-VALUES ($1, $2), ($1, $3), ($1, $4)
+VALUES ($1, $2), ($1, $3)
 "#,
         )
         .bind(user_id.unwrap())
-        .bind(4_i64)
         .bind(5_i64)
         .bind(6_i64)
         .execute(&mut *conn)
         .await?;
 
-        assert_eq!(result.rows_affected(), 3);
+        assert_eq!(result.rows_affected(), 2);
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
@@ -513,7 +511,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
         let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 3);
+        assert_eq!(json.unwrap().len(), 2);
 
         // Soft-delete one of the stories.
         let result = sqlx::query(
@@ -529,7 +527,7 @@ WHERE id = $1
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only two stories.
+        // Should return only one story.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/public/stories/{}/recommendations", 4))
@@ -541,7 +539,7 @@ WHERE id = $1
         let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
+        assert_eq!(json.unwrap().len(), 1);
 
         // Recover the soft-deleted story.
         let result = sqlx::query(
@@ -569,7 +567,7 @@ WHERE id = $1
         let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 3);
+        assert_eq!(json.unwrap().len(), 2);
 
         Ok(())
     }
@@ -593,7 +591,7 @@ WHERE id = $1
         let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 3);
+        assert_eq!(json.unwrap().len(), 2);
 
         // Unpublish one of the stories.
         let result = sqlx::query(
@@ -609,7 +607,7 @@ WHERE id = $1
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should return only two stories.
+        // Should return only one story.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
             .uri(&format!("/v1/public/stories/{}/recommendations", 4))
@@ -621,7 +619,7 @@ WHERE id = $1
         let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
+        assert_eq!(json.unwrap().len(), 1);
 
         // Republish the unpublished story.
         let result = sqlx::query(
@@ -649,7 +647,7 @@ WHERE id = $1
         let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 3);
+        assert_eq!(json.unwrap().len(), 2);
 
         Ok(())
     }

@@ -17,6 +17,7 @@ import NoSsr from "~/components/no-ssr";
 import Spacer from "~/components/spacer";
 import Tooltip from "~/components/tooltip";
 import Typography from "~/components/typography";
+import UserHoverCard from "~/components/user-hover-card";
 import Persona from "~/entities/persona";
 import TagChip from "~/entities/tag-chip";
 import { use_media_query } from "~/hooks/use-media-query";
@@ -140,13 +141,15 @@ const Meta = (props: StoryProps): React.ReactElement | null => {
       className={styles.persona}
       primary_text={
         <span className={css["flex"]} style={{ gap: "4px" }}>
-          <Link
-            className={css["t-medium"]}
-            href={`/${story.user?.username}`}
-            level={"body2"}
-          >
-            {story.user?.name}
-          </Link>
+          <UserHoverCard identifier={story.user?.id || story.user_id}>
+            <Link
+              className={css["t-medium"]}
+              href={`/${story.user?.username}`}
+              level={"body2"}
+            >
+              {story.user?.name}
+            </Link>
+          </UserHoverCard>
           <Typography
             aria-hidden
             as={"span"}
