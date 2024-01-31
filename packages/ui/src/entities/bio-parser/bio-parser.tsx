@@ -2,7 +2,6 @@
 
 import clsx from "clsx";
 import { Interweave, InterweaveProps, Node } from "interweave";
-import NextLink from "next/link";
 import React from "react";
 
 import Link from "~/components/link";
@@ -22,13 +21,10 @@ const transform = (node: HTMLElement, children: Node[]): React.ReactNode => {
       ) {
         return (
           <Typography
-            as={NextLink}
             className={clsx(node.className)}
-            href={node.getAttribute("href") || "/"}
             level={
               typeof node.dataset.mention !== "undefined" ? "mention" : "tag"
             }
-            target={"_blank"}
           >
             {children}
           </Typography>
