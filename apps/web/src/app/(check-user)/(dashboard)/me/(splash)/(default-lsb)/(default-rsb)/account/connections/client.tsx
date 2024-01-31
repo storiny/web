@@ -1,5 +1,6 @@
 "use client";
 
+import { ConnectionProvider } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
@@ -12,8 +13,7 @@ import { DateFormat, format_date } from "~/utils/format-date";
 
 import {
   PROVIDER_DISPLAY_NAME_MAP,
-  PROVIDER_ICON_MAP,
-  PROVIDER_KEY_MAP
+  PROVIDER_ICON_MAP
 } from "../../../../../../../../providers";
 import DashboardGroup from "../../../dashboard-group";
 import DashboardTitle from "../../../dashboard-title";
@@ -123,12 +123,18 @@ const ConnectionSettingsClient = ({
         </Typography>
         <Spacer orientation={"vertical"} size={5} />
         <ul className={clsx(css["flex-col"], styles.list)}>
-          {Object.keys(PROVIDER_KEY_MAP)
-            .filter((item) => Boolean(PROVIDER_KEY_MAP[item])) // Filter out unspecified and unrecognized items
+          {Object.values(ConnectionProvider)
+            // Remove this filter expression when we support all the providers
+            .filter((item) =>
+              // Array of presently supported providers
+              ["github", "discord", "dribbble", "spotify", "youtube"].includes(
+                item
+              )
+            )
             .map((provider) => (
               <ConnectionItem
                 connection={connections.find(
-                  (connection) => String(connection.provider) === provider
+                  (connection) => connection.provider === provider
                 )}
                 key={provider}
                 provider={provider}

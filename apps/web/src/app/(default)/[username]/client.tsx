@@ -205,11 +205,11 @@ const Page = ({
                   ].join(","),
                   // eslint-disable-next-line prefer-snakecase/prefer-snakecase
                   srcSet: [
-                    `${get_cdn_url(profile.banner_id, ImageSize.W_2048)} 2048w`,
+                    `${get_cdn_url(profile.banner_id, ImageSize.W_2440)} 2440w`,
                     `${get_cdn_url(profile.banner_id, ImageSize.W_1920)} 1920w`,
                     `${get_cdn_url(profile.banner_id, ImageSize.W_1440)} 1440w`,
-                    `${get_cdn_url(profile.banner_id, ImageSize.W_1024)} 1024w`,
-                    `${get_cdn_url(profile.banner_id, ImageSize.W_860)} 860w`,
+                    `${get_cdn_url(profile.banner_id, ImageSize.W_1200)} 1200w`,
+                    `${get_cdn_url(profile.banner_id, ImageSize.W_960)} 960w`,
                     `${get_cdn_url(profile.banner_id, ImageSize.W_640)} 640w`,
                     `${get_cdn_url(profile.banner_id, ImageSize.W_320)} 320w`
                   ].join(",")
@@ -285,10 +285,10 @@ const Page = ({
               is_suspended
                 ? "Account suspended"
                 : profile.is_blocked_by_user
-                ? "This user has blocked you"
-                : is_blocked
-                ? "You have blocked this user"
-                : "This account is private"
+                  ? "This user has blocked you"
+                  : is_blocked
+                    ? "You have blocked this user"
+                    : "This account is private"
             }
           />
           {content_hidden && (

@@ -3,7 +3,10 @@ import React from "react";
 
 import css from "~/theme/main.module.scss";
 
-import { is_interactive_object } from "../../../../utils";
+import {
+  compute_object_bounding_rect,
+  is_interactive_object
+} from "../../../../utils";
 
 const POPOVER_ID = "object-popover";
 
@@ -135,11 +138,11 @@ class ActionsPlugin {
         !this.active_object.get("isMoving") &&
         !this.active_object.get("isDrawing")
       ) {
-        const bounding_rect = this.active_object.getBoundingRect();
-        const x = bounding_rect.left + bounding_rect.width / 2;
-        const y = bounding_rect.top - this.vertical_margin;
-
-        this.render_popover(x, y);
+        const bounding_rect = compute_object_bounding_rect(this.active_object);
+        this.render_popover(
+          bounding_rect.left + bounding_rect.width / 2,
+          bounding_rect.top - this.vertical_margin
+        );
       }
     });
   }

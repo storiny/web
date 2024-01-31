@@ -63,35 +63,6 @@
     "schemas": ["dailymotion.com/video/*"]
   },
   {
-    "name": "Facebook Page",
-    "endpoint": "https://graph.facebook.com/v10.0/oembed_page",
-    "schemas": ["facebook.com/*"]
-  },
-  {
-    "name": "Facebook Post",
-    "endpoint": "https://graph.facebook.com/v10.0/oembed_post",
-    "schemas": [
-      "facebook.com/*/posts/*",
-      "facebook.com/*/activity/*",
-      "facebook.com/*/photos/*",
-      "facebook.com/photo.php?fbid=*",
-      "facebook.com/photos/*",
-      "facebook.com/permalink.php?story_fbid=*",
-      "facebook.com/media/set?set=*",
-      "facebook.com/questions/*",
-      "facebook.com/notes/*/*/*"
-    ]
-  },
-  {
-    "name": "Facebook Video",
-    "endpoint": "https://graph.facebook.com/v10.0/oembed_video",
-    "schemas": [
-      "facebook.com/*/videos/*",
-      "facebook.com/video.php?id=*",
-      "facebook.com/video.php?v=*"
-    ]
-  },
-  {
     "name": "Flickr",
     "endpoint": "https://flickr.com/services/oembed",
     "schemas": ["*.flickr.com/photos/*", "flic.kr/p/*", "*.*.flickr.com/*/*"]
@@ -120,18 +91,6 @@
     "name": "Hulu",
     "endpoint": "https://hulu.com/api/oembed.json",
     "schemas": ["hulu.com/watch/*"]
-  },
-  {
-    "name": "Instagram",
-    "endpoint": "https://graph.facebook.com/v10.0/instagram_oembed",
-    "schemas": [
-      "instagram.com/p/*",
-      "instagram.com/tv/*",
-      "instagram.com/reel/*",
-      "instagr.am/p/*",
-      "instagr.am/tv/*",
-      "instagr.am/reel/*"
-    ]
   },
   {
     "name": "Kickstarter",

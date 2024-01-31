@@ -26,4 +26,5 @@ export const use_shortcuts = (): void => {
   use_tool_key(Tool.ELLIPSE, "o");
   use_tool_key(Tool.LINE, "l");
   use_tool_key(Tool.ARROW, "shift+l");
+  use_tool_key(Tool.TEXT, "shift+t");
 };

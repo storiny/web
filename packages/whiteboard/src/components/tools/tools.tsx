@@ -14,7 +14,6 @@ import Tooltip, { TooltipProps } from "~/components/tooltip";
 import ArrowIcon from "~/icons/arrow";
 import CircleIcon from "~/icons/circle";
 import DiamondIcon from "~/icons/diamond";
-import FiltersIcon from "~/icons/filters";
 import HandIcon from "~/icons/hand";
 import ImageIcon from "~/icons/image";
 import LineIcon from "~/icons/line";
@@ -117,14 +116,12 @@ const ShapeTools = (): React.ReactElement => (
         value={Tool.ARROW}
       />
     </PositionedTooltip>
-    <PositionedTooltip content={"Text tool (available soon)"}>
-      {/* TODO: Implement */}
+    <PositionedTooltip content={"Text tool"} shortcut_key={"Shift+T"}>
       <Tab
         aria-controls={undefined}
         aria-label={"Text tool"}
         className={clsx(styles.x, styles.tool)}
         decorator={<TypographyIcon className={clsx(styles.x, styles.icon)} />}
-        disabled
         role={undefined}
         value={Tool.TEXT}
       />
@@ -263,6 +260,9 @@ const Tools = (): React.ReactElement => {
       case Tool.ARROW:
         toggle_draw_mode(LayerType.ARROW);
         break;
+      case Tool.TEXT:
+        toggle_draw_mode(LayerType.TEXT);
+        break;
       default:
         toggle_draw_mode(null);
         break;
@@ -329,19 +329,6 @@ const Tools = (): React.ReactElement => {
           </PositionedTooltip>
           <Separator />
           <ImageTool />
-          <PositionedTooltip content={"Filters tool (available soon)"}>
-            <Tab
-              aria-controls={undefined}
-              aria-label={"Filters tool"}
-              className={clsx(styles.x, styles.tool)}
-              decorator={
-                <FiltersIcon className={clsx(styles.x, styles.icon)} />
-              }
-              disabled
-              role={undefined}
-              value={Tool.FILTERS}
-            />
-          </PositionedTooltip>
           <Separator />
           <ShapeTools />
         </TabsList>

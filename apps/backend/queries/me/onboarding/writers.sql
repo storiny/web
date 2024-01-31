@@ -1,9 +1,10 @@
-SELECT u.id           AS "id",
-	   u.name         AS "name",
-	   u.username     AS "username",
-	   u.avatar_id    AS "avatar_id",
-	   u.avatar_hex   AS "avatar_hex",
-	   u.public_flags AS "public_flags"
+SELECT u.id,
+	   u.name,
+	   u.username,
+	   u.avatar_id,
+	   u.avatar_hex,
+	   u.public_flags,
+	   u.rendered_bio AS "rendered_bio!"
 FROM
 	users u
 		-- Join stories

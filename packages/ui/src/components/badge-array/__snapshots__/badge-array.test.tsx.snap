@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<BadgeArray /> matches snapshot 1`] = `
+<span
+  class="array"
+  style="--badge-size: 16px;"
+>
+  <span
+    aria-hidden="true"
+    class="skeleton rectangular"
+    style="--height: var(--badge-size, 24px); --width: var(--badge-size, 24px);"
+  />
+</span>
+`;

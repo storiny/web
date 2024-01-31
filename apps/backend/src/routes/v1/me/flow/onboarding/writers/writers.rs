@@ -35,6 +35,7 @@ struct Writer {
     avatar_id: Option<Uuid>,
     avatar_hex: Option<String>,
     public_flags: i32,
+    rendered_bio: String,
 }
 
 #[get("/v1/me/flow/onboarding/writers")]

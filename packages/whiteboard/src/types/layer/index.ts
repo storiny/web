@@ -167,10 +167,6 @@ export type TextLayer = Omit<
    */
   lineHeight?: number;
   /**
-   * Layer text content
-   */
-  text: string;
-  /**
    * Text align
    */
   textAlign?: TextAlign;

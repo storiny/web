@@ -38,6 +38,13 @@ const next_config = {
       ]
     }
   ],
+  rewrites: () => [
+    // Hide source maps
+    {
+      source: "/:path*.map",
+      destination: "/404"
+    }
+  ],
   images: {
     loader: "custom",
     loaderFile: "./img.loader.js",
@@ -61,10 +68,15 @@ const next_config = {
   transpilePackages: ["@storiny/ui", "@storiny/editor", "@storiny/shared"],
   output: "standalone",
   sentry: {
-    disableServerWebpackPlugin: true,
-    disableClientWebpackPlugin: true,
+    hideSourceMaps: true,
     autoInstrumentServerFunctions: false
   }
 };
 
-export default with_sentry_config(with_bundle_analyzer(with_mdx(next_config)));
+export default with_sentry_config(with_bundle_analyzer(with_mdx(next_config)), {
+  org: "storiny",
+  project: "website",
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  silent: true,
+  dryRun: process.env.NODE_ENV === "development"
+});

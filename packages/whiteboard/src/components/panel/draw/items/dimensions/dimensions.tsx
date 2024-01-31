@@ -14,7 +14,11 @@ import {
   use_canvas,
   use_event_render
 } from "../../../../../hooks";
-import { is_scalable_object, modify_object } from "../../../../../utils";
+import {
+  is_scalable_object,
+  is_text_object,
+  modify_object
+} from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../item";
 
 const Dimensions = (): React.ReactElement | null => {
@@ -32,6 +36,16 @@ const Dimensions = (): React.ReactElement | null => {
   });
 
   use_event_render("object:scaling", (options) => {
+    const object = options.target;
+    return object.get("id") === active_object?.get("id");
+  });
+  use_event_render("object:resizing", (options) => {
+    const object = options.target;
+    return (
+      object.get("id") === active_object?.get("id") && is_text_object(object)
+    );
+  });
+  use_event_render("text:changed", (options) => {
     const object = options.target;
     return object.get("id") === active_object?.get("id");
   });
@@ -195,8 +209,9 @@ const Dimensions = (): React.ReactElement | null => {
           value={Math.round(dimensions.height)}
         />
         <Toggle
+          disabled={is_text_object(active_object)}
           onPressedChange={change_constrained}
-          pressed={constrained}
+          pressed={constrained || is_text_object(active_object)}
           size={"sm"}
           style={{ "--size": "24px" } as React.CSSProperties}
           tooltip_content={`${

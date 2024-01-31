@@ -5,7 +5,7 @@ import LetterXIcon from "~/icons/letter-x";
 import LetterYIcon from "~/icons/letter-y";
 
 import { use_active_object, use_event_render } from "../../../../../hooks";
-import { modify_object } from "../../../../../utils";
+import { is_text_object, modify_object } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../item";
 
 const Position = (): React.ReactElement | null => {
@@ -16,6 +16,16 @@ const Position = (): React.ReactElement | null => {
   });
 
   use_event_render("object:moving", (options) => {
+    const object = options.target;
+    return object.get("id") === active_object?.get("id");
+  });
+  use_event_render("object:resizing", (options) => {
+    const object = options.target;
+    return (
+      object.get("id") === active_object?.get("id") && is_text_object(object)
+    );
+  });
+  use_event_render("text:changed", (options) => {
     const object = options.target;
     return object.get("id") === active_object?.get("id");
   });

@@ -1,7 +1,7 @@
 SELECT "t->story_tag->story".category::TEXT AS "category!",
 	   COALESCE(
-					   ARRAY_AGG(DISTINCT
-					   (t.id, t.name)
+					   ARRAY_AGG(
+					   DISTINCT (t.id, t.name)
 								) FILTER (
 						   WHERE t.id IS NOT NULL
 						   ), '{}'
@@ -19,8 +19,5 @@ FROM
 WHERE
 	"t->story_tag->story".category::TEXT = ANY ($1)
 GROUP BY
-	"t->story_tag->story".category,
-	t.follower_count
-ORDER BY
-	t.follower_count DESC
+	"t->story_tag->story".category
 LIMIT 25

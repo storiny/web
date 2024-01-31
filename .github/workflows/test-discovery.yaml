@@ -85,8 +85,6 @@ jobs:
       PROXY_KEY_SECRET: abcdef
       REDIS_HOST: localhost
       REDIS_PORT: 6379
-      OAUTH_FACEBOOK_CLIENT_ID: _
-      OAUTH_FACEBOOK_CLIENT_SECRET: _
     services:
       redis:
         image: redis:7.2.4-alpine

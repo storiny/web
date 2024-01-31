@@ -1,8 +1,8 @@
 import { is_arrow_object } from "../is-arrow-object";
-import { is_image_object } from "../is-image-object";
 import { is_linear_object } from "../is-linear-object";
 import { is_pen_object } from "../is-pen-object";
 import { is_scalable_object } from "../is-scalable-object";
+import { is_text_object } from "../is-text-object";
 import { sync_linear_points } from "../sync-linear-points";
 
 /**
@@ -68,8 +68,9 @@ export const recover_object = (object: any, prop: any): void => {
     sync_linear_points(object);
   }
 
-  if (is_image_object(object)) {
-    object.filters = [...prop.filters];
+  if (is_text_object(object)) {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    object.set({ fontName: prop.fontName });
   }
 
   if (object.canvas) {

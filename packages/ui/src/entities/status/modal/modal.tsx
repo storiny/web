@@ -45,7 +45,7 @@ const EmojiIconButton = (): React.ReactElement => {
   return (
     <EmojiPicker
       on_emoji_select={(next_emoji): void => {
-        form.setValue("status_emoji", next_emoji.unified, {
+        form.setValue("status_emoji", next_emoji.native, {
           shouldDirty: true
         });
       }}
@@ -53,24 +53,14 @@ const EmojiIconButton = (): React.ReactElement => {
     >
       <IconButton aria-label={"Set status emoji"} title={"Set status emoji"}>
         <span
+          aria-hidden={!has_emoji}
           className={clsx(
             css["flex-center"],
             status_styles.emoji,
             has_emoji && status_styles["has-emoji"]
           )}
-          {...(has_emoji
-            ? {
-                "aria-label": "Status emoji",
-                role: "img",
-                style: {
-                  "--emoji": `url("${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/raw/emojis/${emoji}.svg")`
-                } as React.CSSProperties
-              }
-            : {
-                "aria-hidden": "true"
-              })}
         >
-          {!has_emoji && <MoodSmile />}
+          {has_emoji ? emoji : <MoodSmile />}
         </span>
       </IconButton>
     </EmojiPicker>

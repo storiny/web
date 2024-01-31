@@ -1,5 +1,7 @@
 FROM node:20-alpine AS base
 
+ENV NODE_OPTIONS="--max-old-space-size=5120"
+
 # Builder
 
 FROM base AS builder

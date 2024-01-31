@@ -32,7 +32,7 @@ const Popover = forward_ref<PopoverProps, "div">((props, ref) => {
       </Trigger>
       <Portal {...slot_props?.portal}>
         <Content
-          collisionPadding={8}
+          collisionPadding={12}
           sideOffset={5}
           {...slot_props?.content}
           asChild

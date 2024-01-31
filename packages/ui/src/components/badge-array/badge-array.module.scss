@@ -1,0 +1,5 @@
+.array {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--badge-size) / 2.5);
+}

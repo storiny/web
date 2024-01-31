@@ -1,3 +1,4 @@
+pub mod cards;
 pub mod comments;
 pub mod explore;
 pub mod preview;

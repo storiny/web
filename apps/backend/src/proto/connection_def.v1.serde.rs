@@ -7,7 +7,7 @@ impl serde::Serialize for Connection {
     {
         use serde::ser::SerializeStruct;
         let mut len = 0;
-        if self.provider != 0 {
+        if !self.provider.is_empty() {
             len += 1;
         }
         if !self.url.is_empty() {
@@ -17,10 +17,8 @@ impl serde::Serialize for Connection {
             len += 1;
         }
         let mut struct_ser = serializer.serialize_struct("connection_def.v1.Connection", len)?;
-        if self.provider != 0 {
-            let v = Provider::from_i32(self.provider)
-                .ok_or_else(|| serde::ser::Error::custom(format!("Invalid variant {}", self.provider)))?;
-            struct_ser.serialize_field("provider", &v)?;
+        if !self.provider.is_empty() {
+            struct_ser.serialize_field("provider", &self.provider)?;
         }
         if !self.url.is_empty() {
             struct_ser.serialize_field("url", &self.url)?;
@@ -101,7 +99,7 @@ impl<'de> serde::Deserialize<'de> for Connection {
                             if provider__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("provider"));
                             }
-                            provider__ = Some(map.next_value::<Provider>()? as i32);
+                            provider__ = Some(map.next_value()?);
                         }
                         GeneratedField::Url => {
                             if url__.is_some() {
@@ -138,7 +136,7 @@ impl serde::Serialize for ConnectionSetting {
         if !self.id.is_empty() {
             len += 1;
         }
-        if self.provider != 0 {
+        if !self.provider.is_empty() {
             len += 1;
         }
         if self.hidden {
@@ -157,10 +155,8 @@ impl serde::Serialize for ConnectionSetting {
         if !self.id.is_empty() {
             struct_ser.serialize_field("id", &self.id)?;
         }
-        if self.provider != 0 {
-            let v = Provider::from_i32(self.provider)
-                .ok_or_else(|| serde::ser::Error::custom(format!("Invalid variant {}", self.provider)))?;
-            struct_ser.serialize_field("provider", &v)?;
+        if !self.provider.is_empty() {
+            struct_ser.serialize_field("provider", &self.provider)?;
         }
         if self.hidden {
             struct_ser.serialize_field("hidden", &self.hidden)?;
@@ -266,7 +262,7 @@ impl<'de> serde::Deserialize<'de> for ConnectionSetting {
                             if provider__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("provider"));
                             }
-                            provider__ = Some(map.next_value::<Provider>()? as i32);
+                            provider__ = Some(map.next_value()?);
                         }
                         GeneratedField::Hidden => {
                             if hidden__.is_some() {
@@ -305,111 +301,5 @@ impl<'de> serde::Deserialize<'de> for ConnectionSetting {
             }
         }
         deserializer.deserialize_struct("connection_def.v1.ConnectionSetting", FIELDS, GeneratedVisitor)
-    }
-}
-impl serde::Serialize for Provider {
-    #[allow(deprecated)]
-    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        let variant = match self {
-            Self::Unspecified => 0,
-            Self::Github => 1,
-            Self::Twitch => 2,
-            Self::Spotify => 3,
-            Self::Reddit => 4,
-            Self::Facebook => 5,
-            Self::Instagram => 6,
-            Self::Discord => 7,
-            Self::Youtube => 8,
-            Self::LinkedIn => 9,
-            Self::Figma => 10,
-            Self::Dribbble => 11,
-            Self::Snapchat => 12,
-        };
-        serializer.serialize_i32(variant)
-    }
-}
-impl<'de> serde::Deserialize<'de> for Provider {
-    #[allow(deprecated)]
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        const FIELDS: &[&str] = &[
-            "PROVIDER_UNSPECIFIED",
-            "PROVIDER_GITHUB",
-            "PROVIDER_TWITCH",
-            "PROVIDER_SPOTIFY",
-            "PROVIDER_REDDIT",
-            "PROVIDER_FACEBOOK",
-            "PROVIDER_INSTAGRAM",
-            "PROVIDER_DISCORD",
-            "PROVIDER_YOUTUBE",
-            "PROVIDER_LINKED_IN",
-            "PROVIDER_FIGMA",
-            "PROVIDER_DRIBBBLE",
-            "PROVIDER_SNAPCHAT",
-        ];
-
-        struct GeneratedVisitor;
-
-        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
-            type Value = Provider;
-
-            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                write!(formatter, "expected one of: {:?}", &FIELDS)
-            }
-
-            fn visit_i64<E>(self, v: i64) -> std::result::Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                use std::convert::TryFrom;
-                i32::try_from(v)
-                    .ok()
-                    .and_then(Provider::from_i32)
-                    .ok_or_else(|| {
-                        serde::de::Error::invalid_value(serde::de::Unexpected::Signed(v), &self)
-                    })
-            }
-
-            fn visit_u64<E>(self, v: u64) -> std::result::Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                use std::convert::TryFrom;
-                i32::try_from(v)
-                    .ok()
-                    .and_then(Provider::from_i32)
-                    .ok_or_else(|| {
-                        serde::de::Error::invalid_value(serde::de::Unexpected::Unsigned(v), &self)
-                    })
-            }
-
-            fn visit_str<E>(self, value: &str) -> std::result::Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                match value {
-                    "PROVIDER_UNSPECIFIED" => Ok(Provider::Unspecified),
-                    "PROVIDER_GITHUB" => Ok(Provider::Github),
-                    "PROVIDER_TWITCH" => Ok(Provider::Twitch),
-                    "PROVIDER_SPOTIFY" => Ok(Provider::Spotify),
-                    "PROVIDER_REDDIT" => Ok(Provider::Reddit),
-                    "PROVIDER_FACEBOOK" => Ok(Provider::Facebook),
-                    "PROVIDER_INSTAGRAM" => Ok(Provider::Instagram),
-                    "PROVIDER_DISCORD" => Ok(Provider::Discord),
-                    "PROVIDER_YOUTUBE" => Ok(Provider::Youtube),
-                    "PROVIDER_LINKED_IN" => Ok(Provider::LinkedIn),
-                    "PROVIDER_FIGMA" => Ok(Provider::Figma),
-                    "PROVIDER_DRIBBBLE" => Ok(Provider::Dribbble),
-                    "PROVIDER_SNAPCHAT" => Ok(Provider::Snapchat),
-                    _ => Err(serde::de::Error::unknown_variant(value, FIELDS)),
-                }
-            }
-        }
-        deserializer.deserialize_any(GeneratedVisitor)
     }
 }

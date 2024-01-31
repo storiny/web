@@ -146,7 +146,7 @@ const User = (props: UserProps): React.ReactElement => {
           )}
         </div>
       </div>
-      {Boolean(user.rendered_bio.trim()) && (
+      {Boolean((user.rendered_bio || "").trim()) && (
         <Typography
           as={NextLink}
           className={clsx(css["t-minor"], styles.bio)}

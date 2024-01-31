@@ -37,9 +37,9 @@ export const generateMetadata = async ({
             ? undefined
             : [
                 {
-                  url: get_cdn_url(profile.avatar_id, ImageSize.W_256),
-                  width: 256,
-                  height: 256
+                  url: get_cdn_url(profile.avatar_id, ImageSize.W_320),
+                  width: 320,
+                  height: 320
                 }
               ]
       },
@@ -50,7 +50,7 @@ export const generateMetadata = async ({
         images:
           profile.is_private || !profile.avatar_id
             ? undefined
-            : [get_cdn_url(profile.avatar_id, ImageSize.W_256)]
+            : [get_cdn_url(profile.avatar_id, ImageSize.W_320)]
       }
     };
     /* eslint-enable prefer-snakecase/prefer-snakecase */

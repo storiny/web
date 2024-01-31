@@ -7,4 +7,6 @@ import { LayerType } from "../../constants";
  * @param object Object
  */
 export const is_scalable_object = (object: FabricObject): boolean =>
-  [LayerType.PEN, LayerType.IMAGE].includes(object.get("_type"));
+  [LayerType.PEN, LayerType.IMAGE, LayerType.TEXT].includes(
+    object.get("_type")
+  );

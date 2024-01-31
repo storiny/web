@@ -106,7 +106,7 @@ LIMIT $1 OFFSET $2
                 location: get_cdn_url(
                     cdn_server_url,
                     &avatar_id.to_string(),
-                    Some(ImageSize::W256),
+                    Some(ImageSize::W320),
                 ),
             });
         }
@@ -116,7 +116,7 @@ LIMIT $1 OFFSET $2
                 location: get_cdn_url(
                     cdn_server_url,
                     &banner_id.to_string(),
-                    Some(ImageSize::W860),
+                    Some(ImageSize::W960),
                 ),
             });
         }

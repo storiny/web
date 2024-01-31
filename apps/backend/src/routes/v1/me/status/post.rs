@@ -74,6 +74,16 @@ async fn post(
         .into());
     }
 
+    // Validate the emoji.
+    match emojis::get(status_emoji.as_str()) {
+        Some(_) => {}
+        None => {
+            return Err(
+                FormErrorResponse::new(None, vec![("status_text", "Invalid emoji")]).into(),
+            );
+        }
+    };
+
     let pg_pool = &data.db_pool;
     let mut txn = pg_pool.begin().await?;
 
@@ -88,15 +98,14 @@ WHERE user_id = $1
     .execute(&mut *txn)
     .await?;
 
-    let status_duration = match StatusDuration::try_from(payload.duration)
-        .unwrap_or(StatusDuration::Day1)
-    {
-        StatusDuration::Day1 => Some(OffsetDateTime::now_utc() + Duration::days(1)),
-        StatusDuration::Hr4 => Some(OffsetDateTime::now_utc() + Duration::hours(4)),
-        StatusDuration::Min60 => Some(OffsetDateTime::now_utc() + Duration::hours(1)),
-        StatusDuration::Min30 => Some(OffsetDateTime::now_utc() + Duration::minutes(30)),
-        _ => None,
-    };
+    let status_duration =
+        match StatusDuration::try_from(payload.duration).unwrap_or(StatusDuration::Day1) {
+            StatusDuration::Day1 => Some(OffsetDateTime::now_utc() + Duration::days(1)),
+            StatusDuration::Hr4 => Some(OffsetDateTime::now_utc() + Duration::hours(4)),
+            StatusDuration::Min60 => Some(OffsetDateTime::now_utc() + Duration::hours(1)),
+            StatusDuration::Min30 => Some(OffsetDateTime::now_utc() + Duration::minutes(30)),
+            _ => None,
+        };
 
     let result = sqlx::query_as::<_, Response>(
         r#"
@@ -151,7 +160,7 @@ mod tests {
             .uri("/v1/me/status")
             .set_json(Request {
                 status_text: Some("Some status text".to_string()),
-                status_emoji: Some("1f90c".to_string()),
+                status_emoji: Some("🌿".to_string()),
                 duration: StatusDuration::Day1.into(),
                 visibility: StatusVisibility::Global.into(),
             })
@@ -188,7 +197,7 @@ SELECT EXISTS (
             .uri("/v1/me/status")
             .set_json(Request {
                 status_text: Some("Some status text".to_string()),
-                status_emoji: Some("1f90c".to_string()),
+                status_emoji: Some("🌿".to_string()),
                 duration: StatusDuration::Hr4.into(),
                 visibility: StatusVisibility::Global.into(),
             })
@@ -212,6 +221,28 @@ WHERE user_id = $1
                 .get::<Option<OffsetDateTime>, _>("expires_at")
                 .is_some()
         );
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_an_invalid_emoji(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/status")
+            .set_json(Request {
+                status_text: Some("".to_string()),
+                status_emoji: Some("invalid".to_string()),
+                duration: StatusDuration::Day1.into(),
+                visibility: StatusVisibility::Global.into(),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_form_error_response(res, vec![("status_text", "Invalid emoji")]).await;
 
         Ok(())
     }
@@ -253,7 +284,7 @@ WHERE user_id = $1
             .uri("/v1/me/status")
             .set_json(Request {
                 status_text: Some("Some status text".to_string()),
-                status_emoji: Some("1f90c".to_string()),
+                status_emoji: Some("🌿".to_string()),
                 duration: StatusDuration::Day1.into(),
                 visibility: StatusVisibility::Global.into(),
             })
@@ -268,7 +299,7 @@ WHERE user_id = $1
             .uri("/v1/me/status")
             .set_json(Request {
                 status_text: Some("New status text".to_string()),
-                status_emoji: Some("1f90c".to_string()),
+                status_emoji: Some("🌿".to_string()),
                 duration: StatusDuration::Day1.into(),
                 visibility: StatusVisibility::Global.into(),
             })

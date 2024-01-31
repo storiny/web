@@ -1,6 +1,6 @@
 use crate::{
+    constants::connection_provider::ConnectionProvider,
     error::AppError,
-    grpc::defs::connection_def::v1::Provider,
     middlewares::identity::identity::Identity,
     oauth::icons::github::GITHUB_LOGO,
     routes::oauth::{
@@ -176,7 +176,7 @@ INSERT INTO connections
 VALUES ($1, $2, $3, $4)
 "#,
     )
-    .bind(Provider::Github as i16)
+    .bind(ConnectionProvider::GitHub.to_string())
     .bind(provider_identifier)
     .bind(display_name)
     .bind(user_id)
@@ -301,7 +301,7 @@ SELECT EXISTS (
 "#,
         )
         .bind(user_id.unwrap())
-        .bind(Provider::Github as i16)
+        .bind(ConnectionProvider::GitHub.to_string())
         .fetch_one(&mut *conn)
         .await?;
 
@@ -323,7 +323,7 @@ INSERT INTO connections
 VALUES ($1, $2, $3, $4)
 "#,
         )
-        .bind(Provider::Github as i16)
+        .bind(ConnectionProvider::GitHub.to_string())
         .bind("0")
         .bind("github_user")
         .bind(user_id.unwrap())

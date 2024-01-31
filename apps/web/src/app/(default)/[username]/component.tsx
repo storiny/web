@@ -52,9 +52,9 @@ const generate_json_ld = (profile: Props["profile"]): Graph => ({
         image: profile.avatar_id
           ? {
               "@type": "ImageObject",
-              url: get_cdn_url(profile.avatar_id, ImageSize.W_256),
-              width: 256 as unknown as string,
-              height: 256 as unknown as string
+              url: get_cdn_url(profile.avatar_id, ImageSize.W_320),
+              width: 320 as unknown as string,
+              height: 320 as unknown as string
             }
           : undefined,
         name: `${profile.name}'s profile on Storiny`

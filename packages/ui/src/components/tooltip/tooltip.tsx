@@ -30,6 +30,7 @@ const Tooltip = forward_ref<TooltipProps, "div">((props, ref) => {
       </Trigger>
       <Portal {...slot_props?.portal}>
         <Content
+          collisionPadding={12}
           sideOffset={5}
           {...slot_props?.content}
           asChild

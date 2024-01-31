@@ -25,7 +25,6 @@ import PlusIcon from "~/icons/plus";
 import {
   boolean_action,
   get_query_error_type,
-  GetOnboardingTagsResponse,
   use_get_onboarding_tags_query,
   use_get_onboarding_writers_query
 } from "~/redux/features";
@@ -155,14 +154,13 @@ const TagsSegment = ({
     error,
     refetch
   } = use_get_onboarding_tags_query(encoded_categories);
-  const chunks = Object.entries(data || ({} as GetOnboardingTagsResponse));
 
   React.useEffect(() => {
     // Switch segments if no tags are returned.
-    if (!is_loading && !is_error && !chunks.length) {
+    if (!is_loading && !is_error && !data?.length) {
       set_segment("writers");
     }
-  }, [chunks.length, is_error, is_loading, set_segment]);
+  }, [data, is_error, is_loading, set_segment]);
 
   return (
     <Segment
@@ -197,7 +195,7 @@ const TagsSegment = ({
           />
         ) : (
           <div className={css["flex-col"]}>
-            {chunks.map(([category, tags]) => (
+            {(data || []).map(({ category, tags }) => (
               <React.Fragment key={category}>
                 <div
                   className={clsx(

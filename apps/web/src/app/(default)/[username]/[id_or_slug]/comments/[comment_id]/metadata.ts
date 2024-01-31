@@ -37,10 +37,10 @@ export const generateMetadata = async ({
               {
                 url: get_cdn_url(
                   comment_response.user.avatar_id,
-                  ImageSize.W_256
+                  ImageSize.W_320
                 ),
-                width: 256,
-                height: 256
+                width: 320,
+                height: 320
               }
             ]
           : undefined
@@ -50,7 +50,7 @@ export const generateMetadata = async ({
         title: `${comment_response.user?.name || "User"} on Storiny`,
         description: comment_response.content,
         images: comment_response.user?.avatar_id
-          ? [get_cdn_url(comment_response.user.avatar_id, ImageSize.W_256)]
+          ? [get_cdn_url(comment_response.user.avatar_id, ImageSize.W_320)]
           : undefined
       }
       /* eslint-enable prefer-snakecase/prefer-snakecase */
