@@ -128,7 +128,7 @@ WHERE notification_id = $2;
 
         assert_eq!(
             result.get::<String, _>("content"),
-            r#"<a data-fw-bold href="/sample_user_2">Sample user 2</a> accepted your collaboration request"#.to_string()
+            r#"<a data-user data-fw-bold href="/sample_user_2">Sample user 2</a> accepted your collaboration request"#.to_string()
         );
 
         Ok(())
@@ -167,7 +167,7 @@ WHERE notification_id = $2;
 
         assert_eq!(
             result.get::<String, _>("content"),
-            r#"<a data-fw-bold href="/sample_user_1">Sample user 1</a> invited you to contribute to their story: <span data-fw-medium>Sample story</span>. <a data-underline href="/me/content/contributions">View all collaboration requests</a>"#
+            r#"<a data-user data-fw-bold href="/sample_user_1">Sample user 1</a> invited you to contribute to their story: <span data-fw-medium>Sample story</span>. <a data-underline href="/me/content/contributions">View all collaboration requests</a>"#
                 .to_string()
         );
 
@@ -194,7 +194,7 @@ WHERE notification_id = $2;
 
         assert_eq!(
             result.get::<String, _>("content"),
-            r#"<a data-fw-bold href="/sample_user_1">Sample user 1</a> invited you to contribute to their story: <span data-fw-medium>Sample story</span>. <a data-underline href="/me/content/contributions">View all collaboration requests</a>"#
+            r#"<a data-user data-fw-bold href="/sample_user_1">Sample user 1</a> invited you to contribute to their story: <span data-fw-medium>Sample story</span>. <a data-underline href="/me/content/contributions">View all collaboration requests</a>"#
                 .to_string()
         );
 
@@ -221,7 +221,7 @@ WHERE notification_id = $2;
 
         assert_eq!(
             result.get::<String, _>("content"),
-            r#"<a data-fw-bold href="/sample_user_2">Sample user 2</a> accepted your friend request"#.to_string()
+            r#"<a data-user data-fw-bold href="/sample_user_2">Sample user 2</a> accepted your friend request"#.to_string()
         );
 
         Ok(())
@@ -247,7 +247,7 @@ WHERE notification_id = $2;
 
         assert_eq!(
             result.get::<String, _>("content"),
-            r#"<a data-fw-bold href="/sample_user_1">Sample user 1</a> sent you a friend request. <a data-underline href="/me/content/relations?tab=friends">View all friend requests</a>"#
+            r#"<a data-user data-fw-bold href="/sample_user_1">Sample user 1</a> sent you a friend request. <a data-underline href="/me/content/relations?tab=friends">View all friend requests</a>"#
                 .to_string()
         );
 
@@ -274,7 +274,7 @@ WHERE notification_id = $2;
 
         assert_eq!(
             result.get::<String, _>("content"),
-            r#"<a data-fw-bold href="/sample_user_1">Sample user 1</a> started following you"#
+            r#"<a data-user data-fw-bold href="/sample_user_1">Sample user 1</a> started following you"#
                 .to_string()
         );
 
@@ -301,7 +301,7 @@ WHERE notification_id = $2;
 
         assert_eq!(
             result.get::<String, _>("content"),
-            r#"<a data-fw-bold href="/sample_user_2">Sample user 2</a> commented: <a data-fw-medium href="/sample_user_1/sample-story/comments/4">Some content</a>"#
+            r#"<a data-user data-fw-bold href="/sample_user_2">Sample user 2</a> commented: <a data-fw-medium href="/sample_user_1/sample-story/comments/4">Some content</a>"#
                 .to_string()
         );
 
@@ -326,7 +326,7 @@ WHERE notification_id = $2;
 
         assert_eq!(
             result.get::<String, _>("content"),
-            r#"<a data-fw-bold href="/sample_user_2">Sample user 2</a> replied: <a data-fw-medium href="/sample_user_1/sample-story/comments/4?reply=5">Reply content</a>"#
+            r#"<a data-user data-fw-bold href="/sample_user_2">Sample user 2</a> replied: <a data-fw-medium href="/sample_user_1/sample-story/comments/4?reply=5">Reply content</a>"#
             .to_string()
         );
 
@@ -351,7 +351,7 @@ WHERE notification_id = $2;
 
         assert_eq!(
             result.get::<String, _>("content"),
-            r#"<a data-fw-bold href="/sample_user_2">Sample user 2</a> liked your story: <a data-fw-medium href="/sample_user_1/sample-story">Sample story</a>"#
+            r#"<a data-user data-fw-bold href="/sample_user_2">Sample user 2</a> liked your story: <a data-fw-medium href="/sample_user_1/sample-story">Sample story</a>"#
                 .to_string()
         );
 
@@ -378,7 +378,7 @@ WHERE notification_id = $2;
 
         assert_eq!(
             result.get::<String, _>("content"),
-            r#"<a data-fw-bold href="/sample_user_1">Sample user 1</a> published a new story: <a data-fw-medium href="/sample_user_1/sample-story">Sample story</a>"#
+            r#"<a data-user data-fw-bold href="/sample_user_1">Sample user 1</a> published a new story: <a data-fw-medium href="/sample_user_1/sample-story">Sample story</a>"#
             .to_string()
         );
 

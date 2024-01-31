@@ -112,7 +112,7 @@ export const MOCK_USERS: User[] = [
     following_count: 0,
     story_count: 0,
     is_private: false,
-    public_flags: 0,
+    public_flags: 17,
     bio: "",
     rendered_bio: "",
     email: "stacy.hall@example.com",
@@ -135,9 +135,10 @@ export const MOCK_USERS: User[] = [
     following_count: 0,
     story_count: 0,
     is_private: false,
-    public_flags: 0,
+    public_flags: 17,
     bio: "",
-    rendered_bio: "",
+    rendered_bio:
+      "<p>Freelance Writer | Travel Enthusiast | Coffee Lover | Always seeking new adventures</p>",
     email: "brennan.austin@example.com",
     location: "",
     status: {
@@ -145,7 +146,7 @@ export const MOCK_USERS: User[] = [
       duration: StatusDuration.NEVER,
       text: "Gummy bears",
       expires_at: null,
-      emoji: "1f33f"
+      emoji: "🌿"
     },
     username_modified_at: null
   },
@@ -155,8 +156,6 @@ export const MOCK_USERS: User[] = [
     banner_hex: "151934",
     banner_id: get_banner_id("W8KTS-mhFUEjpg"),
     bio: "Freelance Writer | Travel Enthusiast | Coffee Lover | Always seeking new adventures",
-    rendered_bio:
-      "<p>Freelance Writer | Travel Enthusiast | Coffee Lover | Always seeking new adventures</p>",
     created_at: "2023-02-03T01:07:02.000Z",
     email: "jacob.webb@example.com",
     follower_count: 0,
@@ -167,12 +166,13 @@ export const MOCK_USERS: User[] = [
     location: "Mountain View, California",
     name: "Jacob Webb",
     public_flags: 0,
+    rendered_bio: "",
     status: {
       visibility: StatusVisibility.GLOBAL,
       duration: StatusDuration.DAY_1,
       text: "Gummy bears",
       expires_at: null,
-      emoji: "1f33f"
+      emoji: "🌿"
     },
     story_count: 0,
     username: "octobee",

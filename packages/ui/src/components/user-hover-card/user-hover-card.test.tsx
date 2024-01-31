@@ -1,76 +1,90 @@
-import { axe } from "@storiny/test-utils";
+import { API_VERSION } from "@storiny/shared";
+import { axe, wait_for_position } from "@storiny/test-utils";
+import { rest } from "msw";
+import { setupServer as setup_server } from "msw/node";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
 
+import { TEST_USER } from "../../mocks";
 import UserHoverCard from "./user-hover-card";
-import styles from "./user-hover-card.module.scss";
-import { StepperSize, UserHoverCardProps } from "./user-hover-card.props";
+import { UserHoverCardProps } from "./user-hover-card.props";
 
-describe("<Stepper />", () => {
-  it("matches snapshot", () => {
-    const { container } = render_test_with_provider(
-      <UserHoverCard total_steps={3} />
+const server = setup_server(
+  rest.get(
+    `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}/public/cards/user/:identifier`,
+    (req, res, ctx) => res(ctx.json(TEST_USER))
+  )
+);
+
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
+describe("<UserHoverCard />", () => {
+  it("matches snapshot", async () => {
+    const { baseElement } = render_test_with_provider(
+      <UserHoverCard identifier={"test"} open />
     );
-    expect(container.firstChild).toMatchSnapshot();
+
+    await wait_for_position();
+
+    expect(baseElement).toMatchSnapshot();
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = render_test_with_provider(
-      <UserHoverCard aria-label={"Test stepper"} total_steps={3} />
+    const { baseElement } = render_test_with_provider(
+      <UserHoverCard identifier={"test"} open />
     );
 
-    expect(await axe(container)).toHaveNoViolations();
+    expect(
+      await axe(baseElement, {
+        rules: {
+          region: { enabled: false }
+        }
+      })
+    ).toHaveNoViolations();
   });
 
-  it("renders as a polymorphic element", () => {
-    const { getByRole } = render_test_with_provider(
-      <UserHoverCard as={"aside"} total_steps={3} />
-    );
-
-    expect(getByRole("progressbar").nodeName.toLowerCase()).toEqual("aside");
-  });
-
-  it("renders size `md` and `1` active step by default", () => {
-    const { getByRole } = render_test_with_provider(
-      <UserHoverCard total_steps={3} />
-    );
-    const stepper = getByRole("progressbar");
-
-    expect(stepper).toHaveClass(styles.md);
-    expect(stepper).toHaveAttribute("data-active", "1");
-  });
-
-  it("renders active steps", () => {
-    const { getByRole } = render_test_with_provider(
-      <UserHoverCard active_steps={2} total_steps={3} />
-    );
-
-    expect(getByRole("progressbar")).toHaveAttribute("data-active", "2");
-  });
-
-  (["md", "sm"] as StepperSize[]).forEach((size) => {
-    it(`renders \`${size}\` size`, () => {
-      const { getByRole } = render_test_with_provider(
-        <UserHoverCard size={size} total_steps={3} />
-      );
-
-      expect(getByRole("progressbar")).toHaveClass(styles[size]);
-    });
-  });
-
-  it("passes props to the element slots", () => {
+  it("renders as a polymorphic element", async () => {
     const { getByTestId } = render_test_with_provider(
       <UserHoverCard
+        as={"aside"}
+        identifier={"test"}
+        open
         slot_props={
           {
-            step: { "data-testid": "step" }
+            content: {
+              "data-testid": "content"
+            }
           } as UserHoverCardProps["slot_props"]
         }
-        total_steps={1}
       />
     );
 
-    expect(getByTestId("step")).toBeInTheDocument();
+    expect(getByTestId("content").nodeName.toLowerCase()).toEqual("aside");
+  });
+
+  it("passes props to the element slots", async () => {
+    const { getByTestId } = render_test_with_provider(
+      <UserHoverCard
+        identifier={"test"}
+        open
+        slot_props={
+          {
+            arrow: { "data-testid": "arrow" },
+            content: { "data-testid": "content" }
+          } as UserHoverCardProps["slot_props"]
+        }
+      >
+        Test
+      </UserHoverCard>
+    );
+
+    await wait_for_position();
+
+    ["arrow", "content"].forEach((element) => {
+      expect(getByTestId(element)).toBeInTheDocument();
+    });
   });
 });

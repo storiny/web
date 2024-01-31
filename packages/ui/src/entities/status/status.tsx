@@ -106,24 +106,14 @@ const Entity = forward_ref<
     >
       {has_emoji || is_editable ? (
         <span
+          aria-hidden={!has_emoji}
           className={clsx(
             css["flex-center"],
             styles.emoji,
             has_emoji && styles["has-emoji"]
           )}
-          {...(has_emoji
-            ? {
-                "aria-label": "Status emoji",
-                role: "img",
-                style: {
-                  "--emoji": `url("${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/raw/emojis/${emoji}.svg")`
-                } as React.CSSProperties
-              }
-            : {
-                "aria-hidden": "true"
-              })}
         >
-          {!has_emoji && <MoodSmile />}
+          {has_emoji ? emoji : <MoodSmile />}
         </span>
       ) : null}
       {has_text || is_editable ? (
@@ -143,9 +133,15 @@ const Entity = forward_ref<
 });
 
 const Status = forward_ref<StatusProps, "span">((props, ref) => {
-  const { user_id, modal_props, disable_modal, ...rest } = props;
+  const {
+    user_id,
+    modal_props,
+    disable_modal,
+    editable = true,
+    ...rest
+  } = props;
   const current_user = use_app_selector(select_user);
-  const is_editable = user_id === current_user?.id;
+  const is_editable = editable && user_id === current_user?.id;
 
   if (is_editable && !disable_modal) {
     return (

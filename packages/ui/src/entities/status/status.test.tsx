@@ -20,12 +20,7 @@ describe("<Status />", () => {
 
   it("renders with emoji", () => {
     const { getByRole } = render_test_with_provider(
-      <Status
-        data-testid={"status"}
-        disable_modal
-        emoji={"1f33f"}
-        user_id={""}
-      />
+      <Status data-testid={"status"} disable_modal emoji={"🌿"} user_id={""} />
     );
 
     expect(getByRole("img")).toBeInTheDocument();

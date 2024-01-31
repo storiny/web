@@ -32,7 +32,7 @@ export const Default: Story = {
 export const WithEmoji: Story = {
   ...Default,
   args: {
-    emoji: "1f33f"
+    emoji: "🌿"
   }
 };
 
@@ -64,7 +64,7 @@ export const Editable: Story = {
 };
 
 export const EditableWithEmojiAndText: Story = {
-  ...Default,
+  ...Editable,
   args: {
     ...WithEmoji.args,
     text: "Click to change",

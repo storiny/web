@@ -216,6 +216,8 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::subscriptions::delete::init_routes(cfg);
     // Me - Unread notifications
     v1::me::unread_notifications::init_routes(cfg);
+    // Public - Cards
+    v1::public::cards::user::init_routes(cfg);
     // Public - Comments
     v1::public::comments::replies::init_routes(cfg);
     v1::public::comments::visibility::init_routes(cfg);

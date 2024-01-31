@@ -12,6 +12,7 @@ import Link from "~/components/link";
 import NoSsr from "~/components/no-ssr";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import UserHoverCard from "~/components/user-hover-card";
 import Persona from "~/entities/persona";
 import { use_media_query } from "~/hooks/use-media-query";
 import ExternalLinkIcon from "~/icons/external-link";
@@ -131,14 +132,16 @@ const Reply = (props: ReplyProps): React.ReactElement => {
                     {reply.comment?.content || "Empty comment"}
                   </Link>
                 ) : (
-                  <Link
-                    ellipsis
-                    fixed_color
-                    href={`/${reply.user?.username || ""}`}
-                    title={`View @${reply.user?.username}'s profile`}
-                  >
-                    {reply.user?.name}
-                  </Link>
+                  <UserHoverCard identifier={reply.user?.id || reply.user_id}>
+                    <Link
+                      ellipsis
+                      fixed_color
+                      href={`/${reply.user?.username || ""}`}
+                      title={`View @${reply.user?.username}'s profile`}
+                    >
+                      {reply.user?.name}
+                    </Link>
+                  </UserHoverCard>
                 )
               }
               secondary_text={
