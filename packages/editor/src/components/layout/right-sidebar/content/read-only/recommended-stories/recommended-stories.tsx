@@ -10,6 +10,7 @@ import { dynamic_loader } from "~/common/dynamic";
 import Link from "~/components/link";
 import NoSsr from "~/components/no-ssr";
 import Typography from "~/components/typography";
+import UserHoverCard from "~/components/user-hover-card";
 import ErrorState from "~/entities/error-state";
 import Persona from "~/entities/persona";
 import {
@@ -51,14 +52,16 @@ const RecommendedStory = ({ story }: { story: Story }): React.ReactElement => {
         }}
         primary_text={
           <span className={clsx(css["flex-center"], styles["primary-text"])}>
-            <Link
-              className={clsx(css["t-medium"], css.ellipsis)}
-              fixed_color
-              href={`/${user?.username}`}
-              level={"body2"}
-            >
-              {user?.name}
-            </Link>
+            <UserHoverCard identifier={user?.id || ""}>
+              <Link
+                className={clsx(css["t-medium"], css.ellipsis)}
+                fixed_color
+                href={`/${user?.username}`}
+                level={"body2"}
+              >
+                {user?.name}
+              </Link>
+            </UserHoverCard>
             <Typography
               aria-hidden
               as={"span"}

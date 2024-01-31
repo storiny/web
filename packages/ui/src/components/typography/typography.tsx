@@ -80,13 +80,13 @@ const Typography = forward_ref<TypographyProps, TypographyElement>(
                 ellipsis && typography_styles["ellipsis-child"],
                 slot_props?.link?.className
               )}
-              href={`/tag/${children}`}
+              href={`/tag/${String(children).replace(/#/g, "")}`}
             >
               {TYPOGRAPHY_PREFIX_MAP[level] || ""}
-              {children}
+              {String(children).replace(/#/g, "")}
             </NextLink>
           ) : level === "mention" ? (
-            <UserHoverCard identifier={String(children)}>
+            <UserHoverCard identifier={String(children).replace(/@/g, "")}>
               <NextLink
                 {...slot_props?.link}
                 className={clsx(
@@ -95,10 +95,10 @@ const Typography = forward_ref<TypographyProps, TypographyElement>(
                   ellipsis && typography_styles["ellipsis-child"],
                   slot_props?.link?.className
                 )}
-                href={`/${children}`}
+                href={`/${String(children).replace(/@/g, "")}`}
               >
                 {TYPOGRAPHY_PREFIX_MAP[level] || ""}
-                {children}
+                {String(children).replace(/@/g, "")}
               </NextLink>
             </UserHoverCard>
           ) : ellipsis ? (
