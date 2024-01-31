@@ -59,6 +59,7 @@ const Typography = forward_ref<TypographyProps, TypographyElement>(
               ? TYPOGRAPHY_SCALE_TO_CLASSNAME_MAP[scale]
               : TYPOGRAPHY_LEVEL_TO_CLASSNAME_MAP[level],
             styles[level],
+            ["tag", "mention"].includes(level) && styles.inline,
             className
           )}
           ref={ref}
