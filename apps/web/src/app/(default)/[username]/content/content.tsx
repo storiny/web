@@ -169,7 +169,7 @@ const Badges = ({
         Badges
         <Tooltip
           content={
-            "Badges represent a user&apos;s achievements, affiliations, or accomplishments."
+            "Badges represent a user's achievements, affiliations, or accomplishments."
           }
           delayDuration={0}
         >
