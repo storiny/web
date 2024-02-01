@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
-import Image from "next/image";
 import React from "react";
 
+import PlusPattern from "~/brand/plus-pattern";
 import Navbar from "~/layout/navbar";
 import css from "~/theme/main.module.scss";
 
@@ -20,15 +20,7 @@ const AuthLayout = ({
       role={"presentation"}
       style={{ minHeight: "100vh", position: "fixed", pointerEvents: "none" }}
     >
-      <Image
-        alt={""}
-        data-invert-filter={""}
-        fill
-        loading={"eager"}
-        priority
-        src={"web-assets/background/noise"}
-        style={{ objectFit: "cover", opacity: 0.45 }}
-      />
+      <PlusPattern />
     </div>
     {/* Need to make the <main /> styles more specific */}
     <main className={clsx(styles.x, styles.main)} data-root={"true"}>

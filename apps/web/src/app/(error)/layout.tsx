@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
-import Image from "next/image";
 import React from "react";
 
+import PlusPattern from "~/brand/plus-pattern";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import Footer from "~/layout/footer";
@@ -30,15 +30,7 @@ const ErrorLayout = ({
       role={"presentation"}
       style={{ minHeight: "100vh", position: "fixed", pointerEvents: "none" }}
     >
-      <Image
-        alt={""}
-        data-invert-filter={""}
-        fill
-        loading={"eager"}
-        priority
-        src={"web-assets/background/noise"}
-        style={{ objectFit: "cover", opacity: 0.45 }}
-      />
+      <PlusPattern />
     </div>
     <div
       className={clsx(css["flex-col"], css["flex-center"], styles.container)}

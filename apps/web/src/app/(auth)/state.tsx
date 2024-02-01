@@ -1,5 +1,6 @@
 "use client";
 
+import { clsx } from "clsx";
 import {
   createStore as create_store,
   StateMachineProvider
@@ -7,6 +8,8 @@ import {
 import React from "react";
 
 import NoSsr from "~/components/no-ssr";
+import Spinner from "~/components/spinner";
+import css from "~/theme/main.module.scss";
 
 type SignupSegment =
   | "base"
@@ -83,7 +86,13 @@ const AuthState = ({
 }: {
   children: React.ReactNode;
 }): React.ReactElement => (
-  <NoSsr>
+  <NoSsr
+    fallback={
+      <div className={clsx(css["flex-center"], css["full-w"], css["full-h"])}>
+        <Spinner size={"lg"} />
+      </div>
+    }
+  >
     <StateMachineProvider>{children}</StateMachineProvider>
   </NoSsr>
 );

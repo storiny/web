@@ -127,7 +127,7 @@ const UserHoverCardContent = ({
           </IconButton>
         )}
       </div>
-      <div className={css["flex-col"]}>
+      <div className={clsx(css["flex-col"], css["fit-w"])}>
         <Link
           className={clsx(css["t-bold"], styles.text)}
           ellipsis
