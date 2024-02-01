@@ -13,8 +13,8 @@ import CriticalStyles from "~/theme/critical";
 
 import CriticalFonts from "./fonts/critical";
 import ObserverErrorHandler from "./observer";
+import PostHogProvider from "./ph-provider";
 import { PreloadResources } from "./preload-resources";
-import PostHogProvider from "./providers";
 import SelfXSSWarning from "./selfxss-warning";
 import StateProvider from "./state-provider";
 // @ts-expect-error text file import
