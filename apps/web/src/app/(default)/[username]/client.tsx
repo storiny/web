@@ -196,6 +196,7 @@ const Page = ({
               className={clsx(styles.x, styles.banner)}
               hex={profile.banner_hex}
               img_key={profile.banner_id}
+              size={ImageSize.W_1200}
               slot_props={{
                 image: {
                   sizes: [
@@ -205,7 +206,6 @@ const Page = ({
                   ].join(","),
                   // eslint-disable-next-line prefer-snakecase/prefer-snakecase
                   srcSet: [
-                    `${get_cdn_url(profile.banner_id, ImageSize.W_2440)} 2440w`,
                     `${get_cdn_url(profile.banner_id, ImageSize.W_1920)} 1920w`,
                     `${get_cdn_url(profile.banner_id, ImageSize.W_1440)} 1440w`,
                     `${get_cdn_url(profile.banner_id, ImageSize.W_1200)} 1200w`,

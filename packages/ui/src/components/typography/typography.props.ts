@@ -60,6 +60,10 @@ export type TypographyProps = Omit<
    */
   color?: TypographyColor;
   /**
+   * Whether to disable hovercards for mention type.
+   */
+  disable_hovercards?: boolean;
+  /**
    * If `true`, the text will not wrap, but instead will truncate with a text
    * overflow ellipsis.
    *

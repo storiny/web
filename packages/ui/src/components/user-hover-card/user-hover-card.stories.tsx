@@ -13,6 +13,17 @@ const meta: Meta<typeof UserHoverCard> = {
   title: "components/user-hover-card",
   component: UserHoverCard,
   tags: ["autodocs"],
+  argTypes: {
+    open: {
+      options: ["Uncontrolled", "Open", "Closed"],
+      control: { type: "select" },
+      mapping: {
+        Uncontrolled: undefined,
+        Open: true,
+        Closed: false
+      }
+    }
+  },
   args: {
     children: (
       <div
@@ -27,7 +38,7 @@ const meta: Meta<typeof UserHoverCard> = {
         <Typography level={"body2"}>Hover over me</Typography>
       </div>
     ),
-    identifier: MOCK_USERS[0].id
+    identifier: MOCK_USERS[4].id
   }
 };
 

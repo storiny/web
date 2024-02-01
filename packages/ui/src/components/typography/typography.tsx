@@ -28,6 +28,7 @@ const Typography = forward_ref<TypographyProps, TypographyElement>(
       color = "major",
       scale,
       ellipsis,
+      disable_hovercards,
       className,
       children,
       slot_props,
@@ -87,7 +88,10 @@ const Typography = forward_ref<TypographyProps, TypographyElement>(
               {String(children).replace(/#/g, "")}
             </NextLink>
           ) : level === "mention" ? (
-            <UserHoverCard identifier={String(children).replace(/@/g, "")}>
+            <UserHoverCard
+              identifier={String(children).replace(/@/g, "")}
+              open={disable_hovercards ? false : undefined}
+            >
               <NextLink
                 {...slot_props?.link}
                 className={clsx(
