@@ -148,7 +148,7 @@ const UserHoverCardContent = ({
         </div>
         {Boolean((user.rendered_bio || "").trim()) && (
           <Typography as={"div"} className={clsx(css["t-minor"], styles.bio)}>
-            <BioParser content={user.rendered_bio} />
+            <BioParser content={user.rendered_bio} disable_hovercards />
           </Typography>
         )}
         <Spacer orientation={"vertical"} size={2} />
