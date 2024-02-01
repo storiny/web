@@ -7140,6 +7140,7 @@ __metadata:
     nanoid: ^4.0.2
     next: 14.1
     nprogress: ^0.2.0
+    posthog-js: ^1.104.3
     raw-loader: ^4.0.2
     react: ^18.2.0
     react-dom: ^18.2.0
@@ -14830,6 +14831,13 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
+"fflate@npm:^0.4.8":
+  version: 0.4.8
+  resolution: "fflate@npm:0.4.8"
+  checksum: 29d8cbe44d5e7f53e7f5a160ac7f9cc025480c7b3bfd85c5f898cbe20dfa2dad4732daa534982664bf30b35896a90af44ea33ede5d94c5ffd1b8b0c0a0a56ca2
+  languageName: node
+  linkType: hard
+
 "fflate@npm:^0.8.1":
   version: 0.8.1
   resolution: "fflate@npm:0.8.1"
@@ -21379,10 +21387,27 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
+"posthog-js@npm:^1.104.3":
+  version: 1.104.3
+  resolution: "posthog-js@npm:1.104.3"
+  dependencies:
+    fflate: ^0.4.8
+    preact: ^10.19.3
+  checksum: c71346e1d736114c83602d0d4df27dbc378ce7338abc0c1fc7bb8c335d9a29aa07422f1313ca9b50c9d4cae6f76d846d937f6759f91b841bb217bcd33e180455
+  languageName: node
+  linkType: hard
+
 "potpack@npm:^2.0.0":
   version: 2.0.0
   resolution: "potpack@npm:2.0.0"
   checksum: 6dd41692349936b436c29c28cf9ff1268c03ed6ec96c4384b2d9eb95e58e422fab75d428648f475507dd167934984d1002df2010b83e5747b5c358bea371e8f7
+  languageName: node
+  linkType: hard
+
+"preact@npm:^10.19.3":
+  version: 10.19.3
+  resolution: "preact@npm:10.19.3"
+  checksum: cb4fcc801f7ff302b9706eb4bb4a36cc7cd96f3231ac28baeb3ea5caf6724372222121cb487f66af44a1312bf61dbe74825ce2fda98295d2108e7443c20b0e56
   languageName: node
   linkType: hard
 
