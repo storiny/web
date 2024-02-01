@@ -38,11 +38,11 @@ const next_config = {
       ]
     }
   ],
-  rewrites: () => [
-    // Hide source maps
+  rewrites: async () => [
+    // Analytics
     {
-      source: "/:path*.map",
-      destination: "/404"
+      source: "/ingest/:path*",
+      destination: "https://app.posthog.com/:path*"
     }
   ],
   images: {

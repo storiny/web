@@ -1,8 +1,8 @@
 import { ImageSize } from "@storiny/shared";
 import { clsx } from "clsx";
-import Image from "next/image";
 import React from "react";
 
+import PlusPattern from "~/brand/plus-pattern";
 import Button from "~/components/button";
 import Divider from "~/components/divider";
 import Spacer from "~/components/spacer";
@@ -16,15 +16,7 @@ import styles from "./styles.module.scss";
 const Page = (): React.ReactElement => (
   <React.Fragment>
     <div className={styles.splash}>
-      <Image
-        alt={""}
-        data-invert-filter={""}
-        fill
-        loading={"eager"}
-        priority
-        src={"web-assets/background/noise"}
-        style={{ objectFit: "cover" }}
-      />
+      <PlusPattern style={{ position: "absolute" }} />
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         alt={""}

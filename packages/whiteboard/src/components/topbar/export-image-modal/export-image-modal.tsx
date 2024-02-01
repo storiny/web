@@ -103,6 +103,10 @@ const ExportImageModal = React.forwardRef<
      * Clones the main canvas to an export canvas
      */
     const get_export_canvas = (): Promise<StaticCanvas> | undefined => {
+      if (!canvas.current) {
+        return;
+      }
+
       const data = canvas.current.toObject(RECOVERY_KEYS);
 
       delete data.width;

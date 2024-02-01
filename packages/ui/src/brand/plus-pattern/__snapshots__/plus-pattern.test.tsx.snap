@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<PlusPattern /> matches snapshot 1`] = `
+<svg
+  aria-hidden="true"
+  class="pattern"
+>
+  <defs>
+    <pattern
+      height="60"
+      id=":r0:"
+      patternUnits="userSpaceOnUse"
+      width="60"
+    >
+      <path
+        class="plus"
+        d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"
+        fill="var(--inverted-50)"
+      />
+    </pattern>
+  </defs>
+  <rect
+    fill="url(#:r0:)"
+    height="100%"
+    width="100%"
+  />
+</svg>
+`;
