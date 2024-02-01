@@ -7,11 +7,11 @@
   &.virtual {
     padding-block: 24px;
 
-    @include breakpoints.media("<=tablet") {
+    @include breakpoints.media("<tablet") {
       padding-block: 30px;
     }
 
-    @include breakpoints.media("<=mobile") {
+    @include breakpoints.media("<mobile") {
       padding-block: 20px;
     }
   }
@@ -21,7 +21,7 @@
   justify-content: space-between;
   gap: 16px;
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     flex-direction: column;
     gap: 12px;
 
@@ -83,11 +83,11 @@
   align-self: flex-start;
   position: relative;
 
-  @include breakpoints.media("<=800px") {
+  @include breakpoints.media("<800px") {
     --size: 200px !important;
   }
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     --size: 100vw !important;
 
     margin-inline: var(--grid-compensation);
@@ -108,7 +108,7 @@
   gap: 12px;
   align-items: center;
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     flex-wrap: wrap;
   }
 }

@@ -68,15 +68,10 @@ const next_config = {
   transpilePackages: ["@storiny/ui", "@storiny/editor", "@storiny/shared"],
   output: "standalone",
   sentry: {
-    hideSourceMaps: true,
+    disableServerWebpackPlugin: true,
+    disableClientWebpackPlugin: true,
     autoInstrumentServerFunctions: false
   }
 };
 
-export default with_sentry_config(with_bundle_analyzer(with_mdx(next_config)), {
-  org: "storiny",
-  project: "website",
-  authToken: process.env.SENTRY_AUTH_TOKEN,
-  silent: true,
-  dryRun: process.env.NODE_ENV === "development"
-});
+export default with_sentry_config(with_bundle_analyzer(with_mdx(next_config)));

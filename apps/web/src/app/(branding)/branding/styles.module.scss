@@ -9,7 +9,7 @@
     max-width: 100%;
   }
 
-  @include breakpoints.media("<=tablet") {
+  @include breakpoints.media("<tablet") {
     flex-direction: column;
     align-items: center;
 
@@ -24,7 +24,7 @@
   padding-inline: 48px;
   gap: 64px;
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     padding-inline: 0;
   }
 }
@@ -49,13 +49,13 @@
     border-radius: var(--radius-xs);
     padding: 2rem 4rem;
 
-    @include breakpoints.media("<=mobile") {
+    @include breakpoints.media("<mobile") {
       padding: 1rem 2rem;
     }
   }
 
   &:not(.with-background) {
-    @include breakpoints.media("<=mobile") {
+    @include breakpoints.media("<mobile") {
       margin-inline: var(--grid-compensation);
       width: auto;
       border-left-width: 0;
@@ -101,7 +101,7 @@
   padding-block: 64px;
   gap: 72px;
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     gap: 42px;
   }
 }

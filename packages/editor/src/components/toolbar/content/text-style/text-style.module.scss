@@ -2,7 +2,7 @@
 
 .x {
   &.select {
-    @include breakpoints.media(">mobile") {
+    @include breakpoints.media(">=mobile") {
       flex-grow: 1;
     }
   }

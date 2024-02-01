@@ -14,7 +14,7 @@
     font-weight: var(--font-weight-medium);
   }
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     &::before {
       content: none;
     }

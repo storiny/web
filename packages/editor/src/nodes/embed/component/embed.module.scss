@@ -59,7 +59,7 @@
     grid-column: unset !important;
   }
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     &::before {
       padding-bottom: var(--padding-mobile, var(--padding-desktop, 0));
     }

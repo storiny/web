@@ -25,7 +25,7 @@
     line-height: 100%;
     padding-block: 16px;
 
-    @include breakpoints.media("<=mobile") {
+    @include breakpoints.media("<mobile") {
       font-size: 96px;
     }
   }

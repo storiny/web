@@ -4,7 +4,7 @@
   padding: 20px;
   flex-grow: 1; // Push footer to bottom
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     padding: 18px 0;
   }
 }

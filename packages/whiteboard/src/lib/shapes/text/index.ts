@@ -18,6 +18,7 @@ const DEFAULT_TEXT_PROPS: Partial<TextProps> = {
   interactive: true,
   cursorDelay: 1060,
   cursorDuration: 500,
+  fill: "rgba(136,136,140,1)",
   editingBorderColor: "#1371ec",
   fontFamily: DEFAULT_FONT_FAMILY,
   fontWeight: "400",

@@ -51,7 +51,7 @@
       ". ft ft ft ft ft ft ft ft ft ft ft ft .";
   }
 
-  @include breakpoints.media("<=desktop", ">tablet") {
+  @include breakpoints.media("<desktop", ">=tablet") {
     --grid-compensation: 0px;
     --grid-gutter: 48px;
 
@@ -74,7 +74,7 @@
     }
   }
 
-  @include breakpoints.media("<=tablet", ">mobile") {
+  @include breakpoints.media("<tablet", ">=mobile") {
     &:not(.no-sidenav, .minimal) {
       @include sidenav;
     }
@@ -91,7 +91,7 @@
     }
   }
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     --grid-compensation: -22px;
     --grid-gutter: 22px;
     --grid-area: ". hd hd ." ". main main ." ". ft ft ." !important;

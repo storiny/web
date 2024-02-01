@@ -14,7 +14,7 @@
 
   flex-basis: calc(33.33% - 12px);
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     flex-basis: calc(50% - 12px);
   }
 }

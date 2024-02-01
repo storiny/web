@@ -41,7 +41,7 @@
     }
   }
 
-  @include breakpoints.media("<=tablet") {
+  @include breakpoints.media("<tablet") {
     padding-inline: 0;
   }
 }
