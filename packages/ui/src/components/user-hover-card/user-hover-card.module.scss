@@ -33,7 +33,8 @@
   position: relative;
 }
 
-.text {
+.meta {
+  width: fit-content;
   max-width: calc(100% - 48px);
 }
 
