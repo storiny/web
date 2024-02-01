@@ -14,7 +14,7 @@
       top: 86px;
     }
 
-    @include breakpoints.media("<=tablet") {
+    @include breakpoints.media("<tablet") {
       left: 0;
     }
   }

@@ -4,7 +4,7 @@
 .content {
   height: 100%;
 
-  @include breakpoints.media(">mobile") {
+  @include breakpoints.media(">=mobile") {
     height: 400px;
   }
 }

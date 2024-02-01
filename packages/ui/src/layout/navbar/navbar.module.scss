@@ -27,7 +27,7 @@
   }
 
   &.dashboard {
-    @include breakpoints.media("<=desktop") {
+    @include breakpoints.media("<desktop") {
       & .wordmark {
         display: none;
       }
@@ -41,7 +41,7 @@
   }
 
   &:not(.minimal) {
-    @include breakpoints.media("<=tablet") {
+    @include breakpoints.media("<tablet") {
       & .wordmark {
         display: none;
       }
@@ -57,7 +57,7 @@
       }
     }
 
-    @include breakpoints.media("<=mobile") {
+    @include breakpoints.media("<mobile") {
       & .wordmark {
         display: inline-flex;
         padding-inline: 6px;

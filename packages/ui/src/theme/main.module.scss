@@ -75,25 +75,27 @@
     }
   }
 
-  @include breakpoints.media("<=desktop", ">tablet") {
+  @include breakpoints.media("<desktop", ">=tablet") {
     margin-left: 47%;
     transform: translateX(-50%);
     width: calc(100vw - 40%);
 
     &.dashboard-header {
-      width: calc(100vw - 78px);
-      margin-left: calc(50% + 2px);
+      // Exclude sidenav width
+      width: calc(100vw - 72px);
+      margin-left: 50%;
       transform: translateX(-50%);
     }
   }
 
-  @include breakpoints.media("<=tablet") {
-    width: calc(100vw - 78px);
-    margin-left: calc(50% + 2px);
+  @include breakpoints.media("<tablet") {
+    // Exclude sidenav width
+    width: calc(100vw - 72px);
+    margin-left: 50%;
     transform: translateX(-50%);
   }
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     width: 100vw;
     margin-left: 50%;
     transform: translateX(-50%);

@@ -9,7 +9,7 @@
       line-height: 86px;
       letter-spacing: 0.25px;
 
-      @include breakpoints.media("<=mobile") {
+      @include breakpoints.media("<mobile") {
         font-size: 54px;
         line-height: 58px;
       }
@@ -21,7 +21,7 @@
       line-height: 68px;
       letter-spacing: -0.4px;
 
-      @include breakpoints.media("<=mobile") {
+      @include breakpoints.media("<mobile") {
         font-size: 26px;
         line-height: 31px;
       }
@@ -38,7 +38,7 @@
       line-height: 43px;
       letter-spacing: -0.05px;
 
-      @include breakpoints.media("<=mobile") {
+      @include breakpoints.media("<mobile") {
         font-size: 32px;
         line-height: 37px;
         letter-spacing: 0;
@@ -50,7 +50,7 @@
       font-size: 30px;
       line-height: 35px;
 
-      @include breakpoints.media("<=mobile") {
+      @include breakpoints.media("<mobile") {
         font-size: 28px;
         line-height: 33px;
       }
@@ -61,7 +61,7 @@
       font-size: 24px;
       line-height: 31px;
 
-      @include breakpoints.media("<=mobile") {
+      @include breakpoints.media("<mobile") {
         font-size: 21px;
         line-height: 28px;
       }
@@ -72,7 +72,7 @@
       font-size: 20px;
       line-height: 25px;
 
-      @include breakpoints.media("<=mobile") {
+      @include breakpoints.media("<mobile") {
         font-size: 18px;
         line-height: 23px;
       }
@@ -128,7 +128,7 @@
       var(--t-legible-regular-line-height)
     );
 
-    @include breakpoints.media("<=mobile") {
+    @include breakpoints.media("<mobile") {
       font-size: var(
         --t-legible-font-size-sm,
         var(
@@ -182,7 +182,7 @@
     border-radius: var(--radius-md);
     background-color: var(--bg-elevation-xs);
 
-    @include breakpoints.media("<=mobile") {
+    @include breakpoints.media("<mobile") {
       font-size: 18px;
       line-height: 25px;
     }

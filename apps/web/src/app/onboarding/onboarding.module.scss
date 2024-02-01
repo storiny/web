@@ -38,7 +38,7 @@
     min-height: 180px;
     max-height: 270px;
 
-    @include breakpoints.media("<=mobile") {
+    @include breakpoints.media("<mobile") {
       max-height: 100%;
     }
   }
