@@ -11,7 +11,7 @@
     }
   }
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     transform: scale(135%) translateY(13%);
   }
 }

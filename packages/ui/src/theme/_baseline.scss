@@ -150,6 +150,15 @@ body {
     }
   }
 
+  &.sidenav {
+    & [data-global-header="true"], [data-global-footer="true"] {
+      &::before {
+        // Remove sidenav width
+        width: calc(100vw - 72px);
+      }
+    }
+  }
+
   // Fixed bottom navigation height compensation
   &.bottom-navigation {
     --global-bottom-gutter: 72px;

@@ -4,7 +4,7 @@
   flex-wrap: wrap;
   gap: 12px;
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     width: auto;
     margin-inline: var(--grid-compensation);
     flex-direction: column;
@@ -22,7 +22,7 @@
   border: 1px solid var(--divider);
   border-radius: var(--radius-xs);
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     border-radius: 0;
     width: 100%;
   }

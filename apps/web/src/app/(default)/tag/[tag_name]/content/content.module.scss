@@ -4,7 +4,7 @@
   gap: 16px;
   padding-block: 24px;
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     gap: 12px;
     padding-block: 18px;
   }
@@ -28,7 +28,7 @@
   &.meta-icon {
     --icon-size: 36px;
 
-    @include breakpoints.media("<=mobile") {
+    @include breakpoints.media("<mobile") {
       --icon-size: 24px;
     }
   }

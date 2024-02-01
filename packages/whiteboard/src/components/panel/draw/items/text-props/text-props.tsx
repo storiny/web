@@ -1,3 +1,4 @@
+import { dev_console } from "@storiny/shared/src/utils/dev-log";
 import { FabricObject } from "fabric";
 import FontFaceObserver from "fontfaceobserver";
 import React from "react";
@@ -103,6 +104,7 @@ const FontFamilyControl = ({
               });
             }
           })
+          .catch(dev_console.error)
           .finally(() => set_loading(false));
       }
     },

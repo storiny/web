@@ -12,7 +12,7 @@
   padding-block: 64px;
   gap: 72px;
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     margin-top: calc(60vh - var(--header-height));
     gap: 42px;
   }
@@ -38,7 +38,7 @@
     height: 100%;
   }
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     height: 60vh;
   }
 }
@@ -62,7 +62,7 @@
     max-width: 100%;
   }
 
-  @include breakpoints.media("<=tablet") {
+  @include breakpoints.media("<tablet") {
     flex-direction: column;
     align-items: center;
 
@@ -77,7 +77,7 @@
   padding-inline: 48px;
   gap: 64px;
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     padding-inline: 0;
   }
 }

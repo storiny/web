@@ -5,7 +5,7 @@
     margin-top: 12px;
     padding-inline: 20px;
 
-    @include breakpoints.media("<=mobile") {
+    @include breakpoints.media("<mobile") {
       padding-inline: 16px;
     }
   }

@@ -14,11 +14,11 @@
     &.static {
       padding-block: 24px;
 
-      @include breakpoints.media("<=tablet") {
+      @include breakpoints.media("<tablet") {
         padding-block: 30px;
       }
 
-      @include breakpoints.media("<=mobile") {
+      @include breakpoints.media("<mobile") {
         padding-block: 20px;
       }
     }

@@ -10,7 +10,7 @@
   &.small {
     max-width: 520px;
 
-    @include breakpoints.media("<=520px") {
+    @include breakpoints.media("<520px") {
       border-radius: 0;
       border-inline: none;
     }
@@ -22,7 +22,7 @@
   }
 
   &:not(.small) {
-    @include breakpoints.media("<=420px") {
+    @include breakpoints.media("<420px") {
       border-radius: 0;
       border-inline: none;
     }

@@ -21,7 +21,7 @@
 .properties {
   gap: 24px;
 
-  @include breakpoints.media("<=tablet") {
+  @include breakpoints.media("<tablet") {
     padding-block: 24px;
   }
 }

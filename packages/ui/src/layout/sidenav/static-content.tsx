@@ -47,6 +47,11 @@ const SidenavStatic = (
     select_unread_notification_count
   );
 
+  React.useLayoutEffect(() => {
+    document.body.classList.add("sidenav");
+    return () => document.body.classList.remove("sidenav");
+  }, []);
+
   return (
     <aside
       {...rest}

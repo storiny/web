@@ -37,6 +37,7 @@ const Navbar = (props: NavbarProps): React.ReactElement => {
         is_dashboard && styles.dashboard,
         className
       )}
+      data-global-header={"true"}
       role={"banner"}
     >
       <nav

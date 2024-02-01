@@ -11,11 +11,11 @@
   &.read-only {
     padding: 32px 28px;
 
-    @include breakpoints.media("<=tablet") {
+    @include breakpoints.media("<tablet") {
       padding-inline: 0;
     }
 
-    @include breakpoints.media("<=mobile") {
+    @include breakpoints.media("<mobile") {
       padding-block: 18px;
     }
   }

@@ -57,7 +57,7 @@
   --icon-size: 24px;
   --icon-stroke: var(--inverted-0);
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     --icon-size: 18px;
   }
 }
