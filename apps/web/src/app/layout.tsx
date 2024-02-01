@@ -14,6 +14,7 @@ import CriticalStyles from "~/theme/critical";
 import CriticalFonts from "./fonts/critical";
 import ObserverErrorHandler from "./observer";
 import { PreloadResources } from "./preload-resources";
+import PostHogProvider from "./providers";
 import SelfXSSWarning from "./selfxss-warning";
 import StateProvider from "./state-provider";
 // @ts-expect-error text file import
@@ -21,6 +22,9 @@ import theme_sync from "./theme-sync.txt";
 
 const LazyFonts = dynamic(() => import("./fonts/lazy"));
 const Progress = dynamic(() => import("./progress"));
+const PostHogPageView = dynamic(() => import("./page-view"), {
+  ssr: false
+});
 
 const RootLayout = ({
   children
@@ -62,10 +66,13 @@ const RootLayout = ({
         <CriticalFonts />
         <LazyFonts />
       </head>
-      <body dir={"ltr"}>
-        <Progress />
-        <StateProvider logged_in={logged_in}>{children}</StateProvider>
-      </body>
+      <PostHogProvider>
+        <body dir={"ltr"}>
+          <PostHogPageView />
+          <Progress />
+          <StateProvider logged_in={logged_in}>{children}</StateProvider>
+        </body>
+      </PostHogProvider>
       <ObserverErrorHandler />
       <SelfXSSWarning />
     </html>
