@@ -155,6 +155,7 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
     <Modal
       footer={<GalleryFooter {...{ on_confirm, on_cancel }} />}
       fullscreen={is_smaller_than_tablet || fullscreen}
+      modal={!fullscreen}
       mode={"tabbed"}
       onOpenChange={(open): void => {
         set_open(open);
@@ -218,6 +219,14 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
           }
         },
         content: {
+          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+          onPointerDownOutside: (event): void => {
+            event.preventDefault();
+          },
+          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+          onInteractOutside: (event): void => {
+            event.preventDefault();
+          },
           style: {
             // eslint-disable-next-line prefer-snakecase/prefer-snakecase
             minHeight: "45vh",

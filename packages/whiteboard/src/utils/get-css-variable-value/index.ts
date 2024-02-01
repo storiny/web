@@ -8,5 +8,10 @@ export const get_css_variable_value = (variable: string): string => {
   }
 
   const style = getComputedStyle(document.body);
-  return style.getPropertyValue(variable);
+  const value = style.getPropertyValue(variable);
+  // The value can be a font family with fallback: 'font-family-a',
+  // 'font-family-b'
+  const first_item = value.split(",");
+
+  return first_item[0].replace(/'/g, "");
 };

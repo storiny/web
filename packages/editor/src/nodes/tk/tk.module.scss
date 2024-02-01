@@ -3,7 +3,7 @@
 .tk {
   color: var(--plum-300);
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     font-weight: var(--font-weight-bold);
   }
 }

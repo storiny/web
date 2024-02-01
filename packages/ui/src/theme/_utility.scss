@@ -58,13 +58,13 @@
 }
 
 .only-mobile {
-  @include breakpoints.media(">mobile") {
+  @include breakpoints.media(">=mobile") {
     display: none;
   }
 }
 
 .not-mobile {
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     display: none;
   }
 }

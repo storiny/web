@@ -4,7 +4,7 @@
   border-top: 1px solid var(--divider);
   padding: 24px 20px;
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     padding-inline: 0;
     padding-bottom: 74px; // Compensate BottomNavigation height
   }

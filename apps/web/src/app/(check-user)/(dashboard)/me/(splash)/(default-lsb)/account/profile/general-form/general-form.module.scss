@@ -3,7 +3,7 @@
 .input-row {
   gap: 24px;
 
-  @include breakpoints.media("<=tablet") {
+  @include breakpoints.media("<tablet") {
     flex-wrap: wrap;
   }
 }

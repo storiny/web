@@ -11,7 +11,7 @@
   background-color: var(--inverted-400);
   border-bottom: 1px solid var(--divider);
 
-  @include breakpoints.media("<desktop", ">mobile") {
+  @include breakpoints.media("<desktop", ">=mobile") {
     width: calc(100vw - 72px);
     margin-left: 50%;
     transform: translateX(-50%);

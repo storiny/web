@@ -39,7 +39,7 @@
 }
 
 .content {
-  @include breakpoints.media(">mobile", "<=820px") {
+  @include breakpoints.media(">=mobile", "<820px") {
     flex-wrap: wrap;
 
     & .grow {
@@ -47,7 +47,7 @@
     }
   }
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     flex-direction: column;
 
     & .branding {
@@ -82,7 +82,7 @@
     margin-right: 64px;
   }
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     margin-bottom: 16px;
   }
 }

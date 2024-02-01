@@ -7,7 +7,7 @@
 .row {
   gap: 12px;
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     gap: 16px;
     flex-direction: column;
     align-items: stretch;

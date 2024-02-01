@@ -28,7 +28,7 @@
     border-inline: 1px solid var(--divider);
   }
 
-  @include breakpoints.media("<=tablet") {
+  @include breakpoints.media("<tablet") {
     grid-column: 2 / -2;
   }
 

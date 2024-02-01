@@ -1,7 +1,7 @@
 @use "breakpoints";
 
 .page-header {
-  @include breakpoints.media("<=tablet") {
+  @include breakpoints.media("<tablet") {
     border-top: 1px solid var(--divider);
     box-shadow: none;
     margin-block: 12px;

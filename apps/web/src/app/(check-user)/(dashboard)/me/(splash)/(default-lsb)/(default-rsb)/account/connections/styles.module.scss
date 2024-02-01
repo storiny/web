@@ -12,7 +12,7 @@
   align-items: center;
   justify-content: space-between;
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     &.connected {
       gap: 16px;
       flex-wrap: wrap;

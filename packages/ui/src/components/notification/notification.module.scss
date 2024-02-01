@@ -13,7 +13,7 @@
   z-index: var(--z-index-toast);
   outline: none;
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     width: 100%;
   }
 }
@@ -26,7 +26,7 @@
   align-items: center;
   overflow: hidden;
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     flex-direction: column;
     align-items: stretch;
     width: 100%;
@@ -52,7 +52,7 @@
   font-size: var(--font-size-xs);
   line-height: var(--line-height-xs);
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     margin: 12px 8px;
     max-width: 100%;
   }
@@ -63,7 +63,7 @@
   flex-direction: column;
   height: 100%;
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     flex-direction: row;
     width: 100%;
     height: 32px;
@@ -100,7 +100,7 @@
     border-bottom-right-radius: var(--radius-lg);
   }
 
-  @include breakpoints.media("<=mobile") {
+  @include breakpoints.media("<mobile") {
     min-height: initial;
 
     &:first-of-type {
