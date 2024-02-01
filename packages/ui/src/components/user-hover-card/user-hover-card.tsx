@@ -127,26 +127,28 @@ const UserHoverCardContent = ({
           </IconButton>
         )}
       </div>
-      <div className={clsx(css["flex-col"], css["fit-w"])}>
-        <Link
-          className={clsx(css["t-bold"], styles.text)}
-          ellipsis
-          fixed_color
-          href={`/${user.username}`}
-        >
-          {user.name}
-        </Link>
-        <Link
-          className={clsx(css.flex, styles.text, styles.sub)}
-          href={`/${user.username}`}
-          level={"body2"}
-        >
-          <span className={css.ellipsis}>@{user.username} </span>
-          <BadgeArray flags={user.public_flags} size={14} />
-        </Link>
+      <div className={css["flex-col"]}>
+        <div className={clsx(css["flex-col"], styles.meta)}>
+          <Link
+            className={css["t-bold"]}
+            ellipsis
+            fixed_color
+            href={`/${user.username}`}
+          >
+            {user.name}
+          </Link>
+          <Link
+            className={clsx(css.flex, styles.sub)}
+            href={`/${user.username}`}
+            level={"body2"}
+          >
+            <span className={css.ellipsis}>@{user.username} </span>
+            <BadgeArray flags={user.public_flags} size={14} />
+          </Link>
+        </div>
         {Boolean((user.rendered_bio || "").trim()) && (
           <Typography as={"div"} className={clsx(css["t-minor"], styles.bio)}>
-            <BioParser content={user.rendered_bio} />
+            <BioParser content={user.rendered_bio} disable_hovercards />
           </Typography>
         )}
         <Spacer orientation={"vertical"} size={2} />
@@ -189,12 +191,11 @@ const UserHoverCard = forward_ref<UserHoverCardProps, "div">((props, ref) => {
     children,
     className,
     slot_props,
-    closeDelay: close_delay = 0,
     ...rest
   } = props;
 
   return (
-    <Root {...rest} closeDelay={close_delay}>
+    <Root {...rest}>
       <Trigger {...slot_props?.trigger} asChild>
         {children}
       </Trigger>
