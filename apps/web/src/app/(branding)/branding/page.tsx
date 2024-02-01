@@ -2,6 +2,7 @@ import { clsx } from "clsx";
 import Image from "next/image";
 import React from "react";
 
+import PlusPattern from "~/brand/plus-pattern";
 import Button from "~/components/button";
 import Divider from "~/components/divider";
 import Link from "~/components/link";
@@ -24,15 +25,7 @@ const Page = (): React.ReactElement => (
       className={clsx(css["grid"], css["minimal"], styles.splash)}
       role={"presentation"}
     >
-      <Image
-        alt={""}
-        data-invert-filter={""}
-        fill
-        loading={"eager"}
-        priority
-        src={"web-assets/background/noise"}
-        style={{ objectFit: "cover" }}
-      />
+      <PlusPattern style={{ position: "absolute" }} />
       <Image
         alt={""}
         fill

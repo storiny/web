@@ -23,8 +23,7 @@ export const PreloadResources = (): null => {
       });
 
     Promise.all([
-      cache_image(`${CDN_URL}/web-assets/raw/spritesheets/emoji-sprite`),
-      cache_image(`${CDN_URL}/web-assets/background/noise`)
+      cache_image(`${CDN_URL}/web-assets/raw/spritesheets/emoji-sprite`)
     ]).catch(() => undefined);
   }, []);
 
