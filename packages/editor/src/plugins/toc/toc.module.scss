@@ -8,6 +8,7 @@
     padding: 4px 16px;
     cursor: pointer;
     border-left: 1px solid var(--border, transparent);
+    width: 100% !important;
 
     &:not(.sub) + .sub {
       margin-top: 8px;
