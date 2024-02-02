@@ -11,7 +11,7 @@ import { render_with_state } from "~/redux/mock";
 import DefaultLayout from "../layout";
 import Profile from "./component";
 
-const USER = MOCK_USERS[9];
+const USER = MOCK_USERS[5];
 const MOCK_RESPONSE = {
   ...USER,
   is_following: false,
