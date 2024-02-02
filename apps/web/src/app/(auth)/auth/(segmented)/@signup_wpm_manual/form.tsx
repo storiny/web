@@ -13,7 +13,7 @@ import { use_toast } from "~/components/toast";
 import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
 
-import { use_auth_state } from "../../../actions";
+import { use_auth_state } from "../../../state";
 import { use_signup } from "../../../use-signup";
 import { SIGNUP_WPM_SCHEMA, SignupWPMSchema } from "./schema";
 
@@ -22,7 +22,7 @@ interface Props {
 }
 
 const SignupWPMForm = ({ on_submit }: Props): React.ReactElement => {
-  const { state, actions } = use_auth_state();
+  const { state, set_state } = use_auth_state();
   const { is_loading, handle_signup } = use_signup();
   const toast = use_toast();
   const form = use_form<SignupWPMSchema>({
@@ -33,7 +33,9 @@ const SignupWPMForm = ({ on_submit }: Props): React.ReactElement => {
   });
 
   const handle_submit: SubmitHandler<SignupWPMSchema> = (values) => {
-    actions.set_signup_state(values);
+    set_state({
+      signup: values
+    });
 
     if (on_submit) {
       on_submit(values);

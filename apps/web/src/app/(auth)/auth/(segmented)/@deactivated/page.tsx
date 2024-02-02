@@ -12,7 +12,7 @@ import { use_login_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
 
-import { use_auth_state } from "../../../actions";
+import { use_auth_state } from "../../../state";
 
 const Page = (): React.ReactElement => {
   const { state } = use_auth_state();

@@ -21,7 +21,7 @@ import { use_username_validation_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
 
-import { use_auth_state } from "../../../actions";
+import { use_auth_state } from "../../../state";
 import { SIGNUP_USERNAME_SCHEMA, SignupUsernameSchema } from "./schema";
 
 interface Props {
@@ -66,8 +66,8 @@ const UsernameField = ({
         username.length < USER_PROPS.username.min_length
           ? true
           : loading
-          ? false
-          : !!is_success
+            ? false
+            : !!is_success
       ),
     [is_success, loading, set_valid, username.length]
   );
@@ -97,8 +97,8 @@ const UsernameField = ({
             color: loading
               ? "var(--fg-minor)"
               : is_success
-              ? "var(--melon-100)"
-              : "var(--ruby-500)"
+                ? "var(--melon-100)"
+                : "var(--ruby-500)"
           } as React.CSSProperties
         }
       }}

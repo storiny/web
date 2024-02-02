@@ -8,17 +8,17 @@ import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import css from "~/theme/main.module.scss";
 
-import { use_auth_state } from "../../../actions";
+import { use_auth_state } from "../../../state";
 import ResetForm from "./form";
 
 const Page = (): React.ReactElement => {
   const params = use_search_params();
-  const { actions } = use_auth_state();
+  const { set_state } = use_auth_state();
   const token = params.get("token") || "";
 
   React.useEffect(() => {
-    actions.set_reset_password_token(token);
-  }, [actions, token]);
+    set_state({ reset_password: { token } });
+  }, [set_state, token]);
 
   return (
     <>
@@ -39,7 +39,7 @@ const Page = (): React.ReactElement => {
           level={"body2"}
           onClick={(event): void => {
             event.preventDefault();
-            actions.switch_segment("login");
+            set_state({ segment: "login" });
           }}
           underline={"always"}
         >

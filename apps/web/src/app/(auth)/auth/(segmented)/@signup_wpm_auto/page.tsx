@@ -12,14 +12,14 @@ import Typography from "~/components/typography";
 import css from "~/theme/main.module.scss";
 import { clamp } from "~/utils/clamp";
 
-import { use_auth_state } from "../../../actions";
+import { use_auth_state } from "../../../state";
 import { use_signup } from "../../../use-signup";
 import styles from "./styles.module.scss";
 
 const WORD_COUNT = 262;
 
 const Page = (): React.ReactElement => {
-  const { actions } = use_auth_state();
+  const { set_state } = use_auth_state();
   const { handle_signup, is_loading } = use_signup();
   const [mount_time, set_mount_time] = React.useState<number | null>(null);
 
@@ -33,7 +33,8 @@ const Page = (): React.ReactElement => {
       USER_PROPS.wpm.max
     );
 
-    actions.set_signup_state({ wpm });
+    set_state({ signup: { wpm } });
+
     handle_signup();
   };
 

@@ -11,10 +11,10 @@ import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import css from "~/theme/main.module.scss";
 
-import { use_auth_state } from "../../../actions";
+import { use_auth_state } from "../../../state";
 
 const Page = (): React.ReactElement => {
-  const { actions, state } = use_auth_state();
+  const { set_state, state } = use_auth_state();
   return (
     <>
       <Typography as={"h1"} level={"h3"}>
@@ -35,7 +35,7 @@ const Page = (): React.ReactElement => {
           href={"#"}
           onClick={(event): void => {
             event.preventDefault();
-            actions.switch_segment("recovery_base");
+            set_state({ segment: "recovery_base" });
           }}
           underline={"always"}
         >
@@ -52,7 +52,7 @@ const Page = (): React.ReactElement => {
           level={"body2"}
           onClick={(event): void => {
             event.preventDefault();
-            actions.switch_segment("login");
+            set_state({ segment: "login" });
           }}
           underline={"always"}
         >

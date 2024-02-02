@@ -14,7 +14,7 @@ import { use_toast } from "~/components/toast";
 import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
 
-import { use_auth_state } from "../../../actions";
+import { use_auth_state } from "../../../state";
 import { SIGNUP_BASE_SCHEMA, SignupBaseSchema } from "./schema";
 
 interface Props {
@@ -22,7 +22,7 @@ interface Props {
 }
 
 const SignupBaseForm = ({ on_submit }: Props): React.ReactElement => {
-  const { state, actions } = use_auth_state();
+  const { state, set_state } = use_auth_state();
   const toast = use_toast();
   const form = use_form<SignupBaseSchema>({
     resolver: zod_resolver(SIGNUP_BASE_SCHEMA),
@@ -37,7 +37,7 @@ const SignupBaseForm = ({ on_submit }: Props): React.ReactElement => {
     if (on_submit) {
       on_submit(values);
     } else {
-      actions.switch_segment("signup_username");
+      set_state({ segment: "signup_username" });
     }
   };
 

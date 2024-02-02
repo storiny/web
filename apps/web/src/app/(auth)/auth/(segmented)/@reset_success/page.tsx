@@ -10,10 +10,10 @@ import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import css from "~/theme/main.module.scss";
 
-import { use_auth_state } from "../../../actions";
+import { use_auth_state } from "../../../state";
 
 const Page = (): React.ReactElement => {
-  const { actions } = use_auth_state();
+  const { set_state } = use_auth_state();
   return (
     <>
       <Typography as={"h1"} level={"h3"}>
@@ -37,7 +37,7 @@ const Page = (): React.ReactElement => {
         <Spacer orientation={"vertical"} size={3} />
         <Button
           className={css["full-w"]}
-          onClick={(): void => actions.switch_segment("login")}
+          onClick={(): void => set_state({ segment: "login" })}
           size={"lg"}
         >
           Log in
