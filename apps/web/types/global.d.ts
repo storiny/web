@@ -6,6 +6,7 @@ import { AuthSegment } from "../src/app/(auth)/state";
 declare module "little-state-machine" {
   interface GlobalState {
     auth: {
+      next_url: string;
       segment: AuthSegment;
     };
     login_data: LoginSchema | null;

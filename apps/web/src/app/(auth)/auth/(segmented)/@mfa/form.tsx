@@ -15,7 +15,7 @@ import { use_login_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
 
-import { use_auth_state } from "../../../actions";
+import { use_auth_state } from "../../../state";
 import {
   AUTHENTICATION_CODE_MAX_LENGTH,
   AUTHENTICATION_CODE_MIN_LENGTH,
@@ -29,7 +29,7 @@ interface Props {
 
 const MFAForm = ({ on_submit }: Props): React.ReactElement => {
   const router = use_app_router();
-  const { actions, state } = use_auth_state();
+  const { state, set_state } = use_auth_state();
   const toast = use_toast();
   const form = use_form<MFASchema>({
     resolver: zod_resolver(MFA_SCHEMA),
@@ -42,7 +42,8 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
 
   const handle_submit: SubmitHandler<MFASchema> = React.useCallback(
     (values) => {
-      actions.set_mfa_code(values.code);
+      set_state({ mfa_code: values.code });
+
       const login_data = state.login_data;
 
       if (on_submit) {
@@ -58,18 +59,20 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
           .then((res) => {
             if (res.result === "success") {
               set_done(true);
-              router.replace("/"); // Home page
+
+              router.replace(state.next_url || "/"); // Home page
               router.refresh(); // Refresh the state
             } else {
-              actions.switch_segment(
+              const next_segment =
                 res.result === "suspended"
                   ? "suspended"
                   : res.result === "held_for_deletion"
                     ? "deletion"
                     : res.result === "deactivated"
                       ? "deactivated"
-                      : "email_confirmation"
-              );
+                      : "email_confirmation";
+
+              set_state({ segment: next_segment });
             }
           })
           .catch((error) => {
@@ -80,7 +83,16 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
         toast("Missing credentials", "error");
       }
     },
-    [actions, form, mutate_login, on_submit, router, state.login_data, toast]
+    [
+      form,
+      mutate_login,
+      on_submit,
+      router,
+      set_state,
+      state.login_data,
+      state.next_url,
+      toast
+    ]
   );
 
   return (

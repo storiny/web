@@ -10,10 +10,10 @@ import Stepper from "~/components/stepper";
 import Typography from "~/components/typography";
 import css from "~/theme/main.module.scss";
 
-import { use_auth_state } from "../../../actions";
+import { use_auth_state } from "../../../state";
 
 const Page = (): React.ReactElement => {
-  const { actions } = use_auth_state();
+  const { set_state } = use_auth_state();
   return (
     <>
       <Typography as={"h1"} level={"h3"}>
@@ -29,7 +29,7 @@ const Page = (): React.ReactElement => {
       <Spacer orientation={"vertical"} size={5} />
       <div className={css["flex-col"]}>
         <Button
-          onClick={(): void => actions.switch_segment("signup_wpm_manual")}
+          onClick={(): void => set_state({ segment: "signup_wpm_manual" })}
           size={"lg"}
           variant={"hollow"}
         >
@@ -37,7 +37,7 @@ const Page = (): React.ReactElement => {
         </Button>
         <Spacer orientation={"vertical"} size={1.75} />
         <Button
-          onClick={(): void => actions.switch_segment("signup_wpm_auto")}
+          onClick={(): void => set_state({ segment: "signup_wpm_auto" })}
           size={"lg"}
         >
           Start
@@ -52,7 +52,7 @@ const Page = (): React.ReactElement => {
           level={"body2"}
           onClick={(event): void => {
             event.preventDefault();
-            actions.switch_segment("signup_wpm_base");
+            set_state({ segment: "signup_wpm_base" });
           }}
           underline={"always"}
         >
