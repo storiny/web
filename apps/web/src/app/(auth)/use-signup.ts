@@ -1,4 +1,5 @@
 import { DEFAULT_WPM } from "@storiny/shared";
+import { usePostHog as use_posthog } from "posthog-js/react";
 
 import { use_toast } from "~/components/toast";
 import { use_signup_mutation } from "~/redux/features";
@@ -17,6 +18,7 @@ export const use_signup = (): {
   const { state, actions } = use_auth_state();
   const [mutate_signup, { isLoading: is_loading }] = use_signup_mutation();
   const toast = use_toast();
+  const posthog = use_posthog();
 
   const handle_signup = (): void => {
     mutate_signup({
@@ -30,6 +32,15 @@ export const use_signup = (): {
           username: undefined,
           wpm_manual: undefined
         });
+
+        if (posthog) {
+          posthog.capture("Signup", {
+            username: state.signup.username,
+            email: state.signup.email,
+            name: state.signup.name,
+            wpm: state.signup.wpm || DEFAULT_WPM
+          });
+        }
 
         actions.switch_segment("email_confirmation");
       })
