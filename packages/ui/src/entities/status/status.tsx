@@ -15,22 +15,17 @@ import { DateFormat, format_date } from "~/utils/format-date";
 import { forward_ref } from "~/utils/forward-ref";
 
 import button_styles from "../../components/common/button-reset.module.scss";
+import { StatusContext } from "./context";
 import styles from "./status.module.scss";
 import { StatusProps } from "./status.props";
 
 const StatusModal = dynamic(() => import("./modal"), {
-  loading: ({ isLoading: is_loading, error }) => (
-    <Typography
-      aria-busy={Boolean(is_loading)}
-      as={"div"}
-      className={clsx(css["flex-center"], styles.status)}
-      color={"minor"}
-      level={"body2"}
-      style={{ userSelect: "none" }}
-    >
-      {Boolean(error) && !is_loading ? "Unavailable" : "Loading…"}
-    </Typography>
-  )
+  loading: ({ isLoading: is_loading, error }) => {
+    const { is_editable, ...rest } = React.useContext(StatusContext);
+    return (
+      <Entity is_editable={is_editable && !is_loading && !error} {...rest} />
+    );
+  }
 });
 
 const ExpiryTime = ({
@@ -145,20 +140,24 @@ const Status = forward_ref<StatusProps, "span">((props, ref) => {
 
   if (is_editable && !disable_modal) {
     return (
-      <StatusModal
-        modal_props={modal_props}
-        trigger={({ open_modal }): React.ReactElement => (
-          <Entity
-            {...rest}
-            is_editable={is_editable}
-            onClick={(event): void => {
-              open_modal();
-              rest.onClick?.(event);
-            }}
-            ref={ref}
-          />
-        )}
-      />
+      <StatusContext.Provider
+        value={{ user_id, editable, is_editable, ...rest }}
+      >
+        <StatusModal
+          modal_props={modal_props}
+          trigger={({ open_modal }): React.ReactElement => (
+            <Entity
+              {...rest}
+              is_editable={is_editable}
+              onClick={(event): void => {
+                open_modal();
+                rest.onClick?.(event);
+              }}
+              ref={ref}
+            />
+          )}
+        />
+      </StatusContext.Provider>
     );
   }
 
