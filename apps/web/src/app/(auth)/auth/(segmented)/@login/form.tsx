@@ -21,7 +21,7 @@ import {
 import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
 
-import { use_auth_state } from "../../../actions";
+import { use_auth_state } from "../../../state";
 import { LOGIN_SCHEMA, LoginSchema } from "./schema";
 
 interface Props {
@@ -30,7 +30,7 @@ interface Props {
 
 const LoginForm = ({ on_submit }: Props): React.ReactElement => {
   const router = use_app_router();
-  const { actions } = use_auth_state();
+  const { state, set_state } = use_auth_state();
   const toast = use_toast();
   const form = use_form<LoginSchema>({
     resolver: zod_resolver(LOGIN_SCHEMA),
@@ -48,7 +48,7 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
 
   const handle_submit: SubmitHandler<LoginSchema> = React.useCallback(
     (values) => {
-      actions.set_login_data(values);
+      set_state({ login_data: values });
 
       if (on_submit) {
         on_submit(values);
@@ -62,7 +62,7 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
           .unwrap()
           .then((result) => {
             if (result.mfa_enabled) {
-              actions.switch_segment("mfa");
+              set_state({ segment: "mfa" });
             } else {
               // Continue login if MFA is not enabled for the user.
               mutate_login(values)
@@ -70,20 +70,23 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
                 .then((res) => {
                   if (res.result === "success") {
                     set_done(true);
+
                     router.replace(
-                      res.is_first_login ? `/?onboarding=true` : "/"
+                      state.next_url ||
+                        (res.is_first_login ? `/?onboarding=true` : "/")
                     ); // Home page
                     router.refresh(); // Refresh the state
                   } else {
-                    actions.switch_segment(
+                    const next_segment =
                       res.result === "suspended"
                         ? "suspended"
                         : res.result === "held_for_deletion"
                           ? "deletion"
                           : res.result === "deactivated"
                             ? "deactivated"
-                            : "email_confirmation"
-                    );
+                            : "email_confirmation";
+
+                    set_state({ segment: next_segment });
                   }
                 })
                 .catch((error) => {
@@ -98,12 +101,13 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
       }
     },
     [
-      actions,
       form,
       mutate_login,
       mutate_mfa_preflight,
       on_submit,
       router,
+      set_state,
+      state.next_url,
       toast
     ]
   );
@@ -142,7 +146,7 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
               level={"body3"}
               onClick={(event): void => {
                 event.preventDefault();
-                actions.switch_segment("recovery_base");
+                set_state({ segment: "recovery_base" });
               }}
               underline={"always"}
             >

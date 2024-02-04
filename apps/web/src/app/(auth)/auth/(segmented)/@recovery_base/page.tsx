@@ -7,11 +7,11 @@ import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import css from "~/theme/main.module.scss";
 
-import { use_auth_state } from "../../../actions";
+import { use_auth_state } from "../../../state";
 import RecoveryForm from "./form";
 
 const Page = (): React.ReactElement => {
-  const { actions } = use_auth_state();
+  const { set_state } = use_auth_state();
   return (
     <>
       <Typography as={"h1"} level={"h3"}>
@@ -32,7 +32,7 @@ const Page = (): React.ReactElement => {
           level={"body2"}
           onClick={(event): void => {
             event.preventDefault();
-            actions.switch_segment("login");
+            set_state({ segment: "login" });
           }}
           underline={"always"}
         >

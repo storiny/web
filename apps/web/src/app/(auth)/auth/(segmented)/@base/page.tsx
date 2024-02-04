@@ -13,7 +13,7 @@ import Tooltip from "~/components/tooltip";
 import Typography from "~/components/typography";
 import css from "~/theme/main.module.scss";
 
-import { use_auth_state } from "../../../actions";
+import { use_auth_state } from "../../../state";
 import styles from "./styles.module.scss";
 
 const AppleIcon = (): React.ReactElement => (
@@ -69,7 +69,7 @@ const GoogleIcon = (): React.ReactElement => (
 );
 
 const Page = (): React.ReactElement => {
-  const { actions } = use_auth_state();
+  const { set_state } = use_auth_state();
   return (
     <>
       <Typography as={"h1"} level={"h3"}>
@@ -82,13 +82,13 @@ const Page = (): React.ReactElement => {
       <Spacer orientation={"vertical"} size={5} />
       <div className={clsx(css["flex-col"], styles.actions)}>
         <Button
-          onClick={(): void => actions.switch_segment("signup_base")}
+          onClick={(): void => set_state({ segment: "signup_base" })}
           size={"lg"}
         >
           Sign up with E-mail
         </Button>
         <Button
-          onClick={(): void => actions.switch_segment("login")}
+          onClick={(): void => set_state({ segment: "login" })}
           size={"lg"}
           variant={"hollow"}
         >
@@ -135,7 +135,7 @@ const Page = (): React.ReactElement => {
           level={"body2"}
           onClick={(event): void => {
             event.preventDefault();
-            actions.switch_segment("recovery_base");
+            set_state({ segment: "recovery_base" });
           }}
           underline={"always"}
         >

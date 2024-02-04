@@ -14,7 +14,7 @@ import { use_recovery_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
 
-import { use_auth_state } from "../../../actions";
+import { use_auth_state } from "../../../state";
 import { RECOVERY_SCHEMA, RecoverySchema } from "./schema";
 
 interface Props {
@@ -23,7 +23,7 @@ interface Props {
 
 const RecoveryForm = ({ on_submit }: Props): React.ReactElement => {
   const toast = use_toast();
-  const { state, actions } = use_auth_state();
+  const { state, set_state } = use_auth_state();
   const form = use_form<RecoverySchema>({
     resolver: zod_resolver(RECOVERY_SCHEMA),
     defaultValues: {
@@ -36,10 +36,11 @@ const RecoveryForm = ({ on_submit }: Props): React.ReactElement => {
     if (on_submit) {
       on_submit(values);
     } else {
-      actions.set_recovery_state(values);
+      set_state({ recovery: values });
+
       mutate_recover(values)
         .unwrap()
-        .then(() => actions.switch_segment("recovery_inbox"))
+        .then(() => set_state({ segment: "recovery_inbox" }))
         .catch((error) =>
           handle_api_error(error, toast, form, "Could not recover your account")
         );

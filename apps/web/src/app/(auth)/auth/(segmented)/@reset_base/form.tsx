@@ -16,7 +16,7 @@ import { use_reset_password_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
 
-import { use_auth_state } from "../../../actions";
+import { use_auth_state } from "../../../state";
 import { RESET_SCHEMA, ResetSchema } from "./schema";
 
 interface Props {
@@ -26,7 +26,7 @@ interface Props {
 
 const ResetForm = ({ on_submit, token }: Props): React.ReactElement => {
   const toast = use_toast();
-  const { actions } = use_auth_state();
+  const { set_state } = use_auth_state();
   const form = use_form<ResetSchema>({
     resolver: zod_resolver(RESET_SCHEMA),
     defaultValues: {
@@ -44,7 +44,7 @@ const ResetForm = ({ on_submit, token }: Props): React.ReactElement => {
     } else {
       mutate_reset_password({ ...values, token })
         .unwrap()
-        .then(() => actions.switch_segment("reset_success"))
+        .then(() => set_state({ segment: "reset_success" }))
         .catch((error) =>
           handle_api_error(error, toast, form, "Could not reset your password")
         );

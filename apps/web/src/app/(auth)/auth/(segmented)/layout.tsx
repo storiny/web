@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { use_auth_state } from "../../actions";
+import { use_auth_state } from "../../state";
 import { AuthSegment } from "../../state";
 
 /**
@@ -18,7 +18,7 @@ const SegmentedLayout = (
     window.history.replaceState({}, "", "/auth");
   }, []);
 
-  return props[state.auth.segment];
+  return props[state.segment];
 };
 
 export default SegmentedLayout;

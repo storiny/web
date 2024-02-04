@@ -297,6 +297,12 @@ const ProfileContent = ({
               hex={profile.avatar_hex}
               label={profile.name}
               size={will_avatar_overflow ? "xl" : "xl2"}
+              slot_props={{
+                image: {
+                  // For transparent avatars over the banner (mobile).
+                  style: { background: "var(--bg-body)" }
+                }
+              }}
             />
           )}
         </Badge>

@@ -3,6 +3,7 @@
 import { Item } from "@radix-ui/react-dropdown-menu";
 import { is_test_env } from "@storiny/shared/src/utils/is-test-env";
 import clsx from "clsx";
+import { usePathname as use_pathname } from "next/navigation";
 import React from "react";
 
 import { select_is_logged_in } from "~/redux/features";
@@ -26,12 +27,16 @@ const MenuItem = forward_ref<MenuItemProps, "div">((props, ref) => {
     onSelect: on_select,
     ...rest
   } = props;
+  const pathname = use_pathname();
   const logged_in = use_app_selector(select_is_logged_in);
   const should_login = check_auth && !logged_in;
   const Component = should_login ? "a" : as;
-  const to = (rest as any)?.href
-    ? `?to=${encodeURIComponent((rest as any).href)}`
-    : "";
+  const to =
+    typeof (rest as any)?.href === "string"
+      ? `?to=${encodeURIComponent((rest as any).href)}`
+      : pathname !== "/"
+        ? `?to=${encodeURIComponent(pathname)}`
+        : "";
 
   /**
    * Handles click event

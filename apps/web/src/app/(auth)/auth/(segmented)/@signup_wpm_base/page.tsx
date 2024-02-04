@@ -11,15 +11,20 @@ import Stepper from "~/components/stepper";
 import Typography from "~/components/typography";
 import css from "~/theme/main.module.scss";
 
-import { use_auth_state } from "../../../actions";
+import { use_auth_state } from "../../../state";
 import { use_signup } from "../../../use-signup";
 
 const Page = (): React.ReactElement => {
-  const { actions } = use_auth_state();
+  const { set_state } = use_auth_state();
   const { handle_signup, is_loading } = use_signup();
 
   const on_skip = (): void => {
-    actions.set_signup_state({ wpm: DEFAULT_WPM });
+    set_state({
+      signup: {
+        wpm: DEFAULT_WPM
+      }
+    });
+
     handle_signup();
   };
 
@@ -48,7 +53,7 @@ const Page = (): React.ReactElement => {
         <Spacer orientation={"vertical"} size={1.75} />
         <Button
           onClick={(): void =>
-            actions.switch_segment("signup_wpm_confirmation")
+            set_state({ segment: "signup_wpm_confirmation" })
           }
           size={"lg"}
         >
@@ -64,7 +69,7 @@ const Page = (): React.ReactElement => {
           level={"body2"}
           onClick={(event): void => {
             event.preventDefault();
-            actions.switch_segment("signup_username");
+            set_state({ segment: "signup_username" });
           }}
           underline={"always"}
         >

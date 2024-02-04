@@ -9,19 +9,25 @@ import Stepper from "~/components/stepper";
 import Typography from "~/components/typography";
 import css from "~/theme/main.module.scss";
 
-import { use_auth_state } from "../../../actions";
+import { use_auth_state } from "../../../state";
 import SignupBaseForm from "./form";
 import { SignupBaseSchema } from "./schema";
 
 const Page = (): React.ReactElement => {
-  const { actions } = use_auth_state();
+  const { set_state } = use_auth_state();
 
   const on_submit: SubmitHandler<SignupBaseSchema> = React.useCallback(
     ({ name, password, email }) => {
-      actions.set_signup_state({ name, password, email });
-      actions.switch_segment("signup_username");
+      set_state({
+        signup: {
+          name,
+          password,
+          email
+        },
+        segment: "signup_username"
+      });
     },
-    [actions]
+    [set_state]
   );
 
   return (
@@ -37,7 +43,7 @@ const Page = (): React.ReactElement => {
           href={"#"}
           onClick={(event): void => {
             event.preventDefault();
-            actions.switch_segment("login");
+            set_state({ segment: "login" });
           }}
           underline={"always"}
         >
@@ -54,7 +60,7 @@ const Page = (): React.ReactElement => {
           level={"body2"}
           onClick={(event): void => {
             event.preventDefault();
-            actions.switch_segment("base");
+            set_state({ segment: "base" });
           }}
           underline={"always"}
         >
