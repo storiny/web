@@ -55,7 +55,18 @@ export const handler = (r: Request): void | undefined => {
     // robots.txt
     if (uri === "/robots.txt") {
       prepare_text_response(r);
-      r.return(200, "User-agent: *\nDisallow: /$\nDisallow: /health\n");
+      r.return(
+        200,
+        [
+          "User-agent: *",
+          "Disallow: /",
+          "Allow: /web-assets/brand/images/",
+          "Allow: /*/web-assets/brand/images/",
+          "Allow: /uploads/",
+          "Allow: /*/uploads/",
+          "" // This is required to add the trailing newline
+        ].join("\n")
+      );
       return;
     }
 
