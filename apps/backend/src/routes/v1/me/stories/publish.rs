@@ -482,7 +482,7 @@ WHERE id = $1
         let (app, cookie, user_id) =
             init_app_for_test(services![post, put], pool, true, false, None).await;
 
-        // Insert a draft.
+        // Insert an unlisted draft.
         let result = sqlx::query(
             r#"
 INSERT INTO stories (id, user_id, visibility)
