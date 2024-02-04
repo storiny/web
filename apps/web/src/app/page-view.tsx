@@ -4,13 +4,13 @@ import {
   usePathname as use_pathname,
   useSearchParams as use_search_params
 } from "next/navigation";
-import { usePostHog as use_post_hog } from "posthog-js/react";
+import { usePostHog as use_posthog } from "posthog-js/react";
 import React from "react";
 
 const PostHogPageview = (): null => {
   const pathname = use_pathname();
   const search_params = use_search_params();
-  const posthog = use_post_hog();
+  const posthog = use_posthog();
 
   React.useEffect(() => {
     if (pathname && posthog) {

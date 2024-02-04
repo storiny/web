@@ -7130,11 +7130,11 @@ __metadata:
     "@types/react": ^18.2.45
     "@types/react-dom": ^18.2.17
     client-only: ^0.0.1
+    deepmerge: ^4.3.1
     dotenv-cli: ^7.2.1
     fuse.js: ^6.6.2
     interweave-ssr: ^2.0.0
     jotai: ^2.3.1
-    little-state-machine: ^4.8.0
     loader-utils: ^3.2.1
     maplibre-gl: ^3.3.0
     nanoid: ^4.0.2
@@ -13016,7 +13016,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deepmerge@npm:^4.2.2":
+"deepmerge@npm:^4.2.2, deepmerge@npm:^4.3.1":
   version: 4.3.1
   resolution: "deepmerge@npm:4.3.1"
   checksum: 2024c6a980a1b7128084170c4cf56b0fd58a63f2da1660dcfe977415f27b17dbe5888668b59d0b063753f3220719d5e400b7f113609489c90160bb9a5518d052
@@ -18076,15 +18076,6 @@ eslint-config-turbo@latest:
   version: 1.2.4
   resolution: "lines-and-columns@npm:1.2.4"
   checksum: 0c37f9f7fa212b38912b7145e1cd16a5f3cd34d782441c3e6ca653485d326f58b3caccda66efce1c5812bde4961bbde3374fae4b0d11bf1226152337f3894aa5
-  languageName: node
-  linkType: hard
-
-"little-state-machine@npm:^4.8.0":
-  version: 4.8.0
-  resolution: "little-state-machine@npm:4.8.0"
-  peerDependencies:
-    react: ^16.8.0 || ^17 || ^18
-  checksum: 80189e43c79896235a16a1700a40fc277be676d968f999c31039e3fea6ac21369de50a4f453c4c47eb272223b27e9c6256be98fb41dd930676a9808f9bc8c3c8
   languageName: node
   linkType: hard
 

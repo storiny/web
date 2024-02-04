@@ -4,6 +4,7 @@ import { VIBRATION_PATTERNS } from "@storiny/shared";
 import { dev_console } from "@storiny/shared/src/utils/dev-log";
 import { is_test_env } from "@storiny/shared/src/utils/is-test-env";
 import clsx from "clsx";
+import { usePathname as use_pathname } from "next/navigation";
 import React from "react";
 
 import { use_media_query } from "~/hooks/use-media-query";
@@ -37,6 +38,7 @@ const Button = forward_ref<ButtonProps, "button">((props, ref) => {
     slot_props,
     ...rest
   } = props;
+  const pathname = use_pathname();
   const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
   const button_ref = React.useRef<HTMLElement>(null);
   const disabled = Boolean(disabled_prop || loading);
@@ -49,9 +51,12 @@ const Button = forward_ref<ButtonProps, "button">((props, ref) => {
       ? "lg"
       : size_prop
     : size_prop;
-  const to = (rest as any)?.href
-    ? `?to=${encodeURIComponent((rest as any).href)}`
-    : "";
+  const to =
+    typeof (rest as any)?.href === "string"
+      ? `?to=${encodeURIComponent((rest as any).href)}`
+      : pathname !== "/"
+        ? `?to=${encodeURIComponent(pathname)}`
+        : "";
 
   /**
    * Handles click event
