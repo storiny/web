@@ -36,9 +36,9 @@ jobs:
 #        uses: docker/setup-qemu-action@v3
 #        with:
 #          platforms: arm64
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+#
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v3
 
       - name: Import production web environment variables
         id: import-env
