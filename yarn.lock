@@ -6810,7 +6810,7 @@ __metadata:
     jotai: ^2.2.2
     lexical: ^0.12.2
     lib0: ^0.2.85
-    next: 14.1
+    next: ^14.1.0
     prettier: ^3.0.3
     react: ^18.2.0
     react-dom: ^18.2.0
@@ -6902,7 +6902,7 @@ __metadata:
     msw: ^1.2.1
     msw-storybook-addon: ^1.10.0
     nanoid: 3
-    next: 14.1
+    next: ^14.1.0
     nodemon: ^2.0.22
     pexels: ^1.4.0
     prettier: ^3.0.3
@@ -7138,7 +7138,7 @@ __metadata:
     loader-utils: ^3.2.1
     maplibre-gl: ^3.3.0
     nanoid: ^4.0.2
-    next: 14.1
+    next: ^14.1.0
     nprogress: ^0.2.0
     posthog-js: ^1.104.3
     raw-loader: ^4.0.2
@@ -20112,7 +20112,7 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
-"next@npm:14.1":
+"next@npm:^14.1.0":
   version: 14.1.0
   resolution: "next@npm:14.1.0"
   dependencies:
