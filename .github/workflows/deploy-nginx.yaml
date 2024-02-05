@@ -34,9 +34,9 @@ jobs:
 #        uses: docker/setup-qemu-action@v3
 #        with:
 #          platforms: arm64
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+#
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v3
 
       - name: Build, tag, and push nginx image
         id: build-nginx-image
