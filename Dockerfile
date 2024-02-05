@@ -1,4 +1,4 @@
-FROM node:20-alpine AS base
+FROM node:20 AS base
 
 ENV NODE_OPTIONS="--max-old-space-size=5120"
 
@@ -33,7 +33,8 @@ RUN yarn turbo run build:prod --filter=@storiny/web
 
 # Runner
 
-FROM base AS runner
+# Use Alpine image
+FROM node:20-alpine AS runner
 WORKDIR /app
  
 # Don't run production as root

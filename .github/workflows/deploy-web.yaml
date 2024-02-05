@@ -8,6 +8,7 @@ on:
       - '.github/workflows/deploy-web.yaml'
       - 'apps/web/**'
       - 'packages/**'
+      - 'Dockerfile'
 
 jobs:
   deploy:
