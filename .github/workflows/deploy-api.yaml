@@ -11,7 +11,7 @@ on:
 jobs:
   deploy:
     name: Deploy API
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment: production
 
     steps:
