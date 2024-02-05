@@ -1,4 +1,4 @@
-FROM node:20 AS base
+FROM node:20-alpine AS base
 
 ENV NODE_OPTIONS="--max-old-space-size=5120"
 
@@ -25,7 +25,7 @@ WORKDIR /app
 COPY .gitignore .gitignore
 COPY --from=builder /app/out/json/ .
 COPY --from=builder /app/out/yarn.lock ./yarn.lock
-RUN yarn install
+RUN yarn install --network-timeout 100000
 
 # Build the project
 COPY --from=builder /app/out/full/ .
@@ -34,7 +34,7 @@ RUN yarn turbo run build:prod --filter=@storiny/web
 # Runner
 
 # Use Alpine image
-FROM node:20-alpine AS runner
+FROM base AS runner
 WORKDIR /app
  
 # Don't run production as root
