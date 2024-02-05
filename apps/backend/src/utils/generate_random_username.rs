@@ -1,4 +1,4 @@
-use crate::constants::reserved_usernames::RESERVED_USERNAMES;
+use crate::constants::reserved_keywords::RESERVED_KEYWORDS;
 use nanoid::nanoid;
 use slugify::slugify;
 use sqlx::{
@@ -41,7 +41,7 @@ pub async fn generate_random_username<'a>(
         nanoid!(SUFFIX_LENGTH, &character_set)
     );
 
-    while RESERVED_USERNAMES.contains(&username.as_str())
+    while RESERVED_KEYWORDS.contains(&username.as_str())
         || match sqlx::query(
             r#"
 SELECT 1 FROM users
