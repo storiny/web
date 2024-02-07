@@ -70,8 +70,7 @@ const next_config = {
   sentry: {
     disableServerWebpackPlugin: true,
     disableClientWebpackPlugin: true,
-    autoInstrumentServerFunctions: false,
-    tunnelRoute: "/monitor"
+    autoInstrumentServerFunctions: false
   }
 };
 
