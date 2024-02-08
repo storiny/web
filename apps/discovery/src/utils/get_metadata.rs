@@ -611,7 +611,7 @@ pub async fn get_metadata(
                         &config.cdn_server_url,
                         &src,
                         &config.proxy_key_secret,
-                        "w@32",
+                        "w@64",
                     ))
                 }
             } else {
