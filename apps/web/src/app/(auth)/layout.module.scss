@@ -1,11 +1,13 @@
 @use "breakpoints";
 
 .container {
+  position: relative;
   padding: 32px;
-  min-height: 420px;
+  min-height: 250px;
   max-width: 460px;
   width: 100%;
   margin: auto;
+  overflow-x: hidden;
   background-color: var(--bg-elevation-xs);
   border: 1px solid var(--divider);
   border-radius: var(--radius-xl);

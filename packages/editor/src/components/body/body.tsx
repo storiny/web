@@ -201,48 +201,47 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
       {!is_editable || read_only || role === "viewer" ? (
         <ClickableLinkPlugin />
       ) : null}
-      {show_overlay && (
-        <EditorLoader
-          action={
-            [
-              DOC_STATUS.role_downgraded,
-              DOC_STATUS.role_upgraded,
-              DOC_STATUS.peer_removed
-            ].includes(doc_status) ? (
-              <ButtonAction
-                href={doc_status === DOC_STATUS.peer_removed ? "/" : undefined}
-              />
-            ) : null
-          }
-          hide_progress={
-            ![
+      <EditorLoader
+        action={
+          [
+            DOC_STATUS.role_downgraded,
+            DOC_STATUS.role_upgraded,
+            DOC_STATUS.peer_removed
+          ].includes(doc_status) ? (
+            <ButtonAction
+              href={doc_status === DOC_STATUS.peer_removed ? "/" : undefined}
+            />
+          ) : null
+        }
+        hide_progress={
+          ![
+            DOC_STATUS.connecting,
+            DOC_STATUS.connected,
+            DOC_STATUS.reconnecting,
+            DOC_STATUS.publishing
+          ].includes(doc_status)
+        }
+        icon={
+          [
+            DOC_STATUS.role_downgraded,
+            DOC_STATUS.role_upgraded,
+            DOC_STATUS.peer_removed,
+            DOC_STATUS.published
+          ].includes(doc_status) ? (
+            <InfoSquareIcon />
+          ) : ![
               DOC_STATUS.connecting,
               DOC_STATUS.connected,
               DOC_STATUS.reconnecting,
               DOC_STATUS.publishing
-            ].includes(doc_status)
-          }
-          icon={
-            [
-              DOC_STATUS.role_downgraded,
-              DOC_STATUS.role_upgraded,
-              DOC_STATUS.peer_removed,
-              DOC_STATUS.published
             ].includes(doc_status) ? (
-              <InfoSquareIcon />
-            ) : ![
-                DOC_STATUS.connecting,
-                DOC_STATUS.connected,
-                DOC_STATUS.reconnecting,
-                DOC_STATUS.publishing
-              ].includes(doc_status) ? (
-              <ConnectionCloseIcon />
-            ) : null
-          }
-          label={DOC_STATUS_TO_LABEL_MAP[doc_status] || "Internal error"}
-          overlay
-        />
-      )}
+            <ConnectionCloseIcon />
+          ) : null
+        }
+        label={DOC_STATUS_TO_LABEL_MAP[doc_status] || "Internal error"}
+        overlay
+        show={show_overlay}
+      />
       {read_only && <StoryFooter />}
     </article>
   );
