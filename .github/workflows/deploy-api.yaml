@@ -11,7 +11,7 @@ on:
 jobs:
   deploy:
     name: Deploy API
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment: production
 
     steps:
@@ -29,13 +29,15 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: arm64
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+# Uncomment for non-arm based runners
+#
+#      - name: Set up QEMU
+#        uses: docker/setup-qemu-action@v3
+#        with:
+#          platforms: arm64
+#
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v3
 
       - name: Build, tag, and push api image
         id: build-api-image
