@@ -15,8 +15,8 @@ const EditorLoader = ({
   overlay,
   hide_progress,
   icon,
-  action
-  // show
+  action,
+  show
 }: {
   action?: React.ReactNode;
   hide_progress?: boolean;
@@ -25,8 +25,6 @@ const EditorLoader = ({
   overlay?: boolean;
   show?: boolean;
 }): React.ReactElement => {
-  // TODO:
-  const show = true;
   const [transitions, api] = use_transition(show, () => ({
     config: { duration: 150 },
     from: { opacity: 1, transform: "scale(1)" },
@@ -54,10 +52,10 @@ const EditorLoader = ({
           data-testid={"overlay"}
           style={style}
         >
-          {/*TODO: Add !*/}
-          {hide_progress ? (
+          {!hide_progress ? (
             <video
               autoPlay={true}
+              className={styles.video}
               controls={false}
               disablePictureInPicture={true}
               disableRemotePlayback={true}
@@ -68,12 +66,15 @@ const EditorLoader = ({
               width={96}
             >
               <source
-                src="/assets/b85e9e5e26daee13304b.webm"
+                src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/animations/loading/render.webm`}
                 type="video/webm"
               />
-              <source src="/assets/9492f371ccf5db4f0156.mp4" type="video/mp4" />
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img alt="" src="/assets/35b6e69b80885d349202.png" />
+              <img
+                alt=""
+                className={styles["video-fallback"]}
+                src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/animations/loading/thumb`}
+              />
             </video>
           ) : (
             <React.Fragment>

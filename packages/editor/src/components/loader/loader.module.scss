@@ -15,10 +15,28 @@
   }
 }
 
+.video {
+  max-height: 96px;
+  max-width: 96px;
+  pointer-events: none;
+}
+
+.video-fallback {
+  width: 96px;
+  height: 96px;
+}
+
 .x {
   &.label {
     max-width: 360px;
     padding-inline: 16px;
     text-align: center;
+  }
+}
+
+// Dark mode filter
+@at-root html[data-theme="dark"] {
+  .video, .video-fallback {
+    filter: brightness(1.1);
   }
 }
