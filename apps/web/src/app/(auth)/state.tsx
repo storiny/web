@@ -101,13 +101,7 @@ const AuthState = ({
     visited_segments: [segment],
     next_url: ((): string | null => {
       const path = decodeURIComponent(search_params.get("to") || "");
-
-      // Only return relative paths
-      if (path.startsWith("/") && path !== "/") {
-        return path;
-      }
-
-      return null;
+      return path !== "/" ? path : null;
     })(),
     reset_password: { token: null },
     login_data: null,

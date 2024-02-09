@@ -55,7 +55,8 @@ const IconButton = forward_ref<IconButtonProps, "button">((props, ref) => {
       ? "lg"
       : size_prop
     : size_prop;
-  const to = pathname !== "/" ? `?to=${encodeURIComponent(pathname)}` : "";
+  const to =
+    pathname && pathname !== "/" ? `?to=${encodeURIComponent(pathname)}` : "";
 
   /**
    * Handles click event

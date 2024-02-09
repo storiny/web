@@ -35,7 +35,7 @@ const SegmentedLayout = (
     state.visited_segments[state.visited_segments.length - 1] !==
       state.segment || state.segment === "base";
   const [ref, { height }] = use_measure({ scroll: false });
-  const [height_style, animate] = use_spring(
+  const [height_style, api] = use_spring(
     () => ({
       height: "0px",
       config: { duration: 10, friction: 0 }
@@ -70,11 +70,11 @@ const SegmentedLayout = (
     if (should_animate && height) {
       has_computed_height_ref.current = true;
 
-      animate({
+      api.start({
         height: height + "px"
       });
     }
-  }, [animate, height, should_animate]);
+  }, [api, height, should_animate]);
 
   React.useEffect(() => {
     // Remove the search parameters.
