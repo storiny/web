@@ -9,7 +9,7 @@ pub mod pexels;
 pub mod reading_session;
 pub mod redis_namespaces;
 pub mod report_type;
-pub mod reserved_usernames;
+pub mod reserved_keywords;
 pub mod resource_limit;
 pub mod resource_lock;
 pub mod session_cookie;

@@ -68,6 +68,7 @@ export const middleware: NextMiddleware = (request) => {
     style-src 'self' 'unsafe-inline' ${CSP_STYLE_SRC};
     frame-src 'self' ${process.env.NEXT_PUBLIC_DISCOVERY_URL} ${CSP_FRAME_SRC};
     img-src 'self' blob: data: *;
+    media-src 'self' ${process.env.NEXT_PUBLIC_CDN_URL};
     font-src 'self';
     connect-src 'self' wss://realms.storiny.com *.storiny.com *.sentry.io *.tile.openstreetmap.fr;
     object-src 'none';

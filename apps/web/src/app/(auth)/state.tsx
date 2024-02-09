@@ -77,20 +77,22 @@ const AuthState = ({
 }): React.ReactElement => {
   const search_params = use_search_params();
   const segment = ((): AuthSegment => {
-    const segment = search_params.get("segment") || "";
-    const token = search_params.get("token") || "";
+    if (search_params) {
+      const segment = search_params.get("segment") || "";
+      const token = search_params.get("token") || "";
 
-    if (["reset-password", "login", "signup", "recover"].includes(segment)) {
-      if (segment === "reset-password" && token) {
-        return "reset_base";
-      }
+      if (["reset-password", "login", "signup", "recover"].includes(segment)) {
+        if (segment === "reset-password" && token) {
+          return "reset_base";
+        }
 
-      if (["login", "signup", "recover"].includes(segment)) {
-        return segment === "login"
-          ? "login"
-          : segment === "recover"
-            ? "recovery_base"
-            : "signup_base";
+        if (["login", "signup", "recover"].includes(segment)) {
+          return segment === "login"
+            ? "login"
+            : segment === "recover"
+              ? "recovery_base"
+              : "signup_base";
+        }
       }
     }
 
@@ -100,14 +102,12 @@ const AuthState = ({
     segment,
     visited_segments: [segment],
     next_url: ((): string | null => {
-      const path = decodeURIComponent(search_params.get("to") || "");
-
-      // Only return relative paths
-      if (path.startsWith("/") && path !== "/") {
-        return path;
+      if (!search_params) {
+        return null;
       }
 
-      return null;
+      const path = decodeURIComponent(search_params.get("to") || "");
+      return path !== "/" ? path : null;
     })(),
     reset_password: { token: null },
     login_data: null,

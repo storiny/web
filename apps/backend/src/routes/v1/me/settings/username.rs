@@ -1,7 +1,7 @@
 use crate::{
     constants::{
         account_activity_type::AccountActivityType,
-        reserved_usernames::RESERVED_USERNAMES,
+        reserved_keywords::RESERVED_KEYWORDS,
         sql_states::SqlState,
         username_regex::USERNAME_REGEX,
     },
@@ -101,7 +101,7 @@ WHERE id = $1
     let slugged_username = slugify!(&payload.new_username, separator = "_", max_length = 24);
 
     // Chekc if username is reserved.
-    if RESERVED_USERNAMES.contains(&slugged_username.as_str()) {
+    if RESERVED_KEYWORDS.contains(&slugged_username.as_str()) {
         return Err(FormErrorResponse::new(
             Some(StatusCode::FORBIDDEN),
             vec![("new_username", "This username is not available")],
@@ -453,7 +453,7 @@ VALUES ($1, $2, $3, $4, $5)
             .cookie(cookie.unwrap())
             .uri("/v1/me/settings/username")
             .set_json(Request {
-                new_username: RESERVED_USERNAMES[10].to_string(),
+                new_username: RESERVED_KEYWORDS[10].to_string(),
                 current_password: password.to_string(),
             })
             .to_request();
