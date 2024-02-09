@@ -7145,6 +7145,7 @@ __metadata:
     react: ^18.2.0
     react-dom: ^18.2.0
     react-use-audio-player: ^2.1.1
+    react-use-measure: ^2.1.1
     react-virtuoso: ^4.3.8
     rehype-slug: ^5.1.0
     remark-gfm: ^3.0.1
@@ -22183,7 +22184,7 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
-"react-use-measure@npm:^2.0.4":
+"react-use-measure@npm:^2.0.4, react-use-measure@npm:^2.1.1":
   version: 2.1.1
   resolution: "react-use-measure@npm:2.1.1"
   dependencies:

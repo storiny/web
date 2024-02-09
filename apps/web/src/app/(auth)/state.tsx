@@ -56,6 +56,8 @@ type AuthState = {
     username: FormError;
     wpm_manual: FormError;
   }>;
+  // This is used for animations
+  visited_segments: Array<AuthSegment>;
 };
 
 type AuthStateContextValue = {
@@ -74,27 +76,29 @@ const AuthState = ({
   children: React.ReactNode;
 }): React.ReactElement => {
   const search_params = use_search_params();
-  const [state, set_state] = React.useState<AuthState>({
-    segment: ((): AuthSegment => {
-      const segment = search_params.get("segment") || "";
-      const token = search_params.get("token") || "";
+  const segment = ((): AuthSegment => {
+    const segment = search_params.get("segment") || "";
+    const token = search_params.get("token") || "";
 
-      if (["reset-password", "login", "signup", "recover"].includes(segment)) {
-        if (segment === "reset-password" && token) {
-          return "reset_base";
-        }
-
-        if (["login", "signup", "recover"].includes(segment)) {
-          return segment === "login"
-            ? "login"
-            : segment === "recover"
-              ? "recovery_base"
-              : "signup_base";
-        }
+    if (["reset-password", "login", "signup", "recover"].includes(segment)) {
+      if (segment === "reset-password" && token) {
+        return "reset_base";
       }
 
-      return "base";
-    })(),
+      if (["login", "signup", "recover"].includes(segment)) {
+        return segment === "login"
+          ? "login"
+          : segment === "recover"
+            ? "recovery_base"
+            : "signup_base";
+      }
+    }
+
+    return "base";
+  })();
+  const [state, set_state] = React.useState<AuthState>({
+    segment,
+    visited_segments: [segment],
     next_url: ((): string | null => {
       const path = decodeURIComponent(search_params.get("to") || "");
 
@@ -129,6 +133,25 @@ const AuthState = ({
           set_state((prev_state) => {
             const next_state =
               typeof payload === "object" ? payload : payload(prev_state);
+
+            if (next_state.segment) {
+              if (next_state.segment === "base") {
+                next_state.visited_segments = ["base"];
+              } else if (prev_state.segment !== next_state.segment) {
+                next_state.visited_segments = Array.from(
+                  new Set([...prev_state.visited_segments, next_state.segment])
+                );
+              } else {
+                const visited_segments = prev_state.visited_segments;
+
+                if (visited_segments.length) {
+                  next_state.visited_segments = visited_segments.filter(
+                    (item) => item !== next_state.segment
+                  );
+                }
+              }
+            }
+
             return deepmerge(prev_state, next_state, {
               // eslint-disable-next-line prefer-snakecase/prefer-snakecase
               arrayMerge: (_, source_array) => source_array
