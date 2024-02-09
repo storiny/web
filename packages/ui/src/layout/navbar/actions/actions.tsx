@@ -128,7 +128,7 @@ const LoggedInMenu = ({
           modal_props={{
             modal: true
           }}
-          style={{ maxWidth: "196px" }}
+          style={{ maxWidth: "165px" }}
           text={user?.status?.text}
           user_id={user?.id || ""}
         />
