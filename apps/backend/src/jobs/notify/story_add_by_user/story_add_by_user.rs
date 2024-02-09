@@ -44,12 +44,14 @@ pub async fn notify_story_add_by_user(
     let result = sqlx::query(
         r#"
 WITH published_story AS (
-    SELECT user_id
-    FROM stories
+    SELECT s.user_id, u.is_private
+    FROM stories s
+        INNER JOIN users u
+            ON u.id = s.user_id
     WHERE
-        id = $1
-        AND published_at IS NOT NULL
-        AND deleted_at IS NULL
+        s.id = $1
+        AND s.published_at IS NOT NULL
+        AND s.deleted_at IS NULL
 ),
 inserted_notification AS (
     INSERT INTO notifications (entity_type, entity_id, notifier_id)
@@ -88,6 +90,8 @@ FROM
               r.followed_id = (SELECT user_id FROM published_story)
           AND r.deleted_at IS NULL
           AND r.subscribed_at IS NOT NULL
+          -- Handle private writer
+          AND (SELECT is_private FROM published_story) IS NOT TRUE
     ) AS user_relations
 WHERE EXISTS (SELECT 1 FROM published_story)
 "#,
@@ -145,6 +149,56 @@ WHERE notification_id = (
         .await?;
 
         assert_eq!(result.len(), 2);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("story_add_by_user"))]
+    async fn should_not_notify_followers_for_a_private_user(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let ctx = get_job_ctx_for_test(pool, None).await;
+
+        // Make the user private.
+        let result = sqlx::query(
+            r#"
+WITH deleted_friends AS (
+    DELETE FROM friends
+    WHERE
+        receiver_id = $1
+        OR transmitter_id = $1
+)
+UPDATE users
+SET is_private = TRUE
+WHERE id = $1
+"#,
+        )
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let result =
+            notify_story_add_by_user(NotifyStoryAddByUserJob { story_id: 4_i64 }, ctx).await;
+
+        assert!(result.is_ok());
+
+        // Notifications should not be present in the database.
+        let result = sqlx::query(
+            r#"
+SELECT EXISTS (
+    SELECT 1 FROM notification_outs n_out
+        INNER JOIN notifications n
+            ON n.id = n_out.notification_id
+            AND n.entity_id = $1
+)
+"#,
+        )
+        .bind(4_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
