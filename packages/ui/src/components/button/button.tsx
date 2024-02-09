@@ -54,7 +54,7 @@ const Button = forward_ref<ButtonProps, "button">((props, ref) => {
   const to =
     typeof (rest as any)?.href === "string"
       ? `?to=${encodeURIComponent((rest as any).href)}`
-      : pathname !== "/"
+      : pathname && pathname !== "/"
         ? `?to=${encodeURIComponent(pathname)}`
         : "";
 
