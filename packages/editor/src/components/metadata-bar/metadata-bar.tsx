@@ -30,7 +30,7 @@ const StoryMetadataBar = (): React.ReactElement | null => {
         styles["metadata-bar"]
       )}
     >
-      <Typography as={"p"} ellipsis level={"h6"}>
+      <Typography as={"p"} ellipsis level={"h6"} style={{ width: "100%" }}>
         {story.title}
       </Typography>
       <Spacer className={css["f-grow"]} />

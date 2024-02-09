@@ -20,9 +20,10 @@ const SplashScreen = (props: SplashScreenProps): React.ReactElement | null => {
   } = props;
   const [visible, set_visible] = React.useState<boolean>(true);
   const [transitions, api] = use_transition(visible, () => ({
+    config: { duration: 150 },
     from: { opacity: 1, transform: "scale(1)" },
     enter: { opacity: 1, transform: "scale(1)" },
-    leave: { opacity: 0, transform: "scale(1.175)" }
+    leave: { opacity: 0, transform: "scale(1.25)" }
   }));
 
   React.useLayoutEffect(() => {

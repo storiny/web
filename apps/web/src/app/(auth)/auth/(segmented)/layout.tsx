@@ -9,6 +9,7 @@ import React from "react";
 import use_measure from "react-use-measure";
 
 import { use_media_query } from "~/hooks/use-media-query";
+import { use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 
@@ -22,7 +23,12 @@ const SegmentedLayout = (
   props: Record<AuthSegment, React.ReactNode>
 ): React.ReactNode => {
   const { state } = use_auth_state();
+  const reduced_motion = use_app_selector(
+    (state) => state.preferences.reduced_motion
+  );
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const should_animate =
+    !is_smaller_than_mobile && reduced_motion !== "enabled";
   const has_computed_height_ref = React.useRef<boolean>(false);
   const container_ref = React.useRef<HTMLDivElement | null>(null);
   const enter_from_top =
@@ -37,7 +43,7 @@ const SegmentedLayout = (
     []
   );
   const transitions = use_transition(state.segment, {
-    immediate: is_smaller_than_mobile || !container_ref.current,
+    immediate: !should_animate || !container_ref.current,
     from: {
       opacity: 0,
       transform: `translate3d(0,${
@@ -61,14 +67,14 @@ const SegmentedLayout = (
   });
 
   React.useEffect(() => {
-    if (!is_smaller_than_mobile && height) {
+    if (should_animate && height) {
       has_computed_height_ref.current = true;
 
       animate({
         height: height + "px"
       });
     }
-  }, [animate, height, is_smaller_than_mobile]);
+  }, [animate, height, should_animate]);
 
   React.useEffect(() => {
     // Remove the search parameters.
@@ -81,7 +87,7 @@ const SegmentedLayout = (
       style={{
         position: "relative",
         height:
-          is_smaller_than_mobile || !container_ref.current
+          !should_animate || !container_ref.current
             ? "100%"
             : !height || !has_computed_height_ref.current
               ? "fit-content"
@@ -95,9 +101,7 @@ const SegmentedLayout = (
           style={{
             ...(container_ref.current ? style : {}),
             height:
-              is_smaller_than_mobile || !container_ref.current
-                ? "100%"
-                : "fit-content"
+              !should_animate || !container_ref.current ? "100%" : "fit-content"
           }}
         >
           {props[segment]}
