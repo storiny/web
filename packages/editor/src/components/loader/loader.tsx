@@ -1,6 +1,5 @@
 "use client";
 
-import { animated, useTransition as use_transition } from "@react-spring/web";
 import { clsx } from "clsx";
 import React from "react";
 
@@ -15,88 +14,67 @@ const EditorLoader = ({
   overlay,
   hide_progress,
   icon,
-  action,
-  show
+  action
 }: {
   action?: React.ReactNode;
   hide_progress?: boolean;
   icon?: React.ReactNode;
   label?: React.ReactNode;
   overlay?: boolean;
-  show?: boolean;
-}): React.ReactElement => {
-  const [transitions, api] = use_transition(show, () => ({
-    config: { duration: 150 },
-    from: { opacity: 1, transform: "scale(1)" },
-    enter: { opacity: 1, transform: "scale(1)" },
-    leave: { opacity: 0, transform: "scale(0.875)" }
-  }));
-
-  React.useLayoutEffect(() => {
-    if (!show) {
-      setTimeout(api.start);
-    }
-  }, [api, show]);
-
-  return transitions(
-    (style, show) =>
-      show && (
-        <animated.div
-          aria-label={typeof label === "string" ? label : "Loading…"}
-          className={clsx(
-            css["flex-col"],
-            css["flex-center"],
-            styles.loader,
-            overlay && styles.overlay
-          )}
-          data-testid={"overlay"}
-          style={style}
-        >
-          {!hide_progress ? (
-            <video
-              autoPlay={true}
-              className={styles.video}
-              controls={false}
-              disablePictureInPicture={true}
-              disableRemotePlayback={true}
-              height={96}
-              loop={true}
-              muted={true}
-              playsInline={true}
-              width={96}
-            >
-              <source
-                src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/animations/loading/render.webm`}
-                type="video/webm"
-              />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                alt=""
-                className={styles["video-fallback"]}
-                src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/animations/loading/thumb`}
-              />
-            </video>
-          ) : (
-            <React.Fragment>
-              {icon}
-              <Spacer orientation={"vertical"} size={2} />
-            </React.Fragment>
-          )}
-          <Typography
-            className={clsx(css["t-minor"], styles.x, styles.label)}
-            level={"body2"}
-          >
-            {label}
-          </Typography>
-          {Boolean(action) && (
-            <React.Fragment>
-              <Spacer orientation={"vertical"} size={2} />
-              {action}
-            </React.Fragment>
-          )}
-        </animated.div>
-      )
-  );
-};
+}): React.ReactElement => (
+  <div
+    aria-label={typeof label === "string" ? label : "Loading…"}
+    className={clsx(
+      css["flex-col"],
+      css["flex-center"],
+      styles.loader,
+      overlay && styles.overlay
+    )}
+    data-testid={"overlay"}
+  >
+    {!hide_progress ? (
+      <video
+        autoPlay={true}
+        className={styles.video}
+        controls={false}
+        disablePictureInPicture={true}
+        disableRemotePlayback={true}
+        height={96}
+        loop={true}
+        muted={true}
+        playsInline={true}
+        width={96}
+      >
+        <source
+          src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/animations/loading/render.webm`}
+          type="video/webm"
+        />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          alt=""
+          className={styles["video-fallback"]}
+          src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/animations/loading/thumb`}
+        />
+      </video>
+    ) : (
+      <React.Fragment>
+        {icon}
+        <Spacer orientation={"vertical"} size={2} />
+      </React.Fragment>
+    )}
+    <Typography
+      className={clsx(css["t-minor"], styles.x, styles.label)}
+      level={"body2"}
+    >
+      {label}
+    </Typography>
+    {Boolean(action) && (
+      <React.Fragment>
+        <Spacer orientation={"vertical"} size={2} />
+        {action}
+      </React.Fragment>
+    )}
+  </div>
+);
 
 export default EditorLoader;
