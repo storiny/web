@@ -3,6 +3,7 @@ use crate::{
         AppError,
         ToastErrorResponse,
     },
+    grpc::defs::story_def::v1::StoryVisibility,
     jobs::{
         notify::{
             story_add_by_tag::NotifyStoryAddByTagJob,
@@ -172,7 +173,7 @@ WHERE
     let story_slug =
         generate_story_slug(&mut txn, &story_id, &story.get::<String, _>("title")).await?;
 
-    match sqlx::query(
+    let story = sqlx::query(
         r#"
 UPDATE stories
 SET
@@ -184,49 +185,52 @@ WHERE
     AND id = $2
     AND published_at IS NULL
     AND deleted_at IS NULL
+RETURNING visibility
 "#,
     )
     .bind(user_id)
     .bind(story_id)
     .bind(&story_slug)
     .bind(payload.word_count as i16)
-    .execute(&mut *txn)
-    .await?
-    .rows_affected()
-    {
-        0 => Err(ToastErrorResponse::new(None, "Story not found").into()),
-        _ => {
-            // Drop the realm.
-            if let Some(realm_inner) = realm.value() {
-                debug!("realm is present in the map, destroying");
-
-                realm_inner
-                    .destroy(RealmDestroyReason::StoryPublished)
-                    .await;
-            }
-
-            realm.remove();
-
-            // Queue push notification jobs.
-            let mut notify_story_add_by_user_job =
-                (*notify_story_add_by_user_job_storage.into_inner()).clone();
-            let mut notify_story_add_by_tag_job =
-                (*notify_story_add_by_tag_job_storage.into_inner()).clone();
-
-            future::try_join(
-                notify_story_add_by_user_job.push(NotifyStoryAddByUserJob { story_id }),
-                notify_story_add_by_tag_job.push(NotifyStoryAddByTagJob { story_id }),
-            )
-            .await
-            .map_err(|error| {
-                AppError::InternalError(format!("unable to push the jobs: {error:?}"))
-            })?;
-
-            txn.commit().await?;
-
-            Ok(HttpResponse::NoContent().finish())
+    .fetch_one(&mut *txn)
+    .await
+    .map_err(|error| {
+        if matches!(error, sqlx::Error::RowNotFound) {
+            AppError::ToastError(ToastErrorResponse::new(None, "Story not found"))
+        } else {
+            AppError::SqlxError(error)
         }
+    })?;
+
+    // Drop the realm.
+    if let Some(realm_inner) = realm.value() {
+        debug!("realm is present in the map, destroying");
+
+        realm_inner
+            .destroy(RealmDestroyReason::StoryPublished)
+            .await;
     }
+
+    realm.remove();
+
+    if story.get::<i16, _>("visibility") == StoryVisibility::Public as i16 {
+        // Queue push notification jobs.
+        let mut notify_story_add_by_user_job =
+            (*notify_story_add_by_user_job_storage.into_inner()).clone();
+        let mut notify_story_add_by_tag_job =
+            (*notify_story_add_by_tag_job_storage.into_inner()).clone();
+
+        future::try_join(
+            notify_story_add_by_user_job.push(NotifyStoryAddByUserJob { story_id }),
+            notify_story_add_by_tag_job.push(NotifyStoryAddByTagJob { story_id }),
+        )
+        .await
+        .map_err(|error| AppError::InternalError(format!("unable to push the jobs: {error:?}")))?;
+    }
+
+    txn.commit().await?;
+
+    Ok(HttpResponse::NoContent().finish())
 }
 
 /// Edit a published story.
@@ -357,6 +361,7 @@ mod tests {
             assert_toast_error_response,
             get_redis_pool,
             init_app_for_test,
+            RedisTestContext,
         },
     };
     use actix_web::{
@@ -369,12 +374,38 @@ mod tests {
         Row,
     };
     use std::collections::HashMap;
+    use storiny_macros::test_context;
     use time::OffsetDateTime;
 
     // Publish a new story.
 
+    #[derive(Debug, Deserialize)]
+    struct JobData {
+        story_id: i64,
+    }
+
+    #[derive(Debug, Deserialize)]
+    struct CachedJob {
+        job: JobData,
+    }
+
+    async fn get_notify_jobs_by_name(job_name: &str) -> Vec<JobData> {
+        let redis_pool = get_redis_pool();
+        let mut redis_conn = redis_pool.get().await.unwrap();
+
+        redis_conn
+            .hgetall::<_, HashMap<String, String>>(format!("{}:data", job_name))
+            .await
+            .expect("unable to get notify jobs")
+            .into_iter()
+            .filter_map(|(_, data)| serde_json::from_str::<CachedJob>(&data).ok())
+            .map(|item| item.job)
+            .collect::<Vec<_>>()
+    }
+
+    #[test_context(RedisTestContext)]
     #[sqlx::test]
-    async fn can_publish_a_story(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_publish_a_story(_ctx: &mut RedisTestContext, pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) =
             init_app_for_test(services![post, put], pool, true, false, None).await;
@@ -427,30 +458,6 @@ WHERE id = $1
 
         // Should insert push notification jobs.
 
-        #[derive(Debug, Deserialize)]
-        struct JobData {
-            story_id: i64,
-        }
-
-        #[derive(Debug, Deserialize)]
-        struct CachedJob {
-            job: JobData,
-        }
-
-        async fn get_notify_jobs_by_name(job_name: &str) -> Vec<JobData> {
-            let redis_pool = get_redis_pool();
-            let mut redis_conn = redis_pool.get().await.unwrap();
-
-            redis_conn
-                .hgetall::<_, HashMap<String, String>>(format!("{}:data", job_name))
-                .await
-                .expect("Notify job not found")
-                .into_iter()
-                .filter_map(|(_, data)| serde_json::from_str::<CachedJob>(&data).ok())
-                .map(|item| item.job)
-                .collect::<Vec<_>>()
-        }
-
         let story_add_by_user_jobs =
             get_notify_jobs_by_name(NOTIFY_STORY_ADD_BY_USER_JOB_NAME).await;
         let story_add_by_tag_jobs = get_notify_jobs_by_name(NOTIFY_STORY_ADD_BY_TAG_JOB_NAME).await;
@@ -465,6 +472,71 @@ WHERE id = $1
                 .iter()
                 .any(|job| job.story_id == 2_i64)
         );
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_publish_an_unlisted_story(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) =
+            init_app_for_test(services![post, put], pool, true, false, None).await;
+
+        // Insert an unlisted draft.
+        let result = sqlx::query(
+            r#"
+INSERT INTO stories (id, user_id, visibility)
+VALUES ($1, $2, $3)
+"#,
+        )
+        .bind(2_i64)
+        .bind(user_id.unwrap())
+        .bind(StoryVisibility::Unlisted as i16)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/stories/{}/publish", 2))
+            .set_json(Request { word_count: 25_u16 })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        // Story should get updated in the database.
+        let result = sqlx::query(
+            r#"
+SELECT
+    slug,
+    published_at,
+    word_count
+FROM stories
+WHERE id = $1
+"#,
+        )
+        .bind(2_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(result.get::<Option<String>, _>("slug").is_some());
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("published_at")
+                .is_some()
+        );
+        assert_eq!(result.get::<i32, _>("word_count"), 25);
+
+        // Should not insert push notification jobs.
+
+        let story_add_by_user_jobs =
+            get_notify_jobs_by_name(NOTIFY_STORY_ADD_BY_USER_JOB_NAME).await;
+        let story_add_by_tag_jobs = get_notify_jobs_by_name(NOTIFY_STORY_ADD_BY_TAG_JOB_NAME).await;
+
+        assert!(story_add_by_user_jobs.is_empty());
+        assert!(story_add_by_tag_jobs.is_empty());
 
         Ok(())
     }

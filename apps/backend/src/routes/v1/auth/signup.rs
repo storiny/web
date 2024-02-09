@@ -1,7 +1,7 @@
 use crate::{
     constants::{
         email_template::EmailTemplate,
-        reserved_usernames::RESERVED_USERNAMES,
+        reserved_keywords::RESERVED_KEYWORDS,
         resource_lock::ResourceLock,
         token::TOKEN_LENGTH,
         username_regex::USERNAME_REGEX,
@@ -132,7 +132,7 @@ SELECT EXISTS (
     let slugged_username = slugify!(&payload.username, separator = "_", max_length = 24);
 
     // Check of a valid username.
-    if RESERVED_USERNAMES.contains(&slugged_username.as_str()) {
+    if RESERVED_KEYWORDS.contains(&slugged_username.as_str()) {
         form_errors.push(("username", "This username is not available"));
     } else {
         let result = sqlx::query(
@@ -347,7 +347,7 @@ VALUES ($1, $2, $3)
             .set_json(Request {
                 email: "someone@example.com".to_string(),
                 name: "Some user".to_string(),
-                username: RESERVED_USERNAMES[10].to_string(),
+                username: RESERVED_KEYWORDS[10].to_string(),
                 password: "some_secret_password".to_string(),
                 wpm: 270,
             })
