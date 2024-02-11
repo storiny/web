@@ -151,8 +151,9 @@ const StatusHeader = ({
         css["flex-center"],
         styles["status-header"]
       )}
+      style={{ alignItems: "flex-start" }}
     >
-      <Typography ellipsis level={"body2"}>
+      <Typography ellipsis level={"body2"} style={{ width: "100%" }}>
         {count_param === 0 ? (
           `You have no ${tab === "pending" ? "pending" : "deleted"} drafts.`
         ) : (

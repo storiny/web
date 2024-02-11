@@ -1,0 +1,13 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  max-width: calc(100vw - 16px);
+  width: 240px;
+  padding: 8px;
+  list-style: none;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--divider);
+  background-color: var(--bg-elevation-xs);
+  box-shadow: var(--shadow-xs);
+  z-index: var(--z-index-popup);
+}
