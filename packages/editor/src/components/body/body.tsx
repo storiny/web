@@ -38,12 +38,17 @@ const FloatingLinkEditorPlugin = dynamic(
 const FloatingTextStylePlugin = dynamic(
   () => import("../../plugins/floating-text-style")
 );
+const ComponentPickerPlugin = dynamic(
+  () => import("../../plugins/component-picker"),
+  { ssr: false }
+);
 const ListMaxIndentLevelPlugin = dynamic(
   () => import("../../plugins/list-max-indent-level")
 );
 const AutoFocusPlugin = dynamic(() => import("../../plugins/auto-focus"));
 const TabFocusPlugin = dynamic(() => import("../../plugins/tab-focus"));
 const MarkdownPlugin = dynamic(() => import("../../plugins/markdown"));
+const MentionPlugin = dynamic(() => import("../../plugins/mention"));
 const MaxLengthPlugin = dynamic(() => import("../../plugins/max-length"));
 const TextEntityPlugin = dynamic(() => import("../../plugins/text-entity"));
 const TKPlugin = dynamic(() => import("../../plugins/tk"));
@@ -187,11 +192,13 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
           <ListMaxIndentLevelPlugin />
           <MaxLengthPlugin />
           <MarkdownPlugin />
+          <MentionPlugin />
           {is_doc_editable(doc_status) && role !== "viewer" ? (
             <React.Fragment>
               <RegisterTools />
               <TabFocusPlugin />
               <AutoFocusPlugin />
+              <ComponentPickerPlugin />
               <FloatingTextStylePlugin />
               <FloatingLinkEditorPlugin />
             </React.Fragment>

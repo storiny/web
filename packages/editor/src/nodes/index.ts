@@ -10,6 +10,7 @@ import { EmbedNode } from "./embed";
 import { FigureNode } from "./figure";
 import { HeadingNode } from "./heading";
 import { ImageNode } from "./image";
+import { MentionNode } from "./mention";
 import { QuoteNode } from "./quote";
 import { TKNode } from "./tk";
 
@@ -29,6 +30,7 @@ export const EDITOR_NODES: (
   LinkNode,
   HorizontalRuleNode,
   ColorNode,
+  MentionNode,
   TKNode,
   ImageNode,
   CodeBlockNode,
