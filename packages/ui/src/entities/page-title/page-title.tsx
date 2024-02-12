@@ -14,7 +14,7 @@ const PageTitle = (props: PageTitleProps): React.ReactElement => {
   const {
     dashboard,
     back_button_href,
-    hide_back_button,
+    hide_back_button_on_desktop,
     className,
     component_props,
     children,
@@ -34,21 +34,23 @@ const PageTitle = (props: PageTitleProps): React.ReactElement => {
         className
       )}
     >
-      {!hide_back_button && (
-        <IconButton
-          aria-label={"Navigate to the previous page"}
-          {...(back_button_href
-            ? { as: NextLink, href: back_button_href }
-            : // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-              { onClick: (): void => router.back() })}
-          {...component_props?.back_button}
-          size={"sm"}
-          title={"Back"}
-          variant={"ghost"}
-        >
-          <ChevronIcon rotation={-90} />
-        </IconButton>
-      )}
+      <IconButton
+        aria-label={"Navigate to the previous page"}
+        {...(back_button_href
+          ? { as: NextLink, href: back_button_href }
+          : // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+            { onClick: (): void => router.back() })}
+        {...component_props?.back_button}
+        className={clsx(
+          hide_back_button_on_desktop && css["below-desktop"],
+          component_props?.back_button?.className
+        )}
+        size={"sm"}
+        title={"Back"}
+        variant={"ghost"}
+      >
+        <ChevronIcon rotation={-90} />
+      </IconButton>
       {children}
     </header>
   );

@@ -1,3 +1,5 @@
+@use "breakpoints";
+
 .value-container {
   gap: 4px;
 }
@@ -144,7 +146,7 @@
 }
 
 /* Sizes */
-.lg {
+@mixin size-lg {
   --radius: var(--radius-lg);
   --size: 38px;
   --font-size: 14.6px;
@@ -159,6 +161,10 @@
 
   /* Menu */
   --menu-margin-top: 6px;
+}
+
+.lg {
+  @include size-lg;
 }
 
 .md {
@@ -176,6 +182,12 @@
 
   /* Menu */
   --menu-margin-top: 4px;
+}
+
+.auto-size {
+  @include breakpoints.media("<tablet") {
+    @include size-lg;
+  }
 }
 
 /* Colors */

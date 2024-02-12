@@ -6,9 +6,7 @@ import clsx from "clsx";
 import React from "react";
 
 import { use_form_field } from "~/components/form";
-import { use_media_query } from "~/hooks/use-media-query";
 import CheckIcon from "~/icons/check";
-import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 
 import styles from "./checkbox.module.scss";
@@ -18,7 +16,7 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
   (props, ref) => {
     const {
       color = "inverted",
-      size: size_prop = "md",
+      size = "md",
       auto_size,
       label,
       className,
@@ -29,12 +27,6 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
     const checkbox_id = React.useId();
     const label_id = React.useId();
     const { item_id } = use_form_field(true);
-    const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
-    const size = auto_size
-      ? is_smaller_than_tablet
-        ? "lg"
-        : size_prop
-      : size_prop;
 
     return (
       <div
@@ -54,6 +46,7 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
             styles.checkbox,
             styles[color],
             styles[size],
+            auto_size && styles["auto-size"],
             className
           )}
           disabled={disabled}

@@ -265,7 +265,7 @@ const ContentStoryResponsesClient = (
       <main data-root={"true"}>
         <DashboardTitle
           back_button_href={"/me/content/stories"}
-          hide_back_button={false}
+          hide_back_button_on_desktop={false}
         >
           Story responses
         </DashboardTitle>

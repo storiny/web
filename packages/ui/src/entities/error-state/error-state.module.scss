@@ -1,3 +1,5 @@
+@use "breakpoints";
+
 .error-state {
   padding: var(--padding);
   gap: 8px;
@@ -17,6 +19,12 @@
 }
 
 /* Sizes */
+@mixin size-sm {
+  --icon-size: 36px;
+  --icon-padding: 0;
+  --padding: 24px 20px;
+}
+
 .md {
   --icon-size: 64px;
   --icon-padding: 4px;
@@ -24,7 +32,11 @@
 }
 
 .sm {
-  --icon-size: 36px;
-  --icon-padding: 0;
-  --padding: 24px 20px;
+  @include size-sm;
+}
+
+.auto-size {
+  @include breakpoints.media("<mobile") {
+    @include size-sm;
+  }
 }

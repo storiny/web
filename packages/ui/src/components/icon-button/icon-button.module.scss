@@ -1,3 +1,5 @@
+@use "breakpoints";
+
 .icon-button {
   display: inline-flex;
   justify-content: center;
@@ -17,10 +19,14 @@
 }
 
 /* Sizes */
-.lg {
+@mixin size-lg {
   --radius: var(--radius-xl);
   --size: 36px;
   --icon-size: 22px;
+}
+
+.lg {
+  @include size-lg;
 }
 
 .md {
@@ -39,4 +45,10 @@
   --radius: var(--radius-sm);
   --size: 21px;
   --icon-size: 12px;
+}
+
+.auto-size {
+  @include breakpoints.media("<tablet") {
+    @include size-lg;
+  }
 }

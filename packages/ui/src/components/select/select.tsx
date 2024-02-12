@@ -14,9 +14,7 @@ import {
 import clsx from "clsx";
 import React from "react";
 
-import { use_media_query } from "~/hooks/use-media-query";
 import ChevronIcon from "~/icons/chevron";
-import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
@@ -27,7 +25,7 @@ import { SelectProps } from "./select.props";
 const Select = forward_ref<SelectProps, "div">((props, ref) => {
   const {
     as: Component = "div",
-    size: size_prop = "md",
+    size = "md",
     color = "inverted",
     auto_size,
     render_trigger = (trigger): React.ReactNode => trigger,
@@ -42,12 +40,6 @@ const Select = forward_ref<SelectProps, "div">((props, ref) => {
     size: input_size,
     disabled: input_disabled
   } = React.useContext(InputContext) || {}; // Size when the select is rendered as the `end_decorator` of an `Input` component
-  const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
-  const size = auto_size
-    ? is_smaller_than_tablet
-      ? "lg"
-      : size_prop
-    : size_prop;
 
   return (
     <Root {...rest} disabled={input_disabled || disabled}>
@@ -60,6 +52,7 @@ const Select = forward_ref<SelectProps, "div">((props, ref) => {
             styles.trigger,
             styles[input_size || size],
             styles[input_color || color],
+            auto_size && styles["auto-size"],
             // Check if inside context provider
             Boolean(input_size) && styles.context,
             slot_props?.trigger?.className
@@ -85,6 +78,7 @@ const Select = forward_ref<SelectProps, "div">((props, ref) => {
           className={clsx(
             styles.content,
             styles[input_size || size],
+            auto_size && styles["auto-size"],
             slot_props?.content?.className
           )}
           ref={ref}

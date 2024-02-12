@@ -103,7 +103,7 @@ const Confirmation = forward_ref<ConfirmationProps, "div">((props, ref) => {
             <Divider
               {...slot_props?.divider}
               className={clsx(
-                css["only-mobile"],
+                css["below-mobile"],
                 slot_props?.divider?.className
               )}
             />

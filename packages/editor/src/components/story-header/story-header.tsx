@@ -44,7 +44,6 @@ import styles from "./story-header.module.scss";
 // Actions
 
 const StoryActions = (): React.ReactElement => {
-  const is_larger_than_desktop = use_media_query(BREAKPOINTS.up("desktop"));
   const toast = use_toast();
   const story = use_atom_value(story_metadata_atom);
   const user = use_app_selector(select_user);
@@ -113,23 +112,16 @@ const StoryActions = (): React.ReactElement => {
         >
           Copy link to story
         </MenuItem>
-        {is_larger_than_desktop && (
-          <React.Fragment>
-            <Separator />
-            <MenuItem
-              decorator={
-                sidebars_collapsed ? (
-                  <SidebarExpandIcon />
-                ) : (
-                  <SidebarCollapseIcon />
-                )
-              }
-              onClick={(): void => set_sidebars_collapsed((prev) => !prev)}
-            >
-              {sidebars_collapsed ? "Expand" : "Collapse"} sidebars
-            </MenuItem>
-          </React.Fragment>
-        )}
+        <Separator className={css["above-desktop"]} />
+        <MenuItem
+          className={css["above-desktop"]}
+          decorator={
+            sidebars_collapsed ? <SidebarExpandIcon /> : <SidebarCollapseIcon />
+          }
+          onClick={(): void => set_sidebars_collapsed((prev) => !prev)}
+        >
+          {sidebars_collapsed ? "Expand" : "Collapse"} sidebars
+        </MenuItem>
         {!is_self && (
           <>
             <Separator />

@@ -54,10 +54,10 @@ const Notification = forward_ref<NotificationProps, "li">((props, ref) => {
         </Description>
         <Divider
           aria-hidden
-          className={css["not-mobile"]}
+          className={css["above-mobile"]}
           orientation={"vertical"}
         />
-        <Divider aria-hidden className={css["only-mobile"]} />
+        <Divider aria-hidden className={css["below-mobile"]} />
         <div
           {...slot_props?.actions}
           className={clsx(styles.actions, slot_props?.actions?.className)}
@@ -79,10 +79,10 @@ const Notification = forward_ref<NotificationProps, "li">((props, ref) => {
               {primary_button_text}
             </button>
           </Action>
-          <Divider aria-hidden className={css["not-mobile"]} />
+          <Divider aria-hidden className={css["above-mobile"]} />
           <Divider
             aria-hidden
-            className={css["only-mobile"]}
+            className={css["below-mobile"]}
             orientation={"vertical"}
           />
           <Close

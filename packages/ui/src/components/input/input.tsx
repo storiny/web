@@ -3,10 +3,8 @@
 import clsx from "clsx";
 import React from "react";
 
-import { use_media_query } from "~/hooks/use-media-query";
 import MinusIcon from "~/icons/minus";
 import PlusIcon from "~/icons/plus";
-import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
@@ -37,7 +35,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
     end_decorator,
     autoFocus: auto_focus,
     color = "inverted",
-    size: size_prop = "md",
+    size = "md",
     type = "text",
     monospaced,
     disabled,
@@ -45,14 +43,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
     slot_props,
     ...rest
   } = props;
-  const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
   const inner_ref = React.useRef<HTMLInputElement>(null);
   const [focused, set_focused] = React.useState<boolean>(Boolean(auto_focus));
-  const size = auto_size
-    ? is_smaller_than_tablet
-      ? "lg"
-      : size_prop
-    : size_prop;
 
   /**
    * Handles focus
@@ -90,6 +82,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
           styles.container,
           styles[color],
           styles[size],
+          auto_size && styles["auto-size"],
           focused && styles.focused,
           disabled && styles.disabled,
           slot_props?.container?.className
