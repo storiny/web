@@ -11,3 +11,18 @@
   box-shadow: var(--shadow-xs);
   z-index: var(--z-index-popup);
 }
+
+.option {
+  width: 100%;
+  padding: 4px 8px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  
+  &.selected {
+    background-color: var(--inverted-50);
+  }
+}
+
+.persona {
+  width: 100%;
+}

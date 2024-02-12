@@ -3,7 +3,6 @@ import {
   DOMConversionMap,
   DOMConversionOutput,
   DOMExportOutput,
-  EditorConfig,
   LexicalNode,
   NodeKey,
   SerializedTextNode,
@@ -37,6 +36,13 @@ const convert_mention_element = (
   return null;
 };
 
+/**
+ * Removes the `@` from the start of the username
+ * @param username The username
+ */
+const normalize_username = (username = ""): string =>
+  username.replace(/@/g, "");
+
 const TYPE = "mention";
 const VERSION = 1;
 
@@ -47,7 +53,9 @@ export class MentionNode extends TextNode {
    * @param key Node key
    */
   constructor(username: string, key?: NodeKey) {
-    super(username, key);
+    username = normalize_username(username);
+
+    super(`@${username}`, key);
     this.__username = username;
   }
 
@@ -71,8 +79,10 @@ export class MentionNode extends TextNode {
    * @param serialized_node Serialized node
    */
   static importJSON(serialized_node: SerializedMentionNode): MentionNode {
-    const node = $create_mention_node(serialized_node.username);
-    node.setTextContent(serialized_node.text);
+    const node = $create_mention_node(
+      normalize_username(serialized_node.username)
+    );
+    node.setTextContent(`@${normalize_username(serialized_node.text)}`);
     node.setFormat(serialized_node.format);
     node.setDetail(serialized_node.detail);
     node.setMode(serialized_node.mode);
@@ -107,10 +117,10 @@ export class MentionNode extends TextNode {
   /**
    * Serializes the node to JSON
    */
-  exportJSON(): SerializedMentionNode {
+  override exportJSON(): SerializedMentionNode {
     return {
       ...super.exportJSON(),
-      username: this.__username,
+      username: normalize_username(this.__username),
       type: TYPE,
       version: VERSION
     };
@@ -118,40 +128,46 @@ export class MentionNode extends TextNode {
 
   /**
    * Creates the DOM node for the mention
-   * @param config Editor config
    */
-  createDOM(config: EditorConfig): HTMLElement {
-    const dom = super.createDOM(config);
+  override createDOM(): HTMLElement {
+    const dom = document.createElement("a");
+    dom.setAttribute("data-mention", "true");
+    dom.textContent = `@${this.__username}`;
+    dom.href = `/${this.__username}`;
     dom.className = styles.mention;
+    dom.style.fontSize = "calc(0.9em)";
+
     return dom;
   }
 
   /**
    * Exports node to element
    */
-  exportDOM(): DOMExportOutput {
-    const element = document.createElement("span");
+  override exportDOM(): DOMExportOutput {
+    const element = document.createElement("a");
     element.setAttribute("data-mention", "true");
     element.textContent = `@${this.__username}`;
+    element.href = `/${this.__username}`;
+
     return { element };
   }
 
   // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-  isTextEntity(): true {
+  override isTextEntity(): true {
     return true;
   }
 
   /**
    * Disables inserting text before the node
    */
-  canInsertTextBefore(): boolean {
+  override canInsertTextBefore(): boolean {
     return false;
   }
 
   /**
    * Disables inserting text after the node
    */
-  canInsertTextAfter(): boolean {
+  override canInsertTextAfter(): boolean {
     return false;
   }
 }
