@@ -1,6 +1,5 @@
 import { clsx } from "clsx";
 import { useAtomValue as use_atom_value } from "jotai";
-import NextLink from "next/link";
 import React from "react";
 
 import Button from "~/components/button";
