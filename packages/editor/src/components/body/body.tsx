@@ -38,6 +38,10 @@ const FloatingLinkEditorPlugin = dynamic(
 const FloatingTextStylePlugin = dynamic(
   () => import("../../plugins/floating-text-style")
 );
+const DraggableBlockPlugin = dynamic(
+  () => import("../../plugins/draggable-block"),
+  { ssr: false }
+);
 const ComponentPickerPlugin = dynamic(
   () => import("../../plugins/component-picker"),
   { ssr: false }
@@ -203,6 +207,7 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
               <ComponentPickerPlugin />
               <FloatingTextStylePlugin />
               <FloatingLinkEditorPlugin />
+              <DraggableBlockPlugin />
             </React.Fragment>
           ) : null}
         </React.Fragment>

@@ -44,7 +44,7 @@ const use_mention_lookup_service = (
 };
 
 /**
- * Checks wether the text matches the mention regex.
+ * Checks whether the text matches the mention regex.
  * @param text The input text
  */
 const check_for_mentions = (text: string): MenuTextMatch | null => {

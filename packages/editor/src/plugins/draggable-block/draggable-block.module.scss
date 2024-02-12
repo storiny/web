@@ -1,0 +1,45 @@
+.icon {
+  --icon-size: 16px;
+  --icon-stroke: var(--inverted-negative);
+
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.dragger {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 4px 1px;
+  cursor: grab;
+  opacity: 0;
+  border-radius: var(--radius-sm);
+  z-index: calc(var(--z-index-header) - 1);
+  will-change: transform;
+
+  &:hover {
+    background-color: var(--inverted-50);
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &:hover, &:active {
+    & .icon {
+      opacity: 1;
+    }
+  }
+}
+
+.target-line {
+  pointer-events: none;
+  background: var(--inverted-400);
+  height: 5px;
+  border-radius: 3px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  will-change: transform;
+}
