@@ -1,3 +1,5 @@
+@use "breakpoints";
+
 .container {
   --border-width: 1px;
   --bg: var(--bg-body);
@@ -176,7 +178,7 @@
 }
 
 /* Sizes */
-.lg {
+@mixin size-lg {
   --radius: var(--radius-lg);
   --size: 38px;
   --font-size: 14.6px;
@@ -189,6 +191,10 @@
 
   /* Clear icon */
   --clear-icon-size: 12px;
+}
+
+.lg {
+  @include size-lg;
 }
 
 .md {
@@ -215,6 +221,12 @@
 
   /* Clear icon */
   --clear-icon-size: 8px;
+}
+
+.auto-size {
+  @include breakpoints.media("<tablet") {
+    @include size-lg;
+  }
 }
 
 /* Colors */

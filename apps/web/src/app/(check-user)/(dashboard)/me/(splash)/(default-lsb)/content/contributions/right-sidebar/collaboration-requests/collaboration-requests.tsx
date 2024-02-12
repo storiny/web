@@ -147,7 +147,11 @@ const CollaborationRequestsModal = (): React.ReactElement => {
   );
 };
 
-const CollaborationRequests = (): React.ReactElement => {
+const CollaborationRequests = ({
+  className
+}: {
+  className?: string;
+}): React.ReactElement => {
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
   const [element] = use_modal(
@@ -155,7 +159,7 @@ const CollaborationRequests = (): React.ReactElement => {
       <Button
         auto_size
         check_auth
-        className={css["fit-w"]}
+        className={clsx(css["fit-w"], className)}
         onClick={open_modal}
         variant={is_smaller_than_desktop ? "hollow" : "rigid"}
       >

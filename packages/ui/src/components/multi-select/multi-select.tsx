@@ -9,9 +9,7 @@ import {
 } from "react-select";
 import CreatableSelect from "react-select/async-creatable";
 
-import { use_media_query } from "~/hooks/use-media-query";
 import XIcon from "~/icons/x";
-import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 
 import Spinner from "../spinner";
@@ -70,7 +68,7 @@ const MultiSelect = React.forwardRef<
   MultiSelectProps
 >((props, ref) => {
   const {
-    size: size_prop = "md",
+    size = "md",
     color = "inverted",
     value: value_prop = [],
     placeholder = "Select an option...",
@@ -91,16 +89,10 @@ const MultiSelect = React.forwardRef<
     options.length
       ? options.filter((option) => value_prop.includes(option.value))
       : value_prop.length
-      ? value_prop.map((item) => ({ value: item, label: item }))
-      : []
+        ? value_prop.map((item) => ({ value: item, label: item }))
+        : []
   );
   const is_option_disabled = typeof max === "number" && value.length >= max;
-  const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
-  const size = auto_size
-    ? is_smaller_than_tablet
-      ? "lg"
-      : size_prop
-    : size_prop;
 
   return (
     <CreatableSelect<MultiSelectOption[]>
@@ -110,6 +102,7 @@ const MultiSelect = React.forwardRef<
         styles.container,
         styles[size],
         styles[color],
+        auto_size && styles["auto-size"],
         disabled && styles.disabled,
         className
       )}
@@ -173,7 +166,7 @@ const MultiSelect = React.forwardRef<
       styles={{
         ...select_styles,
         container: (base): React.CSSProperties =>
-          ({ ...base, ...style } as React.CSSProperties),
+          ({ ...base, ...style }) as React.CSSProperties,
         // eslint-disable-next-line prefer-snakecase/prefer-snakecase
         dropdownIndicator: (): React.CSSProperties => ({
           display: "none"

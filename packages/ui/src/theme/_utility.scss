@@ -57,14 +57,30 @@
   }
 }
 
-.only-mobile {
-  @include breakpoints.media(">=mobile") {
-    display: none;
+/* Render only above mobile */
+.above-mobile {
+  @include breakpoints.media("<mobile") {
+    display: none !important;
   }
 }
 
-.not-mobile {
-  @include breakpoints.media("<mobile") {
-    display: none;
+/* Render only below mobile */
+.below-mobile {
+  @include breakpoints.media(">=mobile") {
+    display: none !important;
+  }
+}
+
+/* Render only above desktop */
+.above-desktop {
+  @include breakpoints.media("<desktop") {
+    display: none !important;
+  }
+}
+
+/* Render only below desktop */
+.below-desktop {
+  @include breakpoints.media(">=desktop") {
+    display: none !important;
   }
 }

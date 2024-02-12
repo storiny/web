@@ -7,11 +7,9 @@ import clsx from "clsx";
 import { usePathname as use_pathname } from "next/navigation";
 import React from "react";
 
-import { use_media_query } from "~/hooks/use-media-query";
 import { select_haptic_feedback } from "~/redux/features";
 import { select_is_logged_in } from "~/redux/features/auth/selectors";
 import { use_app_selector } from "~/redux/hooks";
-import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
@@ -29,7 +27,7 @@ const Button = forward_ref<ButtonProps, "button">((props, ref) => {
     loading,
     disabled: disabled_prop,
     color = "inverted",
-    size: size_prop = "md",
+    size = "md",
     variant = "rigid",
     type = "button",
     decorator,
@@ -39,18 +37,12 @@ const Button = forward_ref<ButtonProps, "button">((props, ref) => {
     ...rest
   } = props;
   const pathname = use_pathname();
-  const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
   const button_ref = React.useRef<HTMLElement>(null);
   const disabled = Boolean(disabled_prop || loading);
   const logged_in = use_app_selector(select_is_logged_in);
   const haptic_feedback = use_app_selector(select_haptic_feedback);
   const should_login = check_auth && !logged_in;
   const Component = should_login ? "a" : as;
-  const size = auto_size
-    ? is_smaller_than_tablet
-      ? "lg"
-      : size_prop
-    : size_prop;
   const to =
     typeof (rest as any)?.href === "string"
       ? `?to=${encodeURIComponent((rest as any).href)}`
@@ -94,6 +86,7 @@ const Button = forward_ref<ButtonProps, "button">((props, ref) => {
         styles.button,
         loading && [styles.loading, "loading"],
         disabled && [styles.disabled, "disabled"],
+        auto_size && styles["auto-size"],
         styles[size],
         className
       )}

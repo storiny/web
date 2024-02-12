@@ -7,11 +7,8 @@ import React from "react";
 
 import Divider from "~/components/divider";
 import Link from "~/components/link";
-import NoSsr from "~/components/no-ssr";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
-import { use_media_query } from "~/hooks/use-media-query";
-import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 
 import page_styles from "../../styles.module.scss";
@@ -321,36 +318,28 @@ const FallbackTypeface = (): React.ReactElement => (
   </div>
 );
 
-const TypographySection = (): React.ReactElement => {
-  const is_tablet = use_media_query(BREAKPOINTS.down("tablet"));
-
-  return (
-    <section className={page_styles.section}>
-      <Typography
-        // Hide inner text to assistive technologies because of hyphen
-        aria-label={"Typography"}
-        as={"h2"}
-        className={clsx(page_styles.x, page_styles["section-title"])}
-        level={"display2"}
-      >
-        <NoSsr>
-          <span aria-hidden>{is_tablet ? "Typography" : "Typo-graphy"}</span>
-        </NoSsr>
+const TypographySection = (): React.ReactElement => (
+  <section className={page_styles.section}>
+    <Typography
+      as={"h2"}
+      className={clsx(page_styles.x, page_styles["section-title"])}
+      level={"display2"}
+    >
+      Typo-graphy
+    </Typography>
+    <div className={clsx(css["flex-col"], page_styles["section-content"])}>
+      <Typography level={"legible"}>
+        Our typographical choice consists of a binary set of fonts: Cabinet
+        Grotesk, a display font, and Satoshi, a legible sans-serif font. Both of
+        these typefaces are designed by the Indian Type Foundry (ITF).
       </Typography>
-      <div className={clsx(css["flex-col"], page_styles["section-content"])}>
-        <Typography level={"legible"}>
-          Our typographical choice consists of a binary set of fonts: Cabinet
-          Grotesk, a display font, and Satoshi, a legible sans-serif font. Both
-          of these typefaces are designed by the Indian Type Foundry (ITF).
-        </Typography>
-        <PrimaryTypeface />
-        <Divider />
-        <SecondaryTypeface />
-        <Divider />
-        <FallbackTypeface />
-      </div>
-    </section>
-  );
-};
+      <PrimaryTypeface />
+      <Divider />
+      <SecondaryTypeface />
+      <Divider />
+      <FallbackTypeface />
+    </div>
+  </section>
+);
 
 export default TypographySection;

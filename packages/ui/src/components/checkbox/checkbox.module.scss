@@ -1,3 +1,5 @@
+@use "breakpoints";
+
 .label {
   --fg: var(--fg-major);
 
@@ -55,14 +57,24 @@
 }
 
 /* Sizes */
-.lg {
+@mixin size-lg {
   --size: 18px;
   --icon-size: 12px;
+}
+
+.lg {
+  @include size-lg;
 }
 
 .md {
   --size: 16px;
   --icon-size: 10px;
+}
+
+.auto-size {
+  @include breakpoints.media("<tablet") {
+    @include size-lg;
+  }
 }
 
 /* Colors */

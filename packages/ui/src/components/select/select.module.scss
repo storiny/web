@@ -1,3 +1,5 @@
+@use "breakpoints";
+
 .trigger {
   --bg: var(--bg-body);
   --border: var(--divider);
@@ -75,14 +77,10 @@
 }
 
 /* Sizes */
-.lg,
-.md {
+@mixin size-lg {
   --padding: 5px 18px 5px 32px;
   --viewport-padding: 9px 0;
   --gap: 10px;
-}
-
-.lg {
   --radius: var(--radius-lg);
   --size: 38px;
   --font-size: 14.6px;
@@ -91,7 +89,14 @@
   --icon-size: 16px;
 }
 
+.lg {
+  @include size-lg;
+}
+
 .md {
+  --padding: 5px 18px 5px 32px;
+  --viewport-padding: 9px 0;
+  --gap: 10px;
   --radius: var(--radius-md);
   --size: 32px;
   --font-size: var(--font-size-sm);
@@ -110,6 +115,12 @@
   --padding: 3.5px 16px 3.5px 28px;
   --viewport-padding: 6px 0;
   --gap: 8px;
+}
+
+.auto-size {
+  @include breakpoints.media("<tablet") {
+    @include size-lg;
+  }
 }
 
 /* Colors */
