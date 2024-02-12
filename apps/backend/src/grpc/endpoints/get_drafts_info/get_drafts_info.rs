@@ -46,13 +46,13 @@ pub async fn get_drafts_info(
     client: &GrpcService,
     request: Request<GetDraftsInfoRequest>,
 ) -> Result<Response<GetDraftsInfoResponse>, Status> {
-    let user_id = request
-        .into_inner()
-        .user_id
+    let user_id_str = request.into_inner().user_id;
+
+    tracing::Span::current().record("user_id", &user_id_str);
+
+    let user_id = user_id_str
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
-
-    tracing::Span::current().record("user_id", user_id);
 
     let pg_pool = &client.db_pool;
     let mut txn = pg_pool.begin().await.map_err(|error| {
@@ -136,14 +136,14 @@ LIMIT 1
         pending_draft_count: result.get::<i64, _>("pending_draft_count") as u32,
         deleted_draft_count: result.get::<i64, _>("deleted_draft_count") as u32,
         latest_draft: latest_draft.ok().map(|draft| DraftDef {
-                id: draft.id.to_string(),
-                title: draft.title,
-                splash_id: draft.splash_id.map(|value| value.to_string()),
-                splash_hex: draft.splash_hex,
-                word_count: draft.word_count as u32,
-                created_at: to_iso8601(&draft.created_at),
-                edited_at: draft.edited_at.map(|value| to_iso8601(&value)),
-            }),
+            id: draft.id.to_string(),
+            title: draft.title,
+            splash_id: draft.splash_id.map(|value| value.to_string()),
+            splash_hex: draft.splash_hex,
+            word_count: draft.word_count as u32,
+            created_at: to_iso8601(&draft.created_at),
+            edited_at: draft.edited_at.map(|value| to_iso8601(&value)),
+        }),
     }))
 }
 

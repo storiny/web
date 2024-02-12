@@ -96,12 +96,13 @@ pub async fn get_login_activity(
 ) -> Result<Response<GetLoginActivityResponse>, Status> {
     let request = request.into_inner();
     let token = request.token;
-    let user_id = request
-        .user_id
+    let user_id_str = request.user_id;
+
+    tracing::Span::current().record("user_id", &user_id_str);
+
+    let user_id = user_id_str
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
-
-    tracing::Span::current().record("user_id", user_id);
 
     let sessions = get_user_sessions(&client.redis_pool, user_id)
         .await
@@ -176,8 +177,7 @@ mod tests {
                     let mut conn = redis_pool.get().await.unwrap();
 
                     // Insert a session.
-                    let session_key =
-                        format!("{}:{}", user_id.unwrap(), Uuid::new_v4());
+                    let session_key = format!("{}:{}", user_id.unwrap(), Uuid::new_v4());
                     let secret_key = Key::from(config.session_secret_key.as_bytes());
                     let cookie = Cookie::new(SESSION_COOKIE_NAME, session_key.clone());
                     let mut jar = CookieJar::new();

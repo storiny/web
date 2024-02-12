@@ -48,7 +48,9 @@ const ListMaxIndentLevelPlugin = dynamic(
 const AutoFocusPlugin = dynamic(() => import("../../plugins/auto-focus"));
 const TabFocusPlugin = dynamic(() => import("../../plugins/tab-focus"));
 const MarkdownPlugin = dynamic(() => import("../../plugins/markdown"));
-const MentionPlugin = dynamic(() => import("../../plugins/mention"));
+const MentionPlugin = dynamic(() => import("../../plugins/mention"), {
+  ssr: false
+});
 const MaxLengthPlugin = dynamic(() => import("../../plugins/max-length"));
 const TextEntityPlugin = dynamic(() => import("../../plugins/text-entity"));
 const TKPlugin = dynamic(() => import("../../plugins/tk"));

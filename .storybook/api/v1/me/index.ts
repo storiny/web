@@ -28,6 +28,7 @@ import "./friends";
 import "./flow";
 import "./subscriptions";
 import "./status";
+import "./lookup";
 
 import { MOCK_USERS } from "@storiny/ui/src/mocks";
 
