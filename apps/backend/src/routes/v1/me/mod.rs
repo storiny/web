@@ -19,6 +19,7 @@ pub mod leave_story;
 pub mod liked_comments;
 pub mod liked_replies;
 pub mod liked_stories;
+pub mod lookup;
 pub mod muted_users;
 pub mod notifications;
 pub mod replies;

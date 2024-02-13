@@ -11,7 +11,7 @@
 .persona {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: var(--gap);
   max-width: 100%;
 

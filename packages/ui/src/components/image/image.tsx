@@ -108,7 +108,6 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
         )}
         {status === "error" && (
           <Fallback
-            delayMs={500}
             {...slot_props?.fallback}
             className={clsx(
               css["flex-center"],

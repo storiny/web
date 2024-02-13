@@ -139,6 +139,8 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::liked_stories::get::init_routes(cfg);
     v1::me::liked_stories::post::init_routes(cfg);
     v1::me::liked_stories::delete::init_routes(cfg);
+    // Me - Lookup
+    v1::me::lookup::username::init_routes(cfg);
     // Me - Muted users
     v1::me::muted_users::get::init_routes(cfg);
     v1::me::muted_users::post::init_routes(cfg);

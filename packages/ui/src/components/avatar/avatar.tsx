@@ -101,7 +101,6 @@ const Avatar = forward_ref<AvatarProps, "span">((props, ref) => {
         )}
         {children || status === "error" ? (
           <Fallback
-            delayMs={children ? 0 : 500}
             {...slot_props?.fallback}
             className={clsx(
               css["flex-center"],

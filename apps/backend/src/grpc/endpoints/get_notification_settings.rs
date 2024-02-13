@@ -26,13 +26,13 @@ pub async fn get_notification_settings(
     client: &GrpcService,
     request: Request<GetNotificationSettingsRequest>,
 ) -> Result<Response<GetNotificationSettingsResponse>, Status> {
-    let user_id = request
-        .into_inner()
-        .user_id
+    let user_id_str = request.into_inner().user_id;
+
+    tracing::Span::current().record("user_id", &user_id_str);
+
+    let user_id = user_id_str
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
-
-    tracing::Span::current().record("user_id", user_id);
 
     let notification_settings = sqlx::query(
         r#"
