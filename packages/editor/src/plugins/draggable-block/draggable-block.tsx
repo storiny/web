@@ -266,7 +266,7 @@ const set_drag_image = (
     draggable_block_element,
     // Center the block nodes
     is_block_node(draggable_block_element)
-      ? draggable_block_element.offsetWidth
+      ? draggable_block_element.getBoundingClientRect().left
       : 0,
     0
   );

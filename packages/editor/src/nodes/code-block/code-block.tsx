@@ -16,7 +16,7 @@ export interface CodeBlockPayload {
 
 export type SerializedCodeBlockNode = Spread<
   {
-    content: YText;
+    content: string;
     language: string | null;
     title: string;
   },
@@ -52,13 +52,7 @@ export class CodeBlockNode extends BlockNode {
 
     if (content) {
       // Content is casted into a string by the `clone` method.
-      if (typeof content === "string") {
-        const text = new YText();
-        text.insert(0, content);
-        this.__content = text;
-      } else {
-        this.__content = content;
-      }
+      this.__content = new YText(content.toString());
     } else {
       const content = new YText();
 
@@ -87,7 +81,7 @@ export class CodeBlockNode extends BlockNode {
   static override clone(node: CodeBlockNode): CodeBlockNode {
     return new CodeBlockNode(
       {
-        content: node.__content,
+        content: node.__content.toString(),
         language: node.__language,
         title: node.__title
       },
@@ -104,7 +98,7 @@ export class CodeBlockNode extends BlockNode {
   ): CodeBlockNode {
     return $create_code_block_node({
       language: serialized_node.language,
-      content: serialized_node.content,
+      content: serialized_node.content.toString(),
       title: serialized_node.title
     });
   }
@@ -129,10 +123,11 @@ export class CodeBlockNode extends BlockNode {
    * Serializes the node to JSON
    */
   override exportJSON(): SerializedCodeBlockNode {
+    const node = this.getLatest();
     return {
       ...super.exportJSON(),
       language: this.__language,
-      content: this.__content,
+      content: node.__content.toString(),
       title: this.__title,
       type: TYPE,
       version: VERSION
@@ -143,7 +138,7 @@ export class CodeBlockNode extends BlockNode {
    * Returns the text code content
    */
   public get_code_content(): string {
-    return this.__content.toString() || "";
+    return this.getLatest().__content.toString() || "";
   }
 
   /**
