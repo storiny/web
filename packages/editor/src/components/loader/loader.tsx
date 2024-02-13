@@ -46,6 +46,10 @@ const EditorLoader = ({
         width={96}
       >
         <source
+          src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/animations/loading/render.mov`}
+          type="video/quicktime"
+        />
+        <source
           src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/animations/loading/render.webm`}
           type="video/webm"
         />
