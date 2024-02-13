@@ -5,7 +5,10 @@ import clsx from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
+import NoSsr from "~/components/no-ssr";
+import { use_media_query } from "~/hooks/use-media-query";
 import { use_sticky } from "~/hooks/use-sticky";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 
 import sidebar_styles from "../common/sidebar.module.scss";
@@ -21,37 +24,43 @@ const LeftSidebar = (props: LeftSidebarProps): React.ReactElement | null => {
   const sticky_ref = use_sticky({
     offset_top: 52 // TODO: Add <Banner /> height to the offset after banner gets implemented
   });
+  const should_render = use_media_query(BREAKPOINTS.up("desktop"));
+
+  if (!should_render && !force_mount) {
+    return null;
+  }
 
   return (
-    <aside
-      {...rest}
-      className={clsx(
-        !force_mount && css["above-desktop"],
-        css["flex-col"],
-        sidebar_styles.sidebar,
-        styles["left-sidebar"],
-        className
-      )}
-      data-lsb={"true"}
-    >
-      <div
-        {...component_props?.wrapper}
+    <NoSsr>
+      <aside
+        {...rest}
         className={clsx(
           css["flex-col"],
-          css["full-w"],
-          styles.wrapper,
-          sidebar_styles.wrapper,
-          component_props?.wrapper?.className
+          sidebar_styles.sidebar,
+          styles["left-sidebar"],
+          className
         )}
-        ref={sticky_ref}
+        data-lsb={"true"}
       >
-        {typeof children !== "undefined" ? (
-          children
-        ) : (
-          <LeftSidebarDefaultContent />
-        )}
-      </div>
-    </aside>
+        <div
+          {...component_props?.wrapper}
+          className={clsx(
+            css["flex-col"],
+            css["full-w"],
+            styles.wrapper,
+            sidebar_styles.wrapper,
+            component_props?.wrapper?.className
+          )}
+          ref={sticky_ref}
+        >
+          {typeof children !== "undefined" ? (
+            children
+          ) : (
+            <LeftSidebarDefaultContent />
+          )}
+        </div>
+      </aside>
+    </NoSsr>
   );
 };
 

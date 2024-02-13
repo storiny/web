@@ -7,9 +7,11 @@ import clsx from "clsx";
 import { usePathname as use_pathname } from "next/navigation";
 import React from "react";
 
+import { use_media_query } from "~/hooks/use-media-query";
 import { select_haptic_feedback } from "~/redux/features";
 import { select_is_logged_in } from "~/redux/features/auth/selectors";
 import { use_app_selector } from "~/redux/hooks";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
@@ -27,7 +29,7 @@ const IconButton = forward_ref<IconButtonProps, "button">((props, ref) => {
     loading,
     className,
     color = "inverted",
-    size = "md",
+    size: size_prop = "md",
     variant = "rigid",
     type = "button",
     disabled: disabled_prop,
@@ -36,6 +38,7 @@ const IconButton = forward_ref<IconButtonProps, "button">((props, ref) => {
     ...rest
   } = props;
   const pathname = use_pathname();
+  const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
   const button_ref = React.useRef<HTMLElement>(null);
   const {
     size: input_size,
@@ -47,6 +50,11 @@ const IconButton = forward_ref<IconButtonProps, "button">((props, ref) => {
   const haptic_feedback = use_app_selector(select_haptic_feedback);
   const should_login = check_auth && !logged_in;
   const Component = should_login ? "a" : as;
+  const size = auto_size
+    ? is_smaller_than_tablet
+      ? "lg"
+      : size_prop
+    : size_prop;
   const to =
     pathname && pathname !== "/" ? `?to=${encodeURIComponent(pathname)}` : "";
 
@@ -86,7 +94,6 @@ const IconButton = forward_ref<IconButtonProps, "button">((props, ref) => {
         styles["icon-button"],
         loading && [styles.loading, "loading"],
         disabled && [styles.disabled, "disabled"],
-        auto_size && styles["auto-size"],
         styles[input_size || size],
         className
       )}

@@ -371,8 +371,8 @@ export const register_rich_text = (editor: LexicalEditor): (() => void) =>
               $is_element_node(parentNode) && !parentNode.isInline()
           );
 
-          if (element !== null && "setFormat" in element) {
-            (element as any).setFormat(format);
+          if (element !== null) {
+            element.setFormat(format);
           }
         }
         return true;

@@ -14,6 +14,7 @@ import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import ErrorState from "~/entities/error-state";
 import { use_debounce } from "~/hooks/use-debounce";
+import { use_media_query } from "~/hooks/use-media-query";
 import SearchIcon from "~/icons/search";
 import {
   get_query_error_type,
@@ -21,6 +22,7 @@ import {
   use_get_contributions_query
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
@@ -71,6 +73,7 @@ const StatusHeader = ({
   contributable_story_count: contributable_story_count_prop,
   pending_collaboration_request_count: pending_collaboration_request_count_prop
 }: ContributionsProps): React.ReactElement => {
+  const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
   const dispatch = use_app_dispatch();
   const contributable_story_count =
     use_app_selector(
@@ -118,7 +121,7 @@ const StatusHeader = ({
           </>
         )}
       </Typography>
-      <CollaborationRequests className={css["below-desktop"]} />
+      {is_smaller_than_desktop && <CollaborationRequests />}
     </div>
   );
 };

@@ -3,12 +3,10 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import SuspenseLoader from "~/common/suspense-loader";
 import Accordion from "~/components/accordion";
 import Button from "~/components/button";
 import { use_confirmation } from "~/components/confirmation";
 import Divider from "~/components/divider";
-import NoSsr from "~/components/no-ssr";
 import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
@@ -44,7 +42,7 @@ const RecentLoginGroup = ({
 
   return (
     <React.Fragment>
-      <DashboardGroup className={css["below-desktop"]}>
+      <DashboardGroup>
         <TitleBlock title={"Recent unrecognized login"}>
           Someone logged into your account from a new device. Please confirm
           whether it was you.
@@ -52,7 +50,7 @@ const RecentLoginGroup = ({
         <Spacer orientation={"vertical"} size={5} />
         <LoginItem login={login} ratio={2.85} />
       </DashboardGroup>
-      <Divider className={css["below-desktop"]} />
+      <Divider />
     </React.Fragment>
   );
 };
@@ -142,7 +140,7 @@ const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
       <main data-root={"true"}>
         <DashboardTitle>Login activity</DashboardTitle>
         <DashboardWrapper>
-          <RecentLoginGroup login={recent} />
+          {is_smaller_than_desktop && <RecentLoginGroup login={recent} />}
           <DashboardGroup>
             <TitleBlock title={"Devices"}>
               These are the devices on which you are currently logged in. If you
@@ -154,29 +152,26 @@ const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
               className={clsx(css["flex-col"], styles.x, styles.logins)}
               type={"multiple"}
             >
-              <NoSsr fallback={<SuspenseLoader />}>
-                {logins.length === 1 && !is_smaller_than_desktop ? (
-                  <CustomState
-                    className={css["above-desktop"]}
-                    description={
-                      "When you log in to your account from other devices, they will show up here."
-                    }
-                    icon={<DevicesIcon />}
-                    title={"You're only logged in here"}
+              {logins.length === 1 && !is_smaller_than_desktop ? (
+                <CustomState
+                  description={
+                    "When you log in to your account from other devices, they will show up here."
+                  }
+                  icon={<DevicesIcon />}
+                  title={"You're only logged in here"}
+                />
+              ) : (
+                (recent || is_smaller_than_desktop
+                  ? logins
+                  : logins.filter((item) => !item.is_active)
+                ).map((login) => (
+                  <LoginAccordion
+                    key={login.id}
+                    login={login}
+                    on_logout={(): void => remove_login(login.id)}
                   />
-                ) : (
-                  (recent || is_smaller_than_desktop
-                    ? logins
-                    : logins.filter((item) => !item.is_active)
-                  ).map((login) => (
-                    <LoginAccordion
-                      key={login.id}
-                      login={login}
-                      on_logout={(): void => remove_login(login.id)}
-                    />
-                  ))
-                )}
-              </NoSsr>
+                ))
+              )}
             </Accordion>
           </DashboardGroup>
           <Divider />

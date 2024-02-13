@@ -5,9 +5,11 @@ import Button from "~/components/button";
 import Link from "~/components/link";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import { use_media_query } from "~/hooks/use-media-query";
 import CloudOffIcon from "~/icons/cloud-off";
 import RetryIcon from "~/icons/retry";
 import ServerErrorIcon from "~/icons/server-error";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 
 import styles from "./error-state.module.scss";
@@ -18,12 +20,15 @@ const ErrorState = React.forwardRef<HTMLDivElement, ErrorStateProps>(
     const {
       className,
       type = "network",
-      size = "md",
+      size: size_prop = "md",
       auto_size,
       retry,
       component_props,
       ...rest
     } = props;
+    const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+    const size = auto_size ? (is_mobile ? "sm" : "md") : size_prop;
+
     return (
       <div
         {...rest}
@@ -31,7 +36,6 @@ const ErrorState = React.forwardRef<HTMLDivElement, ErrorStateProps>(
           css["flex-col"],
           styles["error-state"],
           styles[size],
-          auto_size && styles["auto-size"],
           className
         )}
         data-error-type={type}

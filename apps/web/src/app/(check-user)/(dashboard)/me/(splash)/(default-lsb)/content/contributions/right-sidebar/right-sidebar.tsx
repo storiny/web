@@ -6,10 +6,11 @@ import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
 import Grow from "~/components/grow";
+import { use_media_query } from "~/hooks/use-media-query";
 import RightSidebar from "~/layout/right-sidebar";
 import { self_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import css from "~/theme/main.module.scss";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "./right-sidebar.module.scss";
 import { ContributionsRightSidebarProps } from "./right-sidebar.props";
@@ -29,7 +30,7 @@ const SuspendedContentContributionsRightSidebarContent = dynamic(
 
 const ContentContributionsRightSidebar = (
   props: ContributionsRightSidebarProps
-): React.ReactElement => {
+): React.ReactElement | null => {
   const {
     pending_collaboration_request_count:
       pending_collaboration_request_count_prop
@@ -39,6 +40,7 @@ const ContentContributionsRightSidebar = (
     use_app_selector(
       (state) => state.entities.self_pending_collaboration_request_count
     ) || 0;
+  const should_render = use_media_query(BREAKPOINTS.up("desktop"));
 
   React.useEffect(() => {
     dispatch(
@@ -49,10 +51,12 @@ const ContentContributionsRightSidebar = (
     );
   }, [dispatch, pending_collaboration_request_count_prop]);
 
+  if (!should_render) {
+    return null;
+  }
+
   return (
-    <RightSidebar
-      className={clsx(css["above-desktop"], styles.x, styles["right-sidebar"])}
-    >
+    <RightSidebar className={clsx(styles.x, styles["right-sidebar"])}>
       {pending_collaboration_request_count ? (
         <React.Fragment>
           <SuspendedContentContributionsRightSidebarContent

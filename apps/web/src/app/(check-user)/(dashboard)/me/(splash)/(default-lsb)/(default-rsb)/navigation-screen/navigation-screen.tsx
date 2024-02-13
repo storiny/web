@@ -51,7 +51,7 @@ const DashboardNavigationScreen = (): React.ReactElement => {
 
   return (
     <React.Fragment>
-      <PageTitle dashboard hide_back_button_on_desktop>
+      <PageTitle dashboard hide_back_button>
         Settings
       </PageTitle>
       {/* Page header */}
