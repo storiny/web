@@ -18,7 +18,7 @@ const DashboardEditorLayout = ({
       css["no-sidenav"]
     )}
   >
-    <DashboardSplashLayout>{children}</DashboardSplashLayout>
+    <DashboardSplashLayout hide_logo>{children}</DashboardSplashLayout>
   </div>
 );
 
