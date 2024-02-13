@@ -15,9 +15,11 @@ import css from "~/theme/main.module.scss";
 
 // Handles client-side user authentication logic
 const DashboardSplashLayout = ({
-  children
+  children,
+  hide_logo
 }: {
   children: React.ReactNode;
+  hide_logo?: boolean;
 }): React.ReactElement | null => {
   const redirect = use_login_redirect();
   const [visible, set_visible] = React.useState<boolean>(true);
@@ -32,7 +34,7 @@ const DashboardSplashLayout = ({
 
   if (visible || loading || auth_status === "error") {
     return (
-      <SplashScreen force_mount>
+      <SplashScreen force_mount hide_logo={hide_logo}>
         {auth_status === "error" ? (
           <React.Fragment>
             <Typography
