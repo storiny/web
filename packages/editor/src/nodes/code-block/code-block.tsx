@@ -54,16 +54,12 @@ export class CodeBlockNode extends BlockNode {
       // Content is casted into a string by the `clone` method.
       this.__content = new YText(content.toString());
     } else {
-      const content = new YText();
-
-      if (
+      this.__content = new YText(
         typeof initial_content === "string" &&
         initial_content.length < CODE_EDITOR_MAX_LENGTH
-      ) {
-        content.insert(0, initial_content);
-      }
-
-      this.__content = content;
+          ? initial_content
+          : ""
+      );
     }
   }
 
@@ -81,7 +77,7 @@ export class CodeBlockNode extends BlockNode {
   static override clone(node: CodeBlockNode): CodeBlockNode {
     return new CodeBlockNode(
       {
-        content: node.__content.toString(),
+        content: node.getLatest().__content,
         language: node.__language,
         title: node.__title
       },
@@ -123,11 +119,10 @@ export class CodeBlockNode extends BlockNode {
    * Serializes the node to JSON
    */
   override exportJSON(): SerializedCodeBlockNode {
-    const node = this.getLatest();
     return {
       ...super.exportJSON(),
       language: this.__language,
-      content: node.__content.toString(),
+      content: this.get_code_content(),
       title: this.__title,
       type: TYPE,
       version: VERSION
@@ -174,12 +169,20 @@ export class CodeBlockNode extends BlockNode {
   }
 
   /**
+   * Updates the code editor when the content changes
+   * @param prev_node The previous node
+   */
+  override updateDOM(prev_node: typeof this): boolean {
+    return prev_node.__content !== this.__content;
+  }
+
+  /**
    * Renders the decorator
    */
   override decorate(): React.ReactElement {
     return (
       <CodeBlockComponent
-        content={this.__content}
+        content={this.getLatest().__content}
         language={this.__language}
         node_key={this.getKey()}
         title={this.__title}
