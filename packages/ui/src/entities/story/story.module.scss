@@ -5,7 +5,7 @@
   gap: 8px;
 
   &.virtual {
-    padding-block: 24px;
+    padding-block: 34px;
 
     @include breakpoints.media("<tablet") {
       padding-block: 30px;
