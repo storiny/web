@@ -7,7 +7,6 @@ const CDN_URL = process.env.NEXT_PUBLIC_CDN_URL || "";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 export const PreloadResources = (): null => {
-  ReactDOM.prefetchDNS(CDN_URL);
   ReactDOM.prefetchDNS(API_URL);
   ReactDOM.preconnect(API_URL);
 
@@ -22,9 +21,14 @@ export const PreloadResources = (): null => {
         image.onerror = reject;
       });
 
-    Promise.all([
-      cache_image(`${CDN_URL}/web-assets/raw/spritesheets/emoji-sprite`)
-    ]).catch(() => undefined);
+    // Wait at-least 30 seconds to allow downloading of critical resources.
+    setTimeout(
+      () =>
+        Promise.all([
+          cache_image(`${CDN_URL}/web-assets/raw/spritesheets/emoji-sprite`)
+        ]).catch(() => undefined),
+      30_000
+    );
   }, []);
 
   return null;
