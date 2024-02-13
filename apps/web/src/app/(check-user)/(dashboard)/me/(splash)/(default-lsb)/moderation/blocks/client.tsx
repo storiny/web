@@ -48,6 +48,7 @@ const StatusHeader = ({
         css["flex-center"],
         styles["status-header"]
       )}
+      style={{ alignItems: "flex-start" }}
     >
       <Typography ellipsis level={"body2"}>
         {block_count === 0 ? (

@@ -105,8 +105,9 @@ const StatusHeader = ({
         css["flex-center"],
         styles["status-header"]
       )}
+      style={{ alignItems: "flex-start" }}
     >
-      <Typography ellipsis level={"body2"}>
+      <Typography ellipsis level={"body2"} style={{ width: "100%" }}>
         {contributable_story_count === 0 ? (
           "There are no stories accepting your contributions."
         ) : (

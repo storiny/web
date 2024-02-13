@@ -1,9 +1,9 @@
 .ellipsis {
-  display: table;
+  display: table !important;
   table-layout: fixed;
   width: auto;
 }
 
 .ellipsis-child {
-  display: table-cell;
+  display: table-cell !important;
 }

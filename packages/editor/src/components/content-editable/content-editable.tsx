@@ -56,7 +56,7 @@ const EditorContentEditable = ({
         className
       )}
       contentEditable={is_editable}
-      data-editor-content={""}
+      data-editor-content={"true"}
       ref={ref}
       spellCheck={spell_check}
     />

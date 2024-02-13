@@ -291,7 +291,7 @@ export const sync_cursor_positions = (
   provider: Provider
 ): void => {
   const awareness_states = Array.from(provider.awareness.getStates()).filter(
-    (peer) => peer.role !== "viewer"
+    ([, peer]) => peer.role !== "viewer"
   );
   const local_client_id = binding.client_id;
   const cursors = binding.cursors;

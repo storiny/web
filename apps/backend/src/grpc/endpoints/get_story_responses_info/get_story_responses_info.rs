@@ -28,17 +28,18 @@ pub async fn get_story_responses_info(
     request: Request<GetStoryResponsesInfoRequest>,
 ) -> Result<Response<GetStoryResponsesInfoResponse>, Status> {
     let request = request.into_inner();
-    let user_id = request
-        .user_id
+    let user_id_str = request.user_id;
+    let story_id_str = request.story_id;
+
+    tracing::Span::current().record("user_id", &user_id_str);
+    tracing::Span::current().record("story_id", &story_id_str);
+
+    let user_id = user_id_str
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
-    let story_id = request
-        .story_id
+    let story_id = story_id_str
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`story_id` is invalid"))?;
-
-    tracing::Span::current().record("user_id", user_id);
-    tracing::Span::current().record("story_id", user_id);
 
     let result = sqlx::query(
         r#"

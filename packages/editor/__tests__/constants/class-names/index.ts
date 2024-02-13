@@ -7,6 +7,7 @@ export const EDITOR_CLASSNAMES = {
   t_underline_strikethrough: "theme_t-underline-strikethrough__RBtoW",
   t_subscript: "theme_t-subscript__JG5Mi",
   t_superscript: "theme_t-superscript__LdyVm",
+  mention: "typography_mention__GvPHg",
   inline_code: "main_t-mono__loCfD typography_inline-code__9cz89",
   indent: "theme_indent___oXfv",
   link: "main_focusable__zBD76 link_link__Wv_BN link_color-beryl__RJKy0 link_underline-hover__VomZG theme_link__cwNL8",

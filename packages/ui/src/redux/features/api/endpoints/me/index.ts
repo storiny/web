@@ -14,6 +14,7 @@ export * from "./gallery";
 export * from "./history";
 export * from "./leave-story";
 export * from "./liked-stories";
+export * from "./lookup";
 export * from "./muted-users";
 export * from "./notifications";
 export * from "./relations";

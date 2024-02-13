@@ -85,12 +85,13 @@ pub async fn get_story_metadata(
     let request = request.into_inner();
     let maybe_story_slug = request.id_or_slug.clone();
     let maybe_story_id = request.id_or_slug.parse::<i64>().ok();
-    let user_id = request
-        .user_id
+    let user_id_str = request.user_id;
+
+    tracing::Span::current().record("user_id", &user_id_str);
+
+    let user_id = user_id_str
         .parse::<i64>()
         .map_err(|_| Status::invalid_argument("`user_id` is invalid"))?;
-
-    tracing::Span::current().record("user_id", user_id);
 
     let story = {
         if let Some(story_id) = maybe_story_id {
