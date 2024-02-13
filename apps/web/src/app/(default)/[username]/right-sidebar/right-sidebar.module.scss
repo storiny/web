@@ -2,16 +2,16 @@
   &.right-sidebar {
     &.has-banner {
       padding-top: 140px;
+      clip-path: inset(139px -50vw 0 0 round var(--radius-xl) 0 0 0); // Top left radius
 
       &::before {
         margin-top: 140px;
         border-left: none !important;
-        left: 12px !important;
+        left: 1px !important;
         height: calc(100% - 140px);
-        border-top-left-radius: var(--radius-xl);
         background-color: var(--bg-elevation-xs);
-        box-shadow: calc(50vw - 11px) 50vw 0 50vw var(--bg-elevation-xs),
-        calc(50vw - 12px) calc(50vw - 1px) 0 50vw var(--divider) !important;
+        box-shadow: 50vw 50vw 0 50vw var(--bg-elevation-xs),
+        calc(50vw - 1px) calc(50vw - 1px) 0 50vw var(--divider) !important;
       }
     }
   }
