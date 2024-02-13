@@ -50,7 +50,8 @@ export abstract class BlockNode extends DecoratorNode<React.ReactElement> {
   /**
    * Skips updating the DOM
    */
-  override updateDOM(): false {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  override updateDOM(_prev: typeof this): boolean {
     return false;
   }
 
