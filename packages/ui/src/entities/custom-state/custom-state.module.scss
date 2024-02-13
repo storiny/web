@@ -1,5 +1,3 @@
-@use "breakpoints";
-
 .custom-state {
   padding: var(--padding);
   gap: 8px;
@@ -26,14 +24,6 @@
 }
 
 /* Sizes */
-@mixin size-sm {
-  --icon-size: 48px;
-  --icon-padding: 0;
-  --padding: 24px 20px;
-  --title-font-size: 18px;
-  --title-line-height: 22px;
-}
-
 .md {
   --icon-size: 64px;
   --icon-padding: 4px;
@@ -43,11 +33,9 @@
 }
 
 .sm {
-  @include size-sm;
-}
-
-.auto-size {
-  @include breakpoints.media("<mobile") {
-    @include size-sm;
-  }
+  --icon-size: 48px;
+  --icon-padding: 0;
+  --padding: 24px 20px;
+  --title-font-size: 18px;
+  --title-line-height: 22px;
 }

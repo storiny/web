@@ -2,11 +2,18 @@
 
 import React from "react";
 
+import { use_media_query } from "~/hooks/use-media-query";
 import Footer from "~/layout/footer";
-import css from "~/theme/main.module.scss";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
-const DashboardFooter = (): React.ReactElement => (
-  <Footer className={css["below-desktop"]} style={{ marginTop: "160px" }} />
-);
+const DashboardFooter = (): React.ReactElement | null => {
+  const should_render = use_media_query(BREAKPOINTS.down("desktop"));
+
+  if (!should_render) {
+    return null;
+  }
+
+  return <Footer style={{ marginTop: "160px" }} />;
+};
 
 export default DashboardFooter;

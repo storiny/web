@@ -6,10 +6,11 @@ import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
 import Grow from "~/components/grow";
+import { use_media_query } from "~/hooks/use-media-query";
 import RightSidebar from "~/layout/right-sidebar";
 import { self_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import css from "~/theme/main.module.scss";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "./right-sidebar.module.scss";
 import { RelationsRightSidebarProps } from "./right-sidebar.props";
@@ -29,7 +30,7 @@ const SuspendedContentRelationsRightSidebarContent = dynamic(
 
 const ContentRelationsRightSidebar = (
   props: RelationsRightSidebarProps
-): React.ReactElement => {
+): React.ReactElement | null => {
   const {
     tab,
     pending_friend_request_count: pending_friend_request_count_prop
@@ -39,6 +40,7 @@ const ContentRelationsRightSidebar = (
     use_app_selector(
       (state) => state.entities.self_pending_friend_request_count
     ) || 0;
+  const should_render = use_media_query(BREAKPOINTS.up("desktop"));
 
   React.useEffect(() => {
     dispatch(
@@ -49,10 +51,12 @@ const ContentRelationsRightSidebar = (
     );
   }, [dispatch, pending_friend_request_count_prop]);
 
+  if (!should_render) {
+    return null;
+  }
+
   return (
-    <RightSidebar
-      className={clsx(css["above-desktop"], styles.x, styles["right-sidebar"])}
-    >
+    <RightSidebar className={clsx(styles.x, styles["right-sidebar"])}>
       {tab === "friends" && pending_friend_request_count ? (
         <React.Fragment>
           <SuspendedContentRelationsRightSidebarContent

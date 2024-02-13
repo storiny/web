@@ -19,7 +19,7 @@ export interface PageTitleProps
    */
   dashboard?: boolean;
   /**
-   * If `true`, hides the back button on desktop
+   * If `true`, hides the back button
    */
-  hide_back_button_on_desktop?: boolean;
+  hide_back_button?: boolean;
 }
