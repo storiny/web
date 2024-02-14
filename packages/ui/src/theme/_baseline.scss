@@ -130,6 +130,7 @@ body {
   overflow-x: clip;
   height: 100%;
   width: 100%;
+  overscroll-behavior: none; // Prevent scroll jump on Apple devices
 
   // Fixed banner height compensation
   padding-top: var(--banner-height, 0);
