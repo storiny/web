@@ -3,7 +3,7 @@
 }
 
 .list-item {
-  &:first-of-type {
+  &:not(.story):first-of-type {
     margin-top: 12px;
   }
 }

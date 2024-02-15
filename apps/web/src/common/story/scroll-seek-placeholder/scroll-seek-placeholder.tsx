@@ -13,7 +13,7 @@ import styles from "../../virtual/virtual.module.scss";
 const VirtualizedStoryScrollSeekPlaceholder = React.memo(() => {
   const { skeleton_props } = React.useContext(VirtualizedStoryListContext);
   return (
-    <div className={clsx(css["flex-col"], styles["list-item"])}>
+    <div className={clsx(css["flex-col"], styles["list-item"], styles.story)}>
       <StorySkeleton {...skeleton_props} virtual />
       <Divider style={{ marginInline: "var(--grid-compensation)" }} />
     </div>
