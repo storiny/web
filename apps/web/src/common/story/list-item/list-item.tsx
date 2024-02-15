@@ -17,7 +17,10 @@ const VirtualizedStoryItem = React.memo(
     // Props from context
     const { story_props } = React.useContext(VirtualizedStoryListContext);
     return (
-      <div {...rest} className={clsx(css["flex-col"], styles["list-item"])}>
+      <div
+        {...rest}
+        className={clsx(css["flex-col"], styles["list-item"], styles.story)}
+      >
         <Story {...story_props} story={item} virtual />
         <Divider style={{ marginInline: "var(--grid-compensation)" }} />
       </div>
