@@ -50,12 +50,13 @@ const UserWithAction = (props: UserWithActionProps): React.ReactElement => {
               alt: `${user.name}'s avatar`
             }}
             component_props={{
-              secondary_text: { ellipsis: true }
+              secondary_text: { className: css.ellipsis },
+              primary_text: { className: styles.text }
             }}
             primary_text={
               <Typography
                 as={"span"}
-                ellipsis
+                className={css.ellipsis}
                 level={"body2"}
                 style={{ color: "inherit", fontWeight: "inherit" }}
               >

@@ -11,11 +11,10 @@ import React from "react";
 NProgress.configure({
   /* eslint-disable prefer-snakecase/prefer-snakecase */
   showSpinner: false,
-  trickle: true,
-  trickleSpeed: 260,
+  trickle: false,
   minimum: 0.1,
-  easing: "ease-out",
-  speed: 250,
+  easing: "ease",
+  speed: 380,
   template: '<div class="bar" role="bar"><div class="peg"></div></div>'
   /* eslint-enable prefer-snakecase/prefer-snakecase */
 });
@@ -145,7 +144,7 @@ const Progress = (): null => {
       if (NProgress.isStarted()) {
         NProgress.done();
       }
-    }, 250);
+    }, 500);
   }, [pathname, search_params]);
 
   return null;
