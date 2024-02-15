@@ -1,8 +1,7 @@
 @use "breakpoints";
 
 .header,
-.actions,
-.badges-container {
+.actions {
   gap: 8px;
 }
 
@@ -12,6 +11,8 @@
 
 .badges-container {
   --badge-size: 24px;
+
+  gap: 6px;
 }
 
 .badge-wrapper {
