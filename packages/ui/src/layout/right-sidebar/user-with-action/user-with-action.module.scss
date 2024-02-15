@@ -1,8 +1,15 @@
 .user-with-action {
   justify-content: space-between !important;
   gap: 16px;
+  max-width: 100%;
 }
 
 .link {
   border-radius: var(--radius-md); // Focus outline radius
+  max-width: calc(100% - 46px); // Icon button size + gap size
+  overflow: hidden;
+}
+
+.text {
+  max-width: calc(100% - calc(var(--gap, 0px) + 32px)); // Gap + avatar size
 }
