@@ -33,7 +33,14 @@ const str_to_hue = (str = ""): string =>
  * @param name Name
  */
 const get_name_initials = (name: string): string =>
-  ((name.match(/(\b\S)?/g) || []).join("").match(/(^\S|\S$)?/g) || []).join("");
+  (
+    (name.match(/(^\S\S?|\s\S)?/g) || [])
+      .map((part) => part.trim())
+      .join("")
+      .match(/(^\S|\S$)?/g) || []
+  )
+    .join("")
+    .toLocaleUpperCase();
 
 const AVATAR_IMAGE_SIZE_MAP: Record<AvatarSize, ImageSize> = {
   xl2: ImageSize.W_128,
