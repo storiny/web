@@ -53,6 +53,9 @@ export const webpack_config = (config, { dev }) => {
     })
   );
 
+  /**
+   * Indeterministic classnames
+   */
   const rules = config.module.rules
     .find((rule) => typeof rule.oneOf === "object")
     .oneOf.filter((rule) => Array.isArray(rule.use));

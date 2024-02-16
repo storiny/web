@@ -11,7 +11,7 @@ import css from "~/theme/main.module.scss";
 import styles from "../../virtual/virtual.module.scss";
 
 const StoryListSkeleton = React.memo<StorySkeletonProps>((props) => (
-  <div className={clsx(css["flex-col"], styles.list)}>
+  <div className={clsx(css["flex-col"], styles.list)} style={{ paddingTop: 0 }}>
     {[...Array(5)].map((_, index) => (
       <React.Fragment key={index}>
         <StorySkeleton {...props} virtual />
