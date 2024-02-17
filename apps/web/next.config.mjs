@@ -67,6 +67,14 @@ const next_config = {
   webpack: webpack_config,
   transpilePackages: ["@storiny/ui", "@storiny/editor", "@storiny/shared"],
   output: "standalone",
+  experimental: {
+    optimizePackageImports: [
+      "@storiny/ui",
+      "~/icons",
+      "~/components",
+      "~/entities"
+    ]
+  },
   sentry: {
     disableServerWebpackPlugin: true,
     disableClientWebpackPlugin: true,
