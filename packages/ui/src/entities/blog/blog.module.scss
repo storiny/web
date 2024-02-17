@@ -1,0 +1,53 @@
+@use "breakpoints";
+
+.user {
+  padding-block: 8px;
+
+  @include breakpoints.media("<mobile") {
+    gap: 12px;
+  }
+
+  &.virtual {
+    padding-block: 26px;
+  }
+}
+
+.main {
+  gap: 24px;
+}
+
+.details {
+  gap: 4px;
+}
+
+.meta {
+  gap: 10px;
+  min-width: 0;
+}
+
+.actions {
+  gap: 8px;
+}
+
+.stats {
+  gap: 8px;
+}
+
+.stat {
+  gap: 6px;
+}
+
+.stat-icon {
+  --icon-size: 14px;
+  --icon-stroke: var(--fg-minor);
+}
+
+.bio {
+  gap: 8px; // Gap for skeleton
+  margin-top: 4px;
+  word-wrap: break-word;
+
+  @include breakpoints.media(">=mobile") {
+    padding-left: 58px;
+  }
+}
