@@ -40,7 +40,7 @@ type StoryTag = Omit<
 export type Story = {
   age_restriction: StoryAgeRestriction;
   category: StoryCategory;
-  contributors: User[];
+  contributors?: User[];
   created_at: string;
   deleted_at: string | null;
   description: string | null;
