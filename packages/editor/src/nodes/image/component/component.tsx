@@ -54,24 +54,24 @@ const get_image_sizes = (
   layout: ImageNodeLayout,
   item_count: number,
   item_index: number
-): string | undefined =>
+): string =>
   layout === "fit"
-    ? undefined // Let the browser decide the size for `fit` images
+    ? "960px"
     : (layout === "screen-width"
         ? [
             item_count === 2
-              ? "50%" // Half of the screen
+              ? "50vw" // Half of the screen
               : item_count === 3
                 ? item_index === 0
-                  ? "66.6%" // 2/3 of the screen
-                  : "33.3%" // 1/3 of the screen
+                  ? "66.6vw" // 2/3 of the screen
+                  : "33.3vw" // 1/3 of the screen
                 : "100vw" // Full screen width
           ]
         : layout === "overflow"
           ? [
               `${BREAKPOINTS.up("desktop")} ${
                 item_count === 2
-                  ? "650px" // Half of the layout width
+                  ? "640px" // Half of the layout width
                   : item_count === 3
                     ? item_index === 0
                       ? "860px" // 2/3 of 1300px

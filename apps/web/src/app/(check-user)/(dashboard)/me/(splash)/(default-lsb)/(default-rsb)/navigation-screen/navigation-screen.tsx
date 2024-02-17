@@ -2,8 +2,10 @@ import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
+import SuspenseLoader from "~/common/suspense-loader";
 import Input from "~/components/input";
 import NavigationItem from "~/components/navigation-item";
+import NoSsr from "~/components/no-ssr";
 import Separator from "~/components/separator";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
@@ -50,7 +52,7 @@ const DashboardNavigationScreen = (): React.ReactElement => {
   const [results, set_results] = React.useState<Group[]>([]);
 
   return (
-    <React.Fragment>
+    <NoSsr fallback={<SuspenseLoader style={{ minHeight: "250px" }} />}>
       <PageTitle dashboard hide_back_button>
         Settings
       </PageTitle>
@@ -106,7 +108,7 @@ const DashboardNavigationScreen = (): React.ReactElement => {
         )}
       </div>
       <Spacer className={css["f-grow"]} orientation={"vertical"} size={12} />
-    </React.Fragment>
+    </NoSsr>
   );
 };
 

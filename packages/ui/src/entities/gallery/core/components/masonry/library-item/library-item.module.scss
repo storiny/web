@@ -45,6 +45,7 @@
 
 .alt-text {
   cursor: pointer;
+  width: 100% !important;
 
   &.empty {
     &:hover {
