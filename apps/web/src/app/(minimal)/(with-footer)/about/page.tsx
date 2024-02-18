@@ -26,8 +26,7 @@ const Page = (): React.ReactElement => (
         srcSet={[
           `${process.env.NEXT_PUBLIC_CDN_URL}/w@${ImageSize.W_640}/web-assets/presentational/about-splash 640w`,
           `${process.env.NEXT_PUBLIC_CDN_URL}/w@${ImageSize.W_960}/web-assets/presentational/about-splash 960w`,
-          `${process.env.NEXT_PUBLIC_CDN_URL}/w@${ImageSize.W_1200}/web-assets/presentational/about-splash 1200w`,
-          `${process.env.NEXT_PUBLIC_CDN_URL}/w@${ImageSize.W_1440}/web-assets/presentational/about-splash 1440w`
+          `${process.env.NEXT_PUBLIC_CDN_URL}/w@${ImageSize.W_1200}/web-assets/presentational/about-splash 1200w`
         ].join(",")}
       />
       <div className={clsx(css["flex-col"], css["t-center"], styles.container)}>

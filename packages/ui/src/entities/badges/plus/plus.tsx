@@ -10,8 +10,8 @@ import styles from "../badges.module.scss";
 
 const PlusBadge = React.forwardRef<
   SVGSVGElement,
-  React.ComponentPropsWithoutRef<"svg">
->(({ className, ...rest }, ref) => (
+  React.ComponentPropsWithoutRef<"svg"> & { no_stroke?: boolean }
+>(({ className, no_stroke, ...rest }, ref) => (
   <Root label={"Storiny+ member"}>
     <Tooltip content={"Storiny+ member"}>
       <svg
@@ -33,14 +33,16 @@ const PlusBadge = React.forwardRef<
           fill="url(#pl-b)"
           fillRule="evenodd"
         />
-        <path
-          clipRule="evenodd"
-          d="M12 .5c.7 0 1.28.57 1.28 1.28a8.94 8.94 0 0 0 8.94 8.94 1.28 1.28 0 0 1 0 2.56 8.94 8.94 0 0 0-8.94 8.94 1.28 1.28 0 0 1-2.56 0 8.94 8.94 0 0 0-8.94-8.94 1.28 1.28 0 0 1 0-2.56 8.94 8.94 0 0 0 8.94-8.94c0-.7.57-1.28 1.28-1.28Z"
-          stroke="#45413C"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth=".8"
-        />
+        {!no_stroke && (
+          <path
+            clipRule="evenodd"
+            d="M12 .5c.7 0 1.28.57 1.28 1.28a8.94 8.94 0 0 0 8.94 8.94 1.28 1.28 0 0 1 0 2.56 8.94 8.94 0 0 0-8.94 8.94 1.28 1.28 0 0 1-2.56 0 8.94 8.94 0 0 0-8.94-8.94 1.28 1.28 0 0 1 0-2.56 8.94 8.94 0 0 0 8.94-8.94c0-.7.57-1.28 1.28-1.28Z"
+            stroke="#45413C"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth=".8"
+          />
+        )}
         <defs>
           <radialGradient
             cx="0"
