@@ -17,6 +17,8 @@ export const api_slice = create_api({
     "Story",
     "Comment",
     "Reply",
+    "Blog",
+    "BlogRequest",
     "FriendRequest",
     "CollaborationRequest"
   ],

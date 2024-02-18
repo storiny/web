@@ -58,7 +58,9 @@ interface BlogSeoProps {
 }
 
 interface UserSpecificBlogProps {
+  is_editor?: boolean;
   is_following?: boolean;
+  is_writer?: boolean;
 }
 
 export type Blog = {
@@ -68,6 +70,7 @@ export type Blog = {
   created_at: string;
   default_theme: "light" | "dark" | null;
   description: string | null;
+  domain: string | null;
   favicon: string | null;
   force_theme: boolean;
   has_plus_features: boolean;
