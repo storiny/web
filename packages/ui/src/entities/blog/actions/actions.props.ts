@@ -1,5 +1,3 @@
-import { UserProps } from "~/entities/user";
+import { BlogProps } from "~/entities/blog";
 
-export type UserActionsProps = Pick<UserProps, "user"> & {
-  action_type: NonNullable<UserProps["action_type"]>;
-};
+export type BlogActionsProps = Pick<BlogProps, "blog">;

@@ -1,6 +1,7 @@
 export * from "./account-activity";
 export * from "./assets";
 export * from "./blocked-users";
+export * from "./blogs";
 export * from "./bookmarks";
 export * from "./collaboration-requests";
 export * from "./comments";

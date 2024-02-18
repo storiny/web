@@ -1,11 +1,13 @@
 import { createSlice as create_slice, PayloadAction } from "@reduxjs/toolkit";
 
 import {
+  sync_with_blog_impl,
   sync_with_comment_impl,
   sync_with_reply_impl,
   sync_with_story_impl,
   sync_with_tag_impl,
   sync_with_user_impl,
+  SyncableBlog,
   SyncableComment,
   SyncableReply,
   SyncableStory,
@@ -16,6 +18,7 @@ import {
 interface EntitiesPredicateState {
   blocks: Record<string, boolean>;
   bookmarks: Record<string, boolean>;
+  followed_blogs: Record<string, boolean>;
   followed_tags: Record<string, boolean>;
   followers: Record<string, boolean>;
   following: Record<string, boolean>;
@@ -29,6 +32,7 @@ interface EntitiesPredicateState {
 }
 
 interface EntitiesIntegralState {
+  blog_follower_counts: Record<string, number>;
   comment_like_counts: Record<string, number>;
   comment_reply_counts: Record<string, number>;
   follower_counts: Record<string, number>;
@@ -66,6 +70,7 @@ export const entities_initial_state: EntitiesState = {
   comment_like_counts: /*                     */ {},
   comment_reply_counts: /*                    */ {},
   followed_tags: /*                           */ {},
+  followed_blogs: /*                          */ {},
   follower_counts: /*                         */ {},
   followers: /*                               */ {},
   following: /*                               */ {},
@@ -83,6 +88,7 @@ export const entities_initial_state: EntitiesState = {
   story_like_counts: /*                       */ {},
   subscriptions: /*                           */ {},
   tag_follower_counts: /*                     */ {},
+  blog_follower_counts: /*                    */ {},
   self_block_count: /*                        */ 0,
   self_comment_count: /*                      */ 0,
   self_deleted_draft_count: /*                */ 0,
@@ -145,6 +151,8 @@ export const entities_slice = create_slice({
       sync_with_user_impl(state, action.payload),
     sync_with_story: (state, action: PayloadAction<SyncableStory>) =>
       sync_with_story_impl(state, action.payload),
+    sync_with_blog: (state, action: PayloadAction<SyncableBlog>) =>
+      sync_with_blog_impl(state, action.payload),
     sync_with_tag: (state, action: PayloadAction<SyncableTag>) =>
       sync_with_tag_impl(state, action.payload),
     sync_with_comment: (state, action: PayloadAction<SyncableComment>) =>
@@ -172,6 +180,7 @@ export const {
   sync_with_comment,
   sync_with_reply,
   sync_with_story,
+  sync_with_blog,
   sync_with_tag,
   sync_with_user,
   set_rate_limit

@@ -1,4 +1,4 @@
-export interface UserSkeletonProps {
+export interface BlogSkeletonProps {
   /**
    * Whether the skeleton is rendered inside a virtualized list.
    */
