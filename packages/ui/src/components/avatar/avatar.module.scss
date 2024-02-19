@@ -34,7 +34,8 @@
   }
 
   &.border {
-    border: var(--border-width, 1px) solid var(--border-color, var(--divider));
+    outline: var(--border-color, var(--divider)) solid var(--border-width, 1px);
+    outline-offset: -1px;
   }
 }
 

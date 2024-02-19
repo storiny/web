@@ -2,7 +2,6 @@ import { NextMiddleware, NextResponse } from "next/server";
 
 // Third-party frame sources.
 const CSP_FRAME_SRC = [
-  "https://www.instagram.com",
   "https://twitter.com",
   "platform.twitter.com",
   "syndication.twitter.com"
@@ -10,8 +9,6 @@ const CSP_FRAME_SRC = [
 
 // Third-party script sources.
 const CSP_SCRIPT_SRC = [
-  "https://platform.instagram.com",
-  "https://www.instagram.com",
   "https://cdn.syndication.twimg.com",
   "api.twitter.com",
   "platform.twitter.com"
@@ -69,7 +66,7 @@ export const middleware: NextMiddleware = (request) => {
     frame-src 'self' ${process.env.NEXT_PUBLIC_DISCOVERY_URL} ${CSP_FRAME_SRC};
     img-src 'self' blob: data: *;
     media-src 'self' ${process.env.NEXT_PUBLIC_CDN_URL};
-    font-src 'self';
+    font-src 'self' ${process.env.NEXT_PUBLIC_CDN_URL};
     connect-src 'self' wss://realms.storiny.com *.storiny.com *.sentry.io *.tile.openstreetmap.fr;
     object-src 'none';
     base-uri 'self';

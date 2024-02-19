@@ -1,0 +1,60 @@
+@use "breakpoints";
+
+.preview {
+  @include breakpoints.media("<mobile") {
+    margin-inline: var(--grid-compensation);
+    width: auto;
+  }
+}
+
+.lsb, .body, .rsb {
+  background-color: var(--bg-elevation-xs);
+}
+
+.lsb, .rsb {
+  border-color: var(--divider);
+  border-style: solid;
+}
+
+.lsb {
+  border-width: 1px 1px 0 0;
+  border-top-right-radius: var(--radius-md);
+  gap: 16px;
+  padding: 24px 0 40px 24px;
+  min-width: 320px;
+  pointer-events: none;
+
+  @include breakpoints.media("<tablet") {
+    min-width: 256px;
+  }
+}
+
+.rsb {
+  border-width: 1px 0 0 1px;
+  border-top-left-radius: var(--radius-md);
+  min-width: 96px;
+
+  @include breakpoints.media("<desktop") {
+    min-width: 64px;
+  }
+
+  @include breakpoints.media("<mobile") {
+    display: none;
+  }
+}
+
+.body {
+  margin-top: 64px;
+  border-top: 1px solid var(--divider);
+  flex-grow: 1;
+}
+
+.tabs-list {
+  gap: 12px;
+}
+
+.x {
+  &.tab {
+    justify-content: flex-start;
+  }
+}

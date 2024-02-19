@@ -3,7 +3,12 @@ import React from "react";
 import styles from "./styles.module.scss";
 
 const MembershipWordmark = (): React.ReactElement => (
-  <svg className={styles.wordmark} fill="none" viewBox="0 0 430 163">
+  <svg
+    aria-hidden={"true"}
+    className={styles.wordmark}
+    fill="none"
+    viewBox="0 0 430 163"
+  >
     <path
       clipRule="evenodd"
       d="M391.44 6.88a4.13 4.13 0 0 1 4.13 4.13 28.91 28.91 0 0 0 28.91 28.92 4.13 4.13 0 0 1 0 8.26 28.91 28.91 0 0 0-28.9 28.91 4.13 4.13 0 1 1-8.27 0 28.91 28.91 0 0 0-28.91-28.91 4.13 4.13 0 0 1 0-8.26A28.91 28.91 0 0 0 387.3 11a4.13 4.13 0 0 1 4.13-4.13Z"
