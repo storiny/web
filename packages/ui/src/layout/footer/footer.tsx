@@ -37,7 +37,7 @@ const ListItem = ({ children, ...rest }: LinkProps): React.ReactElement => (
 );
 
 const Footer = (props: FooterProps): React.ReactElement => {
-  const { className, ...rest } = props;
+  const { className, children, ...rest } = props;
 
   React.useLayoutEffect(() => {
     document.body.classList.add("footer");
@@ -51,6 +51,12 @@ const Footer = (props: FooterProps): React.ReactElement => {
       data-global-footer={"true"}
     >
       <div className={clsx(css["flex-col"], styles.container)}>
+        {Boolean(children) && (
+          <React.Fragment>
+            {children}
+            <Divider />
+          </React.Fragment>
+        )}
         <div className={clsx(styles.content)}>
           <div className={clsx(css["flex-col"], styles.branding)}>
             <Wordmark

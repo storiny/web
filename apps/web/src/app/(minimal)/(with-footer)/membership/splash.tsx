@@ -3,14 +3,14 @@
 import { ImageSize } from "@storiny/shared";
 import React from "react";
 
-import { select_theme } from "~/redux/features";
+import { select_resolved_theme } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "./styles.module.scss";
 
 const MembershipSplash = (): React.ReactElement => {
-  const theme = use_app_selector(select_theme);
+  const theme = use_app_selector(select_resolved_theme);
   return (
     <>
       {/* eslint-disable-next-line @next/next/no-img-element */}
