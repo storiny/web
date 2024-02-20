@@ -46,6 +46,7 @@ export const TEST_BLOG: Blog = {
   youtube_id: null,
   website_url: "https://my-website.com",
   public_email: "contact@me.com",
+  domain: "my-site.com",
   twitter_id: null
 };
 
@@ -92,6 +93,7 @@ export const MOCK_BLOGS: Blog[] = [
     youtube_id: null,
     website_url: "https://example.com",
     public_email: "contact@example.com",
+    domain: "my-site.com",
     twitter_id: null
   },
   {
@@ -136,6 +138,7 @@ export const MOCK_BLOGS: Blog[] = [
     youtube_id: "vision",
     website_url: "https://vision.com",
     public_email: "contact@vision.com",
+    domain: "my-site.com",
     twitter_id: "vision"
   },
   {
@@ -180,6 +183,7 @@ export const MOCK_BLOGS: Blog[] = [
     youtube_id: null,
     website_url: null,
     public_email: null,
+    domain: "my-site.com",
     twitter_id: null
   },
   {
@@ -224,6 +228,7 @@ export const MOCK_BLOGS: Blog[] = [
     youtube_id: null,
     website_url: "https://example.com",
     public_email: "contact@example.com",
+    domain: null,
     twitter_id: null
   },
   {
@@ -268,6 +273,7 @@ export const MOCK_BLOGS: Blog[] = [
     youtube_id: null,
     website_url: "https://example.com",
     public_email: "contact@example.com",
+    domain: "my-site.com",
     twitter_id: null
   },
   {
@@ -312,6 +318,7 @@ export const MOCK_BLOGS: Blog[] = [
     youtube_id: null,
     website_url: "https://example.com",
     public_email: "contact@example.com",
+    domain: "my-site.com",
     twitter_id: null
   },
   {
@@ -356,6 +363,7 @@ export const MOCK_BLOGS: Blog[] = [
     youtube_id: null,
     website_url: "https://example.com",
     public_email: "contact@example.com",
+    domain: "my-site.com",
     twitter_id: null
   },
   {
@@ -400,6 +408,7 @@ export const MOCK_BLOGS: Blog[] = [
     youtube_id: null,
     website_url: "https://example.com",
     public_email: "contact@example.com",
+    domain: "my-site.com",
     twitter_id: null
   },
   {
@@ -444,6 +453,7 @@ export const MOCK_BLOGS: Blog[] = [
     youtube_id: null,
     website_url: "https://example.com",
     public_email: "contact@example.com",
+    domain: "my-site.com",
     twitter_id: null
   },
   {
@@ -488,6 +498,7 @@ export const MOCK_BLOGS: Blog[] = [
     youtube_id: null,
     website_url: "https://example.com",
     public_email: "contact@example.com",
+    domain: "my-site.com",
     twitter_id: null
   }
 ];
