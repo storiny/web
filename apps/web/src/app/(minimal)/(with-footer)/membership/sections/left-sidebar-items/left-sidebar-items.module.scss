@@ -53,8 +53,25 @@
   gap: 12px;
 }
 
+.icon {
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  min-height: 26px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
 .x {
   &.tab {
     justify-content: flex-start;
+  }
+}
+
+// Dark mode filter
+@at-root html[data-theme="dark"] {
+  .icon {
+    filter: invert(100%);
   }
 }

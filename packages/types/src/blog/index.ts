@@ -76,6 +76,7 @@ export type Blog = {
   has_plus_features: boolean;
   hide_storiny_branding: boolean;
   id: string;
+  // Whether to hide this blog from the internal Storiny network
   is_external: boolean;
   logo_hex: string | null;
   logo_id: string | null;

@@ -1,10 +1,10 @@
 import { User } from "@storiny/types";
+import { use_blog_context } from "@storiny/web/src/app/(blog)/context";
 import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
 import Avatar from "~/components/avatar";
-import Button from "~/components/button";
 import IconButton from "~/components/icon-button";
 import Menu, { MenuProps } from "~/components/menu";
 import MenuItem, {
@@ -16,17 +16,14 @@ import Skeleton from "~/components/skeleton";
 import Persona from "~/entities/persona";
 import Status from "~/entities/status";
 import AdjustIcon from "~/icons/adjust";
-import BookmarksIcon from "~/icons/bookmarks";
-import ChevronIcon from "~/icons/chevron";
+import ArchiveIcon from "~/icons/archive";
 import CloudOffIcon from "~/icons/cloud-off";
-import DotsIcon from "~/icons/dots";
-import HistoryIcon from "~/icons/history";
+import LoginIcon from "~/icons/login";
 import LogoutIcon from "~/icons/logout";
 import MoonIcon from "~/icons/moon";
 import QuestionMarkIcon from "~/icons/question-mark";
+import SearchIcon from "~/icons/search";
 import SettingsIcon from "~/icons/settings";
-import StoryIcon from "~/icons/story";
-import StoryHeartIcon from "~/icons/story-heart";
 import SunIcon from "~/icons/sun";
 import UserIcon from "~/icons/user";
 import {
@@ -88,8 +85,10 @@ const MenuItemWithLink = ({
 
 const LoggedInMenu = ({
   user,
-  trigger
+  trigger,
+  force_theme
 }: Pick<MenuProps, "trigger"> & {
+  force_theme?: boolean;
   user: User | null;
 }): React.ReactElement => (
   <Menu trigger={trigger}>
@@ -134,44 +133,14 @@ const LoggedInMenu = ({
         />
       </MenuItemUnstyled>
     </div>
-    <Separator />
-    <MenuItemWithLink
-      check_auth
-      decorator={<UserIcon />}
-      href={`/${user?.username || "profile"}`}
-    >
-      Your profile
-    </MenuItemWithLink>
-    <MenuItemWithLink
-      check_auth
-      decorator={<StoryIcon />}
-      href={"/me/content/stories"}
-    >
-      Your stories
-    </MenuItemWithLink>
-    <MenuItemWithLink
-      check_auth
-      decorator={<BookmarksIcon />}
-      href={"/bookmarks"}
-    >
-      Bookmarks
-    </MenuItemWithLink>
-    <MenuItemWithLink
-      check_auth
-      decorator={<StoryHeartIcon />}
-      href={"/liked-stories"}
-    >
-      Liked stories
-    </MenuItemWithLink>
-    <MenuItemWithLink check_auth decorator={<HistoryIcon />} href={"/history"}>
-      History
-    </MenuItemWithLink>
+    {!force_theme && (
+      <React.Fragment>
+        <Separator />
+        <ThemeToggleItem />
+      </React.Fragment>
+    )}
     <Separator />
     <ThemeToggleItem />
-    <Separator />
-    <MenuItemWithLink check_auth decorator={<SettingsIcon />} href={"/me"}>
-      Settings
-    </MenuItemWithLink>
     <MenuItemWithLink
       decorator={<QuestionMarkIcon />}
       href={"mailto:support@storiny.com"}
@@ -187,11 +156,17 @@ const LoggedInMenu = ({
 // Logged out menu
 
 const LoggedOutMenu = ({
-  trigger
-}: Pick<MenuProps, "trigger">): React.ReactElement => (
+  trigger,
+  force_theme
+}: Pick<MenuProps, "trigger"> & {
+  force_theme?: boolean;
+}): React.ReactElement => (
   <Menu trigger={trigger}>
-    <ThemeToggleItem />
+    <MenuItemWithLink decorator={<LoginIcon />} href={"/login"}>
+      Login
+    </MenuItemWithLink>
     <Separator />
+    {!force_theme && <ThemeToggleItem />}
     <MenuItemWithLink
       decorator={<QuestionMarkIcon />}
       href={"mailto:support@storiny.com"}
@@ -201,16 +176,48 @@ const LoggedOutMenu = ({
   </Menu>
 );
 
-const Actions = (): React.ReactElement => {
+const Actions = ({
+  is_transparent,
+  force_theme
+}: {
+  force_theme?: boolean;
+  is_transparent?: boolean;
+}): React.ReactElement => {
   const logged_in = use_app_selector(select_is_logged_in);
   const auth_status = use_app_selector(select_auth_status);
   const user = use_app_selector(select_user);
+  const blog = use_blog_context();
 
   return (
-    <div className={clsx(css["flex-center"], styles.actions)}>
+    <div
+      className={clsx(
+        css["flex-center"],
+        styles.actions,
+        is_transparent && styles.transparent
+      )}
+    >
+      <IconButton
+        aria-label={"Search"}
+        className={styles.action}
+        title={"Search"}
+        variant={"ghost"}
+      >
+        <SearchIcon />
+      </IconButton>
+      <IconButton
+        aria-label={"View archive"}
+        as={NextLink}
+        className={styles.action}
+        href={"/archive"}
+        title={"View archive"}
+        variant={"ghost"}
+      >
+        <ArchiveIcon />
+      </IconButton>
       {logged_in ? (
         ["idle", "loading", "error"].includes(auth_status) ? (
           <LoggedOutMenu
+            force_theme={force_theme}
             trigger={
               <button
                 aria-busy
@@ -223,54 +230,59 @@ const Actions = (): React.ReactElement => {
                     <CloudOffIcon />
                   </Avatar>
                 )}
-                <ChevronIcon rotation={180} />
               </button>
             }
           />
         ) : (
-          <LoggedInMenu
-            trigger={
-              <button
-                aria-label={"Site and account options"}
-                className={clsx(
-                  css["focusable"],
-                  css["flex-center"],
-                  styles.trigger
-                )}
-                type={"button"}
-              >
-                <Avatar
-                  alt={""}
-                  avatar_id={user?.avatar_id}
-                  hex={user?.avatar_hex}
-                  label={user?.name}
-                />
-                <ChevronIcon rotation={180} />
-              </button>
-            }
-            user={user}
-          />
-        )
-      ) : (
-        <>
-          <Button as={NextLink} href={"/login"} variant={"ghost"}>
-            Log in
-          </Button>
-          <Button as={NextLink} href={"/signup"} variant={"hollow"}>
-            Sign up
-          </Button>
-          <LoggedOutMenu
-            trigger={
+          <React.Fragment>
+            {["owner", "editor"].includes(blog.role || "") && (
               <IconButton
-                aria-label={"Site options"}
-                title={"More options"}
+                aria-label={"Blog settings"}
+                as={NextLink}
+                className={styles.action}
+                href={`${process.env.NEXT_PUBLIC_WEB_URL}/blogs/${blog.id}`}
+                title={"Blog settings"}
                 variant={"ghost"}
               >
-                <DotsIcon />
+                <SettingsIcon />
               </IconButton>
-            }
-          />
-        </>
+            )}
+            <LoggedInMenu
+              force_theme={force_theme}
+              trigger={
+                <Avatar
+                  alt={""}
+                  aria-label={"Site and account options"}
+                  as={"button"}
+                  avatar_id={user?.avatar_id}
+                  className={clsx(
+                    css["focusable"],
+                    css["flex-center"],
+                    styles.trigger
+                  )}
+                  hex={user?.avatar_hex}
+                  label={user?.name}
+                  type={"button"}
+                />
+              }
+              user={user}
+            />
+          </React.Fragment>
+        )
+      ) : (
+        <LoggedOutMenu
+          force_theme={force_theme}
+          trigger={
+            <IconButton
+              aria-label={"User options"}
+              className={styles.action}
+              title={"More options"}
+              variant={"ghost"}
+            >
+              <UserIcon />
+            </IconButton>
+          }
+        />
       )}
     </div>
   );

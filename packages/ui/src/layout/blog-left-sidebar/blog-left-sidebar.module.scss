@@ -1,0 +1,22 @@
+.tabs {
+  margin-right: -23px;
+}
+
+.tabs-list {
+  padding-inline-start: 8px;
+  gap: 8px;
+}
+
+.tab[data-orientation="vertical"] {
+  justify-content: flex-start;
+}
+
+.icon {
+  height: 24px;
+  width: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}

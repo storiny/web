@@ -24,19 +24,74 @@ const Preview = (): React.ReactElement => (
           role={undefined}
           size={"lg"}
         >
-          <Tab className={clsx(styles.x, styles.tab)} value={"home"}>
+          <Tab
+            className={clsx(styles.x, styles.tab)}
+            decorator={
+              <span
+                className={styles.icon}
+                style={{
+                  backgroundImage: `url("${process.env.NEXT_PUBLIC_CDN_URL}/w@64/web-assets/presentational/lsb-icons/home")`
+                }}
+              />
+            }
+            value={"home"}
+          >
             Home
           </Tab>
-          <Tab className={clsx(styles.x, styles.tab)} value={"about"}>
+          <Tab
+            className={clsx(styles.x, styles.tab)}
+            decorator={
+              <span
+                className={styles.icon}
+                style={{
+                  backgroundImage: `url("${process.env.NEXT_PUBLIC_CDN_URL}/w@64/web-assets/presentational/lsb-icons/about")`
+                }}
+              />
+            }
+            value={"about"}
+          >
             About
           </Tab>
-          <Tab className={clsx(styles.x, styles.tab)} value={"newsletter"}>
+          <Tab
+            className={clsx(styles.x, styles.tab)}
+            decorator={
+              <span
+                className={styles.icon}
+                style={{
+                  backgroundImage: `url("${process.env.NEXT_PUBLIC_CDN_URL}/w@64/web-assets/presentational/lsb-icons/newsletter")`
+                }}
+              />
+            }
+            value={"newsletter"}
+          >
             Newsletter
           </Tab>
-          <Tab className={clsx(styles.x, styles.tab)} value={"editors"}>
+          <Tab
+            className={clsx(styles.x, styles.tab)}
+            decorator={
+              <span
+                className={styles.icon}
+                style={{
+                  backgroundImage: `url("${process.env.NEXT_PUBLIC_CDN_URL}/w@64/web-assets/presentational/lsb-icons/editors")`
+                }}
+              />
+            }
+            value={"editors"}
+          >
             Editors
           </Tab>
-          <Tab className={clsx(styles.x, styles.tab)} value={"archive"}>
+          <Tab
+            className={clsx(styles.x, styles.tab)}
+            decorator={
+              <span
+                className={styles.icon}
+                style={{
+                  backgroundImage: `url("${process.env.NEXT_PUBLIC_CDN_URL}/w@64/web-assets/presentational/lsb-icons/archive")`
+                }}
+              />
+            }
+            value={"archive"}
+          >
             Archive
           </Tab>
         </TabsList>
