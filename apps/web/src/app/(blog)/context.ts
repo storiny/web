@@ -33,6 +33,8 @@ export type BlogContextValue = Pick<
   | "lsb_items"
   | "rsb_items"
   | "hide_storiny_branding"
+  | "is_following"
+  | "rsb_items_label"
 > & { role: "owner" | "editor" | "writer" | null };
 
 const BlogContext = React.createContext<BlogContextValue>(

@@ -85,6 +85,7 @@ export type Blog = {
   newsletter_splash_hex: string | null;
   newsletter_splash_id: string | null;
   rsb_items?: BlogRightSidebarItem[];
+  rsb_items_label: string;
   slug: string;
   user_id: string;
 } & BlogMarks &
