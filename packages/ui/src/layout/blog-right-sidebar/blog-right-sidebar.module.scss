@@ -1,0 +1,19 @@
+.icon {
+  height: 30px;
+  width: 30px;
+  min-width: 30px;
+  min-height: 30px;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.item {
+  gap: 10px;
+  align-items: center;
+}
+
+.actions {
+  padding-top: 12px;
+  gap: 8px;
+}
