@@ -1,0 +1,12 @@
+.connections {
+  flex-wrap: wrap;
+  gap: 3px 2px;
+}
+
+.x {
+  &.connection {
+    &:not(:hover, :active) {
+      --icon-stroke: var(--fg-minor);
+    }
+  }
+}

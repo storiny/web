@@ -1,7 +1,9 @@
 import { User } from "@storiny/types";
 import { use_blog_context } from "@storiny/web/src/app/(blog)/context";
+import { use_app_router } from "@storiny/web/src/common/utils";
 import clsx from "clsx";
 import NextLink from "next/link";
+import { usePathname as use_pathname } from "next/navigation";
 import React from "react";
 
 import Avatar from "~/components/avatar";
@@ -176,6 +178,31 @@ const LoggedOutMenu = ({
   </Menu>
 );
 
+const SearchAction = (): React.ReactElement => {
+  const pathname = use_pathname();
+  const router = use_app_router();
+
+  return (
+    <IconButton
+      aria-label={"Search"}
+      className={styles.action}
+      onClick={(): void => {
+        if (pathname === "/") {
+          (
+            document.getElementById("feed-search") as HTMLInputElement | null
+          )?.focus();
+        } else {
+          router.push("/?search");
+        }
+      }}
+      title={"Search"}
+      variant={"ghost"}
+    >
+      <SearchIcon />
+    </IconButton>
+  );
+};
+
 const Actions = ({
   is_transparent,
   force_theme
@@ -196,14 +223,7 @@ const Actions = ({
         is_transparent && styles.transparent
       )}
     >
-      <IconButton
-        aria-label={"Search"}
-        className={styles.action}
-        title={"Search"}
-        variant={"ghost"}
-      >
-        <SearchIcon />
-      </IconButton>
+      <SearchAction />
       <IconButton
         aria-label={"View archive"}
         as={NextLink}

@@ -36,12 +36,29 @@
   }
 }
 
+.banner {
+  position: fixed;
+  top: var(--banner-height, 0);
+  left: 0;
+  width: 100%;
+  height: var(--header-height);
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.banner-img {
+  object-fit: cover;
+  object-position: center;
+  height: 365px;
+}
+
 .nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
   width: 100%;
+  z-index: 1;
 }
 
 .mark {

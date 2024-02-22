@@ -7,17 +7,25 @@ import css from "~/theme/main.module.scss";
 
 import styles from "./footer.module.scss";
 
-const RightSidebarFooter = (): React.ReactElement => (
+const RightSidebarFooter = ({
+  is_blog
+}: {
+  is_blog?: boolean;
+}): React.ReactElement => (
   <footer className={styles.footer}>
-    <Link href={"/about"} level={"body3"}>
-      About
-    </Link>
+    {!is_blog && (
+      <Link href={"/about"} level={"body3"}>
+        About
+      </Link>
+    )}
     <Link href={"mailto:support@storiny.com"} level={"body3"}>
       Help
     </Link>
-    <Link href={"/branding"} level={"body3"}>
-      Brand
-    </Link>
+    {!is_blog && (
+      <Link href={"/branding"} level={"body3"}>
+        Brand
+      </Link>
+    )}
     <Link href={process.env.NEXT_PUBLIC_STATUS_PAGE_URL || "/"} level={"body3"}>
       Service status
     </Link>

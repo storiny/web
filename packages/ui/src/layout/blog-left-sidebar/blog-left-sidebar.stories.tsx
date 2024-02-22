@@ -21,29 +21,6 @@ const meta: Meta<typeof BlogLeftSidebar> = {
       <BlogContext.Provider
         value={{
           ...MOCK_BLOGS[0],
-          lsb_items: [
-            {
-              name: "Home",
-              id: "1",
-              target: "/",
-              priority: 1,
-              icon: "NFs6dRTBgaM.jpg"
-            },
-            {
-              name: "About",
-              id: "2",
-              target: "/about",
-              priority: 2,
-              icon: "DLz8QHA7pFUjpg.jpg"
-            },
-            {
-              name: "Editors",
-              id: "3",
-              target: "/editors",
-              priority: 3,
-              icon: "jNpvVRvFcrI.jpg"
-            }
-          ],
           role: null
         }}
       >

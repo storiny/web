@@ -4,7 +4,7 @@
 
 .tabs-list {
   padding-inline-start: 8px;
-  gap: 8px;
+  gap: 12px;
 }
 
 .tab[data-orientation="vertical"] {
@@ -19,4 +19,25 @@
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
+}
+
+.x {
+  &.left-sidebar {
+    &.has-banner {
+      --height: 248px;
+
+      padding-top: var(--height);
+      clip-path: inset(calc(var(--height, 0px) - 1px) 0 0 -50vw round 0 var(--radius-md) 0 0); // Top right radius
+
+      &::before {
+        margin-top: var(--height);
+        border-right: none !important;
+        right: 1px !important;
+        height: calc(100% - var(--height));
+        background-color: var(--bg-elevation-xs);
+        box-shadow: -50vw 50vw 0 50vw var(--bg-elevation-xs),
+        calc(-50vw + 1px) calc(50vw - 1px) 0 50vw var(--divider) !important;
+      }
+    }
+  }
 }

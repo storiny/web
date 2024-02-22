@@ -53,8 +53,8 @@ export const TEST_BLOG: Blog = {
 
 export const MOCK_BLOGS: Blog[] = [
   {
-    banner_hex: null,
-    banner_id: null,
+    banner_hex: "d6d3cd",
+    banner_id: "HvQ_Bb_cohs.jpg",
     category: StoryCategory.OTHERS,
     created_at: "2022-05-18T01:07:02.000Z",
     default_theme: null,
@@ -68,7 +68,6 @@ export const MOCK_BLOGS: Blog[] = [
     font_primary: null,
     font_secondary: null,
     force_theme: false,
-    github_id: null,
     has_plus_features: true,
     hide_storiny_branding: false,
     id: "1632665205526338688",
@@ -86,17 +85,97 @@ export const MOCK_BLOGS: Blog[] = [
     newsletter_splash_id: null,
     preview_image: null,
     public_email: "contact@example.com",
-    rsb_items_label: "",
     seo_description: null,
     seo_title: null,
     slug: "serenity",
     story_count: 144,
     twitch_id: null,
-    twitter_id: null,
     user_id: MOCK_USERS[0].id,
     website_url: "https://example.com",
     writer_count: 22,
-    youtube_id: null
+    youtube_id: null,
+    lsb_items: [
+      {
+        name: "Home",
+        id: "1",
+        target: "/",
+        priority: 1,
+        icon: "house.png"
+      },
+      {
+        name: "About",
+        id: "2",
+        target: "/about",
+        priority: 2,
+        icon: "pushpin.png"
+      },
+      {
+        name: "Newsletter",
+        id: "3",
+        target: "/newsletter",
+        priority: 3,
+        icon: "mailbox.png"
+      },
+      {
+        name: "Editors",
+        id: "4",
+        target: "/editors",
+        priority: 4,
+        icon: "writing_hand.png"
+      },
+      {
+        name: "Archive",
+        id: "5",
+        target: "/archive",
+        priority: 5,
+        icon: "script.png"
+      }
+    ],
+    github_id: "storiny",
+    twitter_id: "storiny_intl",
+    rsb_items_label: "Get a plant",
+    rsb_items: [
+      {
+        primary_text: "Burro's Tail",
+        secondary_text: "13.95",
+        id: "1",
+        target: "/burro-tail",
+        priority: 1,
+        icon: "burro_tail.png"
+      },
+      {
+        primary_text: "Bird of Paradise",
+        secondary_text: "$28.79",
+        id: "2",
+        target: "/bird-of-paradise",
+        priority: 2,
+        icon: "bird_of_paradise.png"
+      },
+      {
+        primary_text: "Yucca",
+        secondary_text: "$4.95",
+        id: "3",
+        target: "/yucca",
+        priority: 3,
+        icon: "yucca.png"
+      },
+      {
+        primary_text: "Boston Fern",
+        secondary_text: "$5.22",
+        id: "4",
+        target: "/boston-fern",
+        priority: 4,
+        icon: "boston_fern.png"
+      },
+      {
+        primary_text: "English Ivy",
+        secondary_text: "$25.99",
+        id: "5",
+        target: "/english-ivy",
+        priority: 5,
+        icon: "english_ivy.png"
+      }
+    ]
   },
   {
     banner_hex: "4e3d2d",

@@ -21,7 +21,7 @@ const Connections = ({
   connections,
   is_inside_sidebar
 }: Props): React.ReactElement => (
-  <div className={clsx(css["flex"], styles.connections)}>
+  <div className={clsx(css.flex, styles.connections)}>
     {connections.map((connection) =>
       !PROVIDER_DISPLAY_NAME_MAP[connection.provider] ||
       !PROVIDER_ICON_MAP[connection.provider] ? null : (

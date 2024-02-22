@@ -1,5 +1,5 @@
 export * from "./auth";
-export * from "./blog";
+export * from "./blogs";
 export * from "./feed";
 export * from "./me";
 export * from "./public";
