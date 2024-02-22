@@ -17,3 +17,28 @@
   padding-top: 12px;
   gap: 8px;
 }
+
+.name {
+  word-wrap: break-word;
+}
+
+.x {
+  &.right-sidebar {
+    &.has-banner {
+      --height: 248px;
+
+      padding-top: var(--height);
+      clip-path: inset(calc(var(--height, 0px) - 1px) -50vw 0 0 round var(--radius-md) 0 0 0); // Top left radius
+
+      &::before {
+        margin-top: var(--height);
+        border-left: none !important;
+        left: 1px !important;
+        height: calc(100% - var(--height));
+        background-color: var(--bg-elevation-xs);
+        box-shadow: 50vw 50vw 0 50vw var(--bg-elevation-xs),
+        calc(50vw - 1px) calc(50vw - 1px) 0 50vw var(--divider) !important;
+      }
+    }
+  }
+}

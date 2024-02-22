@@ -5,4 +5,4 @@ import "./tag";
 import "./user";
 import "./public";
 import "./auth";
-import "./blog";
+import "./blogs";

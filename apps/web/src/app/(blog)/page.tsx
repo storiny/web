@@ -1,71 +1,100 @@
 "use client";
 
+import { ImageSize } from "@storiny/shared";
 import { clsx } from "clsx";
+import { useSearchParams as use_search_params } from "next/dist/client/components/navigation";
 import dynamic from "next/dynamic";
-import { useSearchParams as use_search_params } from "next/navigation";
 import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
-import { use_app_router } from "~/common/utils";
-import Tab from "~/components/tab";
-import Tabs from "~/components/tabs";
-import TabsList from "~/components/tabs-list";
+import Divider from "~/components/divider";
+import Image from "~/components/image";
+import Input from "~/components/input";
+import Option from "~/components/option";
+import Select from "~/components/select";
 import ErrorState from "~/entities/error-state";
+import { use_debounce } from "~/hooks/use-debounce";
+import SearchIcon from "~/icons/search";
 import {
   get_query_error_type,
-  select_is_logged_in,
-  use_get_home_feed_query
+  use_get_blog_feed_query
 } from "~/redux/features";
-import { use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
+import { get_cdn_url } from "~/utils/get-cdn-url";
 
+import { use_blog_context } from "./context";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
   loading: dynamic_loader()
 });
 
-const Onboarding = dynamic(() => import("../../onboarding"));
+export type BlogFeedSortValue = "recent" | "old";
 
-export type IndexTabValue = "suggested" | "friends-and-following";
-
-// Page header tabs
+// Page header
 
 const PageHeader = ({
-  value,
-  on_change
+  query,
+  sort,
+  on_sort_change,
+  on_query_change,
+  disabled
 }: {
-  on_change: (next_value: IndexTabValue) => void;
-  value: IndexTabValue;
-}): React.ReactElement => (
-  <Tabs
-    className={clsx(
-      css["full-bleed"],
-      css["page-header"],
-      styles.x,
-      styles.tabs
-    )}
-    onValueChange={(next_value): void => on_change(next_value as IndexTabValue)}
-    value={value}
-  >
-    <TabsList className={clsx(css["full-w"], styles.x, styles["tabs-list"])}>
-      <Tab aria-controls={undefined} value={"suggested"}>
-        Suggested
-      </Tab>
-      <Tab aria-controls={undefined} value={"friends-and-following"}>
-        Friends & following
-      </Tab>
-    </TabsList>
-  </Tabs>
-);
+  disabled?: boolean;
+  on_query_change: (next_query: string) => void;
+  on_sort_change: (next_sort: BlogFeedSortValue) => void;
+  query: string;
+  sort: BlogFeedSortValue;
+}): React.ReactElement => {
+  const search_params = use_search_params();
+
+  return (
+    <div
+      className={clsx(
+        css["flex-center"],
+        css["full-bleed"],
+        css["page-header"]
+      )}
+    >
+      <Input
+        autoFocus={!!search_params.get("search")}
+        decorator={<SearchIcon />}
+        disabled={disabled}
+        id={"feed-search"}
+        onChange={(event): void => on_query_change(event.target.value)}
+        placeholder={"Search"}
+        size={"lg"}
+        type={"search"}
+        value={query}
+      />
+      <Divider orientation={"vertical"} />
+      <Select
+        disabled={disabled}
+        onValueChange={on_sort_change}
+        slot_props={{
+          trigger: {
+            "aria-label": "Sort items"
+          },
+          value: {
+            placeholder: "Sort"
+          }
+        }}
+        value={sort}
+      >
+        <Option value={"recent"}>Recent</Option>
+        <Option value={"old"}>Old</Option>
+      </Select>
+    </div>
+  );
+};
 
 const Page = (): React.ReactElement => {
-  const is_logged_in = use_app_selector(select_is_logged_in);
-  const search_params = use_search_params();
-  const router = use_app_router();
-  const [value, set_value] = React.useState<IndexTabValue>("suggested");
+  const blog = use_blog_context();
+  const [sort, set_sort] = React.useState<BlogFeedSortValue>("recent");
+  const [query, set_query] = React.useState<string>("");
   const [page, set_page] = React.useState<number>(1);
+  const debounced_query = use_debounce(query);
   const {
     data,
     isLoading: is_loading,
@@ -73,55 +102,90 @@ const Page = (): React.ReactElement => {
     isError: is_error,
     error,
     refetch
-  } = use_get_home_feed_query({
+  } = use_get_blog_feed_query({
     page,
-    type: value
+    sort,
+    query: debounced_query,
+    blog_id: blog.id
   });
   const { items = [], has_more } = data || {};
-  const show_onboarding =
-    is_logged_in && search_params.get("onboarding") === "true";
+  const is_typing = query !== debounced_query;
 
   const load_more = React.useCallback(
     () => set_page((prev_state) => prev_state + 1),
     []
   );
 
-  const handle_change = React.useCallback((next_value: IndexTabValue) => {
-    set_page(1);
-    set_value(next_value);
-  }, []);
+  const handle_sort_change = React.useCallback(
+    (next_sort: BlogFeedSortValue) => {
+      set_page(1);
+      set_sort(next_sort);
+    },
+    []
+  );
 
-  React.useEffect(() => {
-    if (show_onboarding) {
-      // Remove the `onboarding` search parameter.
-      window.history.replaceState({}, "", "/");
-    }
-  }, [router, show_onboarding]);
+  const handle_query_change = React.useCallback((next_query: string) => {
+    set_page(1);
+    set_query(next_query);
+  }, []);
 
   return (
     <>
-      {is_logged_in && <PageHeader on_change={handle_change} value={value} />}
-      {is_loading || (is_fetching && page === 1) ? (
-        <StoryListSkeleton />
-      ) : is_error ? (
-        <ErrorState
-          auto_size
-          component_props={{
-            button: { loading: is_fetching }
+      {blog.banner_id && (
+        <Image
+          alt={""}
+          aria-hidden={"true"}
+          className={styles.banner}
+          hex={blog.banner_hex}
+          img_key={blog.banner_id}
+          slot_props={{
+            image: {
+              className: styles["banner-img"],
+              loading: "eager",
+              draggable: false,
+              sizes: "100vw",
+              // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+              srcSet: [
+                `${get_cdn_url(blog.banner_id, ImageSize.W_2440)} 2440w`,
+                `${get_cdn_url(blog.banner_id, ImageSize.W_1920)} 1920w`,
+                `${get_cdn_url(blog.banner_id, ImageSize.W_1440)} 1440w`,
+                `${get_cdn_url(blog.banner_id, ImageSize.W_1200)} 1200w`,
+                `${get_cdn_url(blog.banner_id, ImageSize.W_960)} 960w`,
+                `${get_cdn_url(blog.banner_id, ImageSize.W_640)} 640w`
+              ].join(",")
+            }
           }}
-          retry={refetch}
-          type={get_query_error_type(error)}
-        />
-      ) : !is_fetching && !items.length ? (
-        <EmptyState value={value} />
-      ) : (
-        <VirtualizedStoryList
-          has_more={Boolean(has_more)}
-          load_more={load_more}
-          stories={items}
         />
       )}
-      {show_onboarding ? <Onboarding /> : null}
+      <div className={styles.content}>
+        <PageHeader
+          disabled={!query && !items.length}
+          on_query_change={handle_query_change}
+          on_sort_change={handle_sort_change}
+          query={query}
+          sort={sort}
+        />
+        {is_error ? (
+          <ErrorState
+            auto_size
+            component_props={{
+              button: { loading: is_fetching }
+            }}
+            retry={refetch}
+            type={get_query_error_type(error)}
+          />
+        ) : !is_fetching && !items.length ? (
+          <EmptyState query={query} />
+        ) : is_loading || is_typing || (is_fetching && page === 1) ? (
+          <StoryListSkeleton />
+        ) : (
+          <VirtualizedStoryList
+            has_more={Boolean(has_more)}
+            load_more={load_more}
+            stories={items}
+          />
+        )}
+      </div>
     </>
   );
 };

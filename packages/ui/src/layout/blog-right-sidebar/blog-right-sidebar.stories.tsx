@@ -21,33 +21,6 @@ const meta: Meta<typeof BlogRightSidebar> = {
       <BlogContext.Provider
         value={{
           ...MOCK_BLOGS[0],
-          rsb_items_label: "Items label",
-          rsb_items: [
-            {
-              primary_text: "Item 1",
-              secondary_text: "$10",
-              id: "1",
-              target: "/item-1",
-              priority: 1,
-              icon: "NFs6dRTBgaM.jpg"
-            },
-            {
-              primary_text: "Item 2",
-              secondary_text: "$5",
-              id: "2",
-              target: "/item-2",
-              priority: 2,
-              icon: "DLz8QHA7pFUjpg.jpg"
-            },
-            {
-              primary_text: "Item 3",
-              secondary_text: "$14",
-              id: "3",
-              target: "/item-3",
-              priority: 3,
-              icon: "jNpvVRvFcrI.jpg"
-            }
-          ],
           role: null
         }}
       >

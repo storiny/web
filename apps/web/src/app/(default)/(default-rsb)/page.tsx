@@ -60,10 +60,25 @@ const PageHeader = ({
   </Tabs>
 );
 
-const Page = (): React.ReactElement => {
+const OnboardingItem = (): React.ReactElement | null => {
   const is_logged_in = use_app_selector(select_is_logged_in);
   const search_params = use_search_params();
   const router = use_app_router();
+  const show_onboarding =
+    is_logged_in && search_params.get("onboarding") === "true";
+
+  React.useEffect(() => {
+    if (show_onboarding) {
+      // Remove the `onboarding` search parameter.
+      window.history.replaceState({}, "", "/");
+    }
+  }, [router, show_onboarding]);
+
+  return show_onboarding ? <Onboarding /> : null;
+};
+
+const Page = (): React.ReactElement => {
+  const is_logged_in = use_app_selector(select_is_logged_in);
   const [value, set_value] = React.useState<IndexTabValue>("suggested");
   const [page, set_page] = React.useState<number>(1);
   const {
@@ -78,8 +93,6 @@ const Page = (): React.ReactElement => {
     type: value
   });
   const { items = [], has_more } = data || {};
-  const show_onboarding =
-    is_logged_in && search_params.get("onboarding") === "true";
 
   const load_more = React.useCallback(
     () => set_page((prev_state) => prev_state + 1),
@@ -90,13 +103,6 @@ const Page = (): React.ReactElement => {
     set_page(1);
     set_value(next_value);
   }, []);
-
-  React.useEffect(() => {
-    if (show_onboarding) {
-      // Remove the `onboarding` search parameter.
-      window.history.replaceState({}, "", "/");
-    }
-  }, [router, show_onboarding]);
 
   return (
     <>
@@ -121,7 +127,7 @@ const Page = (): React.ReactElement => {
           stories={items}
         />
       )}
-      {show_onboarding ? <Onboarding /> : null}
+      <OnboardingItem />
     </>
   );
 };

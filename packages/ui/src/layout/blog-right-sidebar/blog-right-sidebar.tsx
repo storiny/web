@@ -14,13 +14,15 @@ import Typography from "~/components/typography";
 import ChevronIcon from "~/icons/chevron";
 import MailIcon from "~/icons/mail";
 import UsersIcon from "~/icons/users";
+import BlogConnections from "~/layout/common/blog-connections";
 import RightSidebar, {
   TitleWithIcon,
   UserWithActionSkeleton
 } from "~/layout/right-sidebar";
 import rsb_styles from "~/layout/right-sidebar/default-content/default-content.module.scss";
 import UserWithAction from "~/layout/right-sidebar/user-with-action";
-import { use_get_blog_editors_query } from "~/redux/features";
+import { boolean_action, use_get_blog_editors_query } from "~/redux/features";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
@@ -68,14 +70,46 @@ const Editors = (): React.ReactElement | null => {
   );
 };
 
-const BlogRightSidebar = (
-  props: BlogRightSidebarProps
-): React.ReactElement | null => {
+const FollowButton = (): React.ReactElement => {
+  const blog = use_blog_context();
+  const dispatch = use_app_dispatch();
+  const is_following = use_app_selector(
+    (state) => state.entities.followed_blogs[blog.id]
+  );
+
+  return (
+    <Button
+      auto_size
+      check_auth
+      onClick={(): void => {
+        dispatch(boolean_action("followed_blogs", blog.id));
+      }}
+      variant={is_following ? "hollow" : "rigid"}
+    >
+      {is_following ? "Unfollow" : "Follow"}
+    </Button>
+  );
+};
+
+const BlogRightSidebar = ({
+  className,
+  ...rest
+}: BlogRightSidebarProps): React.ReactElement | null => {
   const blog = use_blog_context();
 
   return (
-    <RightSidebar {...props}>
-      <Typography as={"h1"} scale={"lg"}>
+    <RightSidebar
+      {...rest}
+      className={clsx(
+        styles.x,
+        styles["right-sidebar"],
+        blog.banner_id && styles["has-banner"],
+        className
+      )}
+      hide_footer={blog.hide_storiny_branding}
+      is_blog
+    >
+      <Typography as={"h1"} className={styles.name} scale={"lg"}>
         {blog.name}
       </Typography>
       {Boolean((blog.description || "").trim()) && (
@@ -84,19 +118,25 @@ const BlogRightSidebar = (
         </Typography>
       )}
       <div className={clsx(css.flex, styles.actions)}>
-        <Button>Follow</Button>
+        <FollowButton />
         <IconButton disabled>
           <MailIcon />
         </IconButton>
       </div>
-      <Separator />
+      <BlogConnections is_inside_sidebar />
       {Boolean(blog.rsb_items?.length) && (
         <>
           <Separator />
           {(blog.rsb_items_label || "").trim() && (
-            <TitleWithIcon icon={<UsersIcon />}>
+            <Typography
+              as={"span"}
+              className={clsx(css["t-minor"], css["t-bold"])}
+              ellipsis
+              level={"body2"}
+              style={{ width: "100%" }}
+            >
               {blog.rsb_items_label}
-            </TitleWithIcon>
+            </Typography>
           )}
           {blog.rsb_items?.map((item) => (
             <NextLink
@@ -118,13 +158,20 @@ const BlogRightSidebar = (
                 />
               )}
               <div className={clsx(css["flex-col"])}>
-                <Typography className={css["t-medium"]} level={"body2"}>
+                <Typography
+                  className={css["t-medium"]}
+                  ellipsis
+                  level={"body2"}
+                  style={{ width: "100%" }}
+                >
                   {item.primary_text}
                 </Typography>
                 <Typography
                   className={css["t-medium"]}
                   color={"minor"}
+                  ellipsis
                   level={"body2"}
+                  style={{ width: "100%" }}
                 >
                   {item.secondary_text}
                 </Typography>

@@ -47,15 +47,24 @@ const AnchorTab = ({
   />
 );
 
-const BlogLeftSidebar = (
-  props: BlogLeftSidebarProps
-): React.ReactElement | null => {
+const BlogLeftSidebar = ({
+  className,
+  ...rest
+}: BlogLeftSidebarProps): React.ReactElement | null => {
   const blog = use_blog_context();
   const pathname = use_pathname();
   const logged_in = use_app_selector(select_is_logged_in);
 
   return (
-    <LeftSidebar {...props}>
+    <LeftSidebar
+      {...rest}
+      className={clsx(
+        styles.x,
+        styles["left-sidebar"],
+        blog.banner_id && styles["has-banner"],
+        className
+      )}
+    >
       {logged_in && (
         <>
           <LeftSidebarPersona />

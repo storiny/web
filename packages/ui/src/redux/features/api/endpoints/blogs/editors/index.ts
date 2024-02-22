@@ -2,7 +2,7 @@ import { User } from "@storiny/types";
 
 import { api_slice } from "~/redux/features/api/slice";
 
-const SEGMENT = (blog_id: string): string => `blog/${blog_id}/editors`;
+const SEGMENT = (blog_id: string): string => `blogs/${blog_id}/editors`;
 
 export type GetBlogEditorsResponse = User[];
 

@@ -16,10 +16,10 @@ export const PROVIDER_ICON_MAP: Record<
     () => import("~/icons/figma")
   ),
   [ConnectionProvider.GITHUB /*      */]: dynamic(
-    () => import("~/icons/git-hub")
+    () => import("~/icons/github")
   ),
   [ConnectionProvider.LINKEDIN /*    */]: dynamic(
-    () => import("~/icons/linked-in")
+    () => import("~/icons/linkedin")
   ),
   [ConnectionProvider.REDDIT /*      */]: dynamic(
     () => import("~/icons/reddit")
@@ -31,7 +31,7 @@ export const PROVIDER_ICON_MAP: Record<
     () => import("~/icons/spotify")
   ),
   [ConnectionProvider.YOUTUBE /*     */]: dynamic(
-    () => import("~/icons/you-tube")
+    () => import("~/icons/youtube")
   ),
   [ConnectionProvider.TWITCH /*      */]: dynamic(
     () => import("~/icons/twitch")

@@ -2,9 +2,9 @@ import { MOCK_BLOGS } from "@storiny/ui/src/mocks";
 import { clsx } from "clsx";
 import React from "react";
 
+import BlogLeftSidebar from "~/layout/blog-left-sidebar";
 import BlogNavbar from "~/layout/blog-navbar";
-import LeftSidebar from "~/layout/left-sidebar";
-import RightSidebar from "~/layout/right-sidebar";
+import BlogRightSidebar from "~/layout/blog-right-sidebar";
 import SplashScreen from "~/layout/splash-screen";
 import css from "~/theme/main.module.scss";
 
@@ -16,14 +16,14 @@ const BlogLayout = ({
   children: React.ReactNode;
 }): React.ReactElement => (
   //   TODO:
-  <BlogContext.Provider value={{ ...MOCK_BLOGS[3], role: "owner" }}>
+  <BlogContext.Provider value={{ ...MOCK_BLOGS[0], role: "owner" }}>
     <div
       className={clsx(css["grid"], css["grid-container"], css["no-sidenav"])}
     >
       <BlogNavbar />
-      <LeftSidebar />
+      <BlogLeftSidebar />
       <main data-root={"true"}>{children}</main>
-      <RightSidebar />
+      <BlogRightSidebar />
       <SplashScreen />
     </div>
   </BlogContext.Provider>

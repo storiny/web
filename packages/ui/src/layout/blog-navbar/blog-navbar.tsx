@@ -7,6 +7,7 @@ import NextLink from "next/link";
 import React from "react";
 
 import Logo from "~/brand/logo";
+import Image from "~/components/image";
 import { select_resolved_theme } from "~/redux/features";
 import { select_is_logged_in } from "~/redux/features/auth/selectors";
 import { use_app_selector } from "~/redux/hooks";
@@ -36,6 +37,32 @@ const BlogNavbar = (props: BlogNavbarProps): React.ReactElement => {
       data-global-header={"true"}
       role={"banner"}
     >
+      {blog.banner_id && (
+        <Image
+          alt={""}
+          aria-hidden={"true"}
+          className={styles.banner}
+          hex={blog.banner_hex}
+          img_key={blog.banner_id}
+          slot_props={{
+            image: {
+              className: styles["banner-img"],
+              loading: "eager",
+              draggable: false,
+              sizes: "100vw",
+              // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+              srcSet: [
+                `${get_cdn_url(blog.banner_id, ImageSize.W_2440)} 2440w`,
+                `${get_cdn_url(blog.banner_id, ImageSize.W_1920)} 1920w`,
+                `${get_cdn_url(blog.banner_id, ImageSize.W_1440)} 1440w`,
+                `${get_cdn_url(blog.banner_id, ImageSize.W_1200)} 1200w`,
+                `${get_cdn_url(blog.banner_id, ImageSize.W_960)} 960w`,
+                `${get_cdn_url(blog.banner_id, ImageSize.W_640)} 640w`
+              ].join(",")
+            }
+          }}
+        />
+      )}
       <nav className={clsx(css["f-grow"], styles.nav)}>
         <NextLink
           aria-label={"Homepage"}
