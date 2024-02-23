@@ -12,7 +12,8 @@ import Link from "~/components/link";
 import Separator from "~/components/separator";
 import Typography from "~/components/typography";
 import ChevronIcon from "~/icons/chevron";
-import MailIcon from "~/icons/mail";
+import MailPlusIcon from "~/icons/mail-plus";
+import UserPlusIcon from "~/icons/user-plus";
 import UsersIcon from "~/icons/users";
 import BlogConnections from "~/layout/common/blog-connections";
 import RightSidebar, {
@@ -81,6 +82,7 @@ const FollowButton = (): React.ReactElement => {
     <Button
       auto_size
       check_auth
+      decorator={<UserPlusIcon />}
       onClick={(): void => {
         dispatch(boolean_action("followed_blogs", blog.id));
       }}
@@ -119,8 +121,8 @@ const BlogRightSidebar = ({
       )}
       <div className={clsx(css.flex, styles.actions)}>
         <FollowButton />
-        <IconButton disabled>
-          <MailIcon />
+        <IconButton auto_size disabled>
+          <MailPlusIcon />
         </IconButton>
       </div>
       <BlogConnections is_inside_sidebar />
