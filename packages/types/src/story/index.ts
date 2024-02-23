@@ -39,6 +39,7 @@ type StoryTag = Omit<
 
 export type Story = {
   age_restriction: StoryAgeRestriction;
+  blog?: { domain: string | null; id: string; slug: string };
   category: StoryCategory;
   contributors?: User[];
   created_at: string;
@@ -59,10 +60,10 @@ export type Story = {
   slug: string;
   splash_hex: string | null;
   splash_id: string | null;
-  tags: StoryTag[];
   title: string;
   user_id: string;
   visibility: StoryVisibility;
+  tags: StoryTag[];
   word_count: number;
 } & StoryStats &
   StorySeoProps &

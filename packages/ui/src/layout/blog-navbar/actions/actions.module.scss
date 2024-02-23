@@ -1,3 +1,5 @@
+@use "breakpoints";
+
 .actions {
   gap: 8px;
 
@@ -16,6 +18,12 @@
 
       &:hover:not(:active) {
         background-color: var(--bg-elevation-lg);
+      }
+
+      @include breakpoints.media("<mobile") {
+        &:not([data-persistent]) {
+          display: none;
+        }
       }
     }
   }

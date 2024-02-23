@@ -19,6 +19,9 @@ type TStory = StoryObj<typeof Story>;
 
 export const Default: TStory = {};
 
+export const Large: TStory = {
+  args: { is_large: true }
+};
 export const Extended: TStory = {
   args: { is_extended: true }
 };
@@ -37,4 +40,8 @@ export const Skeleton: TStory = {
 
 export const SmallSkeleton: TStory = {
   render: () => <StorySkeleton is_small />
+};
+
+export const LargeSkeleton: TStory = {
+  render: () => <StorySkeleton is_large />
 };

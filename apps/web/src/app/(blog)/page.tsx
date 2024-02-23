@@ -39,9 +39,11 @@ const PageHeader = ({
   sort,
   on_sort_change,
   on_query_change,
-  disabled
+  disabled,
+  has_banner
 }: {
   disabled?: boolean;
+  has_banner: boolean;
   on_query_change: (next_query: string) => void;
   on_sort_change: (next_sort: BlogFeedSortValue) => void;
   query: string;
@@ -54,7 +56,10 @@ const PageHeader = ({
       className={clsx(
         css["flex-center"],
         css["full-bleed"],
-        css["page-header"]
+        css["page-header"],
+        css["no-sidenav"],
+        styles.header,
+        has_banner && styles["has-banner"]
       )}
     >
       <Input
@@ -110,6 +115,7 @@ const Page = (): React.ReactElement => {
   });
   const { items = [], has_more } = data || {};
   const is_typing = query !== debounced_query;
+  const container_ref = React.useRef<HTMLDivElement | null>(null);
 
   const load_more = React.useCallback(
     () => set_page((prev_state) => prev_state + 1),
@@ -128,6 +134,28 @@ const Page = (): React.ReactElement => {
     set_page(1);
     set_query(next_query);
   }, []);
+
+  React.useEffect(() => {
+    const navbar = document.querySelector("[data-global-header='true']");
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (navbar) {
+          navbar.toggleAttribute("data-detached", !entry.isIntersecting);
+        }
+      },
+      {
+        rootMargin: "-50px 0px -100% 0px",
+        threshold: 0
+      }
+    );
+
+    if (container_ref.current && blog.banner_id) {
+      observer.observe(container_ref.current);
+    }
+
+    return () => observer.disconnect();
+  }, [blog.banner_id]);
 
   return (
     <>
@@ -157,9 +185,10 @@ const Page = (): React.ReactElement => {
           }}
         />
       )}
-      <div className={styles.content}>
+      <div className={styles.content} ref={container_ref}>
         <PageHeader
-          disabled={!query && !items.length}
+          disabled={!query && !items.length && !is_fetching}
+          has_banner={Boolean(blog.banner_id)}
           on_query_change={handle_query_change}
           on_sort_change={handle_sort_change}
           query={query}
@@ -177,12 +206,18 @@ const Page = (): React.ReactElement => {
         ) : !is_fetching && !items.length ? (
           <EmptyState query={query} />
         ) : is_loading || is_typing || (is_fetching && page === 1) ? (
-          <StoryListSkeleton />
+          <StoryListSkeleton is_large={blog.is_homepage_large_layout} />
         ) : (
           <VirtualizedStoryList
             has_more={Boolean(has_more)}
             load_more={load_more}
+            skeleton_props={{
+              is_large: blog.is_homepage_large_layout
+            }}
             stories={items}
+            story_props={{
+              is_large: blog.is_homepage_large_layout
+            }}
           />
         )}
       </div>

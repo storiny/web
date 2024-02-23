@@ -14,7 +14,7 @@ import css from "~/theme/main.module.scss";
 import story_styles from "../story.module.scss";
 
 const StorySkeleton = (props: StorySkeletonProps): React.ReactElement => {
-  const { is_small, virtual } = props;
+  const { is_small, is_large, virtual } = props;
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
 
   return (
@@ -27,7 +27,13 @@ const StorySkeleton = (props: StorySkeletonProps): React.ReactElement => {
           virtual && story_styles.virtual
         )}
       >
-        <div className={clsx(css["flex"], story_styles.main)}>
+        <div
+          className={clsx(
+            css["flex"],
+            story_styles.main,
+            is_large && story_styles.large
+          )}
+        >
           <div className={clsx(css["flex-col"], story_styles.meta)}>
             <Skeleton className={story_styles.title} height={24} width={256} />
             <div
@@ -38,18 +44,23 @@ const StorySkeleton = (props: StorySkeletonProps): React.ReactElement => {
               <Spacer />
               <Skeleton height={16} width={152} />
             </div>
-            {!is_mobile && (
-              <>
-                <Spacer orientation={"vertical"} size={0.5} />
-                <Skeleton height={14} width={156} />
-                <Skeleton height={14} width={196} />
-              </>
-            )}
+            {!is_mobile ? (
+              is_large ? (
+                <Spacer orientation={"vertical"} size={2} />
+              ) : (
+                <>
+                  <Spacer orientation={"vertical"} size={0.5} />
+                  <Skeleton height={14} width={156} />
+                  <Skeleton height={14} width={196} />
+                </>
+              )
+            ) : null}
           </div>
           <AspectRatio
             className={clsx(
               story_styles.splash,
-              is_small && story_styles.small
+              is_small && story_styles.small,
+              is_large && story_styles.large
             )}
             ratio={16 / 9}
             tabIndex={-1}

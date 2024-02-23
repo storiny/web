@@ -55,6 +55,12 @@ const get_story_url = (props: StoryProps): string => {
     return `/doc/${story.id}`;
   }
 
+  if (story.blog) {
+    return `https://${story.blog.domain || `${story.blog.slug}.storiny.com`}/${
+      story.slug ?? story.id
+    }`;
+  }
+
   return `/${story.user?.username || "story"}/${story.slug ?? story.id}`;
 };
 
@@ -187,6 +193,7 @@ const Splash = (props: StoryProps): React.ReactElement => {
     is_contributable,
     is_deleted,
     is_draft,
+    is_large,
     show_unlike_button,
     story
   } = props;
@@ -209,7 +216,11 @@ const Splash = (props: StoryProps): React.ReactElement => {
     <AspectRatio
       aria-label={"Read this story"}
       as={is_mobile ? undefined : NextLink}
-      className={clsx(styles.splash, is_small && styles.small)}
+      className={clsx(
+        styles.splash,
+        is_small && styles.small,
+        is_large && styles.large
+      )}
       ratio={16 / 9}
       tabIndex={-1}
       // Use onClick to avoid nesting anchor inside another anchor
@@ -226,6 +237,7 @@ const Splash = (props: StoryProps): React.ReactElement => {
         img_key={story.splash_id}
         slot_props={{
           image: {
+            className: styles["splash-img"],
             loading: "lazy",
             sizes: ["(min-width: 650px) 320px", "100vw"].join(","),
             // eslint-disable-next-line prefer-snakecase/prefer-snakecase
@@ -581,6 +593,7 @@ const Story = (props: StoryProps): React.ReactElement => {
   const {
     className,
     story,
+    is_large,
     is_extended,
     is_deleted,
     is_draft: is_draft_prop,
@@ -639,7 +652,9 @@ const Story = (props: StoryProps): React.ReactElement => {
             className
           )}
         >
-          <div className={clsx(css["flex"], styles.main)}>
+          <div
+            className={clsx(css["flex"], styles.main, is_large && styles.large)}
+          >
             <div className={clsx(css["flex-col"], styles.meta)}>
               <div className={css.flex}>
                 <Typography

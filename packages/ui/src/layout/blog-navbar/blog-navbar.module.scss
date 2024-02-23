@@ -1,5 +1,15 @@
 @use "breakpoints";
 
+.banner {
+  position: fixed;
+  top: var(--banner-height, 0);
+  left: 0;
+  width: 100%;
+  height: var(--header-height);
+  pointer-events: none;
+  overflow: hidden;
+}
+
 .navbar {
   padding-block: 10px;
   max-height: var(--header-height);
@@ -31,25 +41,30 @@
     }
   }
 
+  &:not([data-detached]) {
+    & .banner {
+      box-shadow: var(--shadow-sm);
+      border-bottom: 1px solid var(--divider);
+    }
+  }
+
   @media print {
     display: none !important;
   }
 }
 
-.banner {
-  position: fixed;
-  top: var(--banner-height, 0);
-  left: 0;
-  width: 100%;
-  height: var(--header-height);
-  pointer-events: none;
-  overflow: hidden;
-}
-
 .banner-img {
   object-fit: cover;
   object-position: center;
-  height: 365px;
+  height: 116px;
+
+  @include breakpoints.media(">=tablet") {
+    height: 180px;
+  }
+
+  @include breakpoints.media(">=desktop") {
+    height: 365px;
+  }
 }
 
 .nav {

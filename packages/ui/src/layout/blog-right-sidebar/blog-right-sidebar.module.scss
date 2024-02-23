@@ -1,3 +1,5 @@
+@use "breakpoints";
+
 .icon {
   height: 30px;
   width: 30px;
@@ -25,7 +27,11 @@
 .x {
   &.right-sidebar {
     &.has-banner {
-      --height: 248px;
+      --height: 88px;
+
+      @include breakpoints.media(">=desktop") {
+        --height: 248px;
+      }
 
       padding-top: var(--height);
       clip-path: inset(calc(var(--height, 0px) - 1px) -50vw 0 0 round var(--radius-md) 0 0 0); // Top left radius
