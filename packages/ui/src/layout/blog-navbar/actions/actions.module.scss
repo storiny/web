@@ -7,14 +7,10 @@
     gap: 12px;
 
     & .action {
-      --icon-stroke: var(--inverted-400);
-      --icon-size: 16px;
-      --radius: 50%;
       --size: 32px;
 
-      background-color: var(--bg-body);
-      border: 1px solid var(--inverted-400);
-      box-shadow: 0 0 12px 0 rgba(0 0 0 / 18%);
+      background-color: rgba(255 255 255 / 50%);
+      backdrop-filter: blur(5px);
 
       &:hover:not(:active) {
         background-color: var(--bg-elevation-lg);
@@ -26,6 +22,12 @@
         }
       }
     }
+  }
+}
+
+@at-root html[data-theme="dark"] {
+  .actions.transparent .action {
+    background-color: rgba(0 0 0 / 50%);
   }
 }
 

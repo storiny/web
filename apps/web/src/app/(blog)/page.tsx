@@ -189,7 +189,10 @@ const Page = (): React.ReactElement => {
           }}
         />
       )}
-      <div className={styles.content} ref={container_ref}>
+      <div
+        className={clsx(styles.content, blog.banner_id && styles["has-banner"])}
+        ref={container_ref}
+      >
         {is_smaller_than_tablet && <BlogContent />}
         <PageHeader
           disabled={!query && !items.length && !is_fetching}

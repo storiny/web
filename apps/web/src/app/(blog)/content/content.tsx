@@ -12,7 +12,8 @@ import Tab, { TabProps } from "~/components/tab";
 import Tabs from "~/components/tabs";
 import TabsList from "~/components/tabs-list";
 import Typography from "~/components/typography";
-import MailIcon from "~/icons/mail";
+import MailPlusIcon from "~/icons/mail-plus";
+import UserPlusIcon from "~/icons/user-plus";
 import BlogConnections from "~/layout/common/blog-connections";
 import { boolean_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
@@ -55,6 +56,7 @@ const FollowButton = (): React.ReactElement => {
     <Button
       auto_size
       check_auth
+      decorator={<UserPlusIcon />}
       onClick={(): void => {
         dispatch(boolean_action("followed_blogs", blog.id));
       }}
@@ -70,19 +72,21 @@ const BlogContent = (): React.ReactElement => {
   const pathname = use_pathname();
 
   return (
-    <div>
-      <Typography as={"h1"} className={styles.name} scale={"lg"}>
-        {blog.name}
-      </Typography>
-      {Boolean((blog.description || "").trim()) && (
-        <Typography color={"minor"} level={"body2"}>
-          {blog.description}
+    <div className={clsx(css["flex-col"], styles.content)}>
+      <div className={clsx(css["flex-col"], styles.details)}>
+        <Typography as={"h1"} className={styles.name} scale={"xl"}>
+          {blog.name}
         </Typography>
-      )}
+        {Boolean((blog.description || "").trim()) && (
+          <Typography color={"minor"} level={"body2"}>
+            {blog.description}
+          </Typography>
+        )}
+      </div>
       <div className={clsx(css.flex, styles.actions)}>
         <FollowButton />
-        <IconButton disabled>
-          <MailIcon />
+        <IconButton auto_size disabled>
+          <MailPlusIcon />
         </IconButton>
       </div>
       <BlogConnections is_inside_sidebar={false} />
