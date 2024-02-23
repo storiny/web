@@ -186,6 +186,7 @@ const SearchAction = (): React.ReactElement => {
     <IconButton
       aria-label={"Search"}
       className={styles.action}
+      data-persistent={""}
       onClick={(): void => {
         if (pathname === "/") {
           (
@@ -296,6 +297,7 @@ const Actions = ({
             <IconButton
               aria-label={"User options"}
               className={styles.action}
+              data-persistent={""}
               title={"More options"}
               variant={"ghost"}
             >

@@ -21,6 +21,12 @@
   justify-content: space-between;
   gap: 16px;
 
+  @include breakpoints.media(">=mobile") {
+    &.large {
+      flex-direction: column-reverse !important;
+    }
+  }
+
   @include breakpoints.media("<mobile") {
     flex-direction: column;
     gap: 12px;
@@ -83,8 +89,23 @@
   align-self: flex-start;
   position: relative;
 
+  @include breakpoints.media(">=mobile") {
+    &.large {
+      --size: 100% !important;
+
+      height: 240px;
+
+      & .splash-img {
+        object-position: center;
+        object-fit: cover;
+      }
+    }
+  }
+
   @include breakpoints.media("<800px") {
-    --size: 200px !important;
+    &:not(.large) {
+      --size: 200px !important;
+    }
   }
 
   @include breakpoints.media("<mobile") {

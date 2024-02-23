@@ -89,8 +89,15 @@
   }
 
   @include breakpoints.media("<tablet") {
-    // Exclude sidenav width
-    width: calc(100vw - 72px);
+    &:not(.no-sidenav) {
+      // Exclude sidenav width
+      width: calc(100vw - 72px);
+    }
+
+    &.no-sidenav {
+      width: 100vw;
+    }
+
     margin-left: 50%;
     transform: translateX(-50%);
   }

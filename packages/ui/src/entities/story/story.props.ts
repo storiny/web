@@ -23,6 +23,10 @@ export interface StoryProps extends React.ComponentPropsWithoutRef<"article"> {
    */
   is_extended?: boolean;
   /**
+   * If `true`, renders the large variant
+   */
+  is_large?: boolean;
+  /**
    * If `true`, renders an unlike button.
    * @default false
    */
