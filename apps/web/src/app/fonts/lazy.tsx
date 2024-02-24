@@ -29,11 +29,12 @@ const FONT_FAMILIES: Record<string, string> = {
 };
 
 const LazyFonts = (): React.ReactElement => (
-  <style
-    dangerouslySetInnerHTML={{
-      __html: `:root{${get_font_families_css(FONT_FAMILIES)}}`
-    }}
-  />
+  // eslint-disable-next-line react/no-unknown-property
+  <style global jsx>{`
+    :root {
+      ${get_font_families_css(FONT_FAMILIES)}
+    }
+  `}</style>
 );
 
 export default LazyFonts;

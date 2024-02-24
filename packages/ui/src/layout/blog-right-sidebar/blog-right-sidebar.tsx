@@ -168,15 +168,17 @@ const BlogRightSidebar = ({
                 >
                   {item.primary_text}
                 </Typography>
-                <Typography
-                  className={css["t-medium"]}
-                  color={"minor"}
-                  ellipsis
-                  level={"body2"}
-                  style={{ width: "100%" }}
-                >
-                  {item.secondary_text}
-                </Typography>
+                {item.secondary_text && (
+                  <Typography
+                    className={css["t-medium"]}
+                    color={"minor"}
+                    ellipsis
+                    level={"body2"}
+                    style={{ width: "100%" }}
+                  >
+                    {item.secondary_text}
+                  </Typography>
+                )}
               </div>
             </NextLink>
           ))}

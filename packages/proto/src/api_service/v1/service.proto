@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package api_service.v1;
 
+import "blog_def/v1/def.proto";
 import "comment_def/v1/def.proto";
 import "connection_settings_def/v1/def.proto";
 import "credential_settings_def/v1/def.proto";
@@ -117,6 +118,10 @@ service ApiService {
    * Creates a new draft
    */
   rpc CreateDraft(story_def.v1.CreateDraftRequest) returns (story_def.v1.CreateDraftResponse) {}
+  /**
+   * Returns the blog's data
+   */
+  rpc GetBlog(blog_def.v1.GetBlogRequest) returns (blog_def.v1.GetBlogResponse) {}
 }
 
 // This is necessary to generate an output file using tonic.

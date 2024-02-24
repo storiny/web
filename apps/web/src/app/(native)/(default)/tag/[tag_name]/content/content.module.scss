@@ -1,0 +1,35 @@
+@use "breakpoints";
+
+.content {
+  gap: 16px;
+  padding-block: 24px;
+
+  @include breakpoints.media("<mobile") {
+    gap: 12px;
+    padding-block: 18px;
+  }
+}
+
+.meta {
+  gap: 8px;
+}
+
+.stats {
+  gap: 4px 16px;
+}
+
+.actions {
+  gap: 8px;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.x {
+  &.meta-icon {
+    --icon-size: 36px;
+
+    @include breakpoints.media("<mobile") {
+      --icon-size: 24px;
+    }
+  }
+}

@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package blog_def.v1;
+
+message LeftSidebarItem {
+  string id /*           */ = 1;
+  string name /*         */ = 2;
+  optional string icon /**/ = 3;
+  uint32 priority /*     */ = 4;
+  string target /*       */ = 5;
+}
+
+message RightSidebarItem {
+  string id /*                     */ = 1;
+  string primary_text /*           */ = 2;
+  optional string secondary_text /**/ = 3;
+  optional string icon /*          */ = 4;
+  uint32 priority /*               */ = 5;
+  string target /*                 */ = 6;
+}
+
+message GetBlogRequest {
+  string slug /*                    */ = 1;
+  optional string current_user_id /**/ = 2;
+}
+
+message GetBlogResponse {
+  string id /*                            */ = 1;
+  string name /*                          */ = 2;
+  string slug /*                          */ = 3;
+  optional string description /*          */ = 4;
+  // Banner
+  optional string banner_id /*            */ = 5;
+  optional string banner_hex /*           */ = 6;
+  // Logo
+  optional string logo_id /*              */ = 7;
+  optional string logo_hex /*             */ = 8;
+  // Newsletter splash
+  optional string newsletter_splash_id /* */ = 9;
+  optional string newsletter_splash_hex /**/ = 10;
+  // Mark
+  optional string mark_light /*           */ = 11;
+  optional string mark_dark /*            */ = 12;
+  // Font
+  optional string font_code /*            */ = 13;
+  optional string font_primary /*         */ = 14;
+  optional string font_secondary /*       */ = 15;
+  // Theme
+  optional string default_theme /*        */ = 16;
+  bool force_theme /*                     */ = 17;
+  optional string favicon /*              */ = 18;
+  bool hide_storiny_branding /*           */ = 19;
+  bool is_homepage_large_layout /*        */ = 20;
+  bool is_story_minimal_layout /*         */ = 21;
+  // SEO
+  optional string seo_description /*      */ = 22;
+  optional string seo_title /*            */ = 23;
+  optional string preview_image /*        */ = 24;
+  // Boolean flags
+  bool is_following /*                    */ = 25;
+  bool is_owner /*                        */ = 26;
+  bool is_editor /*                       */ = 27;
+  bool is_writer /*                       */ = 28;
+  // Connections
+  optional string website_url /*          */ = 29;
+  optional string public_email /*         */ = 30;
+  optional string github_id /*            */ = 31;
+  optional string instagram_id /*         */ = 32;
+  optional string linkedin_id /*          */ = 33;
+  optional string youtube_id /*           */ = 34;
+  optional string twitter_id /*           */ = 35;
+  optional string twitch_id /*            */ = 36;
+  // Other props
+  optional string domain /*               */ = 37;
+  string created_at /*                    */ = 38;
+  string category /*                      */ = 39;
+  string user_id /*                       */ = 40;
+  string rsb_items_label /*               */ = 41;
+  repeated LeftSidebarItem lsb_items /*   */ = 42;
+  repeated RightSidebarItem rsb_items /*  */ = 43;
+}

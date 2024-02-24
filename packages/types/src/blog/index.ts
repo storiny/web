@@ -13,7 +13,7 @@ export interface BlogRightSidebarItem {
   id: string;
   primary_text: string;
   priority: number;
-  secondary_text: string;
+  secondary_text: string | null;
   target: string;
 }
 
@@ -73,9 +73,10 @@ export type Blog = {
   domain: string | null;
   favicon: string | null;
   force_theme: boolean;
-  has_plus_features: boolean;
+  has_plus_features?: boolean;
   hide_storiny_branding: boolean;
   id: string;
+  is_active?: boolean;
   // Whether to hide this blog from the internal Storiny network
   is_external: boolean;
   logo_hex: string | null;

@@ -7,7 +7,7 @@ import Typography from "~/components/typography";
 import Footer from "~/layout/footer";
 import css from "~/theme/main.module.scss";
 
-import MinimalLayout from "../(minimal)/layout";
+import MinimalLayout from "../(native)/(minimal)/layout";
 import ErrorLayoutInput from "./input";
 import styles from "./layout.module.scss";
 
@@ -16,12 +16,14 @@ const ErrorLayout = ({
   error_code,
   title,
   description,
-  enable_search
+  enable_search,
+  hide_footer
 }: {
   children?: React.ReactNode;
   description?: React.ReactNode;
   enable_search?: boolean;
   error_code: string;
+  hide_footer?: boolean;
   title: React.ReactNode;
 }): React.ReactElement => (
   <MinimalLayout>
@@ -75,7 +77,7 @@ const ErrorLayout = ({
         </>
       )}
     </div>
-    <Footer />
+    {!hide_footer && <Footer />}
   </MinimalLayout>
 );
 

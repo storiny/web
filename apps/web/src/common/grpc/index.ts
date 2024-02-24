@@ -10,6 +10,10 @@ import {
 } from "@grpc/grpc-js";
 import { ApiServiceClient } from "@storiny/proto/dist/api_service/v1/service";
 import {
+  GetBlogRequest,
+  GetBlogResponse
+} from "@storiny/proto/dist/blog_def/v1/def";
+import {
   GetCommentRequest,
   GetCommentResponse
 } from "@storiny/proto/dist/comment_def/v1/def";
@@ -252,6 +256,9 @@ const grpc_hub = {
     promisify<VerifyEmailRequest, VerifyEmailResponse>(
       global.grpc_client.verifyEmail
     )
+  ),
+  get_blog: cache(
+    promisify<GetBlogRequest, GetBlogResponse>(global.grpc_client.getBlog)
   )
 } as const;
 
@@ -282,11 +289,13 @@ export const {
   create_draft,
   verify_email,
   get_comment,
-  get_username
+  get_username,
+  get_blog
 } = global.grpc_hub as typeof grpc_hub;
 
 export {
   CreateDraftResponse,
+  GetBlogResponse,
   GetCommentResponse,
   GetConnectionSettingsResponse,
   GetContributionsInfoResponse,
