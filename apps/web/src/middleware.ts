@@ -82,11 +82,37 @@ export const middleware: NextMiddleware = (request) => {
   request_headers.set("x-nonce", nonce);
   request_headers.set("Content-Security-Policy", csp_header_value);
 
-  const response = NextResponse.next({
+  let response = NextResponse.next({
     request: {
       headers: request_headers
     }
   });
+
+  // Blog on custom slug
+
+  const hostname = request?.headers?.get("host");
+  const native_domains = [
+    "storiny.com",
+    "wwww.storiny.com",
+    "api.storiny.com",
+    "cdn.storiny.com",
+    "realms.storiny.com",
+    "sitemaps.storiny.com",
+    "discovery.storiny.com",
+    "status.storiny.com"
+  ];
+
+  if (hostname && !native_domains.includes(hostname)) {
+    const url = request.nextUrl.clone();
+
+    request.nextUrl.pathname = `/blog/${hostname}${url.pathname}`;
+
+    response = NextResponse.rewrite(request.nextUrl, {
+      request: {
+        headers: request_headers
+      }
+    });
+  }
 
   response.headers.set("Content-Security-Policy", csp_header_value);
 

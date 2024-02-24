@@ -1,0 +1,1292 @@
+// @generated
+impl serde::Serialize for GetBlogRequest {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if !self.slug.is_empty() {
+            len += 1;
+        }
+        if self.current_user_id.is_some() {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("blog_def.v1.GetBlogRequest", len)?;
+        if !self.slug.is_empty() {
+            struct_ser.serialize_field("slug", &self.slug)?;
+        }
+        if let Some(v) = self.current_user_id.as_ref() {
+            struct_ser.serialize_field("currentUserId", v)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for GetBlogRequest {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "slug",
+            "current_user_id",
+            "currentUserId",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            Slug,
+            CurrentUserId,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "slug" => Ok(GeneratedField::Slug),
+                            "currentUserId" | "current_user_id" => Ok(GeneratedField::CurrentUserId),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = GetBlogRequest;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct blog_def.v1.GetBlogRequest")
+            }
+
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetBlogRequest, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut slug__ = None;
+                let mut current_user_id__ = None;
+                while let Some(k) = map.next_key()? {
+                    match k {
+                        GeneratedField::Slug => {
+                            if slug__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("slug"));
+                            }
+                            slug__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::CurrentUserId => {
+                            if current_user_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("currentUserId"));
+                            }
+                            current_user_id__ = map.next_value()?;
+                        }
+                    }
+                }
+                Ok(GetBlogRequest {
+                    slug: slug__.unwrap_or_default(),
+                    current_user_id: current_user_id__,
+                })
+            }
+        }
+        deserializer.deserialize_struct("blog_def.v1.GetBlogRequest", FIELDS, GeneratedVisitor)
+    }
+}
+impl serde::Serialize for GetBlogResponse {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if !self.id.is_empty() {
+            len += 1;
+        }
+        if !self.name.is_empty() {
+            len += 1;
+        }
+        if !self.slug.is_empty() {
+            len += 1;
+        }
+        if self.description.is_some() {
+            len += 1;
+        }
+        if self.banner_id.is_some() {
+            len += 1;
+        }
+        if self.banner_hex.is_some() {
+            len += 1;
+        }
+        if self.logo_id.is_some() {
+            len += 1;
+        }
+        if self.logo_hex.is_some() {
+            len += 1;
+        }
+        if self.newsletter_splash_id.is_some() {
+            len += 1;
+        }
+        if self.newsletter_splash_hex.is_some() {
+            len += 1;
+        }
+        if self.mark_light.is_some() {
+            len += 1;
+        }
+        if self.mark_dark.is_some() {
+            len += 1;
+        }
+        if self.font_code.is_some() {
+            len += 1;
+        }
+        if self.font_primary.is_some() {
+            len += 1;
+        }
+        if self.font_secondary.is_some() {
+            len += 1;
+        }
+        if self.default_theme.is_some() {
+            len += 1;
+        }
+        if self.force_theme {
+            len += 1;
+        }
+        if self.favicon.is_some() {
+            len += 1;
+        }
+        if self.hide_storiny_branding {
+            len += 1;
+        }
+        if self.is_homepage_large_layout {
+            len += 1;
+        }
+        if self.is_story_minimal_layout {
+            len += 1;
+        }
+        if self.seo_description.is_some() {
+            len += 1;
+        }
+        if self.seo_title.is_some() {
+            len += 1;
+        }
+        if self.preview_image.is_some() {
+            len += 1;
+        }
+        if self.is_following {
+            len += 1;
+        }
+        if self.is_owner {
+            len += 1;
+        }
+        if self.is_editor {
+            len += 1;
+        }
+        if self.is_writer {
+            len += 1;
+        }
+        if self.website_url.is_some() {
+            len += 1;
+        }
+        if self.public_email.is_some() {
+            len += 1;
+        }
+        if self.github_id.is_some() {
+            len += 1;
+        }
+        if self.instagram_id.is_some() {
+            len += 1;
+        }
+        if self.linkedin_id.is_some() {
+            len += 1;
+        }
+        if self.youtube_id.is_some() {
+            len += 1;
+        }
+        if self.twitter_id.is_some() {
+            len += 1;
+        }
+        if self.twitch_id.is_some() {
+            len += 1;
+        }
+        if self.domain.is_some() {
+            len += 1;
+        }
+        if !self.created_at.is_empty() {
+            len += 1;
+        }
+        if !self.category.is_empty() {
+            len += 1;
+        }
+        if !self.user_id.is_empty() {
+            len += 1;
+        }
+        if !self.rsb_items_label.is_empty() {
+            len += 1;
+        }
+        if !self.lsb_items.is_empty() {
+            len += 1;
+        }
+        if !self.rsb_items.is_empty() {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("blog_def.v1.GetBlogResponse", len)?;
+        if !self.id.is_empty() {
+            struct_ser.serialize_field("id", &self.id)?;
+        }
+        if !self.name.is_empty() {
+            struct_ser.serialize_field("name", &self.name)?;
+        }
+        if !self.slug.is_empty() {
+            struct_ser.serialize_field("slug", &self.slug)?;
+        }
+        if let Some(v) = self.description.as_ref() {
+            struct_ser.serialize_field("description", v)?;
+        }
+        if let Some(v) = self.banner_id.as_ref() {
+            struct_ser.serialize_field("bannerId", v)?;
+        }
+        if let Some(v) = self.banner_hex.as_ref() {
+            struct_ser.serialize_field("bannerHex", v)?;
+        }
+        if let Some(v) = self.logo_id.as_ref() {
+            struct_ser.serialize_field("logoId", v)?;
+        }
+        if let Some(v) = self.logo_hex.as_ref() {
+            struct_ser.serialize_field("logoHex", v)?;
+        }
+        if let Some(v) = self.newsletter_splash_id.as_ref() {
+            struct_ser.serialize_field("newsletterSplashId", v)?;
+        }
+        if let Some(v) = self.newsletter_splash_hex.as_ref() {
+            struct_ser.serialize_field("newsletterSplashHex", v)?;
+        }
+        if let Some(v) = self.mark_light.as_ref() {
+            struct_ser.serialize_field("markLight", v)?;
+        }
+        if let Some(v) = self.mark_dark.as_ref() {
+            struct_ser.serialize_field("markDark", v)?;
+        }
+        if let Some(v) = self.font_code.as_ref() {
+            struct_ser.serialize_field("fontCode", v)?;
+        }
+        if let Some(v) = self.font_primary.as_ref() {
+            struct_ser.serialize_field("fontPrimary", v)?;
+        }
+        if let Some(v) = self.font_secondary.as_ref() {
+            struct_ser.serialize_field("fontSecondary", v)?;
+        }
+        if let Some(v) = self.default_theme.as_ref() {
+            struct_ser.serialize_field("defaultTheme", v)?;
+        }
+        if self.force_theme {
+            struct_ser.serialize_field("forceTheme", &self.force_theme)?;
+        }
+        if let Some(v) = self.favicon.as_ref() {
+            struct_ser.serialize_field("favicon", v)?;
+        }
+        if self.hide_storiny_branding {
+            struct_ser.serialize_field("hideStorinyBranding", &self.hide_storiny_branding)?;
+        }
+        if self.is_homepage_large_layout {
+            struct_ser.serialize_field("isHomepageLargeLayout", &self.is_homepage_large_layout)?;
+        }
+        if self.is_story_minimal_layout {
+            struct_ser.serialize_field("isStoryMinimalLayout", &self.is_story_minimal_layout)?;
+        }
+        if let Some(v) = self.seo_description.as_ref() {
+            struct_ser.serialize_field("seoDescription", v)?;
+        }
+        if let Some(v) = self.seo_title.as_ref() {
+            struct_ser.serialize_field("seoTitle", v)?;
+        }
+        if let Some(v) = self.preview_image.as_ref() {
+            struct_ser.serialize_field("previewImage", v)?;
+        }
+        if self.is_following {
+            struct_ser.serialize_field("isFollowing", &self.is_following)?;
+        }
+        if self.is_owner {
+            struct_ser.serialize_field("isOwner", &self.is_owner)?;
+        }
+        if self.is_editor {
+            struct_ser.serialize_field("isEditor", &self.is_editor)?;
+        }
+        if self.is_writer {
+            struct_ser.serialize_field("isWriter", &self.is_writer)?;
+        }
+        if let Some(v) = self.website_url.as_ref() {
+            struct_ser.serialize_field("websiteUrl", v)?;
+        }
+        if let Some(v) = self.public_email.as_ref() {
+            struct_ser.serialize_field("publicEmail", v)?;
+        }
+        if let Some(v) = self.github_id.as_ref() {
+            struct_ser.serialize_field("githubId", v)?;
+        }
+        if let Some(v) = self.instagram_id.as_ref() {
+            struct_ser.serialize_field("instagramId", v)?;
+        }
+        if let Some(v) = self.linkedin_id.as_ref() {
+            struct_ser.serialize_field("linkedinId", v)?;
+        }
+        if let Some(v) = self.youtube_id.as_ref() {
+            struct_ser.serialize_field("youtubeId", v)?;
+        }
+        if let Some(v) = self.twitter_id.as_ref() {
+            struct_ser.serialize_field("twitterId", v)?;
+        }
+        if let Some(v) = self.twitch_id.as_ref() {
+            struct_ser.serialize_field("twitchId", v)?;
+        }
+        if let Some(v) = self.domain.as_ref() {
+            struct_ser.serialize_field("domain", v)?;
+        }
+        if !self.created_at.is_empty() {
+            struct_ser.serialize_field("createdAt", &self.created_at)?;
+        }
+        if !self.category.is_empty() {
+            struct_ser.serialize_field("category", &self.category)?;
+        }
+        if !self.user_id.is_empty() {
+            struct_ser.serialize_field("userId", &self.user_id)?;
+        }
+        if !self.rsb_items_label.is_empty() {
+            struct_ser.serialize_field("rsbItemsLabel", &self.rsb_items_label)?;
+        }
+        if !self.lsb_items.is_empty() {
+            struct_ser.serialize_field("lsbItems", &self.lsb_items)?;
+        }
+        if !self.rsb_items.is_empty() {
+            struct_ser.serialize_field("rsbItems", &self.rsb_items)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for GetBlogResponse {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "id",
+            "name",
+            "slug",
+            "description",
+            "banner_id",
+            "bannerId",
+            "banner_hex",
+            "bannerHex",
+            "logo_id",
+            "logoId",
+            "logo_hex",
+            "logoHex",
+            "newsletter_splash_id",
+            "newsletterSplashId",
+            "newsletter_splash_hex",
+            "newsletterSplashHex",
+            "mark_light",
+            "markLight",
+            "mark_dark",
+            "markDark",
+            "font_code",
+            "fontCode",
+            "font_primary",
+            "fontPrimary",
+            "font_secondary",
+            "fontSecondary",
+            "default_theme",
+            "defaultTheme",
+            "force_theme",
+            "forceTheme",
+            "favicon",
+            "hide_storiny_branding",
+            "hideStorinyBranding",
+            "is_homepage_large_layout",
+            "isHomepageLargeLayout",
+            "is_story_minimal_layout",
+            "isStoryMinimalLayout",
+            "seo_description",
+            "seoDescription",
+            "seo_title",
+            "seoTitle",
+            "preview_image",
+            "previewImage",
+            "is_following",
+            "isFollowing",
+            "is_owner",
+            "isOwner",
+            "is_editor",
+            "isEditor",
+            "is_writer",
+            "isWriter",
+            "website_url",
+            "websiteUrl",
+            "public_email",
+            "publicEmail",
+            "github_id",
+            "githubId",
+            "instagram_id",
+            "instagramId",
+            "linkedin_id",
+            "linkedinId",
+            "youtube_id",
+            "youtubeId",
+            "twitter_id",
+            "twitterId",
+            "twitch_id",
+            "twitchId",
+            "domain",
+            "created_at",
+            "createdAt",
+            "category",
+            "user_id",
+            "userId",
+            "rsb_items_label",
+            "rsbItemsLabel",
+            "lsb_items",
+            "lsbItems",
+            "rsb_items",
+            "rsbItems",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            Id,
+            Name,
+            Slug,
+            Description,
+            BannerId,
+            BannerHex,
+            LogoId,
+            LogoHex,
+            NewsletterSplashId,
+            NewsletterSplashHex,
+            MarkLight,
+            MarkDark,
+            FontCode,
+            FontPrimary,
+            FontSecondary,
+            DefaultTheme,
+            ForceTheme,
+            Favicon,
+            HideStorinyBranding,
+            IsHomepageLargeLayout,
+            IsStoryMinimalLayout,
+            SeoDescription,
+            SeoTitle,
+            PreviewImage,
+            IsFollowing,
+            IsOwner,
+            IsEditor,
+            IsWriter,
+            WebsiteUrl,
+            PublicEmail,
+            GithubId,
+            InstagramId,
+            LinkedinId,
+            YoutubeId,
+            TwitterId,
+            TwitchId,
+            Domain,
+            CreatedAt,
+            Category,
+            UserId,
+            RsbItemsLabel,
+            LsbItems,
+            RsbItems,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "id" => Ok(GeneratedField::Id),
+                            "name" => Ok(GeneratedField::Name),
+                            "slug" => Ok(GeneratedField::Slug),
+                            "description" => Ok(GeneratedField::Description),
+                            "bannerId" | "banner_id" => Ok(GeneratedField::BannerId),
+                            "bannerHex" | "banner_hex" => Ok(GeneratedField::BannerHex),
+                            "logoId" | "logo_id" => Ok(GeneratedField::LogoId),
+                            "logoHex" | "logo_hex" => Ok(GeneratedField::LogoHex),
+                            "newsletterSplashId" | "newsletter_splash_id" => Ok(GeneratedField::NewsletterSplashId),
+                            "newsletterSplashHex" | "newsletter_splash_hex" => Ok(GeneratedField::NewsletterSplashHex),
+                            "markLight" | "mark_light" => Ok(GeneratedField::MarkLight),
+                            "markDark" | "mark_dark" => Ok(GeneratedField::MarkDark),
+                            "fontCode" | "font_code" => Ok(GeneratedField::FontCode),
+                            "fontPrimary" | "font_primary" => Ok(GeneratedField::FontPrimary),
+                            "fontSecondary" | "font_secondary" => Ok(GeneratedField::FontSecondary),
+                            "defaultTheme" | "default_theme" => Ok(GeneratedField::DefaultTheme),
+                            "forceTheme" | "force_theme" => Ok(GeneratedField::ForceTheme),
+                            "favicon" => Ok(GeneratedField::Favicon),
+                            "hideStorinyBranding" | "hide_storiny_branding" => Ok(GeneratedField::HideStorinyBranding),
+                            "isHomepageLargeLayout" | "is_homepage_large_layout" => Ok(GeneratedField::IsHomepageLargeLayout),
+                            "isStoryMinimalLayout" | "is_story_minimal_layout" => Ok(GeneratedField::IsStoryMinimalLayout),
+                            "seoDescription" | "seo_description" => Ok(GeneratedField::SeoDescription),
+                            "seoTitle" | "seo_title" => Ok(GeneratedField::SeoTitle),
+                            "previewImage" | "preview_image" => Ok(GeneratedField::PreviewImage),
+                            "isFollowing" | "is_following" => Ok(GeneratedField::IsFollowing),
+                            "isOwner" | "is_owner" => Ok(GeneratedField::IsOwner),
+                            "isEditor" | "is_editor" => Ok(GeneratedField::IsEditor),
+                            "isWriter" | "is_writer" => Ok(GeneratedField::IsWriter),
+                            "websiteUrl" | "website_url" => Ok(GeneratedField::WebsiteUrl),
+                            "publicEmail" | "public_email" => Ok(GeneratedField::PublicEmail),
+                            "githubId" | "github_id" => Ok(GeneratedField::GithubId),
+                            "instagramId" | "instagram_id" => Ok(GeneratedField::InstagramId),
+                            "linkedinId" | "linkedin_id" => Ok(GeneratedField::LinkedinId),
+                            "youtubeId" | "youtube_id" => Ok(GeneratedField::YoutubeId),
+                            "twitterId" | "twitter_id" => Ok(GeneratedField::TwitterId),
+                            "twitchId" | "twitch_id" => Ok(GeneratedField::TwitchId),
+                            "domain" => Ok(GeneratedField::Domain),
+                            "createdAt" | "created_at" => Ok(GeneratedField::CreatedAt),
+                            "category" => Ok(GeneratedField::Category),
+                            "userId" | "user_id" => Ok(GeneratedField::UserId),
+                            "rsbItemsLabel" | "rsb_items_label" => Ok(GeneratedField::RsbItemsLabel),
+                            "lsbItems" | "lsb_items" => Ok(GeneratedField::LsbItems),
+                            "rsbItems" | "rsb_items" => Ok(GeneratedField::RsbItems),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = GetBlogResponse;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct blog_def.v1.GetBlogResponse")
+            }
+
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetBlogResponse, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut id__ = None;
+                let mut name__ = None;
+                let mut slug__ = None;
+                let mut description__ = None;
+                let mut banner_id__ = None;
+                let mut banner_hex__ = None;
+                let mut logo_id__ = None;
+                let mut logo_hex__ = None;
+                let mut newsletter_splash_id__ = None;
+                let mut newsletter_splash_hex__ = None;
+                let mut mark_light__ = None;
+                let mut mark_dark__ = None;
+                let mut font_code__ = None;
+                let mut font_primary__ = None;
+                let mut font_secondary__ = None;
+                let mut default_theme__ = None;
+                let mut force_theme__ = None;
+                let mut favicon__ = None;
+                let mut hide_storiny_branding__ = None;
+                let mut is_homepage_large_layout__ = None;
+                let mut is_story_minimal_layout__ = None;
+                let mut seo_description__ = None;
+                let mut seo_title__ = None;
+                let mut preview_image__ = None;
+                let mut is_following__ = None;
+                let mut is_owner__ = None;
+                let mut is_editor__ = None;
+                let mut is_writer__ = None;
+                let mut website_url__ = None;
+                let mut public_email__ = None;
+                let mut github_id__ = None;
+                let mut instagram_id__ = None;
+                let mut linkedin_id__ = None;
+                let mut youtube_id__ = None;
+                let mut twitter_id__ = None;
+                let mut twitch_id__ = None;
+                let mut domain__ = None;
+                let mut created_at__ = None;
+                let mut category__ = None;
+                let mut user_id__ = None;
+                let mut rsb_items_label__ = None;
+                let mut lsb_items__ = None;
+                let mut rsb_items__ = None;
+                while let Some(k) = map.next_key()? {
+                    match k {
+                        GeneratedField::Id => {
+                            if id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("id"));
+                            }
+                            id__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::Name => {
+                            if name__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("name"));
+                            }
+                            name__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::Slug => {
+                            if slug__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("slug"));
+                            }
+                            slug__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::Description => {
+                            if description__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("description"));
+                            }
+                            description__ = map.next_value()?;
+                        }
+                        GeneratedField::BannerId => {
+                            if banner_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("bannerId"));
+                            }
+                            banner_id__ = map.next_value()?;
+                        }
+                        GeneratedField::BannerHex => {
+                            if banner_hex__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("bannerHex"));
+                            }
+                            banner_hex__ = map.next_value()?;
+                        }
+                        GeneratedField::LogoId => {
+                            if logo_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("logoId"));
+                            }
+                            logo_id__ = map.next_value()?;
+                        }
+                        GeneratedField::LogoHex => {
+                            if logo_hex__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("logoHex"));
+                            }
+                            logo_hex__ = map.next_value()?;
+                        }
+                        GeneratedField::NewsletterSplashId => {
+                            if newsletter_splash_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("newsletterSplashId"));
+                            }
+                            newsletter_splash_id__ = map.next_value()?;
+                        }
+                        GeneratedField::NewsletterSplashHex => {
+                            if newsletter_splash_hex__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("newsletterSplashHex"));
+                            }
+                            newsletter_splash_hex__ = map.next_value()?;
+                        }
+                        GeneratedField::MarkLight => {
+                            if mark_light__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("markLight"));
+                            }
+                            mark_light__ = map.next_value()?;
+                        }
+                        GeneratedField::MarkDark => {
+                            if mark_dark__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("markDark"));
+                            }
+                            mark_dark__ = map.next_value()?;
+                        }
+                        GeneratedField::FontCode => {
+                            if font_code__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("fontCode"));
+                            }
+                            font_code__ = map.next_value()?;
+                        }
+                        GeneratedField::FontPrimary => {
+                            if font_primary__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("fontPrimary"));
+                            }
+                            font_primary__ = map.next_value()?;
+                        }
+                        GeneratedField::FontSecondary => {
+                            if font_secondary__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("fontSecondary"));
+                            }
+                            font_secondary__ = map.next_value()?;
+                        }
+                        GeneratedField::DefaultTheme => {
+                            if default_theme__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("defaultTheme"));
+                            }
+                            default_theme__ = map.next_value()?;
+                        }
+                        GeneratedField::ForceTheme => {
+                            if force_theme__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("forceTheme"));
+                            }
+                            force_theme__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::Favicon => {
+                            if favicon__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("favicon"));
+                            }
+                            favicon__ = map.next_value()?;
+                        }
+                        GeneratedField::HideStorinyBranding => {
+                            if hide_storiny_branding__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("hideStorinyBranding"));
+                            }
+                            hide_storiny_branding__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::IsHomepageLargeLayout => {
+                            if is_homepage_large_layout__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("isHomepageLargeLayout"));
+                            }
+                            is_homepage_large_layout__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::IsStoryMinimalLayout => {
+                            if is_story_minimal_layout__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("isStoryMinimalLayout"));
+                            }
+                            is_story_minimal_layout__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::SeoDescription => {
+                            if seo_description__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("seoDescription"));
+                            }
+                            seo_description__ = map.next_value()?;
+                        }
+                        GeneratedField::SeoTitle => {
+                            if seo_title__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("seoTitle"));
+                            }
+                            seo_title__ = map.next_value()?;
+                        }
+                        GeneratedField::PreviewImage => {
+                            if preview_image__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("previewImage"));
+                            }
+                            preview_image__ = map.next_value()?;
+                        }
+                        GeneratedField::IsFollowing => {
+                            if is_following__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("isFollowing"));
+                            }
+                            is_following__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::IsOwner => {
+                            if is_owner__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("isOwner"));
+                            }
+                            is_owner__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::IsEditor => {
+                            if is_editor__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("isEditor"));
+                            }
+                            is_editor__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::IsWriter => {
+                            if is_writer__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("isWriter"));
+                            }
+                            is_writer__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::WebsiteUrl => {
+                            if website_url__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("websiteUrl"));
+                            }
+                            website_url__ = map.next_value()?;
+                        }
+                        GeneratedField::PublicEmail => {
+                            if public_email__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("publicEmail"));
+                            }
+                            public_email__ = map.next_value()?;
+                        }
+                        GeneratedField::GithubId => {
+                            if github_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("githubId"));
+                            }
+                            github_id__ = map.next_value()?;
+                        }
+                        GeneratedField::InstagramId => {
+                            if instagram_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("instagramId"));
+                            }
+                            instagram_id__ = map.next_value()?;
+                        }
+                        GeneratedField::LinkedinId => {
+                            if linkedin_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("linkedinId"));
+                            }
+                            linkedin_id__ = map.next_value()?;
+                        }
+                        GeneratedField::YoutubeId => {
+                            if youtube_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("youtubeId"));
+                            }
+                            youtube_id__ = map.next_value()?;
+                        }
+                        GeneratedField::TwitterId => {
+                            if twitter_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("twitterId"));
+                            }
+                            twitter_id__ = map.next_value()?;
+                        }
+                        GeneratedField::TwitchId => {
+                            if twitch_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("twitchId"));
+                            }
+                            twitch_id__ = map.next_value()?;
+                        }
+                        GeneratedField::Domain => {
+                            if domain__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("domain"));
+                            }
+                            domain__ = map.next_value()?;
+                        }
+                        GeneratedField::CreatedAt => {
+                            if created_at__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("createdAt"));
+                            }
+                            created_at__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::Category => {
+                            if category__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("category"));
+                            }
+                            category__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::UserId => {
+                            if user_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("userId"));
+                            }
+                            user_id__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::RsbItemsLabel => {
+                            if rsb_items_label__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("rsbItemsLabel"));
+                            }
+                            rsb_items_label__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::LsbItems => {
+                            if lsb_items__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("lsbItems"));
+                            }
+                            lsb_items__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::RsbItems => {
+                            if rsb_items__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("rsbItems"));
+                            }
+                            rsb_items__ = Some(map.next_value()?);
+                        }
+                    }
+                }
+                Ok(GetBlogResponse {
+                    id: id__.unwrap_or_default(),
+                    name: name__.unwrap_or_default(),
+                    slug: slug__.unwrap_or_default(),
+                    description: description__,
+                    banner_id: banner_id__,
+                    banner_hex: banner_hex__,
+                    logo_id: logo_id__,
+                    logo_hex: logo_hex__,
+                    newsletter_splash_id: newsletter_splash_id__,
+                    newsletter_splash_hex: newsletter_splash_hex__,
+                    mark_light: mark_light__,
+                    mark_dark: mark_dark__,
+                    font_code: font_code__,
+                    font_primary: font_primary__,
+                    font_secondary: font_secondary__,
+                    default_theme: default_theme__,
+                    force_theme: force_theme__.unwrap_or_default(),
+                    favicon: favicon__,
+                    hide_storiny_branding: hide_storiny_branding__.unwrap_or_default(),
+                    is_homepage_large_layout: is_homepage_large_layout__.unwrap_or_default(),
+                    is_story_minimal_layout: is_story_minimal_layout__.unwrap_or_default(),
+                    seo_description: seo_description__,
+                    seo_title: seo_title__,
+                    preview_image: preview_image__,
+                    is_following: is_following__.unwrap_or_default(),
+                    is_owner: is_owner__.unwrap_or_default(),
+                    is_editor: is_editor__.unwrap_or_default(),
+                    is_writer: is_writer__.unwrap_or_default(),
+                    website_url: website_url__,
+                    public_email: public_email__,
+                    github_id: github_id__,
+                    instagram_id: instagram_id__,
+                    linkedin_id: linkedin_id__,
+                    youtube_id: youtube_id__,
+                    twitter_id: twitter_id__,
+                    twitch_id: twitch_id__,
+                    domain: domain__,
+                    created_at: created_at__.unwrap_or_default(),
+                    category: category__.unwrap_or_default(),
+                    user_id: user_id__.unwrap_or_default(),
+                    rsb_items_label: rsb_items_label__.unwrap_or_default(),
+                    lsb_items: lsb_items__.unwrap_or_default(),
+                    rsb_items: rsb_items__.unwrap_or_default(),
+                })
+            }
+        }
+        deserializer.deserialize_struct("blog_def.v1.GetBlogResponse", FIELDS, GeneratedVisitor)
+    }
+}
+impl serde::Serialize for LeftSidebarItem {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if !self.id.is_empty() {
+            len += 1;
+        }
+        if !self.name.is_empty() {
+            len += 1;
+        }
+        if self.icon.is_some() {
+            len += 1;
+        }
+        if self.priority != 0 {
+            len += 1;
+        }
+        if !self.target.is_empty() {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("blog_def.v1.LeftSidebarItem", len)?;
+        if !self.id.is_empty() {
+            struct_ser.serialize_field("id", &self.id)?;
+        }
+        if !self.name.is_empty() {
+            struct_ser.serialize_field("name", &self.name)?;
+        }
+        if let Some(v) = self.icon.as_ref() {
+            struct_ser.serialize_field("icon", v)?;
+        }
+        if self.priority != 0 {
+            struct_ser.serialize_field("priority", &self.priority)?;
+        }
+        if !self.target.is_empty() {
+            struct_ser.serialize_field("target", &self.target)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for LeftSidebarItem {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "id",
+            "name",
+            "icon",
+            "priority",
+            "target",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            Id,
+            Name,
+            Icon,
+            Priority,
+            Target,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "id" => Ok(GeneratedField::Id),
+                            "name" => Ok(GeneratedField::Name),
+                            "icon" => Ok(GeneratedField::Icon),
+                            "priority" => Ok(GeneratedField::Priority),
+                            "target" => Ok(GeneratedField::Target),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = LeftSidebarItem;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct blog_def.v1.LeftSidebarItem")
+            }
+
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<LeftSidebarItem, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut id__ = None;
+                let mut name__ = None;
+                let mut icon__ = None;
+                let mut priority__ = None;
+                let mut target__ = None;
+                while let Some(k) = map.next_key()? {
+                    match k {
+                        GeneratedField::Id => {
+                            if id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("id"));
+                            }
+                            id__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::Name => {
+                            if name__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("name"));
+                            }
+                            name__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::Icon => {
+                            if icon__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("icon"));
+                            }
+                            icon__ = map.next_value()?;
+                        }
+                        GeneratedField::Priority => {
+                            if priority__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("priority"));
+                            }
+                            priority__ = 
+                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
+                            ;
+                        }
+                        GeneratedField::Target => {
+                            if target__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("target"));
+                            }
+                            target__ = Some(map.next_value()?);
+                        }
+                    }
+                }
+                Ok(LeftSidebarItem {
+                    id: id__.unwrap_or_default(),
+                    name: name__.unwrap_or_default(),
+                    icon: icon__,
+                    priority: priority__.unwrap_or_default(),
+                    target: target__.unwrap_or_default(),
+                })
+            }
+        }
+        deserializer.deserialize_struct("blog_def.v1.LeftSidebarItem", FIELDS, GeneratedVisitor)
+    }
+}
+impl serde::Serialize for RightSidebarItem {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if !self.id.is_empty() {
+            len += 1;
+        }
+        if !self.primary_text.is_empty() {
+            len += 1;
+        }
+        if self.secondary_text.is_some() {
+            len += 1;
+        }
+        if self.icon.is_some() {
+            len += 1;
+        }
+        if self.priority != 0 {
+            len += 1;
+        }
+        if !self.target.is_empty() {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("blog_def.v1.RightSidebarItem", len)?;
+        if !self.id.is_empty() {
+            struct_ser.serialize_field("id", &self.id)?;
+        }
+        if !self.primary_text.is_empty() {
+            struct_ser.serialize_field("primaryText", &self.primary_text)?;
+        }
+        if let Some(v) = self.secondary_text.as_ref() {
+            struct_ser.serialize_field("secondaryText", v)?;
+        }
+        if let Some(v) = self.icon.as_ref() {
+            struct_ser.serialize_field("icon", v)?;
+        }
+        if self.priority != 0 {
+            struct_ser.serialize_field("priority", &self.priority)?;
+        }
+        if !self.target.is_empty() {
+            struct_ser.serialize_field("target", &self.target)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for RightSidebarItem {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "id",
+            "primary_text",
+            "primaryText",
+            "secondary_text",
+            "secondaryText",
+            "icon",
+            "priority",
+            "target",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            Id,
+            PrimaryText,
+            SecondaryText,
+            Icon,
+            Priority,
+            Target,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "id" => Ok(GeneratedField::Id),
+                            "primaryText" | "primary_text" => Ok(GeneratedField::PrimaryText),
+                            "secondaryText" | "secondary_text" => Ok(GeneratedField::SecondaryText),
+                            "icon" => Ok(GeneratedField::Icon),
+                            "priority" => Ok(GeneratedField::Priority),
+                            "target" => Ok(GeneratedField::Target),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = RightSidebarItem;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct blog_def.v1.RightSidebarItem")
+            }
+
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<RightSidebarItem, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut id__ = None;
+                let mut primary_text__ = None;
+                let mut secondary_text__ = None;
+                let mut icon__ = None;
+                let mut priority__ = None;
+                let mut target__ = None;
+                while let Some(k) = map.next_key()? {
+                    match k {
+                        GeneratedField::Id => {
+                            if id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("id"));
+                            }
+                            id__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::PrimaryText => {
+                            if primary_text__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("primaryText"));
+                            }
+                            primary_text__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::SecondaryText => {
+                            if secondary_text__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("secondaryText"));
+                            }
+                            secondary_text__ = map.next_value()?;
+                        }
+                        GeneratedField::Icon => {
+                            if icon__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("icon"));
+                            }
+                            icon__ = map.next_value()?;
+                        }
+                        GeneratedField::Priority => {
+                            if priority__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("priority"));
+                            }
+                            priority__ = 
+                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
+                            ;
+                        }
+                        GeneratedField::Target => {
+                            if target__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("target"));
+                            }
+                            target__ = Some(map.next_value()?);
+                        }
+                    }
+                }
+                Ok(RightSidebarItem {
+                    id: id__.unwrap_or_default(),
+                    primary_text: primary_text__.unwrap_or_default(),
+                    secondary_text: secondary_text__,
+                    icon: icon__,
+                    priority: priority__.unwrap_or_default(),
+                    target: target__.unwrap_or_default(),
+                })
+            }
+        }
+        deserializer.deserialize_struct("blog_def.v1.RightSidebarItem", FIELDS, GeneratedVisitor)
+    }
+}

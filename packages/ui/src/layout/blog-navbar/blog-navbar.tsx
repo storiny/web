@@ -45,6 +45,9 @@ const BlogNavbar = (props: BlogNavbarProps): React.ReactElement => {
           hex={blog.banner_hex}
           img_key={blog.banner_id}
           slot_props={{
+            fallback: {
+              style: { display: "none" }
+            },
             image: {
               className: styles["banner-img"],
               loading: "eager",
