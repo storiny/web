@@ -26,11 +26,12 @@ export const generateMetadata = async ({
       openGraph: {
         type: "article",
         siteName: "Storiny",
-        title: story_response.title,
+        title: story_response.seo_title || story_response.title,
         url: `${process.env.NEXT_PUBLIC_WEB_URL}/${
           story_response.user?.username || "story"
         }/${story_response.slug}`,
-        description: story_response.description,
+        description:
+          story_response.seo_description || story_response.description,
         // TODO: Replace with dynamic images
         images: story_response.preview_image
           ? [
@@ -47,8 +48,9 @@ export const generateMetadata = async ({
       },
       twitter: {
         card: "summary_large_image",
-        title: story_response.title,
-        description: story_response.description,
+        title: story_response.seo_title || story_response.title,
+        description:
+          story_response.seo_description || story_response.description,
         images: story_response.preview_image
           ? [get_cdn_url(story_response.preview_image, ImageSize.W_1440)]
           : undefined
