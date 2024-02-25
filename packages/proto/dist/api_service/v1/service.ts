@@ -9,7 +9,7 @@ import type {
   UntypedServiceImplementation,
 } from "@grpc/grpc-js";
 import _m0 from "protobufjs/minimal";
-import { GetBlogRequest, GetBlogResponse } from "../../blog_def/v1/def";
+import { GetBlogArchiveRequest, GetBlogArchiveResponse, GetBlogRequest, GetBlogResponse } from "../../blog_def/v1/def";
 import { GetCommentRequest, GetCommentResponse } from "../../comment_def/v1/def";
 import { GetConnectionSettingsRequest, GetConnectionSettingsResponse } from "../../connection_settings_def/v1/def";
 import { GetCredentialSettingsRequest, GetCredentialSettingsResponse } from "../../credential_settings_def/v1/def";
@@ -395,6 +395,16 @@ export const ApiServiceService = {
     responseSerialize: (value: GetBlogResponse) => Buffer.from(GetBlogResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetBlogResponse.decode(value),
   },
+  /** Returns the blog's archive data */
+  getBlogArchive: {
+    path: "/api_service.v1.ApiService/GetBlogArchive",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetBlogArchiveRequest) => Buffer.from(GetBlogArchiveRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetBlogArchiveRequest.decode(value),
+    responseSerialize: (value: GetBlogArchiveResponse) => Buffer.from(GetBlogArchiveResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetBlogArchiveResponse.decode(value),
+  },
 } as const;
 
 export interface ApiServiceServer extends UntypedServiceImplementation {
@@ -450,6 +460,8 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   createDraft: handleUnaryCall<CreateDraftRequest, CreateDraftResponse>;
   /** Returns the blog's data */
   getBlog: handleUnaryCall<GetBlogRequest, GetBlogResponse>;
+  /** Returns the blog's archive data */
+  getBlogArchive: handleUnaryCall<GetBlogArchiveRequest, GetBlogArchiveResponse>;
 }
 
 export interface ApiServiceClient extends Client {
@@ -868,6 +880,22 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetBlogResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the blog's archive data */
+  getBlogArchive(
+    request: GetBlogArchiveRequest,
+    callback: (error: ServiceError | null, response: GetBlogArchiveResponse) => void,
+  ): ClientUnaryCall;
+  getBlogArchive(
+    request: GetBlogArchiveRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetBlogArchiveResponse) => void,
+  ): ClientUnaryCall;
+  getBlogArchive(
+    request: GetBlogArchiveRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetBlogArchiveResponse) => void,
   ): ClientUnaryCall;
 }
 

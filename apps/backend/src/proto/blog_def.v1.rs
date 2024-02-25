@@ -1,4 +1,6 @@
 // @generated
+// Main blog request
+
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LeftSidebarItem {
@@ -136,5 +138,29 @@ pub struct GetBlogResponse {
     pub lsb_items: ::prost::alloc::vec::Vec<LeftSidebarItem>,
     #[prost(message, repeated, tag="43")]
     pub rsb_items: ::prost::alloc::vec::Vec<RightSidebarItem>,
+}
+// Blog archive request
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ArchiveTimeline {
+    #[prost(uint32, tag="1")]
+    pub year: u32,
+    #[prost(uint32, repeated, tag="2")]
+    pub active_months: ::prost::alloc::vec::Vec<u32>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetBlogArchiveRequest {
+    #[prost(string, tag="1")]
+    pub slug: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetBlogArchiveResponse {
+    #[prost(uint32, tag="1")]
+    pub story_count: u32,
+    #[prost(message, repeated, tag="2")]
+    pub timeline: ::prost::alloc::vec::Vec<ArchiveTimeline>,
 }
 // @@protoc_insertion_point(module)

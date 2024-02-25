@@ -93,13 +93,15 @@ export const middleware: NextMiddleware = (request) => {
   const hostname = request?.headers?.get("host");
   const native_domains = [
     "storiny.com",
-    "wwww.storiny.com",
+    "www.storiny.com",
     "api.storiny.com",
     "cdn.storiny.com",
     "realms.storiny.com",
     "sitemaps.storiny.com",
     "discovery.storiny.com",
-    "status.storiny.com"
+    "status.storiny.com",
+    "admin.storiny.com",
+    "staff.storiny.com"
   ];
 
   if (hostname && !native_domains.includes(hostname)) {

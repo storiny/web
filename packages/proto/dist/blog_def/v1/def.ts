@@ -97,6 +97,20 @@ export interface GetBlogResponse {
   rsb_items: RightSidebarItem[];
 }
 
+export interface ArchiveTimeline {
+  year: number;
+  active_months: number[];
+}
+
+export interface GetBlogArchiveRequest {
+  slug: string;
+}
+
+export interface GetBlogArchiveResponse {
+  story_count: number;
+  timeline: ArchiveTimeline[];
+}
+
 function createBaseLeftSidebarItem(): LeftSidebarItem {
   return { id: "", name: "", icon: undefined, priority: 0, target: "" };
 }
@@ -1167,6 +1181,227 @@ export const GetBlogResponse = {
     message.rsb_items_label = object.rsb_items_label ?? "";
     message.lsb_items = object.lsb_items?.map((e) => LeftSidebarItem.fromPartial(e)) || [];
     message.rsb_items = object.rsb_items?.map((e) => RightSidebarItem.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseArchiveTimeline(): ArchiveTimeline {
+  return { year: 0, active_months: [] };
+}
+
+export const ArchiveTimeline = {
+  encode(message: ArchiveTimeline, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.year !== 0) {
+      writer.uint32(8).uint32(message.year);
+    }
+    writer.uint32(18).fork();
+    for (const v of message.active_months) {
+      writer.uint32(v);
+    }
+    writer.ldelim();
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ArchiveTimeline {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseArchiveTimeline();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.year = reader.uint32();
+          continue;
+        case 2:
+          if (tag === 16) {
+            message.active_months.push(reader.uint32());
+
+            continue;
+          }
+
+          if (tag === 18) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.active_months.push(reader.uint32());
+            }
+
+            continue;
+          }
+
+          break;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ArchiveTimeline {
+    return {
+      year: isSet(object.year) ? globalThis.Number(object.year) : 0,
+      active_months: globalThis.Array.isArray(object?.active_months)
+        ? object.active_months.map((e: any) => globalThis.Number(e))
+        : [],
+    };
+  },
+
+  toJSON(message: ArchiveTimeline): unknown {
+    const obj: any = {};
+    if (message.year !== 0) {
+      obj.year = Math.round(message.year);
+    }
+    if (message.active_months?.length) {
+      obj.active_months = message.active_months.map((e) => Math.round(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ArchiveTimeline>, I>>(base?: I): ArchiveTimeline {
+    return ArchiveTimeline.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ArchiveTimeline>, I>>(object: I): ArchiveTimeline {
+    const message = createBaseArchiveTimeline();
+    message.year = object.year ?? 0;
+    message.active_months = object.active_months?.map((e) => e) || [];
+    return message;
+  },
+};
+
+function createBaseGetBlogArchiveRequest(): GetBlogArchiveRequest {
+  return { slug: "" };
+}
+
+export const GetBlogArchiveRequest = {
+  encode(message: GetBlogArchiveRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.slug !== "") {
+      writer.uint32(10).string(message.slug);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetBlogArchiveRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetBlogArchiveRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.slug = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetBlogArchiveRequest {
+    return { slug: isSet(object.slug) ? globalThis.String(object.slug) : "" };
+  },
+
+  toJSON(message: GetBlogArchiveRequest): unknown {
+    const obj: any = {};
+    if (message.slug !== "") {
+      obj.slug = message.slug;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetBlogArchiveRequest>, I>>(base?: I): GetBlogArchiveRequest {
+    return GetBlogArchiveRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetBlogArchiveRequest>, I>>(object: I): GetBlogArchiveRequest {
+    const message = createBaseGetBlogArchiveRequest();
+    message.slug = object.slug ?? "";
+    return message;
+  },
+};
+
+function createBaseGetBlogArchiveResponse(): GetBlogArchiveResponse {
+  return { story_count: 0, timeline: [] };
+}
+
+export const GetBlogArchiveResponse = {
+  encode(message: GetBlogArchiveResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.story_count !== 0) {
+      writer.uint32(8).uint32(message.story_count);
+    }
+    for (const v of message.timeline) {
+      ArchiveTimeline.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetBlogArchiveResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetBlogArchiveResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.story_count = reader.uint32();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.timeline.push(ArchiveTimeline.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetBlogArchiveResponse {
+    return {
+      story_count: isSet(object.story_count) ? globalThis.Number(object.story_count) : 0,
+      timeline: globalThis.Array.isArray(object?.timeline)
+        ? object.timeline.map((e: any) => ArchiveTimeline.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: GetBlogArchiveResponse): unknown {
+    const obj: any = {};
+    if (message.story_count !== 0) {
+      obj.story_count = Math.round(message.story_count);
+    }
+    if (message.timeline?.length) {
+      obj.timeline = message.timeline.map((e) => ArchiveTimeline.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetBlogArchiveResponse>, I>>(base?: I): GetBlogArchiveResponse {
+    return GetBlogArchiveResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetBlogArchiveResponse>, I>>(object: I): GetBlogArchiveResponse {
+    const message = createBaseGetBlogArchiveResponse();
+    message.story_count = object.story_count ?? 0;
+    message.timeline = object.timeline?.map((e) => ArchiveTimeline.fromPartial(e)) || [];
     return message;
   },
 };

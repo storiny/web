@@ -1,5 +1,6 @@
 export * from "./api";
 export * from "./asset";
+export * from "./blog";
 export * from "./comment";
 export * from "./messages";
 export * from "./reply";

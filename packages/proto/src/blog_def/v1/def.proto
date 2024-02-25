@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package blog_def.v1;
 
+// Main blog request
+
 message LeftSidebarItem {
   string id /*           */ = 1;
   string name /*         */ = 2;
@@ -78,4 +80,20 @@ message GetBlogResponse {
   string rsb_items_label /*               */ = 41;
   repeated LeftSidebarItem lsb_items /*   */ = 42;
   repeated RightSidebarItem rsb_items /*  */ = 43;
+}
+
+// Blog archive request
+
+message ArchiveTimeline {
+  uint32 year /*                  */ = 1;
+  repeated uint32 active_months /**/ = 2;
+}
+
+message GetBlogArchiveRequest {
+  string slug = 1;
+}
+
+message GetBlogArchiveResponse {
+  uint32 story_count /*               */ = 1;
+  repeated ArchiveTimeline timeline /**/ = 2;
 }

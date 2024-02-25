@@ -122,6 +122,10 @@ service ApiService {
    * Returns the blog's data
    */
   rpc GetBlog(blog_def.v1.GetBlogRequest) returns (blog_def.v1.GetBlogResponse) {}
+  /**
+   * Returns the blog's archive data
+   */
+  rpc GetBlogArchive(blog_def.v1.GetBlogArchiveRequest) returns (blog_def.v1.GetBlogArchiveResponse) {}
 }
 
 // This is necessary to generate an output file using tonic.

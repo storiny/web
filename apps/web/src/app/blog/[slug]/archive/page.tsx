@@ -1,30 +1,33 @@
 import "server-only";
 
+import { notFound as not_found } from "next/navigation";
 import React from "react";
 
-import { get_tag } from "~/common/grpc";
+import { get_blog_archive } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
-import { get_user } from "~/common/utils/get-user";
+import { is_valid_blog_slug } from "~/common/utils";
 
 import Component from "./component";
 
 const Page = async ({
-  params: { tag_name }
+  params: { slug }
 }: {
-  params: { tag_name: string };
+  params: { slug: string };
 }): Promise<React.ReactElement | undefined> => {
   try {
-    const user_id = await get_user();
-    const tag = await get_tag({
-      name: tag_name,
-      current_user_id: user_id || undefined
+    if (!is_valid_blog_slug(slug)) {
+      not_found();
+    }
+
+    const archive = await get_blog_archive({
+      slug
     });
 
-    return <Component tag={tag} />;
+    return <Component archive={archive} />;
   } catch (e) {
     handle_exception(e);
   }
 };
 
-export { generateMetadata } from "./metadata";
+export { metadata } from "./metadata";
 export default Page;
