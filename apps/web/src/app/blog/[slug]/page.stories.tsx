@@ -5,11 +5,11 @@ import React from "react";
 
 import { render_with_state } from "~/redux/mock";
 
-import BlogLayout from "./layout";
+import StorybookBlogLayout from "./layout.storybook";
 import Blog from "./page";
 
 const meta: Meta<typeof Blog> = {
-  title: "pages/blog",
+  title: "pages/blog/index",
   component: Blog,
   parameters: {
     layout: "fullscreen"
@@ -24,9 +24,9 @@ export const Default: Story = {
   decorators: [
     (Story): React.ReactElement =>
       render_with_state(
-        <BlogLayout>
+        <StorybookBlogLayout>
           <Story />
-        </BlogLayout>,
+        </StorybookBlogLayout>,
         { ignore_primitive_providers: true }
       )
   ]

@@ -1,5 +1,5 @@
 import { User } from "@storiny/types";
-import { use_blog_context } from "@storiny/web/src/app/(blog)/context";
+import { use_blog_context } from "@storiny/web/src/app/blog/[slug]/context";
 import { use_app_router } from "@storiny/web/src/common/utils";
 import clsx from "clsx";
 import NextLink from "next/link";

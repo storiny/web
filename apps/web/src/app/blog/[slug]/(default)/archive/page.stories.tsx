@@ -6,8 +6,9 @@ import React from "react";
 
 import { render_with_state } from "~/redux/mock";
 
-import BlogLayout from "../layout";
-import Tag from "./component";
+import StorybookBlogLayout from "../../layout.storybook";
+import DefaultBlogLayout from "../layout";
+import Archive from "./component";
 
 const MOCK_RESPONSE: GetBlogArchiveResponse = {
   story_count: 14,
@@ -19,11 +20,11 @@ const MOCK_RESPONSE: GetBlogArchiveResponse = {
   ]
 };
 
-const meta: Meta<typeof Tag> = {
+const meta: Meta<typeof Archive> = {
   title: "pages/blog/archive",
-  component: Tag,
+  component: Archive,
   args: {
-    tag: MOCK_RESPONSE
+    archive: MOCK_RESPONSE
   },
   parameters: {
     layout: "fullscreen"
@@ -32,15 +33,17 @@ const meta: Meta<typeof Tag> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Tag>;
+type Story = StoryObj<typeof Archive>;
 
 export const Default: Story = {
   decorators: [
     (Story): React.ReactElement =>
       render_with_state(
-        <BlogLayout>
-          <Story />
-        </BlogLayout>,
+        <StorybookBlogLayout>
+          <DefaultBlogLayout>
+            <Story />
+          </DefaultBlogLayout>
+        </StorybookBlogLayout>,
         { ignore_primitive_providers: true }
       )
   ]

@@ -1,7 +1,7 @@
 "use client";
 
 import { ImageSize } from "@storiny/shared";
-import { use_blog_context } from "@storiny/web/src/app/(blog)/context";
+import { use_blog_context } from "@storiny/web/src/app/blog/[slug]/context";
 import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
@@ -36,9 +36,10 @@ const Editors = (): React.ReactElement | null => {
     data,
     isLoading: is_loading,
     isError: is_error
-  } = use_get_blog_editors_query({ id: blog.id });
+  } = use_get_blog_editors_query({ blog_id: blog.id, page: 1 });
+  const { items = [] } = data || {};
 
-  if (is_error || (!is_loading && !data?.length)) {
+  if (is_error || (!is_loading && !items.length)) {
     return null;
   }
 
@@ -50,8 +51,8 @@ const Editors = (): React.ReactElement | null => {
         ? [...Array(5)].map((_, index) => (
             <UserWithActionSkeleton key={index} />
           ))
-        : data?.map((user) => <UserWithAction key={user.id} user={user} />)}
-      {data && (
+        : items.map((user) => <UserWithAction key={user.id} user={user} />)}
+      {!!items.length && (
         <div className={rsb_styles["show-more-wrapper"]}>
           <Link
             className={clsx(

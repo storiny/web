@@ -1,7 +1,7 @@
 "use client";
 
 import { ImageSize } from "@storiny/shared";
-import { use_blog_context } from "@storiny/web/src/app/(blog)/context";
+import { use_blog_context } from "@storiny/web/src/app/blog/[slug]/context";
 import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
