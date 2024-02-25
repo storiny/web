@@ -15,13 +15,11 @@ import Option from "~/components/option";
 import Select from "~/components/select";
 import ErrorState from "~/entities/error-state";
 import { use_debounce } from "~/hooks/use-debounce";
-import { use_media_query } from "~/hooks/use-media-query";
 import SearchIcon from "~/icons/search";
 import {
   get_query_error_type,
   use_get_blog_feed_query
 } from "~/redux/features";
-import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
@@ -99,7 +97,6 @@ const PageHeader = ({
 
 const Page = (): React.ReactElement => {
   const blog = use_blog_context();
-  const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
   const [sort, set_sort] = React.useState<BlogFeedSortValue>("recent");
   const [query, set_query] = React.useState<string>("");
   const [page, set_page] = React.useState<number>(1);
@@ -193,7 +190,7 @@ const Page = (): React.ReactElement => {
         className={clsx(styles.content, blog.banner_id && styles["has-banner"])}
         ref={container_ref}
       >
-        {is_smaller_than_tablet && <BlogContent />}
+        <BlogContent />
         <PageHeader
           disabled={!query && !items.length && !is_fetching}
           has_banner={Boolean(blog.banner_id)}

@@ -1,11 +1,13 @@
 import "server-only";
 
+import { ImageSize } from "@storiny/shared";
 import { clsx } from "clsx";
 import { notFound as not_found } from "next/dist/client/components/not-found";
 import { headers } from "next/headers";
 import React from "react";
+import { Organization, WithContext } from "schema-dts";
 
-import { get_blog } from "~/common/grpc";
+import { get_blog, GetBlogResponse } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
 import { is_valid_blog_slug } from "~/common/utils";
 import { get_user } from "~/common/utils/get-user";
@@ -14,9 +16,30 @@ import BlogNavbar from "~/layout/blog-navbar";
 import BlogRightSidebar from "~/layout/blog-right-sidebar";
 import SplashScreen from "~/layout/splash-screen";
 import css from "~/theme/main.module.scss";
+import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import CriticalFonts from "../../fonts/critical";
 import BlogContext from "./context";
+
+const generate_json_ld = (
+  blog: GetBlogResponse
+): WithContext<Organization> => ({
+  /* eslint-disable prefer-snakecase/prefer-snakecase */
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: blog.name,
+  description: blog.description,
+  url: `https://${blog.domain ?? `${blog.slug}.storiny.com`}`,
+  logo: blog.logo_id
+    ? {
+        "@type": "ImageObject",
+        height: 128 as unknown as string,
+        url: get_cdn_url(blog.logo_id, ImageSize.W_128),
+        width: 128 as unknown as string
+      }
+    : undefined
+  /* eslint-enable prefer-snakecase/prefer-snakecase */
+});
 
 const BlogLayout = async ({
   children,
@@ -37,6 +60,7 @@ const BlogLayout = async ({
     });
 
     const nonce = headers().get("x-nonce") ?? undefined;
+    const json_ld = generate_json_ld(blog);
 
     return (
       <React.Fragment>
@@ -167,7 +191,13 @@ if (typeof document !== "undefined") {
           >
             <BlogNavbar />
             <BlogLeftSidebar />
-            <main data-root={"true"}>{children}</main>
+            <main data-root={"true"}>
+              <script
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(json_ld) }}
+                type="application/ld+json"
+              />
+              {children}
+            </main>
             <BlogRightSidebar />
             <SplashScreen />
           </div>

@@ -1,4 +1,4 @@
-import { use_blog_context } from "@storiny/web/src/app/(blog)/context";
+import { use_blog_context } from "@storiny/web/src/app/blog/[slug]/context";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";

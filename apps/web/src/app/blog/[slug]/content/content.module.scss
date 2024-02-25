@@ -1,6 +1,12 @@
+@use "breakpoints";
+
 .content {
   padding-top: 8px;
   gap: 24px;
+
+  @include breakpoints.media(">=tablet") {
+    display: none;
+  }
 }
 
 .details {
