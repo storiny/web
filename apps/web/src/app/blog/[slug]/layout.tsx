@@ -1,7 +1,6 @@
 import "server-only";
 
 import { ImageSize } from "@storiny/shared";
-import { clsx } from "clsx";
 import { notFound as not_found } from "next/dist/client/components/not-found";
 import { headers } from "next/headers";
 import React from "react";
@@ -11,7 +10,6 @@ import { get_blog, GetBlogResponse } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
 import { is_valid_blog_slug } from "~/common/utils";
 import { get_user } from "~/common/utils/get-user";
-import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import CriticalFonts from "../../fonts/critical";
@@ -178,19 +176,11 @@ if (typeof document !== "undefined") {
                   : null
           }}
         >
-          <div
-            className={clsx(
-              css["grid"],
-              css["grid-container"],
-              css["no-sidenav"]
-            )}
-          >
-            <script
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(json_ld) }}
-              type="application/ld+json"
-            />
-            {children}
-          </div>
+          <script
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(json_ld) }}
+            type="application/ld+json"
+          />
+          {children}
         </BlogContext.Provider>
       </React.Fragment>
     );

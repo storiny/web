@@ -3,6 +3,13 @@ import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "blog_def.v1";
 
+export interface BareBlog {
+  id: string;
+  slug: string;
+  domain?: string | undefined;
+  name: string;
+}
+
 export interface LeftSidebarItem {
   id: string;
   name: string;
@@ -110,6 +117,110 @@ export interface GetBlogArchiveResponse {
   story_count: number;
   timeline: ArchiveTimeline[];
 }
+
+function createBaseBareBlog(): BareBlog {
+  return { id: "", slug: "", domain: undefined, name: "" };
+}
+
+export const BareBlog = {
+  encode(message: BareBlog, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.slug !== "") {
+      writer.uint32(18).string(message.slug);
+    }
+    if (message.domain !== undefined) {
+      writer.uint32(26).string(message.domain);
+    }
+    if (message.name !== "") {
+      writer.uint32(34).string(message.name);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): BareBlog {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseBareBlog();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.slug = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.domain = reader.string();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): BareBlog {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      slug: isSet(object.slug) ? globalThis.String(object.slug) : "",
+      domain: isSet(object.domain) ? globalThis.String(object.domain) : undefined,
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
+    };
+  },
+
+  toJSON(message: BareBlog): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.slug !== "") {
+      obj.slug = message.slug;
+    }
+    if (message.domain !== undefined) {
+      obj.domain = message.domain;
+    }
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<BareBlog>, I>>(base?: I): BareBlog {
+    return BareBlog.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<BareBlog>, I>>(object: I): BareBlog {
+    const message = createBaseBareBlog();
+    message.id = object.id ?? "";
+    message.slug = object.slug ?? "";
+    message.domain = object.domain ?? undefined;
+    message.name = object.name ?? "";
+    return message;
+  },
+};
 
 function createBaseLeftSidebarItem(): LeftSidebarItem {
   return { id: "", name: "", icon: undefined, priority: 0, target: "" };

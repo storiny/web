@@ -1,4 +1,18 @@
 // @generated
+// Blog
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct BareBlog {
+    #[prost(string, tag="1")]
+    pub id: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub slug: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="3")]
+    pub domain: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, tag="4")]
+    pub name: ::prost::alloc::string::String,
+}
 // Main blog request
 
 #[allow(clippy::derive_partial_eq_without_eq)]

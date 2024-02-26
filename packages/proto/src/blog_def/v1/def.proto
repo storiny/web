@@ -2,6 +2,15 @@ syntax = "proto3";
 
 package blog_def.v1;
 
+// Blog
+
+message BareBlog {
+  string id /*             */ = 1;
+  string slug /*           */ = 2;
+  optional string domain /**/ = 3;
+  string name /*           */ = 4;
+}
+
 // Main blog request
 
 message LeftSidebarItem {

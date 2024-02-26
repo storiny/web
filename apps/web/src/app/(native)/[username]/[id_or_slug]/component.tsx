@@ -17,7 +17,7 @@ interface Props {
   story: Story;
 }
 
-const CC_LICENSE_DOC_MAP: Record<
+export const CC_LICENSE_DOC_MAP: Record<
   Exclude<
     StoryLicense,
     | typeof StoryLicense.UNSPECIFIED

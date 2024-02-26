@@ -173,13 +173,15 @@ pub struct GetStoryResponse {
     pub contributors: ::prost::alloc::vec::Vec<super::super::user_def::v1::BareUser>,
     #[prost(message, repeated, tag="31")]
     pub tags: ::prost::alloc::vec::Vec<super::super::tag_def::v1::Tag>,
+    #[prost(message, optional, tag="32")]
+    pub blog: ::core::option::Option<super::super::blog_def::v1::BareBlog>,
     /// User specific props
-    #[prost(bool, tag="32")]
-    pub is_bookmarked: bool,
     #[prost(bool, tag="33")]
+    pub is_bookmarked: bool,
+    #[prost(bool, tag="34")]
     pub is_liked: bool,
     /// Reading session token
-    #[prost(string, tag="34")]
+    #[prost(string, tag="35")]
     pub reading_session_token: ::prost::alloc::string::String,
 }
 // Story metadata request

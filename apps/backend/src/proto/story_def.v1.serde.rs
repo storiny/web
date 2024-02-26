@@ -1896,6 +1896,9 @@ impl serde::Serialize for GetStoryResponse {
         if !self.tags.is_empty() {
             len += 1;
         }
+        if self.blog.is_some() {
+            len += 1;
+        }
         if self.is_bookmarked {
             len += 1;
         }
@@ -2005,6 +2008,9 @@ impl serde::Serialize for GetStoryResponse {
         if !self.tags.is_empty() {
             struct_ser.serialize_field("tags", &self.tags)?;
         }
+        if let Some(v) = self.blog.as_ref() {
+            struct_ser.serialize_field("blog", v)?;
+        }
         if self.is_bookmarked {
             struct_ser.serialize_field("isBookmarked", &self.is_bookmarked)?;
         }
@@ -2076,6 +2082,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
             "user",
             "contributors",
             "tags",
+            "blog",
             "is_bookmarked",
             "isBookmarked",
             "is_liked",
@@ -2117,6 +2124,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
             User,
             Contributors,
             Tags,
+            Blog,
             IsBookmarked,
             IsLiked,
             ReadingSessionToken,
@@ -2172,6 +2180,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                             "user" => Ok(GeneratedField::User),
                             "contributors" => Ok(GeneratedField::Contributors),
                             "tags" => Ok(GeneratedField::Tags),
+                            "blog" => Ok(GeneratedField::Blog),
                             "isBookmarked" | "is_bookmarked" => Ok(GeneratedField::IsBookmarked),
                             "isLiked" | "is_liked" => Ok(GeneratedField::IsLiked),
                             "readingSessionToken" | "reading_session_token" => Ok(GeneratedField::ReadingSessionToken),
@@ -2225,6 +2234,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                 let mut user__ = None;
                 let mut contributors__ = None;
                 let mut tags__ = None;
+                let mut blog__ = None;
                 let mut is_bookmarked__ = None;
                 let mut is_liked__ = None;
                 let mut reading_session_token__ = None;
@@ -2424,6 +2434,12 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                             }
                             tags__ = Some(map.next_value()?);
                         }
+                        GeneratedField::Blog => {
+                            if blog__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("blog"));
+                            }
+                            blog__ = map.next_value()?;
+                        }
                         GeneratedField::IsBookmarked => {
                             if is_bookmarked__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isBookmarked"));
@@ -2476,6 +2492,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryResponse {
                     user: user__,
                     contributors: contributors__.unwrap_or_default(),
                     tags: tags__.unwrap_or_default(),
+                    blog: blog__,
                     is_bookmarked: is_bookmarked__.unwrap_or_default(),
                     is_liked: is_liked__.unwrap_or_default(),
                     reading_session_token: reading_session_token__.unwrap_or_default(),

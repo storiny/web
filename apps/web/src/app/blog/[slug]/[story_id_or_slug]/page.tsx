@@ -6,32 +6,32 @@ import React from "react";
 
 import { get_story } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
+import { is_valid_blog_slug } from "~/common/utils";
 import { get_doc_by_key } from "~/common/utils/get-doc-by-key";
 import { get_user } from "~/common/utils/get-user";
-import { is_valid_username } from "~/common/utils/is-valid-username";
 
 import Component from "./component";
 import RestrictedStory from "./restricted";
 
 const Page = async ({
-  params: { id_or_slug, username }
+  params: { story_id_or_slug, slug }
 }: {
-  params: { id_or_slug: string; username: string };
+  params: { slug: string; story_id_or_slug: string };
 }): Promise<React.ReactElement | undefined> => {
   try {
-    // Links to the story can be in the form of `/story/story_id`
-    if (!is_valid_username(username) && username !== "story") {
+    if (!is_valid_blog_slug(slug)) {
       not_found();
     }
 
     const user_id = await get_user();
     const story_response = await get_story({
-      id_or_slug: id_or_slug,
+      id_or_slug: story_id_or_slug,
       current_user_id: user_id || undefined
     });
 
     if (
       !story_response.user || // Sanity
+      !story_response.blog || // Story is not published in a blog
       (typeof story_response.published_at === "undefined" &&
         typeof story_response.first_published_at === "undefined") || // Story was never published
       typeof story_response.deleted_at !== "undefined" // Delete story
@@ -49,21 +49,29 @@ const Page = async ({
       );
     }
 
-    // Redirect if the username is incorrect
-    if (story_response.user.username !== username) {
-      redirect(`/${story_response.user.username}/${story_response.slug}`);
+    // Redirect if the blog does not match
+    if (
+      story_response.blog.domain
+        ? story_response.blog.domain !== slug
+        : story_response.blog.slug !== slug
+    ) {
+      redirect(
+        `https://${
+          story_response.blog.domain ??
+          `${story_response.blog.slug}.storiny.com`
+        }/${story_response.slug}`
+      );
     }
 
-    if (!story_response.user.is_self) {
-      if (story_response.user.is_private && !story_response.user.is_friend) {
-        not_found(); // Private story
-      } else if (story_response.user.is_blocked_by_user) {
-        story_response.user.rendered_bio = ""; // Hide bio
+    if (
+      !story_response.user.is_self &&
+      story_response.user.is_blocked_by_user
+    ) {
+      story_response.user.rendered_bio = ""; // Hide bio
 
-        return (
-          <RestrictedStory type={"user-blocked"} user={story_response.user} />
-        );
-      }
+      return (
+        <RestrictedStory type={"user-blocked"} user={story_response.user} />
+      );
     }
 
     // Uint8Array needs to be converted into an untyped array so that it can be
