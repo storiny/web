@@ -1,0 +1,7 @@
+@use "breakpoints";
+
+@include breakpoints.media("<tablet") {
+  .page-title {
+    display: none;
+  }
+}

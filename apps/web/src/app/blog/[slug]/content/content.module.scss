@@ -25,6 +25,7 @@
   border-top: 1px solid var(--divider);
   margin-bottom: 12px; // Padding for next element
   margin-inline: var(--grid-compensation);
+  box-shadow: 0 1px 0 0 var(--divider);
 }
 
 .tabs-list {

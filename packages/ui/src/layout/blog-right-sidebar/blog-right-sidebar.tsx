@@ -46,7 +46,9 @@ const Editors = (): React.ReactElement | null => {
         ? [...Array(5)].map((_, index) => (
             <UserWithActionSkeleton key={index} />
           ))
-        : items.map((user) => <UserWithAction key={user.id} user={user} />)}
+        : items
+            .slice(0, 5)
+            .map((user) => <UserWithAction key={user.id} user={user} />)}
       {!!items.length && (
         <div className={rsb_styles["show-more-wrapper"]}>
           <Link
@@ -70,6 +72,7 @@ const Editors = (): React.ReactElement | null => {
 const BlogRightSidebar = ({
   className,
   is_homepage,
+  hide_editors,
   ...rest
 }: BlogRightSidebarProps): React.ReactElement | null => {
   const blog = use_blog_context();
@@ -146,7 +149,7 @@ const BlogRightSidebar = ({
           ))}
         </>
       )}
-      <Editors />
+      {!hide_editors && <Editors />}
     </RightSidebar>
   );
 };

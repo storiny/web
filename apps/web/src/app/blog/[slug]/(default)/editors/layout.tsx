@@ -4,7 +4,7 @@ import BlogRightSidebar from "~/layout/blog-right-sidebar";
 
 import BlogContent from "../../content";
 
-const BlogDefaultRightSidebarLayout = ({
+const BlogEditorsLayout = ({
   children
 }: {
   children: React.ReactNode;
@@ -14,8 +14,9 @@ const BlogDefaultRightSidebarLayout = ({
       <BlogContent />
       {children}
     </main>
-    <BlogRightSidebar />
+    <BlogRightSidebar hide_editors />
   </React.Fragment>
 );
 
-export default BlogDefaultRightSidebarLayout;
+export { metadata } from "./metadata";
+export default BlogEditorsLayout;
