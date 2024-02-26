@@ -54,7 +54,7 @@ const BasicFeatures = (): React.ReactElement => (
       </Typography>
       <Typography className={css["flex-col"]} scale={"xl2"}>
         <span>$0</span>
-        <Typography as={"span"} className={css["t-medium"]} color={"minor"}>
+        <Typography as={"span"} color={"minor"} weight={"medium"}>
           per month
         </Typography>
       </Typography>

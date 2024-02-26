@@ -65,7 +65,7 @@ const FollowingList = ({
         Following list
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         Choose who can view the list of users you follow.
       </Typography>
       <Spacer orientation={"vertical"} />

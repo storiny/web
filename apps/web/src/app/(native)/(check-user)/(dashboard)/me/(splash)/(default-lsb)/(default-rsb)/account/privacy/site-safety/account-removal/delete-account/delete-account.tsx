@@ -29,7 +29,7 @@ const DeleteAccountModal = ({
 }): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         {deleted
           ? "Your account has been deleted and you have been logged out."
           : "To delete your account, you need to confirm your password. If you change your mind, you can recover your account by logging back in within 30 days of the deletion request."}

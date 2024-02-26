@@ -38,7 +38,7 @@ const AnchorTab = ({
 
 const TermsGroup = (): React.ReactElement => (
   <div className={clsx(css["flex-col"], styles["tabs-group"])}>
-    <Typography className={css["t-bold"]}>Storiny Terms</Typography>
+    <Typography weight={"bold"}>Storiny Terms</Typography>
     <div className={clsx(css["flex-col"], styles["tabs-group-container"])}>
       <AnchorTab value={"terms/tos"}>Terms of Service</AnchorTab>
       <AnchorTab value={"terms/community-guidelines"}>
@@ -52,7 +52,7 @@ const TermsGroup = (): React.ReactElement => (
 
 const PoliciesGroup = (): React.ReactElement => (
   <div className={clsx(css["flex-col"], styles["tabs-group"])}>
-    <Typography className={css["t-bold"]}>Storiny Policies</Typography>
+    <Typography weight={"bold"}>Storiny Policies</Typography>
     <div className={clsx(css["flex-col"], styles["tabs-group-container"])}>
       <AnchorTab value={"policies/privacy"}>Privacy Policy</AnchorTab>
       <AnchorTab value={"policies/username"}>Username Policy</AnchorTab>
@@ -73,7 +73,7 @@ const PoliciesGroup = (): React.ReactElement => (
 
 const AcceptableUsePoliciesGroup = (): React.ReactElement => (
   <div className={clsx(css["flex-col"], styles["tabs-group"])}>
-    <Typography className={css["t-bold"]}>Acceptable Use Policies</Typography>
+    <Typography weight={"bold"}>Acceptable Use Policies</Typography>
     <div className={clsx(css["flex-col"], styles["tabs-group-container"])}>
       <AnchorTab value={"use-policies/general"}>General</AnchorTab>
       <AnchorTab value={"use-policies/bullying"}>
@@ -109,7 +109,7 @@ const AcceptableUsePoliciesGroup = (): React.ReactElement => (
 
 const MiscellaneousGroup = (): React.ReactElement => (
   <div className={clsx(css["flex-col"], styles["tabs-group"])}>
-    <Typography className={css["t-bold"]}>Miscellaneous</Typography>
+    <Typography weight={"bold"}>Miscellaneous</Typography>
     <div className={clsx(css["flex-col"], styles["tabs-group-container"])}>
       <AnchorTab value={"miscellaneous/acknowledgements"}>
         Acknowledgements

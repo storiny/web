@@ -111,7 +111,8 @@ const RecoveryCodesModal = (): React.ReactElement => {
           style={{ minHeight: "96px" }}
         >
           <Typography
-            className={clsx(css["t-minor"], css["t-center"])}
+            className={css["t-center"]}
+            color={"minor"}
             level={"body2"}
           >
             {error}
@@ -120,7 +121,7 @@ const RecoveryCodesModal = (): React.ReactElement => {
       ) : (
         <React.Fragment>
           <Description asChild>
-            <Typography className={css["t-minor"]} level={"body2"}>
+            <Typography color={"minor"} level={"body2"}>
               Recovery codes can be used to access your account if you lose
               access to your device and cannot receive two-factor authentication
               codes. They are just as sensitive as your password, so be sure to
@@ -187,7 +188,7 @@ const RecoveryCodesModal = (): React.ReactElement => {
             </div>
           </div>
           <Spacer orientation={"vertical"} size={3} />
-          <Typography className={css["t-minor"]} level={"body2"}>
+          <Typography color={"minor"} level={"body2"}>
             Each of these codes can only be used once, and the ones that have
             been used are crossed out. When you generate new recovery codes, be
             sure to save them because the older ones will no longer work.

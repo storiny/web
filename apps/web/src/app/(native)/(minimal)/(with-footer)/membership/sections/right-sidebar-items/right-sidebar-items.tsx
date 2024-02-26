@@ -35,20 +35,16 @@ const Preview = (): React.ReactElement => (
       <div className={styles.divider}>
         <Divider />
       </div>
-      <Typography className={css["t-medium"]} color={"minor"} level={"body2"}>
+      <Typography color={"minor"} level={"body2"} weight={"medium"}>
         Get merchandise
       </Typography>
       <div className={clsx(css.flex, styles.item)}>
         <span className={styles["item-icon"]}>🧦</span>
         <div className={css["flex-col"]}>
-          <Typography className={css["t-medium"]} level={"body2"}>
+          <Typography level={"body2"} weight={"medium"}>
             Socks
           </Typography>
-          <Typography
-            className={css["t-medium"]}
-            color={"minor"}
-            level={"body3"}
-          >
+          <Typography color={"minor"} level={"body3"} weight={"medium"}>
             $19
           </Typography>
         </div>
@@ -56,14 +52,10 @@ const Preview = (): React.ReactElement => (
       <div className={clsx(css.flex, styles.item)}>
         <span className={styles["item-icon"]}>🔖</span>
         <div className={css["flex-col"]}>
-          <Typography className={css["t-medium"]} level={"body2"}>
+          <Typography level={"body2"} weight={"medium"}>
             Bookmark
           </Typography>
-          <Typography
-            className={css["t-medium"]}
-            color={"minor"}
-            level={"body3"}
-          >
+          <Typography color={"minor"} level={"body3"} weight={"medium"}>
             $3
           </Typography>
         </div>
@@ -71,14 +63,10 @@ const Preview = (): React.ReactElement => (
       <div className={clsx(css.flex, styles.item)}>
         <span className={styles["item-icon"]}>👜</span>
         <div className={css["flex-col"]}>
-          <Typography className={css["t-medium"]} level={"body2"}>
+          <Typography level={"body2"} weight={"medium"}>
             Handbag
           </Typography>
-          <Typography
-            className={css["t-medium"]}
-            color={"minor"}
-            level={"body3"}
-          >
+          <Typography color={"minor"} level={"body3"} weight={"medium"}>
             $120
           </Typography>
         </div>

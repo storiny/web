@@ -18,7 +18,7 @@ const CredentialsPasswordSettings = (
         Password
       </Typography>
       <Spacer orientation={"vertical"} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         {has_password
           ? "Changing your password will log you out of all the devices that you have been logged into, including this device, and you will need to log in to them again."
           : "You have signed up through one of our social login providers. We highly recommend that you add a password to your account. This will allow you to log in using both your e-mail and password, and your social account."}

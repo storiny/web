@@ -21,7 +21,7 @@ const Page = (): React.ReactElement => {
         Token expired
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         This token has expired. Kindly{" "}
         <Link
           href={"#"}

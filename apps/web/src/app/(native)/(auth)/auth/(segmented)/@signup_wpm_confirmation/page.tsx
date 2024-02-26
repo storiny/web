@@ -20,7 +20,7 @@ const Page = (): React.ReactElement => {
         Let&apos;s determine your reading speed
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         After pressing the &quot;Start&quot; button, you will be presented with
         a piece of writing. Please read it at your normal reading pace and press
         the &quot;Done&quot; button when you have finished. You can also

@@ -11,10 +11,6 @@ import { get_blog, GetBlogResponse } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
 import { is_valid_blog_slug } from "~/common/utils";
 import { get_user } from "~/common/utils/get-user";
-import BlogLeftSidebar from "~/layout/blog-left-sidebar";
-import BlogNavbar from "~/layout/blog-navbar";
-import BlogRightSidebar from "~/layout/blog-right-sidebar";
-import SplashScreen from "~/layout/splash-screen";
 import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
@@ -189,17 +185,11 @@ if (typeof document !== "undefined") {
               css["no-sidenav"]
             )}
           >
-            <BlogNavbar />
-            <BlogLeftSidebar />
-            <main data-root={"true"}>
-              <script
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(json_ld) }}
-                type="application/ld+json"
-              />
-              {children}
-            </main>
-            <BlogRightSidebar />
-            <SplashScreen />
+            <script
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(json_ld) }}
+              type="application/ld+json"
+            />
+            {children}
           </div>
         </BlogContext.Provider>
       </React.Fragment>

@@ -218,7 +218,7 @@ const IconColor = (): React.ReactElement => (
         alt={""}
         src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/branding/icon/overlay`}
       />
-      <Typography as={"figcaption"} className={css["t-minor"]} level={"body2"}>
+      <Typography as={"figcaption"} color={"minor"} level={"body2"}>
         The Storiny icon being overlaid on top of an image. Image credit:{" "}
         <Link
           href={"https://unsplash.com/photos/IxnPudNyaz0?utm_source=storiny"}
@@ -277,7 +277,7 @@ const FigureWithCaption = ({
       data-invert-filter={""}
       src={`${process.env.NEXT_PUBLIC_CDN_URL}/${src}`}
     />
-    <Typography as={"figcaption"} className={css["t-minor"]} level={"body2"}>
+    <Typography as={"figcaption"} color={"minor"} level={"body2"}>
       {caption}
     </Typography>
   </figure>

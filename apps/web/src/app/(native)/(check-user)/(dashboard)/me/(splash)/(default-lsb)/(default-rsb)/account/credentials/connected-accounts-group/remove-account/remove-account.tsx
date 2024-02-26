@@ -26,7 +26,7 @@ const RemoveAccountModal = ({
 }: Pick<RemoveAccountProps, "vendor">): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         This will remove your {vendor} account from your Storiny account, and
         you will no longer be able to sign in to Storiny with your {vendor}
         account unless you add it again.

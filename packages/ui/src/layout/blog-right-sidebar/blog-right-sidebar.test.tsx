@@ -1,5 +1,5 @@
 import { axe } from "@storiny/test-utils";
-import BlogContext from "@storiny/web/src/app/(blog)/context";
+import BlogContext from "@storiny/web/src/app/blog/[slug]/context";
 import { screen } from "@testing-library/react";
 import React from "react";
 

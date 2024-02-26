@@ -292,10 +292,7 @@ const TextStyle = ({
   disabled?: boolean;
 }): React.ReactElement => (
   <div className={css["flex-col"]}>
-    <Typography
-      className={clsx(css["t-minor"], css["t-medium"])}
-      level={"body2"}
-    >
+    <Typography color={"minor"} level={"body2"} weight={"medium"}>
       Text style
     </Typography>
     <Spacer orientation={"vertical"} size={2} />

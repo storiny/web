@@ -104,15 +104,10 @@ const LoginAccordion = (props: LoginAccordionProps): React.ReactElement => {
             {DEVICE_TYPE_ICON_MAP[login.device?.type ?? DeviceType.UNKNOWN]}
             <Spacer size={2} />
             <span className={clsx(css["flex-col"], styles.details)}>
-              <Typography as={"span"} className={css["t-medium"]} ellipsis>
+              <Typography as={"span"} ellipsis weight={"medium"}>
                 {login.device?.display_name || "Unknown device"}
               </Typography>
-              <Typography
-                as={"span"}
-                className={css["t-minor"]}
-                ellipsis
-                level={"body2"}
-              >
+              <Typography as={"span"} color={"minor"} ellipsis level={"body2"}>
                 {login.is_active ? (
                   <React.Fragment>
                     <span
@@ -152,7 +147,7 @@ const LoginAccordion = (props: LoginAccordionProps): React.ReactElement => {
             ) : (
               <AspectRatio className={css["full-w"]} ratio={2.85}>
                 <div className={css["flex-center"]}>
-                  <Typography className={css["t-minor"]} level={"body2"}>
+                  <Typography color={"minor"} level={"body2"}>
                     Unknown location
                   </Typography>
                 </div>

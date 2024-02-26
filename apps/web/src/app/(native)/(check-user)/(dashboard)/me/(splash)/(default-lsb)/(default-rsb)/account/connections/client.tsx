@@ -14,7 +14,7 @@ import { DateFormat, format_date } from "~/utils/format-date";
 import {
   PROVIDER_DISPLAY_NAME_MAP,
   PROVIDER_ICON_MAP
-} from "../../../../../../../../providers";
+} from "../../../../../../../../../providers";
 import DashboardGroup from "../../../dashboard-group";
 import DashboardTitle from "../../../dashboard-title";
 import DashboardWrapper from "../../../dashboard-wrapper";
@@ -59,14 +59,14 @@ const ConnectionItem = ({
               {connection.display_name}
             </Link>
           ) : (
-            <Typography className={css["t-medium"]}>
+            <Typography weight={"medium"}>
               {PROVIDER_DISPLAY_NAME_MAP[provider]}
             </Typography>
           )}
           {connection ? (
             <NoSsr>
               <Typography
-                className={css["t-minor"]}
+                color={"minor"}
                 ellipsis
                 level={"body2"}
                 title={format_date(connection.created_at, DateFormat.STANDARD)}
@@ -77,7 +77,7 @@ const ConnectionItem = ({
               </Typography>
             </NoSsr>
           ) : (
-            <Typography className={css["t-minor"]} level={"body2"}>
+            <Typography color={"minor"} level={"body2"}>
               Not connected
             </Typography>
           )}
@@ -102,7 +102,7 @@ const ConnectionSettingsClient = ({
     <DashboardTitle>Connections</DashboardTitle>
     <DashboardWrapper>
       <DashboardGroup>
-        <Typography className={css["t-minor"]} level={"body2"}>
+        <Typography color={"minor"} level={"body2"}>
           Link your social media accounts to display them on your public
           profile. Data provided by your selected provider is used for display
           purposes only and is never shared outside of Storiny. Read our{" "}

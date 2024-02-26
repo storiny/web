@@ -1,6 +1,6 @@
 // noinspection JSUnusedGlobalSymbols
 
-import BlogContext from "@storiny/web/src/app/(blog)/context";
+import BlogContext from "@storiny/web/src/app/blog/[slug]/context";
 import type { Meta, StoryObj } from "@storybook/react";
 import clsx from "clsx";
 import React from "react";

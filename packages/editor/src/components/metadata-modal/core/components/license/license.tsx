@@ -77,7 +77,7 @@ const LicenseTab = (): React.ReactElement => {
   const license = form.watch("license");
   return (
     <React.Fragment>
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         Licensing your story enables you to manage and limit the usage of your
         content by others. Learn more about licensing your story.
       </Typography>

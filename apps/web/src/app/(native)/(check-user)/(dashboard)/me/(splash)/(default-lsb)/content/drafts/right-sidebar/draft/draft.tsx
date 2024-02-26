@@ -62,10 +62,7 @@ const Draft = (props: DraftProps): React.ReactElement => {
           {latest_draft.title}
         </Link>
         <footer className={css["flex"]}>
-          <Typography
-            className={clsx(css["t-minor"], css["t-medium"])}
-            level={"body3"}
-          >
+          <Typography color={"minor"} level={"body3"} weight={"medium"}>
             {abbreviate_number(latest_draft.word_count)} words{" "}
             <span className={css["t-muted"]}>&bull;</span> Edited{" "}
             <DateTime

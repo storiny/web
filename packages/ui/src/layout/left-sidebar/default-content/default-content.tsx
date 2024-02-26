@@ -186,7 +186,7 @@ const LeftSidebarDefaultContent = (): React.ReactElement => {
         </Button>
       ) : (
         <>
-          <Typography className={css["t-minor"]} level={"body3"}>
+          <Typography color={"minor"} level={"body3"}>
             Join Storiny to catch up on the latest ideas from your favorite
             writers.
           </Typography>

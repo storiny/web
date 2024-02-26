@@ -23,8 +23,8 @@ import {
 import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
-import BlogContent from "./content";
-import { use_blog_context } from "./context";
+import BlogContent from "../content";
+import { use_blog_context } from "../context";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {

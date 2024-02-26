@@ -47,14 +47,11 @@ const Writer = ({ writer }: { writer: User }): React.ReactElement => (
       size={"lg"}
     />
     <Typography
-      className={clsx(css["t-bold"], css["flex-col"], css["flex-center"])}
+      className={clsx(css["flex-col"], css["flex-center"])}
+      weight={"bold"}
     >
       <span className={css["ellipsis"]}>{writer.name}</span>
-      <Typography
-        className={clsx(css["t-medium"], css["t-minor"])}
-        ellipsis
-        level={"body2"}
-      >
+      <Typography color={"minor"} ellipsis level={"body2"} weight={"medium"}>
         {abbreviate_number(writer.follower_count)}{" "}
         {writer.follower_count === 1 ? "follower" : "followers"}
       </Typography>
@@ -95,7 +92,7 @@ const WritersPreview = ({
           loading && styles.loading
         )}
       >
-        <Typography className={css["t-medium"]} level={"body2"}>
+        <Typography level={"body2"} weight={"medium"}>
           Popular writers in {normalized_category}
         </Typography>
         <div className={styles["writers-list"]} key={String(loading)}>

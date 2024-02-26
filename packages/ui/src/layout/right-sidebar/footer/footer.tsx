@@ -43,7 +43,8 @@ const RightSidebarFooter = ({
     </Link>
     <Typography
       as={"span"}
-      className={clsx(css["t-muted"], styles.copyright)}
+      className={styles.copyright}
+      color={"muted"}
       level={"body3"}
     >
       &copy; {new Date().getFullYear()} Storiny

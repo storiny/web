@@ -8,13 +8,10 @@ import css from "~/theme/main.module.scss";
 
 const ModerationMutesRightSidebarContent = (): React.ReactElement => (
   <React.Fragment>
-    <Typography
-      className={clsx(css["t-medium"], css["t-minor"])}
-      level={"body2"}
-    >
+    <Typography color={"minor"} level={"body2"} weight={"medium"}>
       About muted accounts
     </Typography>
-    <Typography className={css["t-minor"]} level={"body2"}>
+    <Typography color={"minor"} level={"body2"}>
       When you mute someone, their stories will not show up in your home feed,
       and you will not receive any notifications from them.{" "}
       <Link

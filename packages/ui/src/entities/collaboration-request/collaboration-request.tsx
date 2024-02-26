@@ -118,10 +118,10 @@ const CollaborationRequest = (
           />
         )}
         <div className={css["flex-col"]}>
-          <Typography className={css["t-medium"]} ellipsis level={"body2"}>
+          <Typography ellipsis level={"body2"} weight={"medium"}>
             {story.title}
           </Typography>
-          <Typography className={css["t-minor"]} ellipsis level={"body3"}>
+          <Typography color={"minor"} ellipsis level={"body3"}>
             {user === null ? "Deleted user" : `@${user.username}`} &bull;{" "}
             <DateTime
               date={collaboration_request.created_at}

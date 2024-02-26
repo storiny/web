@@ -201,14 +201,10 @@ const Title = ({
 }): React.ReactElement => (
   <Typography
     as={"h2"}
-    className={clsx(
-      css["flex"],
-      css["t-bold"],
-      css["t-minor"],
-      styles.x,
-      styles.title
-    )}
+    className={clsx(css["flex"], styles.x, styles.title)}
+    color={"minor"}
     level={"body3"}
+    weight={"bold"}
   >
     {children}
   </Typography>
@@ -319,9 +315,10 @@ const ProfileContent = ({
               {profile.name}
             </Typography>
             <Typography
-              className={clsx(css["t-medium"], css["t-minor"])}
+              color={"minor"}
               ellipsis
               level={"body1"}
+              weight={"medium"}
             >
               @{profile.username}
             </Typography>
@@ -388,11 +385,7 @@ const ProfileContent = ({
             {Boolean((profile.rendered_bio || "").trim()) && (
               <div className={clsx(css["flex-col"], styles.container)}>
                 <Title>About</Title>
-                <Typography
-                  as={"div"}
-                  className={css["t-minor"]}
-                  level={"body2"}
-                >
+                <Typography as={"div"} color={"minor"} level={"body2"}>
                   <BioParser content={profile.rendered_bio} />
                 </Typography>
               </div>
@@ -404,7 +397,7 @@ const ProfileContent = ({
                   <MapPinIcon />
                   <Typography
                     as={"span"}
-                    className={css["t-minor"]}
+                    color={"minor"}
                     ellipsis
                     level={"body2"}
                     title={profile.location}
@@ -418,7 +411,7 @@ const ProfileContent = ({
                 <NoSsr>
                   <Typography
                     as={"time"}
-                    className={css["t-minor"]}
+                    color={"minor"}
                     dateTime={profile.created_at}
                     level={"body2"}
                     title={format_date(profile.created_at)}

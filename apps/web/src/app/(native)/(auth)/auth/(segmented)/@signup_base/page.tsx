@@ -36,7 +36,7 @@ const Page = (): React.ReactElement => {
         Sign up to Storiny
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         Already have an account?{" "}
         <Link
           className={css["t-medium"]}

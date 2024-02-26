@@ -38,7 +38,8 @@ const DashboardSplashLayout = ({
         {auth_status === "error" ? (
           <React.Fragment>
             <Typography
-              className={clsx(css["t-minor"], css["t-center"])}
+              className={css["t-center"]}
+              color={"minor"}
               level={"body2"}
               style={{ maxWidth: "320px" }}
             >

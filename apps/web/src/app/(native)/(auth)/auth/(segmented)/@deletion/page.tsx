@@ -59,7 +59,7 @@ const Page = (): React.ReactElement => {
         Account held for deletion
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         We have received a request for the deletion of this Storiny account.
         <br />
         <br />

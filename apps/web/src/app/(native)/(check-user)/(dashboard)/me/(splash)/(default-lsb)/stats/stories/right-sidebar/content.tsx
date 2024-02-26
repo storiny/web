@@ -68,10 +68,7 @@ const StoriesStatsRightSidebarContent = ({
     <SuspendedDashboardRightSidebarContent />
   ) : (
     <React.Fragment>
-      <Typography
-        className={clsx(css["t-medium"], css["t-minor"])}
-        level={"body2"}
-      >
+      <Typography color={"minor"} level={"body2"} weight={"medium"}>
         Latest story
       </Typography>
       {!data || is_loading || is_fetching ? (

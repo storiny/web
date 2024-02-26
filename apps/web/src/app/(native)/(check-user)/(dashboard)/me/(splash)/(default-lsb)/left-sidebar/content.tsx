@@ -57,10 +57,7 @@ const AnchorTab = ({
 
 const GroupComponent = ({ group }: { group: Group }): React.ReactElement => (
   <div className={clsx(css["flex-col"], styles["tabs-group"])}>
-    <Typography
-      className={clsx(css["t-medium"], css["t-minor"])}
-      level={"body2"}
-    >
+    <Typography color={"minor"} level={"body2"} weight={"medium"}>
       {group.title}
     </Typography>
     <div className={clsx(css["flex-col"], styles["tabs-group-container"])}>
@@ -177,12 +174,8 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
                 ))
               ) : (
                 <Typography
-                  className={clsx(
-                    css["t-center"],
-                    css["t-minor"],
-                    styles.x,
-                    styles.content
-                  )}
+                  className={clsx(css["t-center"], styles.x, styles.content)}
+                  color={"minor"}
                   level={"body2"}
                 >
                   Could not find anything for &quot;
@@ -206,7 +199,7 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
         <div className={clsx(css["flex-col"], styles.content, styles.footer)}>
           <Separator />
           <div className={css["flex-col"]}>
-            <Typography className={css["t-muted"]} ellipsis level={"body3"}>
+            <Typography color={"muted"} ellipsis level={"body3"}>
               {capitalize(APP_STATUS || "")} {APP_VERSION}
               {APP_BUILD_HASH ? ` (${APP_BUILD_HASH})` : ""}
             </Typography>

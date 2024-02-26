@@ -5,17 +5,16 @@ import { GetProfileResponse } from "~/common/grpc";
 import IconButton from "~/components/icon-button";
 import css from "~/theme/main.module.scss";
 
+import {
+  PROVIDER_DISPLAY_NAME_MAP,
+  PROVIDER_ICON_MAP
+} from "../../../../providers";
 import styles from "./connections.module.scss";
 
 interface Props {
   connections: GetProfileResponse["connections"];
   is_inside_sidebar?: boolean;
 }
-
-import {
-  PROVIDER_DISPLAY_NAME_MAP,
-  PROVIDER_ICON_MAP
-} from "../../../providers";
 
 const Connections = ({
   connections,

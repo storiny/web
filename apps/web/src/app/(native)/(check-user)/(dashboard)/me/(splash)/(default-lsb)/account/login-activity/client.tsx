@@ -111,7 +111,7 @@ const DestroySessions = ({
       {disabled && (
         <React.Fragment>
           <Spacer orientation={"vertical"} size={1.5} />
-          <Typography className={css["t-minor"]} level={"body3"}>
+          <Typography color={"minor"} level={"body3"}>
             You are not logged in to any other device.
           </Typography>
         </React.Fragment>
@@ -195,10 +195,7 @@ const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
         <Spacer orientation={"vertical"} size={10} />
       </main>
       <AccountLoginActivityRightSidebar>
-        <Typography
-          className={clsx(css["t-minor"], css["t-medium"])}
-          level={"body2"}
-        >
+        <Typography color={"minor"} level={"body2"} weight={"medium"}>
           {recent ? "Recent unrecognized login" : "Current device"}
         </Typography>
         <LoginItem login={recent || logins.find((login) => login.is_active)!} />

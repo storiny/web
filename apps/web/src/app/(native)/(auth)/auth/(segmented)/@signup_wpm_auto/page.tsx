@@ -44,7 +44,7 @@ const Page = (): React.ReactElement => {
         Reading speed test
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         Click on &quot;Done&quot; when you have finished reading the text
         presented in the box below.
       </Typography>

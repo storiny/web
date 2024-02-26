@@ -27,15 +27,17 @@ const StatBlock = (props: StatBlockProps): React.ReactElement => {
     >
       <Typography
         {...component_props?.label}
-        className={clsx(css["t-medium"], component_props?.label?.className)}
+        className={clsx(component_props?.label?.className)}
         color={"minor"}
         level={"body2"}
+        weight={"medium"}
       >
         {label}
       </Typography>
       <Typography
         {...component_props?.value}
-        className={clsx(css["t-bold"], styles.value)}
+        className={styles.value}
+        weight={"bold"}
       >
         {typeof value === "number" ? abbreviate_number(value) : value}
       </Typography>

@@ -58,7 +58,8 @@ const Map = (props: MapProps): React.ReactElement => {
       {!hide_copyright && (
         <Typography
           as={"div"}
-          className={clsx(css["t-medium"], styles.x, styles.copyright)}
+          className={clsx(styles.x, styles.copyright)}
+          weight={"medium"}
         >
           ©{" "}
           <Link

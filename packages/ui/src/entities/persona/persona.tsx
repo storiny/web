@@ -83,10 +83,10 @@ const Persona = React.forwardRef<HTMLDivElement, PersonaProps>((props, ref) => {
           <Typography
             {...component_props?.secondary_text}
             className={clsx(
-              css["t-minor"],
               styles["secondary-text"],
               component_props?.secondary_text?.className
             )}
+            color={"minor"}
             level={SIZE_SECONDARY_TEXT_LEVEL_MAP[size]}
           >
             {secondary_text}

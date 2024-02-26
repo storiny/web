@@ -30,7 +30,7 @@ const CredentialsTwoFactorAuthSettings = ({
         Two-factor authentication
       </Typography>
       <Spacer orientation={"vertical"} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         By requiring more than just a password to sign in, two-factor
         authentication (2FA for short) adds an extra layer of security to your
         account.{" "}
@@ -58,7 +58,7 @@ const CredentialsTwoFactorAuthSettings = ({
           {!has_password && (
             <React.Fragment>
               <Spacer orientation={"vertical"} size={1.5} />
-              <Typography className={css["t-minor"]} level={"body3"}>
+              <Typography color={"minor"} level={"body3"}>
                 To enable two-factor authentication, you need to add a password
                 to your account.
               </Typography>

@@ -59,7 +59,7 @@ const Preview = (): React.ReactElement => {
         </div>
         {/* Spacer span */}
         <span />
-        <Typography className={css["t-medium"]} color={"minor"} level={"body3"}>
+        <Typography color={"minor"} level={"body3"} weight={"medium"}>
           BADGES
         </Typography>
         <PlusBadge />

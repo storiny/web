@@ -54,12 +54,8 @@ const ErrorLayout = ({
           {title}
         </Typography>
         <Typography
-          className={clsx(
-            css["t-center"],
-            css["t-minor"],
-            styles.x,
-            styles.description
-          )}
+          className={clsx(css["t-center"], styles.x, styles.description)}
+          color={"minor"}
         >
           {description}
         </Typography>

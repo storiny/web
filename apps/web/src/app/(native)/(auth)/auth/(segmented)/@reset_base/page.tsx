@@ -26,7 +26,7 @@ const Page = (): React.ReactElement => {
         Reset your password
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         Create a memorable and strong password.
       </Typography>
       <Spacer orientation={"vertical"} size={5} />

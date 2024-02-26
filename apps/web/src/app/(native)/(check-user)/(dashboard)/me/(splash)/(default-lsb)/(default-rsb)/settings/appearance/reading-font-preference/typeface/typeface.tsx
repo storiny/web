@@ -144,7 +144,7 @@ const ReadingFontTypefacePreference = (): React.ReactElement => {
         Typeface
       </Typography>
       <Spacer orientation={"vertical"} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         Choose a typeface that you find comfortable to read.
       </Typography>
       <Spacer orientation={"vertical"} size={3} />

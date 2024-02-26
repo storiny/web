@@ -116,7 +116,7 @@ const AvatarSettings = (): React.ReactElement | null => {
           {element}
         </div>
       </div>
-      <Typography className={css["t-minor"]} level={"body3"}>
+      <Typography color={"minor"} level={"body3"}>
         We recommend using a PNG, JPG, WEBP, or GIF with a minimum resolution of
         640 pixels in a square shape.
       </Typography>

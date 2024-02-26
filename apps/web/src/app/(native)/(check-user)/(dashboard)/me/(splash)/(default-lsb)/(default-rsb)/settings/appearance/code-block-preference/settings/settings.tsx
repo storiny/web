@@ -25,17 +25,13 @@ const CodeBlockSettings = (): React.ReactElement => {
         Settings
       </Typography>
       <Spacer orientation={"vertical"} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         Settings for code blocks rendered inside stories.
       </Typography>
       <Spacer orientation={"vertical"} size={3} />
       <div className={clsx(css["flex-col"], styles["switch-container"])}>
         <div className={css["flex-center"]}>
-          <Typography
-            as={"label"}
-            className={css["t-medium"]}
-            htmlFor={"code_gutters"}
-          >
+          <Typography as={"label"} htmlFor={"code_gutters"} weight={"medium"}>
             Show line numbers
           </Typography>
           <Spacer className={css["f-grow"]} size={2} />
@@ -47,7 +43,7 @@ const CodeBlockSettings = (): React.ReactElement => {
             }}
           />
         </div>
-        <Typography className={css["t-minor"]} level={"body2"}>
+        <Typography color={"minor"} level={"body2"}>
           Show line numbers and other line-specific markers on the left edge of
           the code block.
         </Typography>
@@ -55,11 +51,7 @@ const CodeBlockSettings = (): React.ReactElement => {
       <Spacer orientation={"vertical"} size={3} />
       <div className={clsx(css["flex-col"], styles["switch-container"])}>
         <div className={css["flex-center"]}>
-          <Typography
-            as={"label"}
-            className={css["t-medium"]}
-            htmlFor={"wrapping"}
-          >
+          <Typography as={"label"} htmlFor={"wrapping"} weight={"medium"}>
             Wrap long lines
           </Typography>
           <Spacer className={css["f-grow"]} size={2} />
@@ -71,7 +63,7 @@ const CodeBlockSettings = (): React.ReactElement => {
             }}
           />
         </div>
-        <Typography className={css["t-minor"]} level={"body2"}>
+        <Typography color={"minor"} level={"body2"}>
           Wrap long lines inside the code blocks by default. This can be toggled
           individually for a code block.
         </Typography>

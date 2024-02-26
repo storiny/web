@@ -20,7 +20,7 @@ const Page = (): React.ReactElement => {
         Password successfully reset
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         We have successfully reset your password, you can now log in to Storiny.
       </Typography>
       <Spacer orientation={"vertical"} size={5} />

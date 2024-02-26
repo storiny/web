@@ -260,12 +260,8 @@ const StoryHeader = (): React.ReactElement => {
         <NoSsr>
           <Typography
             as={"time"}
-            className={clsx(
-              css["flex-center"],
-              css["t-minor"],
-              styles.x,
-              styles.stat
-            )}
+            className={clsx(css["flex-center"], styles.x, styles.stat)}
+            color={"minor"}
             dateTime={story.published_at!}
             level={"body2"}
             title={format_date(story.published_at!, DateFormat.LONG)}
@@ -281,12 +277,8 @@ const StoryHeader = (): React.ReactElement => {
         </NoSsr>
         <Typography
           aria-label={`${get_read_time(story.word_count, user?.wpm)} min read`}
-          className={clsx(
-            css["flex-center"],
-            css["t-minor"],
-            styles.x,
-            styles.stat
-          )}
+          className={clsx(css["flex-center"], styles.x, styles.stat)}
+          color={"minor"}
           level={"body2"}
           title={`${get_read_time(story.word_count, user?.wpm)} min read`}
         >

@@ -135,7 +135,7 @@ const LegalToc = (): React.ReactElement => {
   if (!nested_headings.length) {
     return (
       <Typography
-        className={css["t-muted"]}
+        color={"muted"}
         level={"body2"}
         style={{ fontStyle: "italic" }}
       >

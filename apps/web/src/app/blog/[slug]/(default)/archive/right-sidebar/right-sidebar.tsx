@@ -2,21 +2,25 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
-import { GetTagResponse } from "~/common/grpc";
+import { GetBlogArchiveResponse } from "~/common/grpc";
+import Separator from "~/components/separator";
+import { DefaultBlogRightSidebarContent } from "~/layout/blog-right-sidebar";
 import RightSidebar from "~/layout/right-sidebar";
 
-const SuspendedTagRightSidebarContent = dynamic(() => import("./content"), {
+const SuspendedArchiveRightSidebarContent = dynamic(() => import("./content"), {
   loading: dynamic_loader()
 });
 
 interface Props {
-  tag: GetTagResponse;
+  archive: GetBlogArchiveResponse;
 }
 
-const TagRightSidebar = ({ tag }: Props): React.ReactElement => (
+const ArchiveRightSidebar = ({ archive }: Props): React.ReactElement => (
   <RightSidebar>
-    <SuspendedTagRightSidebarContent tag={tag} />
+    <DefaultBlogRightSidebarContent />
+    <Separator />
+    <SuspendedArchiveRightSidebarContent archive={archive} />
   </RightSidebar>
 );
 
-export default TagRightSidebar;
+export default ArchiveRightSidebar;

@@ -26,7 +26,7 @@ import {
 const ExportDataModal = (): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         You need to confirm your password to begin the export process. Please be
         aware that the data processing may take up to 14 days, and you will be
         notified by email once it&apos;s ready for download.

@@ -125,7 +125,7 @@ const LeftSidebarPersona = (): React.ReactElement => {
               className={clsx(css["flex-col"], styles["follower-count"])}
             >
               {abbreviate_number(user?.follower_count || 0)}
-              <Typography className={css["t-minor"]} level={"body2"}>
+              <Typography color={"minor"} level={"body2"}>
                 {user?.follower_count === 1 ? "follower" : "followers"}
               </Typography>
             </Typography>

@@ -91,7 +91,7 @@
 
   @include breakpoints.media(">=mobile") {
     &.large {
-      --size: 100% !important;
+      --size: 100%;
 
       height: 240px;
 
@@ -102,9 +102,9 @@
     }
   }
 
-  @include breakpoints.media("<800px") {
-    &:not(.large) {
-      --size: 200px !important;
+  &:not(.large) {
+    @include breakpoints.media("<800px") {
+      --size: 200px;
     }
   }
 

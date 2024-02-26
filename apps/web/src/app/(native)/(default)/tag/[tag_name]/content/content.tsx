@@ -76,19 +76,13 @@ const SuspendedTagContent = ({ tag }: Props): React.ReactElement => {
         <TagActions tag={tag} />
       </div>
       <div className={clsx(css["flex"], styles.stats)}>
-        <Typography
-          className={clsx(css["t-medium"], css["t-minor"])}
-          level={"body2"}
-        >
+        <Typography color={"minor"} level={"body2"} weight={"medium"}>
           <span className={clsx(css["t-bold"], css["t-major"])}>
             {abbreviate_number(tag.story_count)}
           </span>{" "}
           {tag.story_count === 1 ? "story" : "stories"}
         </Typography>
-        <Typography
-          className={clsx(css["t-medium"], css["t-minor"])}
-          level={"body2"}
-        >
+        <Typography color={"minor"} level={"body2"} weight={"medium"}>
           <span className={clsx(css["t-bold"], css["t-major"])}>
             {abbreviate_number(follower_count)}
           </span>{" "}

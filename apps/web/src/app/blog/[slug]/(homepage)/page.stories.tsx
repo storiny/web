@@ -5,7 +5,8 @@ import React from "react";
 
 import { render_with_state } from "~/redux/mock";
 
-import StorybookBlogLayout from "./layout.storybook";
+import StorybookBlogLayout from "../layout.storybook";
+import BlogHomepageLayout from "./layout";
 import Blog from "./page";
 
 const meta: Meta<typeof Blog> = {
@@ -25,7 +26,9 @@ export const Default: Story = {
     (Story): React.ReactElement =>
       render_with_state(
         <StorybookBlogLayout>
-          <Story />
+          <BlogHomepageLayout>
+            <Story />
+          </BlogHomepageLayout>
         </StorybookBlogLayout>,
         { ignore_primitive_providers: true }
       )

@@ -16,20 +16,13 @@ const Stat = ({
   value: string;
 }): React.ReactElement => (
   <Typography
-    className={clsx(
-      css["flex-center"],
-      css["t-medium"],
-      css["t-minor"],
-      styles.x,
-      styles["stat-label"]
-    )}
+    className={clsx(css["flex-center"], styles.x, styles["stat-label"])}
+    color={"minor"}
     level={"body2"}
+    weight={"medium"}
   >
     {label}
-    <Typography
-      className={clsx(css["t-medium"], css["t-major"])}
-      level={"body2"}
-    >
+    <Typography color={"major"} level={"body2"} weight={"medium"}>
       {value}
     </Typography>
   </Typography>

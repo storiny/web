@@ -27,7 +27,7 @@ import {
 const UsernameSettingsModal = (): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         Enter your new username along with your existing password.
       </Typography>
     </Description>

@@ -7,7 +7,7 @@ import DateTime from "~/components/date-time";
 import Typography from "~/components/typography";
 import css from "~/theme/main.module.scss";
 
-import MarkdownProvider from "../../../../mdx-provider";
+import MarkdownProvider from "../../../../../mdx-provider";
 import styles from "./pattern.module.scss";
 
 interface Props {
@@ -22,7 +22,7 @@ const MDXPattern = ({ meta, children }: Props): React.ReactElement => (
   <MarkdownProvider>
     <div className={clsx(css["flex-col"], styles.header)}>
       <Typography level={"h1"}>{meta.title}</Typography>
-      <Typography className={clsx(css["t-medium"], css["t-minor"])}>
+      <Typography color={"minor"} weight={"medium"}>
         Last updated: <DateTime date={meta.last_updated} />
       </Typography>
     </div>

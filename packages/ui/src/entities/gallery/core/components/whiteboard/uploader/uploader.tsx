@@ -80,7 +80,7 @@ const WhiteboardUploader = (
       {result.isLoading ? (
         // Loading area
         <div className={clsx(css["flex-col"], css["flex-center"])}>
-          <Typography className={css["t-medium"]} level={"body3"}>
+          <Typography level={"body3"} weight={"medium"}>
             Uploading sketch...
           </Typography>
           <Spacer orientation={"vertical"} size={1.5} />
@@ -90,7 +90,8 @@ const WhiteboardUploader = (
         // Upload error area
         <React.Fragment>
           <Typography
-            className={clsx(css["t-minor"], css["t-center"])}
+            className={css["t-center"]}
+            color={"minor"}
             level={"body2"}
           >
             {"data" in result.error &&
@@ -112,7 +113,8 @@ const WhiteboardUploader = (
         // Upload success area
         <React.Fragment>
           <Typography
-            className={clsx(css["t-minor"], css["t-center"])}
+            className={css["t-center"]}
+            color={"minor"}
             level={"body2"}
           >
             Sketch uploaded

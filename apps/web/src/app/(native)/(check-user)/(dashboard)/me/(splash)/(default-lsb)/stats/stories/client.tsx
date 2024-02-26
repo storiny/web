@@ -145,9 +145,9 @@ const StoriesStatsClient = (): React.ReactElement => {
               <div className={css["flex-col"]}>
                 <Typography
                   as={"h2"}
-                  className={css["t-medium"]}
                   color={"minor"}
                   level={"body2"}
+                  weight={"medium"}
                 >
                   Story reads (last 3 months)
                 </Typography>
@@ -167,9 +167,9 @@ const StoriesStatsClient = (): React.ReactElement => {
               <div className={css["flex-col"]}>
                 <Typography
                   as={"h2"}
-                  className={css["t-medium"]}
                   color={"minor"}
                   level={"body2"}
+                  weight={"medium"}
                 >
                   Readers by country (last 3 months)
                 </Typography>
@@ -199,9 +199,9 @@ const StoriesStatsClient = (): React.ReactElement => {
               <div className={css["flex-col"]}>
                 <Typography
                   as={"h2"}
-                  className={css["t-medium"]}
                   color={"minor"}
                   level={"body2"}
+                  weight={"medium"}
                 >
                   Referral sources (last 3 months)
                 </Typography>

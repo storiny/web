@@ -103,7 +103,7 @@ const LigaturesPreference = (): React.ReactElement => {
         Ligatures
       </Typography>
       <Spacer orientation={"vertical"} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         Choose whether to enable ligatures for reading code blocks and code
         snippets. Ligatures join two or more graphemes (letters) to improve code
         appearance, but note that they are not available with the system font

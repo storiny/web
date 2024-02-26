@@ -58,7 +58,7 @@ const TagsPreview = ({
           loading && styles.loading
         )}
       >
-        <Typography className={css["t-medium"]} level={"body2"}>
+        <Typography level={"body2"} weight={"medium"}>
           Popular tags in {normalized_category}
         </Typography>
         <div
