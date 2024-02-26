@@ -113,6 +113,148 @@ impl<'de> serde::Deserialize<'de> for ArchiveTimeline {
         deserializer.deserialize_struct("blog_def.v1.ArchiveTimeline", FIELDS, GeneratedVisitor)
     }
 }
+impl serde::Serialize for BareBlog {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if !self.id.is_empty() {
+            len += 1;
+        }
+        if !self.slug.is_empty() {
+            len += 1;
+        }
+        if self.domain.is_some() {
+            len += 1;
+        }
+        if !self.name.is_empty() {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("blog_def.v1.BareBlog", len)?;
+        if !self.id.is_empty() {
+            struct_ser.serialize_field("id", &self.id)?;
+        }
+        if !self.slug.is_empty() {
+            struct_ser.serialize_field("slug", &self.slug)?;
+        }
+        if let Some(v) = self.domain.as_ref() {
+            struct_ser.serialize_field("domain", v)?;
+        }
+        if !self.name.is_empty() {
+            struct_ser.serialize_field("name", &self.name)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for BareBlog {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "id",
+            "slug",
+            "domain",
+            "name",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            Id,
+            Slug,
+            Domain,
+            Name,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "id" => Ok(GeneratedField::Id),
+                            "slug" => Ok(GeneratedField::Slug),
+                            "domain" => Ok(GeneratedField::Domain),
+                            "name" => Ok(GeneratedField::Name),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = BareBlog;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct blog_def.v1.BareBlog")
+            }
+
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<BareBlog, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut id__ = None;
+                let mut slug__ = None;
+                let mut domain__ = None;
+                let mut name__ = None;
+                while let Some(k) = map.next_key()? {
+                    match k {
+                        GeneratedField::Id => {
+                            if id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("id"));
+                            }
+                            id__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::Slug => {
+                            if slug__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("slug"));
+                            }
+                            slug__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::Domain => {
+                            if domain__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("domain"));
+                            }
+                            domain__ = map.next_value()?;
+                        }
+                        GeneratedField::Name => {
+                            if name__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("name"));
+                            }
+                            name__ = Some(map.next_value()?);
+                        }
+                    }
+                }
+                Ok(BareBlog {
+                    id: id__.unwrap_or_default(),
+                    slug: slug__.unwrap_or_default(),
+                    domain: domain__,
+                    name: name__.unwrap_or_default(),
+                })
+            }
+        }
+        deserializer.deserialize_struct("blog_def.v1.BareBlog", FIELDS, GeneratedVisitor)
+    }
+}
 impl serde::Serialize for GetBlogArchiveRequest {
     #[allow(deprecated)]
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>

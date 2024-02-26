@@ -73,6 +73,7 @@ const BlogRightSidebar = ({
   className,
   is_homepage,
   hide_editors,
+  children,
   ...rest
 }: BlogRightSidebarProps): React.ReactElement | null => {
   const blog = use_blog_context();
@@ -89,7 +90,7 @@ const BlogRightSidebar = ({
       hide_footer={blog.hide_storiny_branding}
       is_blog
     >
-      <DefaultBlogRightSidebarContent />
+      {children || <DefaultBlogRightSidebarContent />}
       {Boolean(blog.rsb_items?.length) && (
         <>
           <Separator />

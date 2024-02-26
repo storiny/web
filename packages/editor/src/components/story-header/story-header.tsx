@@ -1,3 +1,4 @@
+import { use_blog_context } from "@storiny/web/src/app/blog/[slug]/context";
 import { clsx } from "clsx";
 import { useAtom as use_atom, useAtomValue as use_atom_value } from "jotai";
 import React from "react";
@@ -61,21 +62,29 @@ const StoryActions = (): React.ReactElement => {
     (state) => state.entities.mutes[story.user?.id || ""]
   );
   const is_self = story.user_id === user?.id;
+  const blog = use_blog_context();
+  const story_url = blog
+    ? `https://${blog.domain ?? `${blog.slug}.storiny.com`}/${story.slug}`
+    : `${process.env.NEXT_PUBLIC_WEB_URL}/${story.user?.username || "story"}/${
+        story.slug
+      }`;
 
   return (
     <div className={css["flex-center"]}>
-      <IconButton
-        aria-label={`${is_bookmarked ? "Un-bookmark" : "Bbookmark"} story`}
-        auto_size
-        check_auth
-        onClick={(): void => {
-          dispatch(boolean_action("bookmarks", story.id));
-        }}
-        title={`${is_bookmarked ? "Un-bookmark" : "Bbookmark"} story`}
-        variant={"ghost"}
-      >
-        {is_bookmarked ? <BookmarkIcon no_stroke /> : <BookmarkPlusIcon />}
-      </IconButton>
+      {!blog && (
+        <IconButton
+          aria-label={`${is_bookmarked ? "Un-bookmark" : "Bbookmark"} story`}
+          auto_size
+          check_auth
+          onClick={(): void => {
+            dispatch(boolean_action("bookmarks", story.id));
+          }}
+          title={`${is_bookmarked ? "Un-bookmark" : "Bbookmark"} story`}
+          variant={"ghost"}
+        >
+          {is_bookmarked ? <BookmarkIcon no_stroke /> : <BookmarkPlusIcon />}
+        </IconButton>
+      )}
       <Menu
         trigger={
           <IconButton
@@ -90,30 +99,17 @@ const StoryActions = (): React.ReactElement => {
       >
         <MenuItem
           decorator={<ShareIcon />}
-          onClick={(): void =>
-            share(
-              story.title,
-              `${process.env.NEXT_PUBLIC_WEB_URL}/${
-                story.user?.username || "story"
-              }/${story.slug}`
-            )
-          }
+          onClick={(): void => share(story.title, story_url)}
         >
           Share
         </MenuItem>
         <MenuItem
           decorator={<CopyIcon />}
-          onClick={(): void =>
-            copy(
-              `${process.env.NEXT_PUBLIC_WEB_URL}/${
-                story.user?.username || "story"
-              }/${story.slug}`
-            )
-          }
+          onClick={(): void => copy(story_url)}
         >
           Copy link to story
         </MenuItem>
-        {is_larger_than_desktop && (
+        {is_larger_than_desktop && !blog ? (
           <React.Fragment>
             <Separator />
             <MenuItem
@@ -129,7 +125,7 @@ const StoryActions = (): React.ReactElement => {
               {sidebars_collapsed ? "Expand" : "Collapse"} sidebars
             </MenuItem>
           </React.Fragment>
-        )}
+        ) : null}
         {!is_self && (
           <>
             <Separator />
