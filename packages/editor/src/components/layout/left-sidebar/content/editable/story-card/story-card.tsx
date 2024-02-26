@@ -56,11 +56,7 @@ const EditorStoryCard = (props: EditorStoryCardProps): React.ReactElement => {
         )}
       </AspectRatio>
       <div className={clsx(css["flex-col"], styles.meta)}>
-        <Typography
-          className={css["t-medium"]}
-          level={"body2"}
-          title={story.title}
-        >
+        <Typography level={"body2"} title={story.title} weight={"medium"}>
           {story.title}
         </Typography>
         {status !== "deleted" && story.is_writer ? (

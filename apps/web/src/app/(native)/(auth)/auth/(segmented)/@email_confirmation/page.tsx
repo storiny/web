@@ -43,7 +43,7 @@ const Page = (): React.ReactElement => {
         Almost there...
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         A confirmation e-mail has been sent to your e-mail address (
         <span className={css["t-medium"]} style={{ wordBreak: "break-all" }}>
           {email}

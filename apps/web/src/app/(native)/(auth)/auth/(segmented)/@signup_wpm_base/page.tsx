@@ -34,7 +34,7 @@ const Page = (): React.ReactElement => {
         Just one more step...
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         As not all readers read at the same pace, the reading time for stories
         on Storiny depends on their reading speed. We can provide readers with
         more accurate and personalized reading times this way. You can always do

@@ -14,7 +14,7 @@ interface Props {
 
 const StoryCommentsRightSidebar = ({ story_id }: Props): React.ReactElement => (
   <RightSidebar>
-    <Typography className={clsx(css["t-minor"], css["t-bold"])} level={"body2"}>
+    <Typography color={"minor"} level={"body2"} weight={"bold"}>
       Commented on
     </Typography>
     <StoryCommentsRightSidebarContent story_id={story_id} />

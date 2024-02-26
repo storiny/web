@@ -69,7 +69,7 @@ const ReadingFontSizePreference = (): React.ReactElement => {
         Font size
       </Typography>
       <Spacer orientation={"vertical"} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         Choose a font size with which you are comfortable reading.
       </Typography>
       <Spacer orientation={"vertical"} size={3} />

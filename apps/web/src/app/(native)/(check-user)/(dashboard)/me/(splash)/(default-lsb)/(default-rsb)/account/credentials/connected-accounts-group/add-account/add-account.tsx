@@ -27,7 +27,7 @@ const AddAccountModal = ({
 }: Pick<AddAccountProps, "vendor">): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         This will add your {vendor} account to your Storiny account, and you
         will be able to sign in to Storiny using your {vendor}
         account.

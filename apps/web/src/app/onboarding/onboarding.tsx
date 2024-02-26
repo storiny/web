@@ -52,10 +52,7 @@ const Segment = ({
       {title}
     </Typography>
     <Spacer orientation={"vertical"} />
-    <Typography
-      className={clsx(css["t-center"], css["t-minor"])}
-      level={"body2"}
-    >
+    <Typography className={css["t-center"]} color={"minor"} level={"body2"}>
       {description}
     </Typography>
     <Spacer orientation={"vertical"} size={7} />
@@ -206,8 +203,9 @@ const TagsSegment = ({
                   <div className={styles["category-tags-label"]}>
                     {CATEGORY_ICON_MAP[category]}
                     <Typography
-                      className={clsx(css["t-minor"], css["t-medium"])}
+                      color={"minor"}
                       level={"body2"}
+                      weight={"medium"}
                     >
                       {CATEGORY_LABEL_MAP[category]}
                     </Typography>
@@ -335,7 +333,7 @@ const Onboarding = (): React.ReactElement => {
         <React.Fragment>
           {!is_smaller_than_mobile && segment === "categories" ? (
             <React.Fragment>
-              <Typography className={css["t-minor"]} level={"body2"}>
+              <Typography color={"minor"} level={"body2"}>
                 {selected_categories.size <= 3
                   ? `${selected_categories.size} of 3 selected`
                   : `${selected_categories.size} selected`}

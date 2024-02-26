@@ -53,10 +53,7 @@ const AccountStatsRightSidebarContent = (): React.ReactElement => {
     <SuspendedDashboardRightSidebarContent />
   ) : (
     <React.Fragment>
-      <Typography
-        className={clsx(css["t-medium"], css["t-minor"])}
-        level={"body2"}
-      >
+      <Typography color={"minor"} level={"body2"} weight={"medium"}>
         Recent followers
       </Typography>
       <div className={clsx(css["flex-col"], styles.list)}>

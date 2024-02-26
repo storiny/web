@@ -31,8 +31,8 @@ const MiscellaneousPreferences = (): React.ReactElement => {
         <div className={css["flex-center"]}>
           <Typography
             as={"label"}
-            className={css["t-medium"]}
             htmlFor={"haptic_feedback"}
+            weight={"medium"}
           >
             Enable haptic feedback
           </Typography>
@@ -45,7 +45,7 @@ const MiscellaneousPreferences = (): React.ReactElement => {
             }}
           />
         </div>
-        <Typography className={css["t-minor"]} level={"body2"}>
+        <Typography color={"minor"} level={"body2"}>
           Provide a haptic feedback mechanism on supported devices, such as
           vibration on important actions. Kindly note that not all devices and
           browsers support this feature, for example, Safari on iOS.

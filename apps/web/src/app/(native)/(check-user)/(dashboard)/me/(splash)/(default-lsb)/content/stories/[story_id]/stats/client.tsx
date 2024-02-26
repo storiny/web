@@ -227,9 +227,9 @@ const ContentStoryStatsClient = (
               <div className={css["flex-col"]}>
                 <Typography
                   as={"h2"}
-                  className={css["t-medium"]}
                   color={"minor"}
                   level={"body2"}
+                  weight={"medium"}
                 >
                   Story reads (last 3 months)
                 </Typography>
@@ -248,9 +248,9 @@ const ContentStoryStatsClient = (
               <div className={css["flex-col"]}>
                 <Typography
                   as={"h2"}
-                  className={css["t-medium"]}
                   color={"minor"}
                   level={"body2"}
+                  weight={"medium"}
                 >
                   Reading duration (last 3 months)
                 </Typography>
@@ -270,9 +270,9 @@ const ContentStoryStatsClient = (
               <div className={css["flex-col"]}>
                 <Typography
                   as={"h2"}
-                  className={css["t-medium"]}
                   color={"minor"}
                   level={"body2"}
+                  weight={"medium"}
                 >
                   Readers by country (last 3 months)
                 </Typography>
@@ -302,9 +302,9 @@ const ContentStoryStatsClient = (
               <div className={css["flex-col"]}>
                 <Typography
                   as={"h2"}
-                  className={css["t-medium"]}
                   color={"minor"}
                   level={"body2"}
+                  weight={"medium"}
                 >
                   Referral sources (last 3 months)
                 </Typography>
@@ -359,9 +359,9 @@ const ContentStoryStatsClient = (
               <div className={css["flex-col"]}>
                 <Typography
                   as={"h2"}
-                  className={css["t-medium"]}
                   color={"minor"}
                   level={"body2"}
+                  weight={"medium"}
                 >
                   Story likes (last 3 months)
                 </Typography>
@@ -381,9 +381,9 @@ const ContentStoryStatsClient = (
               <div className={css["flex-col"]}>
                 <Typography
                   as={"h2"}
-                  className={css["t-medium"]}
                   color={"minor"}
                   level={"body2"}
+                  weight={"medium"}
                 >
                   Devices your readers use (last 3 months)
                 </Typography>
@@ -453,9 +453,9 @@ const ContentStoryStatsClient = (
               <div className={css["flex-col"]}>
                 <Typography
                   as={"h2"}
-                  className={css["t-medium"]}
                   color={"minor"}
                   level={"body2"}
+                  weight={"medium"}
                 >
                   Top comments
                 </Typography>

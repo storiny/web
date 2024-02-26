@@ -25,7 +25,7 @@ import {
 const Remove2FAModal = (): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         Without two-factor authentication, your account will only be protected
         by your password. To disable two-factor authentication, provide your
         6-digit authentication code or one of your recovery codes.

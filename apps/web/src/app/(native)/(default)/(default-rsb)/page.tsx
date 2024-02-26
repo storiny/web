@@ -26,7 +26,7 @@ const EmptyState = dynamic(() => import("./empty-state"), {
   loading: dynamic_loader()
 });
 
-const Onboarding = dynamic(() => import("../../onboarding"));
+const Onboarding = dynamic(() => import("../../../onboarding"));
 
 export type IndexTabValue = "suggested" | "friends-and-following";
 

@@ -114,7 +114,7 @@ const CodeFontTypefacePreference = (): React.ReactElement => {
         Typeface
       </Typography>
       <Spacer orientation={"vertical"} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         Choose a monospaced typeface that you find comfortable for reading code
         blocks and code snippets.
       </Typography>

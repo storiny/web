@@ -8,7 +8,8 @@ import { render_with_state } from "~/redux/mock";
 
 import StorybookBlogLayout from "../../layout.storybook";
 import DefaultBlogLayout from "../layout";
-import Archive from "./component";
+import StorybookBlogArchiveLayout from "./layout.storybook";
+import Archive from "./page";
 
 const MOCK_RESPONSE: GetBlogArchiveResponse = {
   story_count: 14,
@@ -23,9 +24,6 @@ const MOCK_RESPONSE: GetBlogArchiveResponse = {
 const meta: Meta<typeof Archive> = {
   title: "pages/blog/archive",
   component: Archive,
-  args: {
-    archive: MOCK_RESPONSE
-  },
   parameters: {
     layout: "fullscreen"
   },
@@ -41,7 +39,9 @@ export const Default: Story = {
       render_with_state(
         <StorybookBlogLayout>
           <DefaultBlogLayout>
-            <Story />
+            <StorybookBlogArchiveLayout archive={MOCK_RESPONSE}>
+              <Story />
+            </StorybookBlogArchiveLayout>
           </DefaultBlogLayout>
         </StorybookBlogLayout>,
         { ignore_primitive_providers: true }

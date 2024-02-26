@@ -32,10 +32,10 @@ const Page = (): React.ReactElement => (
       <div className={clsx(css["flex-col"], css["t-center"], styles.container)}>
         <Typography level={"display1"}>Your voice matters.</Typography>
         <div className={clsx(css["flex-col"], styles.x, styles.tagline)}>
-          <Typography as={"p"} className={css["t-minor"]} level={"h4"}>
+          <Typography as={"p"} color={"minor"} level={"h4"}>
             <span className={css["t-major"]}>Storiny</span> is the place for
           </Typography>
-          <Typography as={"p"} className={css["t-muted"]} level={"h2"}>
+          <Typography as={"p"} color={"muted"} level={"h2"}>
             the <span className={css["t-major"]}>stor</span>y with
             <span className={css["t-major"]}>in y</span>ou.
           </Typography>

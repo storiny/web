@@ -18,7 +18,7 @@ const Page = (): React.ReactElement => {
         Verify it&apos;s you
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         Enter your authentication code to continue. You can also use one of the
         backup codes for your Storiny account.
       </Typography>

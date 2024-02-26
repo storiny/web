@@ -24,7 +24,9 @@ const DrawItem = ({
   >
     {label && (
       <Typography
-        className={clsx(css["t-bold"], css["t-minor"], styles.x, styles.label)}
+        className={clsx(styles.x, styles.label)}
+        color={"minor"}
+        weight={"bold"}
       >
         {label}
       </Typography>

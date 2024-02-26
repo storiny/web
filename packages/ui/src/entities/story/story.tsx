@@ -77,15 +77,12 @@ const Meta = (props: StoryProps): React.ReactElement | null => {
       <NoSsr>
         <Typography
           as={"time"}
-          className={clsx(
-            css["flex"],
-            css["t-minor"],
-            css["t-medium"],
-            styles["deleted-label"]
-          )}
+          className={clsx(css["flex"], styles["deleted-label"])}
+          color={"minor"}
           dateTime={story.deleted_at!}
           level={"body2"}
           title={format_date(story.deleted_at!)}
+          weight={"medium"}
         >
           <TrashIcon />
           <Spacer size={0.75} />
@@ -102,10 +99,11 @@ const Meta = (props: StoryProps): React.ReactElement | null => {
       <NoSsr>
         <Typography
           as={"time"}
-          className={clsx(css["t-minor"], css["t-medium"])}
+          color={"minor"}
           dateTime={story.published_at!}
           level={"body2"}
           title={format_date(story.published_at!)}
+          weight={"medium"}
         >
           Published {format_date(story.published_at!, DateFormat.RELATIVE)}
         </Typography>
@@ -118,10 +116,11 @@ const Meta = (props: StoryProps): React.ReactElement | null => {
       <NoSsr>
         <Typography
           as={"time"}
-          className={clsx(css["t-minor"], css["t-medium"])}
+          color={"minor"}
           dateTime={story.edited_at || story.created_at}
           level={"body2"}
           title={format_date(story.edited_at || story.created_at)}
+          weight={"medium"}
         >
           Edited{" "}
           {format_date(
@@ -156,18 +155,13 @@ const Meta = (props: StoryProps): React.ReactElement | null => {
               {story.user?.name}
             </Link>
           </UserHoverCard>
-          <Typography
-            aria-hidden
-            as={"span"}
-            className={css["t-muted"]}
-            level={"body2"}
-          >
+          <Typography aria-hidden as={"span"} color={"muted"} level={"body2"}>
             &bull;
           </Typography>
           <NoSsr>
             <Typography
               as={"time"}
-              className={css["t-minor"]}
+              color={"minor"}
               dateTime={story.published_at || story.created_at}
               level={"body2"}
               title={format_date(story.published_at || story.created_at)}
@@ -336,14 +330,11 @@ const Footer = (props: StoryProps): React.ReactElement => {
       {show_word_count ? (
         <Typography
           as={"span"}
-          className={clsx(
-            css["flex-center"],
-            css["t-medium"],
-            css["t-minor"],
-            styles.stat
-          )}
+          className={clsx(css["flex-center"], styles.stat)}
+          color={"minor"}
           level={"body2"}
           title={story.word_count.toLocaleString()}
+          weight={"medium"}
         >
           {abbreviate_number(story.word_count)} words
           {is_mobile && (
@@ -351,7 +342,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
               <Typography
                 aria-hidden
                 as={"span"}
-                className={css["t-muted"]}
+                color={"muted"}
                 level={"body2"}
               >
                 &bull;
@@ -360,10 +351,11 @@ const Footer = (props: StoryProps): React.ReactElement => {
                 <NoSsr>
                   <Typography
                     as={"time"}
-                    className={clsx(css["t-minor"], css["t-medium"])}
+                    color={"minor"}
                     dateTime={story.deleted_at!}
                     level={"body2"}
                     title={format_date(story.deleted_at!)}
+                    weight={"medium"}
                   >
                     Deleted{" "}
                     {format_date(story.deleted_at!, DateFormat.RELATIVE)}
@@ -373,10 +365,11 @@ const Footer = (props: StoryProps): React.ReactElement => {
                 <NoSsr>
                   <Typography
                     as={"time"}
-                    className={clsx(css["t-minor"], css["t-medium"])}
+                    color={"minor"}
                     dateTime={story.edited_at || story.created_at}
                     level={"body2"}
                     title={format_date(story.edited_at || story.created_at)}
+                    weight={"medium"}
                   >
                     Edited{" "}
                     {format_date(
@@ -399,14 +392,11 @@ const Footer = (props: StoryProps): React.ReactElement => {
                   user?.wpm
                 )} min read`}
                 as={"span"}
-                className={clsx(
-                  css["flex-center"],
-                  css["t-medium"],
-                  css["t-minor"],
-                  styles.stat
-                )}
+                className={clsx(css["flex-center"], styles.stat)}
+                color={"minor"}
                 level={"body2"}
                 title={`${get_read_time(story.word_count, user?.wpm)} min read`}
+                weight={"medium"}
               >
                 <ClockIcon />
                 {get_read_time(story.word_count, user?.wpm)} min
@@ -414,7 +404,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
               <Typography
                 aria-hidden
                 as={"span"}
-                className={css["t-muted"]}
+                color={"muted"}
                 level={"body2"}
               >
                 &bull;
@@ -424,14 +414,11 @@ const Footer = (props: StoryProps): React.ReactElement => {
           <Typography
             aria-label={`${story.read_count} reads`}
             as={"span"}
-            className={clsx(
-              css["flex-center"],
-              css["t-medium"],
-              css["t-minor"],
-              styles.stat
-            )}
+            className={clsx(css["flex-center"], styles.stat)}
+            color={"minor"}
             level={"body2"}
             title={`${abbreviate_number(story.read_count)} reads`}
+            weight={"medium"}
           >
             <ReadsIcon />
             {abbreviate_number(story.read_count)}
@@ -443,7 +430,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
                   <Typography
                     aria-hidden
                     as={"span"}
-                    className={css["t-muted"]}
+                    color={"muted"}
                     level={"body2"}
                   >
                     &bull;
@@ -451,14 +438,11 @@ const Footer = (props: StoryProps): React.ReactElement => {
                   <Typography
                     aria-label={`${story.like_count} likes`}
                     as={"span"}
-                    className={clsx(
-                      css["flex-center"],
-                      css["t-medium"],
-                      css["t-minor"],
-                      styles.stat
-                    )}
+                    className={clsx(css["flex-center"], styles.stat)}
+                    color={"minor"}
                     level={"body2"}
                     title={`${abbreviate_number(story.like_count)} likes`}
+                    weight={"medium"}
                   >
                     <HeartIcon />
                     {abbreviate_number(story.like_count)}
@@ -470,7 +454,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
                   <Typography
                     aria-hidden
                     as={"span"}
-                    className={css["t-muted"]}
+                    color={"muted"}
                     level={"body2"}
                   >
                     &bull;
@@ -478,14 +462,11 @@ const Footer = (props: StoryProps): React.ReactElement => {
                   <Typography
                     aria-label={`${story.comment_count} comments`}
                     as={"span"}
-                    className={clsx(
-                      css["flex-center"],
-                      css["t-medium"],
-                      css["t-minor"],
-                      styles.stat
-                    )}
+                    className={clsx(css["flex-center"], styles.stat)}
+                    color={"minor"}
                     level={"body2"}
                     title={`${abbreviate_number(story.comment_count)} comments`}
+                    weight={"medium"}
                   >
                     <CommentIcon />
                     {abbreviate_number(story.comment_count)}
@@ -501,12 +482,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
           {is_mobile ? (
             <Grow />
           ) : (
-            <Typography
-              aria-hidden
-              as={"span"}
-              className={css["t-muted"]}
-              level={"body2"}
-            >
+            <Typography aria-hidden as={"span"} color={"muted"} level={"body2"}>
               &bull;
             </Typography>
           )}
@@ -688,7 +664,8 @@ const Story = (props: StoryProps): React.ReactElement => {
               <Meta {...props} is_draft={is_draft} />
               <Typography
                 as={NextLink}
-                className={clsx(css["t-minor"], styles.description)}
+                className={styles.description}
+                color={"minor"}
                 href={story_url}
                 level={"body2"}
                 tabIndex={-1}

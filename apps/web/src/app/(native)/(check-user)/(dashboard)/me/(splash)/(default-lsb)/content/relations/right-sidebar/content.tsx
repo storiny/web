@@ -15,10 +15,7 @@ const ContentRelationsRightSidebarContent = (
   const { pending_friend_request_count } = props;
   return (
     <React.Fragment>
-      <Typography
-        className={clsx(css["t-medium"], css["t-minor"])}
-        level={"body2"}
-      >
+      <Typography color={"minor"} level={"body2"} weight={"medium"}>
         Friend requests
       </Typography>
       <div className={css["flex-col"]}>

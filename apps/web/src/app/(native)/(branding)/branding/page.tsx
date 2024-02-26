@@ -35,7 +35,7 @@ const Page = (): React.ReactElement => (
         style={{ objectFit: "cover" }}
       />
       <div className={styles.container}>
-        <Typography className={css["t-minor"]} level={"body2"}>
+        <Typography color={"minor"} level={"body2"}>
           Version: 14 April, 2023
         </Typography>
       </div>

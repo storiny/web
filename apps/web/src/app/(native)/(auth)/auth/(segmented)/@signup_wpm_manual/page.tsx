@@ -19,7 +19,7 @@ const Page = (): React.ReactElement => {
         Set your reading speed
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         The speed at which you read is measured in words per minute. Unless you
         are a superhuman, it usually falls between 70 and 320 words per minute.
         Should you find your reading pace to be too fast or too slow, please{" "}

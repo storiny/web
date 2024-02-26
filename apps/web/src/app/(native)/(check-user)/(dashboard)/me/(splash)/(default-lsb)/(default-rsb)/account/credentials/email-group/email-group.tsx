@@ -38,7 +38,7 @@ const EmailSettingsModal = ({
 }): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         {updated
           ? "Your e-mail has been updated. You have been logged out and will need to log in again using your new e-mail."
           : "Enter your new e-mail address along with your current password."}
@@ -220,7 +220,7 @@ const CredentialsEmailGroup = (props: EmailGroupProps): React.ReactElement => {
       {!has_password && (
         <React.Fragment>
           <Spacer orientation={"vertical"} size={1.5} />
-          <Typography className={css["t-minor"]} level={"body3"}>
+          <Typography color={"minor"} level={"body3"}>
             To modify e-mail, you need to add a password to your account.
           </Typography>
         </React.Fragment>

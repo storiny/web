@@ -77,7 +77,7 @@ const User = (props: UserProps): React.ReactElement => {
               )}
             </Typography>
             {is_mobile ? (
-              <Typography className={css["t-minor"]} ellipsis>
+              <Typography color={"minor"} ellipsis>
                 @{user.username}
               </Typography>
             ) : (
@@ -149,7 +149,8 @@ const User = (props: UserProps): React.ReactElement => {
       {Boolean((user.rendered_bio || "").trim()) && (
         <Typography
           as={NextLink}
-          className={clsx(css["t-minor"], styles.bio)}
+          className={styles.bio}
+          color={"minor"}
           href={user_url}
           level={"body2"}
         >

@@ -75,7 +75,7 @@ const Account = ({
         <Spacer orientation={"vertical"} size={0.25} />
         <span className={clsx(css["flex-center"], styles.status)}>
           {connected && <CheckIcon />}
-          <Typography as={"span"} className={css["t-minor"]} level={"body3"}>
+          <Typography as={"span"} color={"minor"} level={"body3"}>
             {connected ? "Connected" : "Not connected"}
           </Typography>
         </span>

@@ -115,7 +115,7 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
               slot_props?.fallback?.className
             )}
           >
-            <Typography className={css["t-minor"]} level={"body2"}>
+            <Typography color={"minor"} level={"body2"}>
               Image not available
             </Typography>
           </Fallback>
@@ -137,7 +137,7 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
               Content warning
             </Typography>
             <Spacer orientation={"vertical"} size={0.5} />
-            <Typography className={css["t-medium"]} level={"body2"}>
+            <Typography level={"body2"} weight={"medium"}>
               {ASSET_RATING_DESCRIPTION_MAP[rating!]}
             </Typography>
             <Spacer orientation={"vertical"} size={2} />

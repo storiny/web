@@ -152,7 +152,7 @@ const Footer = (props: FooterProps): React.ReactElement => {
         </div>
         <Divider />
         <div className={clsx(styles.copyright)}>
-          <Typography className={css["t-minor"]} level={"body2"}>
+          <Typography color={"minor"} level={"body2"}>
             © {new Date().getFullYear()} Storiny. All rights reserved.
           </Typography>
           <IconButton

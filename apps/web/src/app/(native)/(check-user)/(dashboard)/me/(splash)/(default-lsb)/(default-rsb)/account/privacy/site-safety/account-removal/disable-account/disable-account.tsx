@@ -29,7 +29,7 @@ const DisableAccountModal = ({
 }): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         {disabled
           ? "Your account has been disabled and you have been logged out."
           : "You need to confirm your password to temporarily disable your account. You can log back in at any time to re-enable your account."}

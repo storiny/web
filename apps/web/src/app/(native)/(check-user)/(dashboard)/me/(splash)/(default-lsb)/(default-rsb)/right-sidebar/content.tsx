@@ -12,7 +12,7 @@ import styles from "./right-sidebar.module.scss";
 
 const SuspendedDashboardRightSidebarContent = (): React.ReactElement => (
   <div className={clsx(css["flex-col"], styles.content)}>
-    <Typography className={clsx(css["t-bold"], css["t-minor"])} level={"body2"}>
+    <Typography color={"minor"} level={"body2"} weight={"bold"}>
       Recommended support resources
     </Typography>
     <div className={clsx(css["flex-col"], styles.resources)}>

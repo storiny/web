@@ -70,9 +70,10 @@ const Blog = (props: BlogProps): React.ReactElement => {
               {blog.name}
             </Typography>
             <Typography
-              className={clsx(css["t-medium"], css.ellipsis)}
+              className={css.ellipsis}
               color={"minor"}
               level={"body2"}
+              weight={"medium"}
             >
               {blog_url} &bull;{" "}
               {is_self ? "Owner" : blog.is_editor ? "Editor" : "Writer"}
@@ -84,7 +85,8 @@ const Blog = (props: BlogProps): React.ReactElement => {
         {Boolean((blog.description || "").trim()) && (
           <Typography
             as={NextLink}
-            className={clsx(css["t-minor"], styles.description)}
+            className={styles.description}
+            color={"minor"}
             href={`https://${blog_url}`}
             level={"body2"}
           >

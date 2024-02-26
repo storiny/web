@@ -16,7 +16,7 @@ const Page = (): React.ReactElement => (
       E-mail verified
     </Typography>
     <Spacer orientation={"vertical"} size={0.5} />
-    <Typography className={css["t-minor"]} level={"body2"}>
+    <Typography color={"minor"} level={"body2"}>
       Your e-mail has been successfully verified, and your account is now
       active.
     </Typography>

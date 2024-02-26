@@ -24,10 +24,7 @@ import styles from "./navigation-screen.module.scss";
 
 const GroupComponent = ({ group }: { group: Group }): React.ReactElement => (
   <div className={clsx(css["flex-col"], styles["navigation-group"])}>
-    <Typography
-      className={clsx(css["t-medium"], css["t-minor"])}
-      level={"body2"}
-    >
+    <Typography color={"minor"} level={"body2"} weight={"medium"}>
       {group.title}
     </Typography>
     <div className={clsx(css["flex-col"], styles["item-container"])}>
@@ -87,7 +84,8 @@ const DashboardNavigationScreen = (): React.ReactElement => {
             ))
           ) : (
             <Typography
-              className={clsx(css["t-center"], css["t-minor"])}
+              className={css["t-center"]}
+              color={"minor"}
               level={"body2"}
               style={{ margin: "24px" }}
             >

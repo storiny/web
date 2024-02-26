@@ -31,10 +31,7 @@ const Appearance = ({
 
   return (
     <div className={css["flex-col"]}>
-      <Typography
-        className={clsx(css["t-minor"], css["t-medium"])}
-        level={"body2"}
-      >
+      <Typography color={"minor"} level={"body2"} weight={"medium"}>
         Appearance
       </Typography>
       <Spacer orientation={"vertical"} size={2} />

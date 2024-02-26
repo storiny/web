@@ -101,9 +101,9 @@ const AccountStatsClient = (): React.ReactElement => {
               <div className={css["flex-col"]}>
                 <Typography
                   as={"h2"}
-                  className={css["t-medium"]}
                   color={"minor"}
                   level={"body2"}
+                  weight={"medium"}
                 >
                   Account follows (last 3 months)
                 </Typography>

@@ -21,7 +21,7 @@ const Page = (): React.ReactElement => {
         Check your inbox
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         If an account is associated with{" "}
         <span className={css["t-medium"]} style={{ wordBreak: "break-all" }}>
           {state.recovery.email}

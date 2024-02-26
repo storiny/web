@@ -29,7 +29,7 @@ const UpdatePasswordModal = ({
 }): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         {updated
           ? "Your password has been updated. You have been logged out and will need to log in again using your new password."
           : "Enter a new password that is at least 6 characters long, along with your current password."}

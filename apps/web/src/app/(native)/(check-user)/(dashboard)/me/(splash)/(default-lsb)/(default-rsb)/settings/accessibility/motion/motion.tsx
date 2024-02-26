@@ -28,7 +28,7 @@ const MotionPreference = (): React.ReactElement => {
         Reduced motion
       </Typography>
       <Spacer orientation={"vertical"} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         Restrict the number and intensity of on-site animations, including live
         statistics, splash screens, and user-generated animated media.
       </Typography>

@@ -80,10 +80,10 @@ const FriendRequest = (props: FriendRequestProps): React.ReactElement => {
           size={"md"}
         />
         <div className={css["flex-col"]}>
-          <Typography className={css["t-medium"]} ellipsis level={"body2"}>
+          <Typography ellipsis level={"body2"} weight={"medium"}>
             {user.name}
           </Typography>
-          <Typography className={css["t-minor"]} ellipsis level={"body3"}>
+          <Typography color={"minor"} ellipsis level={"body3"}>
             @{user.username} &bull;{" "}
             <DateTime
               date={friend_request.created_at}

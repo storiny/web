@@ -73,7 +73,8 @@ const Enable2FAModal = (): React.ReactElement => {
           style={{ minHeight: "96px" }}
         >
           <Typography
-            className={clsx(css["t-minor"], css["t-center"])}
+            className={css["t-center"]}
+            color={"minor"}
             level={"body2"}
           >
             {error}
@@ -101,7 +102,7 @@ const Enable2FAModal = (): React.ReactElement => {
           <Divider orientation={"vertical"} />
           <div className={css["flex-col"]}>
             <Description asChild>
-              <Typography className={css["t-minor"]} level={"body2"}>
+              <Typography color={"minor"} level={"body2"}>
                 Download an authenticator app (such as{" "}
                 <Link
                   href={"https://authy.com/"}

@@ -59,7 +59,7 @@ const Page = (): React.ReactElement => {
         Glad to see you again!
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         You have previously deactivated your account. Reactivate your account to
         start reading stories again.
       </Typography>

@@ -16,10 +16,7 @@ import SymbolItem from "./symbol";
 
 const Insert = ({ disabled }: { disabled?: boolean }): React.ReactElement => (
   <div className={css["flex-col"]}>
-    <Typography
-      className={clsx(css["t-minor"], css["t-medium"])}
-      level={"body2"}
-    >
+    <Typography color={"minor"} level={"body2"} weight={"medium"}>
       Insert
     </Typography>
     <Spacer orientation={"vertical"} size={2} />

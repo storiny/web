@@ -49,6 +49,7 @@ const AnchorTab = ({
 
 const BlogLeftSidebar = ({
   className,
+  is_homepage,
   ...rest
 }: BlogLeftSidebarProps): React.ReactElement | null => {
   const blog = use_blog_context();
@@ -61,7 +62,7 @@ const BlogLeftSidebar = ({
       className={clsx(
         styles.x,
         styles["left-sidebar"],
-        blog.banner_id && styles["has-banner"],
+        blog.banner_id && is_homepage && styles["has-banner"],
         className
       )}
     >
@@ -114,7 +115,7 @@ const BlogLeftSidebar = ({
       {!blog.hide_storiny_branding && (
         <React.Fragment>
           <Separator />
-          <Typography className={css["t-minor"]} level={"body3"}>
+          <Typography color={"minor"} level={"body3"}>
             This blog is powered by Storiny.
           </Typography>
           <Button

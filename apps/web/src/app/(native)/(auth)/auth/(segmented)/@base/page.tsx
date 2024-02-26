@@ -76,7 +76,7 @@ const Page = (): React.ReactElement => {
         Welcome to Storiny
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         How would you like to proceed?
       </Typography>
       <Spacer orientation={"vertical"} size={5} />

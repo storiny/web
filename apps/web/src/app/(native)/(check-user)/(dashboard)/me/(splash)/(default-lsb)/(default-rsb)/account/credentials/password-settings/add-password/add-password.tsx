@@ -46,7 +46,7 @@ const AddPasswordModal = (): React.ReactElement => {
   return (
     <React.Fragment>
       <Description asChild>
-        <Typography className={css["t-minor"]} level={"body2"}>
+        <Typography color={"minor"} level={"body2"}>
           {SCREEN_MESSAGE_MAP[screen]}
         </Typography>
       </Description>

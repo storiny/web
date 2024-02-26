@@ -11,7 +11,7 @@ import styles from "./footer.module.scss";
 
 const LegalFooter = (): React.ReactElement => (
   <footer className={clsx(css["flex-center"], styles.footer)}>
-    <Typography className={css["t-minor"]} level={"body2"}>
+    <Typography color={"minor"} level={"body2"}>
       Legal &copy; {new Date().getFullYear()} Storiny
     </Typography>
     <Grow />

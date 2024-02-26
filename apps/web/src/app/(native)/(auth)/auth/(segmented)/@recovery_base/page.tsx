@@ -18,7 +18,7 @@ const Page = (): React.ReactElement => {
         Recover your account
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         In order to send you a confirmation e-mail, we require the e-mail
         address associated with your account.
       </Typography>

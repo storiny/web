@@ -123,7 +123,8 @@ const Tag = (props: TagProps): React.ReactElement => {
         <NoSsr>
           <Typography
             as={"time"}
-            className={clsx(css["flex-center"], css["t-minor"], styles.stat)}
+            className={clsx(css["flex-center"], styles.stat)}
+            color={"minor"}
             dateTime={tag.created_at}
             level={"body2"}
             title={format_date(tag.created_at)}

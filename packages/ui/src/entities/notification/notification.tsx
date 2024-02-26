@@ -145,7 +145,7 @@ const Notification = (props: NotificationProps): React.ReactElement => {
         <Typography as={"div"} className={styles.content}>
           <NotificationParser content={notification.rendered_content} />
         </Typography>
-        <Typography className={css["t-minor"]} level={"body2"}>
+        <Typography color={"minor"} level={"body2"}>
           <DateTime
             date={notification.created_at}
             format={DateFormat.RELATIVE_CAPITALIZED}

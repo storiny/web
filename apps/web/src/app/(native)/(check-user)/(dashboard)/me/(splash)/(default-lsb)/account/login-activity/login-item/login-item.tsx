@@ -124,10 +124,10 @@ const LoginItem = (props: LoginItemProps): React.ReactElement => {
         {DEVICE_TYPE_ICON_MAP[login.device?.type ?? DeviceType.UNKNOWN]}
         <Spacer />
         <div className={clsx(css["flex-col"], styles.details)}>
-          <Typography className={css["t-medium"]} ellipsis level={"body2"}>
+          <Typography ellipsis level={"body2"} weight={"medium"}>
             {login.device?.display_name || "Unknown device"}
           </Typography>
-          <Typography className={css["t-minor"]} ellipsis level={"body3"}>
+          <Typography color={"minor"} ellipsis level={"body3"}>
             {login.is_active ? (
               <React.Fragment>
                 <span className={clsx(css["t-medium"], styles["active-label"])}>
@@ -166,7 +166,7 @@ const LoginItem = (props: LoginItemProps): React.ReactElement => {
           />
         ) : (
           <div className={css["flex-center"]}>
-            <Typography className={css["t-minor"]} level={"body2"}>
+            <Typography color={"minor"} level={"body2"}>
               Unknown location
             </Typography>
           </div>
@@ -175,7 +175,7 @@ const LoginItem = (props: LoginItemProps): React.ReactElement => {
       {status !== "acknowledged" && !login.is_active ? (
         <div className={css["flex-col"]}>
           <div className={clsx(css["flex-center"], styles["footer-label"])}>
-            <Typography className={css["t-minor"]} level={"body3"}>
+            <Typography color={"minor"} level={"body3"}>
               {status === "revoked" ? "Session revoked" : "Was this you?"}
             </Typography>
           </div>

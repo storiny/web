@@ -146,9 +146,10 @@ const Reply = (props: ReplyProps): React.ReactElement => {
               }
               secondary_text={
                 <Typography
-                  className={clsx(css["t-medium"], css["t-minor"])}
+                  color={"minor"}
                   ellipsis
                   level={"body3"}
+                  weight={"medium"}
                 >
                   {is_static && is_self ? (
                     <Link href={`/${reply.comment?.user?.username}`}>
@@ -176,11 +177,8 @@ const Reply = (props: ReplyProps): React.ReactElement => {
           </div>
           {hidden ? (
             <Typography
-              className={clsx(
-                css["t-minor"],
-                styles.hidden,
-                is_static && styles.static
-              )}
+              className={clsx(styles.hidden, is_static && styles.static)}
+              color={"minor"}
               level={"body2"}
             >
               This reply has been hidden at the request of the story author.{" "}
@@ -208,8 +206,9 @@ const Reply = (props: ReplyProps): React.ReactElement => {
                     <span className={clsx(css["flex-center"], styles.stat)}>
                       <HeartIcon />{" "}
                       <Typography
-                        className={clsx(css["t-medium"], css["t-minor"])}
+                        color={"minor"}
                         level={"body3"}
+                        weight={"medium"}
                       >
                         {abbreviate_number(like_count)}{" "}
                         {like_count === 1 ? "like" : "likes"}

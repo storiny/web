@@ -115,13 +115,9 @@ const Content = (): React.ReactElement => {
         {value === "comments" && (
           <div className={clsx(css["full-h"], css["flex-center"])}>
             <Typography
-              className={clsx(
-                css["t-bold"],
-                css["f-grow"],
-                styles.x,
-                styles["header-label"]
-              )}
+              className={clsx(css["f-grow"], styles.x, styles["header-label"])}
               level={"body2"}
+              weight={"bold"}
             >
               {story.disable_comments ? "No" : abbreviate_number(comment_count)}{" "}
               {comment_count === 1 ? "comment" : "comments"}

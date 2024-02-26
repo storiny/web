@@ -10,7 +10,7 @@ import { handle_api_error } from "~/utils/handle-api-error";
 import {
   PROVIDER_DISPLAY_NAME_MAP,
   PROVIDER_ICON_MAP
-} from "../../../../../../../../../providers";
+} from "../../../../../../../../../../providers";
 import { ConnectionButtonProps } from "./connection-button.props";
 
 const ConnectionButton = ({

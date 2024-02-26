@@ -40,7 +40,7 @@ const PrimaryTypeface = (): React.ReactElement => (
         src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/branding/typography/primary-typeface.svg`}
       />
       <Spacer orientation={"vertical"} size={2} />
-      <Typography as={"figcaption"} className={css["t-minor"]} level={"body2"}>
+      <Typography as={"figcaption"} color={"minor"} level={"body2"}>
         Typeface: Cabinet Grotesk
       </Typography>
     </figure>
@@ -89,7 +89,7 @@ const PrimaryTypeface = (): React.ReactElement => (
           Cabinet Grotesk Black
         </Typography>
       </div>
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         Large Headline — Font weight: Black, Line height: 112%
       </Typography>
     </div>
@@ -121,7 +121,7 @@ const PrimaryTypeface = (): React.ReactElement => (
           Cabinet Grotesk Extrabold
         </Typography>
       </div>
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         Headline — Font weight: Extrabold, Line height: 112%
       </Typography>
     </div>
@@ -162,7 +162,7 @@ const PrimaryTypeface = (): React.ReactElement => (
           style={{ maxHeight: "96px" }}
         />
       </figure>
-      <Typography as={"figcaption"} className={css["t-minor"]} level={"body2"}>
+      <Typography as={"figcaption"} color={"minor"} level={"body2"}>
         Username with the Storiny icon.
       </Typography>
     </div>
@@ -188,7 +188,7 @@ const PrimaryTypeface = (): React.ReactElement => (
         alt={""}
         src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/branding/lockups/avatar-template`}
       />
-      <Typography as={"figcaption"} className={css["t-minor"]} level={"body2"}>
+      <Typography as={"figcaption"} color={"minor"} level={"body2"}>
         Username with an avatar masked by the Storiny icon.
       </Typography>
     </figure>
@@ -206,7 +206,7 @@ const PrimaryTypeface = (): React.ReactElement => (
         alt={""}
         src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/branding/lockups/samples`}
       />
-      <Typography as={"figcaption"} className={css["t-minor"]} level={"body2"}>
+      <Typography as={"figcaption"} color={"minor"} level={"body2"}>
         Some examples demonstrating the usage of the username with avatar
         version, featuring real avatars. Image credits (from left to right):{" "}
         <Link
@@ -271,7 +271,7 @@ const SecondaryTypeface = (): React.ReactElement => (
         src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/branding/typography/secondary-typeface.svg`}
       />
       <Spacer orientation={"vertical"} size={2} />
-      <Typography as={"figcaption"} className={css["t-minor"]} level={"body2"}>
+      <Typography as={"figcaption"} color={"minor"} level={"body2"}>
         Typeface: Satoshi
       </Typography>
     </figure>

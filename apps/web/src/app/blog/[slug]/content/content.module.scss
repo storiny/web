@@ -23,7 +23,7 @@
   width: auto;
   overflow-x: auto;
   border-top: 1px solid var(--divider);
-  padding-bottom: 12px;
+  margin-bottom: 12px; // Padding for next element
   margin-inline: var(--grid-compensation);
 }
 

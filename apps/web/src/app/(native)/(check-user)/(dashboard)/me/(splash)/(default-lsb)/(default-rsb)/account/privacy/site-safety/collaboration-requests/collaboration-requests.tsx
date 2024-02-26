@@ -66,7 +66,7 @@ const CollaborationRequests = ({
         Collaboration requests
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         Choose who can send you a collaboration request, asking you to
         contribute to their stories.
       </Typography>

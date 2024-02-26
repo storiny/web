@@ -1,23 +1,23 @@
-.meta {
-  gap: 8px;
+.timeline {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--divider);
+  padding: 12px;
+  gap: 24px;
 }
 
-.properties {
-  gap: 18px;
+.item {
+  gap: 4px;
 }
 
-.stats {
-  gap: 4px 16px;
-}
-
-.actions {
-  gap: 8px;
+.months {
   flex-wrap: wrap;
-  max-width: 100%;
+  gap: 6px 10px;
+  padding-block: 4px;
 }
 
-.x {
-  &.meta-icon {
-    --icon-size: 24px;
+.month {
+  &:not(.available) {
+    pointer-events: none;
+    opacity: 0.5;
   }
 }

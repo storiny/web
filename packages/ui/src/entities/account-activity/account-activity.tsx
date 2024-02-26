@@ -76,7 +76,7 @@ const AccountActivity = (props: AccountActivityProps): React.ReactElement => {
             </span>
           </Typography>
         </Typography>
-        <Typography as={"div"} className={css["t-minor"]} level={"body2"}>
+        <Typography as={"div"} color={"minor"} level={"body2"}>
           <AccountActivityParser content={account_activity.description} />
         </Typography>
       </div>

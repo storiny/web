@@ -6,24 +6,19 @@ import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import Button from "~/components/button";
-import IconButton from "~/components/icon-button";
 import Link from "~/components/link";
 import Separator from "~/components/separator";
 import Typography from "~/components/typography";
 import ChevronIcon from "~/icons/chevron";
-import MailPlusIcon from "~/icons/mail-plus";
-import UserPlusIcon from "~/icons/user-plus";
 import UsersIcon from "~/icons/users";
-import BlogConnections from "~/layout/common/blog-connections";
+import DefaultBlogRightSidebarContent from "~/layout/blog-right-sidebar/content";
 import RightSidebar, {
   TitleWithIcon,
   UserWithActionSkeleton
 } from "~/layout/right-sidebar";
 import rsb_styles from "~/layout/right-sidebar/default-content/default-content.module.scss";
 import UserWithAction from "~/layout/right-sidebar/user-with-action";
-import { boolean_action, use_get_blog_editors_query } from "~/redux/features";
-import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import { use_get_blog_editors_query } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
@@ -72,30 +67,9 @@ const Editors = (): React.ReactElement | null => {
   );
 };
 
-const FollowButton = (): React.ReactElement => {
-  const blog = use_blog_context();
-  const dispatch = use_app_dispatch();
-  const is_following = use_app_selector(
-    (state) => state.entities.followed_blogs[blog.id]
-  );
-
-  return (
-    <Button
-      auto_size
-      check_auth
-      decorator={<UserPlusIcon />}
-      onClick={(): void => {
-        dispatch(boolean_action("followed_blogs", blog.id));
-      }}
-      variant={is_following ? "hollow" : "rigid"}
-    >
-      {is_following ? "Unfollow" : "Follow"}
-    </Button>
-  );
-};
-
 const BlogRightSidebar = ({
   className,
+  is_homepage,
   ...rest
 }: BlogRightSidebarProps): React.ReactElement | null => {
   const blog = use_blog_context();
@@ -106,37 +80,24 @@ const BlogRightSidebar = ({
       className={clsx(
         styles.x,
         styles["right-sidebar"],
-        blog.banner_id && styles["has-banner"],
+        blog.banner_id && is_homepage && styles["has-banner"],
         className
       )}
       hide_footer={blog.hide_storiny_branding}
       is_blog
     >
-      <Typography as={"h1"} className={styles.name} scale={"lg"}>
-        {blog.name}
-      </Typography>
-      {Boolean((blog.description || "").trim()) && (
-        <Typography color={"minor"} level={"body2"}>
-          {blog.description}
-        </Typography>
-      )}
-      <div className={clsx(css.flex, styles.actions)}>
-        <FollowButton />
-        <IconButton auto_size disabled>
-          <MailPlusIcon />
-        </IconButton>
-      </div>
-      <BlogConnections is_inside_sidebar />
+      <DefaultBlogRightSidebarContent />
       {Boolean(blog.rsb_items?.length) && (
         <>
           <Separator />
           {(blog.rsb_items_label || "").trim() && (
             <Typography
               as={"span"}
-              className={clsx(css["t-minor"], css["t-bold"])}
+              color={"minor"}
               ellipsis
               level={"body2"}
               style={{ width: "100%" }}
+              weight={"bold"}
             >
               {blog.rsb_items_label}
             </Typography>
@@ -162,20 +123,20 @@ const BlogRightSidebar = ({
               )}
               <div className={clsx(css["flex-col"])}>
                 <Typography
-                  className={css["t-medium"]}
                   ellipsis
                   level={"body2"}
                   style={{ width: "100%" }}
+                  weight={"medium"}
                 >
                   {item.primary_text}
                 </Typography>
                 {item.secondary_text && (
                   <Typography
-                    className={css["t-medium"]}
                     color={"minor"}
                     ellipsis
                     level={"body2"}
                     style={{ width: "100%" }}
+                    weight={"medium"}
                   >
                     {item.secondary_text}
                   </Typography>
