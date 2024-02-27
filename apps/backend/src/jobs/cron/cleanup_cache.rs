@@ -16,8 +16,6 @@ use redis::AsyncCommands;
 use std::sync::Arc;
 use tracing::info;
 
-// TODO: Remove this cron job once https://github.com/geofmureithi/apalis/issues/149 is implemented.
-
 pub const CLEANUP_CACHE_JOB_NAME: &str = "j:cleanup:cache";
 
 /// Duration of the expiry (in seconds).

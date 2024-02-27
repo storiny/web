@@ -6,13 +6,10 @@ import React from "react";
 
 import { BlogListSkeleton, VirtualizedBlogList } from "~/common/blog";
 import { dynamic_loader } from "~/common/dynamic";
-import Button from "~/components/button";
-import IconButton from "~/components/icon-button";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import ErrorState from "~/entities/error-state";
 import { use_media_query } from "~/hooks/use-media-query";
-import PlusIcon from "~/icons/plus";
 import {
   get_query_error_type,
   self_action,
@@ -25,6 +22,7 @@ import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import DashboardTitle from "../../dashboard-title";
 import { BlogsProps } from "./blogs.props";
+import CreateBlog from "./create-blog";
 import ContentBlogsRightSidebar from "./right-sidebar";
 import BlogRequests from "./right-sidebar/blog-requests";
 import styles from "./styles.module.scss";
@@ -73,27 +71,7 @@ const StatusHeader = ({
       </Typography>
       <Spacer className={css["f-grow"]} size={2} />
       {is_smaller_than_desktop && <BlogRequests />}
-      {is_smaller_than_desktop ? (
-        <IconButton
-          auto_size
-          check_auth
-          disabled={!can_create_blog}
-          style={{ marginLeft: "-8px" }} // Reduce gap
-        >
-          <PlusIcon />
-        </IconButton>
-      ) : (
-        <Button
-          auto_size
-          check_auth
-          className={clsx(styles.x, styles["header-button"])}
-          decorator={<PlusIcon />}
-          disabled={!can_create_blog}
-          variant={"ghost"}
-        >
-          New blog
-        </Button>
-      )}
+      <CreateBlog disabled={!can_create_blog} />
     </div>
   );
 };
