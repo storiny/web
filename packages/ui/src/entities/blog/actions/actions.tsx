@@ -1,3 +1,4 @@
+import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import React from "react";
 
 import { use_confirmation } from "~/components/confirmation";
@@ -26,7 +27,7 @@ const BlogActions = (props: BlogActionsProps): React.ReactElement | null => {
   const dispatch = use_app_dispatch();
   const current_user = use_app_selector(select_user);
   const is_self = current_user?.id === blog.user_id;
-  const blog_url = blog.domain || `${blog.slug}.storiny.com`;
+  const blog_url = get_blog_url(blog);
   const role = is_self ? "owner" : blog.is_editor ? "editor" : "writer";
   const [leave_blog, { isLoading: is_loading }] = use_leave_blog_mutation();
 
@@ -85,7 +86,7 @@ const BlogActions = (props: BlogActionsProps): React.ReactElement | null => {
       <MenuItem
         as={"a"}
         decorator={<ExternalLinkIcon />}
-        href={`https://${blog_url}`}
+        href={blog_url}
         rel={"noreferrer"}
         target={"_blank"}
       >

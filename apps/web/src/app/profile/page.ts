@@ -11,7 +11,7 @@ const Page = async (): Promise<void> => {
     const user_id = await get_user();
 
     if (!user_id) {
-      redirect("/login");
+      redirect(`/login?to=${encodeURIComponent("/profile")}`);
     }
 
     const { username } = await get_username({ user_id });

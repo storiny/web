@@ -3,6 +3,7 @@
 import { Compartment, EditorState, Extension } from "@codemirror/state";
 import { EditorView, ViewUpdate } from "@codemirror/view";
 import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import { use_blog_context } from "@storiny/web/src/app/blog/[slug]/context";
 import { clsx } from "clsx";
 import { useAtomValue as use_atom_value } from "jotai";
 import { $getNodeByKey as $get_node_by_key, NodeKey } from "lexical";
@@ -69,6 +70,7 @@ const CodeBlockEditor = ({
   const [language_status, set_language_status] = React.useState<
     "loading" | "loaded" | "error"
   >(language === null ? "loaded" : "loading");
+  const blog = use_blog_context();
   const language_compartment = React.useMemo(() => new Compartment(), []);
   const wrap_compartment = React.useMemo(() => new Compartment(), []);
   const theme_compartment = React.useMemo(() => new Compartment(), []);
@@ -323,7 +325,13 @@ const CodeBlockEditor = ({
         data-testid={"code-block-node"}
         ref={resize_observer_ref}
       >
-        <div className={clsx(css["flex-col"], styles.content)}>
+        <div
+          className={clsx(
+            css["flex-col"],
+            styles.content,
+            blog?.is_story_minimal_layout && styles["is-blog"]
+          )}
+        >
           <div className={clsx(css["flex-center"], styles.header)}>
             <div className={clsx(css.flex, styles.info)}>
               <span className={clsx(css["flex-center"], styles.icon)}>

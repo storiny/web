@@ -1,6 +1,7 @@
 export * from "./account-activity";
 export * from "./asset";
 export * from "./blog";
+export * from "./blog-request";
 export * from "./collaboration-request";
 export * from "./comment";
 export * from "./connection";

@@ -15,7 +15,7 @@ const Page = async (): Promise<React.ReactElement | undefined> => {
     const session_token = get_session_token();
 
     if (!session_token) {
-      redirect("/login"); // Early return
+      redirect(`/login?to=${encodeURIComponent("/me/account/login-activity")}`);
     }
 
     const user_id = await get_user();

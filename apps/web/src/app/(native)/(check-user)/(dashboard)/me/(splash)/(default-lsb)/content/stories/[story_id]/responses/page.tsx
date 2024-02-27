@@ -23,7 +23,11 @@ const Page = async ({
     const user_id = await get_user();
 
     if (!user_id) {
-      redirect("/login");
+      redirect(
+        `/login?to=${encodeURIComponent(
+          `/me/content/stories/${story_id}/responses`
+        )}`
+      );
     }
 
     const story_responses_info_response = await get_story_responses_info({

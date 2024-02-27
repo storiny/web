@@ -1,6 +1,7 @@
 import "server-only";
 
 import { ImageSize } from "@storiny/shared";
+import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { notFound as not_found } from "next/dist/client/components/not-found";
 import { headers } from "next/headers";
 import React from "react";
@@ -23,7 +24,7 @@ const generate_json_ld = (
   "@type": "Organization",
   name: blog.name,
   description: blog.description,
-  url: `https://${blog.domain ?? `${blog.slug}.storiny.com`}`,
+  url: get_blog_url(blog),
   logo: blog.logo_id
     ? {
         "@type": "ImageObject",

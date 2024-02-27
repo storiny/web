@@ -1407,6 +1407,230 @@ impl<'de> serde::Deserialize<'de> for GetBlogResponse {
         deserializer.deserialize_struct("blog_def.v1.GetBlogResponse", FIELDS, GeneratedVisitor)
     }
 }
+impl serde::Serialize for GetUserBlogsInfoRequest {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if !self.user_id.is_empty() {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("blog_def.v1.GetUserBlogsInfoRequest", len)?;
+        if !self.user_id.is_empty() {
+            struct_ser.serialize_field("userId", &self.user_id)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for GetUserBlogsInfoRequest {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "user_id",
+            "userId",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            UserId,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "userId" | "user_id" => Ok(GeneratedField::UserId),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = GetUserBlogsInfoRequest;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct blog_def.v1.GetUserBlogsInfoRequest")
+            }
+
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetUserBlogsInfoRequest, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut user_id__ = None;
+                while let Some(k) = map.next_key()? {
+                    match k {
+                        GeneratedField::UserId => {
+                            if user_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("userId"));
+                            }
+                            user_id__ = Some(map.next_value()?);
+                        }
+                    }
+                }
+                Ok(GetUserBlogsInfoRequest {
+                    user_id: user_id__.unwrap_or_default(),
+                })
+            }
+        }
+        deserializer.deserialize_struct("blog_def.v1.GetUserBlogsInfoRequest", FIELDS, GeneratedVisitor)
+    }
+}
+impl serde::Serialize for GetUserBlogsInfoResponse {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if self.blog_count != 0 {
+            len += 1;
+        }
+        if self.pending_blog_request_count != 0 {
+            len += 1;
+        }
+        if self.can_create_blog {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("blog_def.v1.GetUserBlogsInfoResponse", len)?;
+        if self.blog_count != 0 {
+            struct_ser.serialize_field("blogCount", &self.blog_count)?;
+        }
+        if self.pending_blog_request_count != 0 {
+            struct_ser.serialize_field("pendingBlogRequestCount", &self.pending_blog_request_count)?;
+        }
+        if self.can_create_blog {
+            struct_ser.serialize_field("canCreateBlog", &self.can_create_blog)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for GetUserBlogsInfoResponse {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "blog_count",
+            "blogCount",
+            "pending_blog_request_count",
+            "pendingBlogRequestCount",
+            "can_create_blog",
+            "canCreateBlog",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            BlogCount,
+            PendingBlogRequestCount,
+            CanCreateBlog,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "blogCount" | "blog_count" => Ok(GeneratedField::BlogCount),
+                            "pendingBlogRequestCount" | "pending_blog_request_count" => Ok(GeneratedField::PendingBlogRequestCount),
+                            "canCreateBlog" | "can_create_blog" => Ok(GeneratedField::CanCreateBlog),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = GetUserBlogsInfoResponse;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct blog_def.v1.GetUserBlogsInfoResponse")
+            }
+
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetUserBlogsInfoResponse, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut blog_count__ = None;
+                let mut pending_blog_request_count__ = None;
+                let mut can_create_blog__ = None;
+                while let Some(k) = map.next_key()? {
+                    match k {
+                        GeneratedField::BlogCount => {
+                            if blog_count__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("blogCount"));
+                            }
+                            blog_count__ = 
+                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
+                            ;
+                        }
+                        GeneratedField::PendingBlogRequestCount => {
+                            if pending_blog_request_count__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("pendingBlogRequestCount"));
+                            }
+                            pending_blog_request_count__ = 
+                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
+                            ;
+                        }
+                        GeneratedField::CanCreateBlog => {
+                            if can_create_blog__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("canCreateBlog"));
+                            }
+                            can_create_blog__ = Some(map.next_value()?);
+                        }
+                    }
+                }
+                Ok(GetUserBlogsInfoResponse {
+                    blog_count: blog_count__.unwrap_or_default(),
+                    pending_blog_request_count: pending_blog_request_count__.unwrap_or_default(),
+                    can_create_blog: can_create_blog__.unwrap_or_default(),
+                })
+            }
+        }
+        deserializer.deserialize_struct("blog_def.v1.GetUserBlogsInfoResponse", FIELDS, GeneratedVisitor)
+    }
+}
 impl serde::Serialize for LeftSidebarItem {
     #[allow(deprecated)]
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>

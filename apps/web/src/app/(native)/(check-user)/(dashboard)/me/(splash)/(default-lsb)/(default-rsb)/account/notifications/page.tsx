@@ -14,7 +14,7 @@ const Page = async (): Promise<React.ReactElement | undefined> => {
     const user_id = await get_user();
 
     if (!user_id) {
-      redirect("/login");
+      redirect(`/login?to=${encodeURIComponent("/me/account/notifications")}`);
     }
 
     const notification_settings_response = await get_notification_settings({

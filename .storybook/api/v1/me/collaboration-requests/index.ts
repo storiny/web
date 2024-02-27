@@ -31,21 +31,21 @@ worker.use(
 
 worker.use(
   rest.post(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/collaboration-requests/:user_id`,
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/collaboration-requests/:request_id`,
     (req, res, ctx) => res(ctx.delay(750), ctx.status(204)),
   ),
 );
 
 worker.use(
   rest.delete(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/collaboration-requests/:user_id`,
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/collaboration-requests/:request_id`,
     (req, res, ctx) => res(ctx.delay(750), ctx.status(204)),
   ),
 );
 
 worker.use(
   rest.post(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/collaboration-requests/:user_id/cancel`,
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/collaboration-requests/:request_id/cancel`,
     (req, res, ctx) => res(ctx.delay(750), ctx.status(204)),
   ),
 );

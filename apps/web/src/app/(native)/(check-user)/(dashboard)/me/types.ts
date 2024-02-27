@@ -7,6 +7,7 @@ type AccountSegment =
   | "login-activity";
 type SiteSettingsSegment = "appearance" | "accessibility";
 type ContentSegment =
+  | "blogs"
   | "drafts"
   | "stories"
   | "contributions"

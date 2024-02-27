@@ -23,6 +23,8 @@ import { get_cdn_url } from "~/utils/get-cdn-url";
 import styles from "./image.module.scss";
 import { ImageProps } from "./image.props";
 
+const IMAGE_CACHE = new Set<string>([]);
+
 const ASSET_RATING_DESCRIPTION_MAP: Record<AssetRating, string> = {
   [AssetRating.VIOLENCE /*         */]:
     "This image may contain violent content.",
@@ -52,7 +54,6 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
     ...rest
   } = props;
   const user = use_app_selector(select_user);
-  const [status, set_status] = React.useState<ImageLoadingStatus>("loading");
   const [show_overlay, set_show_overlay] = React.useState<boolean>(
     typeof rating !== "undefined" &&
       [
@@ -61,17 +62,23 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
         AssetRating.VIOLENCE
       ].includes(rating)
   );
-  let final_src = src;
-
-  if (img_key) {
-    final_src = get_cdn_url(img_key, size);
-  }
+  const final_src = img_key ? get_cdn_url(img_key, size) : src;
+  const is_image_cached = IMAGE_CACHE.has(final_src || "");
+  const [status, set_status] = React.useState<ImageLoadingStatus>(
+    is_image_cached ? "loaded" : "loading"
+  );
 
   React.useEffect(() => {
     if (user?.allow_sensitive_content) {
       set_show_overlay(false);
     }
   }, [user?.allow_sensitive_content]);
+
+  React.useEffect(() => {
+    if (final_src && status === "loaded") {
+      IMAGE_CACHE.add(final_src);
+    }
+  }, [status, final_src]);
 
   return (
     <Root
@@ -80,6 +87,7 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
       className={clsx(
         styles.image,
         status === "loaded" && styles.loaded,
+        is_image_cached && styles["no-animation"],
         className
       )}
       ref={ref}
@@ -101,7 +109,9 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
               styles["native-image"],
               slot_props?.image?.className
             )}
-            onLoadingStatusChange={set_status}
+            onLoadingStatusChange={(next_status): void =>
+              status === "loaded" ? undefined : set_status(next_status)
+            }
             ref={img_ref}
             src={final_src}
           />

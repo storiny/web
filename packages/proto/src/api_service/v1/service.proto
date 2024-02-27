@@ -95,6 +95,10 @@ service ApiService {
    */
   rpc GetUserRelationsInfo(user_def.v1.GetUserRelationsInfoRequest) returns (user_def.v1.GetUserRelationsInfoResponse) {}
   /**
+   * Returns the user's blogs details
+   */
+  rpc GetUserBlogsInfo(blog_def.v1.GetUserBlogsInfoRequest) returns (blog_def.v1.GetUserBlogsInfoResponse) {}
+  /**
    * Returns the user's block count
    */
   rpc GetUserBlockCount(user_def.v1.GetUserBlockCountRequest) returns (user_def.v1.GetUserBlockCountResponse) {}

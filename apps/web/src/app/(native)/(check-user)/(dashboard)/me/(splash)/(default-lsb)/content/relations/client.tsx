@@ -40,12 +40,12 @@ import { abbreviate_number } from "~/utils/abbreviate-number";
 import DashboardTitle from "../../dashboard-title";
 import { RelationsProps } from "./relations.props";
 import ContentRelationsRightSidebar from "./right-sidebar";
+import FriendRequests from "./right-sidebar/friend-requests";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
   loading: dynamic_loader()
 });
-const FriendRequests = dynamic(() => import("./right-sidebar/friend-requests"));
 
 export type RelationsTabValue = "followers" | "following" | "friends";
 export type RelationsSortValue = "popular" | "recent" | "old";

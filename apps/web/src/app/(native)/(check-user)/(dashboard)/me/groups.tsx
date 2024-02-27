@@ -4,6 +4,7 @@ import React from "react";
 import AccessibilityIcon from "~/icons/accessibility";
 import BanIcon from "~/icons/ban";
 import BellIcon from "~/icons/bell";
+import BlogIcon from "~/icons/blog";
 import BooksIcon from "~/icons/books";
 import BrushIcon from "~/icons/brush";
 import CommentIcon from "~/icons/comment";
@@ -94,6 +95,7 @@ const SITE_SETTINGS_GROUP: Group = {
 const CONTENT_GROUP: Group = {
   title: "Your content",
   items: [
+    { title: "Blogs", value: "content/blogs", decorator: <BlogIcon /> },
     {
       title: "Drafts",
       value: "content/drafts",

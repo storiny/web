@@ -23,7 +23,11 @@ const Page = async ({
     const user_id = await get_user();
 
     if (!user_id) {
-      redirect("/login");
+      redirect(
+        `/login?to=${encodeURIComponent(
+          `/me/content/stories/${story_id}/stats`
+        )}`
+      );
     }
 
     await validate_story({

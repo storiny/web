@@ -16,7 +16,7 @@ const Page = async (): Promise<React.ReactElement | undefined> => {
     const user_id = await get_user();
 
     if (!user_id) {
-      redirect("/login");
+      redirect(`/login?to=${encodeURIComponent("/new")}`);
     }
 
     const draft_response = await create_draft({ user_id });

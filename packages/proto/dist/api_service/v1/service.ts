@@ -9,7 +9,14 @@ import type {
   UntypedServiceImplementation,
 } from "@grpc/grpc-js";
 import _m0 from "protobufjs/minimal";
-import { GetBlogArchiveRequest, GetBlogArchiveResponse, GetBlogRequest, GetBlogResponse } from "../../blog_def/v1/def";
+import {
+  GetBlogArchiveRequest,
+  GetBlogArchiveResponse,
+  GetBlogRequest,
+  GetBlogResponse,
+  GetUserBlogsInfoRequest,
+  GetUserBlogsInfoResponse,
+} from "../../blog_def/v1/def";
 import { GetCommentRequest, GetCommentResponse } from "../../comment_def/v1/def";
 import { GetConnectionSettingsRequest, GetConnectionSettingsResponse } from "../../connection_settings_def/v1/def";
 import { GetCredentialSettingsRequest, GetCredentialSettingsResponse } from "../../credential_settings_def/v1/def";
@@ -322,6 +329,17 @@ export const ApiServiceService = {
       Buffer.from(GetUserRelationsInfoResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetUserRelationsInfoResponse.decode(value),
   },
+  /** Returns the user's blogs details */
+  getUserBlogsInfo: {
+    path: "/api_service.v1.ApiService/GetUserBlogsInfo",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetUserBlogsInfoRequest) => Buffer.from(GetUserBlogsInfoRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetUserBlogsInfoRequest.decode(value),
+    responseSerialize: (value: GetUserBlogsInfoResponse) =>
+      Buffer.from(GetUserBlogsInfoResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetUserBlogsInfoResponse.decode(value),
+  },
   /** Returns the user's block count */
   getUserBlockCount: {
     path: "/api_service.v1.ApiService/GetUserBlockCount",
@@ -446,6 +464,8 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getFollowedTagCount: handleUnaryCall<GetFollowedTagCountRequest, GetFollowedTagCountResponse>;
   /** Returns the user's relations details */
   getUserRelationsInfo: handleUnaryCall<GetUserRelationsInfoRequest, GetUserRelationsInfoResponse>;
+  /** Returns the user's blogs details */
+  getUserBlogsInfo: handleUnaryCall<GetUserBlogsInfoRequest, GetUserBlogsInfoResponse>;
   /** Returns the user's block count */
   getUserBlockCount: handleUnaryCall<GetUserBlockCountRequest, GetUserBlockCountResponse>;
   /** Returns the user's mute count */
@@ -768,6 +788,22 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetUserRelationsInfoResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the user's blogs details */
+  getUserBlogsInfo(
+    request: GetUserBlogsInfoRequest,
+    callback: (error: ServiceError | null, response: GetUserBlogsInfoResponse) => void,
+  ): ClientUnaryCall;
+  getUserBlogsInfo(
+    request: GetUserBlogsInfoRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetUserBlogsInfoResponse) => void,
+  ): ClientUnaryCall;
+  getUserBlogsInfo(
+    request: GetUserBlogsInfoRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetUserBlogsInfoResponse) => void,
   ): ClientUnaryCall;
   /** Returns the user's block count */
   getUserBlockCount(

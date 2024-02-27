@@ -13,7 +13,9 @@ import {
   GetBlogArchiveRequest,
   GetBlogArchiveResponse,
   GetBlogRequest,
-  GetBlogResponse
+  GetBlogResponse,
+  GetUserBlogsInfoRequest,
+  GetUserBlogsInfoResponse
 } from "@storiny/proto/dist/blog_def/v1/def";
 import {
   GetCommentRequest,
@@ -244,6 +246,11 @@ const grpc_hub = {
       global.grpc_client.getUserRelationsInfo
     )
   ),
+  get_user_blogs_info: cache(
+    promisify<GetUserBlogsInfoRequest, GetUserBlogsInfoResponse>(
+      global.grpc_client.getUserBlogsInfo
+    )
+  ),
   get_username: cache(
     promisify<GetUsernameRequest, GetUsernameResponse>(
       global.grpc_client.getUsername
@@ -293,6 +300,7 @@ export const {
   get_login_activity,
   get_token,
   get_profile,
+  get_user_blogs_info,
   create_draft,
   verify_email,
   get_comment,
@@ -323,6 +331,7 @@ export {
   GetTagResponse,
   GetTokenResponse,
   GetUserBlockCountResponse,
+  GetUserBlogsInfoResponse,
   GetUserIdResponse,
   GetUserMuteCountResponse,
   GetUsernameResponse,

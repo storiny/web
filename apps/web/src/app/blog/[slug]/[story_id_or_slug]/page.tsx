@@ -1,5 +1,6 @@
 import "server-only";
 
+import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { Story } from "@storiny/types";
 import { notFound as not_found, redirect } from "next/navigation";
 import React from "react";
@@ -55,12 +56,7 @@ const Page = async ({
         ? story_response.blog.domain !== slug
         : story_response.blog.slug !== slug
     ) {
-      redirect(
-        `https://${
-          story_response.blog.domain ??
-          `${story_response.blog.slug}.storiny.com`
-        }/${story_response.slug}`
-      );
+      redirect(`${get_blog_url(story_response.blog)}/${story_response.slug}`);
     }
 
     if (

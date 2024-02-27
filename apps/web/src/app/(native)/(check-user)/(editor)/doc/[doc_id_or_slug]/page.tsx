@@ -20,7 +20,7 @@ const Page = async ({
     const user_id = await get_user();
 
     if (!user_id) {
-      redirect("/login");
+      redirect(`/login?to=${encodeURIComponent(`/doc/${doc_id_or_slug}`)}`);
     }
 
     const story_metadata_response = await get_story_metadata({
