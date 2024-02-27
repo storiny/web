@@ -47,12 +47,14 @@ interface EntitiesIntegralState {
 
 interface EntitiesSelfState {
   self_block_count: number;
+  self_blog_count: number;
   self_comment_count: number;
   self_contributable_story_count: number;
   self_deleted_draft_count: number;
   self_deleted_story_count: number;
   self_followed_tag_count: number;
   self_mute_count: number;
+  self_pending_blog_request_count: number;
   self_pending_collaboration_request_count: number;
   self_pending_draft_count: number;
   self_pending_friend_request_count: number;
@@ -99,8 +101,10 @@ export const entities_initial_state: EntitiesState = {
   self_pending_draft_count: /*                */ 0,
   self_pending_friend_request_count: /*       */ 0,
   self_pending_collaboration_request_count: /**/ 0,
+  self_pending_blog_request_count: /*         */ 0,
   self_published_story_count: /*              */ 0,
   self_reply_count: /*                        */ 0,
+  self_blog_count: /*                         */ 0,
   rate_limits: /*                             */ {}
 };
 

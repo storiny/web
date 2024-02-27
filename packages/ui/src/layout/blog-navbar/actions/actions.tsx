@@ -142,7 +142,6 @@ const LoggedInMenu = ({
       </React.Fragment>
     )}
     <Separator />
-    <ThemeToggleItem />
     <MenuItemWithLink
       decorator={<QuestionMarkIcon />}
       href={"mailto:support@storiny.com"}
@@ -180,7 +179,9 @@ const LoggedOutMenu = ({
 
 const SearchAction = (): React.ReactElement => {
   const pathname = use_pathname();
+  const blog = use_blog_context();
   const router = use_app_router();
+  const homepage_path = `/blog/${blog.domain ?? blog.slug}`;
 
   return (
     <IconButton
@@ -188,12 +189,12 @@ const SearchAction = (): React.ReactElement => {
       className={styles.action}
       data-persistent={""}
       onClick={(): void => {
-        if (pathname === "/") {
+        if (pathname === homepage_path) {
           (
             document.getElementById("feed-search") as HTMLInputElement | null
           )?.focus();
         } else {
-          router.push("/?search");
+          router.push(`${homepage_path}/?search`);
         }
       }}
       title={"Search"}
@@ -247,7 +248,23 @@ const Actions = ({
                 {["idle", "loading"].includes(auth_status) ? (
                   <Skeleton height={32} shape={"circular"} width={32} />
                 ) : (
-                  <Avatar className={styles["error-avatar"]}>
+                  <Avatar
+                    className={clsx(
+                      styles.x,
+                      styles.avatar,
+                      styles["error-avatar"],
+                      is_transparent && styles.transparent
+                    )}
+                    slot_props={{
+                      fallback: {
+                        className: clsx(
+                          styles.x,
+                          styles.fallback,
+                          is_transparent && styles.transparent
+                        )
+                      }
+                    }}
+                  >
                     <CloudOffIcon />
                   </Avatar>
                 )}
@@ -271,20 +288,37 @@ const Actions = ({
             <LoggedInMenu
               force_theme={force_theme}
               trigger={
-                <Avatar
-                  alt={""}
+                <button
                   aria-label={"Site and account options"}
-                  as={"button"}
-                  avatar_id={user?.avatar_id}
                   className={clsx(
                     css["focusable"],
                     css["flex-center"],
-                    styles.trigger
+                    styles.trigger,
+                    is_transparent && styles.transparent
                   )}
-                  hex={user?.avatar_hex}
-                  label={user?.name}
                   type={"button"}
-                />
+                >
+                  <Avatar
+                    alt={""}
+                    avatar_id={user?.avatar_id}
+                    className={clsx(
+                      styles.x,
+                      styles.avatar,
+                      is_transparent && styles.transparent
+                    )}
+                    hex={user?.avatar_hex}
+                    label={user?.name}
+                    slot_props={{
+                      fallback: {
+                        className: clsx(
+                          styles.x,
+                          styles.fallback,
+                          is_transparent && styles.transparent
+                        )
+                      }
+                    }}
+                  />
+                </button>
               }
               user={user}
             />

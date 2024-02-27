@@ -1,4 +1,5 @@
 import { ImageSize } from "@storiny/shared";
+import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { Metadata, ResolvingMetadata } from "next";
 import { notFound as not_found } from "next/dist/client/components/not-found";
 
@@ -24,7 +25,7 @@ export const generateMetadata = async ({
       slug
     });
     const parent = await resolving;
-    const blog_url = `https://${blog.domain ?? `${blog.slug}.storiny.com`}`;
+    const blog_url = get_blog_url(blog);
 
     return {
       /* eslint-disable prefer-snakecase/prefer-snakecase */

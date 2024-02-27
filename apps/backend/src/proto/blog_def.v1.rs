@@ -177,4 +177,22 @@ pub struct GetBlogArchiveResponse {
     #[prost(message, repeated, tag="2")]
     pub timeline: ::prost::alloc::vec::Vec<ArchiveTimeline>,
 }
+// Get user blogs info
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetUserBlogsInfoRequest {
+    #[prost(string, tag="1")]
+    pub user_id: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetUserBlogsInfoResponse {
+    #[prost(uint32, tag="1")]
+    pub blog_count: u32,
+    #[prost(uint32, tag="2")]
+    pub pending_blog_request_count: u32,
+    #[prost(bool, tag="3")]
+    pub can_create_blog: bool,
+}
 // @@protoc_insertion_point(module)

@@ -1,4 +1,7 @@
+import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { NextMiddleware, NextResponse } from "next/server";
+
+import { is_valid_blog_slug } from "~/common/utils";
 
 // Third-party frame sources.
 const CSP_FRAME_SRC = [
@@ -53,6 +56,15 @@ export const middleware: NextMiddleware = (request) => {
       );
   }
 
+  // Redirect to blog on the correct domain
+  if (request.nextUrl.pathname.startsWith("/blog/")) {
+    const slug = request.nextUrl.pathname.split("/")[2];
+
+    if (is_valid_blog_slug(slug)) {
+      return NextResponse.redirect(new URL(get_blog_url({ slug })));
+    }
+  }
+
   // Skip adding CSP directives in development environment.
   if (process.env.NODE_ENV === "development") {
     return;
@@ -90,7 +102,8 @@ export const middleware: NextMiddleware = (request) => {
 
   // Blog on custom slug
 
-  const hostname = request?.headers?.get("host");
+  const hostname =
+    request?.headers?.get("x-forwarded-host") || request?.headers?.get("host");
   const native_domains = [
     "storiny.com",
     "www.storiny.com",
@@ -106,8 +119,11 @@ export const middleware: NextMiddleware = (request) => {
 
   if (hostname && !native_domains.includes(hostname)) {
     const url = request.nextUrl.clone();
+    const value = /\.storiny\.com$/i.test(hostname)
+      ? hostname.replace(".storiny.com", "")
+      : hostname;
 
-    request.nextUrl.pathname = `/blog/${hostname}${url.pathname}`;
+    request.nextUrl.pathname = `/blog/${value}${url.pathname}`;
 
     response = NextResponse.rewrite(request.nextUrl, {
       request: {

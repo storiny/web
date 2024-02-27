@@ -106,3 +106,15 @@ message GetBlogArchiveResponse {
   uint32 story_count /*               */ = 1;
   repeated ArchiveTimeline timeline /**/ = 2;
 }
+
+// Get user blogs info
+
+message GetUserBlogsInfoRequest {
+  string user_id = 1;
+}
+
+message GetUserBlogsInfoResponse {
+  uint32 blog_count /*                */ = 1;
+  uint32 pending_blog_request_count /**/ = 2;
+  bool can_create_blog /*             */ = 3;
+}

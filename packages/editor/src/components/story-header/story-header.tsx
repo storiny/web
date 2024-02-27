@@ -1,3 +1,4 @@
+import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { use_blog_context } from "@storiny/web/src/app/blog/[slug]/context";
 import { clsx } from "clsx";
 import { useAtom as use_atom, useAtomValue as use_atom_value } from "jotai";
@@ -64,7 +65,7 @@ const StoryActions = (): React.ReactElement => {
   const is_self = story.user_id === user?.id;
   const blog = use_blog_context();
   const story_url = blog
-    ? `https://${blog.domain ?? `${blog.slug}.storiny.com`}/${story.slug}`
+    ? `${get_blog_url(blog)}/${story.slug}`
     : `${process.env.NEXT_PUBLIC_WEB_URL}/${story.user?.username || "story"}/${
         story.slug
       }`;

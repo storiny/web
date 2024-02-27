@@ -1,4 +1,5 @@
 import { ImageSize } from "@storiny/shared";
+import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import type { Metadata } from "next";
 import { notFound as not_found } from "next/dist/client/components/not-found";
 
@@ -10,7 +11,7 @@ import { get_cdn_url } from "~/utils/get-cdn-url";
 export const generateMetadata = async ({
   params
 }: {
-  params: { slug: string, story_id_or_slug: string; };
+  params: { slug: string; story_id_or_slug: string };
 }): Promise<Metadata> => {
   const { story_id_or_slug, slug } = params;
 
@@ -37,10 +38,7 @@ export const generateMetadata = async ({
         type: "article",
         siteName: story_response.blog.name,
         title: story_response.seo_title || story_response.title,
-        url: `https://${
-          story_response.blog.domain ??
-          `${story_response.blog.slug}.storiny.com`
-        }/${story_response.slug}`,
+        url: `${get_blog_url(story_response.blog)}/${story_response.slug}`,
         description:
           story_response.seo_description || story_response.description,
         // TODO: Replace with dynamic images

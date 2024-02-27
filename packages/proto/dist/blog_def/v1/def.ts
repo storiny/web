@@ -118,6 +118,16 @@ export interface GetBlogArchiveResponse {
   timeline: ArchiveTimeline[];
 }
 
+export interface GetUserBlogsInfoRequest {
+  user_id: string;
+}
+
+export interface GetUserBlogsInfoResponse {
+  blog_count: number;
+  pending_blog_request_count: number;
+  can_create_blog: boolean;
+}
+
 function createBaseBareBlog(): BareBlog {
   return { id: "", slug: "", domain: undefined, name: "" };
 }
@@ -1513,6 +1523,154 @@ export const GetBlogArchiveResponse = {
     const message = createBaseGetBlogArchiveResponse();
     message.story_count = object.story_count ?? 0;
     message.timeline = object.timeline?.map((e) => ArchiveTimeline.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseGetUserBlogsInfoRequest(): GetUserBlogsInfoRequest {
+  return { user_id: "" };
+}
+
+export const GetUserBlogsInfoRequest = {
+  encode(message: GetUserBlogsInfoRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.user_id !== "") {
+      writer.uint32(10).string(message.user_id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetUserBlogsInfoRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetUserBlogsInfoRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.user_id = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetUserBlogsInfoRequest {
+    return { user_id: isSet(object.user_id) ? globalThis.String(object.user_id) : "" };
+  },
+
+  toJSON(message: GetUserBlogsInfoRequest): unknown {
+    const obj: any = {};
+    if (message.user_id !== "") {
+      obj.user_id = message.user_id;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetUserBlogsInfoRequest>, I>>(base?: I): GetUserBlogsInfoRequest {
+    return GetUserBlogsInfoRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetUserBlogsInfoRequest>, I>>(object: I): GetUserBlogsInfoRequest {
+    const message = createBaseGetUserBlogsInfoRequest();
+    message.user_id = object.user_id ?? "";
+    return message;
+  },
+};
+
+function createBaseGetUserBlogsInfoResponse(): GetUserBlogsInfoResponse {
+  return { blog_count: 0, pending_blog_request_count: 0, can_create_blog: false };
+}
+
+export const GetUserBlogsInfoResponse = {
+  encode(message: GetUserBlogsInfoResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.blog_count !== 0) {
+      writer.uint32(8).uint32(message.blog_count);
+    }
+    if (message.pending_blog_request_count !== 0) {
+      writer.uint32(16).uint32(message.pending_blog_request_count);
+    }
+    if (message.can_create_blog === true) {
+      writer.uint32(24).bool(message.can_create_blog);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetUserBlogsInfoResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetUserBlogsInfoResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.blog_count = reader.uint32();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.pending_blog_request_count = reader.uint32();
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.can_create_blog = reader.bool();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetUserBlogsInfoResponse {
+    return {
+      blog_count: isSet(object.blog_count) ? globalThis.Number(object.blog_count) : 0,
+      pending_blog_request_count: isSet(object.pending_blog_request_count)
+        ? globalThis.Number(object.pending_blog_request_count)
+        : 0,
+      can_create_blog: isSet(object.can_create_blog) ? globalThis.Boolean(object.can_create_blog) : false,
+    };
+  },
+
+  toJSON(message: GetUserBlogsInfoResponse): unknown {
+    const obj: any = {};
+    if (message.blog_count !== 0) {
+      obj.blog_count = Math.round(message.blog_count);
+    }
+    if (message.pending_blog_request_count !== 0) {
+      obj.pending_blog_request_count = Math.round(message.pending_blog_request_count);
+    }
+    if (message.can_create_blog === true) {
+      obj.can_create_blog = message.can_create_blog;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetUserBlogsInfoResponse>, I>>(base?: I): GetUserBlogsInfoResponse {
+    return GetUserBlogsInfoResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetUserBlogsInfoResponse>, I>>(object: I): GetUserBlogsInfoResponse {
+    const message = createBaseGetUserBlogsInfoResponse();
+    message.blog_count = object.blog_count ?? 0;
+    message.pending_blog_request_count = object.pending_blog_request_count ?? 0;
+    message.can_create_blog = object.can_create_blog ?? false;
     return message;
   },
 };

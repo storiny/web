@@ -2,6 +2,7 @@ import Editor from "@storiny/editor";
 import { ImageSize, StoryAgeRestriction, StoryLicense } from "@storiny/shared";
 import { CATEGORY_LABEL_MAP } from "@storiny/shared/src/constants/category-icon-map";
 import { LICENSE_LABEL_MAP } from "@storiny/shared/src/constants/license-icon-map";
+import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { Story } from "@storiny/types";
 import { clsx } from "clsx";
 import { decompressSync as decompress_sync } from "fflate";
@@ -25,7 +26,7 @@ const generate_json_ld = ({
   story,
   blog
 }: Pick<Props, "story" | "blog">): WithContext<BlogPosting> => {
-  const blog_url = `https://${blog.domain ?? `${blog.slug}.storiny.com`}`;
+  const blog_url = get_blog_url(blog);
   return {
     /* eslint-disable prefer-snakecase/prefer-snakecase */
     "@context": "https://schema.org",

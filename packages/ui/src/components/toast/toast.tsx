@@ -51,6 +51,7 @@ const Toast = forward_ref<ToastProps, "li">((props, ref) => {
             <span
               {...slot_props?.decorator}
               className={clsx(
+                css["flex-center"],
                 styles.decorator,
                 slot_props?.decorator?.className
               )}

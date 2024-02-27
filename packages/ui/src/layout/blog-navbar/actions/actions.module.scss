@@ -54,12 +54,31 @@
   text-decoration: none;
   user-select: none;
   background: none;
-  border-radius: 32px; // Same as avatar radius
-  padding-inline-end: 6px;
   gap: 6px;
   cursor: pointer;
+
+  &.transparent {
+    border-radius: var(--radius-md);
+    padding: 0;
+  }
+
+  &:not(.transparent) {
+    border-radius: 32px; // Same as avatar radius
+    padding-inline-end: 6px;
+  }
 }
 
 .error-avatar {
   --icon-size: 16px;
+}
+
+.x {
+  &.avatar.transparent {
+    border-radius: var(--radius-md);
+    outline-offset: -1px;
+  }
+
+  &.fallback.transparent {
+    border-radius: var(--radius-md);
+  }
 }

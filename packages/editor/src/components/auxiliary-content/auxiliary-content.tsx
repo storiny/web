@@ -1,5 +1,6 @@
 "use client";
 
+import { use_blog_context } from "@storiny/web/src/app/blog/[slug]/context";
 import { clsx } from "clsx";
 import {
   useAtomValue as use_atom_value,
@@ -83,6 +84,7 @@ const HeaderTabs = ({
 
 const Content = (): React.ReactElement => {
   const story = use_atom_value(story_metadata_atom);
+  const blog = use_blog_context();
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
   const comment_count =
     use_app_selector(
@@ -108,7 +110,13 @@ const Content = (): React.ReactElement => {
 
   return (
     <NoSsr>
-      <header className={clsx(css["flex-col"], styles.header)}>
+      <header
+        className={clsx(
+          css["flex-col"],
+          styles.header,
+          blog?.is_story_minimal_layout && styles["minimal-layout"]
+        )}
+      >
         {is_smaller_than_desktop && (
           <HeaderTabs on_change={set_value} value={value} />
         )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { ImageSize } from "@storiny/shared";
+import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
@@ -20,7 +21,7 @@ const Blog = (props: BlogProps): React.ReactElement => {
   const { className, blog, virtual, ...rest } = props;
   const dispatch = use_app_dispatch();
   const current_user = use_app_selector(select_user);
-  const blog_url = blog.domain || `${blog.slug}.storiny.com`;
+  const blog_url = get_blog_url(blog);
   const is_self = current_user?.id === blog.user_id;
 
   React.useEffect(() => {
@@ -43,7 +44,7 @@ const Blog = (props: BlogProps): React.ReactElement => {
           as={"a"}
           className={clsx(styles.x, styles.logo)}
           hex={blog.logo_hex}
-          href={`https://${blog_url}`}
+          href={blog_url}
           img_key={blog.logo_id}
           rel={"noreferrer"}
           size={ImageSize.W_64}
@@ -61,7 +62,7 @@ const Blog = (props: BlogProps): React.ReactElement => {
         <div className={css.flex}>
           <NextLink
             className={clsx(css["flex-col"])}
-            href={`https://${blog_url}`}
+            href={blog_url}
             rel={"noreferrer"}
             style={{ maxWidth: "calc(100% - 44px)" }}
             target={"_blank"}
@@ -75,7 +76,7 @@ const Blog = (props: BlogProps): React.ReactElement => {
               level={"body2"}
               weight={"medium"}
             >
-              {blog_url} &bull;{" "}
+              {blog_url.replace("https://", "")} &bull;{" "}
               {is_self ? "Owner" : blog.is_editor ? "Editor" : "Writer"}
             </Typography>
           </NextLink>
@@ -87,7 +88,7 @@ const Blog = (props: BlogProps): React.ReactElement => {
             as={NextLink}
             className={styles.description}
             color={"minor"}
-            href={`https://${blog_url}`}
+            href={blog_url}
             level={"body2"}
           >
             {blog.description}

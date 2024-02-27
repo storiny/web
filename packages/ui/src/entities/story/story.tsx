@@ -1,6 +1,7 @@
 "use client";
 
 import { ImageSize } from "@storiny/shared";
+import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { use_app_router } from "@storiny/web/src/common/utils";
 import clsx from "clsx";
 import NextLink from "next/link";
@@ -56,9 +57,7 @@ const get_story_url = (props: StoryProps): string => {
   }
 
   if (story.blog) {
-    return `https://${story.blog.domain || `${story.blog.slug}.storiny.com`}/${
-      story.slug ?? story.id
-    }`;
+    return `${get_blog_url(story.blog)}/${story.slug ?? story.id}`;
   }
 
   return `/${story.user?.username || "story"}/${story.slug ?? story.id}`;

@@ -61,7 +61,7 @@
     border: none !important;
     align-self: stretch;
     outline-offset: calc(
-      -1 * var(--focus-thickness)
+            -1 * var(--focus-thickness)
     ) !important; // Invert focus
   }
 
@@ -90,8 +90,10 @@
 
   @include breakpoints.media("<tablet") {
     &:not(.no-sidenav) {
-      // Exclude sidenav width
-      width: calc(100vw - 72px);
+      @include breakpoints.media(">=mobile") {
+        // Exclude sidenav width
+        width: calc(100vw - 72px);
+      }
     }
 
     &.no-sidenav {
