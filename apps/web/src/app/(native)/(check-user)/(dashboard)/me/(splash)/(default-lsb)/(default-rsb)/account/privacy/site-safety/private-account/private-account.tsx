@@ -83,6 +83,11 @@ const PrivateAccount = ({
               <br />
               When you switch to a private account, your stories will no longer
               be included in the search results.
+              <br />
+              <br />
+              This feature only works on the Storiny network (storiny.com). Your
+              profile and stories will still be accessible on the blogs that you
+              are a member of.
             </React.Fragment>
           }
           label={"Private account"}
