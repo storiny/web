@@ -1,6 +1,5 @@
 "use client";
 
-import { use_blog_context } from "@storiny/web/src/app/blog/[slug]/context";
 import { clsx } from "clsx";
 import {
   useAtomValue as use_atom_value,
@@ -10,6 +9,7 @@ import dynamic from "next/dynamic";
 import React from "react";
 import { useIntersectionObserver as use_intersection_observer } from "react-intersection-observer-hook";
 
+import { use_blog_context } from "~/common/context/blog";
 import { dynamic_loader } from "~/common/dynamic";
 import Divider from "~/components/divider";
 import NoSsr from "~/components/no-ssr";

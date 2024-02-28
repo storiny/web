@@ -1,0 +1,15 @@
+.x {
+  &.logo {
+    --avatar-size: 34px;
+  }
+
+  &.logo, &.fallback {
+    border-radius: var(--radius-md) !important;
+  }
+
+  &.user-dashboard-link {
+    gap: 6px;
+    margin-right: auto;
+    padding-top: 8px;
+  }
+}

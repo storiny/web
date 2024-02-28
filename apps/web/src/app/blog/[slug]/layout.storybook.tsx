@@ -2,7 +2,7 @@ import { Blog } from "@storiny/types";
 import { MOCK_BLOGS } from "@storiny/ui/src/mocks";
 import React from "react";
 
-import BlogContext from "./context";
+import BlogContext from "~/common/context/blog";
 
 const StorybookBlogLayout = ({
   children,

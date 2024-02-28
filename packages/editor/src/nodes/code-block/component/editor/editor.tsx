@@ -3,7 +3,6 @@
 import { Compartment, EditorState, Extension } from "@codemirror/state";
 import { EditorView, ViewUpdate } from "@codemirror/view";
 import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
-import { use_blog_context } from "@storiny/web/src/app/blog/[slug]/context";
 import { clsx } from "clsx";
 import { useAtomValue as use_atom_value } from "jotai";
 import { $getNodeByKey as $get_node_by_key, NodeKey } from "lexical";
@@ -11,6 +10,7 @@ import React from "react";
 import use_resize_observer from "use-resize-observer";
 import { Text as YText } from "yjs";
 
+import { use_blog_context } from "~/common/context/blog";
 import Divider from "~/components/divider";
 import Option from "~/components/option";
 import Select from "~/components/select";

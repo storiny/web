@@ -1,8 +1,9 @@
 "use client";
- 
+
 import dynamic from "next/dynamic";
 import React from "react";
 
+import { use_blog_context } from "~/common/context/blog";
 import { dynamic_loader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
 import ErrorState from "~/entities/error-state";
@@ -10,8 +11,6 @@ import {
   get_query_error_type,
   use_get_blog_archive_query
 } from "~/redux/features";
-
-import { use_blog_context } from "../../context";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
   loading: dynamic_loader()

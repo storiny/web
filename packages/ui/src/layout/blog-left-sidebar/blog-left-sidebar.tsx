@@ -1,7 +1,7 @@
 "use client";
 
 import { ImageSize } from "@storiny/shared";
-import { use_blog_context } from "@storiny/web/src/app/blog/[slug]/context";
+import { use_blog_context } from "@storiny/web/src/common/context/blog";
 import clsx from "clsx";
 import { usePathname as use_pathname } from "next/dist/client/components/navigation";
 import NextLink from "next/link";

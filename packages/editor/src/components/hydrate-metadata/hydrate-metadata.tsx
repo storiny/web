@@ -1,8 +1,8 @@
 import { DocUserRole, Story } from "@storiny/types";
-import { use_blog_context } from "@storiny/web/src/app/blog/[slug]/context";
 import { useHydrateAtoms as use_hydrate_atoms } from "jotai/react/utils";
 import React from "react";
 
+import { use_blog_context } from "~/common/context/blog";
 import { sync_with_story } from "~/redux/features";
 import { use_app_dispatch } from "~/redux/hooks";
 

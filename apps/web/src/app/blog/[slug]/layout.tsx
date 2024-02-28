@@ -7,6 +7,7 @@ import { headers } from "next/headers";
 import React from "react";
 import { Organization, WithContext } from "schema-dts";
 
+import BlogContext from "~/common/context/blog";
 import { get_blog, GetBlogResponse } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
 import { is_valid_blog_slug } from "~/common/utils";
@@ -14,7 +15,6 @@ import { get_user } from "~/common/utils/get-user";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import CriticalFonts from "../../fonts/critical";
-import BlogContext from "./context";
 
 const generate_json_ld = (
   blog: GetBlogResponse
@@ -50,7 +50,7 @@ const BlogLayout = async ({
 
     const user_id = await get_user();
     const blog = await get_blog({
-      slug: params.slug,
+      identifier: params.slug,
       current_user_id: user_id || undefined
     });
 

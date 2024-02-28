@@ -1,9 +1,9 @@
 import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
-import { use_blog_context } from "@storiny/web/src/app/blog/[slug]/context";
 import { clsx } from "clsx";
 import { useAtom as use_atom, useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
+import { use_blog_context } from "~/common/context/blog";
 import Button from "~/components/button";
 import IconButton from "~/components/icon-button";
 import Link from "~/components/link";

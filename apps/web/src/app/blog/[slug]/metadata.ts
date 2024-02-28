@@ -22,7 +22,7 @@ export const generateMetadata = async ({
     }
 
     const blog = await get_blog({
-      slug
+      identifier: slug
     });
     const parent = await resolving;
     const blog_url = get_blog_url(blog);

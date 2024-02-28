@@ -6,6 +6,7 @@ import { useSearchParams as use_search_params } from "next/dist/client/component
 import dynamic from "next/dynamic";
 import React from "react";
 
+import { use_blog_context } from "~/common/context/blog";
 import { dynamic_loader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
 import Divider from "~/components/divider";
@@ -24,7 +25,6 @@ import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import BlogContent from "../content";
-import { use_blog_context } from "../context";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {

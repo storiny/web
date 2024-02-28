@@ -49,7 +49,7 @@ pub struct RightSidebarItem {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetBlogRequest {
     #[prost(string, tag="1")]
-    pub slug: ::prost::alloc::string::String,
+    pub identifier: ::prost::alloc::string::String,
     #[prost(string, optional, tag="2")]
     pub current_user_id: ::core::option::Option<::prost::alloc::string::String>,
 }
