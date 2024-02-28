@@ -31,7 +31,7 @@ message RightSidebarItem {
 }
 
 message GetBlogRequest {
-  string slug /*                    */ = 1;
+  string identifier /*              */ = 1;
   optional string current_user_id /**/ = 2;
 }
 

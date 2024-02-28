@@ -6,6 +6,7 @@ import NextLink from "next/link";
 import { usePathname as use_pathname } from "next/navigation";
 import React from "react";
 
+import { use_blog_context } from "~/common/context/blog";
 import Button from "~/components/button";
 import IconButton from "~/components/icon-button";
 import Tab, { TabProps } from "~/components/tab";
@@ -20,7 +21,6 @@ import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
-import { use_blog_context } from "../context";
 import styles from "./content.module.scss";
 
 const AnchorTab = ({

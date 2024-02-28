@@ -2,6 +2,7 @@
 
 import React from "react";
 
+import { use_blog_context } from "~/common/context/blog";
 import { UserListSkeleton, VirtualizedUserList } from "~/common/user";
 import ErrorState from "~/entities/error-state";
 import PageTitle from "~/entities/page-title";
@@ -10,7 +11,6 @@ import {
   use_get_blog_editors_query
 } from "~/redux/features";
 
-import { use_blog_context } from "../../context";
 import styles from "../archive/styles.module.scss";
 
 const Page = (): React.ReactElement => {

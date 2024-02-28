@@ -28,7 +28,7 @@ export interface RightSidebarItem {
 }
 
 export interface GetBlogRequest {
-  slug: string;
+  identifier: string;
   current_user_id?: string | undefined;
 }
 
@@ -486,13 +486,13 @@ export const RightSidebarItem = {
 };
 
 function createBaseGetBlogRequest(): GetBlogRequest {
-  return { slug: "", current_user_id: undefined };
+  return { identifier: "", current_user_id: undefined };
 }
 
 export const GetBlogRequest = {
   encode(message: GetBlogRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.slug !== "") {
-      writer.uint32(10).string(message.slug);
+    if (message.identifier !== "") {
+      writer.uint32(10).string(message.identifier);
     }
     if (message.current_user_id !== undefined) {
       writer.uint32(18).string(message.current_user_id);
@@ -512,7 +512,7 @@ export const GetBlogRequest = {
             break;
           }
 
-          message.slug = reader.string();
+          message.identifier = reader.string();
           continue;
         case 2:
           if (tag !== 18) {
@@ -532,15 +532,15 @@ export const GetBlogRequest = {
 
   fromJSON(object: any): GetBlogRequest {
     return {
-      slug: isSet(object.slug) ? globalThis.String(object.slug) : "",
+      identifier: isSet(object.identifier) ? globalThis.String(object.identifier) : "",
       current_user_id: isSet(object.current_user_id) ? globalThis.String(object.current_user_id) : undefined,
     };
   },
 
   toJSON(message: GetBlogRequest): unknown {
     const obj: any = {};
-    if (message.slug !== "") {
-      obj.slug = message.slug;
+    if (message.identifier !== "") {
+      obj.identifier = message.identifier;
     }
     if (message.current_user_id !== undefined) {
       obj.current_user_id = message.current_user_id;
@@ -553,7 +553,7 @@ export const GetBlogRequest = {
   },
   fromPartial<I extends Exact<DeepPartial<GetBlogRequest>, I>>(object: I): GetBlogRequest {
     const message = createBaseGetBlogRequest();
-    message.slug = object.slug ?? "";
+    message.identifier = object.identifier ?? "";
     message.current_user_id = object.current_user_id ?? undefined;
     return message;
   },

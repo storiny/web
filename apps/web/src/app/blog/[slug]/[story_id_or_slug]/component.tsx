@@ -9,12 +9,12 @@ import { decompressSync as decompress_sync } from "fflate";
 import React from "react";
 import { BlogPosting, WithContext } from "schema-dts";
 
+import { BlogContextValue, use_blog_context } from "~/common/context/blog";
 import SplashScreen from "~/layout/splash-screen";
 import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import { CC_LICENSE_DOC_MAP } from "../../../(native)/[username]/[id_or_slug]/component";
-import { BlogContextValue, use_blog_context } from "../context";
 
 interface Props {
   blog: BlogContextValue;

@@ -1,10 +1,10 @@
 "use client";
 
-import { use_blog_context } from "@storiny/web/src/app/blog/[slug]/context";
 import { Provider } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
+import { use_blog_context } from "~/common/context/blog";
 import BlogLeftSidebar from "~/layout/blog-left-sidebar";
 import BlogNavbar from "~/layout/blog-navbar";
 import Navbar from "~/layout/navbar";
