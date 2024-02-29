@@ -658,6 +658,9 @@ impl serde::Serialize for GetBlogResponse {
         if self.is_writer {
             len += 1;
         }
+        if self.has_plus_features {
+            len += 1;
+        }
         if self.website_url.is_some() {
             len += 1;
         }
@@ -788,6 +791,9 @@ impl serde::Serialize for GetBlogResponse {
         if self.is_writer {
             struct_ser.serialize_field("isWriter", &self.is_writer)?;
         }
+        if self.has_plus_features {
+            struct_ser.serialize_field("hasPlusFeatures", &self.has_plus_features)?;
+        }
         if let Some(v) = self.website_url.as_ref() {
             struct_ser.serialize_field("websiteUrl", v)?;
         }
@@ -894,6 +900,8 @@ impl<'de> serde::Deserialize<'de> for GetBlogResponse {
             "isEditor",
             "is_writer",
             "isWriter",
+            "has_plus_features",
+            "hasPlusFeatures",
             "website_url",
             "websiteUrl",
             "public_email",
@@ -954,6 +962,7 @@ impl<'de> serde::Deserialize<'de> for GetBlogResponse {
             IsOwner,
             IsEditor,
             IsWriter,
+            HasPlusFeatures,
             WebsiteUrl,
             PublicEmail,
             GithubId,
@@ -1018,6 +1027,7 @@ impl<'de> serde::Deserialize<'de> for GetBlogResponse {
                             "isOwner" | "is_owner" => Ok(GeneratedField::IsOwner),
                             "isEditor" | "is_editor" => Ok(GeneratedField::IsEditor),
                             "isWriter" | "is_writer" => Ok(GeneratedField::IsWriter),
+                            "hasPlusFeatures" | "has_plus_features" => Ok(GeneratedField::HasPlusFeatures),
                             "websiteUrl" | "website_url" => Ok(GeneratedField::WebsiteUrl),
                             "publicEmail" | "public_email" => Ok(GeneratedField::PublicEmail),
                             "githubId" | "github_id" => Ok(GeneratedField::GithubId),
@@ -1080,6 +1090,7 @@ impl<'de> serde::Deserialize<'de> for GetBlogResponse {
                 let mut is_owner__ = None;
                 let mut is_editor__ = None;
                 let mut is_writer__ = None;
+                let mut has_plus_features__ = None;
                 let mut website_url__ = None;
                 let mut public_email__ = None;
                 let mut github_id__ = None;
@@ -1265,6 +1276,12 @@ impl<'de> serde::Deserialize<'de> for GetBlogResponse {
                             }
                             is_writer__ = Some(map.next_value()?);
                         }
+                        GeneratedField::HasPlusFeatures => {
+                            if has_plus_features__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("hasPlusFeatures"));
+                            }
+                            has_plus_features__ = Some(map.next_value()?);
+                        }
                         GeneratedField::WebsiteUrl => {
                             if website_url__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("websiteUrl"));
@@ -1386,6 +1403,7 @@ impl<'de> serde::Deserialize<'de> for GetBlogResponse {
                     is_owner: is_owner__.unwrap_or_default(),
                     is_editor: is_editor__.unwrap_or_default(),
                     is_writer: is_writer__.unwrap_or_default(),
+                    has_plus_features: has_plus_features__.unwrap_or_default(),
                     website_url: website_url__,
                     public_email: public_email__,
                     github_id: github_id__,
