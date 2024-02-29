@@ -23,6 +23,7 @@ import TabsList from "~/components/tabs-list";
 import Typography from "~/components/typography";
 import ErrorState from "~/entities/error-state";
 import { use_debounce } from "~/hooks/use-debounce";
+import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import SearchIcon from "~/icons/search";
 import {
   get_query_error_type,
@@ -372,6 +373,9 @@ const ContentResponsesClient = (props: ResponsesProps): React.ReactElement => {
       : "comments"
   );
   const [page, set_page] = React.useState<number>(1);
+  use_handle_dynamic_state("recent", set_sort);
+  use_handle_dynamic_state("", set_query);
+  use_handle_dynamic_state(1, set_page);
 
   const load_more = React.useCallback(
     () => set_page((prev_state) => prev_state + 1),

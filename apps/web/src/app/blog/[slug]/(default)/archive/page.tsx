@@ -7,6 +7,7 @@ import { use_blog_context } from "~/common/context/blog";
 import { dynamic_loader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
 import ErrorState from "~/entities/error-state";
+import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import {
   get_query_error_type,
   use_get_blog_archive_query
@@ -24,6 +25,7 @@ interface Props {
 const Page = ({ year, month }: Props): React.ReactElement => {
   const blog = use_blog_context();
   const [page, set_page] = React.useState<number>(1);
+  use_handle_dynamic_state(1, set_page);
   const {
     data,
     isLoading: is_loading,

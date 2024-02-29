@@ -17,6 +17,7 @@ import Tab from "~/components/tab";
 import Tabs from "~/components/tabs";
 import TabsList from "~/components/tabs-list";
 import ErrorState from "~/entities/error-state";
+import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import { use_media_query } from "~/hooks/use-media-query";
 import ContributionIcon from "~/icons/contribution";
 import {
@@ -65,6 +66,7 @@ const CollaborationRequestsModal = (): React.ReactElement => {
     React.useState<CollaborationRequestsTabValue>("received");
   const set_render_key = use_set_atom(render_key_atom);
   const [page, set_page] = React.useState<number>(1);
+  use_handle_dynamic_state(1, set_page);
   const {
     data,
     isLoading: is_loading,

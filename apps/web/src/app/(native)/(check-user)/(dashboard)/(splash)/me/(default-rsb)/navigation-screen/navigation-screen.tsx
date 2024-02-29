@@ -10,6 +10,7 @@ import Separator from "~/components/separator";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import PageTitle from "~/entities/page-title";
+import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import SearchIcon from "~/icons/search";
 import css from "~/theme/main.module.scss";
 
@@ -49,6 +50,8 @@ const GroupComponent = ({
 const DashboardNavigationScreen = (): React.ReactElement => {
   const [query, set_query] = React.useState<string>("");
   const [results, set_results] = React.useState<Group<DashboardSegment>[]>([]);
+  use_handle_dynamic_state("", set_query);
+  use_handle_dynamic_state([], set_results);
 
   return (
     <NoSsr fallback={<SuspenseLoader style={{ minHeight: "250px" }} />}>

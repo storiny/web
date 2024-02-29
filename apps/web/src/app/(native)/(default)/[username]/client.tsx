@@ -18,6 +18,7 @@ import Tab from "~/components/tab";
 import TabPanel from "~/components/tab-panel";
 import Tabs from "~/components/tabs";
 import TabsList from "~/components/tabs-list";
+import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import { use_media_query } from "~/hooks/use-media-query";
 import BanIcon from "~/icons/ban";
 import ForbidIcon from "~/icons/forbid";
@@ -155,6 +156,8 @@ const Page = ({
     tab === "stories" ? "recent" : "popular"
   );
   const [query, set_query] = React.useState<string>("");
+  use_handle_dynamic_state("", set_query);
+  use_handle_dynamic_state(tab === "stories" ? "recent" : "popular", set_sort);
   // Hide the content initially when the target user is being blocked
   const [content_hidden, set_content_hidden] = React.useState<boolean>(
     Boolean(profile.is_blocked)

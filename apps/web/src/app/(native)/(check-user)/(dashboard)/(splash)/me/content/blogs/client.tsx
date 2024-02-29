@@ -9,6 +9,7 @@ import { dynamic_loader } from "~/common/dynamic";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import ErrorState from "~/entities/error-state";
+import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import { use_media_query } from "~/hooks/use-media-query";
 import {
   get_query_error_type,
@@ -78,6 +79,7 @@ const StatusHeader = ({
 
 const ContentBlogsClient = (props: BlogsProps): React.ReactElement => {
   const [page, set_page] = React.useState<number>(1);
+  use_handle_dynamic_state(1, set_page);
   const {
     data,
     isLoading: is_loading,

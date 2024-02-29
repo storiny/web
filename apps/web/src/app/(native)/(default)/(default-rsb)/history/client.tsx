@@ -13,6 +13,7 @@ import Input from "~/components/input";
 import ErrorState from "~/entities/error-state";
 import PageTitle from "~/entities/page-title";
 import { use_debounce } from "~/hooks/use-debounce";
+import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import SearchIcon from "~/icons/search";
 import SettingsIcon from "~/icons/settings";
 import { get_query_error_type, use_get_history_query } from "~/redux/features";
@@ -71,6 +72,8 @@ const PageHeader = ({
 const Client = (): React.ReactElement => {
   const [query, set_query] = React.useState<string>("");
   const [page, set_page] = React.useState<number>(1);
+  use_handle_dynamic_state(1, set_page);
+  use_handle_dynamic_state("", set_query);
   const debounced_query = use_debounce(query);
   const {
     data,

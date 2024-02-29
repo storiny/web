@@ -6,6 +6,7 @@ import { use_blog_context } from "~/common/context/blog";
 import { UserListSkeleton, VirtualizedUserList } from "~/common/user";
 import ErrorState from "~/entities/error-state";
 import PageTitle from "~/entities/page-title";
+import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import {
   get_query_error_type,
   use_get_blog_editors_query
@@ -16,6 +17,7 @@ import styles from "../archive/styles.module.scss";
 const Page = (): React.ReactElement => {
   const blog = use_blog_context();
   const [page, set_page] = React.useState<number>(1);
+  use_handle_dynamic_state(1, set_page);
   const {
     data,
     isLoading: is_loading,
