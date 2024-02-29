@@ -72,23 +72,24 @@ message GetBlogResponse {
   bool is_owner /*                        */ = 26;
   bool is_editor /*                       */ = 27;
   bool is_writer /*                       */ = 28;
+  bool has_plus_features /*               */ = 29;
   // Connections
-  optional string website_url /*          */ = 29;
-  optional string public_email /*         */ = 30;
-  optional string github_id /*            */ = 31;
-  optional string instagram_id /*         */ = 32;
-  optional string linkedin_id /*          */ = 33;
-  optional string youtube_id /*           */ = 34;
-  optional string twitter_id /*           */ = 35;
-  optional string twitch_id /*            */ = 36;
+  optional string website_url /*          */ = 30;
+  optional string public_email /*         */ = 31;
+  optional string github_id /*            */ = 32;
+  optional string instagram_id /*         */ = 33;
+  optional string linkedin_id /*          */ = 34;
+  optional string youtube_id /*           */ = 35;
+  optional string twitter_id /*           */ = 36;
+  optional string twitch_id /*            */ = 37;
   // Other props
-  optional string domain /*               */ = 37;
-  string created_at /*                    */ = 38;
-  string category /*                      */ = 39;
-  string user_id /*                       */ = 40;
-  string rsb_items_label /*               */ = 41;
-  repeated LeftSidebarItem lsb_items /*   */ = 42;
-  repeated RightSidebarItem rsb_items /*  */ = 43;
+  optional string domain /*               */ = 38;
+  string created_at /*                    */ = 39;
+  string category /*                      */ = 40;
+  string user_id /*                       */ = 41;
+  string rsb_items_label /*               */ = 42;
+  repeated LeftSidebarItem lsb_items /*   */ = 43;
+  repeated RightSidebarItem rsb_items /*  */ = 44;
 }
 
 // Blog archive request
