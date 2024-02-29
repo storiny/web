@@ -12,6 +12,7 @@ import Tabs from "~/components/tabs";
 import TabsList from "~/components/tabs-list";
 import Typography from "~/components/typography";
 import Persona from "~/entities/persona";
+import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import SearchIcon from "~/icons/search";
 import { select_user } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
@@ -25,6 +26,8 @@ import { DashboardSegment } from "../types";
 const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
   const [query, set_query] = React.useState<string>("");
   const [results, set_results] = React.useState<Group[]>([]);
+  use_handle_dynamic_state("", set_query);
+  use_handle_dynamic_state([], set_results);
   const segments = use_selected_layout_segments();
   const user = use_app_selector(select_user)!;
 

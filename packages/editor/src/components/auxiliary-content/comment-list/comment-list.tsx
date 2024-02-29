@@ -5,6 +5,7 @@ import React from "react";
 import { CommentListSkeleton, VirtualizedCommentList } from "~/common/comment";
 import Divider from "~/components/divider";
 import ErrorState from "~/entities/error-state";
+import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import {
   get_query_error_type,
   use_get_story_comments_query
@@ -22,6 +23,7 @@ const EditorAuxiliaryContentCommentList = (
   const { sort, set_sort } = props;
   const story = use_atom_value(story_metadata_atom);
   const [page, set_page] = React.useState<number>(1);
+  use_handle_dynamic_state(1, set_page);
   const {
     data,
     isLoading: is_loading,

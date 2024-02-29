@@ -20,6 +20,7 @@ import Tab from "~/components/tab";
 import Tabs from "~/components/tabs";
 import TabsList from "~/components/tabs-list";
 import Typography from "~/components/typography";
+import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import { use_media_query } from "~/hooks/use-media-query";
 import { use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
@@ -94,6 +95,7 @@ const Content = (): React.ReactElement => {
     is_smaller_than_desktop ? "suggested" : "comments"
   );
   const [sort, set_sort] = React.useState<StoryCommentsSortValue>("most-liked");
+  use_handle_dynamic_state("most-liked", set_sort);
 
   const handle_sort_change = React.useCallback(
     (next_sort: StoryCommentsSortValue) => {

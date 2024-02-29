@@ -16,6 +16,7 @@ import { ModalFooterButton, use_modal } from "~/components/modal";
 import { Root, Scrollbar, Thumb, Viewport } from "~/components/scroll-area";
 import ErrorState from "~/entities/error-state";
 import { use_debounce } from "~/hooks/use-debounce";
+import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import { use_media_query } from "~/hooks/use-media-query";
 import BlogIcon from "~/icons/blog";
 import SearchIcon from "~/icons/search";
@@ -61,6 +62,8 @@ Scroller.displayName = "Scroller";
 const BlogRequestsModal = (): React.ReactElement => {
   const [query, set_query] = React.useState<string>("");
   const [page, set_page] = React.useState<number>(1);
+  use_handle_dynamic_state(1, set_page);
+  use_handle_dynamic_state("", set_query);
   const set_render_key = use_set_atom(render_key_atom);
   const debounced_query = use_debounce(query);
   const {

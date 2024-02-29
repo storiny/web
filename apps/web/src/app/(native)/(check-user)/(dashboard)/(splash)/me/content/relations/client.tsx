@@ -22,6 +22,7 @@ import TabsList from "~/components/tabs-list";
 import Typography from "~/components/typography";
 import ErrorState from "~/entities/error-state";
 import { use_debounce } from "~/hooks/use-debounce";
+import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import { use_media_query } from "~/hooks/use-media-query";
 import SearchIcon from "~/icons/search";
 import {
@@ -240,6 +241,9 @@ const ContentRelationsClient = (props: RelationsProps): React.ReactElement => {
       : "followers"
   );
   const [page, set_page] = React.useState<number>(1);
+  use_handle_dynamic_state(1, set_page);
+  use_handle_dynamic_state("popular", set_sort);
+  use_handle_dynamic_state("", set_query);
   const debounced_query = use_debounce(query);
   const {
     data,

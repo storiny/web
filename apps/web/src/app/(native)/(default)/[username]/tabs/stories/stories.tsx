@@ -5,6 +5,7 @@ import { dynamic_loader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
 import ErrorState from "~/entities/error-state";
 import { use_debounce } from "~/hooks/use-debounce";
+import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import {
   get_query_error_type,
   use_get_user_stories_query
@@ -26,6 +27,7 @@ interface Props {
 const StoriesTab = (props: Props): React.ReactElement => {
   const { query, sort, user_id, username } = props;
   const [page, set_page] = React.useState<number>(1);
+  use_handle_dynamic_state(1, set_page);
   const debounced_query = use_debounce(query);
   const {
     data,

@@ -7,6 +7,7 @@ import React from "react";
 import { dynamic_loader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
 import ErrorState from "~/entities/error-state";
+import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import {
   get_query_error_type,
   use_get_story_recommendations_query
@@ -21,6 +22,7 @@ const EmptyState = dynamic(() => import("./empty-state"), {
 const EditorAuxiliaryContentSuggestionList = (): React.ReactElement => {
   const story = use_atom_value(story_metadata_atom);
   const [page, set_page] = React.useState<number>(1);
+  use_handle_dynamic_state(1, set_page);
   const {
     data,
     isLoading: is_loading,
