@@ -13,7 +13,7 @@ import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 
-import DashboardGroup from "../../../../dashboard-group";
+import DashboardGroup from "../../../../../common/dashboard-group";
 import common_styles from "../styles.module.scss";
 import styles from "./theme-preference.module.scss";
 

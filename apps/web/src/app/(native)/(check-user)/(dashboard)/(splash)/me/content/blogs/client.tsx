@@ -20,7 +20,7 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
-import DashboardTitle from "../../dashboard-title";
+import DashboardTitle from "../../../common/dashboard-title";
 import { BlogsProps } from "./blogs.props";
 import CreateBlog from "./create-blog";
 import ContentBlogsRightSidebar from "./right-sidebar";

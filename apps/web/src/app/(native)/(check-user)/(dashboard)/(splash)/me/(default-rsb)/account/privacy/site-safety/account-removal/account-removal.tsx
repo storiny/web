@@ -5,7 +5,7 @@ import Spacer from "~/components/spacer";
 import TitleBlock from "~/entities/title-block";
 import css from "~/theme/main.module.scss";
 
-import DashboardGroup from "../../../../../dashboard-group";
+import DashboardGroup from "../../../../../../common/dashboard-group";
 import styles from "./account-removal.module.scss";
 import DeleteAccount from "./delete-account";
 import DisableAccount from "./disable-account";

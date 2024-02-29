@@ -8,7 +8,7 @@ import TitleBlock from "~/entities/title-block";
 import CheckIcon from "~/icons/check";
 import css from "~/theme/main.module.scss";
 
-import DashboardGroup from "../../../../dashboard-group";
+import DashboardGroup from "../../../../../common/dashboard-group";
 import AddAccount from "./add-account";
 import styles from "./connected-accounts-group.module.scss";
 import { ConnectedAccountsGroupProps } from "./connected-accounts-group.props";

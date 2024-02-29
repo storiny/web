@@ -14,7 +14,7 @@ import { DraftsRightSidebarProps } from "./right-sidebar.props";
 // Default content
 
 const SuspendedDashboardRightSidebarContent = dynamic(
-  () => import("../../../(default-rsb)/right-sidebar/content"),
+  () => import("../../../../common/right-sidebar/content"),
   {
     loading: dynamic_loader()
   }

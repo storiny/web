@@ -16,7 +16,7 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
 
-import DashboardGroup from "../../../../../dashboard-group";
+import DashboardGroup from "../../../../../../common/dashboard-group";
 import { ExportDataGroupProps } from "./export-data-group.props";
 import {
   EXPORT_DATA_SCHEMA,

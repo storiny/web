@@ -26,7 +26,7 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
-import DashboardTitle from "../../dashboard-title";
+import DashboardTitle from "../../../common/dashboard-title";
 import { ContributionsProps } from "./contributions.props";
 import ContentContributionsRightSidebar from "./right-sidebar";
 import CollaborationRequests from "./right-sidebar/collaboration-requests";

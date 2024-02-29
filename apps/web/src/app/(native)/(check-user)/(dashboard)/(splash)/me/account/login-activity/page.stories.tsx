@@ -6,7 +6,7 @@ import React from "react";
 
 import { render_with_state } from "~/redux/mock";
 
-import DashboardLayout from "../../../../../layout";
+import DashboardLayout from "../../../../layout";
 import DashboardSplashLayout from "../../../layout";
 import DashboardLeftSidebarLayout from "../../layout";
 import AccountLoginActivityPage from "./client";

@@ -12,7 +12,7 @@ import {
 } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 
-import SuspendedDashboardRightSidebarContent from "../../../(default-rsb)/right-sidebar/content";
+import SuspendedDashboardRightSidebarContent from "../../../../common/right-sidebar/content";
 import styles from "./right-sidebar.module.scss";
 
 const UserSkeleton = (): React.ReactElement => (

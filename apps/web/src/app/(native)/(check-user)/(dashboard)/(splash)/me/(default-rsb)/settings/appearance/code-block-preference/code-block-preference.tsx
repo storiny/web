@@ -3,7 +3,7 @@ import React from "react";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 
-import DashboardGroup from "../../../../dashboard-group";
+import DashboardGroup from "../../../../../common/dashboard-group";
 import CodeBlockSettings from "./settings";
 
 const ReadingFontPreference = (): React.ReactElement => (

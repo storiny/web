@@ -27,8 +27,8 @@ import {
 import css from "~/theme/main.module.scss";
 import { capitalize } from "~/utils/capitalize";
 
-import DashboardTitle from "../../../../dashboard-title";
-import DashboardWrapper from "../../../../dashboard-wrapper";
+import DashboardTitle from "../../../../../common/dashboard-title";
+import DashboardWrapper from "../../../../../common/dashboard-wrapper";
 import ContentStoryStatsRightSidebar from "./right-sidebar";
 import { StoryStatsProps } from "./stats.props";
 import styles from "./styles.module.scss";

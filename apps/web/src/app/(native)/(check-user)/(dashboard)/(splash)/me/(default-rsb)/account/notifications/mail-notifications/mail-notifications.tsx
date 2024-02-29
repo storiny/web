@@ -10,7 +10,7 @@ import { use_mail_notification_settings_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
 
-import DashboardGroup from "../../../../dashboard-group";
+import DashboardGroup from "../../../../../common/dashboard-group";
 import styles from "../styles.module.scss";
 import { MailNotificationsProps } from "./mail-notifications.props";
 import {

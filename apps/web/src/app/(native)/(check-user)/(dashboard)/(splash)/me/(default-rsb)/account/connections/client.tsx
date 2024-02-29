@@ -14,10 +14,10 @@ import { DateFormat, format_date } from "~/utils/format-date";
 import {
   PROVIDER_DISPLAY_NAME_MAP,
   PROVIDER_ICON_MAP
-} from "../../../../../../../../../providers";
-import DashboardGroup from "../../../dashboard-group";
-import DashboardTitle from "../../../dashboard-title";
-import DashboardWrapper from "../../../dashboard-wrapper";
+} from "../../../../../../../../providers";
+import DashboardGroup from "../../../../common/dashboard-group";
+import DashboardTitle from "../../../../common/dashboard-title";
+import DashboardWrapper from "../../../../common/dashboard-wrapper";
 import ConnectionButton from "./connection-button";
 import { ConnectionsProps } from "./connections.props";
 import styles from "./styles.module.scss";
