@@ -27,7 +27,7 @@ import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
-import DashboardTitle from "../../../../dashboard-title";
+import DashboardTitle from "../../../../../common/dashboard-title";
 import { StoryResponsesProps } from "./responses.props";
 import ContentStoryResponsesRightSidebar from "./right-sidebar";
 import styles from "./styles.module.scss";

@@ -37,7 +37,7 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
-import DashboardTitle from "../../dashboard-title";
+import DashboardTitle from "../../../common/dashboard-title";
 import { RelationsProps } from "./relations.props";
 import ContentRelationsRightSidebar from "./right-sidebar";
 import FriendRequests from "./right-sidebar/friend-requests";

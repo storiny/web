@@ -10,8 +10,8 @@ import Spacer from "~/components/spacer";
 import ExternalLinkIcon from "~/icons/external-link";
 import css from "~/theme/main.module.scss";
 
-import DashboardTitle from "../../../dashboard-title";
-import DashboardWrapper from "../../../dashboard-wrapper";
+import DashboardTitle from "../../../../common/dashboard-title";
+import DashboardWrapper from "../../../../common/dashboard-wrapper";
 import styles from "./styles.module.scss";
 
 const MiscellaneousResourcesClient = (): React.ReactElement => (

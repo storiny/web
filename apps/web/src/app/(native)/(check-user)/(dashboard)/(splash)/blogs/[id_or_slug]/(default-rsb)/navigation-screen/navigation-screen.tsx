@@ -66,9 +66,8 @@ const BlogDashboardNavigationScreen = (): React.ReactElement => {
         className={clsx(
           css["flex-center"],
           css["full-bleed"],
-          css["page-header"],
           css["dashboard-header"],
-          css["with-page-title"]
+          styles["page-header"]
         )}
       >
         <Persona

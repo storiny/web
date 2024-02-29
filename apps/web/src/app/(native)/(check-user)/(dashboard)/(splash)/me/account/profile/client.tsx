@@ -11,9 +11,9 @@ import TitleBlock from "~/entities/title-block";
 import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
-import DashboardGroup from "../../dashboard-group";
-import DashboardTitle from "../../dashboard-title";
-import DashboardWrapper from "../../dashboard-wrapper";
+import DashboardGroup from "../../../common/dashboard-group";
+import DashboardTitle from "../../../common/dashboard-title";
+import DashboardWrapper from "../../../common/dashboard-wrapper";
 import AvatarSettings from "./avatar-settings";
 import BannerSettings from "./banner-settings";
 import AccountGeneralForm from "./general-form";

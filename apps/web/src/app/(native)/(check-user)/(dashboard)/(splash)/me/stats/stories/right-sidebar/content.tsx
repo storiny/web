@@ -1,4 +1,3 @@
-import { clsx } from "clsx";
 import React from "react";
 
 import Typography from "~/components/typography";
@@ -8,9 +7,8 @@ import {
   get_query_error_type,
   use_get_story_preview_query
 } from "~/redux/features";
-import css from "~/theme/main.module.scss";
 
-import SuspendedDashboardRightSidebarContent from "../../../(default-rsb)/right-sidebar/content";
+import SuspendedDashboardRightSidebarContent from "../../../../common/right-sidebar/content";
 import { StoriesStatsRightSidebarProps } from "./right-sidebar.props";
 
 const LatestStoryPreview = ({

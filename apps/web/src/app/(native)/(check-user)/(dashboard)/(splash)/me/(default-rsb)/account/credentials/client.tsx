@@ -6,9 +6,9 @@ import Divider from "~/components/divider";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 
-import DashboardGroup from "../../../dashboard-group";
-import DashboardTitle from "../../../dashboard-title";
-import DashboardWrapper from "../../../dashboard-wrapper";
+import DashboardGroup from "../../../../common/dashboard-group";
+import DashboardTitle from "../../../../common/dashboard-title";
+import DashboardWrapper from "../../../../common/dashboard-wrapper";
 import CredentialsTwoFactorAuthSettings from "./2fa-settings";
 import CredentialsConnectedAccountsGroup from "./connected-accounts-group";
 import { CredentialsProps } from "./credentials.props";

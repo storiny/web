@@ -7,9 +7,8 @@ import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import { set_reduced_motion } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import css from "~/theme/main.module.scss";
 
-import DashboardGroup from "../../../../dashboard-group";
+import DashboardGroup from "../../../../../common/dashboard-group";
 import styles from "./motion.module.scss";
 
 const MotionPreference = (): React.ReactElement => {

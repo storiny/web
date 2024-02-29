@@ -8,7 +8,7 @@ import { toggle_haptic_feedback } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 
-import DashboardGroup from "../../../../dashboard-group";
+import DashboardGroup from "../../../../../common/dashboard-group";
 import styles from "./miscellaneous.module.scss";
 
 const MiscellaneousPreferences = (): React.ReactElement => {

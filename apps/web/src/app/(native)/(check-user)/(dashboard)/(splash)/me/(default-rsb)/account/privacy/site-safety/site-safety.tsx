@@ -6,7 +6,7 @@ import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import TitleBlock from "~/entities/title-block";
 
-import DashboardGroup from "../../../../dashboard-group";
+import DashboardGroup from "../../../../../common/dashboard-group";
 import AccountHistory from "./account-history";
 import AccountRemovalGroup from "./account-removal";
 import CollaborationRequests from "./collaboration-requests";

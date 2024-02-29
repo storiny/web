@@ -20,9 +20,9 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
 
-import DashboardGroup from "../../dashboard-group";
-import DashboardTitle from "../../dashboard-title";
-import DashboardWrapper from "../../dashboard-wrapper";
+import DashboardGroup from "../../../common/dashboard-group";
+import DashboardTitle from "../../../common/dashboard-title";
+import DashboardWrapper from "../../../common/dashboard-wrapper";
 import LoginAccordion from "./login-accordion";
 import { LoginActivityProps } from "./login-activity.props";
 import LoginItem from "./login-item";

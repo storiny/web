@@ -5,8 +5,8 @@ import React from "react";
 import { GetPrivacySettingsResponse } from "~/common/grpc";
 import Spacer from "~/components/spacer";
 
-import DashboardTitle from "../../../dashboard-title";
-import DashboardWrapper from "../../../dashboard-wrapper";
+import DashboardTitle from "../../../../common/dashboard-title";
+import DashboardWrapper from "../../../../common/dashboard-wrapper";
 import SiteSafety from "./site-safety";
 
 type Props = GetPrivacySettingsResponse;

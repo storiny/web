@@ -10,8 +10,8 @@ import {
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
-import DashboardTitle from "../../../dashboard-title";
-import DashboardWrapper from "../../../dashboard-wrapper";
+import DashboardTitle from "../../../../common/dashboard-title";
+import DashboardWrapper from "../../../../common/dashboard-wrapper";
 import SettingsAlert from "../alert";
 import CodeBlockPreference from "./code-block-preference";
 import CodeFontPreference from "./code-font-preference";

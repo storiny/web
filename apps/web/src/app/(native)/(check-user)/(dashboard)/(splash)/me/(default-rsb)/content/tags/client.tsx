@@ -24,7 +24,7 @@ import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
-import DashboardTitle from "../../../dashboard-title";
+import DashboardTitle from "../../../../common/dashboard-title";
 import styles from "./styles.module.scss";
 import { TagsProps } from "./tags.props";
 

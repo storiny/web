@@ -16,7 +16,7 @@ import {
 } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 
-import DashboardTitle from "../../../dashboard-title";
+import DashboardTitle from "../../../../common/dashboard-title";
 import styles from "./styles.module.scss";
 
 // Status header

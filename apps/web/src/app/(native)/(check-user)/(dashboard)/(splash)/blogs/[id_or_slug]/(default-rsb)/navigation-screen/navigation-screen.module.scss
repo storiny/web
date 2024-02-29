@@ -1,3 +1,5 @@
+@use "breakpoints";
+
 .navigation-screen {
   gap: 24px;
   padding-block: 6px;
@@ -13,6 +15,17 @@
   border: 1px solid var(--divider);
   border-radius: var(--radius-md);
   overflow: hidden;
+}
+
+.page-header {
+  padding-block: 16px;
+  padding-inline: 20px;
+  justify-content: space-between !important;
+  align-items: center !important;
+
+  @include breakpoints.media("<mobile") {
+    padding-inline: 16px;
+  }
 }
 
 .x {

@@ -3,7 +3,7 @@ import React from "react";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 
-import DashboardGroup from "../../../../dashboard-group";
+import DashboardGroup from "../../../../../common/dashboard-group";
 import ReadingFontSizePreference from "./font-size";
 import ReadingFontTypefacePreference from "./typeface";
 

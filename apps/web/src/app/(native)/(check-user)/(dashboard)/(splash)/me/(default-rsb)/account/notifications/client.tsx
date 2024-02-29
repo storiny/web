@@ -5,8 +5,8 @@ import React from "react";
 import Divider from "~/components/divider";
 import Spacer from "~/components/spacer";
 
-import DashboardTitle from "../../../dashboard-title";
-import DashboardWrapper from "../../../dashboard-wrapper";
+import DashboardTitle from "../../../../common/dashboard-title";
+import DashboardWrapper from "../../../../common/dashboard-wrapper";
 import MailNotifications from "./mail-notifications";
 import { NotificationsProps } from "./notifications.props";
 import SiteNotifications from "./site-notifications";

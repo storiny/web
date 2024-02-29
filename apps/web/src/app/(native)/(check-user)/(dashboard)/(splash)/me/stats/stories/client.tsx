@@ -26,8 +26,8 @@ import { use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 import { capitalize } from "~/utils/capitalize";
 
-import DashboardTitle from "../../dashboard-title";
-import DashboardWrapper from "../../dashboard-wrapper";
+import DashboardTitle from "../../../common/dashboard-title";
+import DashboardWrapper from "../../../common/dashboard-wrapper";
 import StoriesStatsRightSidebar from "./right-sidebar";
 import styles from "./styles.module.scss";
 
