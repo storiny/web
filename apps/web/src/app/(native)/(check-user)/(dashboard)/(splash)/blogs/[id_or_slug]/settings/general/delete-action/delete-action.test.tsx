@@ -1,21 +1,28 @@
 import { user_event } from "@storiny/test-utils";
+import { TEST_BLOG } from "@storiny/ui/src/mocks";
 import { screen } from "@testing-library/react";
 import React from "react";
 
+import BlogContextProvider from "~/common/context/blog";
 import { render_test_with_provider } from "~/redux/test-utils";
 
-import UsernameSettings from "./username-settings";
+import DeleteAction from "./delete-action";
 
-describe("<UsernameSettings />", () => {
+describe("<DeleteAction />", () => {
   it("renders validation messages", async () => {
     const mock_submit = jest.fn();
     const user = user_event.setup();
-    render_test_with_provider(<UsernameSettings on_submit={mock_submit} />, {
-      logged_in: true
-    });
+    render_test_with_provider(
+      <BlogContextProvider value={{ ...TEST_BLOG, role: "owner" }}>
+        <DeleteAction on_submit={mock_submit} />
+      </BlogContextProvider>,
+      {
+        logged_in: true
+      }
+    );
 
     await user.click(
-      screen.getByRole("button", { name: /change username/i }) // Open modal
+      screen.getByRole("button", { name: /delete this blog/i }) // Open modal
     );
 
     await user.type(screen.getByTestId("current-password-input"), " "); // The button is disabled until the form is dirty
@@ -28,15 +35,19 @@ describe("<UsernameSettings />", () => {
   it("submits correct form data", async () => {
     const mock_submit = jest.fn();
     const user = user_event.setup();
-    render_test_with_provider(<UsernameSettings on_submit={mock_submit} />, {
-      logged_in: true
-    });
-
-    await user.click(
-      screen.getByRole("button", { name: /change username/i }) // Open modal
+    render_test_with_provider(
+      <BlogContextProvider value={{ ...TEST_BLOG, role: "owner" }}>
+        <DeleteAction on_submit={mock_submit} />
+      </BlogContextProvider>,
+      {
+        logged_in: true
+      }
     );
 
-    await user.type(screen.getByTestId("new-username-input"), "test_username");
+    await user.click(
+      screen.getByRole("button", { name: /delete this blog/i }) // Open modal
+    );
+
     await user.type(
       screen.getByTestId("current-password-input"),
       "test-password"
@@ -46,7 +57,6 @@ describe("<UsernameSettings />", () => {
 
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(mock_submit).toHaveBeenCalledWith({
-      new_username: "test_username",
       current_password: "test-password"
     });
   });

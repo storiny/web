@@ -1,7 +1,10 @@
 "use client";
 
-import { USER_PROPS } from "@storiny/shared";
-import { SUPPORT_ARTICLE_MAP } from "@storiny/shared/src/constants/support-articles";
+import { BLOG_PROPS, StoryCategory, USER_PROPS } from "@storiny/shared";
+import {
+  CATEGORY_ICON_MAP,
+  CATEGORY_LABEL_MAP
+} from "@storiny/shared/src/constants/category-icon-map";
 import { clsx } from "clsx";
 import React from "react";
 
@@ -14,17 +17,13 @@ import Form, {
   zod_resolver
 } from "~/components/form";
 import FormInput from "~/components/form-input";
+import FormSelect from "~/components/form-select";
 import FormTextarea from "~/components/form-textarea";
 import Grow from "~/components/grow";
-import Link from "~/components/link";
+import Option from "~/components/option";
 import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
-import {
-  mutate_user,
-  select_user,
-  use_profile_settings_mutation
-} from "~/redux/features";
-import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import { use_blog_general_settings_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
 
@@ -59,7 +58,6 @@ const SaveButton = ({
 const BlogGeneralForm = ({
   on_submit
 }: BlogGeneralFormProps): React.ReactElement => {
-  const dispatch = use_app_dispatch();
   const toast = use_toast();
   const blog = use_blog_context();
   const form = use_form<BlogGeneralSchema>({
@@ -70,33 +68,33 @@ const BlogGeneralForm = ({
       description: blog.description
     }
   });
-  const [mutate_profile_settings, { isLoading: is_loading }] =
-    use_profile_settings_mutation();
+  const [mutate_general_settings, { isLoading: is_loading }] =
+    use_blog_general_settings_mutation();
 
   const handle_submit: SubmitHandler<BlogGeneralSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      mutate_profile_settings(values)
+      mutate_general_settings({ ...values, blog_id: blog.id })
         .unwrap()
         .then(() => {
-          dispatch(mutate_user(values));
+          blog.mutate(values);
           form.reset(values);
-          toast("Profile updated successfully", "success");
+          toast("Blog updated successfully", "success");
         })
         .catch((error) => {
           handle_api_error(
             error,
             toast,
             form,
-            "Could not update your profile settings"
+            "Could not update the blog settings"
           );
         });
     }
   };
 
   return (
-    <Form<AccountGeneralSchema>
+    <Form<BlogGeneralSchema>
       className={css["flex-col"]}
       disabled={is_loading}
       on_submit={handle_submit}
@@ -104,7 +102,7 @@ const BlogGeneralForm = ({
     >
       <div className={clsx(css["flex-center"], styles["input-row"])}>
         <FormInput
-          autoComplete={"name"}
+          autoComplete={"off"}
           auto_size
           data-testid={"name-input"}
           form_slot_props={{
@@ -113,55 +111,73 @@ const BlogGeneralForm = ({
             }
           }}
           helper_text={
-            "Provide a name that you are commonly known by, such as your full name or nickname, to help others find you easily."
+            "Provide a name for your blog. This does not affect the URL of your blog."
           }
           label={"Name"}
-          maxLength={USER_PROPS.name.max_length}
-          minLength={USER_PROPS.name.min_length}
+          maxLength={BLOG_PROPS.name.max_length}
+          minLength={BLOG_PROPS.name.min_length}
           name={"name"}
-          placeholder={"Your name"}
+          placeholder={"Blog name"}
           required
         />
-        <FormInput
-          autoComplete={"country-name"}
+        <FormSelect
           auto_size
-          data-testid={"location-input"}
           form_slot_props={{
             form_item: {
               className: css["f-grow"]
             }
           }}
           helper_text={
-            "Your location helps us improve your home feed and is also displayed on your public profile."
+            "Choose a category that best fits your blog to help users find it easily across Storiny."
           }
-          label={"Location"}
-          maxLength={USER_PROPS.location.max_length}
-          name={"location"}
-          placeholder={"Your location"}
-        />
+          label={"Category"}
+          name={"category"}
+          required
+          slot_props={{
+            trigger: {
+              "aria-label": "Blog category"
+            },
+            value: {
+              placeholder: "Blog category"
+            }
+          }}
+        >
+          {(
+            [
+              StoryCategory.OTHERS,
+              StoryCategory.SCIENCE_AND_TECHNOLOGY,
+              StoryCategory.PROGRAMMING,
+              StoryCategory.LIFESTYLE,
+              StoryCategory.HEALTH_AND_WELLNESS,
+              StoryCategory.ENTERTAINMENT,
+              StoryCategory.DIGITAL_GRAPHICS,
+              StoryCategory.TRAVEL,
+              StoryCategory.DIY,
+              StoryCategory.NEWS,
+              StoryCategory.SPORTS,
+              StoryCategory.GAMING,
+              StoryCategory.MUSIC,
+              StoryCategory.LEARNING,
+              StoryCategory.BUSINESS_AND_FINANCE
+            ] as StoryCategory[]
+          ).map((category) => (
+            <Option
+              decorator={CATEGORY_ICON_MAP[category]}
+              key={category}
+              value={category}
+            >
+              {CATEGORY_LABEL_MAP[category]}
+            </Option>
+          ))}
+        </FormSelect>
       </div>
       <Spacer orientation={"vertical"} size={3} />
       <FormTextarea
-        data-testid={"bio-textarea"}
-        helper_text={
-          <React.Fragment>
-            You can format your bio using select markdown features such as **
-            <b>bold</b>** and *<em>italics</em>*, and you can also mention{" "}
-            <span className={css["t-medium"]}>@someone</span>.{" "}
-            <Link
-              href={SUPPORT_ARTICLE_MAP.FORMATTING_BIO}
-              target={"_blank"}
-              underline={"always"}
-            >
-              Learn more about formatting your bio
-            </Link>
-            .
-          </React.Fragment>
-        }
-        label={"Bio"}
+        data-testid={"description-textarea"}
+        label={"Description"}
         maxLength={USER_PROPS.bio.max_length}
-        name={"bio"}
-        placeholder={"Your bio"}
+        name={"description"}
+        placeholder={"Tell readers what your blog is all about"}
       />
       <Spacer orientation={"vertical"} size={3} />
       <SaveButton is_loading={is_loading} />
