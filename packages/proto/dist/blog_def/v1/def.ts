@@ -83,16 +83,17 @@ export interface GetBlogResponse {
   is_owner: boolean;
   is_editor: boolean;
   is_writer: boolean;
+  is_external: boolean;
   has_plus_features: boolean;
   /** Connections */
   website_url?: string | undefined;
   public_email?: string | undefined;
-  github_id?: string | undefined;
-  instagram_id?: string | undefined;
-  linkedin_id?: string | undefined;
-  youtube_id?: string | undefined;
-  twitter_id?: string | undefined;
-  twitch_id?:
+  github_url?: string | undefined;
+  instagram_url?: string | undefined;
+  linkedin_url?: string | undefined;
+  youtube_url?: string | undefined;
+  twitter_url?: string | undefined;
+  twitch_url?:
     | string
     | undefined;
   /** Other props */
@@ -590,15 +591,16 @@ function createBaseGetBlogResponse(): GetBlogResponse {
     is_owner: false,
     is_editor: false,
     is_writer: false,
+    is_external: false,
     has_plus_features: false,
     website_url: undefined,
     public_email: undefined,
-    github_id: undefined,
-    instagram_id: undefined,
-    linkedin_id: undefined,
-    youtube_id: undefined,
-    twitter_id: undefined,
-    twitch_id: undefined,
+    github_url: undefined,
+    instagram_url: undefined,
+    linkedin_url: undefined,
+    youtube_url: undefined,
+    twitter_url: undefined,
+    twitch_url: undefined,
     domain: undefined,
     created_at: "",
     category: "",
@@ -695,53 +697,56 @@ export const GetBlogResponse = {
     if (message.is_writer === true) {
       writer.uint32(224).bool(message.is_writer);
     }
+    if (message.is_external === true) {
+      writer.uint32(232).bool(message.is_external);
+    }
     if (message.has_plus_features === true) {
-      writer.uint32(232).bool(message.has_plus_features);
+      writer.uint32(240).bool(message.has_plus_features);
     }
     if (message.website_url !== undefined) {
-      writer.uint32(242).string(message.website_url);
+      writer.uint32(250).string(message.website_url);
     }
     if (message.public_email !== undefined) {
-      writer.uint32(250).string(message.public_email);
+      writer.uint32(258).string(message.public_email);
     }
-    if (message.github_id !== undefined) {
-      writer.uint32(258).string(message.github_id);
+    if (message.github_url !== undefined) {
+      writer.uint32(266).string(message.github_url);
     }
-    if (message.instagram_id !== undefined) {
-      writer.uint32(266).string(message.instagram_id);
+    if (message.instagram_url !== undefined) {
+      writer.uint32(274).string(message.instagram_url);
     }
-    if (message.linkedin_id !== undefined) {
-      writer.uint32(274).string(message.linkedin_id);
+    if (message.linkedin_url !== undefined) {
+      writer.uint32(282).string(message.linkedin_url);
     }
-    if (message.youtube_id !== undefined) {
-      writer.uint32(282).string(message.youtube_id);
+    if (message.youtube_url !== undefined) {
+      writer.uint32(290).string(message.youtube_url);
     }
-    if (message.twitter_id !== undefined) {
-      writer.uint32(290).string(message.twitter_id);
+    if (message.twitter_url !== undefined) {
+      writer.uint32(298).string(message.twitter_url);
     }
-    if (message.twitch_id !== undefined) {
-      writer.uint32(298).string(message.twitch_id);
+    if (message.twitch_url !== undefined) {
+      writer.uint32(306).string(message.twitch_url);
     }
     if (message.domain !== undefined) {
-      writer.uint32(306).string(message.domain);
+      writer.uint32(314).string(message.domain);
     }
     if (message.created_at !== "") {
-      writer.uint32(314).string(message.created_at);
+      writer.uint32(322).string(message.created_at);
     }
     if (message.category !== "") {
-      writer.uint32(322).string(message.category);
+      writer.uint32(330).string(message.category);
     }
     if (message.user_id !== "") {
-      writer.uint32(330).string(message.user_id);
+      writer.uint32(338).string(message.user_id);
     }
     if (message.rsb_items_label !== "") {
-      writer.uint32(338).string(message.rsb_items_label);
+      writer.uint32(346).string(message.rsb_items_label);
     }
     for (const v of message.lsb_items) {
-      LeftSidebarItem.encode(v!, writer.uint32(346).fork()).ldelim();
+      LeftSidebarItem.encode(v!, writer.uint32(354).fork()).ldelim();
     }
     for (const v of message.rsb_items) {
-      RightSidebarItem.encode(v!, writer.uint32(354).fork()).ldelim();
+      RightSidebarItem.encode(v!, writer.uint32(362).fork()).ldelim();
     }
     return writer;
   },
@@ -954,108 +959,115 @@ export const GetBlogResponse = {
             break;
           }
 
-          message.has_plus_features = reader.bool();
+          message.is_external = reader.bool();
           continue;
         case 30:
-          if (tag !== 242) {
+          if (tag !== 240) {
             break;
           }
 
-          message.website_url = reader.string();
+          message.has_plus_features = reader.bool();
           continue;
         case 31:
           if (tag !== 250) {
             break;
           }
 
-          message.public_email = reader.string();
+          message.website_url = reader.string();
           continue;
         case 32:
           if (tag !== 258) {
             break;
           }
 
-          message.github_id = reader.string();
+          message.public_email = reader.string();
           continue;
         case 33:
           if (tag !== 266) {
             break;
           }
 
-          message.instagram_id = reader.string();
+          message.github_url = reader.string();
           continue;
         case 34:
           if (tag !== 274) {
             break;
           }
 
-          message.linkedin_id = reader.string();
+          message.instagram_url = reader.string();
           continue;
         case 35:
           if (tag !== 282) {
             break;
           }
 
-          message.youtube_id = reader.string();
+          message.linkedin_url = reader.string();
           continue;
         case 36:
           if (tag !== 290) {
             break;
           }
 
-          message.twitter_id = reader.string();
+          message.youtube_url = reader.string();
           continue;
         case 37:
           if (tag !== 298) {
             break;
           }
 
-          message.twitch_id = reader.string();
+          message.twitter_url = reader.string();
           continue;
         case 38:
           if (tag !== 306) {
             break;
           }
 
-          message.domain = reader.string();
+          message.twitch_url = reader.string();
           continue;
         case 39:
           if (tag !== 314) {
             break;
           }
 
-          message.created_at = reader.string();
+          message.domain = reader.string();
           continue;
         case 40:
           if (tag !== 322) {
             break;
           }
 
-          message.category = reader.string();
+          message.created_at = reader.string();
           continue;
         case 41:
           if (tag !== 330) {
             break;
           }
 
-          message.user_id = reader.string();
+          message.category = reader.string();
           continue;
         case 42:
           if (tag !== 338) {
             break;
           }
 
-          message.rsb_items_label = reader.string();
+          message.user_id = reader.string();
           continue;
         case 43:
           if (tag !== 346) {
             break;
           }
 
-          message.lsb_items.push(LeftSidebarItem.decode(reader, reader.uint32()));
+          message.rsb_items_label = reader.string();
           continue;
         case 44:
           if (tag !== 354) {
+            break;
+          }
+
+          message.lsb_items.push(LeftSidebarItem.decode(reader, reader.uint32()));
+          continue;
+        case 45:
+          if (tag !== 362) {
             break;
           }
 
@@ -1110,15 +1122,16 @@ export const GetBlogResponse = {
       is_owner: isSet(object.is_owner) ? globalThis.Boolean(object.is_owner) : false,
       is_editor: isSet(object.is_editor) ? globalThis.Boolean(object.is_editor) : false,
       is_writer: isSet(object.is_writer) ? globalThis.Boolean(object.is_writer) : false,
+      is_external: isSet(object.is_external) ? globalThis.Boolean(object.is_external) : false,
       has_plus_features: isSet(object.has_plus_features) ? globalThis.Boolean(object.has_plus_features) : false,
       website_url: isSet(object.website_url) ? globalThis.String(object.website_url) : undefined,
       public_email: isSet(object.public_email) ? globalThis.String(object.public_email) : undefined,
-      github_id: isSet(object.github_id) ? globalThis.String(object.github_id) : undefined,
-      instagram_id: isSet(object.instagram_id) ? globalThis.String(object.instagram_id) : undefined,
-      linkedin_id: isSet(object.linkedin_id) ? globalThis.String(object.linkedin_id) : undefined,
-      youtube_id: isSet(object.youtube_id) ? globalThis.String(object.youtube_id) : undefined,
-      twitter_id: isSet(object.twitter_id) ? globalThis.String(object.twitter_id) : undefined,
-      twitch_id: isSet(object.twitch_id) ? globalThis.String(object.twitch_id) : undefined,
+      github_url: isSet(object.github_url) ? globalThis.String(object.github_url) : undefined,
+      instagram_url: isSet(object.instagram_url) ? globalThis.String(object.instagram_url) : undefined,
+      linkedin_url: isSet(object.linkedin_url) ? globalThis.String(object.linkedin_url) : undefined,
+      youtube_url: isSet(object.youtube_url) ? globalThis.String(object.youtube_url) : undefined,
+      twitter_url: isSet(object.twitter_url) ? globalThis.String(object.twitter_url) : undefined,
+      twitch_url: isSet(object.twitch_url) ? globalThis.String(object.twitch_url) : undefined,
       domain: isSet(object.domain) ? globalThis.String(object.domain) : undefined,
       created_at: isSet(object.created_at) ? globalThis.String(object.created_at) : "",
       category: isSet(object.category) ? globalThis.String(object.category) : "",
@@ -1219,6 +1232,9 @@ export const GetBlogResponse = {
     if (message.is_writer === true) {
       obj.is_writer = message.is_writer;
     }
+    if (message.is_external === true) {
+      obj.is_external = message.is_external;
+    }
     if (message.has_plus_features === true) {
       obj.has_plus_features = message.has_plus_features;
     }
@@ -1228,23 +1244,23 @@ export const GetBlogResponse = {
     if (message.public_email !== undefined) {
       obj.public_email = message.public_email;
     }
-    if (message.github_id !== undefined) {
-      obj.github_id = message.github_id;
+    if (message.github_url !== undefined) {
+      obj.github_url = message.github_url;
     }
-    if (message.instagram_id !== undefined) {
-      obj.instagram_id = message.instagram_id;
+    if (message.instagram_url !== undefined) {
+      obj.instagram_url = message.instagram_url;
     }
-    if (message.linkedin_id !== undefined) {
-      obj.linkedin_id = message.linkedin_id;
+    if (message.linkedin_url !== undefined) {
+      obj.linkedin_url = message.linkedin_url;
     }
-    if (message.youtube_id !== undefined) {
-      obj.youtube_id = message.youtube_id;
+    if (message.youtube_url !== undefined) {
+      obj.youtube_url = message.youtube_url;
     }
-    if (message.twitter_id !== undefined) {
-      obj.twitter_id = message.twitter_id;
+    if (message.twitter_url !== undefined) {
+      obj.twitter_url = message.twitter_url;
     }
-    if (message.twitch_id !== undefined) {
-      obj.twitch_id = message.twitch_id;
+    if (message.twitch_url !== undefined) {
+      obj.twitch_url = message.twitch_url;
     }
     if (message.domain !== undefined) {
       obj.domain = message.domain;
@@ -1303,15 +1319,16 @@ export const GetBlogResponse = {
     message.is_owner = object.is_owner ?? false;
     message.is_editor = object.is_editor ?? false;
     message.is_writer = object.is_writer ?? false;
+    message.is_external = object.is_external ?? false;
     message.has_plus_features = object.has_plus_features ?? false;
     message.website_url = object.website_url ?? undefined;
     message.public_email = object.public_email ?? undefined;
-    message.github_id = object.github_id ?? undefined;
-    message.instagram_id = object.instagram_id ?? undefined;
-    message.linkedin_id = object.linkedin_id ?? undefined;
-    message.youtube_id = object.youtube_id ?? undefined;
-    message.twitter_id = object.twitter_id ?? undefined;
-    message.twitch_id = object.twitch_id ?? undefined;
+    message.github_url = object.github_url ?? undefined;
+    message.instagram_url = object.instagram_url ?? undefined;
+    message.linkedin_url = object.linkedin_url ?? undefined;
+    message.youtube_url = object.youtube_url ?? undefined;
+    message.twitter_url = object.twitter_url ?? undefined;
+    message.twitch_url = object.twitch_url ?? undefined;
     message.domain = object.domain ?? undefined;
     message.created_at = object.created_at ?? "";
     message.category = object.category ?? "";

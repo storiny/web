@@ -658,6 +658,9 @@ impl serde::Serialize for GetBlogResponse {
         if self.is_writer {
             len += 1;
         }
+        if self.is_external {
+            len += 1;
+        }
         if self.has_plus_features {
             len += 1;
         }
@@ -667,22 +670,22 @@ impl serde::Serialize for GetBlogResponse {
         if self.public_email.is_some() {
             len += 1;
         }
-        if self.github_id.is_some() {
+        if self.github_url.is_some() {
             len += 1;
         }
-        if self.instagram_id.is_some() {
+        if self.instagram_url.is_some() {
             len += 1;
         }
-        if self.linkedin_id.is_some() {
+        if self.linkedin_url.is_some() {
             len += 1;
         }
-        if self.youtube_id.is_some() {
+        if self.youtube_url.is_some() {
             len += 1;
         }
-        if self.twitter_id.is_some() {
+        if self.twitter_url.is_some() {
             len += 1;
         }
-        if self.twitch_id.is_some() {
+        if self.twitch_url.is_some() {
             len += 1;
         }
         if self.domain.is_some() {
@@ -791,6 +794,9 @@ impl serde::Serialize for GetBlogResponse {
         if self.is_writer {
             struct_ser.serialize_field("isWriter", &self.is_writer)?;
         }
+        if self.is_external {
+            struct_ser.serialize_field("isExternal", &self.is_external)?;
+        }
         if self.has_plus_features {
             struct_ser.serialize_field("hasPlusFeatures", &self.has_plus_features)?;
         }
@@ -800,23 +806,23 @@ impl serde::Serialize for GetBlogResponse {
         if let Some(v) = self.public_email.as_ref() {
             struct_ser.serialize_field("publicEmail", v)?;
         }
-        if let Some(v) = self.github_id.as_ref() {
-            struct_ser.serialize_field("githubId", v)?;
+        if let Some(v) = self.github_url.as_ref() {
+            struct_ser.serialize_field("githubUrl", v)?;
         }
-        if let Some(v) = self.instagram_id.as_ref() {
-            struct_ser.serialize_field("instagramId", v)?;
+        if let Some(v) = self.instagram_url.as_ref() {
+            struct_ser.serialize_field("instagramUrl", v)?;
         }
-        if let Some(v) = self.linkedin_id.as_ref() {
-            struct_ser.serialize_field("linkedinId", v)?;
+        if let Some(v) = self.linkedin_url.as_ref() {
+            struct_ser.serialize_field("linkedinUrl", v)?;
         }
-        if let Some(v) = self.youtube_id.as_ref() {
-            struct_ser.serialize_field("youtubeId", v)?;
+        if let Some(v) = self.youtube_url.as_ref() {
+            struct_ser.serialize_field("youtubeUrl", v)?;
         }
-        if let Some(v) = self.twitter_id.as_ref() {
-            struct_ser.serialize_field("twitterId", v)?;
+        if let Some(v) = self.twitter_url.as_ref() {
+            struct_ser.serialize_field("twitterUrl", v)?;
         }
-        if let Some(v) = self.twitch_id.as_ref() {
-            struct_ser.serialize_field("twitchId", v)?;
+        if let Some(v) = self.twitch_url.as_ref() {
+            struct_ser.serialize_field("twitchUrl", v)?;
         }
         if let Some(v) = self.domain.as_ref() {
             struct_ser.serialize_field("domain", v)?;
@@ -900,24 +906,26 @@ impl<'de> serde::Deserialize<'de> for GetBlogResponse {
             "isEditor",
             "is_writer",
             "isWriter",
+            "is_external",
+            "isExternal",
             "has_plus_features",
             "hasPlusFeatures",
             "website_url",
             "websiteUrl",
             "public_email",
             "publicEmail",
-            "github_id",
-            "githubId",
-            "instagram_id",
-            "instagramId",
-            "linkedin_id",
-            "linkedinId",
-            "youtube_id",
-            "youtubeId",
-            "twitter_id",
-            "twitterId",
-            "twitch_id",
-            "twitchId",
+            "github_url",
+            "githubUrl",
+            "instagram_url",
+            "instagramUrl",
+            "linkedin_url",
+            "linkedinUrl",
+            "youtube_url",
+            "youtubeUrl",
+            "twitter_url",
+            "twitterUrl",
+            "twitch_url",
+            "twitchUrl",
             "domain",
             "created_at",
             "createdAt",
@@ -962,15 +970,16 @@ impl<'de> serde::Deserialize<'de> for GetBlogResponse {
             IsOwner,
             IsEditor,
             IsWriter,
+            IsExternal,
             HasPlusFeatures,
             WebsiteUrl,
             PublicEmail,
-            GithubId,
-            InstagramId,
-            LinkedinId,
-            YoutubeId,
-            TwitterId,
-            TwitchId,
+            GithubUrl,
+            InstagramUrl,
+            LinkedinUrl,
+            YoutubeUrl,
+            TwitterUrl,
+            TwitchUrl,
             Domain,
             CreatedAt,
             Category,
@@ -1027,15 +1036,16 @@ impl<'de> serde::Deserialize<'de> for GetBlogResponse {
                             "isOwner" | "is_owner" => Ok(GeneratedField::IsOwner),
                             "isEditor" | "is_editor" => Ok(GeneratedField::IsEditor),
                             "isWriter" | "is_writer" => Ok(GeneratedField::IsWriter),
+                            "isExternal" | "is_external" => Ok(GeneratedField::IsExternal),
                             "hasPlusFeatures" | "has_plus_features" => Ok(GeneratedField::HasPlusFeatures),
                             "websiteUrl" | "website_url" => Ok(GeneratedField::WebsiteUrl),
                             "publicEmail" | "public_email" => Ok(GeneratedField::PublicEmail),
-                            "githubId" | "github_id" => Ok(GeneratedField::GithubId),
-                            "instagramId" | "instagram_id" => Ok(GeneratedField::InstagramId),
-                            "linkedinId" | "linkedin_id" => Ok(GeneratedField::LinkedinId),
-                            "youtubeId" | "youtube_id" => Ok(GeneratedField::YoutubeId),
-                            "twitterId" | "twitter_id" => Ok(GeneratedField::TwitterId),
-                            "twitchId" | "twitch_id" => Ok(GeneratedField::TwitchId),
+                            "githubUrl" | "github_url" => Ok(GeneratedField::GithubUrl),
+                            "instagramUrl" | "instagram_url" => Ok(GeneratedField::InstagramUrl),
+                            "linkedinUrl" | "linkedin_url" => Ok(GeneratedField::LinkedinUrl),
+                            "youtubeUrl" | "youtube_url" => Ok(GeneratedField::YoutubeUrl),
+                            "twitterUrl" | "twitter_url" => Ok(GeneratedField::TwitterUrl),
+                            "twitchUrl" | "twitch_url" => Ok(GeneratedField::TwitchUrl),
                             "domain" => Ok(GeneratedField::Domain),
                             "createdAt" | "created_at" => Ok(GeneratedField::CreatedAt),
                             "category" => Ok(GeneratedField::Category),
@@ -1090,15 +1100,16 @@ impl<'de> serde::Deserialize<'de> for GetBlogResponse {
                 let mut is_owner__ = None;
                 let mut is_editor__ = None;
                 let mut is_writer__ = None;
+                let mut is_external__ = None;
                 let mut has_plus_features__ = None;
                 let mut website_url__ = None;
                 let mut public_email__ = None;
-                let mut github_id__ = None;
-                let mut instagram_id__ = None;
-                let mut linkedin_id__ = None;
-                let mut youtube_id__ = None;
-                let mut twitter_id__ = None;
-                let mut twitch_id__ = None;
+                let mut github_url__ = None;
+                let mut instagram_url__ = None;
+                let mut linkedin_url__ = None;
+                let mut youtube_url__ = None;
+                let mut twitter_url__ = None;
+                let mut twitch_url__ = None;
                 let mut domain__ = None;
                 let mut created_at__ = None;
                 let mut category__ = None;
@@ -1276,6 +1287,12 @@ impl<'de> serde::Deserialize<'de> for GetBlogResponse {
                             }
                             is_writer__ = Some(map.next_value()?);
                         }
+                        GeneratedField::IsExternal => {
+                            if is_external__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("isExternal"));
+                            }
+                            is_external__ = Some(map.next_value()?);
+                        }
                         GeneratedField::HasPlusFeatures => {
                             if has_plus_features__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("hasPlusFeatures"));
@@ -1294,41 +1311,41 @@ impl<'de> serde::Deserialize<'de> for GetBlogResponse {
                             }
                             public_email__ = map.next_value()?;
                         }
-                        GeneratedField::GithubId => {
-                            if github_id__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("githubId"));
+                        GeneratedField::GithubUrl => {
+                            if github_url__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("githubUrl"));
                             }
-                            github_id__ = map.next_value()?;
+                            github_url__ = map.next_value()?;
                         }
-                        GeneratedField::InstagramId => {
-                            if instagram_id__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("instagramId"));
+                        GeneratedField::InstagramUrl => {
+                            if instagram_url__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("instagramUrl"));
                             }
-                            instagram_id__ = map.next_value()?;
+                            instagram_url__ = map.next_value()?;
                         }
-                        GeneratedField::LinkedinId => {
-                            if linkedin_id__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("linkedinId"));
+                        GeneratedField::LinkedinUrl => {
+                            if linkedin_url__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("linkedinUrl"));
                             }
-                            linkedin_id__ = map.next_value()?;
+                            linkedin_url__ = map.next_value()?;
                         }
-                        GeneratedField::YoutubeId => {
-                            if youtube_id__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("youtubeId"));
+                        GeneratedField::YoutubeUrl => {
+                            if youtube_url__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("youtubeUrl"));
                             }
-                            youtube_id__ = map.next_value()?;
+                            youtube_url__ = map.next_value()?;
                         }
-                        GeneratedField::TwitterId => {
-                            if twitter_id__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("twitterId"));
+                        GeneratedField::TwitterUrl => {
+                            if twitter_url__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("twitterUrl"));
                             }
-                            twitter_id__ = map.next_value()?;
+                            twitter_url__ = map.next_value()?;
                         }
-                        GeneratedField::TwitchId => {
-                            if twitch_id__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("twitchId"));
+                        GeneratedField::TwitchUrl => {
+                            if twitch_url__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("twitchUrl"));
                             }
-                            twitch_id__ = map.next_value()?;
+                            twitch_url__ = map.next_value()?;
                         }
                         GeneratedField::Domain => {
                             if domain__.is_some() {
@@ -1403,15 +1420,16 @@ impl<'de> serde::Deserialize<'de> for GetBlogResponse {
                     is_owner: is_owner__.unwrap_or_default(),
                     is_editor: is_editor__.unwrap_or_default(),
                     is_writer: is_writer__.unwrap_or_default(),
+                    is_external: is_external__.unwrap_or_default(),
                     has_plus_features: has_plus_features__.unwrap_or_default(),
                     website_url: website_url__,
                     public_email: public_email__,
-                    github_id: github_id__,
-                    instagram_id: instagram_id__,
-                    linkedin_id: linkedin_id__,
-                    youtube_id: youtube_id__,
-                    twitter_id: twitter_id__,
-                    twitch_id: twitch_id__,
+                    github_url: github_url__,
+                    instagram_url: instagram_url__,
+                    linkedin_url: linkedin_url__,
+                    youtube_url: youtube_url__,
+                    twitter_url: twitter_url__,
+                    twitch_url: twitch_url__,
                     domain: domain__,
                     created_at: created_at__.unwrap_or_default(),
                     category: category__.unwrap_or_default(),

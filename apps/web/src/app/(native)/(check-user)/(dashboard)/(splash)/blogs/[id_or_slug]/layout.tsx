@@ -1,5 +1,6 @@
 import "server-only";
 
+import { StoryCategory } from "@storiny/shared";
 import { notFound as not_found } from "next/dist/client/components/not-found";
 import { redirect } from "next/navigation";
 import React from "react";
@@ -49,6 +50,7 @@ const BlogDashboardLayout = async ({
         <BlogContextProvider
           value={{
             ...blog,
+            category: blog.category as StoryCategory,
             description: blog.description ?? null,
             logo_id: blog.logo_id ?? null,
             logo_hex: blog.logo_hex ?? null,
@@ -65,12 +67,12 @@ const BlogDashboardLayout = async ({
             domain: blog.domain ?? null,
             website_url: blog.website_url ?? null,
             public_email: blog.public_email ?? null,
-            github_id: blog.github_id ?? null,
-            youtube_id: blog.youtube_id ?? null,
-            twitter_id: blog.twitter_id ?? null,
-            twitch_id: blog.twitch_id ?? null,
-            instagram_id: blog.instagram_id ?? null,
-            linkedin_id: blog.linkedin_id ?? null,
+            github_url: blog.github_url ?? null,
+            youtube_url: blog.youtube_url ?? null,
+            twitter_url: blog.twitter_url ?? null,
+            twitch_url: blog.twitch_url ?? null,
+            instagram_url: blog.instagram_url ?? null,
+            linkedin_url: blog.linkedin_url ?? null,
             lsb_items: blog.lsb_items.map((item) => ({
               ...item,
               icon: item.icon ?? null
