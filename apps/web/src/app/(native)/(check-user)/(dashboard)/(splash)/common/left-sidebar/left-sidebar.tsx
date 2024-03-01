@@ -17,6 +17,7 @@ import styles from "./left-sidebar.module.scss";
 export type Group<T extends DashboardSegment | BlogDashboardSegment> = {
   items: {
     decorator: React.ReactElement;
+    metadata?: Record<string, any>;
     title: string;
     value: T;
   }[];
@@ -52,26 +53,30 @@ export const GroupComponent = <
   T extends DashboardSegment | BlogDashboardSegment
 >({
   group,
-  href_prefix
+  href_prefix,
+  should_render = (): boolean => true
 }: {
   group: Group<T>;
   href_prefix: string;
+  should_render?: (item: Group<T>["items"][number]) => boolean;
 }): React.ReactElement => (
   <div className={clsx(css["flex-col"], styles["tabs-group"])}>
     <Typography color={"minor"} level={"body2"} weight={"medium"}>
       {group.title}
     </Typography>
     <div className={clsx(css["flex-col"], styles["tabs-group-container"])}>
-      {group.items.map((item) => (
-        <AnchorTab<T>
-          decorator={item.decorator}
-          href_prefix={href_prefix}
-          key={item.value}
-          value={item.value}
-        >
-          {item.title}
-        </AnchorTab>
-      ))}
+      {group.items.map((item) =>
+        should_render(item) ? (
+          <AnchorTab<T>
+            decorator={item.decorator}
+            href_prefix={href_prefix}
+            key={item.value}
+            value={item.value}
+          >
+            {item.title}
+          </AnchorTab>
+        ) : null
+      )}
     </div>
   </div>
 );
