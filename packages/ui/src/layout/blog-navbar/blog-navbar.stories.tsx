@@ -1,12 +1,12 @@
 // noinspection JSUnusedGlobalSymbols
 
-import BlogContext from "@storiny/web/src/common/context/blog";
 import type { Meta, StoryObj } from "@storybook/react";
 import clsx from "clsx";
 import React from "react";
 
 import css from "~/theme/main.module.scss";
 
+import BlogContextProvider from "../../../../../apps/web/src/common/context/blog";
 import { MOCK_BLOGS } from "../../mocks";
 import BlogNavbar from "./blog-navbar";
 
@@ -15,7 +15,7 @@ const meta: Meta<typeof BlogNavbar> = {
   component: BlogNavbar,
   decorators: [
     (Story): React.ReactElement => (
-      <BlogContext.Provider
+      <BlogContextProvider
         value={{
           ...MOCK_BLOGS[0],
           mark_light: "Gj7gaDpXto8jpg.jpg",
@@ -31,7 +31,7 @@ const meta: Meta<typeof BlogNavbar> = {
         >
           <Story />
         </div>
-      </BlogContext.Provider>
+      </BlogContextProvider>
     )
   ],
   parameters: {
@@ -48,7 +48,7 @@ export const Default: Story = {};
 export const Transparent: Story = {
   decorators: [
     (Story): React.ReactElement => (
-      <BlogContext.Provider
+      <BlogContextProvider
         value={{
           ...MOCK_BLOGS[0],
           banner_id: "0",
@@ -66,7 +66,7 @@ export const Transparent: Story = {
         >
           <Story />
         </div>
-      </BlogContext.Provider>
+      </BlogContextProvider>
     )
   ]
 };

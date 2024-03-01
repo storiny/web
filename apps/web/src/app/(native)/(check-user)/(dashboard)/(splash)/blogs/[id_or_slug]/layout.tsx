@@ -4,7 +4,7 @@ import { notFound as not_found } from "next/dist/client/components/not-found";
 import { redirect } from "next/navigation";
 import React from "react";
 
-import BlogContext from "~/common/context/blog";
+import BlogContextProvider from "~/common/context/blog";
 import { get_blog } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
 import { is_valid_blog_slug } from "~/common/utils";
@@ -46,7 +46,7 @@ const BlogDashboardLayout = async ({
 
     return (
       <React.Fragment>
-        <BlogContext.Provider
+        <BlogContextProvider
           value={{
             ...blog,
             description: blog.description ?? null,
@@ -86,7 +86,7 @@ const BlogDashboardLayout = async ({
           <BlogDashboardLeftSidebar />
           {children}
           <DashboardFooter />
-        </BlogContext.Provider>
+        </BlogContextProvider>
       </React.Fragment>
     );
   } catch (e) {
