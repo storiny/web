@@ -20,6 +20,7 @@ export type BlogContextValue = Pick<
   | "instagram_id"
   | "is_homepage_large_layout"
   | "is_story_minimal_layout"
+  | "is_external"
   | "linkedin_id"
   | "mark_light"
   | "mark_dark"

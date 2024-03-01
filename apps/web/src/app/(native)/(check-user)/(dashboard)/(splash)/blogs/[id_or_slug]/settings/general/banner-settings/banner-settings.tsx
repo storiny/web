@@ -10,6 +10,7 @@ import Image from "~/components/image";
 import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import Gallery from "~/entities/gallery";
+import LockIcon from "~/icons/lock";
 import PencilIcon from "~/icons/pencil";
 import PhotoPlusIcon from "~/icons/photo-plus";
 import TrashIcon from "~/icons/trash";
@@ -96,7 +97,7 @@ const BlogBannerSettings = (): React.ReactElement => {
             styles.preview
           )}
         >
-          <PhotoPlusIcon />
+          <LockIcon />
           <Typography color={"muted"} level={"body3"}>
             Get Storiny+ to modify the banner
           </Typography>

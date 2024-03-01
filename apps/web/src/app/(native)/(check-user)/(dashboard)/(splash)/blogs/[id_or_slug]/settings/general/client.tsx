@@ -1,8 +1,8 @@
 "use client";
 
-import { SUPPORT_ARTICLE_MAP } from "@storiny/shared/src/constants/support-articles";
 import React from "react";
 
+import { use_blog_context } from "~/common/context/blog";
 import Divider from "~/components/divider";
 import Link from "~/components/link";
 import Spacer from "~/components/spacer";
@@ -15,14 +15,17 @@ import DashboardGroup from "../../../../common/dashboard-group";
 import DashboardTitle from "../../../../common/dashboard-title";
 import DashboardWrapper from "../../../../common/dashboard-wrapper";
 import BannerSettings from "./banner-settings";
-import AccountGeneralForm from "./general-form";
+import DeleteAction from "./delete-action";
+import BlogGeneralForm from "./general-form";
 import LogoSettings from "./logo-settings";
 import AccountProfileRightSidebar from "./right-sidebar";
 import styles from "./styles.module.scss";
-import UsernameSettings from "./username-settings";
+import VisibilityAction from "./visibility-action";
 
 const GeneralSettingsClient = (): React.ReactElement => {
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
+  const blog = use_blog_context();
+
   return (
     <React.Fragment>
       <main data-root={"true"}>
@@ -41,40 +44,56 @@ const GeneralSettingsClient = (): React.ReactElement => {
             </DashboardGroup>
           )}
           <DashboardGroup>
-            <Typography as={"h2"} level={"h4"}>
-              General
-            </Typography>
-            <Spacer orientation={"vertical"} size={1.5} />
-            <AccountGeneralForm />
+            <BlogGeneralForm />
           </DashboardGroup>
           <Divider />
           <DashboardGroup>
-            <TitleBlock title={"Username"}>
-              Your username is unique to you globally, and changing it will
-              break any existing links to your profile. You can only change your
-              username once a month.{" "}
-              <Link
-                href={SUPPORT_ARTICLE_MAP.CHANGING_USERNAME}
-                target={"_blank"}
-                underline={"always"}
-              >
-                Learn more about changing your username
-              </Link>
-              .
+            <TitleBlock title={"Visibility"}>
+              You can choose to hide your blog from the Storiny network. If you
+              choose to do so, your blog will not appear in search results or
+              digest emails.
             </TitleBlock>
             <Spacer orientation={"vertical"} size={4.5} />
-            <UsernameSettings />
+            <VisibilityAction />
           </DashboardGroup>
           <Divider />
           <DashboardGroup>
             <TitleBlock title={"Connections"}>
-              You can add a link to your external social media account on the{" "}
-              <Link href={"/me/account/connections"} underline={"always"}>
+              You can add a link to your external social media account or
+              website on the{" "}
+              <Link
+                href={`/blogs/${blog.slug}/settings/connections`}
+                underline={"always"}
+              >
                 connections page
               </Link>
-              , and it will be displayed on your public profile.
+              , and it will be displayed on the home-page of your blog.
             </TitleBlock>
           </DashboardGroup>
+          {blog.role === "owner" && (
+            <React.Fragment>
+              <Divider />
+              <DashboardGroup>
+                <TitleBlock
+                  component_props={{
+                    title: {
+                      style: { color: "var(--ruby-500)" }
+                    }
+                  }}
+                  title={"Danger zone"}
+                >
+                  Deleting this blog will immediately remove all editors and
+                  writers. However, the stories published in this blog will not
+                  be deleted; they will still be available on their
+                  authors&apos; profile pages if they are public. This action is
+                  instant and permanent, and there is no way to recover your
+                  blog after it&apos;s deleted.
+                </TitleBlock>
+                <Spacer orientation={"vertical"} size={4.5} />
+                <DeleteAction />
+              </DashboardGroup>
+            </React.Fragment>
+          )}
         </DashboardWrapper>
         <Spacer orientation={"vertical"} size={10} />
       </main>

@@ -15,9 +15,11 @@
 
 .preview {
   --icon-size: 36px;
+  --icon-stroke: var(--fg-muted);
 
   gap: 8px;
   text-align: center;
+  border-bottom: 1px solid var(--divider);
 }
 
 .x {

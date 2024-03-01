@@ -28,7 +28,45 @@ export const Default: Story = {
       render_with_state(
         <DashboardLayout>
           <DashboardSplashLayout>
-            <StorybookBlogDashboardLayout>
+            <StorybookBlogDashboardLayout
+              blog={{ has_plus_features: true }}
+              role={"owner"}
+            >
+              <Story />
+            </StorybookBlogDashboardLayout>
+          </DashboardSplashLayout>
+        </DashboardLayout>,
+        { ignore_primitive_providers: false, logged_in: true }
+      )
+  ]
+};
+
+export const AsEditor: Story = {
+  decorators: [
+    (Story): React.ReactElement =>
+      render_with_state(
+        <DashboardLayout>
+          <DashboardSplashLayout>
+            <StorybookBlogDashboardLayout
+              blog={{ has_plus_features: true }}
+              role={"editor"}
+            >
+              <Story />
+            </StorybookBlogDashboardLayout>
+          </DashboardSplashLayout>
+        </DashboardLayout>,
+        { ignore_primitive_providers: false, logged_in: true }
+      )
+  ]
+};
+
+export const WithoutPlusFeatures: Story = {
+  decorators: [
+    (Story): React.ReactElement =>
+      render_with_state(
+        <DashboardLayout>
+          <DashboardSplashLayout>
+            <StorybookBlogDashboardLayout blog={{ has_plus_features: false }}>
               <Story />
             </StorybookBlogDashboardLayout>
           </DashboardSplashLayout>

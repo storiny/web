@@ -1,5 +1,5 @@
 import { ContentType } from "@storiny/shared";
-import { AccountGeneralSchema } from "@storiny/web/src/app/(check-user)/(dashboard)/me/(splash)/(default-lsb)/account/profile/general-form";
+import { AccountGeneralSchema } from "@storiny/web/src/app/(native)/(check-user)/(dashboard)/(splash)/me/account/profile/general-form";
 
 import { api_slice } from "~/redux/features/api/slice";
 

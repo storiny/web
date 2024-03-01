@@ -1,55 +1,36 @@
-import { USER_PROPS } from "@storiny/shared";
 import React from "react";
 
+import { use_blog_context } from "~/common/context/blog";
+import { use_app_router } from "~/common/utils";
 import Button from "~/components/button";
 import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
-import FormInput from "~/components/form-input";
 import FormPasswordInput from "~/components/form-password-input";
 import { Description, ModalFooterButton, use_modal } from "~/components/modal";
 import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import { use_media_query } from "~/hooks/use-media-query";
-import AtIcon from "~/icons/at";
 import PasswordIcon from "~/icons/password";
-import { mutate_user, use_username_settings_mutation } from "~/redux/features";
-import { use_app_dispatch } from "~/redux/hooks";
+import TrashIcon from "~/icons/trash";
+import { use_delete_blog_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
 
-import { UsernameSettingsProps } from "./username-settings.props";
+import { DeleteActionProps } from "./delete-action.props";
 import {
-  USERNAME_SETTINGS_SCHEMA,
-  UsernameSettingsSchema
-} from "./username-settings.schema";
+  BLOG_DELETE_ACTION_SCHEMA,
+  BlogDeleteActionSchema
+} from "./delete-action.schema";
 
-const UsernameSettingsModal = (): React.ReactElement => (
+const DeleteBlogModal = (): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
       <Typography color={"minor"} level={"body2"}>
-        Enter your new username along with your existing password.
+        You need to confirm your password to delete this blog.
       </Typography>
     </Description>
     <Spacer orientation={"vertical"} size={5} />
-    <FormInput
-      autoComplete={"username"}
-      auto_size
-      data-testid={"new-username-input"}
-      decorator={<AtIcon />}
-      form_slot_props={{
-        form_item: {
-          className: css["f-grow"]
-        }
-      }}
-      label={"New username"}
-      maxLength={USER_PROPS.username.max_length}
-      minLength={USER_PROPS.username.min_length}
-      name={"new_username"}
-      placeholder={"Choose a new username"}
-      required
-    />
-    <Spacer orientation={"vertical"} size={3} />
     <FormPasswordInput
       auto_size
       data-testid={"current-password-input"}
@@ -59,87 +40,85 @@ const UsernameSettingsModal = (): React.ReactElement => (
           className: css["f-grow"]
         }
       }}
-      label={"Current password"}
+      label={"Password"}
       name={"current_password"}
-      placeholder={"Your current password"}
+      placeholder={"Your password"}
       required
     />
+    <Spacer orientation={"vertical"} size={2} />
   </React.Fragment>
 );
 
-const UsernameSettings = ({
-  on_submit
-}: UsernameSettingsProps): React.ReactElement => {
-  const dispatch = use_app_dispatch();
+const DeleteAction = ({ on_submit }: DeleteActionProps): React.ReactElement => {
   const toast = use_toast();
+  const router = use_app_router();
+  const blog = use_blog_context();
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const form = use_form<UsernameSettingsSchema>({
-    resolver: zod_resolver(USERNAME_SETTINGS_SCHEMA),
+  const [done, set_done] = React.useState<boolean>(false);
+  const form = use_form<BlogDeleteActionSchema>({
+    resolver: zod_resolver(BLOG_DELETE_ACTION_SCHEMA),
     defaultValues: {
-      new_username: "",
       current_password: ""
     }
   });
-  const [mutate_username_settings, { isLoading: is_loading }] =
-    use_username_settings_mutation();
+  const [delete_blog, { isLoading: is_loading }] = use_delete_blog_mutation();
 
-  const handle_submit: SubmitHandler<UsernameSettingsSchema> = (values) => {
+  const handle_submit: SubmitHandler<BlogDeleteActionSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      mutate_username_settings(values)
+      delete_blog({
+        ...values,
+        blog_id: blog.id
+      })
         .unwrap()
         .then(() => {
-          dispatch(
-            mutate_user({
-              username: values["new_username"]
-            })
-          );
-          form.reset(); // Reset with empty values
-          close_modal();
-          toast("Username updated successfully", "success");
+          set_done(true);
+          router.replace("/"); // Home page
+          router.refresh(); // Refresh the state
         })
         .catch((error) => {
-          handle_api_error(
-            error,
-            toast,
-            form,
-            "Could not update your username"
-          );
+          handle_api_error(error, toast, form, "Could not delete your blog");
         });
     }
   };
 
-  const [element, , close_modal] = use_modal(
+  const [element] = use_modal(
     ({ open_modal }) => (
       <Button
         auto_size
         check_auth
         className={css["fit-w"]}
+        color={"ruby"}
         onClick={open_modal}
         variant={"hollow"}
       >
-        Change username
+        Delete this blog
       </Button>
     ),
-    <Form<UsernameSettingsSchema>
+    <Form<BlogDeleteActionSchema>
       className={css["flex-col"]}
       disabled={is_loading}
       on_submit={handle_submit}
       provider_props={form}
     >
-      <UsernameSettingsModal />
+      <DeleteBlogModal />
     </Form>,
     {
       fullscreen: is_smaller_than_mobile,
       footer: (
         <>
-          <ModalFooterButton compact={is_smaller_than_mobile} variant={"ghost"}>
+          <ModalFooterButton
+            compact={is_smaller_than_mobile}
+            disabled={done}
+            variant={"ghost"}
+          >
             Cancel
           </ModalFooterButton>
           <ModalFooterButton
+            color={"ruby"}
             compact={is_smaller_than_mobile}
-            disabled={!form.formState.isDirty}
+            disabled={done || !form.formState.isDirty}
             loading={is_loading}
             onClick={(event): void => {
               event.preventDefault(); // Prevent closing of modal
@@ -160,8 +139,8 @@ const UsernameSettings = ({
           }
         },
         header: {
-          decorator: <AtIcon />,
-          children: "Change your username"
+          decorator: <TrashIcon />,
+          children: "Delete your blog"
         }
       }
     }
@@ -170,4 +149,4 @@ const UsernameSettings = ({
   return element;
 };
 
-export default UsernameSettings;
+export default DeleteAction;
