@@ -36,14 +36,14 @@ interface BlogFonts {
 }
 
 interface BlogConnections {
-  github_id: string | null;
-  instagram_id: string | null;
-  linkedin_id: string | null;
+  github_url: string | null;
+  instagram_url: string | null;
+  linkedin_url: string | null;
   public_email: string | null;
-  twitch_id: string | null;
-  twitter_id: string | null;
+  twitch_url: string | null;
+  twitter_url: string | null;
   website_url: string | null;
-  youtube_id: string | null;
+  youtube_url: string | null;
 }
 
 interface BlogLayout {

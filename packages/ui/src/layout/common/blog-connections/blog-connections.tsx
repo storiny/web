@@ -1,3 +1,4 @@
+import { use_blog_context } from "@storiny/web/src/common/context/blog";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
@@ -8,7 +9,6 @@ import MailIcon from "~/icons/mail";
 import WorldIcon from "~/icons/world";
 import css from "~/theme/main.module.scss";
 
-import { use_blog_context } from "../../../../../../apps/web/src/common/context/blog";
 import styles from "./blog-connections.module.scss";
 
 const IconMap = {
@@ -66,32 +66,13 @@ const BlogConnections = ({
       );
     }
 
-    if (blog.github_id) {
-      items.push(
-        <IconButton
-          aria-label={`${blog.name} on GitHub`}
-          as={"a"}
-          className={clsx(styles.x, styles.connection)}
-          href={`https://github.com/${blog.github_id}`}
-          key={"github"}
-          rel={"noreferrer"}
-          size={is_inside_sidebar ? "md" : "lg"}
-          target={"_blank"}
-          title={`${blog.name} on GitHub`}
-          variant={"ghost"}
-        >
-          <IconMap.GitHub />
-        </IconButton>
-      );
-    }
-
-    if (blog.youtube_id) {
+    if (blog.youtube_url) {
       items.push(
         <IconButton
           aria-label={`${blog.name} on YouTube`}
           as={"a"}
           className={clsx(styles.x, styles.connection)}
-          href={`https://youtube.com/channel/${blog.youtube_id}`}
+          href={blog.youtube_url}
           key={"youtube"}
           rel={"noreferrer"}
           size={is_inside_sidebar ? "md" : "lg"}
@@ -104,13 +85,32 @@ const BlogConnections = ({
       );
     }
 
-    if (blog.twitter_id) {
+    if (blog.github_url) {
+      items.push(
+        <IconButton
+          aria-label={`${blog.name} on GitHub`}
+          as={"a"}
+          className={clsx(styles.x, styles.connection)}
+          href={blog.github_url}
+          key={"github"}
+          rel={"noreferrer"}
+          size={is_inside_sidebar ? "md" : "lg"}
+          target={"_blank"}
+          title={`${blog.name} on GitHub`}
+          variant={"ghost"}
+        >
+          <IconMap.GitHub />
+        </IconButton>
+      );
+    }
+
+    if (blog.twitter_url) {
       items.push(
         <IconButton
           aria-label={`${blog.name} on Twitter`}
           as={"a"}
           className={clsx(styles.x, styles.connection)}
-          href={`https://twitter.com/${blog.twitter_id}`}
+          href={blog.twitter_url}
           key={"twitter"}
           rel={"noreferrer"}
           size={is_inside_sidebar ? "md" : "lg"}
@@ -123,13 +123,13 @@ const BlogConnections = ({
       );
     }
 
-    if (blog.instagram_id) {
+    if (blog.instagram_url) {
       items.push(
         <IconButton
           aria-label={`${blog.name} on Instagram`}
           as={"a"}
           className={clsx(styles.x, styles.connection)}
-          href={`https://instagram.com/${blog.instagram_id}`}
+          href={blog.instagram_url}
           key={"instagram"}
           rel={"noreferrer"}
           size={is_inside_sidebar ? "md" : "lg"}
@@ -142,13 +142,13 @@ const BlogConnections = ({
       );
     }
 
-    if (blog.linkedin_id) {
+    if (blog.linkedin_url) {
       items.push(
         <IconButton
           aria-label={`${blog.name} on LinkedIn`}
           as={"a"}
           className={clsx(styles.x, styles.connection)}
-          href={`https://linkedin.com/in/${blog.linkedin_id}`}
+          href={blog.linkedin_url}
           key={"linkedin"}
           rel={"noreferrer"}
           size={is_inside_sidebar ? "md" : "lg"}
@@ -161,13 +161,13 @@ const BlogConnections = ({
       );
     }
 
-    if (blog.twitch_id) {
+    if (blog.twitch_url) {
       items.push(
         <IconButton
           aria-label={`${blog.name} on Twitch`}
           as={"a"}
           className={clsx(styles.x, styles.connection)}
-          href={`https://twitch.tv/${blog.twitch_id}`}
+          href={blog.twitch_url}
           key={"twitch"}
           rel={"noreferrer"}
           size={is_inside_sidebar ? "md" : "lg"}

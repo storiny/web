@@ -121,38 +121,40 @@ pub struct GetBlogResponse {
     #[prost(bool, tag="28")]
     pub is_writer: bool,
     #[prost(bool, tag="29")]
+    pub is_external: bool,
+    #[prost(bool, tag="30")]
     pub has_plus_features: bool,
     /// Connections
-    #[prost(string, optional, tag="30")]
-    pub website_url: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="31")]
-    pub public_email: ::core::option::Option<::prost::alloc::string::String>,
+    pub website_url: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="32")]
-    pub github_id: ::core::option::Option<::prost::alloc::string::String>,
+    pub public_email: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="33")]
-    pub instagram_id: ::core::option::Option<::prost::alloc::string::String>,
+    pub github_url: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="34")]
-    pub linkedin_id: ::core::option::Option<::prost::alloc::string::String>,
+    pub instagram_url: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="35")]
-    pub youtube_id: ::core::option::Option<::prost::alloc::string::String>,
+    pub linkedin_url: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="36")]
-    pub twitter_id: ::core::option::Option<::prost::alloc::string::String>,
+    pub youtube_url: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="37")]
-    pub twitch_id: ::core::option::Option<::prost::alloc::string::String>,
-    /// Other props
+    pub twitter_url: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="38")]
+    pub twitch_url: ::core::option::Option<::prost::alloc::string::String>,
+    /// Other props
+    #[prost(string, optional, tag="39")]
     pub domain: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, tag="39")]
-    pub created_at: ::prost::alloc::string::String,
     #[prost(string, tag="40")]
-    pub category: ::prost::alloc::string::String,
+    pub created_at: ::prost::alloc::string::String,
     #[prost(string, tag="41")]
-    pub user_id: ::prost::alloc::string::String,
+    pub category: ::prost::alloc::string::String,
     #[prost(string, tag="42")]
+    pub user_id: ::prost::alloc::string::String,
+    #[prost(string, tag="43")]
     pub rsb_items_label: ::prost::alloc::string::String,
-    #[prost(message, repeated, tag="43")]
-    pub lsb_items: ::prost::alloc::vec::Vec<LeftSidebarItem>,
     #[prost(message, repeated, tag="44")]
+    pub lsb_items: ::prost::alloc::vec::Vec<LeftSidebarItem>,
+    #[prost(message, repeated, tag="45")]
     pub rsb_items: ::prost::alloc::vec::Vec<RightSidebarItem>,
 }
 // Blog archive request

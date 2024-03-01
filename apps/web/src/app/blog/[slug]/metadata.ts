@@ -80,7 +80,6 @@ export const generateMetadata = async ({
         card: blog.preview_image ? "summary_large_image" : "summary",
         title: blog.seo_title || blog.name,
         description: blog.seo_description || blog.description,
-        site: blog.twitter_id ? `@${blog.twitter_id}` : undefined,
         images: blog.preview_image
           ? [get_cdn_url(blog.preview_image, ImageSize.W_1440)]
           : blog.logo_id
