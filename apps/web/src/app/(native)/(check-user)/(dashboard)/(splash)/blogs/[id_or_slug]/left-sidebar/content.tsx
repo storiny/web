@@ -141,6 +141,9 @@ const SuspendedBlogDashboardLeftSidebarContent = (): React.ReactElement => {
                 group={group}
                 href_prefix={`blogs/${blog.slug}`}
                 key={group.title}
+                should_render={(item): boolean =>
+                  !(item.metadata?.owner_only && blog.role !== "owner")
+                }
               />
             ))}
           </TabsList>

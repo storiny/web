@@ -64,7 +64,10 @@ const SITE_SETTINGS_GROUP: Group<BlogDashboardSegment> = {
     {
       title: "Editors",
       decorator: <UserPenIcon />,
-      value: "content/editors"
+      value: "content/editors",
+      metadata: {
+        owner_only: true
+      }
     },
     {
       title: "Writers",

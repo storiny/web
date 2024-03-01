@@ -35,18 +35,20 @@ const GroupComponent = ({
         {group.title}
       </Typography>
       <div className={clsx(css["flex-col"], styles["item-container"])}>
-        {group.items.map((item) => (
-          <React.Fragment key={item.value}>
-            <NavigationItem
-              as={NextLink}
-              decorator={item.decorator}
-              href={`/blogs/${blog.slug}/${item.value}`}
-            >
-              {item.title}
-            </NavigationItem>
-            <Separator className={css["hide-last"]} invert_margin />
-          </React.Fragment>
-        ))}
+        {group.items.map((item) =>
+          item.metadata?.owner_only && blog.role !== "owner" ? null : (
+            <React.Fragment key={item.value}>
+              <NavigationItem
+                as={NextLink}
+                decorator={item.decorator}
+                href={`/blogs/${blog.slug}/${item.value}`}
+              >
+                {item.title}
+              </NavigationItem>
+              <Separator className={css["hide-last"]} invert_margin />
+            </React.Fragment>
+          )
+        )}
       </div>
     </div>
   );
