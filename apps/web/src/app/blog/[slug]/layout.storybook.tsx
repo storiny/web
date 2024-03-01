@@ -2,7 +2,7 @@ import { Blog } from "@storiny/types";
 import { MOCK_BLOGS } from "@storiny/ui/src/mocks";
 import React from "react";
 
-import BlogContext from "~/common/context/blog";
+import BlogContextProvider from "~/common/context/blog";
 
 const StorybookBlogLayout = ({
   children,
@@ -13,7 +13,7 @@ const StorybookBlogLayout = ({
   children: React.ReactNode;
   role?: "owner" | "editor" | "writer" | null;
 }): React.ReactElement => (
-  <BlogContext.Provider
+  <BlogContextProvider
     value={{
       ...MOCK_BLOGS[0],
       ...blog,
@@ -21,7 +21,7 @@ const StorybookBlogLayout = ({
     }}
   >
     {children}
-  </BlogContext.Provider>
+  </BlogContextProvider>
 );
 
 export default StorybookBlogLayout;

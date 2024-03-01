@@ -1,0 +1,9 @@
+@use "breakpoints";
+
+.logo-settings-wrapper {
+  padding: 12px 16px;
+
+  @include breakpoints.media("<tablet") {
+    padding: 12px 8px;
+  }
+}

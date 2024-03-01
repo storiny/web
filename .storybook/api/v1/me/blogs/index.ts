@@ -1,5 +1,6 @@
 import { MOCK_BLOGS, MOCK_USERS } from "@storiny/ui/src/mocks";
 import { nanoid } from "nanoid";
+import "./settings";
 
 const { worker, rest } = window.msw;
 

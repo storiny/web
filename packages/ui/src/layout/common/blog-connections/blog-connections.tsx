@@ -1,4 +1,3 @@
-import { use_blog_context } from "@storiny/web/src/common/context/blog";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
@@ -9,6 +8,7 @@ import MailIcon from "~/icons/mail";
 import WorldIcon from "~/icons/world";
 import css from "~/theme/main.module.scss";
 
+import { use_blog_context } from "../../../../../../apps/web/src/common/context/blog";
 import styles from "./blog-connections.module.scss";
 
 const IconMap = {

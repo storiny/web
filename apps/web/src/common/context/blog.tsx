@@ -6,6 +6,7 @@ export type BlogContextValue = Pick<
   | "id"
   | "slug"
   | "description"
+  | "category"
   | "logo_id"
   | "logo_hex"
   | "banner_hex"
@@ -35,13 +36,39 @@ export type BlogContextValue = Pick<
   | "hide_storiny_branding"
   | "is_following"
   | "rsb_items_label"
-> & { role: "owner" | "editor" | "writer" | null };
+> & {
+  mutate: (next_state: Partial<Blog>) => void;
+  role: "owner" | "editor" | "writer" | null;
+};
 
-const BlogContext = React.createContext<BlogContextValue>(
+export const BlogContext = React.createContext<BlogContextValue>(
   {} as unknown as BlogContextValue
 );
+
+const BlogContextProvider = ({
+  children,
+  value
+}: {
+  children: React.ReactNode;
+  value: Omit<BlogContextValue, "mutate">;
+}): React.ReactElement => {
+  const [blog, set_blog] =
+    React.useState<Omit<BlogContextValue, "mutate">>(value);
+
+  return (
+    <BlogContext.Provider
+      value={{
+        ...blog,
+        mutate: (values) =>
+          set_blog((prev_state) => ({ ...prev_state, ...values }))
+      }}
+    >
+      {children}
+    </BlogContext.Provider>
+  );
+};
 
 export const use_blog_context = (): BlogContextValue =>
   React.useContext(BlogContext);
 
-export default BlogContext;
+export default BlogContextProvider;

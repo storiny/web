@@ -1,4 +1,3 @@
-import { use_blog_context } from "@storiny/web/src/common/context/blog";
 import clsx from "clsx";
 import React from "react";
 
@@ -12,6 +11,7 @@ import { boolean_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 
+import { use_blog_context } from "../../../../../apps/web/src/common/context/blog";
 import styles from "./blog-right-sidebar.module.scss";
 
 const FollowButton = (): React.ReactElement => {

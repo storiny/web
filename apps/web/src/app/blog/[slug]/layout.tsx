@@ -7,7 +7,7 @@ import { headers } from "next/headers";
 import React from "react";
 import { Organization, WithContext } from "schema-dts";
 
-import BlogContext from "~/common/context/blog";
+import BlogContextProvider from "~/common/context/blog";
 import { get_blog, GetBlogResponse } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
 import { is_valid_blog_slug } from "~/common/utils";
@@ -134,7 +134,7 @@ if (typeof document !== "undefined") {
             }
           `}</style>
         )}
-        <BlogContext.Provider
+        <BlogContextProvider
           value={{
             ...blog,
             description: blog.description ?? null,
@@ -182,7 +182,7 @@ if (typeof document !== "undefined") {
             type="application/ld+json"
           />
           {children}
-        </BlogContext.Provider>
+        </BlogContextProvider>
       </React.Fragment>
     );
   } catch (e) {
