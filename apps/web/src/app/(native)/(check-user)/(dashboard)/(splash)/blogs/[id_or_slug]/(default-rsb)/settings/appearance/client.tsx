@@ -7,12 +7,12 @@ import Divider from "~/components/divider";
 import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
 import TitleBlock from "~/entities/title-block";
-import css from "~/theme/main.module.scss";
 
 import DashboardGroup from "../../../../../common/dashboard-group";
 import DashboardTitle from "../../../../../common/dashboard-title";
 import DashboardWrapper from "../../../../../common/dashboard-wrapper";
 import BlogFaviconSettings from "./favicon";
+import BlogFontsSettings from "./fonts";
 import BlogMarkSettings from "./mark";
 
 const BlogAppearanceSettingsClient = (): React.ReactElement => {
@@ -27,23 +27,7 @@ const BlogAppearanceSettingsClient = (): React.ReactElement => {
         <Divider />
         <BlogFaviconSettings />
         <Divider />
-        <DashboardGroup>
-          <TitleBlock title={"Fonts"}>
-            You can upload your own fonts to use for your blog. These will
-            override Storiny&apos;s default fonts.
-            <br />
-            <br />
-            The primary font is used for headings, the secondary font is used
-            for body text, and the code font is used for inline code snippets
-            and code blocks. We recommend using a display font as the primary
-            font, a serif or sans-serif font as the secondary font, and a
-            monospace font as the code font choice.
-            <br />
-            <br />
-            Please upload the fonts in{" "}
-            <span className={css["t-bold"]}>WOFF2</span> format.
-          </TitleBlock>
-        </DashboardGroup>
+        <BlogFontsSettings />
         <Divider />
         <DashboardGroup>
           <TitleBlock title={"Page layout"}>

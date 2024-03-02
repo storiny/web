@@ -8,13 +8,14 @@ import Divider from "~/components/divider";
 import IconButton from "~/components/icon-button";
 import Image from "~/components/image";
 import Spacer from "~/components/spacer";
+import Spinner from "~/components/spinner";
 import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import Gallery from "~/entities/gallery";
 import TitleBlock from "~/entities/title-block";
 import FileUploadIcon from "~/icons/file-upload";
 import TrashIcon from "~/icons/trash";
-import { use_blog_mark_settings_mutation } from "~/redux/features/api/endpoints/me/blogs/settings/appearance/mark";
+import { use_blog_mark_settings_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
 
@@ -104,7 +105,9 @@ const BlogMarkSettings = (): React.ReactElement => {
                 }
                 type={"button"}
               >
-                {mark[`mark_${mode}`] ? (
+                {is_loading ? (
+                  <Spinner />
+                ) : mark[`mark_${mode}`] ? (
                   <Image
                     alt={`Mark for ${mode} mode`}
                     className={styles.image}

@@ -2,15 +2,25 @@
 
 .content {
   padding: 12px 8px;
+  gap: 16px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+
+  @include breakpoints.media("<mobile") {
+    flex-direction: column;
+    gap: 32px;
+  }
 }
 
 .item {
   padding-inline: 16px;
   gap: 14px;
+  min-width: 140px;
   max-width: 100%;
 
   @include breakpoints.media("<mobile") {
     padding-inline: 0;
+    width: 100%;
   }
 }
 
@@ -25,9 +35,13 @@
   border-radius: var(--radius-md);
   border: 1.5px dashed var(--divider);
   cursor: pointer;
-  width: 88px;
-  height: 88px;
-  padding: 16px;
+  min-width: 142px;
+  min-height: 142px;
+  padding: 48px;
+
+  &.active {
+    border-color: var(--inverted-400);
+  }
 
   &.disabled {
     pointer-events: none;
@@ -35,16 +49,16 @@
     cursor: wait;
   }
 
-  &.empty {
-    padding: 32px;
+  @include breakpoints.media("<mobile") {
+    width: 100%;
   }
 }
 
-.image {
-  height: 64px;
-  width: 64px;
-  min-height: 64px;
-  min-width: 64px;
+.preview {
+  font-size: 36px;
+  line-height: 36px;
+  user-select: none;
+  text-align: center;
 }
 
 .footer {

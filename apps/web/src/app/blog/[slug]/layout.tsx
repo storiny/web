@@ -148,6 +148,9 @@ if (typeof document !== "undefined") {
             newsletter_splash_id: blog.newsletter_splash_id ?? null,
             mark_dark: blog.mark_dark ?? null,
             mark_light: blog.mark_light ?? null,
+            font_primary: blog.font_primary ?? null,
+            font_secondary: blog.font_secondary ?? null,
+            font_code: blog.font_code ?? null,
             default_theme: (blog.default_theme ?? null) as
               | "light"
               | "dark"
