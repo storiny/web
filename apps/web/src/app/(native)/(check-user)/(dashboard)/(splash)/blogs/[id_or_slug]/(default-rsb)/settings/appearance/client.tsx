@@ -12,6 +12,7 @@ import css from "~/theme/main.module.scss";
 import DashboardGroup from "../../../../../common/dashboard-group";
 import DashboardTitle from "../../../../../common/dashboard-title";
 import DashboardWrapper from "../../../../../common/dashboard-wrapper";
+import BlogMarkSettings from "./mark";
 
 const BlogAppearanceSettingsClient = (): React.ReactElement => {
   const toast = use_toast();
@@ -21,19 +22,7 @@ const BlogAppearanceSettingsClient = (): React.ReactElement => {
     <React.Fragment>
       <DashboardTitle>Appearance</DashboardTitle>
       <DashboardWrapper>
-        <DashboardGroup>
-          <TitleBlock title={"Mark"}>
-            Mark will be displayed on the navigation bar of your blog. We
-            recommend using an image with a transparent background and checking
-            if it has enough contrast with the banner image if you are using
-            one.
-            <br />
-            <br />
-            You can also upload a distinct mark for dark mode.
-          </TitleBlock>
-          <Spacer orientation={"vertical"} size={5} />
-          --
-        </DashboardGroup>
+        <BlogMarkSettings />
         <Divider />
         <DashboardGroup>
           <TitleBlock title={"Favicon"}>
@@ -81,6 +70,7 @@ const BlogAppearanceSettingsClient = (): React.ReactElement => {
           </TitleBlock>
         </DashboardGroup>
         <Divider />
+
         <DashboardGroup>
           <TitleBlock title={"Remove branding"}>
             Remove all Storiny branding from your blog.
