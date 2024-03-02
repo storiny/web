@@ -4,3 +4,4 @@ import "./general";
 import "./visibility";
 import "./delete-blog";
 import "./connections";
+import "./appearance";
