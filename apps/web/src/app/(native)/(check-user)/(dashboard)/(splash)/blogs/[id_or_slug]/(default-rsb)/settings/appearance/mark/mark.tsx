@@ -67,8 +67,9 @@ const BlogMarkSettings = (): React.ReactElement => {
     <DashboardGroup>
       <TitleBlock title={"Mark"}>
         Mark will be displayed on the navigation bar of your blog. We recommend
-        using an image with a transparent background and checking if it has
-        enough contrast with the banner image if you are using one.
+        using an image that is exactly 28 pixels tall with a transparent
+        background and checking if it has enough contrast with the banner image
+        if you are using one.
         <br />
         <br />
         You can also upload a distinct mark for dark mode.
@@ -125,7 +126,6 @@ const BlogMarkSettings = (): React.ReactElement => {
                   <Divider orientation={"vertical"} />
                   <IconButton
                     aria-label={"Remove mark"}
-                    auto_size
                     disabled={is_loading}
                     onClick={(): void => {
                       set_mark((prev_state) => ({

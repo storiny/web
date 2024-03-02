@@ -12,6 +12,7 @@ import css from "~/theme/main.module.scss";
 import DashboardGroup from "../../../../../common/dashboard-group";
 import DashboardTitle from "../../../../../common/dashboard-title";
 import DashboardWrapper from "../../../../../common/dashboard-wrapper";
+import BlogFaviconSettings from "./favicon";
 import BlogMarkSettings from "./mark";
 
 const BlogAppearanceSettingsClient = (): React.ReactElement => {
@@ -24,13 +25,7 @@ const BlogAppearanceSettingsClient = (): React.ReactElement => {
       <DashboardWrapper>
         <BlogMarkSettings />
         <Divider />
-        <DashboardGroup>
-          <TitleBlock title={"Favicon"}>
-            This will be displayed next to your blog&apos;s address by the
-            browsers. Please upload a <span className={css["t-bold"]}>PNG</span>{" "}
-            file with a minimum resolution of 64 pixels in a square shape.
-          </TitleBlock>
-        </DashboardGroup>
+        <BlogFaviconSettings />
         <Divider />
         <DashboardGroup>
           <TitleBlock title={"Fonts"}>
