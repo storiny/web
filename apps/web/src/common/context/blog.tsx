@@ -11,6 +11,7 @@ export type BlogContextValue = Pick<
   | "logo_hex"
   | "banner_hex"
   | "banner_id"
+  | "favicon"
   | "name"
   | "user_id"
   | "default_theme"

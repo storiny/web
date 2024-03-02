@@ -143,6 +143,7 @@ if (typeof document !== "undefined") {
             logo_hex: blog.logo_hex ?? null,
             banner_id: blog.banner_id ?? null,
             banner_hex: blog.banner_hex ?? null,
+            favicon: blog.favicon ?? null,
             newsletter_splash_hex: blog.newsletter_splash_hex ?? null,
             newsletter_splash_id: blog.newsletter_splash_id ?? null,
             mark_dark: blog.mark_dark ?? null,
