@@ -10,7 +10,7 @@ import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
 import TitleBlock from "~/entities/title-block";
 import { use_media_query } from "~/hooks/use-media-query";
-import { use_blog_page_layout_settings_mutation } from "~/redux/features";
+import { use_blog_story_layout_settings_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
@@ -19,37 +19,17 @@ import DashboardGroup from "../../../../../../common/dashboard-group";
 import styles from "../common.module.scss";
 
 const DefaultLayoutPreview = (): React.ReactElement => (
-  <svg fill="none" viewBox="0 0 200 123">
-    <path d="M0 0h200v122.81H0z" fill="var(--bg-body)" />
+  <svg fill="none" viewBox="0 0 200 124">
+    <path d="M0 .81h200v122.81H0z" fill="var(--bg-body)" />
     <rect
       fill="var(--bg-elevation-md)"
       height="1.83"
       rx=".59"
       stroke="var(--divider)"
       strokeWidth=".17"
-      width="25.83"
-      x="64.12"
-      y="21.61"
-    />
-    <rect
-      fill="var(--bg-elevation-md)"
-      height="1.83"
-      rx=".59"
-      stroke="var(--divider)"
-      strokeWidth=".17"
-      width="9.83"
-      x="67.12"
-      y="24.61"
-    />
-    <rect
-      fill="var(--bg-elevation-md)"
-      height="1.83"
-      rx=".92"
-      stroke="var(--divider)"
-      strokeWidth=".17"
-      width="1.83"
-      x="64.12"
-      y="24.61"
+      width="3.83"
+      x="65.08"
+      y="22.08"
     />
     <rect
       fill="var(--bg-elevation-md)"
@@ -58,8 +38,8 @@ const DefaultLayoutPreview = (): React.ReactElement => (
       stroke="var(--divider)"
       strokeWidth=".17"
       width="3.83"
-      x="64.12"
-      y="37.79"
+      x="65.08"
+      y="22.08"
     />
     <rect
       fill="var(--bg-elevation-md)"
@@ -68,8 +48,8 @@ const DefaultLayoutPreview = (): React.ReactElement => (
       stroke="var(--divider)"
       strokeWidth=".17"
       width="3.83"
-      x="69.12"
-      y="37.79"
+      x="70.08"
+      y="22.08"
     />
     <rect
       fill="var(--bg-elevation-md)"
@@ -78,18 +58,8 @@ const DefaultLayoutPreview = (): React.ReactElement => (
       stroke="var(--divider)"
       strokeWidth=".17"
       width="5.83"
-      x="129.12"
-      y="37.79"
-    />
-    <rect
-      fill="var(--bg-elevation-md)"
-      height="13.83"
-      rx=".59"
-      stroke="var(--divider)"
-      strokeWidth=".17"
-      width="25.83"
-      x="109.08"
-      y="21.26"
+      x="130.09"
+      y="22.08"
     />
     <rect
       fill="var(--bg-elevation-md)"
@@ -97,9 +67,9 @@ const DefaultLayoutPreview = (): React.ReactElement => (
       rx=".59"
       stroke="var(--divider)"
       strokeWidth=".17"
-      width="25.83"
-      x="64.12"
-      y="48.14"
+      width="31.83"
+      x="65.08"
+      y="26.08"
     />
     <rect
       fill="var(--bg-elevation-md)"
@@ -107,19 +77,9 @@ const DefaultLayoutPreview = (): React.ReactElement => (
       rx=".59"
       stroke="var(--divider)"
       strokeWidth=".17"
-      width="9.83"
-      x="67.12"
-      y="51.14"
-    />
-    <rect
-      fill="var(--bg-elevation-md)"
-      height="1.83"
-      rx=".92"
-      stroke="var(--divider)"
-      strokeWidth=".17"
-      width="1.83"
-      x="64.12"
-      y="51.14"
+      width="51.83"
+      x="65.08"
+      y="74.08"
     />
     <rect
       fill="var(--bg-elevation-md)"
@@ -127,9 +87,9 @@ const DefaultLayoutPreview = (): React.ReactElement => (
       rx=".59"
       stroke="var(--divider)"
       strokeWidth=".17"
-      width="3.83"
-      x="64.12"
-      y="64.31"
+      width="41.83"
+      x="65.08"
+      y="78.08"
     />
     <rect
       fill="var(--bg-elevation-md)"
@@ -137,9 +97,9 @@ const DefaultLayoutPreview = (): React.ReactElement => (
       rx=".59"
       stroke="var(--divider)"
       strokeWidth=".17"
-      width="3.83"
-      x="69.12"
-      y="64.31"
+      width="27.83"
+      x="65.08"
+      y="82.08"
     />
     <rect
       fill="var(--bg-elevation-md)"
@@ -147,19 +107,9 @@ const DefaultLayoutPreview = (): React.ReactElement => (
       rx=".59"
       stroke="var(--divider)"
       strokeWidth=".17"
-      width="5.83"
-      x="129.12"
-      y="64.31"
-    />
-    <rect
-      fill="var(--bg-elevation-md)"
-      height="13.83"
-      rx=".59"
-      stroke="var(--divider)"
-      strokeWidth=".17"
-      width="25.83"
-      x="109.08"
-      y="47.79"
+      width="57.83"
+      x="65.08"
+      y="86.08"
     />
     <rect
       fill="var(--bg-elevation-md)"
@@ -167,9 +117,9 @@ const DefaultLayoutPreview = (): React.ReactElement => (
       rx=".59"
       stroke="var(--divider)"
       strokeWidth=".17"
-      width="25.83"
-      x="64.12"
-      y="74.66"
+      width="31.83"
+      x="65.08"
+      y="102.08"
     />
     <rect
       fill="var(--bg-elevation-md)"
@@ -177,19 +127,9 @@ const DefaultLayoutPreview = (): React.ReactElement => (
       rx=".59"
       stroke="var(--divider)"
       strokeWidth=".17"
-      width="9.83"
-      x="67.12"
-      y="77.66"
-    />
-    <rect
-      fill="var(--bg-elevation-md)"
-      height="1.83"
-      rx=".92"
-      stroke="var(--divider)"
-      strokeWidth=".17"
-      width="1.83"
-      x="64.12"
-      y="77.66"
+      width="41.83"
+      x="65.08"
+      y="106.08"
     />
     <rect
       fill="var(--bg-elevation-md)"
@@ -197,70 +137,46 @@ const DefaultLayoutPreview = (): React.ReactElement => (
       rx=".59"
       stroke="var(--divider)"
       strokeWidth=".17"
-      width="3.83"
-      x="64.12"
-      y="90.84"
+      width="13.83"
+      x="65.08"
+      y="29.08"
     />
     <rect
       fill="var(--bg-elevation-md)"
-      height="1.83"
+      height="24.83"
       rx=".59"
       stroke="var(--divider)"
       strokeWidth=".17"
-      width="3.83"
-      x="69.12"
-      y="90.84"
+      width="70.83"
+      x="65.08"
+      y="39.08"
     />
-    <rect
-      fill="var(--bg-elevation-md)"
-      height="1.83"
-      rx=".59"
-      stroke="var(--divider)"
-      strokeWidth=".17"
-      width="5.83"
-      x="129.12"
-      y="90.84"
-    />
-    <rect
-      fill="var(--bg-elevation-md)"
-      height="13.83"
-      rx=".59"
-      stroke="var(--divider)"
-      strokeWidth=".17"
-      width="25.83"
-      x="109.08"
-      y="74.31"
-    />
-    <mask fill="#fff" id="page-default-layout-a">
-      <path d="M142.6 15.79H200v106.86h-57.4V15.79Z" />
+    <mask fill="#fff" id="a">
+      <path d="M142.6 16.6H200v106.85h-57.4V16.6Z" />
     </mask>
     <path
-      d="M142.6 15.79H200v106.86h-57.4V15.79Z"
+      d="M142.6 16.6H200v106.85h-57.4V16.6Z"
       fill="var(--bg-elevation-sm)"
     />
     <path
-      d="M142.76 122.65V15.79h-.34v106.86h.34Z"
+      d="M142.76 123.45V16.6h-.34v106.85h.34Z"
       fill="var(--divider)"
-      mask="url(#page-default-layout-a)"
+      mask="url(#a)"
     />
-    <mask fill="#fff" id="page-default-layout-b">
-      <path d="M0 15.79h57.4v106.86H0V15.79Z" />
+    <mask fill="#fff" id="b">
+      <path d="M0 16.6h57.4v106.85H0V16.6Z" />
     </mask>
-    <path d="M0 15.79h57.4v106.86H0V15.79Z" fill="var(--bg-elevation-sm)" />
+    <path d="M0 16.6h57.4v106.85H0V16.6Z" fill="var(--bg-elevation-sm)" />
     <path
-      d="M57.24 15.79v106.86h.34V15.79h-.34Z"
+      d="M57.24 16.6v106.85h.34V16.6h-.34Z"
       fill="var(--divider)"
-      mask="url(#page-default-layout-b)"
+      mask="url(#b)"
     />
-    <mask fill="#fff" id="page-default-layout-c">
-      <path d="M0 0h200v15.79H0V0Z" />
+    <mask fill="#fff" id="c">
+      <path d="M0 .8h200v15.8H0V.8Z" />
     </mask>
-    <path d="M0 0h200v15.79H0V0Z" fill="var(--bg-elevation-md)" />
-    <path
-      d="M200 15.62H0v.34h200v-.34Z"
-      fill="var(--divider)"
-      mask="url(#page-default-layout-c)"
-    />
+    <path d="M0 .8h200v15.8H0V.8Z" fill="var(--bg-elevation-md)" />
+    <path d="M200 16.43H0v.34h200v-.34Z" fill="var(--divider)" mask="url(#c)" />
     <rect
       fill="var(--divider)"
       height="5.93"
@@ -269,7 +185,7 @@ const DefaultLayoutPreview = (): React.ReactElement => (
       strokeWidth=".17"
       width="5.93"
       x="188.4"
-      y="4.47"
+      y="5.28"
     />
     <rect
       fill="var(--divider)"
@@ -279,7 +195,7 @@ const DefaultLayoutPreview = (): React.ReactElement => (
       strokeWidth=".17"
       width="16.09"
       x="23.96"
-      y="5.35"
+      y="6.15"
     />
     <rect
       fill="var(--divider)"
@@ -289,14 +205,14 @@ const DefaultLayoutPreview = (): React.ReactElement => (
       strokeWidth=".17"
       width="16.09"
       x="5.67"
-      y="5.35"
+      y="6.15"
     />
   </svg>
 );
 
-const LargeLayoutPreview = (): React.ReactElement => (
-  <svg fill="none" viewBox="0 0 200 123">
-    <path d="M0 0h200v122.81H0z" fill="var(--bg-body)" />
+const MinimalLayoutPreview = (): React.ReactElement => (
+  <svg fill="none" viewBox="0 0 200 124">
+    <path d="M0 .81h200v122.81H0z" fill="var(--bg-body)" />
     <rect
       fill="var(--bg-elevation-md)"
       height="1.83"
@@ -305,67 +221,7 @@ const LargeLayoutPreview = (): React.ReactElement => (
       strokeWidth=".17"
       width="3.83"
       x="65.08"
-      y="47.26"
-    />
-    <rect
-      fill="var(--bg-elevation-md)"
-      height="1.83"
-      rx=".59"
-      stroke="var(--divider)"
-      strokeWidth=".17"
-      width="3.83"
-      x="65.08"
-      y="47.26"
-    />
-    <rect
-      fill="var(--bg-elevation-md)"
-      height="1.83"
-      rx=".59"
-      stroke="var(--divider)"
-      strokeWidth=".17"
-      width="3.83"
-      x="70.08"
-      y="47.26"
-    />
-    <rect
-      fill="var(--bg-elevation-md)"
-      height="1.83"
-      rx=".59"
-      stroke="var(--divider)"
-      strokeWidth=".17"
-      width="5.83"
-      x="130.09"
-      y="47.26"
-    />
-    <rect
-      fill="var(--bg-elevation-md)"
-      height="1.83"
-      rx=".59"
-      stroke="var(--divider)"
-      strokeWidth=".17"
-      width="31.83"
-      x="65.08"
-      y="51.26"
-    />
-    <rect
-      fill="var(--bg-elevation-md)"
-      height="1.83"
-      rx=".59"
-      stroke="var(--divider)"
-      strokeWidth=".17"
-      width="13.83"
-      x="65.08"
-      y="54.26"
-    />
-    <rect
-      fill="var(--bg-elevation-md)"
-      height="23.83"
-      rx=".59"
-      stroke="var(--divider)"
-      strokeWidth=".17"
-      width="70.83"
-      x="65.08"
-      y="21.08"
+      y="22.08"
     />
     <rect
       fill="var(--bg-elevation-md)"
@@ -375,17 +231,7 @@ const LargeLayoutPreview = (): React.ReactElement => (
       strokeWidth=".17"
       width="3.83"
       x="65.08"
-      y="90.44"
-    />
-    <rect
-      fill="var(--bg-elevation-md)"
-      height="1.83"
-      rx=".59"
-      stroke="var(--divider)"
-      strokeWidth=".17"
-      width="3.83"
-      x="65.08"
-      y="90.44"
+      y="22.08"
     />
     <rect
       fill="var(--bg-elevation-md)"
@@ -395,7 +241,7 @@ const LargeLayoutPreview = (): React.ReactElement => (
       strokeWidth=".17"
       width="3.83"
       x="70.08"
-      y="90.44"
+      y="22.08"
     />
     <rect
       fill="var(--bg-elevation-md)"
@@ -405,7 +251,7 @@ const LargeLayoutPreview = (): React.ReactElement => (
       strokeWidth=".17"
       width="5.83"
       x="130.09"
-      y="90.44"
+      y="22.08"
     />
     <rect
       fill="var(--bg-elevation-md)"
@@ -415,7 +261,67 @@ const LargeLayoutPreview = (): React.ReactElement => (
       strokeWidth=".17"
       width="31.83"
       x="65.08"
-      y="94.44"
+      y="26.08"
+    />
+    <rect
+      fill="var(--bg-elevation-md)"
+      height="1.83"
+      rx=".59"
+      stroke="var(--divider)"
+      strokeWidth=".17"
+      width="51.83"
+      x="65.08"
+      y="74.08"
+    />
+    <rect
+      fill="var(--bg-elevation-md)"
+      height="1.83"
+      rx=".59"
+      stroke="var(--divider)"
+      strokeWidth=".17"
+      width="41.83"
+      x="65.08"
+      y="78.08"
+    />
+    <rect
+      fill="var(--bg-elevation-md)"
+      height="1.83"
+      rx=".59"
+      stroke="var(--divider)"
+      strokeWidth=".17"
+      width="27.83"
+      x="65.08"
+      y="82.08"
+    />
+    <rect
+      fill="var(--bg-elevation-md)"
+      height="1.83"
+      rx=".59"
+      stroke="var(--divider)"
+      strokeWidth=".17"
+      width="57.83"
+      x="65.08"
+      y="86.08"
+    />
+    <rect
+      fill="var(--bg-elevation-md)"
+      height="1.83"
+      rx=".59"
+      stroke="var(--divider)"
+      strokeWidth=".17"
+      width="31.83"
+      x="65.08"
+      y="102.08"
+    />
+    <rect
+      fill="var(--bg-elevation-md)"
+      height="1.83"
+      rx=".59"
+      stroke="var(--divider)"
+      strokeWidth=".17"
+      width="41.83"
+      x="65.08"
+      y="106.08"
     />
     <rect
       fill="var(--bg-elevation-md)"
@@ -425,48 +331,23 @@ const LargeLayoutPreview = (): React.ReactElement => (
       strokeWidth=".17"
       width="13.83"
       x="65.08"
-      y="97.44"
+      y="29.08"
     />
     <rect
       fill="var(--bg-elevation-md)"
-      height="23.83"
+      height="24.83"
       rx=".59"
       stroke="var(--divider)"
       strokeWidth=".17"
       width="70.83"
       x="65.08"
-      y="64.26"
+      y="39.08"
     />
-    <mask fill="#fff" id="page-large-layout-a">
-      <path d="M142.6 15.79H200v106.86h-57.4V15.79Z" />
+    <mask fill="#fff" id="a">
+      <path d="M0 .8h200v15.8H0V.8Z" />
     </mask>
-    <path
-      d="M142.6 15.79H200v106.86h-57.4V15.79Z"
-      fill="var(--bg-elevation-sm)"
-    />
-    <path
-      d="M142.76 122.65V15.79h-.34v106.86h.34Z"
-      fill="var(--divider)"
-      mask="url(#page-large-layout-a)"
-    />
-    <mask fill="#fff" id="page-large-layout-b">
-      <path d="M0 15.79h57.4v106.86H0V15.79Z" />
-    </mask>
-    <path d="M0 15.79h57.4v106.86H0V15.79Z" fill="var(--bg-elevation-sm)" />
-    <path
-      d="M57.24 15.79v106.86h.34V15.79h-.34Z"
-      fill="var(--divider)"
-      mask="url(#page-large-layout-b)"
-    />
-    <mask fill="#fff" id="page-large-layout-c">
-      <path d="M0 0h200v15.79H0V0Z" />
-    </mask>
-    <path d="M0 0h200v15.79H0V0Z" fill="var(--bg-elevation-md)" />
-    <path
-      d="M200 15.62H0v.34h200v-.34Z"
-      fill="var(--divider)"
-      mask="url(#page-large-layout-c)"
-    />
+    <path d="M0 .8h200v15.8H0V.8Z" fill="var(--bg-elevation-md)" />
+    <path d="M200 16.43H0v.34h200v-.34Z" fill="var(--divider)" mask="url(#a)" />
     <rect
       fill="var(--divider)"
       height="5.93"
@@ -475,7 +356,7 @@ const LargeLayoutPreview = (): React.ReactElement => (
       strokeWidth=".17"
       width="5.93"
       x="188.4"
-      y="4.47"
+      y="5.28"
     />
     <rect
       fill="var(--divider)"
@@ -485,7 +366,7 @@ const LargeLayoutPreview = (): React.ReactElement => (
       strokeWidth=".17"
       width="16.09"
       x="23.96"
-      y="5.35"
+      y="6.15"
     />
     <rect
       fill="var(--divider)"
@@ -495,7 +376,7 @@ const LargeLayoutPreview = (): React.ReactElement => (
       strokeWidth=".17"
       width="16.09"
       x="5.67"
-      y="5.35"
+      y="6.15"
     />
   </svg>
 );
@@ -540,57 +421,58 @@ const LayoutItem = ({
   </div>
 );
 
-const PageLayoutSettings = (): React.ReactElement => {
+const StoryLayoutSettings = (): React.ReactElement => {
   const toast = use_toast();
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const ratio = is_smaller_than_mobile ? 2.21 : 1.62;
   const blog = use_blog_context();
-  const [mutate_page_layout, { isLoading: is_loading }] =
-    use_blog_page_layout_settings_mutation();
+  const [mutate_story_layout, { isLoading: is_loading }] =
+    use_blog_story_layout_settings_mutation();
 
   /**
-   * Dispatches the current page layout settings
+   * Dispatches the current story layout settings
    */
-  const dispatch_page_layout_settings = React.useCallback(
-    (layout: "default" | "large") => {
-      mutate_page_layout({
+  const dispatch_story_layout_settings = React.useCallback(
+    (layout: "default" | "minimal") => {
+      mutate_story_layout({
         layout,
         blog_id: blog.id
       })
         .unwrap()
         .then(() => {
-          blog.mutate({ is_homepage_large_layout: layout === "large" });
+          blog.mutate({ is_story_minimal_layout: layout === "minimal" });
         })
         .catch((error) =>
           handle_api_error(
             error,
             toast,
             null,
-            "Could not update the page layout"
+            "Could not update the story layout"
           )
         );
     },
-    [mutate_page_layout, blog, toast]
+    [mutate_story_layout, blog, toast]
   );
 
   return (
     <DashboardGroup>
-      <TitleBlock title={"Page layout"}>
-        Choose how stories are displayed on your homepage.
+      <TitleBlock title={"Story layout"}>
+        Choose how your stories appear to your readers. Choosing the minimal
+        layout will hide the table of contents for the stories.
       </TitleBlock>
       <Spacer orientation={"vertical"} size={4} />
       <RadioGroup
         className={clsx(styles.x, styles["radio-group"])}
         disabled={is_loading}
         onValueChange={(next_value): void => {
-          dispatch_page_layout_settings(next_value as "default" | "large");
+          dispatch_story_layout_settings(next_value as "default" | "minimal");
         }}
         orientation={is_smaller_than_mobile ? "vertical" : "horizontal"}
-        value={blog.is_homepage_large_layout ? "large" : "default"}
+        value={blog.is_story_minimal_layout ? "minimal" : "default"}
       >
         <LayoutItem
           disabled={is_loading}
-          is_active={!blog.is_homepage_large_layout}
+          is_active={!blog.is_story_minimal_layout}
           label={"Default"}
           preview={<DefaultLayoutPreview />}
           ratio={ratio}
@@ -598,15 +480,15 @@ const PageLayoutSettings = (): React.ReactElement => {
         />
         <LayoutItem
           disabled={is_loading}
-          is_active={blog.is_homepage_large_layout}
-          label={"Large"}
-          preview={<LargeLayoutPreview />}
+          is_active={blog.is_story_minimal_layout}
+          label={"Minimal"}
+          preview={<MinimalLayoutPreview />}
           ratio={ratio}
-          value={"large"}
+          value={"minimal"}
         />
       </RadioGroup>
     </DashboardGroup>
   );
 };
 
-export default PageLayoutSettings;
+export default StoryLayoutSettings;
