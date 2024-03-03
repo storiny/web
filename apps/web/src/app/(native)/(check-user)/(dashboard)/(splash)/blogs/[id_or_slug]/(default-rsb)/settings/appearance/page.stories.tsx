@@ -14,6 +14,16 @@ import BlogAppearanceSettingsPage from "./client";
 const meta: Meta<typeof BlogAppearanceSettingsPage> = {
   title: "blog-dashboard/settings/appearance",
   component: BlogAppearanceSettingsPage,
+  parameters: {
+    layout: "fullscreen"
+  },
+  tags: ["autodocs"]
+};
+
+export default meta;
+type Story = StoryObj<typeof BlogAppearanceSettingsPage>;
+
+export const Default: Story = {
   decorators: [
     (Story): React.ReactElement =>
       render_with_state(
@@ -28,14 +38,23 @@ const meta: Meta<typeof BlogAppearanceSettingsPage> = {
         </DashboardLayout>,
         { ignore_primitive_providers: false, logged_in: true }
       )
-  ],
-  parameters: {
-    layout: "fullscreen"
-  },
-  tags: ["autodocs"]
+  ]
 };
 
-export default meta;
-type Story = StoryObj<typeof BlogAppearanceSettingsPage>;
-
-export const Default: Story = {};
+export const WithoutPlusFeatures: Story = {
+  decorators: [
+    (Story): React.ReactElement =>
+      render_with_state(
+        <DashboardLayout>
+          <DashboardSplashLayout>
+            <StorybookBlogDashboardLayout blog={{ has_plus_features: false }}>
+              <DefaultBlogDashboardRightSidebarLayout>
+                <Story />
+              </DefaultBlogDashboardRightSidebarLayout>
+            </StorybookBlogDashboardLayout>
+          </DashboardSplashLayout>
+        </DashboardLayout>,
+        { ignore_primitive_providers: false, logged_in: true }
+      )
+  ]
+};
