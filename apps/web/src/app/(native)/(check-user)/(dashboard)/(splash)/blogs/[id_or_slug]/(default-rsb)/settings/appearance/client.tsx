@@ -14,6 +14,7 @@ import DashboardWrapper from "../../../../../common/dashboard-wrapper";
 import BlogFaviconSettings from "./favicon";
 import BlogFontsSettings from "./fonts";
 import BlogMarkSettings from "./mark";
+import PageLayoutSettings from "./page-layout";
 
 const BlogAppearanceSettingsClient = (): React.ReactElement => {
   const toast = use_toast();
@@ -29,11 +30,7 @@ const BlogAppearanceSettingsClient = (): React.ReactElement => {
         <Divider />
         <BlogFontsSettings />
         <Divider />
-        <DashboardGroup>
-          <TitleBlock title={"Page layout"}>
-            Choose how stories are displayed on your homepage.
-          </TitleBlock>
-        </DashboardGroup>
+        <PageLayoutSettings />
         <Divider />
         <DashboardGroup>
           <TitleBlock title={"Story layout"}>
