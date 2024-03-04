@@ -13,7 +13,9 @@ import BlogFaviconSettings from "./favicon";
 import BlogFontsSettings from "./fonts";
 import BlogMarkSettings from "./mark";
 import PageLayoutSettings from "./page-layout";
+import BlogBrandingSettings from "./remove-branding";
 import StoryLayoutSettings from "./story-layout";
+import BlogThemeSettings from "./theme";
 
 const BlogAppearanceSettingsClient = (): React.ReactElement => (
   <React.Fragment>
@@ -29,18 +31,9 @@ const BlogAppearanceSettingsClient = (): React.ReactElement => (
       <Divider />
       <StoryLayoutSettings />
       <Divider />
-      <DashboardGroup>
-        <TitleBlock title={"Default theme"}>
-          Choose the default theme for your blog. Users can switch between a
-          dark and a light theme.
-        </TitleBlock>
-      </DashboardGroup>
+      <BlogThemeSettings />
       <Divider />
-      <DashboardGroup>
-        <TitleBlock title={"Remove branding"}>
-          Remove all Storiny branding from your blog.
-        </TitleBlock>
-      </DashboardGroup>
+      <BlogBrandingSettings />
     </DashboardWrapper>
     <Spacer orientation={"vertical"} size={10} />
   </React.Fragment>
