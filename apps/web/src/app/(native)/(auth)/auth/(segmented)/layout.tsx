@@ -26,6 +26,7 @@ const SegmentedLayout = (
   const reduced_motion = use_app_selector(
     (state) => state.preferences.reduced_motion
   );
+  const prev_height_ref = React.useRef<number>(0);
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const should_animate =
     !is_smaller_than_mobile && reduced_motion !== "enabled";
@@ -63,6 +64,13 @@ const SegmentedLayout = (
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       pointerEvents: "none",
       width: (container_ref.current?.offsetWidth || 0) + "px"
+    },
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    onRest: (): void => {
+      prev_height_ref.current =
+        prev_height_ref.current === 0
+          ? height
+          : Math.min(prev_height_ref.current, height);
     }
   });
 
@@ -86,6 +94,7 @@ const SegmentedLayout = (
       ref={container_ref}
       style={{
         position: "relative",
+        minHeight: `${prev_height_ref.current}px`,
         height:
           !should_animate || !container_ref.current
             ? "100%"

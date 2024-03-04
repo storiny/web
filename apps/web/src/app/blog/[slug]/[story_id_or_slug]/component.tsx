@@ -158,16 +158,15 @@ const Component = (props: Omit<Props, "blog">): React.ReactElement => {
     >
       <JsonLD {...props} blog={blog} />
       {blog.is_story_minimal_layout && (
-        // eslint-disable-next-line react/no-unknown-property
-        <style global jsx>
-          {`
-            [data-lsb="true"],
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `[data-lsb="true"],
             [data-rsb="true"] {
               visibility: hidden !important;
               pointer-events: none;
-            }
-          `}
-        </style>
+            }`
+          }}
+        />
       )}
       <Editor
         doc_id={story.id}
