@@ -5,3 +5,4 @@ import "./visibility";
 import "./delete-blog";
 import "./connections";
 import "./appearance";
+import "./sidebars";
