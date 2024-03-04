@@ -32,6 +32,33 @@ export const BLOG_PROPS = {
   }
 } as const;
 
+export const LSB_ITEM_PROPS = {
+  name: {
+    min_length: 1,
+    max_length: 64
+  },
+  priority: { min: 1, max: 5 },
+  target: {
+    min_length: 6,
+    max_length: 1024
+  }
+} as const;
+
+export const RSB_ITEM_PROPS = {
+  primary_text: {
+    min_length: 1,
+    max_length: 64
+  },
+  secondary_text: {
+    max_length: 64
+  },
+  priority: { min: 1, max: 5 },
+  target: {
+    min_length: 6,
+    max_length: 1024
+  }
+} as const;
+
 export const BLOG_SCHEMA = {
   description: z
     .string()
@@ -102,4 +129,79 @@ export const BLOG_SCHEMA = {
     )
     .nullable(),
   category: z.nativeEnum(StoryCategory)
+} as const;
+
+export const LSB_ITEM_SCHEMA = {
+  name: z
+    .string()
+    .min(
+      LSB_ITEM_PROPS.name.min_length,
+      ZOD_MESSAGES.min("name", LSB_ITEM_PROPS.name.min_length)
+    )
+    .max(
+      LSB_ITEM_PROPS.name.max_length,
+      ZOD_MESSAGES.max("name", LSB_ITEM_PROPS.name.max_length)
+    )
+    .nonempty(ZOD_MESSAGES.non_empty("name")),
+  icon: z.string().nullable(),
+  priority: z
+    .number()
+    .min(
+      LSB_ITEM_PROPS.priority.min,
+      ZOD_MESSAGES.min("priority", LSB_ITEM_PROPS.priority.min, "number")
+    )
+    .max(
+      LSB_ITEM_PROPS.priority.max,
+      ZOD_MESSAGES.max("priority", LSB_ITEM_PROPS.priority.max, "number")
+    ),
+  target: z
+    .string()
+    .url("Invalid URL")
+    .max(
+      LSB_ITEM_PROPS.target.max_length,
+      ZOD_MESSAGES.max("URL", LSB_ITEM_PROPS.target.max_length)
+    )
+    .or(z.literal("/")) // Allow homepage
+} as const;
+
+export const RSB_ITEM_SCHEMA = {
+  primary_text: z
+    .string()
+    .min(
+      RSB_ITEM_PROPS.primary_text.min_length,
+      ZOD_MESSAGES.min("primary text", RSB_ITEM_PROPS.primary_text.min_length)
+    )
+    .max(
+      RSB_ITEM_PROPS.primary_text.max_length,
+      ZOD_MESSAGES.max("primary text", RSB_ITEM_PROPS.primary_text.max_length)
+    )
+    .nonempty(ZOD_MESSAGES.non_empty("primary text")),
+  secondary_text: z
+    .string()
+    .max(
+      RSB_ITEM_PROPS.secondary_text.max_length,
+      ZOD_MESSAGES.max(
+        "secondary text",
+        RSB_ITEM_PROPS.secondary_text.max_length
+      )
+    )
+    .nullable(),
+  icon: z.string().nullable(),
+  priority: z
+    .number()
+    .min(
+      LSB_ITEM_PROPS.priority.min,
+      ZOD_MESSAGES.min("priority", LSB_ITEM_PROPS.priority.min, "number")
+    )
+    .max(
+      LSB_ITEM_PROPS.priority.max,
+      ZOD_MESSAGES.max("priority", LSB_ITEM_PROPS.priority.max, "number")
+    ),
+  target: z
+    .string()
+    .url("Invalid URL")
+    .max(
+      LSB_ITEM_PROPS.target.max_length,
+      ZOD_MESSAGES.max("URL", LSB_ITEM_PROPS.target.max_length)
+    )
 } as const;
