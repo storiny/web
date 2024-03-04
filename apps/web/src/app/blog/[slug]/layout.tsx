@@ -99,40 +99,43 @@ if (typeof document !== "undefined") {
         />
         <CriticalFonts />
         {blog.font_primary && (
-          // eslint-disable-next-line react/no-unknown-property
-          <style global jsx>{`
-            @font-face {
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `@font-face {
               font-family: blog-primary;
               font-weight: normal;
               font-style: normal;
               src: url("https://cdn.storiny.com/user-assets/fonts/${blog.font_primary}.woff2")
                 format("woff2");
-            }
-          `}</style>
+            }`
+            }}
+          />
         )}
         {blog.font_secondary && (
-          // eslint-disable-next-line react/no-unknown-property
-          <style global jsx>{`
-            @font-face {
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `@font-face {
               font-family: blog-secondary;
               font-weight: normal;
               font-style: normal;
               src: url("https://cdn.storiny.com/user-assets/fonts/${blog.font_secondary}.woff2")
                 format("woff2");
-            }
-          `}</style>
+            }`
+            }}
+          />
         )}
         {blog.font_code && (
-          // eslint-disable-next-line react/no-unknown-property
-          <style global jsx>{`
-            @font-face {
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `@font-face {
               font-family: blog-code;
               font-weight: normal;
               font-style: normal;
               src: url("https://cdn.storiny.com/user-assets/fonts/${blog.font_code}.woff2")
                 format("woff2");
-            }
-          `}</style>
+            }`
+            }}
+          />
         )}
         <BlogContextProvider
           value={{
