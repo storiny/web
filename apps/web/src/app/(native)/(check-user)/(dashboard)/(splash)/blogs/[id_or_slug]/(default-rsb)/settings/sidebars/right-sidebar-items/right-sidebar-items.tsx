@@ -1,5 +1,6 @@
-import { ImageSize, LSB_ITEM_PROPS } from "@storiny/shared";
+import { ImageSize, RSB_ITEM_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
+import NextLink from "next/link";
 import React from "react";
 
 import { use_blog_context } from "~/common/context/blog";
@@ -17,6 +18,7 @@ import Grow from "~/components/grow";
 import IconButton from "~/components/icon-button";
 import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
+import { PlusBadge } from "~/entities/badges";
 import Gallery from "~/entities/gallery";
 import TitleBlock from "~/entities/title-block";
 import CaretUpIcon from "~/icons/caret-up";
@@ -25,18 +27,18 @@ import PhotoPlusIcon from "~/icons/photo-plus";
 import PlusIcon from "~/icons/plus";
 import TrashIcon from "~/icons/trash";
 import XIcon from "~/icons/x";
-import { use_blog_lsb_settings_mutation } from "~/redux/features";
+import { use_blog_rsb_settings_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 import { handle_api_error } from "~/utils/handle-api-error";
 
 import DashboardGroup from "../../../../../../common/dashboard-group";
 import common_styles from "../common.module.scss";
-import styles from "./navigation-items.module.scss";
+import styles from "./right-sidebar-items.module.scss";
 import {
-  LSB_SETTINGS_SCHEMA,
-  LsbSettingsSchema
-} from "./navigation-items.schema";
+  RSB_SETTINGS_SCHEMA,
+  RsbSettingsSchema
+} from "./right-sidebar-items.schema";
 
 const SaveButton = ({
   is_loading
@@ -61,12 +63,14 @@ const SaveButton = ({
 };
 
 const Icon = ({ index }: { index: number }): React.ReactElement => {
-  const form = use_form_context<LsbSettingsSchema>();
+  const form = use_form_context<RsbSettingsSchema>();
   const item_key = `items.${index}.icon` as const;
   const icon = form.watch(item_key);
 
   return (
-    <div className={clsx(css["flex-center"], common_styles.icon)}>
+    <div
+      className={clsx(css["flex-center"], css["flex-col"], common_styles.icon)}
+    >
       <Gallery
         on_confirm={(asset): void => {
           form.setValue(item_key, asset.key, {
@@ -114,8 +118,7 @@ const Icon = ({ index }: { index: number }): React.ReactElement => {
 };
 
 const Content = (): React.ReactElement => {
-  const { control } = use_form_context<LsbSettingsSchema>();
-  const home_item_id_ref = React.useRef<string | null>(null);
+  const { control } = use_form_context<RsbSettingsSchema>();
   const { fields, append, remove, move } = use_field_array({
     control,
     name: "items"
@@ -123,33 +126,72 @@ const Content = (): React.ReactElement => {
 
   return (
     <React.Fragment>
+      <FormInput
+        autoComplete={"off"}
+        auto_size
+        data-testid={"label-input"}
+        form_slot_props={{ form_item: { className: styles["label-input"] } }}
+        helper_text={"Label for the sidebar items."}
+        maxLength={32}
+        name={"label"}
+        placeholder={"Label"}
+      />
+      <Divider />
       {fields.map((field, index) => (
         <div
           className={clsx(css["flex-center"], common_styles.item)}
           key={field.id}
         >
           <div className={clsx(css["flex-col"], common_styles.column)}>
-            <div className={clsx(css["flex-center"], common_styles["top-row"])}>
+            <div
+              className={clsx(
+                css["flex-center"],
+                css["full-w"],
+                common_styles["top-row"]
+              )}
+            >
               <Icon index={index} />
               <Divider
                 className={clsx(common_styles.divider, styles.divider)}
                 orientation={"vertical"}
               />
-              <FormInput
-                autoComplete={"off"}
-                auto_size
-                data-testid={`name-input-${index}`}
-                form_slot_props={{
-                  form_item: {
-                    className: css["full-w"]
-                  }
-                }}
-                maxLength={LSB_ITEM_PROPS.name.max_length}
-                minLength={LSB_ITEM_PROPS.name.min_length}
-                name={`items.${index}.name`}
-                placeholder={"Name"}
-                required
-              />
+              <div
+                className={clsx(
+                  css["flex-center"],
+                  css["flex-col"],
+                  css["full-w"]
+                )}
+              >
+                <FormInput
+                  autoComplete={"off"}
+                  auto_size
+                  data-testid={`primary-text-input-${index}`}
+                  form_slot_props={{
+                    form_item: {
+                      className: css["full-w"]
+                    }
+                  }}
+                  maxLength={RSB_ITEM_PROPS.primary_text.max_length}
+                  minLength={RSB_ITEM_PROPS.primary_text.min_length}
+                  name={`items.${index}.primary_text`}
+                  placeholder={"Primary text"}
+                  required
+                />
+                <Spacer orientation={"vertical"} />
+                <FormInput
+                  autoComplete={"off"}
+                  auto_size
+                  data-testid={`secondary-text-input-${index}`}
+                  form_slot_props={{
+                    form_item: {
+                      className: css["full-w"]
+                    }
+                  }}
+                  maxLength={RSB_ITEM_PROPS.secondary_text.max_length}
+                  name={`items.${index}.secondary_text`}
+                  placeholder={"Secondary text"}
+                />
+              </div>
             </div>
             <FormInput
               autoComplete={"url"}
@@ -161,15 +203,8 @@ const Content = (): React.ReactElement => {
                   className: css["full-w"]
                 }
               }}
-              is_field_disabled={(input): boolean => {
-                if (input.value === "/" && !home_item_id_ref.current) {
-                  home_item_id_ref.current = field.id;
-                }
-
-                return home_item_id_ref.current === field.id;
-              }}
-              maxLength={LSB_ITEM_PROPS.target.max_length}
-              minLength={LSB_ITEM_PROPS.target.min_length}
+              maxLength={RSB_ITEM_PROPS.target.max_length}
+              minLength={RSB_ITEM_PROPS.target.min_length}
               name={`items.${index}.target`}
               placeholder={"Link"}
               required
@@ -198,12 +233,6 @@ const Content = (): React.ReactElement => {
               aria-label={"Remove item"}
               auto_size
               color={"ruby"}
-              disabled={
-                (home_item_id_ref.current === null
-                  ? field.target === "/"
-                  : home_item_id_ref.current === field.id) ||
-                fields.length === 1
-              }
               onClick={(): void => remove(index)}
               size={"sm"}
               title={"Remove item"}
@@ -232,7 +261,8 @@ const Content = (): React.ReactElement => {
           decorator={<PlusIcon />}
           onClick={(): void =>
             append({
-              name: "",
+              primary_text: "",
+              secondary_text: "",
               target: "",
               icon: null
             })
@@ -246,30 +276,33 @@ const Content = (): React.ReactElement => {
   );
 };
 
-const NavigationItems = (): React.ReactElement => {
+const RightSidebarItems = (): React.ReactElement => {
   const toast = use_toast();
   const blog = use_blog_context();
-  const form = use_form<LsbSettingsSchema>({
-    resolver: zod_resolver(LSB_SETTINGS_SCHEMA),
+  const form = use_form<RsbSettingsSchema>({
+    resolver: zod_resolver(RSB_SETTINGS_SCHEMA),
     defaultValues: {
-      items: (blog.lsb_items || []).map((item) => ({
+      label: blog.rsb_items_label,
+      items: (blog.rsb_items || []).map((item) => ({
         target: item.target,
-        name: item.name,
-        icon: item.icon
+        icon: item.icon,
+        primary_text: item.primary_text,
+        secondary_text: item.secondary_text
       }))
     }
   });
-  const [mutate_lsb_settings, { isLoading: is_loading }] =
-    use_blog_lsb_settings_mutation();
+  const [mutate_rsb_settings, { isLoading: is_loading }] =
+    use_blog_rsb_settings_mutation();
 
-  const handle_submit: SubmitHandler<LsbSettingsSchema> = (values) => {
-    mutate_lsb_settings({
+  const handle_submit: SubmitHandler<RsbSettingsSchema> = (values) => {
+    mutate_rsb_settings({
       items: values.items,
+      label: values.label,
       blog_id: blog.id
     })
       .unwrap()
       .then((res) => {
-        blog.mutate({ lsb_items: res });
+        blog.mutate({ rsb_items: res });
         form.reset(values);
         toast("Sidebar settings updated", "success");
       })
@@ -285,24 +318,40 @@ const NavigationItems = (): React.ReactElement => {
 
   return (
     <DashboardGroup>
-      <TitleBlock title={"Navigation items"}>
-        These items are displayed in the left sidebar of your blog on desktops
-        and as header tabs on mobile devices. You can add items that link to
-        pages within or outside of Storiny. These items will automatically
-        become active on the relevant pages present on your blog.
+      <TitleBlock title={"Right sidebar items"}>
+        These items are displayed in the right sidebar of your blog. You can
+        showcase up to five items, such as merchandise, ebooks, or sponsorship
+        links.
       </TitleBlock>
       <Spacer orientation={"vertical"} size={3} />
-      <Form<LsbSettingsSchema>
-        className={clsx(css["flex-col"], common_styles.form)}
-        disabled={is_loading}
-        on_submit={handle_submit}
-        provider_props={form}
-      >
-        <Content />
-        <SaveButton is_loading={is_loading} />
-      </Form>
+      {blog.has_plus_features ? (
+        <Form<RsbSettingsSchema>
+          className={clsx(css["flex-col"], common_styles.form)}
+          disabled={is_loading}
+          on_submit={handle_submit}
+          provider_props={form}
+        >
+          <Content />
+          <SaveButton is_loading={is_loading} />
+        </Form>
+      ) : (
+        <div className={clsx(css["flex-center"], common_styles.form)}>
+          <Button
+            as={NextLink}
+            auto_size
+            className={css["fit-w"]}
+            decorator={<PlusBadge no_stroke />}
+            href={"/membership"}
+            target={"_blank"}
+            variant={"hollow"}
+          >
+            This is a plus feature
+          </Button>
+          <Grow />
+        </div>
+      )}
     </DashboardGroup>
   );
 };
 
-export default NavigationItems;
+export default RightSidebarItems;

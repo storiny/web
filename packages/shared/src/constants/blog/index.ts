@@ -35,9 +35,8 @@ export const BLOG_PROPS = {
 export const LSB_ITEM_PROPS = {
   name: {
     min_length: 1,
-    max_length: 64
+    max_length: 32
   },
-  priority: { min: 1, max: 5 },
   target: {
     min_length: 6,
     max_length: 1024
@@ -47,12 +46,11 @@ export const LSB_ITEM_PROPS = {
 export const RSB_ITEM_PROPS = {
   primary_text: {
     min_length: 1,
-    max_length: 64
+    max_length: 32
   },
   secondary_text: {
-    max_length: 64
+    max_length: 32
   },
-  priority: { min: 1, max: 5 },
   target: {
     min_length: 6,
     max_length: 1024
@@ -144,16 +142,6 @@ export const LSB_ITEM_SCHEMA = {
     )
     .nonempty(ZOD_MESSAGES.non_empty("name")),
   icon: z.string().nullable(),
-  priority: z
-    .number()
-    .min(
-      LSB_ITEM_PROPS.priority.min,
-      ZOD_MESSAGES.min("priority", LSB_ITEM_PROPS.priority.min, "number")
-    )
-    .max(
-      LSB_ITEM_PROPS.priority.max,
-      ZOD_MESSAGES.max("priority", LSB_ITEM_PROPS.priority.max, "number")
-    ),
   target: z
     .string()
     .url("Invalid URL")
@@ -187,16 +175,6 @@ export const RSB_ITEM_SCHEMA = {
     )
     .nullable(),
   icon: z.string().nullable(),
-  priority: z
-    .number()
-    .min(
-      LSB_ITEM_PROPS.priority.min,
-      ZOD_MESSAGES.min("priority", LSB_ITEM_PROPS.priority.min, "number")
-    )
-    .max(
-      LSB_ITEM_PROPS.priority.max,
-      ZOD_MESSAGES.max("priority", LSB_ITEM_PROPS.priority.max, "number")
-    ),
   target: z
     .string()
     .url("Invalid URL")
