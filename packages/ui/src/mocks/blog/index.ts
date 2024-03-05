@@ -105,28 +105,28 @@ export const MOCK_BLOGS: Blog[] = [
       {
         name: "About",
         id: "2",
-        target: "/about",
+        target: "https://storiny.com/about",
         priority: 2,
         icon: "pushpin.png"
       },
       {
         name: "Newsletter",
         id: "3",
-        target: "/newsletter",
+        target: "https://storiny.com/newsletter",
         priority: 3,
         icon: "mailbox.png"
       },
       {
         name: "Editors",
         id: "4",
-        target: "/editors",
+        target: "https://storiny.com/editors",
         priority: 4,
         icon: "writing_hand.png"
       },
       {
         name: "Archive",
         id: "5",
-        target: "/archive",
+        target: "https://storiny.com/archive",
         priority: 5,
         icon: "script.png"
       }
@@ -139,7 +139,7 @@ export const MOCK_BLOGS: Blog[] = [
         primary_text: "Burro's Tail",
         secondary_text: "13.95",
         id: "1",
-        target: "/burro-tail",
+        target: "https://storiny.com/burro-tail",
         priority: 1,
         icon: "burro_tail.png"
       },
@@ -147,7 +147,7 @@ export const MOCK_BLOGS: Blog[] = [
         primary_text: "Bird of Paradise",
         secondary_text: "$28.79",
         id: "2",
-        target: "/bird-of-paradise",
+        target: "https://storiny.com/bird-of-paradise",
         priority: 2,
         icon: "bird_of_paradise.png"
       },
@@ -155,7 +155,7 @@ export const MOCK_BLOGS: Blog[] = [
         primary_text: "Yucca",
         secondary_text: "$4.95",
         id: "3",
-        target: "/yucca",
+        target: "https://storiny.com/yucca",
         priority: 3,
         icon: "yucca.png"
       },
@@ -163,7 +163,7 @@ export const MOCK_BLOGS: Blog[] = [
         primary_text: "Boston Fern",
         secondary_text: "$5.22",
         id: "4",
-        target: "/boston-fern",
+        target: "https://storiny.com/boston-fern",
         priority: 4,
         icon: "boston_fern.png"
       },
@@ -171,7 +171,7 @@ export const MOCK_BLOGS: Blog[] = [
         primary_text: "English Ivy",
         secondary_text: "$25.99",
         id: "5",
-        target: "/english-ivy",
+        target: "https://storiny.com/english-ivy",
         priority: 5,
         icon: "english_ivy.png"
       }

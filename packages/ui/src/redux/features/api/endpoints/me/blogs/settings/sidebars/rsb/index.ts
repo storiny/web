@@ -7,7 +7,8 @@ const SEGMENT = (id: string): string => `me/blogs/${id}/settings/sidebars/rsb`;
 
 export type BlogRsbSettingsPayload = {
   blog_id: string;
-  items: Omit<BlogRightSidebarItem, "id">[];
+  items: Omit<BlogRightSidebarItem, "id" | "priority">[];
+  label: string;
 };
 
 export type BlogRsbSettingsResponse = BlogRightSidebarItem[];
