@@ -12,6 +12,8 @@ import _m0 from "protobufjs/minimal";
 import {
   GetBlogArchiveRequest,
   GetBlogArchiveResponse,
+  GetBlogPendingStoryCountRequest,
+  GetBlogPendingStoryCountResponse,
   GetBlogRequest,
   GetBlogResponse,
   GetUserBlogsInfoRequest,
@@ -423,6 +425,18 @@ export const ApiServiceService = {
     responseSerialize: (value: GetBlogArchiveResponse) => Buffer.from(GetBlogArchiveResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetBlogArchiveResponse.decode(value),
   },
+  /** Returns the blog's pending story count */
+  getBlogPendingStoryCount: {
+    path: "/api_service.v1.ApiService/GetBlogPendingStoryCount",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetBlogPendingStoryCountRequest) =>
+      Buffer.from(GetBlogPendingStoryCountRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetBlogPendingStoryCountRequest.decode(value),
+    responseSerialize: (value: GetBlogPendingStoryCountResponse) =>
+      Buffer.from(GetBlogPendingStoryCountResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetBlogPendingStoryCountResponse.decode(value),
+  },
 } as const;
 
 export interface ApiServiceServer extends UntypedServiceImplementation {
@@ -482,6 +496,8 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getBlog: handleUnaryCall<GetBlogRequest, GetBlogResponse>;
   /** Returns the blog's archive data */
   getBlogArchive: handleUnaryCall<GetBlogArchiveRequest, GetBlogArchiveResponse>;
+  /** Returns the blog's pending story count */
+  getBlogPendingStoryCount: handleUnaryCall<GetBlogPendingStoryCountRequest, GetBlogPendingStoryCountResponse>;
 }
 
 export interface ApiServiceClient extends Client {
@@ -932,6 +948,22 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetBlogArchiveResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the blog's pending story count */
+  getBlogPendingStoryCount(
+    request: GetBlogPendingStoryCountRequest,
+    callback: (error: ServiceError | null, response: GetBlogPendingStoryCountResponse) => void,
+  ): ClientUnaryCall;
+  getBlogPendingStoryCount(
+    request: GetBlogPendingStoryCountRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetBlogPendingStoryCountResponse) => void,
+  ): ClientUnaryCall;
+  getBlogPendingStoryCount(
+    request: GetBlogPendingStoryCountRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetBlogPendingStoryCountResponse) => void,
   ): ClientUnaryCall;
 }
 

@@ -12,11 +12,12 @@ import { ApiServiceClient } from "@storiny/proto/dist/api_service/v1/service";
 import {
   GetBlogArchiveRequest,
   GetBlogArchiveResponse,
+  GetBlogPendingStoryCountRequest,
+  GetBlogPendingStoryCountResponse,
   GetBlogRequest,
   GetBlogResponse,
   GetUserBlogsInfoRequest,
-  GetUserBlogsInfoResponse
-} from "@storiny/proto/dist/blog_def/v1/def";
+  GetUserBlogsInfoResponse} from "@storiny/proto/dist/blog_def/v1/def";
 import {
   GetCommentRequest,
   GetCommentResponse
@@ -273,6 +274,12 @@ const grpc_hub = {
     promisify<GetBlogArchiveRequest, GetBlogArchiveResponse>(
       global.grpc_client.getBlogArchive
     )
+  ),
+  get_blog_pending_story_count: cache(
+    promisify<
+      GetBlogPendingStoryCountRequest,
+      GetBlogPendingStoryCountResponse
+    >(global.grpc_client.getBlogPendingStoryCount)
   )
 } as const;
 
@@ -306,12 +313,14 @@ export const {
   get_comment,
   get_username,
   get_blog,
-  get_blog_archive
+  get_blog_archive,
+  get_blog_pending_story_count
 } = global.grpc_hub as typeof grpc_hub;
 
 export {
   CreateDraftResponse,
   GetBlogArchiveResponse,
+  GetBlogPendingStoryCountResponse,
   GetBlogResponse,
   GetCommentResponse,
   GetConnectionSettingsResponse,

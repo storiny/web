@@ -33,6 +33,7 @@ interface EntitiesPredicateState {
 
 interface EntitiesIntegralState {
   blog_follower_counts: Record<string, number>;
+  blog_pending_story_counts: Record<string, number>;
   comment_like_counts: Record<string, number>;
   comment_reply_counts: Record<string, number>;
   follower_counts: Record<string, number>;
@@ -68,11 +69,13 @@ export type EntitiesState = EntitiesPredicateState &
 
 export const entities_initial_state: EntitiesState = {
   blocks: /*                                  */ {},
+  blog_follower_counts: /*                    */ {},
+  blog_pending_story_counts: /*               */ {},
   bookmarks: /*                               */ {},
   comment_like_counts: /*                     */ {},
   comment_reply_counts: /*                    */ {},
-  followed_tags: /*                           */ {},
   followed_blogs: /*                          */ {},
+  followed_tags: /*                           */ {},
   follower_counts: /*                         */ {},
   followers: /*                               */ {},
   following: /*                               */ {},
@@ -83,29 +86,28 @@ export const entities_initial_state: EntitiesState = {
   liked_replies: /*                           */ {},
   liked_stories: /*                           */ {},
   mutes: /*                                   */ {},
+  rate_limits: /*                             */ {},
   reply_like_counts: /*                       */ {},
+  self_block_count: /*                        */ 0,
+  self_blog_count: /*                         */ 0,
+  self_comment_count: /*                      */ 0,
+  self_contributable_story_count: /*          */ 0,
+  self_deleted_draft_count: /*                */ 0,
+  self_deleted_story_count: /*                */ 0,
+  self_followed_tag_count: /*                 */ 0,
+  self_mute_count: /*                         */ 0,
+  self_pending_blog_request_count: /*         */ 0,
+  self_pending_collaboration_request_count: /**/ 0,
+  self_pending_draft_count: /*                */ 0,
+  self_pending_friend_request_count: /*       */ 0,
+  self_published_story_count: /*              */ 0,
+  self_reply_count: /*                        */ 0,
   sent_requests: /*                           */ {},
   story_comment_counts: /*                    */ {},
   story_hidden_comment_counts: /*             */ {},
   story_like_counts: /*                       */ {},
   subscriptions: /*                           */ {},
-  tag_follower_counts: /*                     */ {},
-  blog_follower_counts: /*                    */ {},
-  self_block_count: /*                        */ 0,
-  self_comment_count: /*                      */ 0,
-  self_deleted_draft_count: /*                */ 0,
-  self_deleted_story_count: /*                */ 0,
-  self_contributable_story_count: /*          */ 0,
-  self_followed_tag_count: /*                 */ 0,
-  self_mute_count: /*                         */ 0,
-  self_pending_draft_count: /*                */ 0,
-  self_pending_friend_request_count: /*       */ 0,
-  self_pending_collaboration_request_count: /**/ 0,
-  self_pending_blog_request_count: /*         */ 0,
-  self_published_story_count: /*              */ 0,
-  self_reply_count: /*                        */ 0,
-  self_blog_count: /*                         */ 0,
-  rate_limits: /*                             */ {}
+  tag_follower_counts: /*                     */ {}
 };
 
 export const entities_slice = create_slice({

@@ -1,6 +1,8 @@
 import { MOCK_BLOGS, MOCK_USERS } from "@storiny/ui/src/mocks";
 import { nanoid } from "nanoid";
 import "./settings";
+import "./leave";
+import "./content";
 
 const { worker, rest } = window.msw;
 
@@ -23,13 +25,6 @@ worker.use(
 worker.use(
   rest.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/me/blogs`, (req, res, ctx) =>
     res(ctx.delay(750), ctx.status(204)),
-  ),
-);
-
-worker.use(
-  rest.post(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/blogs/:blog_id/leave`,
-    (req, res, ctx) => res(ctx.delay(750), ctx.status(204)),
   ),
 );
 
