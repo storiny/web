@@ -130,6 +130,14 @@ export interface GetUserBlogsInfoResponse {
   can_create_blog: boolean;
 }
 
+export interface GetBlogPendingStoryCountRequest {
+  identifier: string;
+}
+
+export interface GetBlogPendingStoryCountResponse {
+  pending_story_count: number;
+}
+
 function createBaseBareBlog(): BareBlog {
   return { id: "", slug: "", domain: undefined, name: "" };
 }
@@ -1705,6 +1713,128 @@ export const GetUserBlogsInfoResponse = {
     message.blog_count = object.blog_count ?? 0;
     message.pending_blog_request_count = object.pending_blog_request_count ?? 0;
     message.can_create_blog = object.can_create_blog ?? false;
+    return message;
+  },
+};
+
+function createBaseGetBlogPendingStoryCountRequest(): GetBlogPendingStoryCountRequest {
+  return { identifier: "" };
+}
+
+export const GetBlogPendingStoryCountRequest = {
+  encode(message: GetBlogPendingStoryCountRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.identifier !== "") {
+      writer.uint32(10).string(message.identifier);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetBlogPendingStoryCountRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetBlogPendingStoryCountRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.identifier = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetBlogPendingStoryCountRequest {
+    return { identifier: isSet(object.identifier) ? globalThis.String(object.identifier) : "" };
+  },
+
+  toJSON(message: GetBlogPendingStoryCountRequest): unknown {
+    const obj: any = {};
+    if (message.identifier !== "") {
+      obj.identifier = message.identifier;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetBlogPendingStoryCountRequest>, I>>(base?: I): GetBlogPendingStoryCountRequest {
+    return GetBlogPendingStoryCountRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetBlogPendingStoryCountRequest>, I>>(
+    object: I,
+  ): GetBlogPendingStoryCountRequest {
+    const message = createBaseGetBlogPendingStoryCountRequest();
+    message.identifier = object.identifier ?? "";
+    return message;
+  },
+};
+
+function createBaseGetBlogPendingStoryCountResponse(): GetBlogPendingStoryCountResponse {
+  return { pending_story_count: 0 };
+}
+
+export const GetBlogPendingStoryCountResponse = {
+  encode(message: GetBlogPendingStoryCountResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.pending_story_count !== 0) {
+      writer.uint32(8).uint32(message.pending_story_count);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetBlogPendingStoryCountResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetBlogPendingStoryCountResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.pending_story_count = reader.uint32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetBlogPendingStoryCountResponse {
+    return {
+      pending_story_count: isSet(object.pending_story_count) ? globalThis.Number(object.pending_story_count) : 0,
+    };
+  },
+
+  toJSON(message: GetBlogPendingStoryCountResponse): unknown {
+    const obj: any = {};
+    if (message.pending_story_count !== 0) {
+      obj.pending_story_count = Math.round(message.pending_story_count);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetBlogPendingStoryCountResponse>, I>>(
+    base?: I,
+  ): GetBlogPendingStoryCountResponse {
+    return GetBlogPendingStoryCountResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetBlogPendingStoryCountResponse>, I>>(
+    object: I,
+  ): GetBlogPendingStoryCountResponse {
+    const message = createBaseGetBlogPendingStoryCountResponse();
+    message.pending_story_count = object.pending_story_count ?? 0;
     return message;
   },
 };

@@ -981,6 +981,43 @@ pub mod api_service_client {
                 .insert(GrpcMethod::new("api_service.v1.ApiService", "GetBlogArchive"));
             self.inner.unary(req, path, codec).await
         }
+        /** *
+ Returns the blog's pending story count
+*/
+        pub async fn get_blog_pending_story_count(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::super::blog_def::v1::GetBlogPendingStoryCountRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<
+                super::super::super::blog_def::v1::GetBlogPendingStoryCountResponse,
+            >,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/api_service.v1.ApiService/GetBlogPendingStoryCount",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "api_service.v1.ApiService",
+                        "GetBlogPendingStoryCount",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
+        }
     }
 }
 /// Generated server implementations.
@@ -1338,6 +1375,20 @@ pub mod api_service_server {
             >,
         ) -> std::result::Result<
             tonic::Response<super::super::super::blog_def::v1::GetBlogArchiveResponse>,
+            tonic::Status,
+        >;
+        /** *
+ Returns the blog's pending story count
+*/
+        async fn get_blog_pending_story_count(
+            &self,
+            request: tonic::Request<
+                super::super::super::blog_def::v1::GetBlogPendingStoryCountRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<
+                super::super::super::blog_def::v1::GetBlogPendingStoryCountResponse,
+            >,
             tonic::Status,
         >;
     }
@@ -2765,6 +2816,55 @@ pub mod api_service_server {
                     let fut = async move {
                         let inner = inner.0;
                         let method = GetBlogArchiveSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/api_service.v1.ApiService/GetBlogPendingStoryCount" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetBlogPendingStoryCountSvc<T: ApiService>(pub Arc<T>);
+                    impl<
+                        T: ApiService,
+                    > tonic::server::UnaryService<
+                        super::super::super::blog_def::v1::GetBlogPendingStoryCountRequest,
+                    > for GetBlogPendingStoryCountSvc<T> {
+                        type Response = super::super::super::blog_def::v1::GetBlogPendingStoryCountResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<
+                                super::super::super::blog_def::v1::GetBlogPendingStoryCountRequest,
+                            >,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                (*inner).get_blog_pending_story_count(request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = GetBlogPendingStoryCountSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
