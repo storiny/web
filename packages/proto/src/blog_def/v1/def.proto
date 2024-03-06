@@ -130,3 +130,13 @@ message GetBlogPendingStoryCountRequest {
 message GetBlogPendingStoryCountResponse {
   uint32 pending_story_count = 1;
 }
+
+// Blog published stories info
+
+message GetBlogPublishedStoryCountRequest {
+  string identifier = 1;
+}
+
+message GetBlogPublishedStoryCountResponse {
+  uint32 published_story_count = 1;
+}

@@ -186,6 +186,7 @@ const Splash = (props: StoryProps): React.ReactElement => {
     is_contributable,
     is_deleted,
     is_draft,
+    is_blog,
     is_large,
     show_unlike_button,
     story
@@ -285,6 +286,7 @@ const Splash = (props: StoryProps): React.ReactElement => {
             <RestoreAction is_draft={is_draft} overlay story={story} />
           ) : (
             <Actions
+              is_blog={is_blog}
               is_contributable={is_contributable}
               is_draft={is_draft}
               is_extended={is_extended}
@@ -306,6 +308,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
     is_contributable,
     is_deleted,
     is_draft,
+    is_blog,
     story,
     show_unlike_button
   } = props;
@@ -551,6 +554,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
               <RestoreAction is_draft={is_draft} overlay story={story} />
             ) : (
               <Actions
+                is_blog={is_blog}
                 is_contributable={is_contributable}
                 is_draft={is_draft}
                 is_extended={is_extended}
@@ -571,6 +575,7 @@ const Story = (props: StoryProps): React.ReactElement => {
     is_large,
     is_extended,
     is_deleted,
+    is_blog,
     is_draft: is_draft_prop,
     is_contributable,
     enable_ssr,
@@ -651,6 +656,7 @@ const Story = (props: StoryProps): React.ReactElement => {
                       <RestoreAction is_draft={is_draft} story={story} />
                     ) : (
                       <Actions
+                        is_blog={is_blog}
                         is_contributable={is_contributable}
                         is_draft={is_draft}
                         is_extended={is_extended}

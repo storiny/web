@@ -138,6 +138,14 @@ export interface GetBlogPendingStoryCountResponse {
   pending_story_count: number;
 }
 
+export interface GetBlogPublishedStoryCountRequest {
+  identifier: string;
+}
+
+export interface GetBlogPublishedStoryCountResponse {
+  published_story_count: number;
+}
+
 function createBaseBareBlog(): BareBlog {
   return { id: "", slug: "", domain: undefined, name: "" };
 }
@@ -1835,6 +1843,130 @@ export const GetBlogPendingStoryCountResponse = {
   ): GetBlogPendingStoryCountResponse {
     const message = createBaseGetBlogPendingStoryCountResponse();
     message.pending_story_count = object.pending_story_count ?? 0;
+    return message;
+  },
+};
+
+function createBaseGetBlogPublishedStoryCountRequest(): GetBlogPublishedStoryCountRequest {
+  return { identifier: "" };
+}
+
+export const GetBlogPublishedStoryCountRequest = {
+  encode(message: GetBlogPublishedStoryCountRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.identifier !== "") {
+      writer.uint32(10).string(message.identifier);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetBlogPublishedStoryCountRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetBlogPublishedStoryCountRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.identifier = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetBlogPublishedStoryCountRequest {
+    return { identifier: isSet(object.identifier) ? globalThis.String(object.identifier) : "" };
+  },
+
+  toJSON(message: GetBlogPublishedStoryCountRequest): unknown {
+    const obj: any = {};
+    if (message.identifier !== "") {
+      obj.identifier = message.identifier;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetBlogPublishedStoryCountRequest>, I>>(
+    base?: I,
+  ): GetBlogPublishedStoryCountRequest {
+    return GetBlogPublishedStoryCountRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetBlogPublishedStoryCountRequest>, I>>(
+    object: I,
+  ): GetBlogPublishedStoryCountRequest {
+    const message = createBaseGetBlogPublishedStoryCountRequest();
+    message.identifier = object.identifier ?? "";
+    return message;
+  },
+};
+
+function createBaseGetBlogPublishedStoryCountResponse(): GetBlogPublishedStoryCountResponse {
+  return { published_story_count: 0 };
+}
+
+export const GetBlogPublishedStoryCountResponse = {
+  encode(message: GetBlogPublishedStoryCountResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.published_story_count !== 0) {
+      writer.uint32(8).uint32(message.published_story_count);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetBlogPublishedStoryCountResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetBlogPublishedStoryCountResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.published_story_count = reader.uint32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetBlogPublishedStoryCountResponse {
+    return {
+      published_story_count: isSet(object.published_story_count) ? globalThis.Number(object.published_story_count) : 0,
+    };
+  },
+
+  toJSON(message: GetBlogPublishedStoryCountResponse): unknown {
+    const obj: any = {};
+    if (message.published_story_count !== 0) {
+      obj.published_story_count = Math.round(message.published_story_count);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetBlogPublishedStoryCountResponse>, I>>(
+    base?: I,
+  ): GetBlogPublishedStoryCountResponse {
+    return GetBlogPublishedStoryCountResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetBlogPublishedStoryCountResponse>, I>>(
+    object: I,
+  ): GetBlogPublishedStoryCountResponse {
+    const message = createBaseGetBlogPublishedStoryCountResponse();
+    message.published_story_count = object.published_story_count ?? 0;
     return message;
   },
 };

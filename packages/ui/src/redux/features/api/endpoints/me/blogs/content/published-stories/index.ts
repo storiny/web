@@ -8,9 +8,7 @@ const ITEMS_PER_PAGE = 10;
 
 export type GetBlogPublishedStoriesReponse = Story[];
 
-export const {
-  useGetBlogPublishedStoriesQuery: use_get_blog_published_stories_query
-} = api_slice.injectEndpoints({
+export const get_blog_published_stories_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
     // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getBlogPublishedStories: builder.query<
@@ -57,3 +55,7 @@ export const {
     })
   })
 });
+
+export const {
+  useGetBlogPublishedStoriesQuery: use_get_blog_published_stories_query
+} = get_blog_published_stories_api;

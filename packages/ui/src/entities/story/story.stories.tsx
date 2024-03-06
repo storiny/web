@@ -34,6 +34,10 @@ export const Deleted: TStory = {
   args: { is_deleted: true }
 };
 
+export const Blog: TStory = {
+  args: { is_blog: true }
+};
+
 export const Skeleton: TStory = {
   render: () => <StorySkeleton />
 };

@@ -14,6 +14,8 @@ import {
   GetBlogArchiveResponse,
   GetBlogPendingStoryCountRequest,
   GetBlogPendingStoryCountResponse,
+  GetBlogPublishedStoryCountRequest,
+  GetBlogPublishedStoryCountResponse,
   GetBlogRequest,
   GetBlogResponse,
   GetUserBlogsInfoRequest,
@@ -437,6 +439,18 @@ export const ApiServiceService = {
       Buffer.from(GetBlogPendingStoryCountResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetBlogPendingStoryCountResponse.decode(value),
   },
+  /** Returns the blog's published story count */
+  getBlogPublishedStoryCount: {
+    path: "/api_service.v1.ApiService/GetBlogPublishedStoryCount",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetBlogPublishedStoryCountRequest) =>
+      Buffer.from(GetBlogPublishedStoryCountRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetBlogPublishedStoryCountRequest.decode(value),
+    responseSerialize: (value: GetBlogPublishedStoryCountResponse) =>
+      Buffer.from(GetBlogPublishedStoryCountResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetBlogPublishedStoryCountResponse.decode(value),
+  },
 } as const;
 
 export interface ApiServiceServer extends UntypedServiceImplementation {
@@ -498,6 +512,8 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getBlogArchive: handleUnaryCall<GetBlogArchiveRequest, GetBlogArchiveResponse>;
   /** Returns the blog's pending story count */
   getBlogPendingStoryCount: handleUnaryCall<GetBlogPendingStoryCountRequest, GetBlogPendingStoryCountResponse>;
+  /** Returns the blog's published story count */
+  getBlogPublishedStoryCount: handleUnaryCall<GetBlogPublishedStoryCountRequest, GetBlogPublishedStoryCountResponse>;
 }
 
 export interface ApiServiceClient extends Client {
@@ -964,6 +980,22 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetBlogPendingStoryCountResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the blog's published story count */
+  getBlogPublishedStoryCount(
+    request: GetBlogPublishedStoryCountRequest,
+    callback: (error: ServiceError | null, response: GetBlogPublishedStoryCountResponse) => void,
+  ): ClientUnaryCall;
+  getBlogPublishedStoryCount(
+    request: GetBlogPublishedStoryCountRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetBlogPublishedStoryCountResponse) => void,
+  ): ClientUnaryCall;
+  getBlogPublishedStoryCount(
+    request: GetBlogPublishedStoryCountRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetBlogPublishedStoryCountResponse) => void,
   ): ClientUnaryCall;
 }
 
