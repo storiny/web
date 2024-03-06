@@ -7,6 +7,11 @@ export interface StoryProps extends React.ComponentPropsWithoutRef<"article"> {
    */
   enable_ssr?: boolean;
   /**
+   * If `true`, renders a remove action that can be used to remove this story
+   * from the blog.
+   */
+  is_blog?: boolean;
+  /**
    * If `true`, renders with contributable properties
    */
   is_contributable?: boolean;

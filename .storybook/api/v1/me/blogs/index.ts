@@ -3,6 +3,7 @@ import { nanoid } from "nanoid";
 import "./settings";
 import "./leave";
 import "./content";
+import "./stories";
 
 const { worker, rest } = window.msw;
 

@@ -34,6 +34,7 @@ interface EntitiesPredicateState {
 interface EntitiesIntegralState {
   blog_follower_counts: Record<string, number>;
   blog_pending_story_counts: Record<string, number>;
+  blog_published_story_counts: Record<string, number>;
   comment_like_counts: Record<string, number>;
   comment_reply_counts: Record<string, number>;
   follower_counts: Record<string, number>;
@@ -71,6 +72,7 @@ export const entities_initial_state: EntitiesState = {
   blocks: /*                                  */ {},
   blog_follower_counts: /*                    */ {},
   blog_pending_story_counts: /*               */ {},
+  blog_published_story_counts: /*             */ {},
   bookmarks: /*                               */ {},
   comment_like_counts: /*                     */ {},
   comment_reply_counts: /*                    */ {},

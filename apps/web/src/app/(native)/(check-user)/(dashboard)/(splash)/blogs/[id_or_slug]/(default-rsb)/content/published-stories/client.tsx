@@ -20,43 +20,43 @@ import SearchIcon from "~/icons/search";
 import {
   get_query_error_type,
   number_action,
-  use_get_blog_pending_stories_query
+  use_get_blog_published_stories_query
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import DashboardTitle from "../../../../../common/dashboard-title";
-import { PendingStoriesProps } from "./pending-stories.props";
+import { PublishedStoriesProps } from "./published-stories.props";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
   loading: dynamic_loader()
 });
 
-export type PendingStoriesSortValue = "recent" | "old";
+export type PublishedStoriesSortValue = "recent" | "old";
 
 // Status header
 
 const StatusHeader = ({
-  pending_story_count: pending_story_count_prop
-}: PendingStoriesProps): React.ReactElement => {
+  published_story_count: published_story_count_prop
+}: PublishedStoriesProps): React.ReactElement => {
   const blog = use_blog_context();
   const dispatch = use_app_dispatch();
-  const pending_story_count =
+  const published_story_count =
     use_app_selector(
-      (state) => state.entities.blog_pending_story_counts[blog.id]
+      (state) => state.entities.blog_published_story_counts[blog.id]
     ) || 0;
 
   React.useEffect(() => {
     dispatch(
       number_action(
-        "blog_pending_story_counts",
+        "blog_published_story_counts",
         blog.id,
-        pending_story_count_prop
+        published_story_count_prop
       )
     );
-  }, [pending_story_count_prop, dispatch, blog.id]);
+  }, [published_story_count_prop, dispatch, blog.id]);
 
   return (
     <div
@@ -69,15 +69,16 @@ const StatusHeader = ({
       style={{ justifyContent: "flex-start" }}
     >
       <Typography ellipsis level={"body2"} style={{ width: "100%" }}>
-        {pending_story_count === 0 ? (
-          "There are no pending stories."
+        {published_story_count === 0 ? (
+          "No story has been published in this blog yet."
         ) : (
           <>
-            There {pending_story_count === 1 ? "is" : "are"}{" "}
+            There {published_story_count === 1 ? "is" : "are"}{" "}
             <span className={css["t-bold"]}>
-              {abbreviate_number(pending_story_count)}
+              {abbreviate_number(published_story_count)}
             </span>{" "}
-            pending {pending_story_count === 1 ? "story" : "stories"}.
+            {published_story_count === 1 ? "story" : "stories"} published in
+            this blog.
           </>
         )}
       </Typography>
@@ -96,9 +97,9 @@ const ControlBar = ({
 }: {
   disabled?: boolean;
   on_query_change: (next_query: string) => void;
-  on_sort_change: (next_sort: PendingStoriesSortValue) => void;
+  on_sort_change: (next_sort: PublishedStoriesSortValue) => void;
   query: string;
-  sort: PendingStoriesSortValue;
+  sort: PublishedStoriesSortValue;
 }): React.ReactElement => (
   <div
     className={clsx(
@@ -112,7 +113,7 @@ const ControlBar = ({
       decorator={<SearchIcon />}
       disabled={disabled}
       onChange={(event): void => on_query_change(event.target.value)}
-      placeholder={"Search pending stories"}
+      placeholder={"Search stories"}
       size={"lg"}
       type={"search"}
       value={query}
@@ -137,11 +138,11 @@ const ControlBar = ({
   </div>
 );
 
-const ContentPendingStoriesClient = (
-  props: PendingStoriesProps
+const ContentPublishedStoriesClient = (
+  props: PublishedStoriesProps
 ): React.ReactElement => {
   const blog = use_blog_context();
-  const [sort, set_sort] = React.useState<PendingStoriesSortValue>("recent");
+  const [sort, set_sort] = React.useState<PublishedStoriesSortValue>("recent");
   const [query, set_query] = React.useState<string>("");
   const [page, set_page] = React.useState<number>(1);
   use_handle_dynamic_state(1, set_page);
@@ -155,7 +156,7 @@ const ContentPendingStoriesClient = (
     isError: is_error,
     error,
     refetch
-  } = use_get_blog_pending_stories_query({
+  } = use_get_blog_published_stories_query({
     page,
     sort,
     query: debounced_query,
@@ -170,7 +171,7 @@ const ContentPendingStoriesClient = (
   );
 
   const handle_sort_change = React.useCallback(
-    (next_sort: PendingStoriesSortValue) => {
+    (next_sort: PublishedStoriesSortValue) => {
       set_page(1);
       set_sort(next_sort);
     },
@@ -184,7 +185,7 @@ const ContentPendingStoriesClient = (
 
   return (
     <React.Fragment>
-      <DashboardTitle>Pending stories</DashboardTitle>
+      <DashboardTitle>Published stories</DashboardTitle>
       <StatusHeader {...props} />
       <ControlBar
         disabled={!query && !items.length}
@@ -221,4 +222,4 @@ const ContentPendingStoriesClient = (
   );
 };
 
-export default ContentPendingStoriesClient;
+export default ContentPublishedStoriesClient;

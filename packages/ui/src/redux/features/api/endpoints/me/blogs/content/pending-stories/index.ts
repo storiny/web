@@ -8,9 +8,7 @@ const ITEMS_PER_PAGE = 10;
 
 export type GetBlogPendingStoriesReponse = Story[];
 
-export const {
-  useGetBlogPendingStoriesQuery: use_get_blog_pending_stories_query
-} = api_slice.injectEndpoints({
+export const get_blog_pending_stories_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
     // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getBlogPendingStories: builder.query<
@@ -57,3 +55,7 @@ export const {
     })
   })
 });
+
+export const {
+  useGetBlogPendingStoriesQuery: use_get_blog_pending_stories_query
+} = get_blog_pending_stories_api;
