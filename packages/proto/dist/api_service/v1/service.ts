@@ -12,6 +12,8 @@ import _m0 from "protobufjs/minimal";
 import {
   GetBlogArchiveRequest,
   GetBlogArchiveResponse,
+  GetBlogEditorsInfoRequest,
+  GetBlogEditorsInfoResponse,
   GetBlogPendingStoryCountRequest,
   GetBlogPendingStoryCountResponse,
   GetBlogPublishedStoryCountRequest,
@@ -451,6 +453,18 @@ export const ApiServiceService = {
       Buffer.from(GetBlogPublishedStoryCountResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetBlogPublishedStoryCountResponse.decode(value),
   },
+  /** Returns the blog's editors details */
+  getBlogEditorsInfo: {
+    path: "/api_service.v1.ApiService/GetBlogEditorsInfo",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetBlogEditorsInfoRequest) =>
+      Buffer.from(GetBlogEditorsInfoRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetBlogEditorsInfoRequest.decode(value),
+    responseSerialize: (value: GetBlogEditorsInfoResponse) =>
+      Buffer.from(GetBlogEditorsInfoResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetBlogEditorsInfoResponse.decode(value),
+  },
 } as const;
 
 export interface ApiServiceServer extends UntypedServiceImplementation {
@@ -514,6 +528,8 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getBlogPendingStoryCount: handleUnaryCall<GetBlogPendingStoryCountRequest, GetBlogPendingStoryCountResponse>;
   /** Returns the blog's published story count */
   getBlogPublishedStoryCount: handleUnaryCall<GetBlogPublishedStoryCountRequest, GetBlogPublishedStoryCountResponse>;
+  /** Returns the blog's editors details */
+  getBlogEditorsInfo: handleUnaryCall<GetBlogEditorsInfoRequest, GetBlogEditorsInfoResponse>;
 }
 
 export interface ApiServiceClient extends Client {
@@ -996,6 +1012,22 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetBlogPublishedStoryCountResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the blog's editors details */
+  getBlogEditorsInfo(
+    request: GetBlogEditorsInfoRequest,
+    callback: (error: ServiceError | null, response: GetBlogEditorsInfoResponse) => void,
+  ): ClientUnaryCall;
+  getBlogEditorsInfo(
+    request: GetBlogEditorsInfoRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetBlogEditorsInfoResponse) => void,
+  ): ClientUnaryCall;
+  getBlogEditorsInfo(
+    request: GetBlogEditorsInfoRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetBlogEditorsInfoResponse) => void,
   ): ClientUnaryCall;
 }
 

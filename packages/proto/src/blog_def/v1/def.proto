@@ -140,3 +140,14 @@ message GetBlogPublishedStoryCountRequest {
 message GetBlogPublishedStoryCountResponse {
   uint32 published_story_count = 1;
 }
+
+// Blog editors info
+
+message GetBlogEditorsInfoRequest {
+  string identifier = 1;
+}
+
+message GetBlogEditorsInfoResponse {
+  uint32 editor_count /*                */ = 1;
+  uint32 pending_editor_request_count /**/ = 2;
+}
