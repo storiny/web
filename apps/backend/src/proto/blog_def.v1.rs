@@ -227,4 +227,20 @@ pub struct GetBlogPublishedStoryCountResponse {
     #[prost(uint32, tag="1")]
     pub published_story_count: u32,
 }
+// Blog editors info
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetBlogEditorsInfoRequest {
+    #[prost(string, tag="1")]
+    pub identifier: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetBlogEditorsInfoResponse {
+    #[prost(uint32, tag="1")]
+    pub editor_count: u32,
+    #[prost(uint32, tag="2")]
+    pub pending_editor_request_count: u32,
+}
 // @@protoc_insertion_point(module)

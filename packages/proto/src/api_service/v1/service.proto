@@ -138,6 +138,10 @@ service ApiService {
    * Returns the blog's published story count
    */
   rpc GetBlogPublishedStoryCount(blog_def.v1.GetBlogPublishedStoryCountRequest) returns (blog_def.v1.GetBlogPublishedStoryCountResponse) {}
+  /**
+   * Returns the blog's editors details
+   */
+  rpc GetBlogEditorsInfo(blog_def.v1.GetBlogEditorsInfoRequest) returns (blog_def.v1.GetBlogEditorsInfoResponse) {}
 }
 
 // This is necessary to generate an output file using tonic.

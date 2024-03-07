@@ -12,6 +12,8 @@ import { ApiServiceClient } from "@storiny/proto/dist/api_service/v1/service";
 import {
   GetBlogArchiveRequest,
   GetBlogArchiveResponse,
+  GetBlogEditorsInfoRequest,
+  GetBlogEditorsInfoResponse,
   GetBlogPendingStoryCountRequest,
   GetBlogPendingStoryCountResponse,
   GetBlogPublishedStoryCountRequest,
@@ -289,6 +291,11 @@ const grpc_hub = {
       GetBlogPublishedStoryCountRequest,
       GetBlogPublishedStoryCountResponse
     >(global.grpc_client.getBlogPublishedStoryCount)
+  ),
+  get_blog_editors_info: cache(
+    promisify<GetBlogEditorsInfoRequest, GetBlogEditorsInfoResponse>(
+      global.grpc_client.getBlogEditorsInfo
+    )
   )
 } as const;
 
@@ -324,12 +331,14 @@ export const {
   get_blog,
   get_blog_archive,
   get_blog_pending_story_count,
-  get_blog_published_story_count
+  get_blog_published_story_count,
+  get_blog_editors_info
 } = global.grpc_hub as typeof grpc_hub;
 
 export {
   CreateDraftResponse,
   GetBlogArchiveResponse,
+  GetBlogEditorsInfoResponse,
   GetBlogPendingStoryCountResponse,
   GetBlogPublishedStoryCountResponse,
   GetBlogResponse,
