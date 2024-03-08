@@ -2,13 +2,13 @@ import React from "react";
 
 import CustomState from "~/entities/custom-state";
 
-interface FriendRequestsEmptyStateProps {
+interface EditorRequestsEmptyStateProps {
   query: string;
 }
 
-const FriendRequestsEmptyState = ({
+const EditorRequestsEmptyState = ({
   query
-}: FriendRequestsEmptyStateProps): React.ReactElement => (
+}: EditorRequestsEmptyStateProps): React.ReactElement => (
   <CustomState
     auto_size
     description={
@@ -17,9 +17,9 @@ const FriendRequestsEmptyState = ({
         : "When someone sends you a friend request, it will show up here."
     }
     title={
-      query ? `Could not find any request for "${query}"` : "No friend requests"
+      query ? `Could not find any request for "${query}"` : "No editor requests"
     }
   />
 );
 
-export default FriendRequestsEmptyState;
+export default EditorRequestsEmptyState;

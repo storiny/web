@@ -30,7 +30,7 @@ import {
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 
-import styles from "./friend-requests.module.scss";
+import styles from "./editor-requests.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
   loading: dynamic_loader()
@@ -64,7 +64,7 @@ Scroller.displayName = "Scroller";
 
 // Modal
 
-const FriendRequestsModal = (): React.ReactElement => {
+const EditorRequestsModal = (): React.ReactElement => {
   const [sort, set_sort] = React.useState<FriendRequestsSortValue>("popular");
   const [query, set_query] = React.useState<string>("");
   const [page, set_page] = React.useState<number>(1);
@@ -183,7 +183,7 @@ const FriendRequestsModal = (): React.ReactElement => {
   );
 };
 
-const FriendRequests = (): React.ReactElement => {
+const EditorRequests = (): React.ReactElement => {
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
   const [element] = use_modal(
@@ -198,7 +198,7 @@ const FriendRequests = (): React.ReactElement => {
         View requests
       </Button>
     ),
-    <FriendRequestsModal />,
+    <EditorRequestsModal />,
     {
       fullscreen: is_smaller_than_mobile,
       footer: (
@@ -233,4 +233,4 @@ const FriendRequests = (): React.ReactElement => {
   return element;
 };
 
-export default FriendRequests;
+export default EditorRequests;
