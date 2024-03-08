@@ -5,7 +5,7 @@ import Typography from "~/components/typography";
 import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
-import FriendRequests from "./friend-requests";
+import EditorRequests from "./editor-requests";
 import { RelationsRightSidebarProps } from "./right-sidebar.props";
 
 const ContentRelationsRightSidebarContent = (
@@ -27,7 +27,7 @@ const ContentRelationsRightSidebarContent = (
           {pending_friend_request_count === 1 ? "request" : "requests"}.
         </Typography>
         <Spacer orientation={"vertical"} size={2} />
-        <FriendRequests />
+        <EditorRequests />
       </div>
     </React.Fragment>
   );
