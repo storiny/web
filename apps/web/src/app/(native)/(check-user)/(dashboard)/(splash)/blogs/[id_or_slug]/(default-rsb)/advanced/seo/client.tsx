@@ -190,7 +190,7 @@ const SEOSettingsClient = (): React.ReactElement => {
       .then(() => {
         blog.mutate(values);
         form.reset(values);
-        toast("Settings updated successfully", "success");
+        toast("Settings successfully updated", "success");
       })
       .catch((error) => {
         handle_api_error(

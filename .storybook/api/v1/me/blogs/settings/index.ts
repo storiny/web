@@ -7,3 +7,4 @@ import "./connections";
 import "./appearance";
 import "./sidebars";
 import "./seo";
+import "./domain";
