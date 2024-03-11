@@ -20,6 +20,8 @@ import {
   GetBlogPublishedStoryCountResponse,
   GetBlogRequest,
   GetBlogResponse,
+  GetBlogWritersInfoRequest,
+  GetBlogWritersInfoResponse,
   GetUserBlogsInfoRequest,
   GetUserBlogsInfoResponse,
 } from "../../blog_def/v1/def";
@@ -465,6 +467,18 @@ export const ApiServiceService = {
       Buffer.from(GetBlogEditorsInfoResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetBlogEditorsInfoResponse.decode(value),
   },
+  /** Returns the blog's writers details */
+  getBlogWritersInfo: {
+    path: "/api_service.v1.ApiService/GetBlogWritersInfo",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetBlogWritersInfoRequest) =>
+      Buffer.from(GetBlogWritersInfoRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetBlogWritersInfoRequest.decode(value),
+    responseSerialize: (value: GetBlogWritersInfoResponse) =>
+      Buffer.from(GetBlogWritersInfoResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetBlogWritersInfoResponse.decode(value),
+  },
 } as const;
 
 export interface ApiServiceServer extends UntypedServiceImplementation {
@@ -530,6 +544,8 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getBlogPublishedStoryCount: handleUnaryCall<GetBlogPublishedStoryCountRequest, GetBlogPublishedStoryCountResponse>;
   /** Returns the blog's editors details */
   getBlogEditorsInfo: handleUnaryCall<GetBlogEditorsInfoRequest, GetBlogEditorsInfoResponse>;
+  /** Returns the blog's writers details */
+  getBlogWritersInfo: handleUnaryCall<GetBlogWritersInfoRequest, GetBlogWritersInfoResponse>;
 }
 
 export interface ApiServiceClient extends Client {
@@ -1028,6 +1044,22 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetBlogEditorsInfoResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the blog's writers details */
+  getBlogWritersInfo(
+    request: GetBlogWritersInfoRequest,
+    callback: (error: ServiceError | null, response: GetBlogWritersInfoResponse) => void,
+  ): ClientUnaryCall;
+  getBlogWritersInfo(
+    request: GetBlogWritersInfoRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetBlogWritersInfoResponse) => void,
+  ): ClientUnaryCall;
+  getBlogWritersInfo(
+    request: GetBlogWritersInfoRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetBlogWritersInfoResponse) => void,
   ): ClientUnaryCall;
 }
 

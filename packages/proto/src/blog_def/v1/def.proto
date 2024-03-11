@@ -151,3 +151,14 @@ message GetBlogEditorsInfoResponse {
   uint32 editor_count /*                */ = 1;
   uint32 pending_editor_request_count /**/ = 2;
 }
+
+// Blog writers info
+
+message GetBlogWritersInfoRequest {
+  string identifier = 1;
+}
+
+message GetBlogWritersInfoResponse {
+  uint32 writer_count /*                */ = 1;
+  uint32 pending_writer_request_count /**/ = 2;
+}

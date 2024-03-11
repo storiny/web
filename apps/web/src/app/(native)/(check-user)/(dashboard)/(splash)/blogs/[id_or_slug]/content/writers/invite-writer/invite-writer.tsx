@@ -16,8 +16,8 @@ import AtIcon from "~/icons/at";
 import PlusIcon from "~/icons/plus";
 import SendIcon from "~/icons/send";
 import {
-  get_blog_editor_requests_api,
-  use_invite_blog_editor_mutation
+  get_blog_writer_requests_api,
+  use_invite_blog_writer_mutation
 } from "~/redux/features";
 import { use_app_dispatch } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
@@ -25,17 +25,17 @@ import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
 
 import styles from "../styles.module.scss";
-import { InviteEditorProps } from "./invite-editor.props";
+import { InviteWriterProps } from "./invite-writer.props";
 import {
-  INVITE_EDITOR_SCHEMA,
-  InviteEditorSchema
-} from "./invite-editor.schema";
+  INVITE_WRITER_SCHEMA,
+  InviteWriterSchema
+} from "./invite-writer.schema";
 
-const InviteEditorModal = (): React.ReactElement => (
+const InviteWriterModal = (): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
       <Typography color={"minor"} level={"body2"}>
-        You can invite editors to this blog by searching for them using their
+        You can invite writers to this blog by searching for them using their
         Storiny usernames. However, if your account is private, you can only
         invite your friends.
       </Typography>
@@ -60,32 +60,32 @@ const InviteEditorModal = (): React.ReactElement => (
   </React.Fragment>
 );
 
-const InviteEditor = ({ on_submit }: InviteEditorProps): React.ReactElement => {
+const InviteWriter = ({ on_submit }: InviteWriterProps): React.ReactElement => {
   const toast = use_toast();
   const blog = use_blog_context();
   const dispatch = use_app_dispatch();
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const form = use_form<InviteEditorSchema>({
-    resolver: zod_resolver(INVITE_EDITOR_SCHEMA),
+  const form = use_form<InviteWriterSchema>({
+    resolver: zod_resolver(INVITE_WRITER_SCHEMA),
     defaultValues: {
       username: ""
     }
   });
-  const [invite_editor, { isLoading: is_loading }] =
-    use_invite_blog_editor_mutation();
+  const [invite_writer, { isLoading: is_loading }] =
+    use_invite_blog_writer_mutation();
 
-  const handle_submit: SubmitHandler<InviteEditorSchema> = (values) => {
+  const handle_submit: SubmitHandler<InviteWriterSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      invite_editor({ ...values, blog_id: blog.id })
+      invite_writer({ ...values, blog_id: blog.id })
         .unwrap()
         .then(() => {
           close_modal();
           form.reset();
           toast("Invite sent", "success");
-          dispatch(get_blog_editor_requests_api.util.resetApiState());
+          dispatch(get_blog_writer_requests_api.util.resetApiState());
         })
         .catch((error) => {
           handle_api_error(error, toast, form, "Could not send the invite");
@@ -97,10 +97,10 @@ const InviteEditor = ({ on_submit }: InviteEditorProps): React.ReactElement => {
     ({ open_modal }) =>
       is_smaller_than_desktop ? (
         <IconButton
-          aria-label={"Invite editor"}
+          aria-label={"Invite writer"}
           auto_size
           check_auth
-          data-testid={"invite-editor-button"}
+          data-testid={"invite-writer-button"}
           onClick={open_modal}
           style={{ marginLeft: "-8px" }} // Reduce gap
           variant={"hollow"}
@@ -112,7 +112,7 @@ const InviteEditor = ({ on_submit }: InviteEditorProps): React.ReactElement => {
           auto_size
           check_auth
           className={clsx(styles.x, styles["header-button"])}
-          data-testid={"invite-editor-button"}
+          data-testid={"invite-writer-button"}
           decorator={<PlusIcon />}
           onClick={open_modal}
           variant={"ghost"}
@@ -120,13 +120,13 @@ const InviteEditor = ({ on_submit }: InviteEditorProps): React.ReactElement => {
           Invite
         </Button>
       ),
-    <Form<InviteEditorSchema>
+    <Form<InviteWriterSchema>
       className={css["flex-col"]}
       disabled={is_loading}
       on_submit={handle_submit}
       provider_props={form}
     >
-      <InviteEditorModal />
+      <InviteWriterModal />
     </Form>,
     {
       fullscreen: is_smaller_than_mobile,
@@ -163,7 +163,7 @@ const InviteEditor = ({ on_submit }: InviteEditorProps): React.ReactElement => {
         },
         header: {
           decorator: <SendIcon />,
-          children: "Invite editor"
+          children: "Invite writer"
         }
       }
     }
@@ -172,4 +172,4 @@ const InviteEditor = ({ on_submit }: InviteEditorProps): React.ReactElement => {
   return element;
 };
 
-export default InviteEditor;
+export default InviteWriter;
