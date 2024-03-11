@@ -128,7 +128,7 @@ const RemoveEditorAction = ({
     {
       color: "ruby",
       on_confirm: handle_remove,
-      title: "Remove editor?",
+      title: "Remove this editor?",
       description:
         "This user will not be able to join again until you invite them."
     }

@@ -128,7 +128,7 @@ const RemoveWriterAction = ({
     {
       color: "ruby",
       on_confirm: handle_remove,
-      title: "Remove writer?",
+      title: "Remove this writer?",
       description:
         "This user will not be able to join again until you invite them."
     }

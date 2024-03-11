@@ -1,3 +1,4 @@
+import { number_action } from "~/redux/features";
 import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = (blog_id: string, story_id: string): string =>
@@ -6,6 +7,7 @@ const SEGMENT = (blog_id: string, story_id: string): string =>
 export interface RemoveBlogStoryPayload {
   blog_id: string;
   story_id: string;
+  type: "pending" | "published";
 }
 
 export const { useRemoveBlogStoryMutation: use_remove_blog_story_mutation } =
@@ -19,7 +21,20 @@ export const { useRemoveBlogStoryMutation: use_remove_blog_story_mutation } =
         }),
         invalidatesTags: (result, error, arg) => [
           { type: "Story", id: arg.story_id }
-        ]
+        ],
+        onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+          queryFulfilled.then(() => {
+            dispatch(
+              number_action(
+                arg.type === "pending"
+                  ? "blog_pending_story_counts"
+                  : "blog_published_story_counts",
+                arg.blog_id,
+                "decrement"
+              )
+            );
+          });
+        }
       })
     })
   });

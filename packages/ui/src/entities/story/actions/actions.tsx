@@ -1,6 +1,4 @@
 import { SUPPORT_ARTICLE_MAP } from "@storiny/shared/src/constants/support-articles";
-import { Story } from "@storiny/types";
-import { use_blog_context } from "@storiny/web/src/common/context/blog";
 import { clsx } from "clsx";
 import NextLink from "next/link";
 import React from "react";
@@ -30,8 +28,6 @@ import TrashIcon from "~/icons/trash";
 import UserBlockIcon from "~/icons/user-block";
 import {
   boolean_action,
-  get_blog_pending_stories_api,
-  get_blog_published_stories_api,
   get_contributions_api,
   get_drafts_api,
   get_stories_api,
@@ -39,7 +35,6 @@ import {
   use_delete_draft_mutation,
   use_delete_story_mutation,
   use_leave_story_mutation,
-  use_remove_blog_story_mutation,
   use_unpublish_story_mutation
 } from "~/redux/features";
 import { select_is_logged_in } from "~/redux/features/auth/selectors";
@@ -47,25 +42,24 @@ import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import { handle_api_error } from "~/utils/handle-api-error";
 
+import { StoryProps } from "../story.props";
+
 const StoryActions = ({
   story,
   is_draft,
   is_extended,
   is_contributable,
-  is_blog,
-  overlay
+  overlay,
+  custom_action
 }: {
-  is_blog?: boolean;
-  is_contributable?: boolean;
-  is_draft?: boolean;
-  is_extended?: boolean;
   overlay?: boolean;
-  story: Story;
-}): React.ReactElement => {
+} & Pick<
+  StoryProps,
+  "custom_action" | "is_draft" | "is_contributable" | "is_extended" | "story"
+>): React.ReactElement => {
   const toast = use_toast();
   const share = use_web_share(toast);
   const copy = use_clipboard();
-  const blog = use_blog_context();
   const dispatch = use_app_dispatch();
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const logged_in = use_app_selector(select_is_logged_in);
@@ -82,7 +76,6 @@ const StoryActions = ({
   const [delete_story] = use_delete_story_mutation();
   const [unpublish_story] = use_unpublish_story_mutation();
   const [leave_story] = use_leave_story_mutation();
-  const [remove_blog_story] = use_remove_blog_story_mutation();
 
   const [block_element] = use_confirmation(
     ({ open_confirmation }) => (
@@ -280,48 +273,6 @@ const StoryActions = ({
     }
   );
 
-  /**
-   * Removes the story from the blog
-   */
-  const handle_blog_remove_story = (): void => {
-    remove_blog_story({
-      blog_id: story.blog?.id || blog?.id,
-      story_id: story.id
-    })
-      .unwrap()
-      .then(() => {
-        toast("Story removed", "success");
-        dispatch(get_blog_published_stories_api.util.resetApiState());
-        dispatch(get_blog_pending_stories_api.util.resetApiState());
-      })
-      .catch((error) =>
-        handle_api_error(error, toast, null, "Could not remove the story")
-      );
-  };
-
-  const [blog_remove_story_element] = use_confirmation(
-    ({ open_confirmation }) => (
-      <MenuItem
-        check_auth
-        decorator={<TrashIcon />}
-        onSelect={(event): void => {
-          event.preventDefault(); // Do not auto-close the menu
-          event.stopPropagation();
-          open_confirmation();
-        }}
-      >
-        Remove this story
-      </MenuItem>
-    ),
-    {
-      color: "ruby",
-      on_confirm: handle_blog_remove_story,
-      title: "Remove this story?",
-      decorator: <TrashIcon />,
-      description: "This story will be removed from the blog immediately."
-    }
-  );
-
   return (
     <Menu
       trigger={
@@ -337,17 +288,16 @@ const StoryActions = ({
         </IconButton>
       }
     >
-      {is_draft ? (
-        <React.Fragment>
-          {is_blog
-            ? blog_remove_story_element
-            : is_contributable
-              ? leave_story_element
-              : delete_draft_element}
-        </React.Fragment>
+      {custom_action ? (
+        custom_action(story)
+      ) : is_draft ? (
+        is_contributable ? (
+          leave_story_element
+        ) : (
+          delete_draft_element
+        )
       ) : (
         <React.Fragment>
-          {is_blog && blog_remove_story_element}
           <MenuItem
             decorator={<ShareIcon />}
             onClick={(event): void => {
