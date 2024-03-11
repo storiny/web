@@ -11,9 +11,12 @@ import DateTime from "~/components/date-time";
 import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import {
+  get_blog_editor_requests_api,
+  get_blog_writer_requests_api,
   use_cancel_blog_editor_request_mutation,
   use_cancel_blog_writer_request_mutation
 } from "~/redux/features";
+import { use_app_dispatch } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 import { DateFormat } from "~/utils/format-date";
 import { handle_api_error } from "~/utils/handle-api-error";
@@ -28,6 +31,7 @@ const BlogMemberRequest = (
   const { user } = blog_member_request;
   const toast = use_toast();
   const blog = use_blog_context();
+  const dispatch = use_app_dispatch();
   const user_url = `/${user.username}`;
   const [cancel_editor_request, { isLoading: is_cancel_editor_loading }] =
     use_cancel_blog_editor_request_mutation();
@@ -46,6 +50,12 @@ const BlogMemberRequest = (
       .unwrap()
       .then(() => {
         toast("Request cancelled", "success");
+        dispatch(
+          (role === "editor"
+            ? get_blog_editor_requests_api
+            : get_blog_writer_requests_api
+          ).util.resetApiState()
+        );
       })
       .catch((error) =>
         handle_api_error(error, toast, null, "Could not cancel the request")

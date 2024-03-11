@@ -3,16 +3,13 @@
 .status-header {
   padding-inline: 20px;
   padding-block: 16px;
+  gap: 16px;
 
-  @include breakpoints.media(">=tablet") {
+  @include breakpoints.media(">=desktop") {
     padding-right: 0;
     padding-block: 0;
     min-height: 42px;
   }
-}
-
-.control-bar {
-  align-items: stretch;
 }
 
 .x {
