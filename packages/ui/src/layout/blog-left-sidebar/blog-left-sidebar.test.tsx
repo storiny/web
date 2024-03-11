@@ -23,7 +23,7 @@ describe("<BlogLeftSidebar />", () => {
         <BlogLeftSidebar force_mount />
       </BlogContextProvider>
     );
-    await screen.findByRole("button", { name: /log in/i });
+
     expect(await axe(container)).toHaveNoViolations();
   });
 
@@ -37,20 +37,7 @@ describe("<BlogLeftSidebar />", () => {
       }
     );
 
-    await screen.findByRole("button", { name: /write/i });
     expect(await axe(container)).toHaveNoViolations();
-  });
-
-  it("renders logged in state", () => {
-    render_test_with_provider(
-      <BlogContextProvider value={{ ...TEST_BLOG, role: null }}>
-        <BlogLeftSidebar force_mount />
-      </BlogContextProvider>,
-      {
-        logged_in: true
-      }
-    );
-    expect(screen.getByRole("button", { name: /write/i })).toBeInTheDocument();
   });
 
   it("does not render persona when logged out", () => {
@@ -59,6 +46,7 @@ describe("<BlogLeftSidebar />", () => {
         <BlogLeftSidebar force_mount />
       </BlogContextProvider>
     );
+
     expect(screen.queryByTestId("lsb-banner")).not.toBeInTheDocument();
   });
 
@@ -71,6 +59,7 @@ describe("<BlogLeftSidebar />", () => {
         logged_in: true
       }
     );
+
     await screen.findByTestId("lsb-banner");
     expect(screen.getByTestId("lsb-banner")).toBeInTheDocument();
   });

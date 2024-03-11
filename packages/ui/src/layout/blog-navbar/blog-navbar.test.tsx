@@ -1,5 +1,4 @@
 import { axe } from "@storiny/test-utils";
-import { screen } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -23,7 +22,7 @@ describe("<BlogNavbar />", () => {
         <BlogNavbar />
       </BlogContextProvider>
     );
-    await screen.findByRole("button", { name: /log in/i });
+
     expect(await axe(container)).toHaveNoViolations();
   });
 

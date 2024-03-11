@@ -1,6 +1,7 @@
 "use client";
 
 import { ImageSize } from "@storiny/shared";
+import { use_blog_context } from "@storiny/web/src/common/context/blog";
 import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
@@ -21,7 +22,6 @@ import { use_get_blog_editors_query } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
-import { use_blog_context } from "../../../../../apps/web/src/common/context/blog";
 import styles from "./blog-right-sidebar.module.scss";
 import { BlogRightSidebarProps } from "./blog-right-sidebar.props";
 
