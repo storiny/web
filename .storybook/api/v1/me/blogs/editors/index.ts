@@ -7,4 +7,11 @@ worker.use(
   ),
 );
 
+worker.use(
+  rest.post(
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/blogs/:blog_id/editors`,
+    (req, res, ctx) => res(ctx.delay(750), ctx.status(204)),
+  ),
+);
+
 export {};

@@ -7,7 +7,6 @@ import React from "react";
 import { use_blog_context } from "~/common/context/blog";
 import { dynamic_loader } from "~/common/dynamic";
 import { UserListSkeleton, VirtualizedUserList } from "~/common/user";
-import Button from "~/components/button";
 import { use_confirmation } from "~/components/confirmation";
 import MenuItem from "~/components/menu-item";
 import Spacer from "~/components/spacer";
@@ -15,7 +14,7 @@ import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import ErrorState from "~/entities/error-state";
 import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
-import PlusIcon from "~/icons/plus";
+import { use_media_query } from "~/hooks/use-media-query";
 import UserXIcon from "~/icons/user-x";
 import {
   get_blog_editors_api,
@@ -25,13 +24,16 @@ import {
   use_remove_blog_editor_mutation
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 import { handle_api_error } from "~/utils/handle-api-error";
 
 import DashboardTitle from "../../../../common/dashboard-title";
 import { BlogEditorsProps } from "./editors.props";
+import InviteEditor from "./invite-editor";
 import BlogContentEditorsRightSidebar from "./right-sidebar";
+import EditorRequests from "./right-sidebar/editor-requests";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
@@ -42,6 +44,7 @@ const StatusHeader = ({
   editor_count: editor_count_prop
 }: Pick<BlogEditorsProps, "editor_count">): React.ReactElement => {
   const blog = use_blog_context();
+  const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
   const dispatch = use_app_dispatch();
   const editor_count =
     use_app_selector((state) => state.entities.blog_editor_counts[blog.id]) ||
@@ -75,14 +78,8 @@ const StatusHeader = ({
         )}
       </Typography>
       <Spacer className={css["f-grow"]} size={2} />
-      <Button
-        check_auth
-        className={clsx(styles.x, styles["header-button"])}
-        decorator={<PlusIcon />}
-        variant={"ghost"}
-      >
-        Invite
-      </Button>
+      {is_smaller_than_desktop && <EditorRequests />}
+      <InviteEditor />
     </div>
   );
 };
