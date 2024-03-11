@@ -7,10 +7,10 @@ import css from "~/theme/main.module.scss";
 
 import styles from "../blog-member-request.module.scss";
 
-const FriendRequestSkeleton = (): React.ReactElement => (
+const BlogMemberRequestSkeleton = (): React.ReactElement => (
   <div
     aria-busy={"true"}
-    className={clsx(css["flex-center"], styles["friend-request"])}
+    className={clsx(css["flex-center"], styles["blog-member-request"])}
     style={{ cursor: "progress" }}
   >
     <div className={clsx(css["flex-center"], styles.meta)}>
@@ -21,11 +21,8 @@ const FriendRequestSkeleton = (): React.ReactElement => (
         <Skeleton height={10} width={42} />
       </div>
     </div>
-    <div className={clsx(css["flex-center"], styles.actions)}>
-      <Skeleton height={26} width={64} />
-      <Skeleton height={26} width={64} />
-    </div>
+    <Skeleton height={26} width={64} />
   </div>
 );
 
-export default React.memo(FriendRequestSkeleton);
+export default React.memo(BlogMemberRequestSkeleton);

@@ -11,7 +11,8 @@ const meta: Meta<typeof BlogMemberRequest> = {
   title: "entities/blog-member-request",
   component: BlogMemberRequest,
   args: {
-    friend_request: {
+    role: "editor",
+    blog_member_request: {
       user: MOCK_USERS[6],
       id: "0",
       created_at: new Date().toJSON()

@@ -20,7 +20,9 @@ export const api_slice = create_api({
     "Blog",
     "BlogRequest",
     "FriendRequest",
-    "CollaborationRequest"
+    "CollaborationRequest",
+    "BlogEditorRequest",
+    "BlogWriterRequest"
   ],
   endpoints: () => ({})
   /* eslint-enable prefer-snakecase/prefer-snakecase */
