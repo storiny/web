@@ -186,10 +186,10 @@ const Splash = (props: StoryProps): React.ReactElement => {
     is_contributable,
     is_deleted,
     is_draft,
-    is_blog,
     is_large,
     show_unlike_button,
-    story
+    story,
+    custom_action
   } = props;
   const router = use_app_router();
   const dispatch = use_app_dispatch();
@@ -286,7 +286,7 @@ const Splash = (props: StoryProps): React.ReactElement => {
             <RestoreAction is_draft={is_draft} overlay story={story} />
           ) : (
             <Actions
-              is_blog={is_blog}
+              custom_action={custom_action}
               is_contributable={is_contributable}
               is_draft={is_draft}
               is_extended={is_extended}
@@ -308,9 +308,9 @@ const Footer = (props: StoryProps): React.ReactElement => {
     is_contributable,
     is_deleted,
     is_draft,
-    is_blog,
     story,
-    show_unlike_button
+    show_unlike_button,
+    custom_action
   } = props;
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const dispatch = use_app_dispatch();
@@ -554,7 +554,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
               <RestoreAction is_draft={is_draft} overlay story={story} />
             ) : (
               <Actions
-                is_blog={is_blog}
+                custom_action={custom_action}
                 is_contributable={is_contributable}
                 is_draft={is_draft}
                 is_extended={is_extended}
@@ -575,11 +575,11 @@ const Story = (props: StoryProps): React.ReactElement => {
     is_large,
     is_extended,
     is_deleted,
-    is_blog,
     is_draft: is_draft_prop,
     is_contributable,
     enable_ssr,
     virtual,
+    custom_action,
     ...rest
   } = props;
   const is_draft = is_draft_prop ?? story.published_at === null;
@@ -656,7 +656,7 @@ const Story = (props: StoryProps): React.ReactElement => {
                       <RestoreAction is_draft={is_draft} story={story} />
                     ) : (
                       <Actions
-                        is_blog={is_blog}
+                        custom_action={custom_action}
                         is_contributable={is_contributable}
                         is_draft={is_draft}
                         is_extended={is_extended}

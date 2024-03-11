@@ -7,24 +7,31 @@ import React from "react";
 import { use_blog_context } from "~/common/context/blog";
 import { dynamic_loader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
+import { use_confirmation } from "~/components/confirmation";
 import Divider from "~/components/divider";
 import Input from "~/components/input";
+import MenuItem from "~/components/menu-item";
 import Option from "~/components/option";
 import Select from "~/components/select";
 import Spacer from "~/components/spacer";
+import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import ErrorState from "~/entities/error-state";
 import { use_debounce } from "~/hooks/use-debounce";
 import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import SearchIcon from "~/icons/search";
+import TrashIcon from "~/icons/trash";
 import {
+  get_blog_published_stories_api,
   get_query_error_type,
   number_action,
-  use_get_blog_published_stories_query
+  use_get_blog_published_stories_query,
+  use_remove_blog_story_mutation
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
+import { handle_api_error } from "~/utils/handle-api-error";
 
 import DashboardTitle from "../../../../../common/dashboard-title";
 import { PublishedStoriesProps } from "./published-stories.props";
@@ -138,6 +145,61 @@ const ControlBar = ({
   </div>
 );
 
+// Remove action
+
+const RemoveStoryAction = ({
+  story_id
+}: {
+  story_id: string;
+}): React.ReactElement => {
+  const blog = use_blog_context();
+  const toast = use_toast();
+  const dispatch = use_app_dispatch();
+  const [remove_blog_story, { isLoading: is_loading }] =
+    use_remove_blog_story_mutation();
+
+  /**
+   * Removes the story from the blog
+   */
+  const handle_remove = (): void => {
+    remove_blog_story({ blog_id: blog.id, story_id, type: "published" })
+      .unwrap()
+      .then(() => {
+        toast("Story removed", "success");
+        dispatch(get_blog_published_stories_api.util.resetApiState());
+      })
+      .catch((error) =>
+        handle_api_error(error, toast, null, "Could not remove the story")
+      );
+  };
+
+  const [element] = use_confirmation(
+    ({ open_confirmation }) => (
+      <MenuItem
+        check_auth
+        decorator={<TrashIcon />}
+        disabled={is_loading}
+        onSelect={(event): void => {
+          event.preventDefault(); // Do not auto-close the menu
+          event.stopPropagation();
+          open_confirmation();
+        }}
+      >
+        Remove this story
+      </MenuItem>
+    ),
+    {
+      color: "ruby",
+      on_confirm: handle_remove,
+      title: "Remove this story?",
+      decorator: <TrashIcon />,
+      description: "This story will be removed from the blog immediately."
+    }
+  );
+
+  return element;
+};
+
 const ContentPublishedStoriesClient = (
   props: PublishedStoriesProps
 ): React.ReactElement => {
@@ -213,7 +275,7 @@ const ContentPublishedStoriesClient = (
           load_more={load_more}
           stories={items}
           story_props={{
-            is_blog: true
+            custom_action: (story) => <RemoveStoryAction story_id={story.id} />
           }}
         />
       )}

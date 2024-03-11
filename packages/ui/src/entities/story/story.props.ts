@@ -3,14 +3,13 @@ import React from "react";
 
 export interface StoryProps extends React.ComponentPropsWithoutRef<"article"> {
   /**
+   * A custom action item for the action menu.
+   */
+  custom_action?: (story: Story) => React.ReactNode;
+  /**
    * Enables SSR.
    */
   enable_ssr?: boolean;
-  /**
-   * If `true`, renders a remove action that can be used to remove this story
-   * from the blog.
-   */
-  is_blog?: boolean;
   /**
    * If `true`, renders with contributable properties
    */
