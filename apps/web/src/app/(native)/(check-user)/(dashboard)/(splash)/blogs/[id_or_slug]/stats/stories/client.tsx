@@ -6,6 +6,7 @@ import relative_time from "dayjs/plugin/relativeTime";
 import dynamic from "next/dynamic";
 import React from "react";
 
+import { use_blog_context } from "~/common/context/blog";
 import { dynamic_loader } from "~/common/dynamic";
 import ProgressState from "~/common/progress-state";
 import Divider from "~/components/divider";
@@ -19,28 +20,29 @@ import StatBlock from "~/entities/stat-block";
 import HomeIcon from "~/icons/home";
 import {
   get_query_error_type,
-  select_user,
-  use_get_stories_stats_query
+  use_get_blog_stories_stats_query
 } from "~/redux/features";
-import { use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 import { capitalize } from "~/utils/capitalize";
 
-import DashboardTitle from "../../../common/dashboard-title";
-import DashboardWrapper from "../../../common/dashboard-wrapper";
+import DashboardTitle from "../../../../common/dashboard-title";
+import DashboardWrapper from "../../../../common/dashboard-wrapper";
 import StoriesStatsRightSidebar from "./right-sidebar";
 import styles from "./styles.module.scss";
 
 dayjs.extend(relative_time);
 dayjs.extend(duration);
 
-const EmptyState = dynamic(() => import("../../../common/stats-empty-state"), {
-  loading: dynamic_loader()
-});
+const EmptyState = dynamic(
+  () => import("../../../../common/stats-empty-state"),
+  {
+    loading: dynamic_loader()
+  }
+);
 
 const StoriesStatsClient = (): React.ReactElement => {
-  const user = use_app_selector(select_user);
-  const hook_return = use_get_stories_stats_query({ user_id: user?.id || "" });
+  const blog = use_blog_context();
+  const hook_return = use_get_blog_stories_stats_query({ blog_id: blog.id });
   const {
     data,
     isLoading: is_loading,
@@ -70,7 +72,7 @@ const StoriesStatsClient = (): React.ReactElement => {
             <>
               <div className={styles.container}>
                 <StatBlock
-                  caption={"Did not go through your entire stories."}
+                  caption={"Did not go through the entire stories."}
                   className={styles.stat}
                   label={"Total visitors"}
                   value={data.total_views}
@@ -82,7 +84,7 @@ const StoriesStatsClient = (): React.ReactElement => {
                   value={data.total_reads}
                 />
                 <StatBlock
-                  caption={"Read your stories more than once."}
+                  caption={"Read the stories more than once."}
                   className={styles.stat}
                   label={"Returning readers"}
                   value={data.returning_readers}

@@ -8,6 +8,7 @@ import "./writers";
 import "./editors";
 import "./editor-requests";
 import "./writer-requests";
+import "./stats";
 
 const { worker, rest } = window.msw;
 
