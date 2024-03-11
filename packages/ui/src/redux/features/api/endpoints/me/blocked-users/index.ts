@@ -18,7 +18,7 @@ export const { useGetBlockedUsersQuery: use_get_blocked_users_query } =
         }
       >({
         query: ({ page }) => `/${SEGMENT}?page=${page}`,
-        serializeQueryArgs: ({ endpointName }) => `${endpointName}`,
+        serializeQueryArgs: ({ endpointName }) => endpointName,
         transformResponse: (response: User[]) => ({
           items: response,
           has_more: response.length === ITEMS_PER_PAGE

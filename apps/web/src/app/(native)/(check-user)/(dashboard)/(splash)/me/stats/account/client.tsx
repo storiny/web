@@ -24,7 +24,7 @@ import DashboardWrapper from "../../../common/dashboard-wrapper";
 import AccountStatsRightSidebar from "./right-sidebar";
 import styles from "./styles.module.scss";
 
-const EmptyState = dynamic(() => import("../../stats-empty-state"), {
+const EmptyState = dynamic(() => import("../../../common/stats-empty-state"), {
   loading: dynamic_loader()
 });
 

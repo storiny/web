@@ -10,7 +10,7 @@ import DashboardWrapper from "../../../../../common/dashboard-wrapper";
 
 const NewsletterStatsClient = (): React.ReactElement => (
   <React.Fragment>
-    <DashboardTitle>Newsletter metrics</DashboardTitle>
+    <DashboardTitle>Newsletter statistics</DashboardTitle>
     <DashboardWrapper>
       <CustomState
         auto_size

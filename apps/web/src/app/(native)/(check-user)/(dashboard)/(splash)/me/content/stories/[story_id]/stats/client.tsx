@@ -36,9 +36,12 @@ import styles from "./styles.module.scss";
 dayjs.extend(relative_time);
 dayjs.extend(duration);
 
-const EmptyState = dynamic(() => import("../../../../stats-empty-state"), {
-  loading: dynamic_loader()
-});
+const EmptyState = dynamic(
+  () => import("../../../../../common/stats-empty-state"),
+  {
+    loading: dynamic_loader()
+  }
+);
 
 const CommentList = ({
   story_id
