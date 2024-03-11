@@ -155,6 +155,15 @@ export interface GetBlogEditorsInfoResponse {
   pending_editor_request_count: number;
 }
 
+export interface GetBlogWritersInfoRequest {
+  identifier: string;
+}
+
+export interface GetBlogWritersInfoResponse {
+  writer_count: number;
+  pending_writer_request_count: number;
+}
+
 function createBaseBareBlog(): BareBlog {
   return { id: "", slug: "", domain: undefined, name: "" };
 }
@@ -2109,6 +2118,139 @@ export const GetBlogEditorsInfoResponse = {
     const message = createBaseGetBlogEditorsInfoResponse();
     message.editor_count = object.editor_count ?? 0;
     message.pending_editor_request_count = object.pending_editor_request_count ?? 0;
+    return message;
+  },
+};
+
+function createBaseGetBlogWritersInfoRequest(): GetBlogWritersInfoRequest {
+  return { identifier: "" };
+}
+
+export const GetBlogWritersInfoRequest = {
+  encode(message: GetBlogWritersInfoRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.identifier !== "") {
+      writer.uint32(10).string(message.identifier);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetBlogWritersInfoRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetBlogWritersInfoRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.identifier = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetBlogWritersInfoRequest {
+    return { identifier: isSet(object.identifier) ? globalThis.String(object.identifier) : "" };
+  },
+
+  toJSON(message: GetBlogWritersInfoRequest): unknown {
+    const obj: any = {};
+    if (message.identifier !== "") {
+      obj.identifier = message.identifier;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetBlogWritersInfoRequest>, I>>(base?: I): GetBlogWritersInfoRequest {
+    return GetBlogWritersInfoRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetBlogWritersInfoRequest>, I>>(object: I): GetBlogWritersInfoRequest {
+    const message = createBaseGetBlogWritersInfoRequest();
+    message.identifier = object.identifier ?? "";
+    return message;
+  },
+};
+
+function createBaseGetBlogWritersInfoResponse(): GetBlogWritersInfoResponse {
+  return { writer_count: 0, pending_writer_request_count: 0 };
+}
+
+export const GetBlogWritersInfoResponse = {
+  encode(message: GetBlogWritersInfoResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.writer_count !== 0) {
+      writer.uint32(8).uint32(message.writer_count);
+    }
+    if (message.pending_writer_request_count !== 0) {
+      writer.uint32(16).uint32(message.pending_writer_request_count);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetBlogWritersInfoResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetBlogWritersInfoResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.writer_count = reader.uint32();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.pending_writer_request_count = reader.uint32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetBlogWritersInfoResponse {
+    return {
+      writer_count: isSet(object.writer_count) ? globalThis.Number(object.writer_count) : 0,
+      pending_writer_request_count: isSet(object.pending_writer_request_count)
+        ? globalThis.Number(object.pending_writer_request_count)
+        : 0,
+    };
+  },
+
+  toJSON(message: GetBlogWritersInfoResponse): unknown {
+    const obj: any = {};
+    if (message.writer_count !== 0) {
+      obj.writer_count = Math.round(message.writer_count);
+    }
+    if (message.pending_writer_request_count !== 0) {
+      obj.pending_writer_request_count = Math.round(message.pending_writer_request_count);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetBlogWritersInfoResponse>, I>>(base?: I): GetBlogWritersInfoResponse {
+    return GetBlogWritersInfoResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetBlogWritersInfoResponse>, I>>(object: I): GetBlogWritersInfoResponse {
+    const message = createBaseGetBlogWritersInfoResponse();
+    message.writer_count = object.writer_count ?? 0;
+    message.pending_writer_request_count = object.pending_writer_request_count ?? 0;
     return message;
   },
 };
