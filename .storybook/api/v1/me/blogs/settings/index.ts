@@ -6,3 +6,4 @@ import "./delete-blog";
 import "./connections";
 import "./appearance";
 import "./sidebars";
+import "./seo";
