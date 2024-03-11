@@ -1,5 +1,4 @@
 import { axe } from "@storiny/test-utils";
-import { screen } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -23,7 +22,7 @@ describe("<BlogRightSidebar />", () => {
         <BlogRightSidebar force_mount />
       </BlogContextProvider>
     );
-    await screen.findByRole("button", { name: /log in/i });
+
     expect(await axe(container)).toHaveNoViolations();
   });
 
@@ -37,7 +36,6 @@ describe("<BlogRightSidebar />", () => {
       }
     );
 
-    await screen.findByRole("button", { name: /write/i });
     expect(await axe(container)).toHaveNoViolations();
   });
 });

@@ -25,7 +25,7 @@ describe("<InviteWriter />", () => {
       screen.getByTestId("invite-writer-button") // Open modal
     );
 
-    await user.type(screen.getByTestId("username-input"), "abcd"); // The button is disabled until the form is dirty
+    await user.type(screen.getByTestId("username-input"), " "); // The button is disabled until the form is dirty
     await user.click(screen.getByRole("button", { name: /invite/i }));
 
     expect((await screen.findAllByRole("alert")).length).not.toEqual(0);
