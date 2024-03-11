@@ -24,7 +24,9 @@ export type ApiQueryBuilder = EndpointBuilder<
   | "Blog"
   | "BlogRequest"
   | "FriendRequest"
-  | "CollaborationRequest",
+  | "CollaborationRequest"
+  | "BlogEditorRequest"
+  | "BlogWriterRequest",
   "api"
 >;
 

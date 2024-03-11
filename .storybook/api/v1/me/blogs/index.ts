@@ -4,6 +4,8 @@ import "./settings";
 import "./leave";
 import "./content";
 import "./stories";
+import "./editor-requests";
+import "./writer-requests";
 
 const { worker, rest } = window.msw;
 
