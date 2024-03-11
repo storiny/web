@@ -28,6 +28,7 @@ const User = (props: UserProps): React.ReactElement => {
   const {
     action_type = "default",
     hide_action,
+    custom_action,
     className,
     user,
     virtual,
@@ -128,7 +129,7 @@ const User = (props: UserProps): React.ReactElement => {
         </NextLink>
         <Grow />
         <div className={clsx(css["flex"], styles.actions)}>
-          {!is_self && action_type === "default" ? (
+          {!custom_action && !is_self && action_type === "default" ? (
             <Button
               auto_size
               check_auth
@@ -142,7 +143,11 @@ const User = (props: UserProps): React.ReactElement => {
             </Button>
           ) : null}
           {!hide_action && (
-            <UserActions action_type={action_type} user={user} />
+            <UserActions
+              action_type={action_type}
+              custom_action={custom_action}
+              user={user}
+            />
           )}
         </div>
       </div>

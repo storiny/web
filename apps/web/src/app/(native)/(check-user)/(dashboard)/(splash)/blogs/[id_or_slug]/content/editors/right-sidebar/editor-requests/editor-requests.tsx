@@ -7,25 +7,23 @@ import {
 import dynamic from "next/dynamic";
 import React from "react";
 
+import { VirtualizedBlogMemberRequestList } from "~/common/blog-member-request";
+import { use_blog_context } from "~/common/context/blog";
 import { dynamic_loader } from "~/common/dynamic";
-import { VirtualizedFriendRequestList } from "~/common/friend-request";
 import SuspenseLoader from "~/common/suspense-loader";
 import Button from "~/components/button";
-import Divider from "~/components/divider";
 import Input from "~/components/input";
 import { ModalFooterButton, use_modal } from "~/components/modal";
-import Option from "~/components/option";
 import { Root, Scrollbar, Thumb, Viewport } from "~/components/scroll-area";
-import Select from "~/components/select";
 import ErrorState from "~/entities/error-state";
 import { use_debounce } from "~/hooks/use-debounce";
 import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import { use_media_query } from "~/hooks/use-media-query";
+import PencilIcon from "~/icons/pencil";
 import SearchIcon from "~/icons/search";
-import UserHeartIcon from "~/icons/user-heart";
 import {
   get_query_error_type,
-  use_get_friend_requests_query
+  use_get_blog_editor_requests_query
 } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
@@ -35,8 +33,6 @@ import styles from "./editor-requests.module.scss";
 const EmptyState = dynamic(() => import("./empty-state"), {
   loading: dynamic_loader()
 });
-
-export type FriendRequestsSortValue = "popular" | "recent" | "old";
 
 const render_key_atom = atom<string>(""); // Key to re-render the scrollbar
 
@@ -65,13 +61,12 @@ Scroller.displayName = "Scroller";
 // Modal
 
 const EditorRequestsModal = (): React.ReactElement => {
-  const [sort, set_sort] = React.useState<FriendRequestsSortValue>("popular");
   const [query, set_query] = React.useState<string>("");
   const [page, set_page] = React.useState<number>(1);
   use_handle_dynamic_state(1, set_page);
   use_handle_dynamic_state("", set_query);
-  use_handle_dynamic_state("popular", set_sort);
   const set_render_key = use_set_atom(render_key_atom);
+  const blog = use_blog_context();
   const debounced_query = use_debounce(query);
   const {
     data,
@@ -80,9 +75,9 @@ const EditorRequestsModal = (): React.ReactElement => {
     isError: is_error,
     error,
     refetch
-  } = use_get_friend_requests_query({
+  } = use_get_blog_editor_requests_query({
+    blog_id: blog.id,
     page,
-    sort,
     query: debounced_query
   });
   const { items = [], has_more } = data || {};
@@ -90,14 +85,6 @@ const EditorRequestsModal = (): React.ReactElement => {
 
   const load_more = React.useCallback(
     () => set_page((prev_state) => prev_state + 1),
-    []
-  );
-
-  const handle_sort_change = React.useCallback(
-    (next_sort: FriendRequestsSortValue) => {
-      set_page(1);
-      set_sort(next_sort);
-    },
     []
   );
 
@@ -126,34 +113,6 @@ const EditorRequestsModal = (): React.ReactElement => {
           type={"search"}
           value={query}
         />
-        <Divider orientation={"vertical"} />
-        <Select
-          disabled={!query && !items.length}
-          onValueChange={handle_sort_change}
-          slot_props={{
-            trigger: {
-              "aria-label": "Sort items",
-              className: clsx(
-                css["focus-invert"],
-                styles.x,
-                styles["select-trigger"]
-              )
-            },
-            value: {
-              placeholder: "Sort"
-            },
-            content: {
-              style: {
-                zIndex: "calc(var(--z-index-modal) + 2)"
-              }
-            }
-          }}
-          value={sort}
-        >
-          <Option value={"popular"}>Popular</Option>
-          <Option value={"recent"}>Recent</Option>
-          <Option value={"old"}>Old</Option>
-        </Select>
       </div>
       {is_loading || is_typing || (is_fetching && page === 1) ? (
         <SuspenseLoader />
@@ -170,9 +129,12 @@ const EditorRequestsModal = (): React.ReactElement => {
         <EmptyState query={query} />
       ) : (
         <Root className={clsx(styles.x, styles["scroll-area"])} type={"auto"}>
-          <VirtualizedFriendRequestList
+          <VirtualizedBlogMemberRequestList
+            blog_member_request_props={{
+              role: "editor"
+            }}
+            blog_member_requests={items}
             components={{ Scroller }}
-            friend_requests={items}
             has_more={Boolean(has_more)}
             load_more={load_more}
             useWindowScroll={false}
@@ -223,8 +185,8 @@ const EditorRequests = (): React.ReactElement => {
           }
         },
         header: {
-          decorator: <UserHeartIcon />,
-          children: "Friend requests"
+          decorator: <PencilIcon />,
+          children: "Editor requests"
         }
       }
     }

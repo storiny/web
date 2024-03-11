@@ -1,3 +1,4 @@
+import { get_blog_writer_requests_api, number_action } from "~/redux/features";
 import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = (blog_id: string, id: string): string =>
@@ -23,7 +24,19 @@ export const {
       }),
       invalidatesTags: (result, error, arg) => [
         { type: "BlogWriterRequest", id: arg.id }
-      ]
+      ],
+      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+        queryFulfilled.then(() => {
+          [
+            get_blog_writer_requests_api.util.resetApiState(),
+            number_action(
+              "blog_pending_writer_request_counts",
+              arg.blog_id,
+              "decrement"
+            )
+          ].forEach(dispatch);
+        });
+      }
     })
   })
 });

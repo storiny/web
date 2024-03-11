@@ -1,6 +1,6 @@
-import { RelationsTabValue } from "../client";
-import { EditorsProps } from "../editors.props";
+import { BlogEditorsProps } from "../editors.props";
 
-export type RelationsRightSidebarProps = {
-  tab: RelationsTabValue;
-} & Pick<EditorsProps, "pending_friend_request_count">;
+export type EditorsRightSidebarProps = Pick<
+  BlogEditorsProps,
+  "pending_editor_request_count"
+>;
