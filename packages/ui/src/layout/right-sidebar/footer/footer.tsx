@@ -1,9 +1,7 @@
-import clsx from "clsx";
 import React from "react";
 
 import Link from "~/components/link";
 import Typography from "~/components/typography";
-import css from "~/theme/main.module.scss";
 
 import styles from "./footer.module.scss";
 

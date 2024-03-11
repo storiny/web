@@ -4,9 +4,7 @@ import React from "react";
 
 import Divider from "~/components/divider";
 import Spacer from "~/components/spacer";
-import TitleBlock from "~/entities/title-block";
 
-import DashboardGroup from "../../../../../common/dashboard-group";
 import DashboardTitle from "../../../../../common/dashboard-title";
 import DashboardWrapper from "../../../../../common/dashboard-wrapper";
 import BlogFaviconSettings from "./favicon";

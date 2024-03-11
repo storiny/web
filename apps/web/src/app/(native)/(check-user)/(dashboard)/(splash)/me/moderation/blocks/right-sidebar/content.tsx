@@ -1,10 +1,8 @@
 import { SUPPORT_ARTICLE_MAP } from "@storiny/shared/src/constants/support-articles";
-import { clsx } from "clsx";
 import React from "react";
 
 import Link from "~/components/link";
 import Typography from "~/components/typography";
-import css from "~/theme/main.module.scss";
 
 const ModerationBlocksRightSidebarContent = (): React.ReactElement => (
   <React.Fragment>
