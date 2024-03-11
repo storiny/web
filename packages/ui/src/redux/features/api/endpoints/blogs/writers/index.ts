@@ -2,15 +2,15 @@ import { User } from "@storiny/types";
 
 import { api_slice } from "~/redux/features/api/slice";
 
-const SEGMENT = (blog_id: string): string => `blogs/${blog_id}/editors`;
+const SEGMENT = (blog_id: string): string => `blogs/${blog_id}/writers`;
 const ITEMS_PER_PAGE = 10;
 
-export type GetBlogEditorsResponse = User[];
+export type GetBlogWritersResponse = User[];
 
-export const get_blog_editors_api = api_slice.injectEndpoints({
+export const get_blog_writers_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
     // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-    getBlogEditors: builder.query<
+    getBlogWriters: builder.query<
       { has_more: boolean; items: User[] },
       {
         blog_id: string;
@@ -39,5 +39,5 @@ export const get_blog_editors_api = api_slice.injectEndpoints({
   })
 });
 
-export const { useGetBlogEditorsQuery: use_get_blog_editors_query } =
-  get_blog_editors_api;
+export const { useGetBlogWritersQuery: use_get_blog_writers_query } =
+  get_blog_writers_api;

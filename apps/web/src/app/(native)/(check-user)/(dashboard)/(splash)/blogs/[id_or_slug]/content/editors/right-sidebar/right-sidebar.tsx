@@ -4,52 +4,53 @@ import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
+import { use_blog_context } from "~/common/context/blog";
 import { dynamic_loader } from "~/common/dynamic";
 import Grow from "~/components/grow";
 import { use_media_query } from "~/hooks/use-media-query";
 import RightSidebar from "~/layout/right-sidebar";
-import { self_action } from "~/redux/features";
+import { number_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "./right-sidebar.module.scss";
-import { RelationsRightSidebarProps } from "./right-sidebar.props";
+import { EditorsRightSidebarProps } from "./right-sidebar.props";
 
 const SuspendedDashboardRightSidebarContent = dynamic(
-  () => import("../../../../common/right-sidebar/content"),
+  () => import("../../../../../common/right-sidebar/content"),
   {
     loading: dynamic_loader()
   }
 );
-const SuspendedContentRelationsRightSidebarContent = dynamic(
+const SuspendedBlogContentEditorsRightSidebarContent = dynamic(
   () => import("./content"),
   {
     loading: dynamic_loader()
   }
 );
 
-const ContentRelationsRightSidebar = (
-  props: RelationsRightSidebarProps
+const BlogContentEditorsRightSidebar = (
+  props: EditorsRightSidebarProps
 ): React.ReactElement | null => {
-  const {
-    tab,
-    pending_friend_request_count: pending_friend_request_count_prop
-  } = props;
+  const { pending_editor_request_count: pending_editor_request_count_prop } =
+    props;
+  const blog = use_blog_context();
   const dispatch = use_app_dispatch();
-  const pending_friend_request_count =
+  const pending_editor_request_count =
     use_app_selector(
-      (state) => state.entities.self_pending_friend_request_count
+      (state) => state.entities.blog_pending_editor_request_counts[blog.id]
     ) || 0;
   const should_render = use_media_query(BREAKPOINTS.up("desktop"));
 
   React.useEffect(() => {
     dispatch(
-      self_action(
-        "self_pending_friend_request_count",
-        pending_friend_request_count_prop
+      number_action(
+        "blog_pending_editor_request_counts",
+        blog.id,
+        pending_editor_request_count_prop
       )
     );
-  }, [dispatch, pending_friend_request_count_prop]);
+  }, [dispatch, blog, pending_editor_request_count_prop]);
 
   if (!should_render) {
     return null;
@@ -57,10 +58,10 @@ const ContentRelationsRightSidebar = (
 
   return (
     <RightSidebar className={clsx(styles.x, styles["right-sidebar"])}>
-      {tab === "friends" && pending_friend_request_count ? (
+      {pending_editor_request_count ? (
         <React.Fragment>
-          <SuspendedContentRelationsRightSidebarContent
-            pending_friend_request_count={pending_friend_request_count}
+          <SuspendedBlogContentEditorsRightSidebarContent
+            pending_editor_request_count={pending_editor_request_count}
           />
           {/* Push the footer to the bottom of the viewport */}
           <Grow />
@@ -72,4 +73,4 @@ const ContentRelationsRightSidebar = (
   );
 };
 
-export default ContentRelationsRightSidebar;
+export default BlogContentEditorsRightSidebar;

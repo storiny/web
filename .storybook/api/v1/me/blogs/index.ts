@@ -4,6 +4,8 @@ import "./settings";
 import "./leave";
 import "./content";
 import "./stories";
+import "./writers";
+import "./editors";
 import "./editor-requests";
 import "./writer-requests";
 

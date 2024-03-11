@@ -6,25 +6,25 @@ import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import EditorRequests from "./editor-requests";
-import { RelationsRightSidebarProps } from "./right-sidebar.props";
+import { EditorsRightSidebarProps } from "./right-sidebar.props";
 
-const ContentRelationsRightSidebarContent = (
-  props: Omit<RelationsRightSidebarProps, "tab">
+const BlogContentEditorsRightSidebarContent = (
+  props: EditorsRightSidebarProps
 ): React.ReactElement => {
-  const { pending_friend_request_count } = props;
+  const { pending_editor_request_count } = props;
   return (
     <React.Fragment>
       <Typography color={"minor"} level={"body2"} weight={"medium"}>
-        Friend requests
+        Editor requests
       </Typography>
       <div className={css["flex-col"]}>
         <Typography level={"body2"}>
-          You have{" "}
+          You have sent{" "}
           <span className={css["t-bold"]}>
-            {abbreviate_number(pending_friend_request_count)}
+            {abbreviate_number(pending_editor_request_count)}
           </span>{" "}
-          pending friend{" "}
-          {pending_friend_request_count === 1 ? "request" : "requests"}.
+          editor {pending_editor_request_count === 1 ? "request" : "requests"}{" "}
+          that are still pending.
         </Typography>
         <Spacer orientation={"vertical"} size={2} />
         <EditorRequests />
@@ -33,4 +33,4 @@ const ContentRelationsRightSidebarContent = (
   );
 };
 
-export default ContentRelationsRightSidebarContent;
+export default BlogContentEditorsRightSidebarContent;

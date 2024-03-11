@@ -14,21 +14,13 @@
 }
 
 .x {
-  &.input,
-  &.select-trigger {
+  &.input {
     border-radius: 0;
     background-color: transparent;
-  }
 
-  &.input {
     &:not([data-focused="true"]) {
       border: none;
     }
-  }
-
-  &.select-trigger {
-    border: none;
-    align-self: stretch;
   }
 
   &.scroll-area {

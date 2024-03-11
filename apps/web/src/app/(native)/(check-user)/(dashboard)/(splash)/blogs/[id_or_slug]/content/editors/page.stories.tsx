@@ -13,6 +13,10 @@ import BlogContentEditorsPage from "./client";
 const meta: Meta<typeof BlogContentEditorsPage> = {
   title: "blog-dashboard/content/editors",
   component: BlogContentEditorsPage,
+  args: {
+    pending_editor_request_count: 5,
+    editor_count: 5
+  },
   parameters: {
     layout: "fullscreen"
   },
