@@ -2,7 +2,6 @@ import React from "react";
 
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
-import css from "~/theme/main.module.scss";
 
 import AddPassword from "./add-password";
 import { PasswordSettingsProps } from "./password-settings.props";

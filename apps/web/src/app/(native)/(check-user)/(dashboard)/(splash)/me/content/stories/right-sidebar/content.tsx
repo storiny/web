@@ -1,8 +1,6 @@
-import { clsx } from "clsx";
 import React from "react";
 
 import Typography from "~/components/typography";
-import css from "~/theme/main.module.scss";
 
 const ContentStoriesRightSidebarContent = (): React.ReactElement => (
   <React.Fragment>
