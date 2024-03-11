@@ -41,6 +41,9 @@ export type BlogContextValue = Pick<
   | "hide_storiny_branding"
   | "is_following"
   | "rsb_items_label"
+  | "seo_description"
+  | "seo_title"
+  | "preview_image"
 > & {
   mutate: (next_state: Partial<Blog>) => void;
   role: "owner" | "editor" | "writer" | null;
