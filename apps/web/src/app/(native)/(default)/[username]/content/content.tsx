@@ -49,6 +49,10 @@ const StaffBadge = dynamic(() => import("~/entities/badges/staff"), {
   loading: () => <BadgeSkeleton />
 });
 
+const PlusBadge = dynamic(() => import("~/entities/badges/plus"), {
+  loading: () => <BadgeSkeleton />
+});
+
 interface Props {
   is_inside_sidebar?: boolean;
   is_private: boolean;
@@ -153,10 +157,11 @@ const Stat = ({
 // Badges block
 
 const Badges = ({
-  public_flags
+  public_flags,
+  is_plus_member
 }: {
   public_flags: Props["profile"]["public_flags"];
-}): React.ReactElement | null => {
+} & Pick<GetProfileResponse, "is_plus_member">): React.ReactElement | null => {
   const flags = new Flag(public_flags);
 
   if (flags.none()) {
@@ -185,6 +190,11 @@ const Badges = ({
         {flags.has_any_of(UserFlag.EARLY_USER) && (
           <span className={clsx(css["flex-center"], styles["badge-wrapper"])}>
             <EarlyUserBadge />
+          </span>
+        )}
+        {is_plus_member && (
+          <span className={clsx(css["flex-center"], styles["badge-wrapper"])}>
+            <PlusBadge />
           </span>
         )}
       </div>
@@ -380,7 +390,10 @@ const ProfileContent = ({
         Boolean(profile.is_blocked_by_user) ? null : (
           <>
             {/* Badges */}
-            <Badges public_flags={profile.public_flags} />
+            <Badges
+              is_plus_member={profile.is_plus_member}
+              public_flags={profile.public_flags}
+            />
             {/* Bio */}
             {Boolean((profile.rendered_bio || "").trim()) && (
               <div className={clsx(css["flex-col"], styles.container)}>

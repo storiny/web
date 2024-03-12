@@ -42,4 +42,5 @@ message GetProfileResponse {
   bool is_blocked /*                                  */ = 26;
   bool is_muted /*                                    */ = 27;
   bool is_self /*                                     */ = 28;
+  bool is_plus_member /*                              */ = 29;
 }
