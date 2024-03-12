@@ -159,7 +159,7 @@ const BlogConnectionsClient = ({
                 </>
               }
               label={"Your e-mail address"}
-              maxLength={CONNECTION_VALUE_MAX_LENGTH}
+              maxLength={300}
               name={"public_email"}
               placeholder={"contact@me.com"}
               slot_props={{
