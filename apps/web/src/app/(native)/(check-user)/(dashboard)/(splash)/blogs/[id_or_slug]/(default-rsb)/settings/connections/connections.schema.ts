@@ -21,10 +21,7 @@ export const BLOG_CONNECTIONS_SCHEMA = z.object({
   public_email: z
     .string()
     .email("Invalid e-mail")
-    .max(
-      CONNECTION_VALUE_MAX_LENGTH,
-      ZOD_MESSAGES.max("e-mail", CONNECTION_VALUE_MAX_LENGTH)
-    )
+    .max(300, ZOD_MESSAGES.max("e-mail", 300))
     .optional()
     .nullable()
     .or(z.literal("")),
