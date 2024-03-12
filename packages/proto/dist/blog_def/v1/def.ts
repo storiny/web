@@ -164,6 +164,14 @@ export interface GetBlogWritersInfoResponse {
   pending_writer_request_count: number;
 }
 
+export interface GetBlogSitemapRequest {
+  identifier: string;
+}
+
+export interface GetBlogSitemapResponse {
+  content: string;
+}
+
 function createBaseBareBlog(): BareBlog {
   return { id: "", slug: "", domain: undefined, name: "" };
 }
@@ -2251,6 +2259,120 @@ export const GetBlogWritersInfoResponse = {
     const message = createBaseGetBlogWritersInfoResponse();
     message.writer_count = object.writer_count ?? 0;
     message.pending_writer_request_count = object.pending_writer_request_count ?? 0;
+    return message;
+  },
+};
+
+function createBaseGetBlogSitemapRequest(): GetBlogSitemapRequest {
+  return { identifier: "" };
+}
+
+export const GetBlogSitemapRequest = {
+  encode(message: GetBlogSitemapRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.identifier !== "") {
+      writer.uint32(10).string(message.identifier);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetBlogSitemapRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetBlogSitemapRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.identifier = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetBlogSitemapRequest {
+    return { identifier: isSet(object.identifier) ? globalThis.String(object.identifier) : "" };
+  },
+
+  toJSON(message: GetBlogSitemapRequest): unknown {
+    const obj: any = {};
+    if (message.identifier !== "") {
+      obj.identifier = message.identifier;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetBlogSitemapRequest>, I>>(base?: I): GetBlogSitemapRequest {
+    return GetBlogSitemapRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetBlogSitemapRequest>, I>>(object: I): GetBlogSitemapRequest {
+    const message = createBaseGetBlogSitemapRequest();
+    message.identifier = object.identifier ?? "";
+    return message;
+  },
+};
+
+function createBaseGetBlogSitemapResponse(): GetBlogSitemapResponse {
+  return { content: "" };
+}
+
+export const GetBlogSitemapResponse = {
+  encode(message: GetBlogSitemapResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.content !== "") {
+      writer.uint32(10).string(message.content);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetBlogSitemapResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetBlogSitemapResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.content = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetBlogSitemapResponse {
+    return { content: isSet(object.content) ? globalThis.String(object.content) : "" };
+  },
+
+  toJSON(message: GetBlogSitemapResponse): unknown {
+    const obj: any = {};
+    if (message.content !== "") {
+      obj.content = message.content;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetBlogSitemapResponse>, I>>(base?: I): GetBlogSitemapResponse {
+    return GetBlogSitemapResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetBlogSitemapResponse>, I>>(object: I): GetBlogSitemapResponse {
+    const message = createBaseGetBlogSitemapResponse();
+    message.content = object.content ?? "";
     return message;
   },
 };

@@ -146,6 +146,10 @@ service ApiService {
    * Returns the blog's writers details
    */
   rpc GetBlogWritersInfo(blog_def.v1.GetBlogWritersInfoRequest) returns (blog_def.v1.GetBlogWritersInfoResponse) {}
+  /**
+   * Returns the blog's sitemap
+   */
+  rpc GetBlogSitemap(blog_def.v1.GetBlogSitemapRequest) returns (blog_def.v1.GetBlogSitemapResponse) {}
 }
 
 // This is necessary to generate an output file using tonic.
