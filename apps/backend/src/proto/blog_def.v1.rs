@@ -24,9 +24,7 @@ pub struct LeftSidebarItem {
     pub name: ::prost::alloc::string::String,
     #[prost(string, optional, tag="3")]
     pub icon: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(uint32, tag="4")]
-    pub priority: u32,
-    #[prost(string, tag="5")]
+    #[prost(string, tag="4")]
     pub target: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -40,9 +38,7 @@ pub struct RightSidebarItem {
     pub secondary_text: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="4")]
     pub icon: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(uint32, tag="5")]
-    pub priority: u32,
-    #[prost(string, tag="6")]
+    #[prost(string, tag="5")]
     pub target: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]

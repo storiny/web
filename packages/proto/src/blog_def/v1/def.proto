@@ -17,8 +17,7 @@ message LeftSidebarItem {
   string id /*           */ = 1;
   string name /*         */ = 2;
   optional string icon /**/ = 3;
-  uint32 priority /*     */ = 4;
-  string target /*       */ = 5;
+  string target /*       */ = 4;
 }
 
 message RightSidebarItem {
@@ -26,8 +25,7 @@ message RightSidebarItem {
   string primary_text /*           */ = 2;
   optional string secondary_text /**/ = 3;
   optional string icon /*          */ = 4;
-  uint32 priority /*               */ = 5;
-  string target /*                 */ = 6;
+  string target /*                 */ = 5;
 }
 
 message GetBlogRequest {
