@@ -13,5 +13,7 @@ export enum NotificationType {
   STORY_ADD_BY_USER /*  */ = 10,
   STORY_ADD_BY_TAG /*   */ = 11,
   COLLAB_REQ_ACCEPT /*  */ = 12,
-  COLLAB_REQ_RECEIVED /**/ = 13
+  COLLAB_REQ_RECEIVED /**/ = 13,
+  BLOG_EDITOR_INVITE /* */ = 14,
+  BLOG_WRITER_INVITE /* */ = 15
 }

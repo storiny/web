@@ -19,6 +19,8 @@ const meta: Meta<typeof AccountNotificationsPage> = {
     comments: true,
     features_and_updates: true,
     friend_requests: true,
+    collaboration_requests: true,
+    blog_requests: true,
     mail_digest: true,
     mail_features_and_updates: true,
     mail_login_activity: true,

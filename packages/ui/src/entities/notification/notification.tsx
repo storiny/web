@@ -13,6 +13,7 @@ import Typography from "~/components/typography";
 import NotificationParser from "~/entities/notification/parser";
 import { use_media_query } from "~/hooks/use-media-query";
 import AtIcon from "~/icons/at";
+import BlogIcon from "~/icons/blog";
 import CommentIcon from "~/icons/comment";
 import ContributionIcon from "~/icons/contribution";
 import HeartIcon from "~/icons/heart";
@@ -52,10 +53,14 @@ const NOTIFICATION_BADGE_CONTENT_MAP: Record<
   [NotificationType.STORY_ADD_BY_USER /*  */]: <StoryIcon />,
   [NotificationType.STORY_ADD_BY_TAG /*   */]: <TagIcon no_stroke />,
   [NotificationType.SYSTEM /*             */]: <VerifiedIcon />,
-  [NotificationType.LOGIN_ATTEMPT /*      */]: <VerifiedIcon />
+  [NotificationType.LOGIN_ATTEMPT /*      */]: <VerifiedIcon />,
+  [NotificationType.BLOG_EDITOR_INVITE /* */]: <BlogIcon />,
+  [NotificationType.BLOG_WRITER_INVITE /* */]: <BlogIcon />
 };
 
 const NOTIFICATION_BADGE_COLOR_MAP: Record<NotificationType, string> = {
+  [NotificationType.BLOG_EDITOR_INVITE /* */]: "var(--lemon-500)",
+  [NotificationType.BLOG_WRITER_INVITE /* */]: "var(--lemon-500)",
   [NotificationType.STORY_LIKE /*         */]: "var(--blush-100)",
   [NotificationType.FRIEND_REQ_ACCEPT /*  */]: "var(--blush-100)",
   [NotificationType.FRIEND_REQ_RECEIVED /**/]: "var(--beryl-200)",

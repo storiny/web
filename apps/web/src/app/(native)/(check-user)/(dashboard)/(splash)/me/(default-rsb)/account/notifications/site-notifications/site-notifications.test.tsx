@@ -12,6 +12,8 @@ describe("<SiteNotifications />", () => {
     const user = user_event.setup();
     render_test_with_provider(
       <SiteNotifications
+        blog_requests
+        collaboration_requests
         comments
         features_and_updates
         friend_requests
@@ -30,14 +32,16 @@ describe("<SiteNotifications />", () => {
     await user.click(screen.getByLabelText(/features & updates/i));
 
     expect(mock_submit).toHaveBeenCalledWith({
-      friend_requests: true,
-      features_and_updates: false,
-      new_followers: true,
-      story_likes: true,
-      replies: true,
+      blog_requests: true,
+      collaboration_requests: true,
       comments: true,
-      tags: true,
-      stories: true
+      features_and_updates: false,
+      friend_requests: true,
+      new_followers: true,
+      replies: true,
+      stories: true,
+      story_likes: true,
+      tags: true
     });
   });
 });

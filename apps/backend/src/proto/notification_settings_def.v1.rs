@@ -25,14 +25,18 @@ pub struct GetNotificationSettingsResponse {
     pub new_followers: bool,
     #[prost(bool, tag="8")]
     pub friend_requests: bool,
-    /// Mail notifications
     #[prost(bool, tag="9")]
-    pub mail_login_activity: bool,
+    pub collaboration_requests: bool,
     #[prost(bool, tag="10")]
-    pub mail_features_and_updates: bool,
+    pub blog_requests: bool,
+    /// Mail notifications
     #[prost(bool, tag="11")]
-    pub mail_newsletters: bool,
+    pub mail_login_activity: bool,
     #[prost(bool, tag="12")]
+    pub mail_features_and_updates: bool,
+    #[prost(bool, tag="13")]
+    pub mail_newsletters: bool,
+    #[prost(bool, tag="14")]
     pub mail_digest: bool,
 }
 // @@protoc_insertion_point(module)
