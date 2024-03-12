@@ -528,4 +528,154 @@ VALUES ($1, $2)
 
         Ok(())
     }
+
+    #[sqlx::test(fixtures("user", "notification"))]
+    async fn can_skip_notification_out_when_the_notified_user_has_disabled_push_collaboration_requests(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Update notification settings for the notified user
+        sqlx::query(
+            r#"
+UPDATE notification_settings
+SET push_collaboration_requests = FALSE
+WHERE user_id = $1
+"#,
+        )
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Set entity type to collaboration request received
+        sqlx::query(
+            r#"
+UPDATE notifications
+SET entity_type = $1
+WHERE id = $2
+"#,
+        )
+        .bind(NotificationEntityType::CollabReqReceived as i16)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let result = sqlx::query(
+            r#"
+INSERT INTO notification_outs (notified_id, notification_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(1_i64)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Should not insert the row
+        assert_eq!(result.rows_affected(), 0);
+
+        // Set entity type to collaboration request accept
+        sqlx::query(
+            r#"
+UPDATE notifications
+SET entity_type = $1
+WHERE id = $2
+"#,
+        )
+        .bind(NotificationEntityType::CollabReqAccept as i16)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let result = sqlx::query(
+            r#"
+INSERT INTO notification_outs (notified_id, notification_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(1_i64)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Should not insert the row
+        assert_eq!(result.rows_affected(), 0);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user", "notification"))]
+    async fn can_skip_notification_out_when_the_notified_user_has_disabled_push_blog_requests(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Update notification settings for the notified user
+        sqlx::query(
+            r#"
+UPDATE notification_settings
+SET push_blog_requests = FALSE
+WHERE user_id = $1
+"#,
+        )
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Set entity type to blog editor invite
+        sqlx::query(
+            r#"
+UPDATE notifications
+SET entity_type = $1
+WHERE id = $2
+"#,
+        )
+        .bind(NotificationEntityType::BlogEditorInvite as i16)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let result = sqlx::query(
+            r#"
+INSERT INTO notification_outs (notified_id, notification_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(1_i64)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Should not insert the row
+        assert_eq!(result.rows_affected(), 0);
+
+        // Set entity type to blog writer invite
+        sqlx::query(
+            r#"
+UPDATE notifications
+SET entity_type = $1
+WHERE id = $2
+"#,
+        )
+        .bind(NotificationEntityType::BlogWriterInvite as i16)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let result = sqlx::query(
+            r#"
+INSERT INTO notification_outs (notified_id, notification_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(1_i64)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Should not insert the row
+        assert_eq!(result.rows_affected(), 0);
+
+        Ok(())
+    }
 }

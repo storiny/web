@@ -123,6 +123,12 @@ impl serde::Serialize for GetNotificationSettingsResponse {
         if self.friend_requests {
             len += 1;
         }
+        if self.collaboration_requests {
+            len += 1;
+        }
+        if self.blog_requests {
+            len += 1;
+        }
         if self.mail_login_activity {
             len += 1;
         }
@@ -160,6 +166,12 @@ impl serde::Serialize for GetNotificationSettingsResponse {
         if self.friend_requests {
             struct_ser.serialize_field("friendRequests", &self.friend_requests)?;
         }
+        if self.collaboration_requests {
+            struct_ser.serialize_field("collaborationRequests", &self.collaboration_requests)?;
+        }
+        if self.blog_requests {
+            struct_ser.serialize_field("blogRequests", &self.blog_requests)?;
+        }
         if self.mail_login_activity {
             struct_ser.serialize_field("mailLoginActivity", &self.mail_login_activity)?;
         }
@@ -194,6 +206,10 @@ impl<'de> serde::Deserialize<'de> for GetNotificationSettingsResponse {
             "newFollowers",
             "friend_requests",
             "friendRequests",
+            "collaboration_requests",
+            "collaborationRequests",
+            "blog_requests",
+            "blogRequests",
             "mail_login_activity",
             "mailLoginActivity",
             "mail_features_and_updates",
@@ -214,6 +230,8 @@ impl<'de> serde::Deserialize<'de> for GetNotificationSettingsResponse {
             Replies,
             NewFollowers,
             FriendRequests,
+            CollaborationRequests,
+            BlogRequests,
             MailLoginActivity,
             MailFeaturesAndUpdates,
             MailNewsletters,
@@ -247,6 +265,8 @@ impl<'de> serde::Deserialize<'de> for GetNotificationSettingsResponse {
                             "replies" => Ok(GeneratedField::Replies),
                             "newFollowers" | "new_followers" => Ok(GeneratedField::NewFollowers),
                             "friendRequests" | "friend_requests" => Ok(GeneratedField::FriendRequests),
+                            "collaborationRequests" | "collaboration_requests" => Ok(GeneratedField::CollaborationRequests),
+                            "blogRequests" | "blog_requests" => Ok(GeneratedField::BlogRequests),
                             "mailLoginActivity" | "mail_login_activity" => Ok(GeneratedField::MailLoginActivity),
                             "mailFeaturesAndUpdates" | "mail_features_and_updates" => Ok(GeneratedField::MailFeaturesAndUpdates),
                             "mailNewsletters" | "mail_newsletters" => Ok(GeneratedField::MailNewsletters),
@@ -278,6 +298,8 @@ impl<'de> serde::Deserialize<'de> for GetNotificationSettingsResponse {
                 let mut replies__ = None;
                 let mut new_followers__ = None;
                 let mut friend_requests__ = None;
+                let mut collaboration_requests__ = None;
+                let mut blog_requests__ = None;
                 let mut mail_login_activity__ = None;
                 let mut mail_features_and_updates__ = None;
                 let mut mail_newsletters__ = None;
@@ -332,6 +354,18 @@ impl<'de> serde::Deserialize<'de> for GetNotificationSettingsResponse {
                             }
                             friend_requests__ = Some(map.next_value()?);
                         }
+                        GeneratedField::CollaborationRequests => {
+                            if collaboration_requests__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("collaborationRequests"));
+                            }
+                            collaboration_requests__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::BlogRequests => {
+                            if blog_requests__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("blogRequests"));
+                            }
+                            blog_requests__ = Some(map.next_value()?);
+                        }
                         GeneratedField::MailLoginActivity => {
                             if mail_login_activity__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("mailLoginActivity"));
@@ -367,6 +401,8 @@ impl<'de> serde::Deserialize<'de> for GetNotificationSettingsResponse {
                     replies: replies__.unwrap_or_default(),
                     new_followers: new_followers__.unwrap_or_default(),
                     friend_requests: friend_requests__.unwrap_or_default(),
+                    collaboration_requests: collaboration_requests__.unwrap_or_default(),
+                    blog_requests: blog_requests__.unwrap_or_default(),
                     mail_login_activity: mail_login_activity__.unwrap_or_default(),
                     mail_features_and_updates: mail_features_and_updates__.unwrap_or_default(),
                     mail_newsletters: mail_newsletters__.unwrap_or_default(),

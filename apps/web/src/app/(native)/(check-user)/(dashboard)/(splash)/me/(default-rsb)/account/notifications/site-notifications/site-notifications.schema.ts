@@ -10,5 +10,7 @@ export const SITE_NOTIFICATIONS_SCHEMA = z.object({
   comments: z.boolean(),
   replies: z.boolean(),
   new_followers: z.boolean(),
-  friend_requests: z.boolean()
+  friend_requests: z.boolean(),
+  collaboration_requests: z.boolean(),
+  blog_requests: z.boolean()
 });

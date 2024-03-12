@@ -17,6 +17,8 @@ export interface GetNotificationSettingsResponse {
   replies: boolean;
   new_followers: boolean;
   friend_requests: boolean;
+  collaboration_requests: boolean;
+  blog_requests: boolean;
   /** Mail notifications */
   mail_login_activity: boolean;
   mail_features_and_updates: boolean;
@@ -93,6 +95,8 @@ function createBaseGetNotificationSettingsResponse(): GetNotificationSettingsRes
     replies: false,
     new_followers: false,
     friend_requests: false,
+    collaboration_requests: false,
+    blog_requests: false,
     mail_login_activity: false,
     mail_features_and_updates: false,
     mail_newsletters: false,
@@ -126,17 +130,23 @@ export const GetNotificationSettingsResponse = {
     if (message.friend_requests === true) {
       writer.uint32(64).bool(message.friend_requests);
     }
+    if (message.collaboration_requests === true) {
+      writer.uint32(72).bool(message.collaboration_requests);
+    }
+    if (message.blog_requests === true) {
+      writer.uint32(80).bool(message.blog_requests);
+    }
     if (message.mail_login_activity === true) {
-      writer.uint32(72).bool(message.mail_login_activity);
+      writer.uint32(88).bool(message.mail_login_activity);
     }
     if (message.mail_features_and_updates === true) {
-      writer.uint32(80).bool(message.mail_features_and_updates);
+      writer.uint32(96).bool(message.mail_features_and_updates);
     }
     if (message.mail_newsletters === true) {
-      writer.uint32(88).bool(message.mail_newsletters);
+      writer.uint32(104).bool(message.mail_newsletters);
     }
     if (message.mail_digest === true) {
-      writer.uint32(96).bool(message.mail_digest);
+      writer.uint32(112).bool(message.mail_digest);
     }
     return writer;
   },
@@ -209,24 +219,38 @@ export const GetNotificationSettingsResponse = {
             break;
           }
 
-          message.mail_login_activity = reader.bool();
+          message.collaboration_requests = reader.bool();
           continue;
         case 10:
           if (tag !== 80) {
             break;
           }
 
-          message.mail_features_and_updates = reader.bool();
+          message.blog_requests = reader.bool();
           continue;
         case 11:
           if (tag !== 88) {
             break;
           }
 
-          message.mail_newsletters = reader.bool();
+          message.mail_login_activity = reader.bool();
           continue;
         case 12:
           if (tag !== 96) {
+            break;
+          }
+
+          message.mail_features_and_updates = reader.bool();
+          continue;
+        case 13:
+          if (tag !== 104) {
+            break;
+          }
+
+          message.mail_newsletters = reader.bool();
+          continue;
+        case 14:
+          if (tag !== 112) {
             break;
           }
 
@@ -253,6 +277,10 @@ export const GetNotificationSettingsResponse = {
       replies: isSet(object.replies) ? globalThis.Boolean(object.replies) : false,
       new_followers: isSet(object.new_followers) ? globalThis.Boolean(object.new_followers) : false,
       friend_requests: isSet(object.friend_requests) ? globalThis.Boolean(object.friend_requests) : false,
+      collaboration_requests: isSet(object.collaboration_requests)
+        ? globalThis.Boolean(object.collaboration_requests)
+        : false,
+      blog_requests: isSet(object.blog_requests) ? globalThis.Boolean(object.blog_requests) : false,
       mail_login_activity: isSet(object.mail_login_activity) ? globalThis.Boolean(object.mail_login_activity) : false,
       mail_features_and_updates: isSet(object.mail_features_and_updates)
         ? globalThis.Boolean(object.mail_features_and_updates)
@@ -288,6 +316,12 @@ export const GetNotificationSettingsResponse = {
     if (message.friend_requests === true) {
       obj.friend_requests = message.friend_requests;
     }
+    if (message.collaboration_requests === true) {
+      obj.collaboration_requests = message.collaboration_requests;
+    }
+    if (message.blog_requests === true) {
+      obj.blog_requests = message.blog_requests;
+    }
     if (message.mail_login_activity === true) {
       obj.mail_login_activity = message.mail_login_activity;
     }
@@ -318,6 +352,8 @@ export const GetNotificationSettingsResponse = {
     message.replies = object.replies ?? false;
     message.new_followers = object.new_followers ?? false;
     message.friend_requests = object.friend_requests ?? false;
+    message.collaboration_requests = object.collaboration_requests ?? false;
+    message.blog_requests = object.blog_requests ?? false;
     message.mail_login_activity = object.mail_login_activity ?? false;
     message.mail_features_and_updates = object.mail_features_and_updates ?? false;
     message.mail_newsletters = object.mail_newsletters ?? false;

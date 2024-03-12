@@ -22,6 +22,8 @@ const SiteNotifications = ({
   on_submit,
   features_and_updates,
   friend_requests,
+  collaboration_requests,
+  blog_requests,
   tags,
   replies,
   new_followers,
@@ -35,6 +37,8 @@ const SiteNotifications = ({
     resolver: zod_resolver(SITE_NOTIFICATIONS_SCHEMA),
     defaultValues: {
       friend_requests,
+      collaboration_requests,
+      blog_requests,
       features_and_updates,
       new_followers,
       replies,
@@ -88,7 +92,10 @@ const SiteNotifications = ({
       >
         <FormCheckbox
           helper_text={
-            "Receive notifications for new product features, tips, and updates from Storiny."
+            <>
+              Receive notifications for new product features, tips, and updates
+              from Storiny.
+            </>
           }
           label={"Features & updates"}
           name={"features_and_updates"}
@@ -97,7 +104,10 @@ const SiteNotifications = ({
         />
         <FormCheckbox
           helper_text={
-            "Receive a notification when your friends or the writers you follow, and have subscribed to, publish a new story."
+            <>
+              Receive a notification when your friends or the writers you
+              follow, and have subscribed to, publish a new story.
+            </>
           }
           label={"Stories"}
           name={"stories"}
@@ -105,7 +115,9 @@ const SiteNotifications = ({
           size={"lg"}
         />
         <FormCheckbox
-          helper_text={"Receive a notification when someone likes your story."}
+          helper_text={
+            <>Receive a notification when someone likes your story.</>
+          }
           label={"Story likes"}
           name={"story_likes"}
           onCheckedChange={submit_form}
@@ -113,7 +125,10 @@ const SiteNotifications = ({
         />
         <FormCheckbox
           helper_text={
-            "Receive a notification when a new story gets published in one of the tags that you follow."
+            <>
+              Receive a notification when a new story gets published in one of
+              the tags that you follow.
+            </>
           }
           label={"Tags"}
           name={"tags"}
@@ -122,7 +137,10 @@ const SiteNotifications = ({
         />
         <FormCheckbox
           helper_text={
-            "Receive a notification when someone leaves a comment on your stories."
+            <>
+              Receive a notification when someone leaves a comment on your
+              stories.
+            </>
           }
           label={"Comments"}
           name={"comments"}
@@ -131,7 +149,7 @@ const SiteNotifications = ({
         />
         <FormCheckbox
           helper_text={
-            "Receive a notification when someone replies to your comment."
+            <>Receive a notification when someone replies to your comment.</>
           }
           label={"Replies"}
           name={"replies"}
@@ -140,7 +158,7 @@ const SiteNotifications = ({
         />
         <FormCheckbox
           helper_text={
-            "Receive a notification when someone starts following you."
+            <>Receive a notification when someone starts following you.</>
           }
           label={"New followers"}
           name={"new_followers"}
@@ -149,10 +167,38 @@ const SiteNotifications = ({
         />
         <FormCheckbox
           helper_text={
-            "Receive a notification when someone sends you a friend request or when your friend request is accepted."
+            <>
+              Receive a notification when someone sends you a friend request or
+              when your friend request is accepted.
+            </>
           }
           label={"Friend requests"}
           name={"friend_requests"}
+          onCheckedChange={submit_form}
+          size={"lg"}
+        />
+        <FormCheckbox
+          helper_text={
+            <>
+              Receive a notification when someone sends you a collaboration
+              request to contribute to their stories or when your collaboration
+              request is accepted.
+            </>
+          }
+          label={"Collaboration requests"}
+          name={"collaboration_requests"}
+          onCheckedChange={submit_form}
+          size={"lg"}
+        />
+        <FormCheckbox
+          helper_text={
+            <>
+              Receive a notification when someone invites you as an editor or
+              writer to their blog.
+            </>
+          }
+          label={"Blog requests"}
+          name={"blog_requests"}
           onCheckedChange={submit_form}
           size={"lg"}
         />
