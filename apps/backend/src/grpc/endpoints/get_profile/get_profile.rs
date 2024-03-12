@@ -78,6 +78,7 @@ struct Profile {
     is_blocked_by_user: bool,
     is_blocked: bool,
     is_muted: bool,
+    is_plus_member: bool,
 }
 
 /// Returns the user profile object.
@@ -178,6 +179,7 @@ pub async fn get_profile(
         is_blocked: profile.is_blocked,
         is_muted: profile.is_muted,
         is_self: current_user_id.is_some_and(|user_id| user_id == profile.id),
+        is_plus_member: profile.is_plus_member,
     }))
 }
 
