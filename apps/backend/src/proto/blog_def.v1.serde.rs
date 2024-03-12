@@ -2646,9 +2646,6 @@ impl serde::Serialize for LeftSidebarItem {
         if self.icon.is_some() {
             len += 1;
         }
-        if self.priority != 0 {
-            len += 1;
-        }
         if !self.target.is_empty() {
             len += 1;
         }
@@ -2661,9 +2658,6 @@ impl serde::Serialize for LeftSidebarItem {
         }
         if let Some(v) = self.icon.as_ref() {
             struct_ser.serialize_field("icon", v)?;
-        }
-        if self.priority != 0 {
-            struct_ser.serialize_field("priority", &self.priority)?;
         }
         if !self.target.is_empty() {
             struct_ser.serialize_field("target", &self.target)?;
@@ -2681,7 +2675,6 @@ impl<'de> serde::Deserialize<'de> for LeftSidebarItem {
             "id",
             "name",
             "icon",
-            "priority",
             "target",
         ];
 
@@ -2690,7 +2683,6 @@ impl<'de> serde::Deserialize<'de> for LeftSidebarItem {
             Id,
             Name,
             Icon,
-            Priority,
             Target,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
@@ -2716,7 +2708,6 @@ impl<'de> serde::Deserialize<'de> for LeftSidebarItem {
                             "id" => Ok(GeneratedField::Id),
                             "name" => Ok(GeneratedField::Name),
                             "icon" => Ok(GeneratedField::Icon),
-                            "priority" => Ok(GeneratedField::Priority),
                             "target" => Ok(GeneratedField::Target),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
@@ -2740,7 +2731,6 @@ impl<'de> serde::Deserialize<'de> for LeftSidebarItem {
                 let mut id__ = None;
                 let mut name__ = None;
                 let mut icon__ = None;
-                let mut priority__ = None;
                 let mut target__ = None;
                 while let Some(k) = map.next_key()? {
                     match k {
@@ -2762,14 +2752,6 @@ impl<'de> serde::Deserialize<'de> for LeftSidebarItem {
                             }
                             icon__ = map.next_value()?;
                         }
-                        GeneratedField::Priority => {
-                            if priority__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("priority"));
-                            }
-                            priority__ = 
-                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
-                            ;
-                        }
                         GeneratedField::Target => {
                             if target__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("target"));
@@ -2782,7 +2764,6 @@ impl<'de> serde::Deserialize<'de> for LeftSidebarItem {
                     id: id__.unwrap_or_default(),
                     name: name__.unwrap_or_default(),
                     icon: icon__,
-                    priority: priority__.unwrap_or_default(),
                     target: target__.unwrap_or_default(),
                 })
             }
@@ -2810,9 +2791,6 @@ impl serde::Serialize for RightSidebarItem {
         if self.icon.is_some() {
             len += 1;
         }
-        if self.priority != 0 {
-            len += 1;
-        }
         if !self.target.is_empty() {
             len += 1;
         }
@@ -2828,9 +2806,6 @@ impl serde::Serialize for RightSidebarItem {
         }
         if let Some(v) = self.icon.as_ref() {
             struct_ser.serialize_field("icon", v)?;
-        }
-        if self.priority != 0 {
-            struct_ser.serialize_field("priority", &self.priority)?;
         }
         if !self.target.is_empty() {
             struct_ser.serialize_field("target", &self.target)?;
@@ -2851,7 +2826,6 @@ impl<'de> serde::Deserialize<'de> for RightSidebarItem {
             "secondary_text",
             "secondaryText",
             "icon",
-            "priority",
             "target",
         ];
 
@@ -2861,7 +2835,6 @@ impl<'de> serde::Deserialize<'de> for RightSidebarItem {
             PrimaryText,
             SecondaryText,
             Icon,
-            Priority,
             Target,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
@@ -2888,7 +2861,6 @@ impl<'de> serde::Deserialize<'de> for RightSidebarItem {
                             "primaryText" | "primary_text" => Ok(GeneratedField::PrimaryText),
                             "secondaryText" | "secondary_text" => Ok(GeneratedField::SecondaryText),
                             "icon" => Ok(GeneratedField::Icon),
-                            "priority" => Ok(GeneratedField::Priority),
                             "target" => Ok(GeneratedField::Target),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
@@ -2913,7 +2885,6 @@ impl<'de> serde::Deserialize<'de> for RightSidebarItem {
                 let mut primary_text__ = None;
                 let mut secondary_text__ = None;
                 let mut icon__ = None;
-                let mut priority__ = None;
                 let mut target__ = None;
                 while let Some(k) = map.next_key()? {
                     match k {
@@ -2941,14 +2912,6 @@ impl<'de> serde::Deserialize<'de> for RightSidebarItem {
                             }
                             icon__ = map.next_value()?;
                         }
-                        GeneratedField::Priority => {
-                            if priority__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("priority"));
-                            }
-                            priority__ = 
-                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
-                            ;
-                        }
                         GeneratedField::Target => {
                             if target__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("target"));
@@ -2962,7 +2925,6 @@ impl<'de> serde::Deserialize<'de> for RightSidebarItem {
                     primary_text: primary_text__.unwrap_or_default(),
                     secondary_text: secondary_text__,
                     icon: icon__,
-                    priority: priority__.unwrap_or_default(),
                     target: target__.unwrap_or_default(),
                 })
             }

@@ -14,7 +14,6 @@ export interface LeftSidebarItem {
   id: string;
   name: string;
   icon?: string | undefined;
-  priority: number;
   target: string;
 }
 
@@ -23,7 +22,6 @@ export interface RightSidebarItem {
   primary_text: string;
   secondary_text?: string | undefined;
   icon?: string | undefined;
-  priority: number;
   target: string;
 }
 
@@ -277,7 +275,7 @@ export const BareBlog = {
 };
 
 function createBaseLeftSidebarItem(): LeftSidebarItem {
-  return { id: "", name: "", icon: undefined, priority: 0, target: "" };
+  return { id: "", name: "", icon: undefined, target: "" };
 }
 
 export const LeftSidebarItem = {
@@ -291,11 +289,8 @@ export const LeftSidebarItem = {
     if (message.icon !== undefined) {
       writer.uint32(26).string(message.icon);
     }
-    if (message.priority !== 0) {
-      writer.uint32(32).uint32(message.priority);
-    }
     if (message.target !== "") {
-      writer.uint32(42).string(message.target);
+      writer.uint32(34).string(message.target);
     }
     return writer;
   },
@@ -329,14 +324,7 @@ export const LeftSidebarItem = {
           message.icon = reader.string();
           continue;
         case 4:
-          if (tag !== 32) {
-            break;
-          }
-
-          message.priority = reader.uint32();
-          continue;
-        case 5:
-          if (tag !== 42) {
+          if (tag !== 34) {
             break;
           }
 
@@ -356,7 +344,6 @@ export const LeftSidebarItem = {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       icon: isSet(object.icon) ? globalThis.String(object.icon) : undefined,
-      priority: isSet(object.priority) ? globalThis.Number(object.priority) : 0,
       target: isSet(object.target) ? globalThis.String(object.target) : "",
     };
   },
@@ -372,9 +359,6 @@ export const LeftSidebarItem = {
     if (message.icon !== undefined) {
       obj.icon = message.icon;
     }
-    if (message.priority !== 0) {
-      obj.priority = Math.round(message.priority);
-    }
     if (message.target !== "") {
       obj.target = message.target;
     }
@@ -389,14 +373,13 @@ export const LeftSidebarItem = {
     message.id = object.id ?? "";
     message.name = object.name ?? "";
     message.icon = object.icon ?? undefined;
-    message.priority = object.priority ?? 0;
     message.target = object.target ?? "";
     return message;
   },
 };
 
 function createBaseRightSidebarItem(): RightSidebarItem {
-  return { id: "", primary_text: "", secondary_text: undefined, icon: undefined, priority: 0, target: "" };
+  return { id: "", primary_text: "", secondary_text: undefined, icon: undefined, target: "" };
 }
 
 export const RightSidebarItem = {
@@ -413,11 +396,8 @@ export const RightSidebarItem = {
     if (message.icon !== undefined) {
       writer.uint32(34).string(message.icon);
     }
-    if (message.priority !== 0) {
-      writer.uint32(40).uint32(message.priority);
-    }
     if (message.target !== "") {
-      writer.uint32(50).string(message.target);
+      writer.uint32(42).string(message.target);
     }
     return writer;
   },
@@ -458,14 +438,7 @@ export const RightSidebarItem = {
           message.icon = reader.string();
           continue;
         case 5:
-          if (tag !== 40) {
-            break;
-          }
-
-          message.priority = reader.uint32();
-          continue;
-        case 6:
-          if (tag !== 50) {
+          if (tag !== 42) {
             break;
           }
 
@@ -486,7 +459,6 @@ export const RightSidebarItem = {
       primary_text: isSet(object.primary_text) ? globalThis.String(object.primary_text) : "",
       secondary_text: isSet(object.secondary_text) ? globalThis.String(object.secondary_text) : undefined,
       icon: isSet(object.icon) ? globalThis.String(object.icon) : undefined,
-      priority: isSet(object.priority) ? globalThis.Number(object.priority) : 0,
       target: isSet(object.target) ? globalThis.String(object.target) : "",
     };
   },
@@ -505,9 +477,6 @@ export const RightSidebarItem = {
     if (message.icon !== undefined) {
       obj.icon = message.icon;
     }
-    if (message.priority !== 0) {
-      obj.priority = Math.round(message.priority);
-    }
     if (message.target !== "") {
       obj.target = message.target;
     }
@@ -523,7 +492,6 @@ export const RightSidebarItem = {
     message.primary_text = object.primary_text ?? "";
     message.secondary_text = object.secondary_text ?? undefined;
     message.icon = object.icon ?? undefined;
-    message.priority = object.priority ?? 0;
     message.target = object.target ?? "";
     return message;
   },

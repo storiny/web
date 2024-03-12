@@ -4,7 +4,6 @@ export interface BlogLeftSidebarItem {
   icon: string | null;
   id: string;
   name: string;
-  priority: number;
   target: string;
 }
 
@@ -12,7 +11,6 @@ export interface BlogRightSidebarItem {
   icon: string | null;
   id: string;
   primary_text: string;
-  priority: number;
   secondary_text: string | null;
   target: string;
 }

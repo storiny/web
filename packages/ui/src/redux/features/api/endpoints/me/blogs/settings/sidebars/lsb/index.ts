@@ -7,7 +7,7 @@ const SEGMENT = (id: string): string => `me/blogs/${id}/settings/sidebars/lsb`;
 
 export type BlogLsbSettingsPayload = {
   blog_id: string;
-  items: Omit<BlogLeftSidebarItem, "id" | "priority">[];
+  items: Omit<BlogLeftSidebarItem, "id">[];
 };
 
 export type BlogLsbSettingsResponse = BlogLeftSidebarItem[];

@@ -99,35 +99,30 @@ export const MOCK_BLOGS: Blog[] = [
         name: "Home",
         id: "1",
         target: "/",
-        priority: 1,
         icon: "house.png"
       },
       {
         name: "About",
         id: "2",
         target: "https://storiny.com/about",
-        priority: 2,
         icon: "pushpin.png"
       },
       {
         name: "Newsletter",
         id: "3",
         target: "https://storiny.com/newsletter",
-        priority: 3,
         icon: "mailbox.png"
       },
       {
         name: "Editors",
         id: "4",
         target: "https://storiny.com/editors",
-        priority: 4,
         icon: "writing_hand.png"
       },
       {
         name: "Archive",
         id: "5",
         target: "https://storiny.com/archive",
-        priority: 5,
         icon: "script.png"
       }
     ],
@@ -140,7 +135,6 @@ export const MOCK_BLOGS: Blog[] = [
         secondary_text: "13.95",
         id: "1",
         target: "https://storiny.com/burro-tail",
-        priority: 1,
         icon: "burro_tail.png"
       },
       {
@@ -148,7 +142,6 @@ export const MOCK_BLOGS: Blog[] = [
         secondary_text: "$28.79",
         id: "2",
         target: "https://storiny.com/bird-of-paradise",
-        priority: 2,
         icon: "bird_of_paradise.png"
       },
       {
@@ -156,7 +149,6 @@ export const MOCK_BLOGS: Blog[] = [
         secondary_text: "$4.95",
         id: "3",
         target: "https://storiny.com/yucca",
-        priority: 3,
         icon: "yucca.png"
       },
       {
@@ -164,7 +156,6 @@ export const MOCK_BLOGS: Blog[] = [
         secondary_text: "$5.22",
         id: "4",
         target: "https://storiny.com/boston-fern",
-        priority: 4,
         icon: "boston_fern.png"
       },
       {
@@ -172,7 +163,6 @@ export const MOCK_BLOGS: Blog[] = [
         secondary_text: "$25.99",
         id: "5",
         target: "https://storiny.com/english-ivy",
-        priority: 5,
         icon: "english_ivy.png"
       }
     ]
