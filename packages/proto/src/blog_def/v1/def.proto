@@ -162,3 +162,13 @@ message GetBlogWritersInfoResponse {
   uint32 writer_count /*                */ = 1;
   uint32 pending_writer_request_count /**/ = 2;
 }
+
+// Blog sitemap
+
+message GetBlogSitemapRequest {
+  string identifier = 1;
+}
+
+message GetBlogSitemapResponse {
+  string content = 1;
+}

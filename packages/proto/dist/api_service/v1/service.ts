@@ -20,6 +20,8 @@ import {
   GetBlogPublishedStoryCountResponse,
   GetBlogRequest,
   GetBlogResponse,
+  GetBlogSitemapRequest,
+  GetBlogSitemapResponse,
   GetBlogWritersInfoRequest,
   GetBlogWritersInfoResponse,
   GetUserBlogsInfoRequest,
@@ -479,6 +481,16 @@ export const ApiServiceService = {
       Buffer.from(GetBlogWritersInfoResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetBlogWritersInfoResponse.decode(value),
   },
+  /** Returns the blog's sitemap */
+  getBlogSitemap: {
+    path: "/api_service.v1.ApiService/GetBlogSitemap",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetBlogSitemapRequest) => Buffer.from(GetBlogSitemapRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetBlogSitemapRequest.decode(value),
+    responseSerialize: (value: GetBlogSitemapResponse) => Buffer.from(GetBlogSitemapResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetBlogSitemapResponse.decode(value),
+  },
 } as const;
 
 export interface ApiServiceServer extends UntypedServiceImplementation {
@@ -546,6 +558,8 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getBlogEditorsInfo: handleUnaryCall<GetBlogEditorsInfoRequest, GetBlogEditorsInfoResponse>;
   /** Returns the blog's writers details */
   getBlogWritersInfo: handleUnaryCall<GetBlogWritersInfoRequest, GetBlogWritersInfoResponse>;
+  /** Returns the blog's sitemap */
+  getBlogSitemap: handleUnaryCall<GetBlogSitemapRequest, GetBlogSitemapResponse>;
 }
 
 export interface ApiServiceClient extends Client {
@@ -1060,6 +1074,22 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetBlogWritersInfoResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the blog's sitemap */
+  getBlogSitemap(
+    request: GetBlogSitemapRequest,
+    callback: (error: ServiceError | null, response: GetBlogSitemapResponse) => void,
+  ): ClientUnaryCall;
+  getBlogSitemap(
+    request: GetBlogSitemapRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetBlogSitemapResponse) => void,
+  ): ClientUnaryCall;
+  getBlogSitemap(
+    request: GetBlogSitemapRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetBlogSitemapResponse) => void,
   ): ClientUnaryCall;
 }
 

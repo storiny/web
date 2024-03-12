@@ -123,6 +123,16 @@ export const middleware: NextMiddleware = (request) => {
       ? hostname.replace(".storiny.com", "")
       : hostname;
 
+    if (url.pathname === "/robots.txt") {
+      return NextResponse.rewrite(new URL(`/api/robots/${value}`, request.url));
+    }
+
+    if (url.pathname === "/sitemap.xml") {
+      return NextResponse.rewrite(
+        new URL(`/api/sitemaps/${value}`, request.url)
+      );
+    }
+
     request.nextUrl.pathname = `/blog/${value}${url.pathname}`;
 
     response = NextResponse.rewrite(request.nextUrl, {

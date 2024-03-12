@@ -259,4 +259,18 @@ pub struct GetBlogWritersInfoResponse {
     #[prost(uint32, tag="2")]
     pub pending_writer_request_count: u32,
 }
+// Blog sitemap
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetBlogSitemapRequest {
+    #[prost(string, tag="1")]
+    pub identifier: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetBlogSitemapResponse {
+    #[prost(string, tag="1")]
+    pub content: ::prost::alloc::string::String,
+}
 // @@protoc_insertion_point(module)
