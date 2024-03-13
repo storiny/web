@@ -77,7 +77,7 @@ BEGIN
 			deleted_at = NOW()
 		WHERE
 			  deleted_at IS NULL
-		  AND user_id = NEW.id;
+		  AND receiver_id = NEW.id;
 		--
 		-- Soft-delete story contributors
 		UPDATE story_contributors
@@ -323,7 +323,7 @@ BEGIN
 			deleted_at = NULL
 		WHERE
 			  bw.deleted_at IS NOT NULL
-		  AND bw.user_id = NEW.id
+		  AND bw.receiver_id = NEW.id
 		  AND EXISTS(SELECT 1
 					 FROM
 						 blogs AS b
