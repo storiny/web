@@ -21,14 +21,14 @@
 
 # Class 52—Others
 
-| Class | Action               | Description                                                                |
-|-------|----------------------|----------------------------------------------------------------------------|
-| 52000 | Relation overlap     | Target user ID is equivalent to the source user ID                         | 
-| 52001 | Entity unavailable   | Entity has been soft-deleted (or deactivated in case of a user)            |
-| 52002 | Username cooldown    | Username was updated recently and is currently on a cooldown period        |
-| 52003 | Illegal contributor  | Raised when trying to add the author of a story as one of its contributors |
-| 52004 | Contributor overflow | Maximum limit for contributors on a particular story has been reached      |
-| 52005 | Editor overflow      | Maximum limit for editors on a particular blog has been reached            |
-| 52006 | Writer overflow      | Maximum limit for writers on a particular blog has been reached            |
-| 52007 | Illegal editor       | Raised when trying to add the owner of a blog as one of its editors        |
-| 52008 | Illegal writer       | Raised when trying to add the owner of a blog as one of its writers        |
+| Class | Action               | Description                                                                   |
+|-------|----------------------|-------------------------------------------------------------------------------|
+| 52000 | Relation overlap     | Target user ID is equivalent to the source user ID                            | 
+| 52001 | Entity unavailable   | Entity has been soft-deleted (or deactivated in case of a user)               |
+| 52002 | Username cooldown    | Username was updated recently and is currently on a cooldown period           |
+| 52003 | Illegal contributor  | Raised when trying to add the author of a story as one of its contributors    |
+| 52004 | Contributor overflow | Maximum limit for contributors on a particular story has been reached         |
+| 52005 | Editor overflow      | Maximum limit for editors on a particular blog has been reached               |
+| 52006 | Writer overflow      | Maximum limit for writers on a particular blog has been reached               |
+| 52007 | Illegal editor       | Raised when trying to add the owner of a blog as one of its editors           |
+| 52008 | Illegal writer       | Raised when trying to add the owner or editor of a blog as one of its writers |
