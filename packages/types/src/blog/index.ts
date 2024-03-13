@@ -18,7 +18,6 @@ export interface BlogRightSidebarItem {
 interface BlogStatistics {
   editor_count: number;
   follower_count: number;
-  story_count: number;
   writer_count: number;
 }
 
