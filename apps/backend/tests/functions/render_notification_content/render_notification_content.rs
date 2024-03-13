@@ -254,6 +254,60 @@ WHERE notification_id = $2;
         Ok(())
     }
 
+    #[sqlx::test(fixtures("blog_editor_invite"))]
+    async fn can_render_notification_content_for_blog_editor_invite_type(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let result = sqlx::query(
+            r#"
+SELECT
+    public.render_notification_content($1, notification_outs.*) AS "content"
+FROM notification_outs
+WHERE notification_id = $2;
+"#,
+        )
+        .bind(NotificationEntityType::BlogEditorInvite as i16)
+        .bind(5_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(
+            result.get::<String, _>("content"),
+            r#"You are invited as an editor to a blog: <a data-fw-medium href="https://sample-blog.storiny.com">Sample blog</a>"#
+                .to_string()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("blog_writer_invite"))]
+    async fn can_render_notification_content_for_blog_writer_invite_type(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let result = sqlx::query(
+            r#"
+SELECT
+    public.render_notification_content($1, notification_outs.*) AS "content"
+FROM notification_outs
+WHERE notification_id = $2;
+"#,
+        )
+        .bind(NotificationEntityType::BlogWriterInvite as i16)
+        .bind(5_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(
+            result.get::<String, _>("content"),
+            r#"You are invited as a writer to a blog: <a data-fw-medium href="https://sample-blog.storiny.com">Sample blog</a>"#
+                .to_string()
+        );
+
+        Ok(())
+    }
+
     #[sqlx::test(fixtures("follower_add"))]
     async fn can_render_notification_content_for_follower_add_type(
         pool: PgPool,

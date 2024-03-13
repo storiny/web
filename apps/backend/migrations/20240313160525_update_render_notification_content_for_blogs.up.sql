@@ -387,7 +387,7 @@ BEGIN
 				-- Blog editor invite
 				WHEN
 					entity_type = 14
-					THEN (WITH blog AS (SELECT b.name
+					THEN (WITH blog AS (SELECT b.name, b.slug, b.domain
 										FROM
 											notification_outs n_out
 												-- Join notification
@@ -406,7 +406,13 @@ BEGIN
 						  SELECT (
 									 FORMAT(
 											 'You are invited as an editor to a blog: '
-												 || '<a data-fw-medium href="/%s">%s</a>',
+												 || '<a data-fw-medium href="https://%s">%s</a>',
+											 (SELECT CASE
+														 WHEN (SELECT domain FROM blog) IS NOT NULL
+															 THEN (SELECT domain FROM blog)
+														 ELSE (SELECT slug FROM blog) || '.storiny.com'
+													 END
+											 ),
 											 (SELECT name FROM blog)
 									 )
 									 )
@@ -414,7 +420,7 @@ BEGIN
 				-- Blog writer invite
 				WHEN
 					entity_type = 15
-					THEN (WITH blog AS (SELECT b.name
+					THEN (WITH blog AS (SELECT b.name, b.slug, b.domain
 										FROM
 											notification_outs n_out
 												-- Join notification
@@ -433,7 +439,13 @@ BEGIN
 						  SELECT (
 									 FORMAT(
 											 'You are invited as a writer to a blog: '
-												 || '<a data-fw-medium href="/%s">%s</a>',
+												 || '<a data-fw-medium href="https://%s">%s</a>',
+											 (SELECT CASE
+														 WHEN (SELECT domain FROM blog) IS NOT NULL
+															 THEN (SELECT domain FROM blog)
+														 ELSE (SELECT slug FROM blog) || '.storiny.com'
+													 END
+											 ),
 											 (SELECT name FROM blog)
 									 )
 									 )
