@@ -1,6 +1,7 @@
 pub mod account_activities;
 pub mod assets;
 pub mod blocks;
+pub mod blog_editors;
 pub mod bookmarks;
 pub mod comment_likes;
 pub mod comments;
