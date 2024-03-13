@@ -63,7 +63,6 @@ CREATE TABLE IF NOT EXISTS blogs
 	editor_count             unsigned_int32 NOT NULL DEFAULT 0,
 	writer_count             unsigned_int32 NOT NULL DEFAULT 0,
 	follower_count           unsigned_int32 NOT NULL DEFAULT 0,
-	story_count              unsigned_int32 NOT NULL DEFAULT 0,
 	-- Settings
 	is_homepage_large_layout BOOL           NOT NULL DEFAULT FALSE,
 	is_story_minimal_layout  BOOL           NOT NULL DEFAULT FALSE,

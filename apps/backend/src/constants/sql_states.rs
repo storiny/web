@@ -46,4 +46,8 @@ pub enum SqlState {
     IllegalEditor,
     #[strum(serialize = "52008")]
     IllegalWriter,
+    #[strum(serialize = "52009")]
+    IllegalBlogStory,
+    #[strum(serialize = "52010")]
+    BlogLocked,
 }
