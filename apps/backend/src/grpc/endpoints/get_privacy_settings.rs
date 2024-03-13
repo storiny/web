@@ -42,6 +42,7 @@ SELECT
     allow_sensitive_content,
     incoming_friend_requests,
     incoming_collaboration_requests,
+    incoming_blog_requests,
     following_list_visibility,
     friend_list_visibility
 FROM users
@@ -68,6 +69,7 @@ WHERE id = $1
         incoming_friend_requests: user.get::<i16, _>("incoming_friend_requests") as i32,
         incoming_collaboration_requests: user.get::<i16, _>("incoming_collaboration_requests")
             as i32,
+        incoming_blog_requests: user.get::<i16, _>("incoming_blog_requests") as i32,
         following_list_visibility: user.get::<i16, _>("following_list_visibility") as i32,
         friend_list_visibility: user.get::<i16, _>("friend_list_visibility") as i32,
     }))
@@ -79,6 +81,7 @@ mod tests {
         grpc::defs::privacy_settings_def::v1::{
             GetPrivacySettingsRequest,
             GetPrivacySettingsResponse,
+            IncomingBlogRequest,
             IncomingCollaborationRequest,
             IncomingFriendRequest,
             RelationVisibility,
@@ -109,10 +112,11 @@ INSERT INTO users (
     allow_sensitive_content,
     incoming_friend_requests,
     incoming_collaboration_requests,
+    incoming_blog_requests,
     following_list_visibility,
     friend_list_visibility
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 RETURNING id
 "#,
                 )
@@ -124,6 +128,7 @@ RETURNING id
                 .bind(true)
                 .bind(IncomingFriendRequest::None as i16)
                 .bind(IncomingCollaborationRequest::None as i16)
+                .bind(IncomingBlogRequest::None as i16)
                 .bind(RelationVisibility::None as i16)
                 .bind(RelationVisibility::None as i16)
                 .fetch_one(&pool)
@@ -148,6 +153,7 @@ RETURNING id
                         allow_sensitive_media: true,
                         incoming_friend_requests: IncomingFriendRequest::None as i32,
                         incoming_collaboration_requests: IncomingCollaborationRequest::None as i32,
+                        incoming_blog_requests: IncomingBlogRequest::None as i32,
                         following_list_visibility: RelationVisibility::None as i32,
                         friend_list_visibility: RelationVisibility::None as i32,
                     }

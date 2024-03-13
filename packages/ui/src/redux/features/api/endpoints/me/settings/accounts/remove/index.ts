@@ -1,5 +1,5 @@
 import { ContentType } from "@storiny/shared";
-import { AccountActionSchema } from "@storiny/web/src/app/(check-user)/(dashboard)/me/(splash)/(default-lsb)/(default-rsb)/account/credentials/connected-accounts-group/account-action.schema";
+import { AccountActionSchema } from "@storiny/web/src/app/(native)/(check-user)/(dashboard)/(splash)/me/(default-rsb)/account/credentials/connected-accounts-group/account-action.schema";
 
 import { api_slice } from "~/redux/features/api/slice";
 

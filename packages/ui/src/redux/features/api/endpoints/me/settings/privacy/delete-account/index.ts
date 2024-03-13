@@ -1,5 +1,5 @@
 import { ContentType } from "@storiny/shared";
-import { DeleteAccountSchema } from "@storiny/web/src/app/(check-user)/(dashboard)/me/(splash)/(default-lsb)/(default-rsb)/account/privacy/site-safety/account-removal/delete-account";
+import { DeleteAccountSchema } from "@storiny/web/src/app/(native)/(check-user)/(dashboard)/(splash)/me/(default-rsb)/account/privacy/site-safety/account-removal/delete-account";
 
 import { api_slice } from "~/redux/features/api/slice";
 
