@@ -28,6 +28,47 @@ VALUES ($1, $2)
     //
 
     #[sqlx::test(fixtures("user", "blog"))]
+    async fn can_reject_blog_follower_for_soft_deleted_blog(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Soft-delete the blog
+        sqlx::query(
+            r#"
+UPDATE blogs
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let result = sqlx::query(
+            r#"
+INSERT INTO blog_followers (blog_id, user_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(3_i64)
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await;
+
+        // Should reject with the correct SQLSTATE.
+        assert_eq!(
+            result
+                .unwrap_err()
+                .into_database_error()
+                .unwrap()
+                .code()
+                .unwrap(),
+            SqlState::EntityUnavailable.to_string()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user", "blog"))]
     async fn can_reject_blog_follower_for_soft_deleted_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
