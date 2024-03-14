@@ -10,14 +10,15 @@ mod tests {
     };
 
     #[sqlx::test(fixtures("user", "blog"))]
-    async fn can_send_an_editor_request(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_send_a_writer_request(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
@@ -31,15 +32,17 @@ VALUES ($1, $2)
     //
 
     #[sqlx::test(fixtures("user", "blog"))]
-    async fn can_reject_an_illegal_editor(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_an_illegal_writer(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
+        // Case when the receiver ID is same as the ID of the owner of the blog.
         let result = sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(2_i64)
         .bind(1_i64)
         .bind(3_i64)
         .execute(&mut *conn)
@@ -53,44 +56,17 @@ VALUES ($1, $2)
                 .unwrap()
                 .code()
                 .unwrap(),
-            SqlState::IllegalEditor.to_string()
+            SqlState::IllegalWriter.to_string()
         );
 
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("user", "blog"))]
-    async fn can_reject_overflowing_editors(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-
+        // Case when the receiver ID is same as the transmitter ID.
         let result = sqlx::query(
             r#"
-WITH inserted_users AS (
-    INSERT INTO users (id, name, username, email)
-    VALUES
-        (4, 'Editor 1', 'editor_1', 'editor_1@storiny.com'),
-        (5, 'Editor 2', 'editor_2', 'editor_2@storiny.com'),
-        (6, 'Editor 3', 'editor_3', 'editor_3@storiny.com'),
-        (7, 'Editor 4', 'editor_4', 'editor_4@storiny.com'),
-        (8, 'Editor 5', 'editor_5', 'editor_5@storiny.com')
-)
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES (4, $1), (5, $1), (6, $1), (7, $1), (8, $1)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
-        .bind(3_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 5);
-
-        // Force overflow.
-        let result = sqlx::query(
-            r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
-"#,
-        )
+        .bind(2_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
@@ -104,14 +80,110 @@ VALUES ($1, $2)
                 .unwrap()
                 .code()
                 .unwrap(),
-            SqlState::EditorOverflow.to_string()
+            SqlState::IllegalWriter.to_string()
+        );
+
+        // Case when the receiver is already an editor in the blog.
+        let result = sqlx::query(
+            r#"
+WITH inserted_editor AS (
+    INSERT INTO blog_editors (user_id, blog_id)
+    VALUES ($2, $3)
+)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
+"#,
+        )
+        .bind(1_i64)
+        .bind(2_i64)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await;
+
+        // Should reject with the correct SQLSTATE.
+        assert_eq!(
+            result
+                .unwrap_err()
+                .into_database_error()
+                .unwrap()
+                .code()
+                .unwrap(),
+            SqlState::IllegalWriter.to_string()
         );
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("user", "blog"))]
-    async fn can_handle_overflowing_editors_for_a_blog_with_plus_features(
+    async fn can_reject_overflowing_writers(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        let result = sqlx::query(
+            r#"
+WITH inserted_users AS (
+    INSERT INTO users (id, name, username, email)
+    VALUES
+        (4, 'Writer 1', 'writer_1', 'writer_1@storiny.com'),
+        (5, 'Writer 2', 'writer_2', 'writer_2@storiny.com'),
+        (6, 'Writer 3', 'writer_3', 'writer_3@storiny.com'),
+        (7, 'Writer 4', 'writer_4', 'writer_4@storiny.com'),
+        (8, 'Writer 5', 'writer_5', 'writer_5@storiny.com'),
+        (9, 'Writer 6', 'writer_6', 'writer_6@storiny.com'),
+        (10, 'Writer 7', 'writer_7', 'writer_7@storiny.com'),
+        (11, 'Writer 8', 'writer_8', 'writer_8@storiny.com'),
+        (12, 'Writer 9', 'writer_9', 'writer_9@storiny.com'),
+        (13, 'Writer 10', 'writer_10', 'writer_10@storiny.com')
+)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES
+    ($1, 4, $2),
+    ($1, 5, $2),
+    ($1, 6, $2),
+    ($1, 7, $2),
+    ($1, 8, $2),
+    ($1, 9, $2),
+    ($1, 10, $2),
+    ($1, 11, $2),
+    ($1, 12, $2),
+    ($1, 13, $2)
+"#,
+        )
+        .bind(1_i64)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 10);
+
+        // Force overflow.
+        let result = sqlx::query(
+            r#"
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
+"#,
+        )
+        .bind(1_i64)
+        .bind(2_i64)
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await;
+
+        // Should reject with the correct SQLSTATE.
+        assert_eq!(
+            result
+                .unwrap_err()
+                .into_database_error()
+                .unwrap()
+                .code()
+                .unwrap(),
+            SqlState::WriterOverflow.to_string()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user", "blog"))]
+    async fn can_handle_overflowing_writers_for_a_blog_with_plus_features(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -130,110 +202,59 @@ WHERE id = $1
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Add editors.
+        // Add writers.
         let result = sqlx::query(
             r#"
 WITH inserted_users AS (
     INSERT INTO users (id, name, username, email)
     VALUES
-        (4, 'Editor 1', 'editor_1', 'editor_1@storiny.com'),
-        (5, 'Editor 2', 'editor_2', 'editor_2@storiny.com'),
-        (6, 'Editor 3', 'editor_3', 'editor_3@storiny.com'),
-        (7, 'Editor 4', 'editor_4', 'editor_4@storiny.com'),
-        (8, 'Editor 5', 'editor_5', 'editor_5@storiny.com')
+        (4, 'Writer 1', 'writer_1', 'writer_1@storiny.com'),
+        (5, 'Writer 2', 'writer_2', 'writer_2@storiny.com'),
+        (6, 'Writer 3', 'writer_3', 'writer_3@storiny.com'),
+        (7, 'Writer 4', 'writer_4', 'writer_4@storiny.com'),
+        (8, 'Writer 5', 'writer_5', 'writer_5@storiny.com'),
+        (9, 'Writer 6', 'writer_6', 'writer_6@storiny.com'),
+        (10, 'Writer 7', 'writer_7', 'writer_7@storiny.com'),
+        (11, 'Writer 8', 'writer_8', 'writer_8@storiny.com'),
+        (12, 'Writer 9', 'writer_9', 'writer_9@storiny.com'),
+        (13, 'Writer 10', 'writer_10', 'writer_10@storiny.com')
 )
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES (4, $1), (5, $1), (6, $1), (7, $1), (8, $1)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES
+    ($1, 4, $2),
+    ($1, 5, $2),
+    ($1, 6, $2),
+    ($1, 7, $2),
+    ($1, 8, $2),
+    ($1, 9, $2),
+    ($1, 10, $2),
+    ($1, 11, $2),
+    ($1, 12, $2),
+    ($1, 13, $2)
 "#,
         )
+        .bind(1_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
-        assert_eq!(result.rows_affected(), 5);
+        assert_eq!(result.rows_affected(), 10);
 
         // Force overflow.
         let result = sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
-"#,
-        )
-        .bind(2_i64)
-        .bind(3_i64)
-        .execute(&mut *conn)
-        .await;
-
-        // Should accept the editor.
-        assert_eq!(result.rows_affected(), 1);
-
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("user", "blog"))]
-    async fn can_purge_redundant_writer_when_accepting_the_editor_invite(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-
-        // Insert a writer.
-        let result = sqlx::query(
-            r#"
 INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
-VALUES ($1, $2)
+VALUES ($1, $2, $3)
 "#,
         )
         .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
-        .await?;
+        .await;
 
+        // Should accept the writer.
         assert_eq!(result.rows_affected(), 1);
-
-        // Insert an editor.
-        let result = sqlx::query(
-            r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
-"#,
-        )
-        .bind(2_i64)
-        .bind(3_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        // Accept the editor invite.
-        let result = sqlx::query(
-            r#"
-UPDATE blog_editors
-SET accepted_at = NOW()
-WHERE user_id = $1 AND blog_id = $2
-"#,
-        )
-        .bind(2_i64)
-        .bind(3_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        // Should delete the writer.
-        let result = sqlx::query(
-            r#"
-SELECT EXISTS (
-    SELECT FROM blog_writers
-    WHERE blog_id = $1
-)
-"#,
-        )
-        .bind(3_i64)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -241,10 +262,10 @@ SELECT EXISTS (
     //
 
     #[sqlx::test(fixtures("user", "blog"))]
-    async fn can_reject_blog_editor_invite_for_private_editor(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_blog_writer_invite_for_private_writer(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Make the editor private.
+        // Make the writer private.
         sqlx::query(
             r#"
 UPDATE users
@@ -258,10 +279,11 @@ WHERE id = $1
 
         let result = sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
@@ -275,7 +297,7 @@ VALUES ($1, $2)
                 .unwrap()
                 .code()
                 .unwrap(),
-            SqlState::EditorNotAcceptingBlogRequest.to_string()
+            SqlState::WriterNotAcceptingBlogRequest.to_string()
         );
 
         // Add the user as friend.
@@ -292,10 +314,11 @@ VALUES ($1, $2, NOW())
 
         let result = sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
@@ -307,12 +330,12 @@ VALUES ($1, $2)
     }
 
     #[sqlx::test(fixtures("user", "blog"))]
-    async fn can_reject_blog_editor_invite_for_soft_deleted_editor(
+    async fn can_reject_blog_writer_invite_for_soft_deleted_writer(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Soft-delete the editor
+        // Soft-delete the writer
         sqlx::query(
             r#"
 UPDATE users
@@ -326,10 +349,11 @@ WHERE id = $1
 
         let result = sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
@@ -350,12 +374,12 @@ VALUES ($1, $2)
     }
 
     #[sqlx::test(fixtures("user", "blog"))]
-    async fn can_reject_blog_editor_invite_for_deactivated_editor(
+    async fn can_reject_blog_writer_invite_for_deactivated_writer(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Deactivate the editor
+        // Deactivate the writer
         sqlx::query(
             r#"
 UPDATE users
@@ -369,10 +393,11 @@ WHERE id = $1
 
         let result = sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
@@ -393,7 +418,7 @@ VALUES ($1, $2)
     }
 
     #[sqlx::test(fixtures("user", "blog"))]
-    async fn can_reject_blog_editor_invite_for_soft_deleted_blog(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_blog_writer_invite_for_soft_deleted_blog(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
         // Soft-delete the blog
@@ -410,10 +435,11 @@ WHERE id = $1
 
         let result = sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
@@ -433,30 +459,31 @@ VALUES ($1, $2)
         Ok(())
     }
 
-    // `editor_count` counter cache
+    // `writer_count` counter cache
 
     #[sqlx::test(fixtures("user", "blog"))]
-    async fn can_increment_editor_count_when_accepting_an_editor_invite(
+    async fn can_increment_writer_count_when_accepting_a_writer_invite(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Send an editor invite
+        // Send a writer invite
         sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Should not increment `editor_count`
+        // Should not increment `writer_count`
         let result = sqlx::query(
             r#"
-SELECT editor_count FROM blogs
+SELECT writer_count FROM blogs
 WHERE id = $1
 "#,
         )
@@ -464,14 +491,14 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 0);
+        assert_eq!(result.get::<i32, _>("writer_count"), 0);
 
-        // Accept the editor invite
+        // Accept the writer invite
         sqlx::query(
             r#"
-UPDATE blog_editors
+UPDATE blog_writers
 SET accepted_at = NOW()
-WHERE user_id = $1 AND blog_id = $2
+WHERE receiver_id = $1 AND blog_id = $2
 "#,
         )
         .bind(2_i64)
@@ -479,10 +506,10 @@ WHERE user_id = $1 AND blog_id = $2
         .execute(&mut *conn)
         .await?;
 
-        // Should increment the `editor_count`
+        // Should increment the `writer_count`
         let result = sqlx::query(
             r#"
-SELECT editor_count FROM blogs
+SELECT writer_count FROM blogs
 WHERE id = $1
 "#,
         )
@@ -490,35 +517,36 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 1);
+        assert_eq!(result.get::<i32, _>("writer_count"), 1);
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("user", "blog"))]
-    async fn can_update_editor_count_when_soft_deleting_and_restoring_the_editor(
+    async fn can_update_writer_count_when_soft_deleting_and_restoring_the_writer(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Send an editor invite
+        // Send a writer invite
         sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Accept the editor invite
+        // Accept the writer invite
         sqlx::query(
             r#"
-UPDATE blog_editors
+UPDATE blog_writers
 SET accepted_at = NOW()
-WHERE user_id = $1 AND blog_id = $2
+WHERE receiver_id = $1 AND blog_id = $2
 "#,
         )
         .bind(2_i64)
@@ -526,10 +554,10 @@ WHERE user_id = $1 AND blog_id = $2
         .execute(&mut *conn)
         .await?;
 
-        // Should have 1 `editor_count` initially
+        // Should have 1 `writer_count` initially
         let result = sqlx::query(
             r#"
-SELECT editor_count FROM blogs
+SELECT writer_count FROM blogs
 WHERE id = $1
 "#,
         )
@@ -537,14 +565,14 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 1);
+        assert_eq!(result.get::<i32, _>("writer_count"), 1);
 
-        // Soft-delete the editor
+        // Soft-delete the writer
         sqlx::query(
             r#"
-UPDATE blog_editors
+UPDATE blog_writers
 SET deleted_at = NOW()
-WHERE user_id = $1 AND blog_id = $2
+WHERE receiver_id = $1 AND blog_id = $2
 "#,
         )
         .bind(2_i64)
@@ -552,10 +580,10 @@ WHERE user_id = $1 AND blog_id = $2
         .execute(&mut *conn)
         .await?;
 
-        // Should decrement the `editor_count`
+        // Should decrement the `writer_count`
         let result = sqlx::query(
             r#"
-SELECT editor_count FROM blogs
+SELECT writer_count FROM blogs
 WHERE id = $1
 "#,
         )
@@ -563,14 +591,14 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 0);
+        assert_eq!(result.get::<i32, _>("writer_count"), 0);
 
-        // Restore the editor
+        // Restore the writer
         sqlx::query(
             r#"
-UPDATE blog_editors
+UPDATE blog_writers
 SET deleted_at = NULL
-WHERE user_id = $1 AND blog_id = $2
+WHERE receiver_id = $1 AND blog_id = $2
 "#,
         )
         .bind(2_i64)
@@ -578,10 +606,10 @@ WHERE user_id = $1 AND blog_id = $2
         .execute(&mut *conn)
         .await?;
 
-        // Should increment the `editor_count`
+        // Should increment the `writer_count`
         let result = sqlx::query(
             r#"
-SELECT editor_count FROM blogs
+SELECT writer_count FROM blogs
 WHERE id = $1
 "#,
         )
@@ -589,35 +617,36 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 1);
+        assert_eq!(result.get::<i32, _>("writer_count"), 1);
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("user", "blog"))]
-    async fn can_update_editor_count_when_hard_deleting_the_editor(
+    async fn can_update_writer_count_when_hard_deleting_the_writer(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Send an editor request
+        // Send a writer request
         sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Accept the editor invite
+        // Accept the writer invite
         sqlx::query(
             r#"
-UPDATE blog_editors
+UPDATE blog_writers
 SET accepted_at = NOW()
-WHERE user_id = $1 AND blog_id = $2
+WHERE receiver_id = $1 AND blog_id = $2
 "#,
         )
         .bind(2_i64)
@@ -625,10 +654,10 @@ WHERE user_id = $1 AND blog_id = $2
         .execute(&mut *conn)
         .await?;
 
-        // Should have 1 `editor_count` initially
+        // Should have 1 `writer_count` initially
         let result = sqlx::query(
             r#"
-SELECT editor_count FROM blogs
+SELECT writer_count FROM blogs
 WHERE id = $1
 "#,
         )
@@ -636,13 +665,13 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 1);
+        assert_eq!(result.get::<i32, _>("writer_count"), 1);
 
-        // Delete the editor
+        // Delete the writer
         sqlx::query(
             r#"
-DELETE FROM blog_editors
-WHERE user_id = $1 AND blog_id = $2
+DELETE FROM blog_writers
+WHERE receiver_id = $1 AND blog_id = $2
 "#,
         )
         .bind(2_i64)
@@ -650,10 +679,10 @@ WHERE user_id = $1 AND blog_id = $2
         .execute(&mut *conn)
         .await?;
 
-        // Should decrement the `editor_count`
+        // Should decrement the `writer_count`
         let result = sqlx::query(
             r#"
-SELECT editor_count FROM blogs
+SELECT writer_count FROM blogs
 WHERE id = $1
 "#,
         )
@@ -661,35 +690,36 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 0);
+        assert_eq!(result.get::<i32, _>("writer_count"), 0);
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("user", "blog"))]
-    async fn should_not_update_editor_count_when_hard_deleting_a_soft_deleted_editor(
+    async fn should_not_update_writer_count_when_hard_deleting_a_soft_deleted_writer(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Send an editor invite
+        // Send a writer invite
         sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Accept the editor invite
+        // Accept the writer invite
         sqlx::query(
             r#"
-UPDATE blog_editors
+UPDATE blog_writers
 SET accepted_at = NOW()
-WHERE user_id = $1 AND blog_id = $2
+WHERE receiver_id = $1 AND blog_id = $2
 "#,
         )
         .bind(2_i64)
@@ -697,20 +727,21 @@ WHERE user_id = $1 AND blog_id = $2
         .execute(&mut *conn)
         .await?;
 
-        // Insert two more editors so that the `editor_count` is always >= 1,
-        // which would allow us to bypass the `editor_count > 1` constraint
-        // on the blog when decrementing the `editor_count`.
+        // Insert two more writers so that the `writer_count` is always >= 1,
+        // which would allow us to bypass the `writer_count > 1` constraint
+        // on the blog when decrementing the `writer_count`.
         sqlx::query(
             r#"
 WITH inserted_user AS (
     INSERT INTO users (name, username, email)
-    VALUES ('Editor 1', 'editor_1', 'editor_1@storiny.com')
+    VALUES ('Writer 1', 'writer_1', 'writer_1@storiny.com')
     RETURNING id
 )
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ((SELECT id FROM inserted_user), $1)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, (SELECT id FROM inserted_user), $2)
 "#,
         )
+        .bind(1_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
@@ -719,20 +750,21 @@ VALUES ((SELECT id FROM inserted_user), $1)
             r#"
 WITH inserted_user AS (
     INSERT INTO users (name, username, email)
-    VALUES ('Editor 2', 'editor_2', 'editor_2@storiny.com')
+    VALUES ('Writer 2', 'writer_2', 'writer_2@storiny.com')
     RETURNING id
 )
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ((SELECT id FROM inserted_user), $1)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, (SELECT id FROM inserted_user), $2)
 "#,
         )
+        .bind(1_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
         sqlx::query(
             r#"
-UPDATE blog_editors
+UPDATE blog_writers
 SET accepted_at = NOW()
 WHERE blog_id = $1
 "#,
@@ -741,10 +773,10 @@ WHERE blog_id = $1
         .execute(&mut *conn)
         .await?;
 
-        // Should have 2 `editor_count` initially
+        // Should have 2 `writer_count` initially
         let result = sqlx::query(
             r#"
-SELECT editor_count FROM blogs
+SELECT writer_count FROM blogs
 WHERE id = $1
 "#,
         )
@@ -752,14 +784,14 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 2);
+        assert_eq!(result.get::<i32, _>("writer_count"), 2);
 
-        // Soft-delete the editor
+        // Soft-delete the writer
         sqlx::query(
             r#"
-UPDATE blog_editors
+UPDATE blog_writers
 SET deleted_at = NOW()
-WHERE user_id = $1 AND blog_id = $2
+WHERE receiver_id = $1 AND blog_id = $2
 "#,
         )
         .bind(2_i64)
@@ -767,10 +799,10 @@ WHERE user_id = $1 AND blog_id = $2
         .execute(&mut *conn)
         .await?;
 
-        // Should decrement the `editor_count`
+        // Should decrement the `writer_count`
         let result = sqlx::query(
             r#"
-SELECT editor_count FROM blogs
+SELECT writer_count FROM blogs
 WHERE id = $1
 "#,
         )
@@ -778,13 +810,13 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 1);
+        assert_eq!(result.get::<i32, _>("writer_count"), 1);
 
-        // Delete the editor
+        // Delete the writer
         sqlx::query(
             r#"
-DELETE FROM blog_editors
-WHERE user_id = $1 AND blog_id = $2
+DELETE FROM blog_writers
+WHERE receiver_id = $1 AND blog_id = $2
 "#,
         )
         .bind(2_i64)
@@ -792,10 +824,10 @@ WHERE user_id = $1 AND blog_id = $2
         .execute(&mut *conn)
         .await?;
 
-        // Should not decrement the `editor_count` any further
+        // Should not decrement the `writer_count` any further
         let result = sqlx::query(
             r#"
-SELECT editor_count FROM blogs
+SELECT writer_count FROM blogs
 WHERE id = $1
 "#,
         )
@@ -803,7 +835,7 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 1);
+        assert_eq!(result.get::<i32, _>("writer_count"), 1);
 
         Ok(())
     }
@@ -811,27 +843,28 @@ WHERE id = $1
     //
 
     #[sqlx::test(fixtures("user", "blog"))]
-    async fn should_not_increment_editor_count_when_inserting_an_editor_invite(
+    async fn should_not_increment_writer_count_when_inserting_a_writer_invite(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Send an editor invite
+        // Send a writer invite
         sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Should not increment `editor_count`
+        // Should not increment `writer_count`
         let result = sqlx::query(
             r#"
-SELECT editor_count FROM blogs
+SELECT writer_count FROM blogs
 WHERE id = $1
 "#,
         )
@@ -839,35 +872,36 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 0);
+        assert_eq!(result.get::<i32, _>("writer_count"), 0);
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("user", "blog"))]
-    async fn should_not_update_editor_count_when_soft_deleting_and_restoring_the_non_accepted_editor(
+    async fn should_not_update_writer_count_when_soft_deleting_and_restoring_the_non_accepted_writer(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Send an editor invite
+        // Send a writer invite
         sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Soft-delete the editor
+        // Soft-delete the writer
         sqlx::query(
             r#"
-UPDATE blog_editors
+UPDATE blog_writers
 SET deleted_at = NOW()
-WHERE user_id = $1 AND blog_id = $2
+WHERE receiver_id = $1 AND blog_id = $2
 "#,
         )
         .bind(2_i64)
@@ -875,12 +909,12 @@ WHERE user_id = $1 AND blog_id = $2
         .execute(&mut *conn)
         .await?;
 
-        // Restore the editor
+        // Restore the writer
         sqlx::query(
             r#"
-UPDATE blog_editors
+UPDATE blog_writers
 SET deleted_at = NULL
-WHERE user_id = $1 AND blog_id = $2
+WHERE receiver_id = $1 AND blog_id = $2
 "#,
         )
         .bind(2_i64)
@@ -888,10 +922,10 @@ WHERE user_id = $1 AND blog_id = $2
         .execute(&mut *conn)
         .await?;
 
-        // Should not increment the `editor_count`
+        // Should not increment the `writer_count`
         let result = sqlx::query(
             r#"
-SELECT editor_count FROM blogs
+SELECT writer_count FROM blogs
 WHERE id = $1
 "#,
         )
@@ -899,43 +933,45 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 0);
+        assert_eq!(result.get::<i32, _>("writer_count"), 0);
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("user", "blog"))]
-    async fn should_not_update_editor_count_when_hard_deleting_the_non_accepted_editor(
+    async fn should_not_update_writer_count_when_hard_deleting_the_non_accepted_writer(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Send an editor invite
+        // Send a writer invite
         sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Insert two more editors so that the `editor_count` is always >= 1,
-        // which would allow us to bypass the `editor_count > 1` constraint
-        // on the blog when decrementing the `editor_count`.
+        // Insert two more writers so that the `writer_count` is always >= 1,
+        // which would allow us to bypass the `writer_count > 1` constraint
+        // on the blog when decrementing the `writer_count`.
         sqlx::query(
             r#"
 WITH inserted_user AS (
     INSERT INTO users (name, username, email)
-    VALUES ('Editor 1', 'editor_1', 'editor_1@storiny.com')
+    VALUES ('Writer 1', 'writer_1', 'writer_1@storiny.com')
     RETURNING id
 )
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ((SELECT id FROM inserted_user), $1)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, (SELECT id FROM inserted_user), $2)
 "#,
         )
+        .bind(1_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
@@ -944,20 +980,21 @@ VALUES ((SELECT id FROM inserted_user), $1)
             r#"
 WITH inserted_user AS (
     INSERT INTO users (name, username, email)
-    VALUES ('Editor 2', 'editor_2', 'editor_2@storiny.com')
+    VALUES ('Writer 2', 'writer_2', 'writer_2@storiny.com')
     RETURNING id
 )
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ((SELECT id FROM inserted_user), $1)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, (SELECT id FROM inserted_user), $2)
 "#,
         )
+        .bind(1_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
         sqlx::query(
             r#"
-UPDATE blog_editors
+UPDATE blog_writers
 SET accepted_at = NOW()
 WHERE blog_id = $1
 "#,
@@ -966,10 +1003,10 @@ WHERE blog_id = $1
         .execute(&mut *conn)
         .await?;
 
-        // Should have 1 `editor_count` initially
+        // Should have 1 `writer_count` initially
         let result = sqlx::query(
             r#"
-SELECT editor_count FROM blogs
+SELECT writer_count FROM blogs
 WHERE id = $1
 "#,
         )
@@ -977,13 +1014,13 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 1);
+        assert_eq!(result.get::<i32, _>("writer_count"), 1);
 
-        // Delete the editor
+        // Delete the writer
         sqlx::query(
             r#"
-DELETE FROM blog_editors
-WHERE user_id = $1 AND blog_id = $2
+DELETE FROM blog_writers
+WHERE receiver_id = $1 AND blog_id = $2
 "#,
         )
         .bind(2_i64)
@@ -991,10 +1028,10 @@ WHERE user_id = $1 AND blog_id = $2
         .execute(&mut *conn)
         .await?;
 
-        // Should not decrement the `editor_count`
+        // Should not decrement the `writer_count`
         let result = sqlx::query(
             r#"
-SELECT editor_count FROM blogs
+SELECT writer_count FROM blogs
 WHERE id = $1
 "#,
         )
@@ -1002,43 +1039,45 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 1);
+        assert_eq!(result.get::<i32, _>("writer_count"), 1);
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("user", "blog"))]
-    async fn should_not_update_editor_count_when_hard_deleting_a_soft_deleted_non_accepted_editor(
+    async fn should_not_update_writer_count_when_hard_deleting_a_soft_deleted_non_accepted_writer(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Send an editor invite
+        // Send a writer invite
         sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Insert two more editors so that the `editor_count` is always >= 1,
-        // which would allow us to bypass the `editor_count > 1` constraint
-        // on the blog when decrementing the `editor_count`.
+        // Insert two more writers so that the `writer_count` is always >= 1,
+        // which would allow us to bypass the `writer_count > 1` constraint
+        // on the blog when decrementing the `writer_count`.
         sqlx::query(
             r#"
 WITH inserted_user AS (
     INSERT INTO users (name, username, email)
-    VALUES ('Editor 1', 'editor_1', 'editor_1@storiny.com')
+    VALUES ('Writer 1', 'writer_1', 'writer_1@storiny.com')
     RETURNING id
 )
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ((SELECT id FROM inserted_user), $1)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, (SELECT id FROM inserted_user), $2)
 "#,
         )
+        .bind(1_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
@@ -1047,20 +1086,21 @@ VALUES ((SELECT id FROM inserted_user), $1)
             r#"
 WITH inserted_user AS (
     INSERT INTO users (name, username, email)
-    VALUES ('Editor 2', 'editor_2', 'editor_2@storiny.com')
+    VALUES ('Writer 2', 'writer_2', 'writer_2@storiny.com')
     RETURNING id
 )
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ((SELECT id FROM inserted_user), $1)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, (SELECT id FROM inserted_user), $2)
 "#,
         )
+        .bind(1_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
         sqlx::query(
             r#"
-UPDATE blog_editors
+UPDATE blog_writers
 SET accepted_at = NOW()
 WHERE blog_id = $1
 "#,
@@ -1069,10 +1109,10 @@ WHERE blog_id = $1
         .execute(&mut *conn)
         .await?;
 
-        // Should have 1 `editor_count` initially
+        // Should have 1 `writer_count` initially
         let result = sqlx::query(
             r#"
-SELECT editor_count FROM blogs
+SELECT writer_count FROM blogs
 WHERE id = $1
 "#,
         )
@@ -1080,14 +1120,14 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 1);
+        assert_eq!(result.get::<i32, _>("writer_count"), 1);
 
-        // Soft-delete the editor
+        // Soft-delete the writer
         sqlx::query(
             r#"
-UPDATE blog_editors
+UPDATE blog_writers
 SET deleted_at = NOW()
-WHERE user_id = $1 AND blog_id = $2
+WHERE receiver_id = $1 AND blog_id = $2
 "#,
         )
         .bind(2_i64)
@@ -1095,10 +1135,10 @@ WHERE user_id = $1 AND blog_id = $2
         .execute(&mut *conn)
         .await?;
 
-        // Should not decrement the `editor_count`
+        // Should not decrement the `writer_count`
         let result = sqlx::query(
             r#"
-SELECT editor_count FROM blogs
+SELECT writer_count FROM blogs
 WHERE id = $1
 "#,
         )
@@ -1106,13 +1146,13 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 1);
+        assert_eq!(result.get::<i32, _>("writer_count"), 1);
 
-        // Delete the editor
+        // Delete the writer
         sqlx::query(
             r#"
-DELETE FROM blog_editors
-WHERE user_id = $1 AND blog_id = $2
+DELETE FROM blog_writers
+WHERE receiver_id = $1 AND blog_id = $2
 "#,
         )
         .bind(2_i64)
@@ -1120,10 +1160,10 @@ WHERE user_id = $1 AND blog_id = $2
         .execute(&mut *conn)
         .await?;
 
-        // Should not decrement the `editor_count`
+        // Should not decrement the `writer_count`
         let result = sqlx::query(
             r#"
-SELECT editor_count FROM blogs
+SELECT writer_count FROM blogs
 WHERE id = $1
 "#,
         )
@@ -1131,7 +1171,7 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 1);
+        assert_eq!(result.get::<i32, _>("writer_count"), 1);
 
         Ok(())
     }
@@ -1139,7 +1179,7 @@ WHERE id = $1
     // `incoming_blog_requests` setting
 
     #[sqlx::test(fixtures("user", "blog"))]
-    async fn can_reject_blog_editor_invite_for_none_incoming_blog_requests_setting(
+    async fn can_reject_blog_writer_invite_for_none_incoming_blog_requests_setting(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -1159,10 +1199,11 @@ WHERE id = $2
 
         let result = sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
@@ -1176,14 +1217,14 @@ VALUES ($1, $2)
                 .unwrap()
                 .code()
                 .unwrap(),
-            SqlState::EditorNotAcceptingBlogRequest.to_string()
+            SqlState::WriterNotAcceptingBlogRequest.to_string()
         );
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("user", "blog", "following"))]
-    async fn can_reject_blog_editor_invite_for_none_incoming_blog_requests_setting_from_following_user(
+    async fn can_reject_blog_writer_invite_for_none_incoming_blog_requests_setting_from_following_user(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -1203,10 +1244,11 @@ WHERE id = $2
 
         let result = sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
@@ -1220,14 +1262,14 @@ VALUES ($1, $2)
                 .unwrap()
                 .code()
                 .unwrap(),
-            SqlState::EditorNotAcceptingBlogRequest.to_string()
+            SqlState::WriterNotAcceptingBlogRequest.to_string()
         );
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("user", "blog", "friend"))]
-    async fn can_reject_blog_editor_invite_for_none_incoming_blog_requests_setting_from_friend(
+    async fn can_reject_blog_writer_invite_for_none_incoming_blog_requests_setting_from_friend(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -1247,10 +1289,11 @@ WHERE id = $2
 
         let result = sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
@@ -1264,7 +1307,7 @@ VALUES ($1, $2)
                 .unwrap()
                 .code()
                 .unwrap(),
-            SqlState::EditorNotAcceptingBlogRequest.to_string()
+            SqlState::WriterNotAcceptingBlogRequest.to_string()
         );
 
         Ok(())
@@ -1273,7 +1316,7 @@ VALUES ($1, $2)
     //
 
     #[sqlx::test(fixtures("user", "blog"))]
-    async fn can_reject_blog_editor_invite_for_following_incoming_blog_requests_setting(
+    async fn can_reject_blog_writer_invite_for_following_incoming_blog_requests_setting(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -1293,10 +1336,11 @@ WHERE id = $2
 
         let result = sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
@@ -1310,14 +1354,14 @@ VALUES ($1, $2)
                 .unwrap()
                 .code()
                 .unwrap(),
-            SqlState::EditorNotAcceptingBlogRequest.to_string()
+            SqlState::WriterNotAcceptingBlogRequest.to_string()
         );
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("user", "blog", "following"))]
-    async fn can_accept_blog_editor_invite_for_following_incoming_blog_requests_setting_from_following_user(
+    async fn can_accept_blog_writer_invite_for_following_incoming_blog_requests_setting_from_following_user(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -1337,10 +1381,11 @@ WHERE id = $2
 
         let result = sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
@@ -1352,7 +1397,7 @@ VALUES ($1, $2)
     }
 
     #[sqlx::test(fixtures("user", "blog", "friend"))]
-    async fn can_reject_blog_editor_invite_for_following_incoming_blog_requests_setting_from_friend(
+    async fn can_reject_blog_writer_invite_for_following_incoming_blog_requests_setting_from_friend(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -1372,10 +1417,11 @@ WHERE id = $2
 
         let result = sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
@@ -1389,7 +1435,7 @@ VALUES ($1, $2)
                 .unwrap()
                 .code()
                 .unwrap(),
-            SqlState::EditorNotAcceptingBlogRequest.to_string()
+            SqlState::WriterNotAcceptingBlogRequest.to_string()
         );
 
         Ok(())
@@ -1398,7 +1444,7 @@ VALUES ($1, $2)
     //
 
     #[sqlx::test(fixtures("user", "blog"))]
-    async fn can_reject_blog_editor_invite_for_friends_incoming_blog_requests_setting(
+    async fn can_reject_blog_writer_invite_for_friends_incoming_blog_requests_setting(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -1418,10 +1464,11 @@ WHERE id = $2
 
         let result = sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
@@ -1435,14 +1482,14 @@ VALUES ($1, $2)
                 .unwrap()
                 .code()
                 .unwrap(),
-            SqlState::EditorNotAcceptingBlogRequest.to_string()
+            SqlState::WriterNotAcceptingBlogRequest.to_string()
         );
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("user", "blog", "following"))]
-    async fn can_reject_blog_editor_invite_for_friends_incoming_blog_requests_setting_from_following_user(
+    async fn can_reject_blog_writer_invite_for_friends_incoming_blog_requests_setting_from_following_user(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -1462,10 +1509,11 @@ WHERE id = $2
 
         let result = sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
@@ -1479,14 +1527,14 @@ VALUES ($1, $2)
                 .unwrap()
                 .code()
                 .unwrap(),
-            SqlState::EditorNotAcceptingBlogRequest.to_string()
+            SqlState::WriterNotAcceptingBlogRequest.to_string()
         );
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("user", "blog", "friend"))]
-    async fn can_accept_blog_editor_invite_for_friends_incoming_blog_requests_setting_from_friends(
+    async fn can_accept_blog_writer_invite_for_friends_incoming_blog_requests_setting_from_friends(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -1506,10 +1554,11 @@ WHERE id = $2
 
         let result = sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
@@ -1523,19 +1572,20 @@ VALUES ($1, $2)
     // Notifications
 
     #[sqlx::test(fixtures("user", "blog"))]
-    async fn can_delete_notifications_when_the_editor_is_soft_deleted(
+    async fn can_delete_notifications_when_the_writer_is_soft_deleted(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Add an editor
+        // Add a writer
         let result = sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 RETURNING id
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .fetch_one(&mut *conn)
@@ -1557,10 +1607,10 @@ RETURNING id
 
         assert!(insert_result.try_get::<i64, _>("id").is_ok());
 
-        // Soft-delete the editor
+        // Soft-delete the writer
         sqlx::query(
             r#"
-UPDATE blog_editors
+UPDATE blog_writers
 SET deleted_at = NOW()
 WHERE id = $1
 "#,
@@ -1590,17 +1640,18 @@ SELECT EXISTS (
     // Hard deletes
 
     #[sqlx::test(fixtures("user", "blog"))]
-    async fn can_delete_notification_on_editor_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_delete_notification_on_writer_hard_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
-        // Add an editor
+        // Add a writer
         let result = sqlx::query(
             r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
 RETURNING id
 "#,
         )
+        .bind(1_i64)
         .bind(2_i64)
         .bind(3_i64)
         .fetch_one(&mut *conn)
@@ -1622,10 +1673,10 @@ RETURNING id
 
         assert!(insert_result.try_get::<i64, _>("id").is_ok());
 
-        // Delete the editor
+        // Delete the writer
         sqlx::query(
             r#"
-DELETE FROM blog_editors
+DELETE FROM blog_writers
 WHERE id = $1
 "#,
         )
