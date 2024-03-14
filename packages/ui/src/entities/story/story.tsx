@@ -535,6 +535,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
                     aria-label={`${
                       is_bookmarked ? "Un-bookmark" : "Bookmark"
                     } this story`}
+                    auto_size
                     check_auth
                     onClick={(): void => {
                       dispatch(boolean_action("bookmarks", story.id));
