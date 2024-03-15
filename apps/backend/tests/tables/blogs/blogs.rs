@@ -87,7 +87,7 @@ WHERE blog_id = $1
     #[sqlx::test(fixtures("user"))]
     async fn can_reject_invalid_slugs(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let cases: Vec<&str> = vec!["", "ABCD", "a", "abcd#", "abcD"];
+        let cases: Vec<&str> = vec!["", "ABCD", "a", "abcd#", "abcD", "000000"];
 
         for case in cases {
             let result = sqlx::query(

@@ -1,4 +1,5 @@
 pub mod create_draft;
+pub mod get_blog_editors_info;
 pub mod get_comment;
 pub mod get_connection_settings;
 pub mod get_contributions_info;
