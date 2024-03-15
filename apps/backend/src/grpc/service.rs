@@ -330,14 +330,15 @@ impl ApiService for GrpcService {
         &self,
         request: Request<GetBlogPublishedStoryCountRequest>,
     ) -> Result<Response<GetBlogPublishedStoryCountResponse>, Status> {
-        todo!()
+        endpoints::get_blog_published_story_count::get_blog_published_story_count(self, request)
+            .await
     }
 
     async fn get_blog_sitemap(
         &self,
         request: Request<GetBlogSitemapRequest>,
     ) -> Result<Response<GetBlogSitemapResponse>, Status> {
-        todo!()
+        endpoints::get_blog_sitemap::get_blog_sitemap(self, request).await
     }
 
     async fn get_blog_writers_info(

@@ -407,11 +407,9 @@ BEGIN
 									 FORMAT(
 											 'You are invited as an editor to a blog: '
 												 || '<a data-fw-medium href="https://%s">%s</a>',
-											 (SELECT CASE
-														 WHEN (SELECT domain FROM blog) IS NOT NULL
-															 THEN (SELECT domain FROM blog)
-														 ELSE (SELECT slug FROM blog) || '.storiny.com'
-													 END
+											 COALESCE(
+													 (SELECT domain FROM blog),
+													 ((SELECT slug FROM blog) || '.storiny.com')
 											 ),
 											 (SELECT name FROM blog)
 									 )
@@ -440,11 +438,9 @@ BEGIN
 									 FORMAT(
 											 'You are invited as a writer to a blog: '
 												 || '<a data-fw-medium href="https://%s">%s</a>',
-											 (SELECT CASE
-														 WHEN (SELECT domain FROM blog) IS NOT NULL
-															 THEN (SELECT domain FROM blog)
-														 ELSE (SELECT slug FROM blog) || '.storiny.com'
-													 END
+											 COALESCE(
+													 (SELECT domain FROM blog),
+													 ((SELECT slug FROM blog) || '.storiny.com')
 											 ),
 											 (SELECT name FROM blog)
 									 )

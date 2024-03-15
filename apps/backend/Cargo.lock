@@ -3459,6 +3459,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "quick-xml"
+version = "0.23.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "11bafc859c6815fbaffbbbf4229ecb767ac913fecb27f9ad4343662e9ef099ea"
+dependencies = [
+ "memchr",
+]
+
+[[package]]
 name = "quote"
 version = "1.0.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4147,6 +4156,7 @@ version = "1.0.107"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6b420ce6e3d8bd882e9b243c6eed35dbc9a6110c9769e74b584e0d68d1f20c65"
 dependencies = [
+ "indexmap 2.0.2",
  "itoa",
  "ryu",
  "serde",
@@ -4692,6 +4702,7 @@ dependencies = [
  "uuid",
  "validator",
  "warp",
+ "xml2json-rs",
  "yrs",
 ]
 
@@ -5918,6 +5929,19 @@ name = "xml-builder"
 version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "efc4f1a86af7800dfc4056c7833648ea4515ae21502060b5c98114d828f5333b"
+
+[[package]]
+name = "xml2json-rs"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c6ba4fb1256176d2eb02e25065efade8e43215a4d0743cb823991aea314077ea"
+dependencies = [
+ "lazy_static",
+ "quick-xml",
+ "regex",
+ "serde",
+ "serde_json",
+]
 
 [[package]]
 name = "xmlparser"

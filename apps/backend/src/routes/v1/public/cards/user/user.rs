@@ -15,7 +15,6 @@ use serde::{
 };
 use sqlx::{
     postgres::PgRow,
-    testing::TestTermination,
     FromRow,
     Postgres,
     QueryBuilder,
@@ -76,7 +75,7 @@ async fn get(
     tracing::Span::current().record("current_user_id", current_user_id);
 
     // Identifier can be username or an ID
-    let is_identifier_number = path.identifier.parse::<i64>().is_success();
+    let is_identifier_number = path.identifier.parse::<i64>().is_ok();
 
     let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
         r#"
