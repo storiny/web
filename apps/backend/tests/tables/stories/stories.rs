@@ -474,6 +474,65 @@ WHERE blog_id = $1 AND story_id = $2
         Ok(())
     }
 
+    #[sqlx::test(fixtures("user", "blog"))]
+    async fn can_set_accepted_at_field_to_null_when_the_story_is_unpublished(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
+
+        // Add the story to the blog.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO blog_stories (blog_id, story_id, accepted_at)
+VALUES ($1, $2, NOW())
+RETURNING accepted_at
+"#,
+        )
+        .bind(3_i64)
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("accepted_at")
+                .is_some()
+        );
+
+        // Unpublish the story
+        sqlx::query(
+            r#"
+UPDATE stories
+SET published_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // `accepted_at` should be NULL
+        let result = sqlx::query(
+            r#"
+SELECT accepted_at FROM blog_stories
+WHERE blog_id = $1 AND story_id = $2
+"#,
+        )
+        .bind(3_i64)
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("accepted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
     // Story contributors
 
     #[sqlx::test(fixtures("user"))]
