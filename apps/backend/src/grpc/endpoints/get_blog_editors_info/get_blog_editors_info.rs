@@ -62,10 +62,13 @@ b.slug = $1
         r#"
     AND b.deleted_at IS NULL
 )
-SELECT (
-    SELECT editor_count
-    FROM blog
-    ) AS "editor_count",
+SELECT
+    COALESCE(
+        (
+            SELECT editor_count
+            FROM blog
+        )
+    , 0) AS "editor_count",
 (
     SELECT COUNT(*)
     FROM blog_editors
@@ -192,6 +195,27 @@ WHERE user_id IN ($1, $2)
 
                 assert_eq!(response.editor_count, 2_u32);
                 assert_eq!(response.pending_editor_request_count, 1_u32);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test]
+    async fn can_handle_a_missing_blog(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            false,
+            Box::new(|mut client, _, _, _| async move {
+                let response = client
+                    .get_blog_editors_info(Request::new(GetBlogEditorsInfoRequest {
+                        identifier: "invalid-blog".to_string(),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                assert_eq!(response.editor_count, 0_u32);
+                assert_eq!(response.pending_editor_request_count, 0_u32);
             }),
         )
         .await;
