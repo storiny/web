@@ -5,6 +5,7 @@ pub mod blog_editors;
 pub mod blog_followers;
 pub mod blog_stories;
 pub mod blog_writers;
+pub mod blogs;
 pub mod bookmarks;
 pub mod comment_likes;
 pub mod comments;
