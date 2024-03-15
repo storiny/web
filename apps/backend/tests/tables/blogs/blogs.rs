@@ -2209,4 +2209,104 @@ SELECT EXISTS (
 
         Ok(())
     }
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_delete_lsb_items_on_blog_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let blog_id = (insert_sample_blog(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert an item
+        let result = sqlx::query(
+            r#"
+INSERT INTO blog_lsb_items (name, target, priority, blog_id)
+VALUES ($1, $2, $3, $4)
+"#,
+        )
+        .bind("test_item".to_string())
+        .bind("https://storiny.com".to_string())
+        .bind(1_i16)
+        .bind(blog_id)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Delete the blog
+        sqlx::query(
+            r#"
+DELETE FROM blogs
+WHERE id = $1
+"#,
+        )
+        .bind(blog_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Item should get deleted
+        let result = sqlx::query(
+            r#"
+SELECT EXISTS (
+    SELECT 1 FROM blog_lsb_items
+    WHERE name = $1
+)
+"#,
+        )
+        .bind("test_item".to_string())
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_delete_rsb_items_on_blog_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let blog_id = (insert_sample_blog(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert an item
+        let result = sqlx::query(
+            r#"
+INSERT INTO blog_rsb_items (primary_text, target, priority, blog_id)
+VALUES ($1, $2, $3, $4)
+"#,
+        )
+        .bind("test_item".to_string())
+        .bind("https://storiny.com".to_string())
+        .bind(1_i16)
+        .bind(blog_id)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Delete the blog
+        sqlx::query(
+            r#"
+DELETE FROM blogs
+WHERE id = $1
+"#,
+        )
+        .bind(blog_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Item should get deleted
+        let result = sqlx::query(
+            r#"
+SELECT EXISTS (
+    SELECT 1 FROM blog_rsb_items
+    WHERE primary_text = $1
+)
+"#,
+        )
+        .bind("test_item".to_string())
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
 }
