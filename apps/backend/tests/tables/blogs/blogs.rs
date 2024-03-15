@@ -19,7 +19,7 @@ mod tests {
         sqlx::query(
             r#"
 INSERT INTO blogs (user_id, name, slug)
-VALUES ($1, $2, $2)
+VALUES ($1, $2, $3)
 RETURNING id
 "#,
         )
@@ -929,11 +929,11 @@ WHERE id = $1
         let result = sqlx::query(
             r#"
 SELECT deleted_at FROM blog_stories
-WHERE blog_id = $1 AND user_id = $2
+WHERE blog_id = $1 AND story_id = $2
 "#,
         )
         .bind(blog_id)
-        .bind(2_i64)
+        .bind(3_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -959,11 +959,11 @@ WHERE id = $1
         let result = sqlx::query(
             r#"
 SELECT deleted_at FROM blog_stories
-WHERE blog_id = $1 AND user_id = $2
+WHERE blog_id = $1 AND story_id = $2
 "#,
         )
         .bind(blog_id)
-        .bind(2_i64)
+        .bind(3_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -976,7 +976,7 @@ WHERE blog_id = $1 AND user_id = $2
         Ok(())
     }
 
-    #[sqlx::test(fixtures("user", "blog"))]
+    #[sqlx::test(fixtures("user", "story"))]
     async fn should_not_restore_blog_stories_from_deleted_stories_when_cascading_blog(
         pool: PgPool,
     ) -> sqlx::Result<()> {
@@ -2224,7 +2224,7 @@ VALUES ($1, $2, $3, $4)
         )
         .bind("test_item".to_string())
         .bind("https://storiny.com".to_string())
-        .bind(1_i16)
+        .bind(2_i16)
         .bind(blog_id)
         .execute(&mut *conn)
         .await?;

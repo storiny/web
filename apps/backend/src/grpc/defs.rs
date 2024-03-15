@@ -6,6 +6,13 @@ pub mod grpc_service {
     }
 }
 
+pub mod blog_def {
+    pub mod v1 {
+        include!("../proto/blog_def.v1.rs");
+        include!("../proto/blog_def.v1.serde.rs");
+    }
+}
+
 pub mod comment_def {
     pub mod v1 {
         include!("../proto/comment_def.v1.rs");

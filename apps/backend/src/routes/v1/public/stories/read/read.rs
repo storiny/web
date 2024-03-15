@@ -246,7 +246,7 @@ mod tests {
 
             // Start a reading session.
             redis_conn
-                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
+                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as u64)
                 .await
                 .unwrap();
 
@@ -306,7 +306,7 @@ WHERE story_id = $1
 
             // Start a reading session.
             redis_conn
-                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
+                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as u64)
                 .await
                 .unwrap();
 
@@ -371,7 +371,7 @@ WHERE story_id = $1
 
             // Start a reading session.
             redis_conn
-                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
+                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as u64)
                 .await
                 .unwrap();
 
@@ -446,7 +446,7 @@ WHERE story_id = $1
 
             // Start a reading session.
             redis_conn
-                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
+                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as u64)
                 .await
                 .unwrap();
 
@@ -495,7 +495,7 @@ WHERE story_id = $1
 
             // Start a reading session.
             redis_conn
-                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
+                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as u64)
                 .await
                 .unwrap();
 
@@ -534,7 +534,7 @@ WHERE story_id = $1
 
             // Start a reading session.
             redis_conn
-                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
+                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as u64)
                 .await
                 .unwrap();
 
@@ -591,7 +591,7 @@ WHERE id = $1
 
             // Start a reading session.
             redis_conn
-                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
+                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as u64)
                 .await
                 .unwrap();
 

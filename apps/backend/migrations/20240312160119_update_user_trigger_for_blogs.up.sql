@@ -408,7 +408,8 @@ BEGIN
 					 FROM
 						 blogs AS b
 					 WHERE
-						 b.id = bf.blog_id
+						   b.id = bf.blog_id
+					   AND b.deleted_at IS NULL
 					);
 		--
 		-- Restore tag follows
