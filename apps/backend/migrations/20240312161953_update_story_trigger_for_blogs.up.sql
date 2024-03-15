@@ -35,6 +35,16 @@ BEGIN
 		--
 		-- Drop relations for published (now soft-deleted or unpublished) story
 		IF (OLD.published_at IS NOT NULL) THEN
+			IF (NEW.published_at IS NULL) THEN
+				-- Unaccept the blog requests when the story is unpublished
+				UPDATE blog_stories
+				SET
+					accepted_at = NULL
+				WHERE
+					  accepted_at IS NOT NULL
+				  AND story_id = NEW.id;
+			END IF;
+			--
 			-- Soft-delete comments
 			UPDATE
 				comments
