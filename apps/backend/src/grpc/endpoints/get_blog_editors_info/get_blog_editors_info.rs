@@ -6,7 +6,6 @@ use crate::grpc::{
     service::GrpcService,
 };
 use sqlx::{
-    testing::TestTermination,
     Postgres,
     QueryBuilder,
     Row,
@@ -33,7 +32,7 @@ pub async fn get_blog_editors_info(
 ) -> Result<Response<GetBlogEditorsInfoResponse>, Status> {
     let identifier = request.into_inner().identifier;
     // Identifier can be slug or the ID
-    let is_identifier_number = identifier.parse::<i64>().is_success();
+    let is_identifier_number = identifier.parse::<i64>().is_ok();
 
     tracing::Span::current().record("identifier", &identifier);
 
