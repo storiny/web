@@ -1455,14 +1455,13 @@ WHERE blog_id = $1 AND receiver_id = $2
 WITH inserted_editor AS (
     INSERT INTO blog_editors (blog_id, user_id, accepted_at)
     VALUES ($1, $2, NOW())
-)
-WITH receiver AS (
+), receiver AS (
     INSERT INTO users (name, username, email)
     VALUES ('Writer', 'writer', 'writer@example.com')
     RETURNING id
 )
 INSERT INTO blog_writers (blog_id, receiver_id, transmitter_id)
-VALUES ($1, (SELECT user_id FROM receiver), $2)
+VALUES ($1, (SELECT id FROM receiver), $2)
 RETURNING deleted_at
 "#,
         )
@@ -1523,14 +1522,13 @@ WHERE blog_id = $1 AND transmitter_id = $2
 WITH inserted_editor AS (
     INSERT INTO blog_editors (blog_id, user_id, accepted_at)
     VALUES ($1, $2, NOW())
-)
-WITH receiver AS (
+), receiver AS (
     INSERT INTO users (name, username, email)
     VALUES ('Writer', 'writer', 'writer@example.com')
     RETURNING id
 )
 INSERT INTO blog_writers (blog_id, receiver_id, transmitter_id)
-VALUES ($1, (SELECT user_id FROM receiver), $2)
+VALUES ($1, (SELECT id FROM receiver), $2)
 RETURNING deleted_at
 "#,
         )
@@ -11550,14 +11548,13 @@ WHERE id = $1
 WITH inserted_editor AS (
     INSERT INTO blog_editors (blog_id, user_id, accepted_at)
     VALUES ($1, $2, NOW())
-)
-WITH receiver AS (
+), receiver AS (
     INSERT INTO users (name, username, email)
     VALUES ('Writer', 'writer', 'writer@example.com')
     RETURNING id
 )
 INSERT INTO blog_writers (blog_id, receiver_id, transmitter_id)
-VALUES ($1, (SELECT user_id FROM receiver), $2)
+VALUES ($1, (SELECT id FROM receiver), $2)
 RETURNING deleted_at
 "#,
         )

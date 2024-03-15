@@ -228,7 +228,7 @@ SET created_at = NOW()
             );
 
             redis_conn
-                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
+                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as u64)
                 .await
                 .map_err(|error| {
                     error!("unable to start a reading session for the user: {error:?}");
@@ -320,6 +320,8 @@ SET created_at = NOW()
                 public_flags: user.public_flags as u32,
             })
             .collect::<Vec<_>>(),
+        // TODO:
+        blog: None,
         is_bookmarked: story.is_bookmarked,
         is_liked: story.is_liked,
         reading_session_token: reading_session_token.to_string(),

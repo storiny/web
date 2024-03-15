@@ -29,10 +29,10 @@ CREATE TABLE IF NOT EXISTS blogs
 	font_code                UUID,
 	--
 	category                 story_category NOT NULL DEFAULT 'others' ::story_category,
-	user_id                  BIGINT         NOT NULL
-		REFERENCES users (id)
-			-- Avoid cascade action as it will result in orphaned objects in S3 (for fonts)
-			ON DELETE SET NULL,
+	user_id                  BIGINT
+											REFERENCES users (id)
+												-- Avoid cascade action as it will result in orphaned objects in S3 (for fonts)
+												ON DELETE SET NULL,
 	-- SEO
 	seo_title                TEXT
 		CONSTRAINT seo_title_length CHECK (CHAR_LENGTH(seo_title) <= 54),

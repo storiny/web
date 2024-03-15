@@ -59,7 +59,13 @@ BEGIN
 	IF (
 		NEW.receiver_id = blog_user_id
 			OR NEW.receiver_id = NEW.transmitter_id
-			OR EXISTS(SELECT FROM blog_editors AS be WHERE be.user_id = NEW.receiver_id AND be.blog_id = NEW.blog_id)
+			OR EXISTS(SELECT
+					  FROM
+						  blog_editors AS be
+					  WHERE
+							be.user_id = NEW.receiver_id
+						AND be.blog_id = NEW.blog_id
+					 )
 		) THEN
 		RAISE 'Illegal writer'
 			USING ERRCODE = '52008';

@@ -261,7 +261,7 @@ VALUES ($1, $2)
         .bind(3_i64)
         .bind(4_i64)
         .execute(&mut *conn)
-        .await;
+        .await?;
 
         assert_eq!(result.rows_affected(), 1);
 
@@ -332,7 +332,7 @@ VALUES ($1, $2)
         .bind(3_i64)
         .bind(4_i64)
         .execute(&mut *conn)
-        .await;
+        .await?;
 
         assert_eq!(result.rows_affected(), 1);
 
@@ -407,7 +407,7 @@ VALUES ($1, $2)
         .bind(3_i64)
         .bind(4_i64)
         .execute(&mut *conn)
-        .await;
+        .await?;
 
         assert_eq!(result.rows_affected(), 1);
 

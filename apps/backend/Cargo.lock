@@ -1657,12 +1657,12 @@ dependencies = [
 
 [[package]]
 name = "deadpool-redis"
-version = "0.13.0"
+version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "84930e585871d35b8e06d3e03d03e3a8a4c5dc71afa4376c7cd5f9223e1da1ea"
+checksum = "36f2381b0e993d06a1f6d49f486b33bc4004085bf980340fc05726bacc681fff"
 dependencies = [
  "deadpool",
- "redis 0.23.3",
+ "redis 0.24.0",
 ]
 
 [[package]]
@@ -3595,7 +3595,6 @@ dependencies = [
  "percent-encoding",
  "pin-project-lite",
  "ryu",
- "sha1_smol",
  "tokio",
  "tokio-retry",
  "tokio-util",
@@ -4657,7 +4656,7 @@ dependencies = [
  "pbjson",
  "prost",
  "rand 0.8.5",
- "redis 0.23.3",
+ "redis 0.24.0",
  "regex",
  "reqwest",
  "rmp-serde",

@@ -162,7 +162,7 @@ VALUES ($1, $2)
         .bind(2_i64)
         .bind(3_i64)
         .execute(&mut *conn)
-        .await;
+        .await?;
 
         // Should accept the editor.
         assert_eq!(result.rows_affected(), 1);
@@ -180,7 +180,7 @@ VALUES ($1, $2)
         let result = sqlx::query(
             r#"
 INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
-VALUES ($1, $2)
+VALUES ($1, $2, $3)
 "#,
         )
         .bind(1_i64)
@@ -741,7 +741,7 @@ WHERE blog_id = $1
         .execute(&mut *conn)
         .await?;
 
-        // Should have 2 `editor_count` initially
+        // Should have 3 `editor_count` initially
         let result = sqlx::query(
             r#"
 SELECT editor_count FROM blogs
@@ -752,7 +752,7 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 2);
+        assert_eq!(result.get::<i32, _>("editor_count"), 3);
 
         // Soft-delete the editor
         sqlx::query(
@@ -778,7 +778,7 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 1);
+        assert_eq!(result.get::<i32, _>("editor_count"), 2);
 
         // Delete the editor
         sqlx::query(
@@ -803,7 +803,7 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 1);
+        assert_eq!(result.get::<i32, _>("editor_count"), 2);
 
         Ok(())
     }
@@ -932,10 +932,11 @@ WITH inserted_user AS (
     VALUES ('Editor 1', 'editor_1', 'editor_1@storiny.com')
     RETURNING id
 )
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ((SELECT id FROM inserted_user), $1)
+INSERT INTO blog_editors (id, user_id, blog_id)
+VALUES ($1, (SELECT id FROM inserted_user), $2)
 "#,
         )
+        .bind(4_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
@@ -947,10 +948,11 @@ WITH inserted_user AS (
     VALUES ('Editor 2', 'editor_2', 'editor_2@storiny.com')
     RETURNING id
 )
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ((SELECT id FROM inserted_user), $1)
+INSERT INTO blog_editors (id, user_id, blog_id)
+VALUES ($1, (SELECT id FROM inserted_user), $2)
 "#,
         )
+        .bind(5_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
@@ -959,14 +961,13 @@ VALUES ((SELECT id FROM inserted_user), $1)
             r#"
 UPDATE blog_editors
 SET accepted_at = NOW()
-WHERE blog_id = $1
+WHERE id IN (4, 5)
 "#,
         )
-        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Should have 1 `editor_count` initially
+        // Should have 2 `editor_count` initially
         let result = sqlx::query(
             r#"
 SELECT editor_count FROM blogs
@@ -977,7 +978,7 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 1);
+        assert_eq!(result.get::<i32, _>("editor_count"), 2);
 
         // Delete the editor
         sqlx::query(
@@ -1002,7 +1003,7 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 1);
+        assert_eq!(result.get::<i32, _>("editor_count"), 2);
 
         Ok(())
     }
@@ -1035,10 +1036,11 @@ WITH inserted_user AS (
     VALUES ('Editor 1', 'editor_1', 'editor_1@storiny.com')
     RETURNING id
 )
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ((SELECT id FROM inserted_user), $1)
+INSERT INTO blog_editors (id, user_id, blog_id)
+VALUES ($1, (SELECT id FROM inserted_user), $2)
 "#,
         )
+        .bind(4_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
@@ -1050,10 +1052,11 @@ WITH inserted_user AS (
     VALUES ('Editor 2', 'editor_2', 'editor_2@storiny.com')
     RETURNING id
 )
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ((SELECT id FROM inserted_user), $1)
+INSERT INTO blog_editors (id, user_id, blog_id)
+VALUES ($1, (SELECT id FROM inserted_user), $2)
 "#,
         )
+        .bind(5_i64)
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
@@ -1062,14 +1065,13 @@ VALUES ((SELECT id FROM inserted_user), $1)
             r#"
 UPDATE blog_editors
 SET accepted_at = NOW()
-WHERE blog_id = $1
+WHERE id IN (4, 5)
 "#,
         )
-        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
-        // Should have 1 `editor_count` initially
+        // Should have 2 `editor_count` initially
         let result = sqlx::query(
             r#"
 SELECT editor_count FROM blogs
@@ -1080,7 +1082,7 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 1);
+        assert_eq!(result.get::<i32, _>("editor_count"), 2);
 
         // Soft-delete the editor
         sqlx::query(
@@ -1106,7 +1108,7 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 1);
+        assert_eq!(result.get::<i32, _>("editor_count"), 2);
 
         // Delete the editor
         sqlx::query(
@@ -1131,7 +1133,7 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<i32, _>("editor_count"), 1);
+        assert_eq!(result.get::<i32, _>("editor_count"), 2);
 
         Ok(())
     }
