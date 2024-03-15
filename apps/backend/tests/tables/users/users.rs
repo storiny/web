@@ -186,6 +186,184 @@ WHERE id = $1
         Ok(())
     }
 
+    // Blogs
+
+    #[sqlx::test]
+    async fn can_cascade_user_soft_delete_to_blogs(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert a blog
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO blogs (name, slug, user_id)
+VALUES ($1, $2, $3)
+RETURNING id, deleted_at
+"#,
+        )
+        .bind("Sample blog".to_string())
+        .bind("sample-blog".to_string())
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(insert_result.try_get::<i64, _>("id").is_ok());
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Soft-delete the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog should be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blogs
+WHERE id = $1
+"#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deleted_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog should be restored
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blogs
+WHERE id = $1
+"#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_soft_delete_and_restore_blogs_on_user_deactivation(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert a blog
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO blogs (name, slug, user_id)
+VALUES ($1, $2, $3)
+RETURNING id, deleted_at
+"#,
+        )
+        .bind("Sample content".to_string())
+        .bind("sample-content".to_string())
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(insert_result.try_get::<i64, _>("id").is_ok());
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Deactivate the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog should be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blogs
+WHERE id = $1
+"#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Activate the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deactivated_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog should be restored
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blogs
+WHERE id = $1
+"#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
     // Stories
 
     #[sqlx::test]
@@ -888,6 +1066,684 @@ WHERE id = $1
 "#,
         )
         .bind(insert_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    // Blog editors
+
+    #[sqlx::test(fixtures("blog"))]
+    async fn can_cascade_user_soft_delete_to_blog_editors(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Add an editor
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO blog_editors (blog_id, user_id)
+VALUES ($1, $2)
+RETURNING deleted_at
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Soft-delete the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog editor relation should be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_editors
+WHERE blog_id = $1 AND user_id = $2
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deleted_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog editor relation should be restored
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_editors
+WHERE blog_id = $1 AND user_id = $2
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("blog"))]
+    async fn can_soft_delete_and_restore_blog_editors_on_user_deactivation(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Add an editor
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO blog_editors (blog_id, user_id)
+VALUES ($1, $2)
+RETURNING deleted_at
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Deactivate the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog editor relation should be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_editors
+WHERE blog_id = $1 AND user_id = $2
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Activate the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deactivated_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog editor relation should be restored
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_editors
+WHERE blog_id = $1 AND user_id = $2
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    // Blog writers
+
+    #[sqlx::test(fixtures("blog"))]
+    async fn can_cascade_user_soft_delete_to_blog_writers(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Add a writer
+        let insert_result = sqlx::query(
+            r#"
+WITH blog AS (
+    SELECT user_id FROM blogs
+    WHERE id = $1
+)
+INSERT INTO blog_writers (blog_id, receiver_id, transmitter_id)
+VALUES ($1, $2, (SELECT user_id FROM blog))
+RETURNING deleted_at
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Soft-delete the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog writer relation should be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_writers
+WHERE blog_id = $1 AND receiver_id = $2
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deleted_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog writer relation should be restored
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_writers
+WHERE blog_id = $1 AND receiver_id = $2
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("blog"))]
+    async fn can_soft_delete_and_restore_blog_writers_on_user_deactivation(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Add a writer
+        let insert_result = sqlx::query(
+            r#"
+WITH blog AS (
+    SELECT user_id FROM blogs
+    WHERE id = $1
+)
+INSERT INTO blog_writers (blog_id, receiver_id, transmitter_id)
+VALUES ($1, $2, (SELECT user_id FROM blog))
+RETURNING deleted_at
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Deactivate the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog writer relation should be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_writers
+WHERE blog_id = $1 AND receiver_id = $2
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Activate the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deactivated_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog writer relation should be restored
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_writers
+WHERE blog_id = $1 AND receiver_id = $2
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("blog"))]
+    async fn should_not_cascade_user_soft_delete_to_blog_writers_from_a_transmitter(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Send a writer invite
+        let insert_result = sqlx::query(
+            r#"
+WITH inserted_editor AS (
+    INSERT INTO blog_editors (blog_id, user_id, accepted_at)
+    VALUES ($1, $2, NOW())
+)
+WITH receiver AS (
+    INSERT INTO users (name, username, email)
+    VALUES ('Writer', 'writer', 'writer@example.com')
+    RETURNING id
+)
+INSERT INTO blog_writers (blog_id, receiver_id, transmitter_id)
+VALUES ($1, (SELECT user_id FROM receiver), $2)
+RETURNING deleted_at
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Soft-delete the transmitter
+        sqlx::query(
+            r#"
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog writer relation should not be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_writers
+WHERE blog_id = $1 AND transmitter_id = $2
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("blog"))]
+    async fn should_not_soft_delete_blog_writers_on_transmitter_deactivation(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Send a writer invite
+        let insert_result = sqlx::query(
+            r#"
+WITH inserted_editor AS (
+    INSERT INTO blog_editors (blog_id, user_id, accepted_at)
+    VALUES ($1, $2, NOW())
+)
+WITH receiver AS (
+    INSERT INTO users (name, username, email)
+    VALUES ('Writer', 'writer', 'writer@example.com')
+    RETURNING id
+)
+INSERT INTO blog_writers (blog_id, receiver_id, transmitter_id)
+VALUES ($1, (SELECT user_id FROM receiver), $2)
+RETURNING deleted_at
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Deactivate the transmitter
+        sqlx::query(
+            r#"
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog writer relation should not be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_writers
+WHERE blog_id = $1 AND transmitter_id = $2
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    // Followed blogs
+
+    #[sqlx::test(fixtures("blog"))]
+    async fn can_cascade_user_soft_delete_to_followed_blogs(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Follow a blog
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO blog_followers (blog_id, user_id)
+VALUES ($1, $2)
+RETURNING deleted_at
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Soft-delete the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Followed blog relation should be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_followers
+WHERE blog_id = $1 AND user_id = $2
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deleted_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Followed blog relation should be restored
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_followers
+WHERE blog_id = $1 AND user_id = $2
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("blog"))]
+    async fn can_soft_delete_and_restore_followed_blogs_on_user_deactivation(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Follow a blog
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO blog_followers (blog_id, user_id)
+VALUES ($1, $2)
+RETURNING deleted_at
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Deactivate the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Followed blog relation should be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_followers
+WHERE blog_id = $1 AND user_id = $2
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Activate the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deactivated_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Followed blog relation should be restored
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_followers
+WHERE blog_id = $1 AND user_id = $2
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -4037,6 +4893,538 @@ WHERE id = $1
 
     //
 
+    #[sqlx::test(fixtures("blog"))]
+    async fn should_not_restore_blog_editors_from_deleted_blogs_when_cascading_user(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Add an editor
+        let result = sqlx::query(
+            r#"
+INSERT INTO blog_editors (user_id, blog_id)
+VALUES ($1, $2)
+RETURNING id, deleted_at
+"#,
+        )
+        .bind(user_id)
+        .bind(1_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+        let relation_id = result.get::<i64, _>("id");
+
+        // Blog editor should not be deleted initially
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Soft-delete the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Soft-delete the blog
+        sqlx::query(
+            r#"
+UPDATE blogs
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog editor should be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_editors
+WHERE id = $1
+"#,
+        )
+        .bind(relation_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deleted_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog editor should still be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_editors
+WHERE id = $1
+"#,
+        )
+        .bind(relation_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the blog
+        sqlx::query(
+            r#"
+UPDATE blogs
+SET deleted_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog editor should be restored
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_editors
+WHERE id = $1
+"#,
+        )
+        .bind(relation_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("blog"))]
+    async fn should_not_restore_blog_editors_from_deleted_blogs_when_activating_user(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Add an editor
+        let result = sqlx::query(
+            r#"
+INSERT INTO blog_editors (user_id, blog_id)
+VALUES ($1, $2)
+RETURNING id, deleted_at
+"#,
+        )
+        .bind(user_id)
+        .bind(1_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+        let relation_id = result.get::<i64, _>("id");
+
+        // Blog editor should not be deleted initially
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Deactivate the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Soft-delete the blog
+        sqlx::query(
+            r#"
+UPDATE blogs
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog editor should be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_editors
+WHERE id = $1
+"#,
+        )
+        .bind(relation_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Activate the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deactivated_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog editor should still be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_editors
+WHERE id = $1
+"#,
+        )
+        .bind(relation_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the blog
+        sqlx::query(
+            r#"
+UPDATE blogs
+SET deleted_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog editor should be restored
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_editors
+WHERE id = $1
+"#,
+        )
+        .bind(relation_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    //
+
+    #[sqlx::test(fixtures("blog"))]
+    async fn should_not_restore_blog_writers_from_deleted_blogs_when_cascading_user(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Add a writer
+        let result = sqlx::query(
+            r#"
+WITH blog AS (
+    SELECT user_id FROM blogs
+    WHERE id = $1
+)
+INSERT INTO blog_writers (blog_id, receiver_id, transmitter_id)
+VALUES ($1, $2, (SELECT user_id FROM blog))
+RETURNING id, deleted_at
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+        let relation_id = result.get::<i64, _>("id");
+
+        // Blog writer should not be deleted initially
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Soft-delete the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Soft-delete the blog
+        sqlx::query(
+            r#"
+UPDATE blogs
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog writer should be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_writers
+WHERE id = $1
+"#,
+        )
+        .bind(relation_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deleted_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog writer should still be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_writers
+WHERE id = $1
+"#,
+        )
+        .bind(relation_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the blog
+        sqlx::query(
+            r#"
+UPDATE blogs
+SET deleted_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog writer should be restored
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_writers
+WHERE id = $1
+"#,
+        )
+        .bind(relation_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("blog"))]
+    async fn should_not_restore_blog_writers_from_deleted_blogs_when_activating_user(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Add a writer
+        let result = sqlx::query(
+            r#"
+WITH blog AS (
+    SELECT user_id FROM blogs
+    WHERE id = $1
+)
+INSERT INTO blog_writers (blog_id, receiver_id, transmitter_id)
+VALUES ($1, $2, (SELECT user_id FROM blog))
+RETURNING id, deleted_at
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+        let relation_id = result.get::<i64, _>("id");
+
+        // Blog writer should not be deleted initially
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Deactivate the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Soft-delete the blog
+        sqlx::query(
+            r#"
+UPDATE blogs
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog writer should be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_writers
+WHERE id = $1
+"#,
+        )
+        .bind(relation_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Reactivate the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deactivated_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog writer should still be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_writers
+WHERE id = $1
+"#,
+        )
+        .bind(relation_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the blog
+        sqlx::query(
+            r#"
+UPDATE blogs
+SET deleted_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog writer should be restored
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_writers
+WHERE id = $1
+"#,
+        )
+        .bind(relation_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    //
+
     #[sqlx::test(fixtures("story"))]
     async fn should_not_restore_comments_from_deleted_stories_when_cascading_user(
         pool: PgPool,
@@ -6863,6 +8251,272 @@ WHERE user_id = $1 AND story_id = $2
 
     //
 
+    #[sqlx::test(fixtures("blog"))]
+    async fn should_not_restore_blog_followers_from_deleted_blogs_when_cascading_user(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Follow a blog
+        let result = sqlx::query(
+            r#"
+INSERT INTO blog_followers (user_id, blog_id)
+VALUES ($1, $2)
+RETURNING deleted_at
+"#,
+        )
+        .bind(user_id)
+        .bind(1_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        // Blog follower relation should not be deleted initially
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Soft-delete the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Soft-delete the blog
+        sqlx::query(
+            r#"
+UPDATE blogs
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog follower relation should be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_followers
+WHERE user_id = $1 AND blog_id = $2
+"#,
+        )
+        .bind(user_id)
+        .bind(1_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deleted_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog follower relation should still be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_followers
+WHERE user_id = $1 AND blog_id = $2
+"#,
+        )
+        .bind(user_id)
+        .bind(1_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the blog
+        sqlx::query(
+            r#"
+UPDATE blogs
+SET deleted_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog follower relation should be restored
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_followers
+WHERE user_id = $1 AND blog_id = $2
+"#,
+        )
+        .bind(user_id)
+        .bind(1_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("blog"))]
+    async fn should_not_restore_blog_followers_from_deleted_blogs_when_activating_user(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Follow a blog
+        let result = sqlx::query(
+            r#"
+INSERT INTO blog_followers (user_id, blog_id)
+VALUES ($1, $2)
+RETURNING deleted_at
+"#,
+        )
+        .bind(user_id)
+        .bind(1_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        // Blog follower relation should not be deleted initially
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Deactivate the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Soft-delete the blog
+        sqlx::query(
+            r#"
+UPDATE blogs
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog follower relation should be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_followers
+WHERE user_id = $1 AND blog_id = $2
+"#,
+        )
+        .bind(user_id)
+        .bind(1_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Activate the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deactivated_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog follower relation should still be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_followers
+WHERE user_id = $1 AND blog_id = $2
+"#,
+        )
+        .bind(user_id)
+        .bind(1_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the blog
+        sqlx::query(
+            r#"
+UPDATE blogs
+SET deleted_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog follower relation should be restored
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_followers
+WHERE user_id = $1 AND blog_id = $2
+"#,
+        )
+        .bind(user_id)
+        .bind(1_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    //
+
     #[sqlx::test(fixtures("story"))]
     async fn should_not_restore_story_like_having_deleted_story_when_cascading_user(
         pool: PgPool,
@@ -8179,6 +9833,216 @@ WHERE user_id = $1 AND story_id = $2
         )
         .bind(user_id)
         .bind(2_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    //
+
+    #[sqlx::test]
+    async fn can_restore_self_followed_blogs_from_self_blogs_when_cascading_user(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Create a blog
+        let blog_result = sqlx::query(
+            r#"
+INSERT INTO blogs (name, slug, user_id)
+VALUES ($1, $2, $3)
+RETURNING id, deleted_at
+"#,
+        )
+        .bind("Sample blog".to_string())
+        .bind("sample-blog".to_string())
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        // Follow the blog
+        let follow_result = sqlx::query(
+            r#"
+INSERT INTO blog_followers (user_id, blog_id)
+VALUES ($1, $2)
+RETURNING deleted_at
+"#,
+        )
+        .bind(user_id)
+        .bind(blog_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        // Blog follower should not be deleted initially
+        assert!(
+            follow_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Soft-delete the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog follower should be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_followers
+WHERE user_id = $1 AND blog_id = $2
+"#,
+        )
+        .bind(user_id)
+        .bind(blog_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deleted_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog follower should be restored
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_followers
+WHERE user_id = $1 AND blog_id = $2
+"#,
+        )
+        .bind(user_id)
+        .bind(blog_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_restore_self_followed_blogs_from_self_blogs_when_activating_user(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Create a blog
+        let blog_result = sqlx::query(
+            r#"
+INSERT INTO blogs (name, slug, user_id)
+VALUES ($1, $2, $3)
+RETURNING id, deleted_at
+"#,
+        )
+        .bind("Sample blog".to_string())
+        .bind("sample-blog".to_string())
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        // Follow the blog
+        let follow_result = sqlx::query(
+            r#"
+INSERT INTO blog_followers (user_id, blog_id)
+VALUES ($1, $2)
+RETURNING deleted_at
+"#,
+        )
+        .bind(user_id)
+        .bind(blog_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        // Blog follower should not be deleted initially
+        assert!(
+            follow_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Deactivate the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deactivated_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog follower should be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_followers
+WHERE user_id = $1 AND blog_id = $2
+"#,
+        )
+        .bind(user_id)
+        .bind(blog_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Activate the user
+        sqlx::query(
+            r#"
+UPDATE users
+SET deactivated_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog follower should be restored
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_followers
+WHERE user_id = $1 AND blog_id = $2
+"#,
+        )
+        .bind(user_id)
+        .bind(blog_result.get::<i64, _>("id"))
         .fetch_one(&mut *conn)
         .await?;
 
@@ -9626,6 +11490,116 @@ WHERE id = $1
     }
 
     #[sqlx::test]
+    async fn can_set_blog_user_id_as_null_on_user_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert a blog
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO blogs (name, slug, user_id)
+VALUES ($1, $2, $3)
+RETURNING id
+"#,
+        )
+        .bind("Sample blog".to_string())
+        .bind("sample-blog".to_string())
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(insert_result.try_get::<i64, _>("id").is_ok());
+
+        // Delete the current user
+        sqlx::query(
+            r#"
+DELETE FROM users
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // `user_id` should be NULL on the blog
+        let result = sqlx::query(
+            r#"
+SELECT user_id FROM blogs
+WHERE id = $1
+"#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(result.get::<Option<i64>, _>("user_id").is_none());
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("blog"))]
+    async fn can_set_blog_writer_transmitter_id_as_null_on_transmitter_hard_delete(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Send a writer invite
+        let insert_result = sqlx::query(
+            r#"
+WITH inserted_editor AS (
+    INSERT INTO blog_editors (blog_id, user_id, accepted_at)
+    VALUES ($1, $2, NOW())
+)
+WITH receiver AS (
+    INSERT INTO users (name, username, email)
+    VALUES ('Writer', 'writer', 'writer@example.com')
+    RETURNING id
+)
+INSERT INTO blog_writers (blog_id, receiver_id, transmitter_id)
+VALUES ($1, (SELECT user_id FROM receiver), $2)
+RETURNING deleted_at
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Delete the transmitter
+        sqlx::query(
+            r#"
+DELETE FROM users
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog writer relation should not be deleted
+        let result = sqlx::query(
+            r#"
+SELECT transmitter_id FROM blog_writers
+WHERE blog_id = $1
+"#,
+        )
+        .bind(1_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(result.get::<Option<i64>, _>("transmitter_id").is_none());
+
+        Ok(())
+    }
+
+    #[sqlx::test]
     async fn can_set_user_avatar_id_as_null_on_asset_hard_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
@@ -10127,6 +12101,159 @@ WHERE id = $1
 SELECT EXISTS (
     SELECT 1 FROM tag_followers
     WHERE tag_id = $1 AND user_id = $2
+)
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("blog"))]
+    async fn can_delete_followed_blog_relation_on_user_hard_delete(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Follow a blog
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO blog_followers (blog_id, user_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        // Delete the current user
+        sqlx::query(
+            r#"
+DELETE FROM users
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Followed blog relation should get deleted
+        let result = sqlx::query(
+            r#"
+SELECT EXISTS (
+    SELECT 1 FROM blog_followers
+    WHERE blog_id = $1 AND user_id = $2
+)
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("blog"))]
+    async fn can_delete_blog_editor_relation_on_user_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Add an editor
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO blog_editors (blog_id, user_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        // Delete the current user
+        sqlx::query(
+            r#"
+DELETE FROM users
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog editor should get deleted
+        let result = sqlx::query(
+            r#"
+SELECT EXISTS (
+    SELECT 1 FROM blog_editors
+    WHERE blog_id = $1 AND user_id = $2
+)
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("blog"))]
+    async fn can_delete_blog_writer_relation_on_user_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Add a writer
+        let insert_result = sqlx::query(
+            r#"
+WITH blog AS (
+    SELECT user_id FROM blogs
+    WHERE id = $1
+)
+INSERT INTO blog_writers (blog_id, receiver_id, transmitter_id)
+VALUES ($1, $2, (SELECT user_id FROM blog))
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        // Delete the current user
+        sqlx::query(
+            r#"
+DELETE FROM users
+WHERE id = $1
+"#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog writer should get deleted
+        let result = sqlx::query(
+            r#"
+SELECT EXISTS (
+    SELECT 1 FROM blog_writers
+    WHERE blog_id = $1 AND receiver_id = $2
 )
 "#,
         )
