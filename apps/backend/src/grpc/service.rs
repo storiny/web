@@ -316,7 +316,7 @@ impl ApiService for GrpcService {
         &self,
         request: Request<GetBlogEditorsInfoRequest>,
     ) -> Result<Response<GetBlogEditorsInfoResponse>, Status> {
-        todo!()
+        endpoints::get_blog_editors_info::get_blog_editors_info(self, request).await
     }
 
     async fn get_blog_pending_story_count(

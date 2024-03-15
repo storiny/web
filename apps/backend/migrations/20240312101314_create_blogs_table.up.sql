@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS blogs
 	name                     TEXT           NOT NULL
 		CONSTRAINT name_length CHECK (CHAR_LENGTH(name) <= 32 AND CHAR_LENGTH(name) >= 3),
 	slug                     TEXT           NOT NULL UNIQUE
-		CONSTRAINT slug_constraint CHECK (slug ~ '^[a-z0-9_-]{3,24}$'),
+		-- Must contain at-least one non-digit character
+		CONSTRAINT slug_constraint CHECK (slug ~ '^[a-z0-9_-]{3,24}$' AND slug ~ '[^\d]'),
 	description              TEXT
 		CONSTRAINT description_length CHECK (CHAR_LENGTH(description) <= 256),
 	domain                   citext UNIQUE
