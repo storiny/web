@@ -3,6 +3,8 @@ pub mod assets;
 pub mod blocks;
 pub mod blog_editors;
 pub mod blog_followers;
+pub mod blog_lsb_items;
+pub mod blog_rsb_items;
 pub mod blog_stories;
 pub mod blog_writers;
 pub mod blogs;
