@@ -344,7 +344,7 @@ impl ApiService for GrpcService {
         &self,
         request: Request<GetBlogWritersInfoRequest>,
     ) -> Result<Response<GetBlogWritersInfoResponse>, Status> {
-        todo!()
+        endpoints::get_blog_writers_info::get_blog_writers_info(self, request).await
     }
 
     async fn get_user_blogs_info(

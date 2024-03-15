@@ -1,7 +1,7 @@
 use crate::grpc::{
     defs::blog_def::v1::{
-        GetBlogEditorsInfoRequest,
-        GetBlogEditorsInfoResponse,
+        GetBlogWritersInfoRequest,
+        GetBlogWritersInfoResponse,
     },
     service::GrpcService,
 };
@@ -18,19 +18,19 @@ use tonic::{
 };
 use tracing::error;
 
-/// Returns the `editor_count` and `pending_editor_request_count` for a blog.
+/// Returns the `writer_count` and `pending_writer_request_count` for a blog.
 #[tracing::instrument(
-    name = "GRPC get_blog_editors_info",
+    name = "GRPC get_blog_writers_info",
     skip_all,
     fields(
         identifier = tracing::field::Empty
     ),
     err
 )]
-pub async fn get_blog_editors_info(
+pub async fn get_blog_writers_info(
     client: &GrpcService,
-    request: Request<GetBlogEditorsInfoRequest>,
-) -> Result<Response<GetBlogEditorsInfoResponse>, Status> {
+    request: Request<GetBlogWritersInfoRequest>,
+) -> Result<Response<GetBlogWritersInfoResponse>, Status> {
     let identifier = request.into_inner().identifier;
     // Identifier can be slug or the ID
     let is_identifier_number = identifier.parse::<i64>().is_success();
@@ -40,7 +40,7 @@ pub async fn get_blog_editors_info(
     let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
         r#"
 WITH blog AS (
-    SELECT id, editor_count
+    SELECT id, writer_count
     FROM blogs b
     WHERE
 "#,
@@ -64,20 +64,20 @@ b.slug = $1
 SELECT
     COALESCE(
         (
-            SELECT editor_count
+            SELECT writer_count
             FROM blog
         )
-    , 0) AS "editor_count",
+    , 0) AS "writer_count",
 (
     SELECT COUNT(*)
-    FROM blog_editors
+    FROM blog_writers
     WHERE
         blog_id = (
             SELECT id FROM blog
         )
         AND deleted_at IS NULL
         AND accepted_at IS NULL
-) AS "pending_editor_request_count"
+) AS "pending_writer_request_count"
 "#,
     );
 
@@ -92,87 +92,87 @@ SELECT
             Status::internal("Database error")
         })?;
 
-    Ok(Response::new(GetBlogEditorsInfoResponse {
-        editor_count: result.get::<i32, _>("editor_count") as u32,
-        pending_editor_request_count: result.get::<i64, _>("pending_editor_request_count") as u32,
+    Ok(Response::new(GetBlogWritersInfoResponse {
+        writer_count: result.get::<i32, _>("writer_count") as u32,
+        pending_writer_request_count: result.get::<i64, _>("pending_writer_request_count") as u32,
     }))
 }
 
 #[cfg(test)]
 mod tests {
     use crate::{
-        grpc::defs::blog_def::v1::GetBlogEditorsInfoRequest,
+        grpc::defs::blog_def::v1::GetBlogWritersInfoRequest,
         test_utils::test_grpc_service,
     };
     use sqlx::PgPool;
     use tonic::Request;
 
-    #[sqlx::test(fixtures("get_blog_editors_info"))]
-    async fn can_return_blog_editors_info_by_slug(pool: PgPool) {
+    #[sqlx::test(fixtures("get_blog_writers_info"))]
+    async fn can_return_blog_writers_info_by_slug(pool: PgPool) {
         test_grpc_service(
             pool,
             false,
             Box::new(|mut client, _, _, _| async move {
                 let response = client
-                    .get_blog_editors_info(Request::new(GetBlogEditorsInfoRequest {
+                    .get_blog_writers_info(Request::new(GetBlogWritersInfoRequest {
                         identifier: "test-blog".to_string(),
                     }))
                     .await
                     .unwrap()
                     .into_inner();
 
-                assert_eq!(response.editor_count, 3_u32);
-                assert_eq!(response.pending_editor_request_count, 2_u32);
+                assert_eq!(response.writer_count, 3_u32);
+                assert_eq!(response.pending_writer_request_count, 2_u32);
             }),
         )
         .await;
     }
 
-    #[sqlx::test(fixtures("get_blog_editors_info"))]
-    async fn can_return_blog_editors_info_by_id(pool: PgPool) {
+    #[sqlx::test(fixtures("get_blog_writers_info"))]
+    async fn can_return_blog_writers_info_by_id(pool: PgPool) {
         test_grpc_service(
             pool,
             false,
             Box::new(|mut client, _, _, _| async move {
                 let response = client
-                    .get_blog_editors_info(Request::new(GetBlogEditorsInfoRequest {
+                    .get_blog_writers_info(Request::new(GetBlogWritersInfoRequest {
                         identifier: 7_i64.to_string(),
                     }))
                     .await
                     .unwrap()
                     .into_inner();
 
-                assert_eq!(response.editor_count, 3_u32);
-                assert_eq!(response.pending_editor_request_count, 2_u32);
+                assert_eq!(response.writer_count, 3_u32);
+                assert_eq!(response.pending_writer_request_count, 2_u32);
             }),
         )
         .await;
     }
 
-    #[sqlx::test(fixtures("get_blog_editors_info"))]
-    async fn should_not_count_soft_deleted_editors(pool: PgPool) {
+    #[sqlx::test(fixtures("get_blog_writers_info"))]
+    async fn should_not_count_soft_deleted_writers(pool: PgPool) {
         test_grpc_service(
             pool,
             false,
             Box::new(|mut client, pool, _, _| async move {
-                // Should count all the editors initially.
+                // Should count all the writers initially.
                 let response = client
-                    .get_blog_editors_info(Request::new(GetBlogEditorsInfoRequest {
+                    .get_blog_writers_info(Request::new(GetBlogWritersInfoRequest {
                         identifier: "test-blog".to_string(),
                     }))
                     .await
                     .unwrap()
                     .into_inner();
 
-                assert_eq!(response.editor_count, 3_u32);
-                assert_eq!(response.pending_editor_request_count, 2_u32);
+                assert_eq!(response.writer_count, 3_u32);
+                assert_eq!(response.pending_writer_request_count, 2_u32);
 
-                // Soft-delete one of the editor relations.
+                // Soft-delete one of the writer relations.
                 let result = sqlx::query(
                     r#"
-UPDATE blog_editors
+UPDATE blog_writers
 SET deleted_at = NOW()
-WHERE user_id IN ($1, $2)
+WHERE receiver_id IN ($1, $2)
 "#,
                 )
                 .bind(3_i64)
@@ -183,17 +183,17 @@ WHERE user_id IN ($1, $2)
 
                 assert_eq!(result.rows_affected(), 2);
 
-                // Should count only valid editors.
+                // Should count only valid writers.
                 let response = client
-                    .get_blog_editors_info(Request::new(GetBlogEditorsInfoRequest {
+                    .get_blog_writers_info(Request::new(GetBlogWritersInfoRequest {
                         identifier: "test-blog".to_string(),
                     }))
                     .await
                     .unwrap()
                     .into_inner();
 
-                assert_eq!(response.editor_count, 2_u32);
-                assert_eq!(response.pending_editor_request_count, 1_u32);
+                assert_eq!(response.writer_count, 2_u32);
+                assert_eq!(response.pending_writer_request_count, 1_u32);
             }),
         )
         .await;
@@ -206,15 +206,15 @@ WHERE user_id IN ($1, $2)
             false,
             Box::new(|mut client, _, _, _| async move {
                 let response = client
-                    .get_blog_editors_info(Request::new(GetBlogEditorsInfoRequest {
+                    .get_blog_writers_info(Request::new(GetBlogWritersInfoRequest {
                         identifier: "invalid-blog".to_string(),
                     }))
                     .await
                     .unwrap()
                     .into_inner();
 
-                assert_eq!(response.editor_count, 0_u32);
-                assert_eq!(response.pending_editor_request_count, 0_u32);
+                assert_eq!(response.writer_count, 0_u32);
+                assert_eq!(response.pending_writer_request_count, 0_u32);
             }),
         )
         .await;
