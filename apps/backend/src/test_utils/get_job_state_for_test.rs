@@ -14,11 +14,14 @@ use apalis::prelude::*;
 use sqlx::PgPool;
 use std::sync::Arc;
 
-/// Initializes returns a background job context for tests.
+/// Initializes and returns a background job state for tests.
 ///
 /// * `db_pool` - The Postgres connection pool.
 /// * `s3_client` - An optional S3 client instance.
-pub async fn get_job_ctx_for_test(db_pool: PgPool, s3_client: Option<S3Client>) -> JobContext {
+pub async fn get_job_state_for_test(
+    db_pool: PgPool,
+    s3_client: Option<S3Client>,
+) -> Data<Arc<SharedJobState>> {
     let shared_aws_config = aws_config::defaults(get_aws_behavior_version())
         .region(get_aws_region())
         .load()
@@ -33,8 +36,5 @@ pub async fn get_job_ctx_for_test(db_pool: PgPool, s3_client: Option<S3Client>) 
         s3_client: s3_client.unwrap_or(get_s3_client().await),
     });
 
-    let mut ctx = JobContext::new(JobId::new());
-    ctx.insert(shared_state);
-
-    ctx
+    Data::new(shared_state)
 }

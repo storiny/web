@@ -4,7 +4,7 @@ use crate::{
     utils::deflate_bytes_gzip::deflate_bytes_gzip,
     S3Client,
 };
-use apalis::prelude::JobError;
+use apalis::prelude::Error;
 use sitemap_rs::{
     url::{
         ChangeFrequency,
@@ -25,13 +25,13 @@ fn build_url_entry(
     path: &str,
     priority: f32,
     change_frequency: Option<ChangeFrequency>,
-) -> Result<Url, JobError> {
-    Url::builder(format!("{web_server_url}{}", path))
+) -> Result<Url, Error> {
+    Url::builder(format!("{web_server_url}{path}"))
         .change_frequency(change_frequency.unwrap_or(ChangeFrequency::Yearly))
         .priority(priority)
         .build()
         .map_err(Box::new)
-        .map_err(|err| JobError::Failed(err))
+        .map_err(|err| Error::Failed(err))
 }
 
 /// Generates the preset sitemap.
@@ -41,7 +41,7 @@ fn build_url_entry(
 pub async fn generate_preset_sitemap(
     s3_client: &S3Client,
     web_server_url: &str,
-) -> Result<GenerateSitemapResponse, JobError> {
+) -> Result<GenerateSitemapResponse, Error> {
     let presets = vec![
         build_url_entry(web_server_url, "/", 1.0, Some(ChangeFrequency::Always))?,
         build_url_entry(web_server_url, "/about", 0.8, None)?,
@@ -59,18 +59,18 @@ pub async fn generate_preset_sitemap(
     // Throws error when the number of presets are > 50,000
     let url_set: UrlSet = UrlSet::new(presets)
         .map_err(Box::new)
-        .map_err(|err| JobError::Failed(err))?;
+        .map_err(|err| Error::Failed(err))?;
     let mut buffer = Vec::new();
 
     url_set
         .write(&mut buffer)
         .map_err(Box::new)
-        .map_err(|err| JobError::Failed(err))?;
+        .map_err(|err| Error::Failed(err))?;
 
     let compressed_bytes = deflate_bytes_gzip(&buffer, None)
         .await
         .map_err(Box::new)
-        .map_err(|err| JobError::Failed(err))?;
+        .map_err(|err| Error::Failed(err))?;
 
     debug!(
         "sitemap size after compression: {} bytes",
@@ -88,7 +88,7 @@ pub async fn generate_preset_sitemap(
         .send()
         .await
         .map_err(|error| Box::new(error.into_service_error()))
-        .map_err(|error| JobError::Failed(error))?;
+        .map_err(|error| Error::Failed(error))?;
 
     Ok(GenerateSitemapResponse {
         url_count: preset_count as u32,
