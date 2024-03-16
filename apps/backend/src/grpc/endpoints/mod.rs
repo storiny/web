@@ -23,6 +23,7 @@ pub mod get_story_responses_info;
 pub mod get_tag;
 pub mod get_token;
 pub mod get_user_block_count;
+pub mod get_user_blogs_info;
 pub mod get_user_id;
 pub mod get_user_mute_count;
 pub mod get_user_relations_info;
