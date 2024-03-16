@@ -33,14 +33,8 @@ use apalis::{
         CronStream,
         Schedule,
     },
-    layers::{
-        Extension,
-        TraceLayer,
-    },
-    prelude::{
-        timer::TokioTimer,
-        *,
-    },
+    layers::tracing::TraceLayer,
+    prelude::*,
 };
 use redis::aio::ConnectionManager;
 use sqlx::{
@@ -50,6 +44,11 @@ use sqlx::{
 use std::{
     str::FromStr,
     sync::Arc,
+    time::Duration,
+};
+use tracing::{
+    error,
+    info,
 };
 
 /// State common to all the jobs
@@ -65,6 +64,14 @@ pub struct SharedJobState {
     pub ses_client: SesClient,
     /// AWS S3 client instance
     pub s3_client: S3Client,
+}
+
+/// Storage map for all the jobs. Used to remove done and killed jobs from the cache.
+#[derive(Clone)]
+pub struct JobStorageMap {
+    pub story_add_by_user: JobStorage<NotifyStoryAddByUserJob>,
+    pub story_add_by_tag: JobStorage<NotifyStoryAddByTagJob>,
+    pub templated_email: JobStorage<TemplatedEmailJob>,
 }
 
 /// Starts the background jobs.
@@ -104,35 +111,44 @@ pub async fn start_jobs(
         let templated_email_storage: JobStorage<TemplatedEmailJob> =
             JobStorage::new(connection_manager);
 
-        Monitor::new()
+        let job_storage_map = JobStorageMap {
+            story_add_by_user: story_add_by_user_storage.clone(),
+            story_add_by_tag: story_add_by_tag_storage.clone(),
+            templated_email: templated_email_storage.clone(),
+        };
+
+        Monitor::<TokioExecutor>::new()
             // Push notifications
-            .register_with_count(4, move |x| {
-                WorkerBuilder::new(format!("notify-story-add-by-user-worker-{x}"))
+            .register_with_count(
+                4,
+                WorkerBuilder::new("notify-story-add-by-user-worker")
                     .layer(TraceLayer::new())
-                    .layer(Extension(story_add_by_user_state.clone()))
-                    .with_storage(story_add_by_user_storage.clone())
-                    .build_fn(notify_story_add_by_user)
-            })
-            .register_with_count(4, move |x| {
-                WorkerBuilder::new(format!("notify-story-add-by-tag-worker-{x}"))
+                    .data(story_add_by_user_state.clone())
+                    .with_storage(story_add_by_user_storage)
+                    .build_fn(notify_story_add_by_user),
+            )
+            .register_with_count(
+                4,
+                WorkerBuilder::new("notify-story-add-by-tag-worker")
                     .layer(TraceLayer::new())
-                    .layer(Extension(story_add_by_tag_state.clone()))
-                    .with_storage(story_add_by_tag_storage.clone())
-                    .build_fn(notify_story_add_by_tag)
-            })
+                    .data(story_add_by_tag_state.clone())
+                    .with_storage(story_add_by_tag_storage)
+                    .build_fn(notify_story_add_by_tag),
+            )
             // Email
-            .register_with_count(6, move |x| {
-                WorkerBuilder::new(format!("templated-email-worker-{x}"))
+            .register_with_count(
+                6,
+                WorkerBuilder::new("templated-email-worker")
                     .layer(TraceLayer::new())
-                    .layer(Extension(templated_email_state.clone()))
-                    .with_storage(templated_email_storage.clone())
-                    .build_fn(send_templated_email)
-            })
+                    .data(templated_email_state.clone())
+                    .with_storage(templated_email_storage)
+                    .build_fn(send_templated_email),
+            )
             // Cron
             .register(
                 WorkerBuilder::new("cache-cleanup-worker")
                     .layer(TraceLayer::new())
-                    .layer(Extension(state.clone()))
+                    .data(job_storage_map)
                     .stream(
                         CronStream::new(
                             // Run every night at 2 AM
@@ -140,15 +156,14 @@ pub async fn start_jobs(
                             Schedule::from_str("0 0 02 * * *")
                                 .expect("unable to parse the cron schedule"),
                         )
-                        .timer(TokioTimer)
-                        .to_stream(),
+                        .into_stream(),
                     )
                     .build_fn(cleanup_cache),
             )
             .register(
                 WorkerBuilder::new("sitemap-worker")
                     .layer(TraceLayer::new())
-                    .layer(Extension(state.clone()))
+                    .data(state.clone())
                     .stream(
                         CronStream::new(
                             // Run every month
@@ -156,15 +171,14 @@ pub async fn start_jobs(
                             Schedule::from_str("0 0 0 1 * *")
                                 .expect("unable to parse the cron schedule"),
                         )
-                        .timer(TokioTimer)
-                        .to_stream(),
+                        .into_stream(),
                     )
                     .build_fn(refresh_sitemap),
             )
             .register(
                 WorkerBuilder::new("db-cleanup-worker")
                     .layer(TraceLayer::new())
-                    .layer(Extension(state.clone()))
+                    .data(state.clone())
                     .stream(
                         CronStream::new(
                             // Run every monday
@@ -172,15 +186,14 @@ pub async fn start_jobs(
                             Schedule::from_str("0 0 0 * * 1")
                                 .expect("unable to parse the cron schedule"),
                         )
-                        .timer(TokioTimer)
-                        .to_stream(),
+                        .into_stream(),
                     )
                     .build_fn(cleanup_db),
             )
             .register(
                 WorkerBuilder::new("s3-cleanup-worker")
                     .layer(TraceLayer::new())
-                    .layer(Extension(state.clone()))
+                    .data(state)
                     .stream(
                         CronStream::new(
                             // Run every tuesday
@@ -188,12 +201,32 @@ pub async fn start_jobs(
                             Schedule::from_str("0 0 0 * * 2")
                                 .expect("unable to parse the cron schedule"),
                         )
-                        .timer(TokioTimer)
-                        .to_stream(),
+                        .into_stream(),
                     )
                     .build_fn(cleanup_s3),
             )
-            .run()
+            .on_event(|event| {
+                let worker_id = event.id();
+
+                match event.inner() {
+                    Event::Start => {
+                        info!("[{worker_id}] worker started");
+                    }
+                    Event::Error(err) => {
+                        error!("[{worker_id}] worker encountered an error: {err:?}");
+                    }
+                    Event::Exit => {
+                        info!("[{worker_id}] worker exited");
+                    }
+                    _ => {}
+                }
+            })
+            .shutdown_timeout(Duration::from_millis(10_000))
+            .run_with_signal(async {
+                tokio::signal::ctrl_c().await?;
+                info!("monitor starting shutdown");
+                Ok(())
+            })
             .await
     });
 }

@@ -51,16 +51,15 @@ impl Job for SitemapJob {
 #[tracing::instrument(name = "JOB refresh_sitemap", skip_all, ret, err)]
 pub async fn refresh_sitemap(
     _: SitemapJob,
-    ctx: JobContext,
-) -> Result<GenerateSitemapResponse, JobError> {
+    state: Data<Arc<SharedJobState>>,
+) -> Result<GenerateSitemapResponse, Error> {
     info!("attempting to refresh sitemaps");
 
-    let state = ctx.data::<Arc<SharedJobState>>()?;
     let s3_client = &state.s3_client;
     let deleted_sitemaps = delete_s3_objects(s3_client, S3_SITEMAPS_BUCKET, None, None)
         .await
         .map_err(|err| Box::from(err.to_string()))
-        .map_err(JobError::Failed)?;
+        .map_err(Error::Failed)?;
 
     debug!("deleted {} old sitemap files", deleted_sitemaps);
 
@@ -173,7 +172,7 @@ pub async fn refresh_sitemap(
     // This fails if there are more than 50,000 entries in the index file.
     let index_sitemap: SitemapIndex = SitemapIndex::new(sitemaps)
         .map_err(Box::new)
-        .map_err(|err| JobError::Failed(err))?;
+        .map_err(|err| Error::Failed(err))?;
 
     // Finally, upload the sitemap index file to the bucket.
 
@@ -182,12 +181,12 @@ pub async fn refresh_sitemap(
     index_sitemap
         .write(&mut buffer)
         .map_err(Box::new)
-        .map_err(|err| JobError::Failed(err))?;
+        .map_err(|err| Error::Failed(err))?;
 
     let compressed_bytes = deflate_bytes_gzip(&buffer, None)
         .await
         .map_err(Box::new)
-        .map_err(|err| JobError::Failed(err))?;
+        .map_err(|err| Error::Failed(err))?;
 
     debug!(
         "sitemap index size after compression: {} bytes",
@@ -205,7 +204,7 @@ pub async fn refresh_sitemap(
         .send()
         .await
         .map_err(|error| Box::new(error.into_service_error()))
-        .map_err(|error| JobError::Failed(error))?;
+        .map_err(|error| Error::Failed(error))?;
 
     info!("regenerate sitemap index file");
 
@@ -221,7 +220,7 @@ mod tests {
     use crate::{
         test_utils::{
             count_s3_objects,
-            get_job_ctx_for_test,
+            get_job_state_for_test,
             get_s3_client,
             TestContext,
         },
@@ -256,8 +255,8 @@ mod tests {
         #[sqlx::test(fixtures("sitemap"))]
         async fn can_generate_sitemap(ctx: &mut LocalTestContext, pool: PgPool) {
             let s3_client = &ctx.s3_client;
-            let ctx = get_job_ctx_for_test(pool, Some(s3_client.clone())).await;
-            let result = refresh_sitemap(SitemapJob(Utc::now()), ctx).await;
+            let state = get_job_state_for_test(pool, Some(s3_client.clone())).await;
+            let result = refresh_sitemap(SitemapJob(Utc::now()), state).await;
             // 1 preset file + 1 story file + 1 user file + 1 tag file + 1 index sitemap file.
             let expected_sitemap_file_count = 5;
 
@@ -276,8 +275,8 @@ mod tests {
         #[sqlx::test(fixtures("large_dataset"))]
         async fn can_generate_sitemap_for_large_dataset(ctx: &mut LocalTestContext, pool: PgPool) {
             let s3_client = &ctx.s3_client;
-            let ctx = get_job_ctx_for_test(pool, Some(s3_client.clone())).await;
-            let result = refresh_sitemap(SitemapJob(Utc::now()), ctx).await;
+            let state = get_job_state_for_test(pool, Some(s3_client.clone())).await;
+            let result = refresh_sitemap(SitemapJob(Utc::now()), state).await;
             // 1 preset file + 3 story files + 3 user files + 3 tag files + 1 index sitemap file.
             let expected_sitemap_file_count = 11;
 

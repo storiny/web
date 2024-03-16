@@ -17,7 +17,7 @@ actix-utils = "3.0.1"
 actix-web = { version = "4.4.0", features = ["cookies", "secure-cookies", "__compress"] }
 actix-web-validator = "5.0.1"
 anyhow = "1.0.75"
-apalis = { version = "0.4.7", default-features = false, features = ["extensions", "retry", "cron", "tokio-comp", "tracing", "redis", "chrono"] }
+apalis = { version = "0.5.1", default-features = false, features = ["retry", "cron", "tokio-comp", "tracing", "redis"] }
 argon2 = "0.5.2"
 async-compression = { version = "0.4.5", features = ["gzip", "tokio"] }
 async-recursion = "1.0.5"
@@ -28,7 +28,7 @@ aws-sdk-sesv2 = "1.3.0"
 chrono = "0.4.31"
 colors-transform = "0.2.11"
 cookie = { version = "0.18.0", features = ["private", "signed"] }
-deadpool-redis = "0.14.0"
+deadpool-redis = { git = "https://github.com/bikeshedder/deadpool.git" }
 derive_more = "0.99.17"
 dominant_color = "0.4.0"
 dotenv = "0.15.0"
@@ -49,7 +49,7 @@ oauth2 = "4.4.2"
 pbjson = "0.6.0"
 prost = "0.12.1"
 rand = "0.8.5"
-redis = { version = "0.24.0", default-features = false, features = ["tokio-comp", "aio", "connection-manager", "script"] }
+redis = { version = "0.25.1", default-features = false, features = ["tokio-comp", "aio", "connection-manager", "script"] }
 regex = "1.9.5"
 reqwest = { version = "0.11.22", features = ["json"] }
 sailfish = "0.8.0"
