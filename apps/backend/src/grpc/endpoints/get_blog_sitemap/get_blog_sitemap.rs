@@ -56,6 +56,12 @@ pub async fn get_blog_sitemap(
 
     tracing::Span::current().record("identifier", &identifier);
 
+    let pg_pool = &client.db_pool;
+    let mut txn = pg_pool.begin().await.map_err(|error| {
+        error!("unable to begin the transaction: {error:?}");
+        Status::internal("Database error")
+    })?;
+
     let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
         r#"
 SELECT id FROM blogs b
@@ -72,12 +78,17 @@ WHERE
         r#" b.slug = $1 "#
     });
 
-    query_builder.push(r#" AND b.deleted_at IS NULL "#);
+    query_builder.push(
+        r#"
+AND b.deleted_at IS NULL
+AND b.user_id IS NOT NULL
+"#,
+    );
 
     let blog = query_builder
         .build()
         .bind(identifier)
-        .fetch_one(&client.db_pool)
+        .fetch_one(&mut *txn)
         .await
         .map_err(|error| {
             if matches!(error, sqlx::Error::RowNotFound) {
@@ -124,7 +135,7 @@ LIMIT $2
     )
     .bind(blog_id)
     .bind(CHUNK_SIZE as i32)
-    .fetch_all(&client.db_pool)
+    .fetch_all(&mut *txn)
     .await
     .map_err(|error| {
         error!("database error: {error:?}");
@@ -149,6 +160,11 @@ LIMIT $2
         url_builder.build().ok()
     })
     .collect::<Vec<_>>();
+
+    txn.commit().await.map_err(|error| {
+        error!("unable to commit the transaction: {error:?}");
+        Status::internal("Database error")
+    })?;
 
     // This should never error as the number of rows are always <= 50,000
     let url_set = UrlSet::new(result).map_err(|error| {

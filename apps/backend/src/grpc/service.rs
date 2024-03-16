@@ -302,7 +302,7 @@ impl ApiService for GrpcService {
         &self,
         request: Request<GetBlogRequest>,
     ) -> Result<Response<GetBlogResponse>, Status> {
-        todo!()
+        endpoints::get_blog::get_blog(self, request).await
     }
 
     async fn get_blog_archive(
