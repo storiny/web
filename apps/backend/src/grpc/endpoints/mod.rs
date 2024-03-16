@@ -1,5 +1,6 @@
 pub mod create_draft;
 pub mod get_blog;
+pub mod get_blog_archive;
 pub mod get_blog_editors_info;
 pub mod get_blog_pending_story_count;
 pub mod get_blog_published_story_count;
