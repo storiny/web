@@ -41,6 +41,62 @@ VALUES ($1, $2)
     //
 
     #[sqlx::test(fixtures("user", "story", "blog"))]
+    async fn can_reject_duplicate_blog_story(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Add the user as an editor.
+        let result = sqlx::query(
+            r#"
+INSERT INTO blog_editors (blog_id, user_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
+        )
+        .bind(3_i64)
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let result = sqlx::query(
+            r#"
+INSERT INTO blog_stories (blog_id, story_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(3_i64)
+        .bind(4_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Try adding the story to another blog.
+        let result = sqlx::query(
+            r#"
+WITH blog AS (
+    INSERT INTO blogs (name, slug, user_id)
+    VALUES ('Test blog', 'test-blog', $2)
+    RETURNING id
+)
+INSERT INTO blog_stories (blog_id, story_id)
+VALUES ((SELECT id FROM blog), $1)
+"#,
+        )
+        .bind(4_i64)
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await;
+
+        assert!(matches!(
+            result.unwrap_err().as_database_error().unwrap().kind(),
+            sqlx::error::ErrorKind::UniqueViolation
+        ));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user", "story", "blog"))]
     async fn can_reject_blog_story_for_soft_deleted_blog(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
 
