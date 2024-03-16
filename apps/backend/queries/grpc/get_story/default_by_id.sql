@@ -88,7 +88,18 @@ SELECT s.id,
 							   'public_flags', "s->contributors->user".public_flags
 								)
 								) FILTER ( WHERE "s->contributors->user".id IS NOT NULL )
-		   , '[]')                  AS "contributors!: Json<Vec<User>>"
+		   , '[]')                  AS "contributors!: Json<Vec<User>>",
+	   -- Blog
+	   CASE
+		   WHEN "s->blog_story->blog".id IS NOT NULL
+			   THEN
+			   JSON_BUILD_OBJECT(
+					   'id', "s->blog_story->blog".id,
+					   'name', "s->blog_story->blog".name,
+					   'slug', "s->blog_story->blog".slug,
+					   'domain', "s->blog_story->blog".domain
+			   )
+	   END                          AS "blog: Json<Blog>"
 FROM
 	stories s
 		-- Join document
@@ -118,6 +129,15 @@ FROM
 						 ON "s->story_tags->tag".id = "s->story_tags".tag_id
 		)
 						ON "s->story_tags".story_id = s.id
+		-- Join blog story
+		LEFT OUTER JOIN (blog_stories AS "s->blog_story"
+		INNER JOIN blogs AS "s->blog_story->blog"
+						 ON "s->blog_story->blog".id = "s->blog_story".blog_id
+							 AND "s->blog_story->blog".user_id IS NOT NULL
+		)
+						ON "s->blog_story".story_id = s.id
+							AND "s->blog_story".deleted_at IS NULL
+							AND "s->blog_story".accepted_at IS NOT NULL
 WHERE
 	s.id = $1
 GROUP BY
@@ -136,4 +156,6 @@ GROUP BY
 	"user_status_emoji?",
 	"user_status_text?",
 	"user_status_expires_at?",
-	"s->user->status".user_id
+	"s->user->status".user_id,
+	"s->blog_story->blog".id
+LIMIT 1
