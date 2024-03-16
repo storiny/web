@@ -143,6 +143,7 @@ BEGIN
 					 WHERE
 						   b.id = bs.blog_id
 					   AND b.deleted_at IS NULL
+					   AND b.user_id IS NOT NULL
 					);
 	END IF;
 	--
