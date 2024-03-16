@@ -22,6 +22,7 @@ import ReplyIcon from "~/icons/reply";
 import ShieldIcon from "~/icons/shield";
 import StoryIcon from "~/icons/story";
 import TagIcon from "~/icons/tag";
+import UserIcon from "~/icons/user";
 import UserCheckIcon from "~/icons/user-check";
 import UserHeartIcon from "~/icons/user-heart";
 import UserPlusIcon from "~/icons/user-plus";
@@ -120,7 +121,7 @@ const Notification = (props: NotificationProps): React.ReactElement => {
         }
         visible={!is_mobile}
       >
-        {is_system ? (
+        {is_system || !notification.actor ? (
           <Avatar
             borderless={!is_mobile}
             className={styles["system-avatar"]}
@@ -133,7 +134,7 @@ const Notification = (props: NotificationProps): React.ReactElement => {
               }
             }}
           >
-            {SYSTEM_ICON_MAP[notification.type]}
+            {SYSTEM_ICON_MAP[notification.type] || <UserIcon />}
           </Avatar>
         ) : (
           <Avatar
