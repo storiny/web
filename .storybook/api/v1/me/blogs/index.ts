@@ -22,6 +22,7 @@ worker.use(
           id: nanoid(),
           is_owner: blog.user_id === MOCK_USERS[0].id,
           is_editor: index % 2 === 0 && blog.user_id !== MOCK_USERS[0].id,
+          is_writer: index % 2 !== 0 && blog.user_id !== MOCK_USERS[0].id,
         })),
       ),
     ),

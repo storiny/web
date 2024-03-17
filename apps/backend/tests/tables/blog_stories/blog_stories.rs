@@ -262,6 +262,79 @@ VALUES ($1, $2)
     }
 
     #[sqlx::test(fixtures("user", "story", "blog"))]
+    async fn should_not_accept_blog_story_for_a_locked_blog(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Add the user as an editor.
+        let result = sqlx::query(
+            r#"
+INSERT INTO blog_editors (blog_id, user_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
+        )
+        .bind(3_i64)
+        .bind(1_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Add the story to the blog.
+        let result = sqlx::query(
+            r#"
+INSERT INTO blog_stories (blog_id, story_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(3_i64)
+        .bind(4_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Lock the blog
+        let result = sqlx::query(
+            r#"
+UPDATE blogs
+SET is_active = FALSE
+WHERE id = $1
+"#,
+        )
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Try accepting the story.
+        let result = sqlx::query(
+            r#"
+UPDATE blog_stories
+SET accepted_at = NOW()
+WHERE blog_id = $1 AND story_id = $2
+"#,
+        )
+        .bind(3_i64)
+        .bind(4_i64)
+        .execute(&mut *conn)
+        .await;
+
+        // Should reject with the correct SQLSTATE.
+        assert_eq!(
+            result
+                .unwrap_err()
+                .into_database_error()
+                .unwrap()
+                .code()
+                .unwrap(),
+            SqlState::BlogLocked.to_string()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user", "story", "blog"))]
     async fn can_reject_blog_story_from_an_unknown_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(

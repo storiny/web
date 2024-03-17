@@ -2,6 +2,7 @@ pub mod account_activity;
 pub mod assets;
 pub mod blocked_users;
 pub mod blog_requests;
+pub mod blogs;
 pub mod bookmarks;
 pub mod collaboration_requests;
 pub mod comments;
