@@ -35,6 +35,8 @@ pub enum ResourceLimit {
     CreateReport,
     /// The daily limit for sending collaboration requests.
     SendCollabRequest,
+    /// The daily limit for creating blogs.
+    CreateBlog,
 }
 
 impl ResourceLimit {
@@ -56,6 +58,7 @@ impl ResourceLimit {
             ResourceLimit::FollowTag => 400,
             ResourceLimit::BookmarkStory => 400,
             ResourceLimit::CreateReport => 25,
+            ResourceLimit::CreateBlog => 10,
         }
     }
 }
