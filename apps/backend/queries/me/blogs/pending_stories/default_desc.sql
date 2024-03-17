@@ -45,42 +45,40 @@ WITH stories_result AS (SELECT
 								ELSE '{}'
 							END                                     AS "tags!: Vec<Tag>"
 						FROM
-							stories s
+							blog_stories AS bs
+								-- Join story
+								INNER JOIN stories AS s
+										   ON s.id = bs.story_id
 								-- Join user
 								INNER JOIN users AS su
 										   ON su.id = s.user_id
-								-- Join contributor
-								INNER JOIN story_contributors AS sc
-										   ON sc.story_id = s.id
-											   AND sc.user_id = $1
-											   AND sc.accepted_at IS NOT NULL
-											   AND sc.deleted_at IS NULL
 								-- Join story tags
 								LEFT OUTER JOIN (story_tags AS "s->story_tags"
-								-- Join tags
 								INNER JOIN tags AS "s->story_tags->tag"
 												 ON "s->story_tags->tag".id = "s->story_tags".tag_id)
 												ON "s->story_tags".story_id = s.id
 								-- Boolean story like flag
 								LEFT OUTER JOIN story_likes AS "s->is_liked"
 												ON "s->is_liked".story_id = s.id
-													AND "s->is_liked".user_id = $1
+													AND "s->is_liked".user_id = $2
 													AND "s->is_liked".deleted_at IS NULL
 								-- Boolean bookmark flag
 								LEFT OUTER JOIN bookmarks AS "s->is_bookmarked"
 												ON "s->is_bookmarked".story_id = s.id
-													AND "s->is_bookmarked".user_id = $1
+													AND "s->is_bookmarked".user_id = $2
 													AND "s->is_bookmarked".deleted_at IS NULL
 						WHERE
-							s.deleted_at IS NULL
+							  bs.blog_id = $1
+						  AND bs.accepted_at IS NULL
+						  AND bs.deleted_at IS NULL
 						GROUP BY
 							s.id,
 							su.id,
-							sc.accepted_at,
+							bs.created_at,
 							"s->is_liked".story_id,
 							"s->is_bookmarked".story_id
-						ORDER BY sc.accepted_at DESC
-						LIMIT $2 OFFSET $3
+						ORDER BY bs.created_at DESC
+						LIMIT $3 OFFSET $4
 					   )
 SELECT
 	-- Story

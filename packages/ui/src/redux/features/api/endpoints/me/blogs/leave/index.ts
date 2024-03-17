@@ -1,6 +1,6 @@
 import { api_slice } from "~/redux/features/api/slice";
 
-const SEGMENT = (id: string): string => `me/blogs/${id}/leave`;
+const SEGMENT = (id: string): string => `me/leave-blog/${id}`;
 
 export interface LeaveBlogPayload {
   id: string;
