@@ -93,3 +93,29 @@ CREATE OR REPLACE TRIGGER blog_story_insert_trigger
 	ON blog_stories
 	FOR EACH ROW
 EXECUTE PROCEDURE blog_story_insert_trigger_proc();
+
+-- Update
+--
+CREATE OR REPLACE FUNCTION blog_story_update_trigger_proc(
+)
+	RETURNS TRIGGER
+AS
+$$
+BEGIN
+	-- Check if the blog is locked when the story is accepted
+	IF (OLD.accepted_at IS NULL AND NEW.accepted_at IS NOT NULL) THEN
+		RAISE 'Blog is locked'
+			USING ERRCODE = '52010';
+	END IF;
+	--
+	RETURN NEW;
+END;
+$$
+	LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER blog_story_update_trigger
+	BEFORE UPDATE
+	ON blog_stories
+	FOR EACH ROW
+	WHEN (OLD.accepted_at IS DISTINCT FROM NEW.accepted_at)
+EXECUTE PROCEDURE blog_story_update_trigger_proc();
