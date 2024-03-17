@@ -1,9 +1,10 @@
 INSERT INTO
 	users(id, name, username, email)
-VALUES (1, 'Test user 1', 'test_user_1', 'test_user_1@example.com'),
-	   (2, 'Test user 2', 'test_user_2', 'test_user_2@example.com');
+VALUES (1, 'Test user 1', 'test_user_1', 'test_user_1@example.com');
 
 INSERT INTO
-	stories (id, user_id)
-VALUES (3, 1),
-	   (4, 1);
+	blogs (id, name, slug, user_id)
+VALUES (2, 'Wellness Wisdom', 'wellness', 1),
+	   (3, 'The Green Guru', 'green-guru', 1),
+	   (4, 'Geek Gazette', 'geek-gazette', 1),
+	   (5, 'RED Cinema', 'red', 1);

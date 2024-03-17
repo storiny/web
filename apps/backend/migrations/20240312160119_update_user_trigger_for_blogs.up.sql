@@ -314,7 +314,6 @@ BEGIN
 					 WHERE
 						   b.id = be.blog_id
 					   AND b.deleted_at IS NULL
-					   AND b.user_id IS NOT NULL
 					);
 		--
 		-- Restore blog writers
@@ -331,7 +330,6 @@ BEGIN
 					 WHERE
 						   b.id = bw.blog_id
 					   AND b.deleted_at IS NULL
-					   AND b.user_id IS NOT NULL
 					);
 		--
 		-- Restore story contributors
@@ -412,7 +410,6 @@ BEGIN
 					 WHERE
 						   b.id = bf.blog_id
 					   AND b.deleted_at IS NULL
-					   AND b.user_id IS NOT NULL
 					);
 		--
 		-- Restore tag follows

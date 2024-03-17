@@ -59,7 +59,6 @@ b.slug = $1
     query_builder.push(
         r#"
     AND b.deleted_at IS NULL
-    AND b.user_id IS NOT NULL
 )
 SELECT COUNT(*) AS "pending_story_count"
 FROM blog_stories
