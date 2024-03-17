@@ -53,7 +53,31 @@ EXECUTE PROCEDURE blog_after_insert_trigger_proc();
 
 -- Update
 --
-CREATE OR REPLACE FUNCTION blog_update_trigger_proc(
+CREATE OR REPLACE FUNCTION blog_before_update_trigger_proc(
+)
+	RETURNS TRIGGER
+AS
+$$
+BEGIN
+	-- Soft-delete the blog if `user_id` is NULL
+	IF (NEW.user_id IS NULL AND NEW.deleted_at IS NULL) THEN
+		NEW.deleted_at := NOW();
+	END IF;
+	--
+	RETURN NEW;
+END;
+$$
+	LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER blog_before_update_trigger
+	BEFORE UPDATE
+	ON blogs
+	FOR EACH ROW
+	WHEN (OLD.user_id IS DISTINCT FROM NEW.user_id)
+EXECUTE PROCEDURE blog_before_update_trigger_proc();
+
+--
+CREATE OR REPLACE FUNCTION blog_after_update_trigger_proc(
 )
 	RETURNS TRIGGER
 AS
@@ -175,9 +199,9 @@ END;
 $$
 	LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER blog_update_trigger
+CREATE OR REPLACE TRIGGER blog_after_update_trigger
 	AFTER UPDATE
 	ON blogs
 	FOR EACH ROW
 	WHEN (OLD.deleted_at IS DISTINCT FROM NEW.deleted_at)
-EXECUTE PROCEDURE blog_update_trigger_proc();
+EXECUTE PROCEDURE blog_after_update_trigger_proc();

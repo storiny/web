@@ -121,7 +121,7 @@ FROM
     blog_editors AS be
         INNER JOIN blogs AS "be->blog"
             ON be.blog_id = "be->blog".id
-            AND "be->blog".user_id IS NOT NULL
+            AND "be->blog".deleted_at IS NULL
 WHERE
     be.user_id = $1
     AND be.accepted_at IS NULL
@@ -170,7 +170,7 @@ FROM
     blog_writers AS bw
         INNER JOIN blogs AS "bw->blog"
             ON bw.blog_id = "bw->blog".id
-            AND "bw->blog".user_id IS NOT NULL
+            AND "bw->blog".deleted_at IS NULL
 WHERE
     bw.receiver_id = $1
     AND bw.accepted_at IS NULL
@@ -235,546 +235,298 @@ mod tests {
         res_to_string,
     };
     use actix_web::test;
-    use sqlx::{
-        PgPool,
-        Row,
-    };
+    use sqlx::PgPool;
+    use urlencoding::encode;
 
-    // Received
-
-    #[sqlx::test(fixtures("collaboration_request"))]
-    async fn can_return_received_collaboration_requests(pool: PgPool) -> sqlx::Result<()> {
+    #[sqlx::test(fixtures("blog_request"))]
+    async fn can_return_blog_requests(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Receive some collaboration requests.
-        let insert_result = sqlx::query(
+        // Receive some requests.
+        let result = sqlx::query(
             r#"
-INSERT INTO story_contributors (user_id, story_id)
-VALUES ($1, $2), ($1, $3)
+WITH writers AS (
+    INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+    VALUES ($1, $2, $3), ($1, $2, $4)
+)
+INSERT INTO blog_editors (user_id, blog_id)
+VALUES ($2, $5), ($2, $6)
 "#,
         )
+        .bind(1_i64)
         .bind(user_id.unwrap())
+        .bind(2_i64)
         .bind(3_i64)
         .bind(4_i64)
+        .bind(5_i64)
         .execute(&mut *conn)
         .await?;
 
-        assert_eq!(insert_result.rows_affected(), 2);
+        assert_eq!(result.rows_affected(), 2);
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri("/v1/me/collaboration-requests?type=received")
+            .uri("/v1/me/blog-requests")
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<CollaborationRequest>>(&res_to_string(res).await);
+        let json = serde_json::from_str::<Vec<BlogRequest>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
+
+        let json = json.unwrap();
+
+        assert_eq!(json.len(), 4);
+        assert_eq!(
+            json.iter()
+                .filter(|item| item.role == "editor")
+                .collect::<Vec<_>>()
+                .len(),
+            2
+        );
+        assert_eq!(
+            json.iter()
+                .filter(|item| item.role == "writer")
+                .collect::<Vec<_>>()
+                .len(),
+            2
+        );
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("collaboration_request"))]
-    async fn should_not_include_soft_deleted_requests_in_received_collaboration_requests(
+    #[sqlx::test(fixtures("blog_request"))]
+    async fn can_search_blog_requests(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
+
+        // Receive some requests.
+        let result = sqlx::query(
+            r#"
+WITH writers AS (
+    INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+    VALUES ($1, $2, $3), ($1, $2, $4)
+)
+INSERT INTO blog_editors (user_id, blog_id)
+VALUES ($2, $5), ($2, $6)
+"#,
+        )
+        .bind(1_i64)
+        .bind(user_id.unwrap())
+        .bind(2_i64)
+        .bind(3_i64)
+        .bind(4_i64)
+        .bind(5_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 2);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/blog-requests?query={}", encode("red")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<BlogRequest>>(&res_to_string(res).await).unwrap();
+
+        assert!(json[0].blog.name.contains("RED"));
+        assert_eq!(json.len(), 1);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("blog_request"))]
+    async fn should_not_include_soft_deleted_requests_in_blog_requests(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Receive some collaboration requests.
-        let insert_result = sqlx::query(
+        // Receive some requests.
+        let result = sqlx::query(
             r#"
-INSERT INTO story_contributors (user_id, story_id)
-VALUES ($1, $2), ($1, $3)
+WITH writers AS (
+    INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+    VALUES ($1, $2, $3), ($1, $2, $4)
+)
+INSERT INTO blog_editors (user_id, blog_id)
+VALUES ($2, $5), ($2, $6)
 "#,
         )
+        .bind(1_i64)
         .bind(user_id.unwrap())
+        .bind(2_i64)
+        .bind(3_i64)
+        .bind(4_i64)
+        .bind(5_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 2);
+
+        // Should return all the blog requests initially.
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/blog-requests")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<BlogRequest>>(&res_to_string(res).await);
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 4);
+
+        // Soft-delete two of the blog requests.
+        let result = sqlx::query(
+            r#"
+WITH updated_writers AS (
+    UPDATE blog_writers
+    SET deleted_at = NOW()
+    WHERE blog_id = $1
+)
+UPDATE blog_editors
+SET deleted_at = NOW()
+WHERE blog_id = $2
+"#,
+        )
         .bind(3_i64)
         .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
-        assert_eq!(insert_result.rows_affected(), 2);
+        assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the collaboration requests initially.
+        // Should return only two blog requests.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/collaboration-requests?type=received")
+            .uri("/v1/me/blog-requests")
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<CollaborationRequest>>(&res_to_string(res).await);
+        let json = serde_json::from_str::<Vec<BlogRequest>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
 
-        // Soft-delete one of the collaboration request.
+        // Recover the blog requests.
         let result = sqlx::query(
             r#"
-UPDATE story_contributors
-SET deleted_at = NOW()
-WHERE user_id = $1 AND story_id = $2
-"#,
-        )
-        .bind(user_id.unwrap())
-        .bind(3_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        // Should return only one collaboration request.
-        let req = test::TestRequest::get()
-            .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/collaboration-requests?type=received")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<CollaborationRequest>>(&res_to_string(res).await);
-
-        assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 1);
-
-        // Recover the collaboration request.
-        let result = sqlx::query(
-            r#"
-UPDATE story_contributors
+WITH updated_writers AS (
+    UPDATE blog_writers
+    SET deleted_at = NULL
+)
+UPDATE blog_editors
 SET deleted_at = NULL
-WHERE user_id = $1 AND story_id = $2
 "#,
         )
-        .bind(user_id.unwrap())
-        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
-        assert_eq!(result.rows_affected(), 1);
+        assert_eq!(result.rows_affected(), 2);
 
-        // Should return all the collaboration requests again.
+        // Should return all the blog requests again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri("/v1/me/collaboration-requests?type=received")
+            .uri("/v1/me/blog-requests")
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<CollaborationRequest>>(&res_to_string(res).await);
+        let json = serde_json::from_str::<Vec<BlogRequest>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
+        assert_eq!(json.unwrap().len(), 4);
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("collaboration_request"))]
-    async fn should_not_include_accepted_requests_in_received_collaboration_requests(
+    #[sqlx::test(fixtures("blog_request"))]
+    async fn should_not_include_accepted_requests_in_blog_requests(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
 
-        // Receive some collaboration requests.
-        let insert_result = sqlx::query(
+        // Receive some requests.
+        let result = sqlx::query(
             r#"
-INSERT INTO story_contributors (user_id, story_id)
-VALUES ($1, $2), ($1, $3)
+WITH writers AS (
+    INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+    VALUES ($1, $2, $3), ($1, $2, $4)
+)
+INSERT INTO blog_editors (user_id, blog_id)
+VALUES ($2, $5), ($2, $6)
 "#,
         )
+        .bind(1_i64)
         .bind(user_id.unwrap())
+        .bind(2_i64)
+        .bind(3_i64)
+        .bind(4_i64)
+        .bind(5_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 2);
+
+        // Should return all the blog requests initially.
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/blog-requests")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<BlogRequest>>(&res_to_string(res).await);
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 4);
+
+        // Accept two of the blog requests.
+        let result = sqlx::query(
+            r#"
+WITH updated_writers AS (
+    UPDATE blog_writers
+    SET accepted_at = NOW()
+    WHERE blog_id = $1
+)
+UPDATE blog_editors
+SET accepted_at = NOW()
+WHERE blog_id = $2
+"#,
+        )
         .bind(3_i64)
         .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
-        assert_eq!(insert_result.rows_affected(), 2);
+        assert_eq!(result.rows_affected(), 1);
 
-        // Should return all the collaboration requests initially.
+        // Should return only two blog requests.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/collaboration-requests?type=received")
+            .uri("/v1/me/blog-requests")
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<CollaborationRequest>>(&res_to_string(res).await);
+        let json = serde_json::from_str::<Vec<BlogRequest>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
-
-        // Accept one of the collaboration request.
-        let result = sqlx::query(
-            r#"
-UPDATE story_contributors
-SET accepted_at = NOW()
-WHERE user_id = $1 AND story_id = $2
-"#,
-        )
-        .bind(user_id.unwrap())
-        .bind(3_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        // Should return only one collaboration request.
-        let req = test::TestRequest::get()
-            .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/collaboration-requests?type=received")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<CollaborationRequest>>(&res_to_string(res).await);
-
-        assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 1);
-
-        Ok(())
-    }
-
-    // Sent
-
-    #[sqlx::test(fixtures("collaboration_request"))]
-    async fn can_return_sent_collaboration_requests(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Insert a story.
-        let result = sqlx::query(
-            r#"
-INSERT INTO stories (user_id)
-VALUES ($1)
-RETURNING id
-"#,
-        )
-        .bind(user_id.unwrap())
-        .fetch_one(&mut *conn)
-        .await?;
-
-        // Send some collaboration requests.
-        let insert_result = sqlx::query(
-            r#"
-INSERT INTO story_contributors (user_id, story_id)
-VALUES ($1, $3), ($2, $3)
-"#,
-        )
-        .bind(1_i64)
-        .bind(2_i64)
-        .bind(result.get::<i64, _>("id"))
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(insert_result.rows_affected(), 2);
-
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/collaboration-requests?type=sent")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<CollaborationRequest>>(&res_to_string(res).await);
-
-        assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
-
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("collaboration_request"))]
-    async fn can_return_sent_collaboration_requests_with_soft_deleted_users(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Insert a story.
-        let result = sqlx::query(
-            r#"
-INSERT INTO stories (user_id)
-VALUES ($1)
-RETURNING id
-"#,
-        )
-        .bind(user_id.unwrap())
-        .fetch_one(&mut *conn)
-        .await?;
-
-        // Send a collaboration request.
-        let insert_result = sqlx::query(
-            r#"
-INSERT INTO story_contributors (user_id, story_id)
-VALUES ($1, $2)
-"#,
-        )
-        .bind(1_i64)
-        .bind(result.get::<i64, _>("id"))
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(insert_result.rows_affected(), 1);
-
-        // Soft-delete the user.
-        let result = sqlx::query(
-            r#"
-UPDATE users
-SET deleted_at = NOW()
-WHERE id = $1
-"#,
-        )
-        .bind(1_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/collaboration-requests?type=sent")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json =
-            serde_json::from_str::<Vec<CollaborationRequest>>(&res_to_string(res).await).unwrap();
-
-        assert_eq!(json.len(), 1);
-        assert!(json[0].user.is_none());
-
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("collaboration_request"))]
-    async fn can_return_sent_collaboration_requests_with_deactivated_users(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Insert a story.
-        let result = sqlx::query(
-            r#"
-INSERT INTO stories (user_id)
-VALUES ($1)
-RETURNING id
-"#,
-        )
-        .bind(user_id.unwrap())
-        .fetch_one(&mut *conn)
-        .await?;
-
-        // Send a collaboration request.
-        let insert_result = sqlx::query(
-            r#"
-INSERT INTO story_contributors (user_id, story_id)
-VALUES ($1, $2)
-"#,
-        )
-        .bind(1_i64)
-        .bind(result.get::<i64, _>("id"))
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(insert_result.rows_affected(), 1);
-
-        // Deactivate the user.
-        let result = sqlx::query(
-            r#"
-UPDATE users
-SET deactivated_at = NOW()
-WHERE id = $1
-"#,
-        )
-        .bind(1_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        let req = test::TestRequest::get()
-            .cookie(cookie.unwrap())
-            .uri("/v1/me/collaboration-requests?type=sent")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json =
-            serde_json::from_str::<Vec<CollaborationRequest>>(&res_to_string(res).await).unwrap();
-
-        assert_eq!(json.len(), 1);
-        assert!(json[0].user.is_none());
-
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("collaboration_request"))]
-    async fn should_not_include_requests_with_soft_deleted_story_in_sent_collaboration_requests(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Insert a story.
-        let story_result = sqlx::query(
-            r#"
-INSERT INTO stories (user_id)
-VALUES ($1)
-RETURNING id
-"#,
-        )
-        .bind(user_id.unwrap())
-        .fetch_one(&mut *conn)
-        .await?;
-
-        // Send some collaboration requests.
-        let insert_result = sqlx::query(
-            r#"
-INSERT INTO story_contributors (user_id, story_id)
-VALUES ($1, $3), ($2, $3)
-"#,
-        )
-        .bind(1_i64)
-        .bind(2_i64)
-        .bind(story_result.get::<i64, _>("id"))
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(insert_result.rows_affected(), 2);
-
-        // Should return all the collaboration requests initially.
-        let req = test::TestRequest::get()
-            .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/collaboration-requests?type=sent")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<CollaborationRequest>>(&res_to_string(res).await);
-
-        assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
-
-        // Soft-delete the story.
-        let result = sqlx::query(
-            r#"
-UPDATE stories
-SET deleted_at = NOW()
-WHERE id = $1
-"#,
-        )
-        .bind(story_result.get::<i64, _>("id"))
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        // Should not return any collaboration request.
-        let req = test::TestRequest::get()
-            .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/collaboration-requests?type=sent")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<CollaborationRequest>>(&res_to_string(res).await);
-
-        assert!(json.is_ok());
-        assert!(json.unwrap().is_empty());
-
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("collaboration_request"))]
-    async fn should_not_include_accepted_requests_in_sent_collaboration_requests(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false, None).await;
-
-        // Insert a story.
-        let result = sqlx::query(
-            r#"
-INSERT INTO stories (user_id)
-VALUES ($1)
-RETURNING id
-"#,
-        )
-        .bind(user_id.unwrap())
-        .fetch_one(&mut *conn)
-        .await?;
-
-        // Send some collaboration requests.
-        let insert_result = sqlx::query(
-            r#"
-INSERT INTO story_contributors (user_id, story_id)
-VALUES ($1, $3), ($2, $3)
-"#,
-        )
-        .bind(1_i64)
-        .bind(2_i64)
-        .bind(result.get::<i64, _>("id"))
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(insert_result.rows_affected(), 2);
-
-        // Should return all the collaboration requests initially.
-        let req = test::TestRequest::get()
-            .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/collaboration-requests?type=sent")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<CollaborationRequest>>(&res_to_string(res).await);
-
-        assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 2);
-
-        // Accept one of the collaboration request.
-        let result = sqlx::query(
-            r#"
-UPDATE story_contributors
-SET accepted_at = NOW()
-WHERE user_id = $1
-"#,
-        )
-        .bind(1_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        // Should return only one collaboration request.
-        let req = test::TestRequest::get()
-            .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/collaboration-requests?type=sent")
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        let json = serde_json::from_str::<Vec<CollaborationRequest>>(&res_to_string(res).await);
-
-        assert!(json.is_ok());
-        assert_eq!(json.unwrap().len(), 1);
 
         Ok(())
     }

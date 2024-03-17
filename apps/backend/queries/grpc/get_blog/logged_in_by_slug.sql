@@ -105,7 +105,6 @@ FROM
 WHERE
 	  b.slug = $1
   AND b.deleted_at IS NULL
-  AND b.user_id IS NOT NULL
 GROUP BY
 	b.id,
 	"b->is_following".blog_id,

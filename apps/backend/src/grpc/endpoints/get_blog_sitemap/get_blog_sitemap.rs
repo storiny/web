@@ -78,12 +78,7 @@ WHERE
         r#" b.slug = $1 "#
     });
 
-    query_builder.push(
-        r#"
-AND b.deleted_at IS NULL
-AND b.user_id IS NOT NULL
-"#,
-    );
+    query_builder.push(r#" AND b.deleted_at IS NULL "#);
 
     let blog = query_builder
         .build()

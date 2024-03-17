@@ -56,7 +56,6 @@ WITH blog AS (
     WHERE
         slug = $1
         AND deleted_at IS NULL
-        AND user_id IS NOT NULL
 )
 SELECT
 (

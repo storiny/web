@@ -133,7 +133,7 @@ FROM
 		LEFT OUTER JOIN (blog_stories AS "s->blog_story"
 		INNER JOIN blogs AS "s->blog_story->blog"
 						 ON "s->blog_story->blog".id = "s->blog_story".blog_id
-							 AND "s->blog_story->blog".user_id IS NOT NULL
+							 AND "s->blog_story->blog".deleted_at IS NULL
 		)
 						ON "s->blog_story".story_id = s.id
 							AND "s->blog_story".deleted_at IS NULL

@@ -1461,6 +1461,64 @@ WHERE blog_id = $1 AND user_id = $2
     // Hard deletes
 
     #[sqlx::test(fixtures("user"))]
+    async fn can_soft_delete_blog_when_user_id_is_null(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let blog_id = (insert_sample_blog(&mut conn).await?).get::<i64, _>("id");
+
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at, user_id FROM blogs
+WHERE id = $1
+"#,
+        )
+        .bind(blog_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        // Should be present initially.
+        assert!(result.get::<Option<i64>, _>("user_id").is_some());
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Set the `user_id` to NULL
+        let result = sqlx::query(
+            r#"
+UPDATE blogs
+SET user_id = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(blog_id)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at, user_id FROM blogs
+WHERE id = $1
+"#,
+        )
+        .bind(blog_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        // Should soft-delete the blog.
+        assert!(result.get::<Option<i64>, _>("user_id").is_none());
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
     async fn can_set_blog_logo_id_as_null_on_asset_hard_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let blog_id = (insert_sample_blog(&mut conn).await?).get::<i64, _>("id");
