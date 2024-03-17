@@ -81,6 +81,8 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     // Me - Blogs
     v1::me::blogs::get::init_routes(cfg);
     v1::me::blogs::post::init_routes(cfg);
+    // Me - Blogs - Content
+    v1::me::blogs::content::pending_stories::init_routes(cfg);
     // Me - Bookmarks
     v1::me::bookmarks::get::init_routes(cfg);
     v1::me::bookmarks::post::init_routes(cfg);

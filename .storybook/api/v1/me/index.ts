@@ -8,6 +8,7 @@ import "./unread-notifications";
 import "./collaboration-requests";
 import "./blog-requests";
 import "./leave-story";
+import "./leave-blog";
 import "./notifications";
 import "./friend-requests";
 import "./gallery";

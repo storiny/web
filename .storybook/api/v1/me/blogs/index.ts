@@ -1,7 +1,6 @@
 import { MOCK_BLOGS, MOCK_USERS } from "@storiny/ui/src/mocks";
 import { nanoid } from "nanoid";
 import "./settings";
-import "./leave";
 import "./content";
 import "./stories";
 import "./writers";
