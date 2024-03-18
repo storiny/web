@@ -10,7 +10,6 @@ use crate::{
         ToastErrorResponse,
     },
     middlewares::identity::identity::Identity,
-    realms::realm::MAX_PEERS_PER_REALM,
     utils::{
         check_resource_limit::check_resource_limit,
         incr_resource_limit::incr_resource_limit,
@@ -24,8 +23,6 @@ use actix_web::{
     HttpResponse,
 };
 use actix_web_validator::Json;
-use lazy_static::lazy_static;
-use regex::Regex;
 use serde::{
     Deserialize,
     Serialize,
@@ -100,26 +97,28 @@ WHERE
     })?;
 
     match sqlx::query(
-        r#"                        
-WITH inserted_blog_editor AS (
-        INSERT INTO blog_editors (user_id, blog_id)
-        VALUES ($2, $3)
-        RETURNING id
-    ),
-    target_blog AS (
-        SELECT user_id FROM blogs
+        r#"
+WITH target_blog AS (
+        SELECT FROM blogs
         WHERE
             id = $3
             AND user_id = $1
     ),
+    inserted_blog_editor AS (
+        INSERT INTO blog_editors (user_id, blog_id)
+        SELECT $2, $3
+        WHERE
+            EXISTS (SELECT 1 FROM target_blog)
+        RETURNING id
+    ),
     inserted_notification AS (
         INSERT INTO notifications (entity_type, entity_id, notifier_id)
         SELECT
-            $5,
+            $4,
             (SELECT id FROM inserted_blog_editor),
             $1
         WHERE
-            EXISTS (SELECT 1 FROM target_story)
+            EXISTS (SELECT 1 FROM target_blog)
             AND EXISTS (SELECT 1 FROM inserted_blog_editor)
         RETURNING id
     )
@@ -129,7 +128,7 @@ SELECT
     $2,
     (SELECT id FROM inserted_notification)
 WHERE
-    EXISTS (SELECT 1 FROM target_story)
+    EXISTS (SELECT 1 FROM target_blog)
     AND EXISTS (SELECT 1 FROM inserted_notification)
 "#,
     )
@@ -137,71 +136,73 @@ WHERE
     .bind(user_result.get::<i64, _>("id"))
     .bind(blog_id)
     .bind(NotificationEntityType::BlogEditorInvite as i16)
-    .bind(MAX_PEERS_PER_REALM as i16)
     .execute(&mut *txn)
     .await
     {
-        Ok(_) => {
-            incr_resource_limit(&data.redis, ResourceLimit::SendBlogEditorRequest, blog_id).await?;
+        Ok(result) => match result.rows_affected() {
+            0 => Err(AppError::from("Unknown blog")),
+            _ => {
+                incr_resource_limit(&data.redis, ResourceLimit::SendBlogEditorRequest, blog_id)
+                    .await?;
 
-            txn.commit().await?;
+                txn.commit().await?;
 
-            Ok(HttpResponse::Ok().finish())
-        }
+                Ok(HttpResponse::Ok().finish())
+            }
+        },
         Err(error) => {
             if let Some(db_err) = error.as_database_error() {
                 let error_kind = db_err.kind();
 
-                // User is already a contributor.
+                // User is already an editor.
                 if matches!(error_kind, sqlx::error::ErrorKind::UniqueViolation) {
                     return Err(AppError::ToastError(ToastErrorResponse::new(
                         Some(StatusCode::CONFLICT),
-                        "User is already a contributor",
+                        "User is already an editor or the request is still pending",
                     )));
                 }
 
-                // Target story is not present in the table.
+                // Target blog is not present in the table.
                 if matches!(error_kind, sqlx::error::ErrorKind::ForeignKeyViolation) {
-                    return Err(AppError::from("Story does not exist"));
+                    return Err(AppError::from("Blog does not exist"));
                 }
 
                 let error_code = db_err.code().unwrap_or_default();
 
-                // Check if the story is soft-deleted or the target user is
-                // soft-deleted/deactivated.
+                // Check if the blog is soft-deleted.
                 if error_code == SqlState::EntityUnavailable.to_string() {
-                    return Err(AppError::from("Story or user unavailable"));
+                    return Err(AppError::from("Blog unavailable"));
                 }
 
-                // Check if the contributor ID is same as the current user ID.
-                if error_code == SqlState::IllegalContributor.to_string() {
+                // Check if the editor ID is same as the current user ID.
+                if error_code == SqlState::IllegalEditor.to_string() {
                     return Err(AppError::ToastError(ToastErrorResponse::new(
                         None,
-                        "You cannot send a collaboration request to yourself",
+                        "You cannot send an editor request to yourself",
                     )));
                 }
 
-                // Check if the current user is blocked by the contributor.
-                if error_code == SqlState::StoryWriterBlockedByContributor.to_string() {
+                // Check if the current user is blocked by the editor.
+                if error_code == SqlState::BlogOwnerBlockedByEditor.to_string() {
                     return Err(AppError::ToastError(ToastErrorResponse::new(
                         Some(StatusCode::FORBIDDEN),
                         "You are being blocked by the user",
                     )));
                 }
 
-                // Check if the contributor is accepting requests from the current user.
-                if error_code == SqlState::ContributorNotAcceptingCollaborationRequest.to_string() {
+                // Check if the editor is accepting requests from the current user.
+                if error_code == SqlState::EditorNotAcceptingBlogRequest.to_string() {
                     return Err(AppError::ToastError(ToastErrorResponse::new(
                         Some(StatusCode::FORBIDDEN),
-                        "User is not accepting collaboration requests from you",
+                        "User is not accepting editor requests from you",
                     )));
                 }
 
-                // Check if the contributor limit has been reached for the current story.
-                if error_code == SqlState::ContributorOverflow.to_string() {
+                // Check if the editor limit has been reached for the current blog.
+                if error_code == SqlState::EditorOverflow.to_string() {
                     return Err(AppError::ToastError(ToastErrorResponse::new(
                         None,
-                        "Maximum number of contributors reached",
+                        "Editor limit has been reached for this blog",
                     )));
                 }
             }
@@ -219,7 +220,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::{
-        grpc::defs::privacy_settings_def::v1::IncomingCollaborationRequest,
+        grpc::defs::privacy_settings_def::v1::IncomingBlogRequest,
         test_utils::{
             assert_response_body_text,
             assert_toast_error_response,
@@ -237,24 +238,17 @@ mod tests {
     };
     use storiny_macros::test_context;
 
-    #[sqlx::test(fixtures("contributor"))]
-    async fn can_reject_a_collaboration_request_for_a_soft_deleted_story(
+    #[sqlx::test(fixtures("editor"))]
+    async fn can_reject_an_editor_request_for_a_soft_deleted_blog(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(
-            crate::routes::init::v1::me::stories::contributors::invite::post,
-            pool,
-            true,
-            true,
-            Some(1_i64),
-        )
-        .await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
-        // Soft-delete the story.
+        // Soft-delete the blog.
         let result = sqlx::query(
             r#"
-UPDATE stories
+UPDATE blogs
 SET deleted_at = NOW()
 WHERE id = $1
 "#,
@@ -265,36 +259,28 @@ WHERE id = $1
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Try sending the collaboration request.
+        // Try sending the editor request.
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .set_json(Request {
-                role: "editor".to_string(),
                 username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/stories/{}/contributors", 3))
+            .uri(&format!("/v1/me/blogs/{}/editors", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Story unavailable").await;
+        assert_response_body_text(res, "Blog unavailable").await;
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("contributor"))]
-    async fn can_reject_a_collaboration_request_for_a_soft_deleted_user(
+    #[sqlx::test(fixtures("editor"))]
+    async fn can_reject_an_editor_request_for_a_soft_deleted_user(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(
-            crate::routes::init::v1::me::stories::contributors::invite::post,
-            pool,
-            true,
-            true,
-            Some(1_i64),
-        )
-        .await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
         // Soft-delete the user.
         let result = sqlx::query(
@@ -310,14 +296,13 @@ WHERE id = $1
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Try sending the collaboration request.
+        // Try sending the editor request.
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .set_json(Request {
-                role: "editor".to_string(),
                 username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/stories/{}/contributors", 3))
+            .uri(&format!("/v1/me/blogs/{}/editors", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -327,19 +312,10 @@ WHERE id = $1
         Ok(())
     }
 
-    #[sqlx::test(fixtures("contributor"))]
-    async fn can_reject_a_collaboration_request_for_a_deactivated_user(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
+    #[sqlx::test(fixtures("editor"))]
+    async fn can_reject_an_editor_request_for_a_deactivated_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(
-            crate::routes::init::v1::me::stories::contributors::invite::post,
-            pool,
-            true,
-            true,
-            Some(1_i64),
-        )
-        .await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
         // Deactivate the user.
         let result = sqlx::query(
@@ -355,14 +331,13 @@ WHERE id = $1
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Try sending the collaboration request.
+        // Try sending the editor request.
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .set_json(Request {
-                role: "editor".to_string(),
                 username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/stories/{}/contributors", 3))
+            .uri(&format!("/v1/me/blogs/{}/editors", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -372,55 +347,55 @@ WHERE id = $1
         Ok(())
     }
 
-    #[sqlx::test(fixtures("contributor"))]
-    async fn can_reject_a_collaboration_request_for_a_missing_story(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(
-            crate::routes::init::v1::me::stories::contributors::invite::post,
-            pool,
-            true,
-            true,
-            Some(1_i64),
-        )
-        .await;
+    #[sqlx::test(fixtures("editor"))]
+    async fn can_reject_an_editor_request_from_an_unknown_user(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
+        // Try sending the editor request.
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .set_json(Request {
-                role: "editor".to_string(),
                 username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/stories/{}/contributors", 12345))
+            .uri(&format!("/v1/me/blogs/{}/editors", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Story does not exist").await;
+        assert_response_body_text(res, "Unknown blog").await;
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("contributor"))]
-    async fn can_reject_a_collaboration_request_for_a_missing_user(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(
-            crate::routes::init::v1::me::stories::contributors::invite::post,
-            pool,
-            true,
-            true,
-            Some(1_i64),
-        )
-        .await;
+    #[sqlx::test(fixtures("editor"))]
+    async fn can_reject_an_editor_request_for_a_missing_blog(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .set_json(Request {
-                role: "editor".to_string(),
+                username: "test_user_2".to_string(),
+            })
+            .uri(&format!("/v1/me/blogs/{}/editors", 12345))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_response_body_text(res, "Unknown blog").await;
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("editor"))]
+    async fn can_reject_an_editor_request_for_a_missing_user(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .set_json(Request {
                 username: "random_user".to_string(),
             })
-            .uri(&format!("/v1/me/stories/{}/contributors", 3))
+            .uri(&format!("/v1/me/blogs/{}/editors", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -430,101 +405,77 @@ WHERE id = $1
         Ok(())
     }
 
-    #[sqlx::test(fixtures("contributor"))]
-    async fn should_not_allow_the_user_to_send_friend_request_to_itself(
+    #[sqlx::test(fixtures("editor"))]
+    async fn should_not_allow_the_user_to_send_editor_request_to_itself(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(
-            crate::routes::init::v1::me::stories::contributors::invite::post,
-            pool,
-            true,
-            true,
-            Some(1_i64),
-        )
-        .await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .set_json(Request {
-                role: "editor".to_string(),
                 username: "test_user_1".to_string(),
             })
-            .uri(&format!("/v1/me/stories/{}/contributors", 3))
+            .uri(&format!("/v1/me/blogs/{}/editors", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "You cannot send a collaboration request to yourself")
-            .await;
+        assert_toast_error_response(res, "You cannot send an editor request to yourself").await;
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("contributor"))]
-    async fn can_reject_a_collaboration_request_on_contributor_overflow(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
+    #[sqlx::test(fixtures("editor"))]
+    async fn can_reject_an_editor_request_on_editor_overflow(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(
-            crate::routes::init::v1::me::stories::contributors::invite::post,
-            pool,
-            true,
-            true,
-            Some(1_i64),
-        )
-        .await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
-        // Insert some contributors.
+        // Insert some editors.
         let result = sqlx::query(
             r#"
 WITH inserted_users AS (
     INSERT INTO users (id, name, username, email)
     VALUES
-        (4, 'Contributor 1', 'contributor_1', 'contributor_1@storiny.com'),
-        (5, 'Contributor 2', 'contributor_2', 'contributor_2@storiny.com'),
-        (6, 'Contributor 3', 'contributor_3', 'contributor_3@storiny.com')
+        (4, 'Editor 1', 'editor_1', 'editor_1@storiny.com'),
+        (5, 'Editor 2', 'editor_2', 'editor_2@storiny.com'),
+        (6, 'Editor 3', 'editor_3', 'editor_3@storiny.com'),
+        (7, 'Editor 4', 'editor_4', 'editor_4@storiny.com'),
+        (8, 'Editor 5', 'editor_5', 'editor_5@storiny.com')
 )
-INSERT INTO story_contributors (user_id, story_id)
-VALUES (4, $1), (5, $1), (6, $1)
+INSERT INTO blog_editors (user_id, blog_id)
+VALUES (4, $1), (5, $1), (6, $1), (7, $1), (8, $1)
 "#,
         )
         .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
-        assert_eq!(result.rows_affected(), 3);
+        assert_eq!(result.rows_affected(), 5);
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .set_json(Request {
-                role: "editor".to_string(),
                 username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/stories/{}/contributors", 3))
+            .uri(&format!("/v1/me/blogs/{}/editors", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Maximum number of contributors reached").await;
+        assert_toast_error_response(res, "Editor limit has been reached for this blog").await;
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("contributor"))]
-    async fn can_reject_a_collaboration_request_when_the_contributor_is_private(
+    #[sqlx::test(fixtures("editor"))]
+    async fn can_reject_an_editor_request_when_the_editor_is_private(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(
-            crate::routes::init::v1::me::stories::contributors::invite::post,
-            pool,
-            true,
-            true,
-            Some(1_i64),
-        )
-        .await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
-        // Make the contributor private.
+        // Make the editor private.
         sqlx::query(
             r#"
 UPDATE users
@@ -539,35 +490,26 @@ WHERE id = $1
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .set_json(Request {
-                role: "editor".to_string(),
                 username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/stories/{}/contributors", 3))
+            .uri(&format!("/v1/me/blogs/{}/editors", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "User is not accepting collaboration requests from you")
-            .await;
+        assert_toast_error_response(res, "User is not accepting editor requests from you").await;
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("contributor"))]
-    async fn can_reject_a_collaboration_request_when_the_contributor_has_blocked_the_writer_of_the_story(
+    #[sqlx::test(fixtures("editor"))]
+    async fn can_reject_an_editor_request_when_the_editor_has_blocked_the_owner_of_the_blog(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(
-            crate::routes::init::v1::me::stories::contributors::invite::post,
-            pool,
-            true,
-            true,
-            Some(1_i64),
-        )
-        .await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
-        // Get blocked by the contributor.
+        // Get blocked by the editor.
         sqlx::query(
             r#"
 INSERT INTO blocks (blocker_id, blocked_id)
@@ -582,10 +524,9 @@ VALUES ($1, $2)
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .set_json(Request {
-                role: "editor".to_string(),
                 username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/stories/{}/contributors", 3))
+            .uri(&format!("/v1/me/blogs/{}/editors", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -595,29 +536,22 @@ VALUES ($1, $2)
         Ok(())
     }
 
-    #[sqlx::test(fixtures("contributor"))]
-    async fn can_reject_a_collaboration_request_when_the_contributor_is_not_accepting_friend_requests_from_the_user(
+    #[sqlx::test(fixtures("editor"))]
+    async fn can_reject_an_editor_request_when_the_editor_is_not_accepting_editor_requests_from_the_user(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(
-            crate::routes::init::v1::me::stories::contributors::invite::post,
-            pool,
-            true,
-            true,
-            Some(1_i64),
-        )
-        .await;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
-        // Set `incoming_collaboration_requests` to `None` for the receiver.
+        // Set `incoming_blog_requests` to `None` for the receiver.
         sqlx::query(
             r#"
 UPDATE users
-SET incoming_collaboration_requests = $1
+SET incoming_blog_requests = $1
 WHERE id = $2
 "#,
         )
-        .bind(IncomingCollaborationRequest::None as i64)
+        .bind(IncomingBlogRequest::None as i64)
         .bind(2_i64)
         .execute(&mut *conn)
         .await?;
@@ -625,16 +559,14 @@ WHERE id = $2
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .set_json(Request {
-                role: "editor".to_string(),
                 username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/stories/{}/contributors", 3))
+            .uri(&format!("/v1/me/blogs/{}/editors", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "User is not accepting collaboration requests from you")
-            .await;
+        assert_toast_error_response(res, "User is not accepting editor requests from you").await;
 
         Ok(())
     }
@@ -643,38 +575,31 @@ WHERE id = $2
         use super::*;
 
         #[test_context(RedisTestContext)]
-        #[sqlx::test(fixtures("contributor"))]
-        async fn can_send_a_collaboration_request(
+        #[sqlx::test(fixtures("editor"))]
+        async fn can_send_an_editor_request(
             ctx: &mut RedisTestContext,
             pool: PgPool,
         ) -> sqlx::Result<()> {
             let mut conn = pool.acquire().await?;
-            let (app, cookie, user_id) = init_app_for_test(
-                crate::routes::init::v1::me::stories::contributors::invite::post,
-                pool,
-                true,
-                true,
-                Some(1_i64),
-            )
-            .await;
+            let (app, cookie, user_id) =
+                init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
             let req = test::TestRequest::post()
                 .cookie(cookie.unwrap())
                 .set_json(Request {
-                    role: "editor".to_string(),
                     username: "test_user_2".to_string(),
                 })
-                .uri(&format!("/v1/me/stories/{}/contributors", 3))
+                .uri(&format!("/v1/me/blogs/{}/editors", 3))
                 .to_request();
             let res = test::call_service(&app, req).await;
 
             assert!(res.status().is_success());
 
-            // Story contributor should be present in the database.
-            let contributor_result = sqlx::query(
+            // Editor request should be present in the database.
+            let editor_result = sqlx::query(
                 r#"
-SELECT id FROM story_contributors
-WHERE user_id = $1 AND story_id = $2
+SELECT id FROM blog_editors
+WHERE user_id = $1 AND blog_id = $2
 "#,
             )
             .bind(2_i64)
@@ -682,7 +607,7 @@ WHERE user_id = $1 AND story_id = $2
             .fetch_one(&mut *conn)
             .await?;
 
-            assert!(contributor_result.try_get::<i64, _>("id").is_ok());
+            assert!(editor_result.try_get::<i64, _>("id").is_ok());
 
             // Should also insert a notification.
             let result = sqlx::query(
@@ -693,19 +618,16 @@ SELECT EXISTS (
 )
 "#,
             )
-            .bind(contributor_result.get::<i64, _>("id"))
+            .bind(editor_result.get::<i64, _>("id"))
             .fetch_one(&mut *conn)
             .await?;
 
             assert!(result.get::<bool, _>("exists"));
 
             // Should also increment the resource limit.
-            let result = get_resource_limit(
-                &ctx.redis_pool,
-                ResourceLimit::SendCollabRequest,
-                user_id.unwrap(),
-            )
-            .await;
+            let result =
+                get_resource_limit(&ctx.redis_pool, ResourceLimit::SendBlogEditorRequest, 3_i64)
+                    .await;
 
             assert_eq!(result, 1);
 
@@ -714,33 +636,21 @@ SELECT EXISTS (
 
         #[test_context(RedisTestContext)]
         #[sqlx::test]
-        async fn can_reject_a_collaboration_request_on_exceeding_the_resource_limit(
+        async fn can_reject_an_editor_request_on_exceeding_the_resource_limit(
             ctx: &mut RedisTestContext,
             pool: PgPool,
         ) -> sqlx::Result<()> {
-            let (app, cookie, user_id) = init_app_for_test(
-                crate::routes::init::v1::me::stories::contributors::invite::post,
-                pool,
-                true,
-                false,
-                None,
-            )
-            .await;
+            let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
-            exceed_resource_limit(
-                &ctx.redis_pool,
-                ResourceLimit::SendCollabRequest,
-                user_id.unwrap(),
-            )
-            .await;
+            exceed_resource_limit(&ctx.redis_pool, ResourceLimit::SendBlogEditorRequest, 3_i64)
+                .await;
 
             let req = test::TestRequest::post()
                 .cookie(cookie.unwrap())
                 .set_json(Request {
-                    role: "editor".to_string(),
                     username: "test_user_2".to_string(),
                 })
-                .uri(&format!("/v1/me/stories/{}/contributors", 3))
+                .uri(&format!("/v1/me/blogs/{}/editors", 3))
                 .to_request();
             let res = test::call_service(&app, req).await;
 
