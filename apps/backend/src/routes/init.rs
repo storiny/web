@@ -104,6 +104,7 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::blogs::settings::appearance::branding::init_routes(cfg);
     v1::me::blogs::settings::appearance::page_layout::init_routes(cfg);
     v1::me::blogs::settings::appearance::story_layout::init_routes(cfg);
+    v1::me::blogs::settings::appearance::theme::init_routes(cfg);
     // Me - Bookmarks
     v1::me::bookmarks::get::init_routes(cfg);
     v1::me::bookmarks::post::init_routes(cfg);

@@ -175,7 +175,7 @@ async fn handle_upload(
         // This will never panic
         !supported_image_mimes.contains(&image_mime_type.clone().unwrap().to_string())
     {
-        debug!("received an image with unknown format: {image_mime_type:?}",);
+        debug!("received an image with unknown format: {image_mime_type:?}");
 
         return Err(ToastErrorResponse::new(None, "Unsupported image type").into());
     }
