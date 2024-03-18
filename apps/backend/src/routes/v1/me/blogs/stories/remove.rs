@@ -137,7 +137,7 @@ mod tests {
     #[sqlx::test(fixtures("story"))]
     async fn can_remove_a_story_as_blog_owner(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(delete, pool, true, true, Some(1_i64)).await;
+        let (app, cookie, _) = init_app_for_test(delete, pool, true, true, Some(1_i64)).await;
 
         // Add a story.
         let result = sqlx::query(
@@ -221,7 +221,7 @@ VALUES ($1, $2)
 
         // Should reject the request as the editor has not been accepted yet.
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Writer not found").await;
+        assert_response_body_text(res, "Blog or story not found").await;
 
         // Accept the editor.
         let result = sqlx::query(

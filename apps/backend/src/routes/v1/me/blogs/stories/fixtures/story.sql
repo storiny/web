@@ -10,3 +10,7 @@ VALUES (3, 2);
 INSERT INTO
 	blogs (id, name, slug, user_id)
 VALUES (4, 'Sample blog', 'sample-blog-1', 1);
+
+INSERT INTO
+	blog_editors (user_id, blog_id, accepted_at)
+VALUES (2, 4, NOW());
