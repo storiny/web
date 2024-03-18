@@ -166,9 +166,9 @@ pub async fn start_jobs(
                     .data(state.clone())
                     .stream(
                         CronStream::new(
-                            // Run every month
+                            // Run twice a month
                             #[allow(clippy::expect_used)]
-                            Schedule::from_str("0 0 0 1 * *")
+                            Schedule::from_str("0 0 0 1,15 * *")
                                 .expect("unable to parse the cron schedule"),
                         )
                         .into_stream(),
