@@ -22,7 +22,7 @@ export const {
       query: ({ layout, blog_id }) => ({
         url: `/${SEGMENT(blog_id)}`,
         method: "PATCH",
-        body: { layout },
+        body: { is_homepage_large_layout: layout === "large" },
         headers: {
           "Content-type": ContentType.JSON
         }

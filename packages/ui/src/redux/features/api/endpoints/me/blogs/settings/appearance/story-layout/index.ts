@@ -22,7 +22,7 @@ export const {
       query: ({ layout, blog_id }) => ({
         url: `/${SEGMENT(blog_id)}`,
         method: "PATCH",
-        body: { layout },
+        body: { is_story_minimal_layout: layout === "minimal" },
         headers: {
           "Content-type": ContentType.JSON
         }
