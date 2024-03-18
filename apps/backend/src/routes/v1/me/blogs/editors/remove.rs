@@ -1,7 +1,6 @@
 use crate::{
     error::AppError,
     middlewares::identity::identity::Identity,
-    realms::realm::RealmData,
     AppState,
 };
 use actix_web::{
@@ -9,25 +8,23 @@ use actix_web::{
     web,
     HttpResponse,
 };
-use lockable::AsyncLimit;
 use serde::Deserialize;
-use tracing::debug;
 use validator::Validate;
 
 #[derive(Deserialize, Validate)]
 struct Fragments {
-    story_id: String,
+    blog_id: String,
     user_id: String,
 }
 
-#[delete("/v1/me/stories/{story_id}/contributors/{user_id}")]
+#[delete("/v1/me/blogs/{blog_id}/editors/{user_id}")]
 #[tracing::instrument(
-    name = "DELETE /v1/me/stories/{story_id}/contributors/{user_id}",
+    name = "DELETE /v1/me/blogs/{blog_id}/editors/{user_id}",
     skip_all,
     fields(
         current_user_id = user.id().ok(),
-        story_id = %path.story_id,
-        contributor_user_id = %path.user_id
+        blog_id = %path.blog_id,
+        editor_user_id = %path.user_id
     ),
     err
 )]
@@ -35,62 +32,41 @@ async fn delete(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
-    realm_map: RealmData,
 ) -> Result<HttpResponse, AppError> {
     let current_user_id = user.id()?;
 
-    let story_id = path
-        .story_id
+    let blog_id = path
+        .blog_id
         .parse::<i64>()
-        .map_err(|_| AppError::from("Invalid story ID"))?;
+        .map_err(|_| AppError::from("Invalid blog ID"))?;
 
-    let contributor_user_id = path
+    let editor_user_id = path
         .user_id
         .parse::<i64>()
         .map_err(|_| AppError::from("Invalid user ID"))?;
 
-    let realm = realm_map
-        .async_lock(story_id, AsyncLimit::no_limit())
-        .await
-        .map_err(|error| {
-            AppError::InternalError(format!("unable to acquire a lock on the realm: {error:?}"))
-        })?;
-
-    let pg_pool = &data.db_pool;
-    let mut txn = pg_pool.begin().await?;
-
     match sqlx::query(
         r#"
-DELETE FROM story_contributors sc
-USING stories s
+DELETE FROM blog_editors be
+USING blogs b
 WHERE
-    s.id = $3
-    AND s.user_id = $1
-    AND s.deleted_at IS NULL
-    AND sc.story_id = s.id
-    AND sc.user_id = $2
+    b.id = $3
+    AND b.user_id = $1
+    AND b.deleted_at IS NULL
+    AND be.blog_id = b.id
+    AND be.user_id = $2
+    AND be.accepted_at IS NOT NULL
 "#,
     )
     .bind(current_user_id)
-    .bind(contributor_user_id)
-    .bind(story_id)
-    .execute(&mut *txn)
+    .bind(editor_user_id)
+    .bind(blog_id)
+    .execute(&data.db_pool)
     .await?
     .rows_affected()
     {
-        0 => Err(AppError::from("Contributor not found")),
-        _ => {
-            // Remove the peer from the realm.
-            if let Some(realm_inner) = realm.value() {
-                debug!("realm is present in the map, removing the peer");
-
-                realm_inner.remove_peer(contributor_user_id, false).await;
-            }
-
-            txn.commit().await?;
-
-            Ok(HttpResponse::NoContent().finish())
-        }
+        0 => Err(AppError::from("Editor not found")),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -111,16 +87,16 @@ mod tests {
         Row,
     };
 
-    #[sqlx::test(fixtures("contributor"))]
-    async fn can_remove_a_contributor(pool: PgPool) -> sqlx::Result<()> {
+    #[sqlx::test(fixtures("editor"))]
+    async fn can_remove_an_editor(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(delete, pool, true, true, Some(1_i64)).await;
 
-        // Add a contributor.
+        // Add an editor.
         let result = sqlx::query(
             r#"
-INSERT INTO story_contributors (user_id, story_id)
-VALUES ($1, $2)
+INSERT INTO blog_editors (user_id, blog_id, accepted_at)
+VALUES ($1, $2, NOW())
 "#,
         )
         .bind(2_i64)
@@ -132,18 +108,18 @@ VALUES ($1, $2)
 
         let req = test::TestRequest::delete()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/stories/{}/contributors/{}", 3, 2))
+            .uri(&format!("/v1/me/blogs/{}/editors/{}", 3, 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
 
-        // Contributor should not be present in the database.
+        // Editor should not be present in the database.
         let result = sqlx::query(
             r#"
 SELECT EXISTS (
-    SELECT 1 FROM story_contributors
-    WHERE user_id = $1 AND story_id = $2
+    SELECT 1 FROM blog_editors
+    WHERE user_id = $1 AND blog_id = $2
 )
 "#,
         )
@@ -157,51 +133,51 @@ SELECT EXISTS (
         Ok(())
     }
 
-    #[sqlx::test(fixtures("contributor"))]
-    async fn can_return_an_error_response_when_removing_an_unknown_contributor(
+    #[sqlx::test(fixtures("editor"))]
+    async fn can_return_an_error_response_when_removing_an_unknown_editor(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(delete, pool, true, true, Some(1_i64)).await;
 
         let req = test::TestRequest::delete()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/stories/{}/contributors/{}", 3, 12345))
+            .uri(&format!("/v1/me/blogs/{}/editors/{}", 3, 12345))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Contributor not found").await;
+        assert_response_body_text(res, "Editor not found").await;
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("contributor"))]
-    async fn can_return_an_error_response_for_a_missing_story(pool: PgPool) -> sqlx::Result<()> {
+    #[sqlx::test(fixtures("editor"))]
+    async fn can_return_an_error_response_for_a_missing_blog(pool: PgPool) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(delete, pool, true, true, Some(1_i64)).await;
 
         let req = test::TestRequest::delete()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/stories/{}/contributors/{}", 12345, 2))
+            .uri(&format!("/v1/me/blogs/{}/editors/{}", 12345, 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Contributor not found").await;
+        assert_response_body_text(res, "Editor not found").await;
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("contributor"))]
-    async fn can_return_an_error_response_for_a_soft_deleted_story(
+    #[sqlx::test(fixtures("editor"))]
+    async fn can_return_an_error_response_for_a_soft_deleted_blog(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(delete, pool, true, true, Some(1_i64)).await;
 
-        // Soft-delete the story.
+        // Soft-delete the blog.
         let result = sqlx::query(
             r#"
-UPDATE stories
+UPDATE blogs
 SET deleted_at = NOW()
 WHERE id = $1
 "#,
@@ -214,12 +190,12 @@ WHERE id = $1
 
         let req = test::TestRequest::delete()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/stories/{}/contributors/{}", 3, 2))
+            .uri(&format!("/v1/me/blogs/{}/editors/{}", 3, 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Contributor not found").await;
+        assert_response_body_text(res, "Editor not found").await;
 
         Ok(())
     }
