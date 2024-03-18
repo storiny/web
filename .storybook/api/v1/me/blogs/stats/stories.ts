@@ -1,5 +1,5 @@
 import { appleStock as apple_stock } from "@visx/mock-data";
-import { MOCK_STORIES, MOCK_USERS } from "@storiny/ui/src/mocks";
+import { MOCK_STORIES } from "@storiny/ui/src/mocks";
 
 const { worker, rest } = window.msw;
 
