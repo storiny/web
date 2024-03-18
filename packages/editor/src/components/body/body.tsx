@@ -94,7 +94,7 @@ const DOC_STATUS_TO_LABEL_MAP: Partial<Record<DocStatus, string>> = {
   [DOC_STATUS.lifetime_exceeded]:
     "This document has been terminated due to inactivity. Reload this window to reconnect.",
   [DOC_STATUS.internal_error]:
-    "Unable to connect to the server. Please check your network connection and try again later",
+    "This document has been terminated due to an internal reason or network failure. Please reload this window to reconnect.",
   [DOC_STATUS.stale_peer]:
     "You have been disconnected due to inactivity. Reload this window to reconnect.",
   [DOC_STATUS.role_upgraded]:

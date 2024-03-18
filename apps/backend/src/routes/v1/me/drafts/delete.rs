@@ -81,7 +81,6 @@ WHERE
             // Drop the realm.
             if let Some(realm_inner) = realm.value() {
                 debug!("realm is present in the map, destroying");
-
                 realm_inner.destroy(RealmDestroyReason::StoryDeleted).await;
             }
 
