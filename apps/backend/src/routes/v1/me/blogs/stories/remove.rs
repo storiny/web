@@ -98,7 +98,7 @@ WHERE
     .bind(current_user_id)
     .bind(story_id)
     .bind(blog_id)
-    .execute(&data.db_pool)
+    .execute(&mut *txn)
     .await?
     .rows_affected()
     {

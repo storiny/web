@@ -126,6 +126,9 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     // Me - Flow
     v1::me::flow::onboarding::tags::init_routes(cfg);
     v1::me::flow::onboarding::writers::init_routes(cfg);
+    // Me - Followed blogs
+    v1::me::followed_blogs::post::init_routes(cfg);
+    v1::me::followed_blogs::delete::init_routes(cfg);
     // Me - Followed tags
     v1::me::followed_tags::get::init_routes(cfg);
     v1::me::followed_tags::post::init_routes(cfg);
