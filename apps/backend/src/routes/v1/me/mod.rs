@@ -9,6 +9,7 @@ pub mod comments;
 pub mod contributions;
 pub mod drafts;
 pub mod flow;
+pub mod followed_blogs;
 pub mod followed_tags;
 pub mod followers;
 pub mod following;
