@@ -33,34 +33,25 @@ use serde::{
 use sqlx::Row;
 use validator::Validate;
 
-lazy_static! {
-    static ref ROLE_REGEX: Regex = {
-        #[allow(clippy::unwrap_used)]
-        Regex::new(r"^(editor|viewer)$").unwrap()
-    };
-}
-
 #[derive(Deserialize, Validate)]
 struct Fragments {
-    story_id: String,
+    blog_id: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
 struct Request {
-    #[validate(regex = "ROLE_REGEX")]
-    role: String,
     #[validate(regex = "USERNAME_REGEX")]
     #[validate(length(min = 3, max = 24, message = "Invalid username length"))]
     username: String,
 }
 
-#[post("/v1/me/stories/{story_id}/contributors")]
+#[post("/v1/me/blogs/{blog_id}/editors")]
 #[tracing::instrument(
-    name = "POST /v1/me/stories/{story_id}/contributors",
+    name = "POST /v1/me/blogs/{blog_id}/editors",
     skip_all,
     fields(
         current_user_id = user.id().ok(),
-        story_id = %path.story_id,
+        blog_id = %path.blog_id,
         payload
     ),
     err
@@ -73,21 +64,15 @@ async fn post(
 ) -> Result<HttpResponse, AppError> {
     let current_user_id = user.id()?;
 
-    let story_id = path
-        .story_id
+    let blog_id = path
+        .blog_id
         .parse::<i64>()
-        .map_err(|_| AppError::from("Invalid story ID"))?;
+        .map_err(|_| AppError::from("Invalid blog ID"))?;
 
-    if !check_resource_limit(
-        &data.redis,
-        ResourceLimit::SendCollabRequest,
-        current_user_id,
-    )
-    .await?
-    {
+    if !check_resource_limit(&data.redis, ResourceLimit::SendBlogEditorRequest, blog_id).await? {
         return Err(AppError::new_client_error_with_status(
             StatusCode::TOO_MANY_REQUESTS,
-            "Daily limit exceeded for sending collaboration requests. Try again tomorrow.",
+            "Daily limit exceeded for sending editor requests on this blog. Try again tomorrow.",
         ));
     }
 
@@ -116,28 +101,26 @@ WHERE
 
     match sqlx::query(
         r#"                        
-WITH target_story AS (
-        SELECT FROM stories
+WITH inserted_blog_editor AS (
+        INSERT INTO blog_editors (user_id, blog_id)
+        VALUES ($2, $3)
+        RETURNING id
+    ),
+    target_blog AS (
+        SELECT user_id FROM blogs
         WHERE
             id = $3
             AND user_id = $1
-    ),
-    inserted_story_contributor AS (
-        INSERT INTO story_contributors (user_id, story_id, role)
-        SELECT $2, $3, $4
-        WHERE
-            EXISTS (SELECT 1 FROM target_story)
-        RETURNING id
     ),
     inserted_notification AS (
         INSERT INTO notifications (entity_type, entity_id, notifier_id)
         SELECT
             $5,
-            (SELECT id FROM inserted_story_contributor),
+            (SELECT id FROM inserted_blog_editor),
             $1
         WHERE
             EXISTS (SELECT 1 FROM target_story)
-            AND EXISTS (SELECT 1 FROM inserted_story_contributor)
+            AND EXISTS (SELECT 1 FROM inserted_blog_editor)
         RETURNING id
     )
 INSERT INTO
@@ -152,28 +135,19 @@ WHERE
     )
     .bind(current_user_id)
     .bind(user_result.get::<i64, _>("id"))
-    .bind(story_id)
-    .bind(&payload.role)
-    .bind(NotificationEntityType::CollabReqReceived as i16)
+    .bind(blog_id)
+    .bind(NotificationEntityType::BlogEditorInvite as i16)
     .bind(MAX_PEERS_PER_REALM as i16)
     .execute(&mut *txn)
     .await
     {
-        Ok(result) => match result.rows_affected() {
-            0 => Err(AppError::from("Unknown story")),
-            _ => {
-                incr_resource_limit(
-                    &data.redis,
-                    ResourceLimit::SendCollabRequest,
-                    current_user_id,
-                )
-                .await?;
+        Ok(_) => {
+            incr_resource_limit(&data.redis, ResourceLimit::SendBlogEditorRequest, blog_id).await?;
 
-                txn.commit().await?;
+            txn.commit().await?;
 
-                Ok(HttpResponse::Ok().finish())
-            }
-        },
+            Ok(HttpResponse::Ok().finish())
+        }
         Err(error) => {
             if let Some(db_err) = error.as_database_error() {
                 let error_kind = db_err.kind();
@@ -193,9 +167,10 @@ WHERE
 
                 let error_code = db_err.code().unwrap_or_default();
 
-                // Check if the story is soft-deleted.
+                // Check if the story is soft-deleted or the target user is
+                // soft-deleted/deactivated.
                 if error_code == SqlState::EntityUnavailable.to_string() {
-                    return Err(AppError::from("Story unavailable"));
+                    return Err(AppError::from("Story or user unavailable"));
                 }
 
                 // Check if the contributor ID is same as the current user ID.
@@ -267,7 +242,14 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+        let (app, cookie, _) = init_app_for_test(
+            crate::routes::init::v1::me::stories::contributors::invite::post,
+            pool,
+            true,
+            true,
+            Some(1_i64),
+        )
+        .await;
 
         // Soft-delete the story.
         let result = sqlx::query(
@@ -305,7 +287,14 @@ WHERE id = $1
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+        let (app, cookie, _) = init_app_for_test(
+            crate::routes::init::v1::me::stories::contributors::invite::post,
+            pool,
+            true,
+            true,
+            Some(1_i64),
+        )
+        .await;
 
         // Soft-delete the user.
         let result = sqlx::query(
@@ -343,7 +332,14 @@ WHERE id = $1
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+        let (app, cookie, _) = init_app_for_test(
+            crate::routes::init::v1::me::stories::contributors::invite::post,
+            pool,
+            true,
+            true,
+            Some(1_i64),
+        )
+        .await;
 
         // Deactivate the user.
         let result = sqlx::query(
@@ -377,33 +373,17 @@ WHERE id = $1
     }
 
     #[sqlx::test(fixtures("contributor"))]
-    async fn can_reject_a_collaboration_request_from_an_unknown_user(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
-
-        // Try sending the collaboration request.
-        let req = test::TestRequest::post()
-            .cookie(cookie.unwrap())
-            .set_json(Request {
-                role: "editor".to_string(),
-                username: "test_user_2".to_string(),
-            })
-            .uri(&format!("/v1/me/stories/{}/contributors", 3))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Unknown story").await;
-
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("contributor"))]
     async fn can_reject_a_collaboration_request_for_a_missing_story(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+        let (app, cookie, _) = init_app_for_test(
+            crate::routes::init::v1::me::stories::contributors::invite::post,
+            pool,
+            true,
+            true,
+            Some(1_i64),
+        )
+        .await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
@@ -416,7 +396,7 @@ WHERE id = $1
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Unknown story").await;
+        assert_response_body_text(res, "Story does not exist").await;
 
         Ok(())
     }
@@ -425,7 +405,14 @@ WHERE id = $1
     async fn can_reject_a_collaboration_request_for_a_missing_user(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+        let (app, cookie, _) = init_app_for_test(
+            crate::routes::init::v1::me::stories::contributors::invite::post,
+            pool,
+            true,
+            true,
+            Some(1_i64),
+        )
+        .await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
@@ -444,10 +431,17 @@ WHERE id = $1
     }
 
     #[sqlx::test(fixtures("contributor"))]
-    async fn should_not_allow_the_user_to_send_collaboration_request_to_itself(
+    async fn should_not_allow_the_user_to_send_friend_request_to_itself(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+        let (app, cookie, _) = init_app_for_test(
+            crate::routes::init::v1::me::stories::contributors::invite::post,
+            pool,
+            true,
+            true,
+            Some(1_i64),
+        )
+        .await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
@@ -471,7 +465,14 @@ WHERE id = $1
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+        let (app, cookie, _) = init_app_for_test(
+            crate::routes::init::v1::me::stories::contributors::invite::post,
+            pool,
+            true,
+            true,
+            Some(1_i64),
+        )
+        .await;
 
         // Insert some contributors.
         let result = sqlx::query(
@@ -514,7 +515,14 @@ VALUES (4, $1), (5, $1), (6, $1)
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+        let (app, cookie, _) = init_app_for_test(
+            crate::routes::init::v1::me::stories::contributors::invite::post,
+            pool,
+            true,
+            true,
+            Some(1_i64),
+        )
+        .await;
 
         // Make the contributor private.
         sqlx::query(
@@ -550,7 +558,14 @@ WHERE id = $1
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+        let (app, cookie, user_id) = init_app_for_test(
+            crate::routes::init::v1::me::stories::contributors::invite::post,
+            pool,
+            true,
+            true,
+            Some(1_i64),
+        )
+        .await;
 
         // Get blocked by the contributor.
         sqlx::query(
@@ -581,11 +596,18 @@ VALUES ($1, $2)
     }
 
     #[sqlx::test(fixtures("contributor"))]
-    async fn can_reject_a_collaboration_request_when_the_contributor_is_not_accepting_collaboration_requests_from_the_user(
+    async fn can_reject_a_collaboration_request_when_the_contributor_is_not_accepting_friend_requests_from_the_user(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+        let (app, cookie, _) = init_app_for_test(
+            crate::routes::init::v1::me::stories::contributors::invite::post,
+            pool,
+            true,
+            true,
+            Some(1_i64),
+        )
+        .await;
 
         // Set `incoming_collaboration_requests` to `None` for the receiver.
         sqlx::query(
@@ -627,8 +649,14 @@ WHERE id = $2
             pool: PgPool,
         ) -> sqlx::Result<()> {
             let mut conn = pool.acquire().await?;
-            let (app, cookie, user_id) =
-                init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+            let (app, cookie, user_id) = init_app_for_test(
+                crate::routes::init::v1::me::stories::contributors::invite::post,
+                pool,
+                true,
+                true,
+                Some(1_i64),
+            )
+            .await;
 
             let req = test::TestRequest::post()
                 .cookie(cookie.unwrap())
@@ -690,7 +718,14 @@ SELECT EXISTS (
             ctx: &mut RedisTestContext,
             pool: PgPool,
         ) -> sqlx::Result<()> {
-            let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+            let (app, cookie, user_id) = init_app_for_test(
+                crate::routes::init::v1::me::stories::contributors::invite::post,
+                pool,
+                true,
+                false,
+                None,
+            )
+            .await;
 
             exceed_resource_limit(
                 &ctx.redis_pool,

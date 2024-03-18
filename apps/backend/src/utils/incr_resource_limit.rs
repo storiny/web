@@ -14,18 +14,18 @@ const HOURS_24_AS_SECONDS: i32 = 86_400;
 ///
 /// * `redis_pool` - The Redis connection pool.
 /// * `resource_limit` - The resource limit variant.
-/// * `user_id` - The user ID value for the resource limit record.
+/// * `resource_id` - The resource ID value for the resource limit record.
 pub async fn incr_resource_limit(
     redis_pool: &RedisPool,
     resource_limit: ResourceLimit,
-    user_id: i64,
+    resource_id: i64,
 ) -> anyhow::Result<()> {
     let mut conn = redis_pool.get().await.map_err(|error| {
         anyhow!("unable to acquire a connection from the Redis pool: {error:?}")
     })?;
     let increx = redis::Script::new(include_str!("../../lua/increx.lua"));
     let cache_key = format!(
-        "{}:{}:{user_id}",
+        "{}:{}:{resource_id}",
         RedisNamespace::ResourceLimit,
         resource_limit as i32
     );
