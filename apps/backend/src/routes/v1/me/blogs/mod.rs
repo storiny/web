@@ -4,3 +4,4 @@ pub mod editors;
 pub mod get;
 pub mod post;
 pub mod writer_requests;
+pub mod writers;

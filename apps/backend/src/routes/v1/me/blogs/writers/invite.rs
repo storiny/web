@@ -42,9 +42,9 @@ struct Request {
     username: String,
 }
 
-#[post("/v1/me/blogs/{blog_id}/editors")]
+#[post("/v1/me/blogs/{blog_id}/writers")]
 #[tracing::instrument(
-    name = "POST /v1/me/blogs/{blog_id}/editors",
+    name = "POST /v1/me/blogs/{blog_id}/writers",
     skip_all,
     fields(
         current_user_id = user.id().ok(),
@@ -66,10 +66,10 @@ async fn post(
         .parse::<i64>()
         .map_err(|_| AppError::from("Invalid blog ID"))?;
 
-    if !check_resource_limit(&data.redis, ResourceLimit::SendBlogEditorRequest, blog_id).await? {
+    if !check_resource_limit(&data.redis, ResourceLimit::SendBlogWriterRequest, blog_id).await? {
         return Err(AppError::new_client_error_with_status(
             StatusCode::TOO_MANY_REQUESTS,
-            "Daily limit exceeded for sending editor requests on this blog. Try again tomorrow.",
+            "Daily limit exceeded for sending writer requests on this blog. Try again tomorrow.",
         ));
     }
 
@@ -98,51 +98,64 @@ WHERE
 
     match sqlx::query(
         r#"
-WITH target_blog AS (
-        SELECT FROM blogs
-        WHERE
-            id = $3
-            AND user_id = $1
-    ),
-    inserted_blog_editor AS (
-        INSERT INTO blog_editors (user_id, blog_id)
-        SELECT $2, $3
-        WHERE
-            EXISTS (SELECT 1 FROM target_blog)
-        RETURNING id
-    ),
-    inserted_notification AS (
-        INSERT INTO notifications (entity_type, entity_id, notifier_id)
-        SELECT
-            $4,
-            (SELECT id FROM inserted_blog_editor),
-            $1
-        WHERE
-            EXISTS (SELECT 1 FROM target_blog)
-            AND EXISTS (SELECT 1 FROM inserted_blog_editor)
-        RETURNING id
-    )
+WITH blog_as_owner AS (
+    SELECT 1 FROM blogs
+    WHERE
+        id = $3
+        AND user_id = $1
+), blog_as_editor AS (
+    SELECT 1 FROM blog_editors
+    WHERE
+        blog_id = $3
+        AND user_id = $1
+        AND accepted_at IS NOT NULL
+        AND deleted_at IS NULL
+        AND NOT EXISTS (
+            SELECT FROM blog_as_owner
+        )
+), sanity_check AS ( 
+    SELECT COALESCE(
+        (SELECT TRUE FROM blog_as_owner),
+        (SELECT TRUE FROM blog_as_editor)
+    ) AS "found"
+), inserted_blog_writer AS (
+    INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+    SELECT $1, $2, $3
+    WHERE
+        (SELECT found FROM sanity_check) IS TRUE
+    RETURNING id
+), inserted_notification AS (
+    INSERT INTO notifications (entity_type, entity_id, notifier_id)
+    SELECT
+        $4,
+        (SELECT id FROM inserted_blog_writer),
+        $1
+    WHERE
+        (SELECT found FROM sanity_check) IS TRUE
+        AND EXISTS (SELECT 1 FROM inserted_blog_writer)
+    RETURNING id
+)
 INSERT INTO
     notification_outs (notified_id, notification_id)
 SELECT
     $2,
     (SELECT id FROM inserted_notification)
 WHERE
-    EXISTS (SELECT 1 FROM target_blog)
+    (SELECT found FROM sanity_check) IS TRUE
     AND EXISTS (SELECT 1 FROM inserted_notification)
 "#,
     )
     .bind(current_user_id)
     .bind(user_result.get::<i64, _>("id"))
     .bind(blog_id)
-    .bind(NotificationEntityType::BlogEditorInvite as i16)
+    .bind(NotificationEntityType::BlogWriterInvite as i16)
     .execute(&mut *txn)
     .await
     {
         Ok(result) => match result.rows_affected() {
             0 => Err(AppError::from("Unknown blog")),
             _ => {
-                incr_resource_limit(&data.redis, ResourceLimit::SendBlogEditorRequest, blog_id)
+                incr_resource_limit(&data.redis, ResourceLimit::SendBlogWriterRequest, blog_id)
                     .await?;
 
                 txn.commit().await?;
@@ -154,11 +167,11 @@ WHERE
             if let Some(db_err) = error.as_database_error() {
                 let error_kind = db_err.kind();
 
-                // User is already an editor.
+                // User is already a writer.
                 if matches!(error_kind, sqlx::error::ErrorKind::UniqueViolation) {
                     return Err(AppError::ToastError(ToastErrorResponse::new(
                         Some(StatusCode::CONFLICT),
-                        "User is already an editor or the request is still pending",
+                        "User is already a writer or the request is still pending",
                     )));
                 }
 
@@ -174,35 +187,35 @@ WHERE
                     return Err(AppError::from("Blog unavailable"));
                 }
 
-                // Check if the editor ID is same as the current user ID.
-                if error_code == SqlState::IllegalEditor.to_string() {
+                // Check for illegal writer.
+                if error_code == SqlState::IllegalWriter.to_string() {
                     return Err(AppError::ToastError(ToastErrorResponse::new(
                         None,
-                        "You cannot send an editor request to yourself",
+                        "This user cannot be added as a writer to this blog",
                     )));
                 }
 
-                // Check if the current user is blocked by the editor.
-                if error_code == SqlState::BlogOwnerBlockedByEditor.to_string() {
+                // Check if the current user is blocked by the writer.
+                if error_code == SqlState::BlogOwnerOrEditorBlockedByWriter.to_string() {
                     return Err(AppError::ToastError(ToastErrorResponse::new(
                         Some(StatusCode::FORBIDDEN),
                         "You are being blocked by the user",
                     )));
                 }
 
-                // Check if the editor is accepting requests from the current user.
-                if error_code == SqlState::EditorNotAcceptingBlogRequest.to_string() {
+                // Check if the writer is accepting requests from the current user.
+                if error_code == SqlState::WriterNotAcceptingBlogRequest.to_string() {
                     return Err(AppError::ToastError(ToastErrorResponse::new(
                         Some(StatusCode::FORBIDDEN),
-                        "User is not accepting editor requests from you",
+                        "User is not accepting writer requests from you",
                     )));
                 }
 
-                // Check if the editor limit has been reached for the current blog.
-                if error_code == SqlState::EditorOverflow.to_string() {
+                // Check if the writer limit has been reached for the current blog.
+                if error_code == SqlState::WriterOverflow.to_string() {
                     return Err(AppError::ToastError(ToastErrorResponse::new(
                         None,
-                        "Editor limit has been reached for this blog",
+                        "Writer limit has been reached for this blog",
                     )));
                 }
             }
@@ -238,10 +251,8 @@ mod tests {
     };
     use storiny_macros::test_context;
 
-    #[sqlx::test(fixtures("editor"))]
-    async fn can_reject_an_editor_request_for_a_soft_deleted_blog(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
+    #[sqlx::test(fixtures("writer"))]
+    async fn can_reject_a_writer_request_for_a_soft_deleted_blog(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
@@ -253,19 +264,19 @@ SET deleted_at = NOW()
 WHERE id = $1
 "#,
         )
-        .bind(3_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Try sending the editor request.
+        // Try sending the writer request.
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .set_json(Request {
                 username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/blogs/{}/editors", 3))
+            .uri(&format!("/v1/me/blogs/{}/writers", 4))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -275,10 +286,8 @@ WHERE id = $1
         Ok(())
     }
 
-    #[sqlx::test(fixtures("editor"))]
-    async fn can_reject_an_editor_request_for_a_soft_deleted_user(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
+    #[sqlx::test(fixtures("writer"))]
+    async fn can_reject_a_writer_request_for_a_soft_deleted_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
@@ -296,13 +305,13 @@ WHERE id = $1
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Try sending the editor request.
+        // Try sending the writer request.
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .set_json(Request {
                 username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/blogs/{}/editors", 3))
+            .uri(&format!("/v1/me/blogs/{}/writers", 4))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -312,8 +321,8 @@ WHERE id = $1
         Ok(())
     }
 
-    #[sqlx::test(fixtures("editor"))]
-    async fn can_reject_an_editor_request_for_a_deactivated_user(pool: PgPool) -> sqlx::Result<()> {
+    #[sqlx::test(fixtures("writer"))]
+    async fn can_reject_a_writer_request_for_a_deactivated_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
@@ -331,13 +340,13 @@ WHERE id = $1
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Try sending the editor request.
+        // Try sending the writer request.
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .set_json(Request {
                 username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/blogs/{}/editors", 3))
+            .uri(&format!("/v1/me/blogs/{}/writers", 4))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -347,17 +356,17 @@ WHERE id = $1
         Ok(())
     }
 
-    #[sqlx::test(fixtures("editor"))]
-    async fn can_reject_an_editor_request_from_an_unknown_user(pool: PgPool) -> sqlx::Result<()> {
+    #[sqlx::test(fixtures("writer"))]
+    async fn can_reject_a_writer_request_from_an_unknown_user(pool: PgPool) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
-        // Try sending the editor request.
+        // Try sending the writer request.
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .set_json(Request {
                 username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/blogs/{}/editors", 3))
+            .uri(&format!("/v1/me/blogs/{}/writers", 4))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -367,8 +376,8 @@ WHERE id = $1
         Ok(())
     }
 
-    #[sqlx::test(fixtures("editor"))]
-    async fn can_reject_an_editor_request_for_a_missing_blog(pool: PgPool) -> sqlx::Result<()> {
+    #[sqlx::test(fixtures("writer"))]
+    async fn can_reject_a_writer_request_for_a_missing_blog(pool: PgPool) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
         let req = test::TestRequest::post()
@@ -376,7 +385,7 @@ WHERE id = $1
             .set_json(Request {
                 username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/blogs/{}/editors", 12345))
+            .uri(&format!("/v1/me/blogs/{}/writers", 12345))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -386,8 +395,8 @@ WHERE id = $1
         Ok(())
     }
 
-    #[sqlx::test(fixtures("editor"))]
-    async fn can_reject_an_editor_request_for_a_missing_user(pool: PgPool) -> sqlx::Result<()> {
+    #[sqlx::test(fixtures("writer"))]
+    async fn can_reject_a_writer_request_for_a_missing_user(pool: PgPool) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
         let req = test::TestRequest::post()
@@ -395,7 +404,7 @@ WHERE id = $1
             .set_json(Request {
                 username: "random_user".to_string(),
             })
-            .uri(&format!("/v1/me/blogs/{}/editors", 3))
+            .uri(&format!("/v1/me/blogs/{}/writers", 4))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -405,77 +414,211 @@ WHERE id = $1
         Ok(())
     }
 
-    #[sqlx::test(fixtures("editor"))]
-    async fn should_not_allow_the_user_to_send_editor_request_to_itself(
+    #[sqlx::test(fixtures("writer"))]
+    async fn should_not_allow_the_user_to_send_writer_request_to_itself(
         pool: PgPool,
     ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+
+        // Change the owner of the blog.
+        let result = sqlx::query(
+            r#"
+UPDATE blogs
+SET user_id = $1
+WHERE id = $2
+"#,
+        )
+        .bind(2_i64)
+        .bind(4_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Add the current user as an editor.
+        let result = sqlx::query(
+            r#"
+INSERT INTO blog_editors (user_id, blog_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(4_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .set_json(Request {
                 username: "test_user_1".to_string(),
             })
-            .uri(&format!("/v1/me/blogs/{}/editors", 3))
+            .uri(&format!("/v1/me/blogs/{}/writers", 4))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "You cannot send an editor request to yourself").await;
+        assert_toast_error_response(res, "This user cannot be added as a writer to this blog")
+            .await;
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("editor"))]
-    async fn can_reject_an_editor_request_on_editor_overflow(pool: PgPool) -> sqlx::Result<()> {
+    #[sqlx::test(fixtures("writer"))]
+    async fn should_not_allow_the_user_to_send_writer_request_to_the_owner_of_the_blog(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
-        // Insert some editors.
+        // Change the owner of the blog.
         let result = sqlx::query(
             r#"
-WITH inserted_users AS (
-    INSERT INTO users (id, name, username, email)
-    VALUES
-        (4, 'Editor 1', 'editor_1', 'editor_1@storiny.com'),
-        (5, 'Editor 2', 'editor_2', 'editor_2@storiny.com'),
-        (6, 'Editor 3', 'editor_3', 'editor_3@storiny.com'),
-        (7, 'Editor 4', 'editor_4', 'editor_4@storiny.com'),
-        (8, 'Editor 5', 'editor_5', 'editor_5@storiny.com')
-)
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES (4, $1), (5, $1), (6, $1), (7, $1), (8, $1)
+UPDATE blogs
+SET user_id = $1
+WHERE id = $2
 "#,
         )
-        .bind(3_i64)
+        .bind(2_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
-        assert_eq!(result.rows_affected(), 5);
+        assert_eq!(result.rows_affected(), 1);
+
+        // Add the current user as an editor.
+        let result = sqlx::query(
+            r#"
+INSERT INTO blog_editors (user_id, blog_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(4_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .set_json(Request {
                 username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/blogs/{}/editors", 3))
+            .uri(&format!("/v1/me/blogs/{}/writers", 4))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Editor limit has been reached for this blog").await;
+        assert_toast_error_response(res, "This user cannot be added as a writer to this blog")
+            .await;
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("editor"))]
-    async fn can_reject_an_editor_request_when_the_editor_is_private(
+    #[sqlx::test(fixtures("writer"))]
+    async fn can_reject_a_writer_request_for_an_existing_editor(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+
+        // Insert an editor.
+        let result = sqlx::query(
+            r#"
+INSERT INTO blog_editors (user_id, blog_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(2_i64)
+        .bind(4_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .set_json(Request {
+                username: "test_user_2".to_string(),
+            })
+            .uri(&format!("/v1/me/blogs/{}/writers", 4))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "This user cannot be added as a writer to this blog")
+            .await;
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("writer"))]
+    async fn can_reject_a_writer_request_on_writer_overflow(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
+
+        // Insert some writers.
+        let result = sqlx::query(
+            r#"
+WITH inserted_users AS (
+    INSERT INTO users (id, name, username, email)
+    VALUES
+        (4, 'Writer 1', 'writer_1', 'writer_1@storiny.com'),
+        (5, 'Writer 2', 'writer_2', 'writer_2@storiny.com'),
+        (6, 'Writer 3', 'writer_3', 'writer_3@storiny.com'),
+        (7, 'Writer 4', 'writer_4', 'writer_4@storiny.com'),
+        (8, 'Writer 5', 'writer_5', 'writer_5@storiny.com'),
+        (9, 'Writer 6', 'writer_6', 'writer_6@storiny.com'),
+        (10, 'Writer 7', 'writer_7', 'writer_7@storiny.com'),
+        (11, 'Writer 8', 'writer_8', 'writer_8@storiny.com'),
+        (12, 'Writer 9', 'writer_9', 'writer_9@storiny.com'),
+        (13, 'Writer 10', 'writer_10', 'writer_10@storiny.com')
+)
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES
+    ($1, 4, $2),
+    ($1, 5, $2),
+    ($1, 6, $2),
+    ($1, 7, $2),
+    ($1, 8, $2),
+    ($1, 9, $2),
+    ($1, 10, $2),
+    ($1, 11, $2),
+    ($1, 12, $2),
+    ($1, 13, $2)
+"#,
+        )
+        .bind(user_id.unwrap())
+        .bind(4_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 10);
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .set_json(Request {
+                username: "test_user_2".to_string(),
+            })
+            .uri(&format!("/v1/me/blogs/{}/writers", 4))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Writer limit has been reached for this blog").await;
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("writer"))]
+    async fn can_reject_a_writer_request_when_the_writer_is_private(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
-        // Make the editor private.
+        // Make the writer private.
         sqlx::query(
             r#"
 UPDATE users
@@ -492,24 +635,24 @@ WHERE id = $1
             .set_json(Request {
                 username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/blogs/{}/editors", 3))
+            .uri(&format!("/v1/me/blogs/{}/writers", 4))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "User is not accepting editor requests from you").await;
+        assert_toast_error_response(res, "User is not accepting writer requests from you").await;
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("editor"))]
-    async fn can_reject_an_editor_request_when_the_editor_has_blocked_the_owner_of_the_blog(
+    #[sqlx::test(fixtures("writer"))]
+    async fn can_reject_a_writer_request_when_the_writer_has_blocked_the_transmitter_of_the_request(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
 
-        // Get blocked by the editor.
+        // Get blocked by the writer.
         sqlx::query(
             r#"
 INSERT INTO blocks (blocker_id, blocked_id)
@@ -526,7 +669,7 @@ VALUES ($1, $2)
             .set_json(Request {
                 username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/blogs/{}/editors", 3))
+            .uri(&format!("/v1/me/blogs/{}/writers", 4))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -536,8 +679,8 @@ VALUES ($1, $2)
         Ok(())
     }
 
-    #[sqlx::test(fixtures("editor"))]
-    async fn can_reject_an_editor_request_when_the_editor_is_not_accepting_editor_requests_from_the_user(
+    #[sqlx::test(fixtures("writer"))]
+    async fn can_reject_a_writer_request_when_the_writer_is_not_accepting_writer_requests_from_the_user(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -561,12 +704,12 @@ WHERE id = $2
             .set_json(Request {
                 username: "test_user_2".to_string(),
             })
-            .uri(&format!("/v1/me/blogs/{}/editors", 3))
+            .uri(&format!("/v1/me/blogs/{}/writers", 4))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "User is not accepting editor requests from you").await;
+        assert_toast_error_response(res, "User is not accepting writer requests from you").await;
 
         Ok(())
     }
@@ -575,8 +718,8 @@ WHERE id = $2
         use super::*;
 
         #[test_context(RedisTestContext)]
-        #[sqlx::test(fixtures("editor"))]
-        async fn can_send_an_editor_request(
+        #[sqlx::test(fixtures("writer"))]
+        async fn can_send_a_writer_request_as_blog_owner(
             ctx: &mut RedisTestContext,
             pool: PgPool,
         ) -> sqlx::Result<()> {
@@ -588,25 +731,25 @@ WHERE id = $2
                 .set_json(Request {
                     username: "test_user_2".to_string(),
                 })
-                .uri(&format!("/v1/me/blogs/{}/editors", 3))
+                .uri(&format!("/v1/me/blogs/{}/writers", 4))
                 .to_request();
             let res = test::call_service(&app, req).await;
 
             assert!(res.status().is_success());
 
-            // Editor request should be present in the database.
-            let editor_result = sqlx::query(
+            // Writer request should be present in the database.
+            let writer_result = sqlx::query(
                 r#"
-SELECT id FROM blog_editors
-WHERE user_id = $1 AND blog_id = $2
+SELECT id FROM blog_writers
+WHERE receiver_id = $1 AND blog_id = $2
 "#,
             )
             .bind(2_i64)
-            .bind(3_i64)
+            .bind(4_i64)
             .fetch_one(&mut *conn)
             .await?;
 
-            assert!(editor_result.try_get::<i64, _>("id").is_ok());
+            assert!(writer_result.try_get::<i64, _>("id").is_ok());
 
             // Should also insert a notification.
             let result = sqlx::query(
@@ -617,7 +760,7 @@ SELECT EXISTS (
 )
 "#,
             )
-            .bind(editor_result.get::<i64, _>("id"))
+            .bind(writer_result.get::<i64, _>("id"))
             .fetch_one(&mut *conn)
             .await?;
 
@@ -625,7 +768,107 @@ SELECT EXISTS (
 
             // Should also increment the resource limit.
             let result =
-                get_resource_limit(&ctx.redis_pool, ResourceLimit::SendBlogEditorRequest, 3_i64)
+                get_resource_limit(&ctx.redis_pool, ResourceLimit::SendBlogWriterRequest, 4_i64)
+                    .await;
+
+            assert_eq!(result, 1);
+
+            Ok(())
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("writer"))]
+        async fn can_send_a_writer_request_as_blog_editor(
+            ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) -> sqlx::Result<()> {
+            let mut conn = pool.acquire().await?;
+            let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
+
+            // Insert an editor.
+            let result = sqlx::query(
+                r#"
+INSERT INTO blog_editors (user_id, blog_id)
+VALUES ($1, $2)
+"#,
+            )
+            .bind(user_id.unwrap())
+            .bind(4_i64)
+            .execute(&mut *conn)
+            .await?;
+
+            assert_eq!(result.rows_affected(), 1);
+
+            let req = test::TestRequest::post()
+                .cookie(cookie.clone().unwrap())
+                .set_json(Request {
+                    username: "test_user_2".to_string(),
+                })
+                .uri(&format!("/v1/me/blogs/{}/writers", 4))
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            // Should reject the request as the editor has not been accepted yet.
+            assert!(res.status().is_client_error());
+            assert_response_body_text(res, "Unknown blog").await;
+
+            // Accept the editor.
+            let result = sqlx::query(
+                r#"
+UPDATE blog_editors
+SET accepted_at = NOW()
+WHERE user_id = $1
+"#,
+            )
+            .bind(user_id.unwrap())
+            .execute(&mut *conn)
+            .await?;
+
+            assert_eq!(result.rows_affected(), 1);
+
+            let req = test::TestRequest::post()
+                .cookie(cookie.unwrap())
+                .set_json(Request {
+                    username: "test_user_2".to_string(),
+                })
+                .uri(&format!("/v1/me/blogs/{}/writers", 4))
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_success());
+
+            // Writer request should be present in the database.
+            let writer_result = sqlx::query(
+                r#"
+SELECT id FROM blog_writers
+WHERE receiver_id = $1 AND blog_id = $2
+"#,
+            )
+            .bind(2_i64)
+            .bind(4_i64)
+            .fetch_one(&mut *conn)
+            .await?;
+
+            assert!(writer_result.try_get::<i64, _>("id").is_ok());
+
+            // Should also insert a notification.
+            let result = sqlx::query(
+                r#"
+SELECT EXISTS (
+    SELECT 1 FROM notifications
+    WHERE entity_id = $1
+)
+"#,
+            )
+            .bind(writer_result.get::<i64, _>("id"))
+            .fetch_one(&mut *conn)
+            .await?;
+
+            assert!(result.get::<bool, _>("exists"));
+
+            // Should also increment the resource limit.
+            let result =
+                get_resource_limit(&ctx.redis_pool, ResourceLimit::SendBlogWriterRequest, 4_i64)
                     .await;
 
             assert_eq!(result, 1);
@@ -635,13 +878,13 @@ SELECT EXISTS (
 
         #[test_context(RedisTestContext)]
         #[sqlx::test]
-        async fn can_reject_an_editor_request_on_exceeding_the_resource_limit(
+        async fn can_reject_a_writer_request_on_exceeding_the_resource_limit(
             ctx: &mut RedisTestContext,
             pool: PgPool,
         ) -> sqlx::Result<()> {
             let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
-            exceed_resource_limit(&ctx.redis_pool, ResourceLimit::SendBlogEditorRequest, 3_i64)
+            exceed_resource_limit(&ctx.redis_pool, ResourceLimit::SendBlogWriterRequest, 4_i64)
                 .await;
 
             let req = test::TestRequest::post()
@@ -649,7 +892,7 @@ SELECT EXISTS (
                 .set_json(Request {
                     username: "test_user_2".to_string(),
                 })
-                .uri(&format!("/v1/me/blogs/{}/editors", 3))
+                .uri(&format!("/v1/me/blogs/{}/writers", 4))
                 .to_request();
             let res = test::call_service(&app, req).await;
 

@@ -81,6 +81,12 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     // Me - Blogs
     v1::me::blogs::get::init_routes(cfg);
     v1::me::blogs::post::init_routes(cfg);
+    // Me - Blogs - Editors
+    v1::me::blogs::editors::invite::init_routes(cfg);
+    v1::me::blogs::editors::remove::init_routes(cfg);
+    // Me - Blogs - Writers
+    v1::me::blogs::writers::invite::init_routes(cfg);
+    v1::me::blogs::writers::remove::init_routes(cfg);
     // Me - Blogs - Editor requests
     v1::me::blogs::editor_requests::get::init_routes(cfg);
     v1::me::blogs::editor_requests::cancel::init_routes(cfg);
