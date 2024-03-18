@@ -115,10 +115,11 @@ END AS "can_create_blog"
         .into());
     }
 
+    // TODO: Insert without plus features on stable release.
     match sqlx::query(
         r#"
-INSERT INTO blogs (name, slug, user_id)
-VALUES ($1, $2, $3)
+INSERT INTO blogs (name, slug, user_id, has_plus_features)
+VALUES ($1, $2, $3, TRUE)
 "#,
     )
     .bind(name)

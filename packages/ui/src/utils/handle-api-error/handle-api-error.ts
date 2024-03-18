@@ -49,6 +49,7 @@ export const handle_api_error = <T extends FieldValues>(
   } else {
     toaster(
       error?.data?.error ||
+        (typeof error?.data === "string" ? error.data : false) ||
         (error?.status === "FETCH_ERROR"
           ? "Storiny is currently unavailable. Check your network connection or try again later."
           : default_message),
