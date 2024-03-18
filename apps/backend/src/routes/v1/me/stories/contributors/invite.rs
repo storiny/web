@@ -97,7 +97,10 @@ async fn post(
     let user_result = sqlx::query(
         r#"
 SELECT id FROM users
-WHERE username = $1
+WHERE
+    username = $1
+    AND deleted_at IS NULL
+    AND deactivated_at IS NULL
 "#,
     )
     .bind(&payload.username)
@@ -112,17 +115,19 @@ WHERE username = $1
     })?;
 
     match sqlx::query(
-        r#"                        
-WITH inserted_story_contributor AS (
-        INSERT INTO story_contributors (user_id, story_id, role)
-        VALUES ($2, $3, $4)
-        RETURNING id
-    ),
-    target_story AS (
-        SELECT user_id FROM stories
+        r#"
+WITH target_story AS (
+        SELECT FROM stories
         WHERE
             id = $3
             AND user_id = $1
+    ),
+    inserted_story_contributor AS (
+        INSERT INTO story_contributors (user_id, story_id, role)
+        SELECT $2, $3, $4
+        WHERE
+            EXISTS (SELECT 1 FROM target_story)
+        RETURNING id
     ),
     inserted_notification AS (
         INSERT INTO notifications (entity_type, entity_id, notifier_id)
@@ -154,18 +159,21 @@ WHERE
     .execute(&mut *txn)
     .await
     {
-        Ok(_) => {
-            incr_resource_limit(
-                &data.redis,
-                ResourceLimit::SendCollabRequest,
-                current_user_id,
-            )
-            .await?;
+        Ok(result) => match result.rows_affected() {
+            0 => Err(AppError::from("Unknown story")),
+            _ => {
+                incr_resource_limit(
+                    &data.redis,
+                    ResourceLimit::SendCollabRequest,
+                    current_user_id,
+                )
+                .await?;
 
-            txn.commit().await?;
+                txn.commit().await?;
 
-            Ok(HttpResponse::Ok().finish())
-        }
+                Ok(HttpResponse::Ok().finish())
+            }
+        },
         Err(error) => {
             if let Some(db_err) = error.as_database_error() {
                 let error_kind = db_err.kind();
@@ -185,10 +193,9 @@ WHERE
 
                 let error_code = db_err.code().unwrap_or_default();
 
-                // Check if the story is soft-deleted or the target user is
-                // soft-deleted/deactivated.
+                // Check if the story is soft-deleted.
                 if error_code == SqlState::EntityUnavailable.to_string() {
-                    return Err(AppError::from("Story or user unavailable"));
+                    return Err(AppError::from("Story unavailable"));
                 }
 
                 // Check if the contributor ID is same as the current user ID.
@@ -288,7 +295,7 @@ WHERE id = $1
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Story or user unavailable").await;
+        assert_response_body_text(res, "Story unavailable").await;
 
         Ok(())
     }
@@ -326,7 +333,7 @@ WHERE id = $1
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Story or user unavailable").await;
+        assert_toast_error_response(res, "Unknown user, try again").await;
 
         Ok(())
     }
@@ -364,7 +371,30 @@ WHERE id = $1
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Story or user unavailable").await;
+        assert_toast_error_response(res, "Unknown user, try again").await;
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("contributor"))]
+    async fn can_reject_a_collaboration_request_from_an_unknown_user(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
+
+        // Try sending the collaboration request.
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .set_json(Request {
+                role: "editor".to_string(),
+                username: "test_user_2".to_string(),
+            })
+            .uri(&format!("/v1/me/stories/{}/contributors", 3))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_response_body_text(res, "Unknown story").await;
 
         Ok(())
     }
@@ -386,7 +416,7 @@ WHERE id = $1
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Story does not exist").await;
+        assert_response_body_text(res, "Unknown story").await;
 
         Ok(())
     }
@@ -414,7 +444,7 @@ WHERE id = $1
     }
 
     #[sqlx::test(fixtures("contributor"))]
-    async fn should_not_allow_the_user_to_send_friend_request_to_itself(
+    async fn should_not_allow_the_user_to_send_collaboration_request_to_itself(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(post, pool, true, true, Some(1_i64)).await;
@@ -551,7 +581,7 @@ VALUES ($1, $2)
     }
 
     #[sqlx::test(fixtures("contributor"))]
-    async fn can_reject_a_collaboration_request_when_the_contributor_is_not_accepting_friend_requests_from_the_user(
+    async fn can_reject_a_collaboration_request_when_the_contributor_is_not_accepting_collaboration_requests_from_the_user(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
