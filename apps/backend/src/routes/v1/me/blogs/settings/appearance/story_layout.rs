@@ -55,6 +55,7 @@ WITH blog_as_owner AS (
     WHERE
         id = $2
         AND user_id = $1
+        AND deleted_at IS NULL
 ), blog_as_editor AS (
     SELECT 1 FROM blog_editors
     WHERE
@@ -258,6 +259,60 @@ WHERE id = $1
         .await?;
 
         assert!(result.get::<bool, _>("is_story_minimal_layout"));
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_story_layout_settings_request_for_a_deleted_blog(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
+
+        // Insert a blog.
+        let result = sqlx::query(
+            r#"
+INSERT INTO blogs (name, slug, user_id)
+VALUES ($1, $2, $3)
+RETURNING id
+"#,
+        )
+        .bind("Sample blog".to_string())
+        .bind("sample-blog".to_string())
+        .bind(user_id.unwrap())
+        .fetch_one(&mut *conn)
+        .await?;
+
+        let blog_id = result.get::<i64, _>("id");
+
+        // Delete the blog.
+        let result = sqlx::query(
+            r#"
+UPDATE blogs
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(blog_id)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let req = test::TestRequest::patch()
+            .cookie(cookie.unwrap())
+            .uri(&format!(
+                "/v1/me/blogs/{blog_id}/settings/appearance/story-layout",
+            ))
+            .set_json(Request {
+                is_story_minimal_layout: true,
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_response_body_text(res, "Missing permission or the blog does not exist").await;
 
         Ok(())
     }

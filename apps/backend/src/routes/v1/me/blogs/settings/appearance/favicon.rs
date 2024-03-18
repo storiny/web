@@ -1,5 +1,8 @@
 use crate::{
-    error::AppError,
+    error::{
+        AppError,
+        ToastErrorResponse,
+    },
     middlewares::identity::identity::Identity,
     AppState,
 };
@@ -9,20 +12,13 @@ use actix_web::{
     HttpResponse,
 };
 use actix_web_validator::Json;
-use lazy_static::lazy_static;
-use regex::Regex;
 use serde::{
     Deserialize,
     Serialize,
 };
+use sqlx::Row;
+use uuid::Uuid;
 use validator::Validate;
-
-lazy_static! {
-    static ref THEME_REGEX: Regex = {
-        #[allow(clippy::unwrap_used)]
-        Regex::new(r"^(light|dark)$").unwrap()
-    };
-}
 
 #[derive(Deserialize, Validate)]
 struct Fragments {
@@ -31,14 +27,17 @@ struct Fragments {
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
 struct Request {
-    #[validate(regex = "THEME_REGEX")]
-    default_theme: Option<String>,
-    force: bool,
+    favicon: Option<Uuid>,
 }
 
-#[patch("/v1/me/blogs/{blog_id}/settings/appearance/theme")]
+#[derive(Debug, Serialize, Deserialize)]
+struct Response {
+    favicon: Option<Uuid>,
+}
+
+#[patch("/v1/me/blogs/{blog_id}/settings/appearance/favicon")]
 #[tracing::instrument(
-    name = "PATCH /v1/me/blogs/{blog_id}/settings/appearance/theme",
+    name = "PATCH /v1/me/blogs/{blog_id}/settings/appearance/favicon",
     skip_all,
     fields(
         user = user.id().ok(),
@@ -59,8 +58,9 @@ async fn patch(
         .parse::<i64>()
         .map_err(|_| AppError::from("Invalid blog ID"))?;
 
-    match sqlx::query(
-        r#"
+    if payload.favicon.is_none() {
+        match sqlx::query(
+            r#"
 WITH blog_as_owner AS (
     SELECT 1 FROM blogs
     WHERE
@@ -85,25 +85,83 @@ WITH blog_as_owner AS (
 )
 UPDATE blogs
 SET
-    default_theme = $3,
-    force_theme = $4
+    favicon = NULL
 WHERE
     id = $2
     AND (SELECT found FROM sanity_check) IS TRUE
 "#,
-    )
-    .bind(user_id)
-    .bind(blog_id)
-    .bind(&payload.default_theme)
-    .bind(&payload.force)
-    .execute(&data.db_pool)
-    .await?
-    .rows_affected()
-    {
-        0 => Err(AppError::from(
-            "Missing permission or the blog does not exist",
-        )),
-        _ => Ok(HttpResponse::NoContent().finish()),
+        )
+        .bind(user_id)
+        .bind(blog_id)
+        .execute(&data.db_pool)
+        .await?
+        .rows_affected()
+        {
+            0 => Err(AppError::ToastError(ToastErrorResponse::new(
+                None,
+                "Missing permission, the blog does not exist, or the favicon is invalid",
+            ))),
+            _ => Ok(HttpResponse::Ok().json(Response { favicon: None })),
+        }
+    } else {
+        let result = sqlx::query(
+            r#"
+WITH blog_as_owner AS (
+    SELECT 1 FROM blogs
+    WHERE
+        id = $2
+        AND user_id = $1
+        AND deleted_at IS NULL
+), blog_as_editor AS (
+    SELECT 1 FROM blog_editors
+    WHERE
+        blog_id = $2
+        AND user_id = $1
+        AND accepted_at IS NOT NULL
+        AND deleted_at IS NULL
+        AND NOT EXISTS (
+            SELECT FROM blog_as_owner
+        )
+), sanity_check AS (
+    SELECT COALESCE(
+        (SELECT TRUE FROM blog_as_owner),
+        (SELECT TRUE FROM blog_as_editor)
+    ) AS "found"
+), selected_asset AS (
+    SELECT key
+    FROM assets
+    WHERE key = $3
+    LIMIT 1
+)
+UPDATE blogs
+SET
+    favicon = (SELECT key FROM selected_asset)
+WHERE
+    id = $2
+    AND EXISTS (SELECT 1 FROM selected_asset)
+    AND (SELECT found FROM sanity_check) IS TRUE
+RETURNING favicon
+"#,
+        )
+        .bind(user_id)
+        .bind(blog_id)
+        .bind(payload.favicon)
+        .fetch_one(&data.db_pool)
+        .await
+        .map_err(|error| {
+            if matches!(error, sqlx::Error::RowNotFound) {
+                AppError::ToastError(ToastErrorResponse::new(
+                    None,
+                    "Missing permission, the blog does not exist, or the favicon is invalid",
+                ))
+            } else {
+                AppError::SqlxError(error)
+            }
+        })?;
+
+        Ok(HttpResponse::Ok().json(Response {
+            favicon: result.get::<Option<Uuid>, _>("favicon"),
+        }))
     }
 }
 
@@ -115,8 +173,9 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::test_utils::{
-        assert_response_body_text,
+        assert_toast_error_response,
         init_app_for_test,
+        res_to_string,
     };
     use actix_web::test;
     use sqlx::{
@@ -125,7 +184,7 @@ mod tests {
     };
 
     #[sqlx::test]
-    async fn can_update_theme_settings_as_blog_owner(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_update_favicon_as_blog_owner(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
@@ -134,7 +193,7 @@ mod tests {
             r#"
 INSERT INTO blogs (name, slug, user_id)
 VALUES ($1, $2, $3)
-RETURNING id, default_theme, force_theme
+RETURNING id, favicon
 "#,
         )
         .bind("Sample blog".to_string())
@@ -145,26 +204,50 @@ RETURNING id, default_theme, force_theme
 
         let blog_id = result.get::<i64, _>("id");
 
-        // Assert initial values.
-        assert!(result.get::<Option<String>, _>("default_theme").is_none());
-        assert!(!result.get::<bool, _>("force_theme"));
+        // Should be `NULL` initially.
+        assert!(result.get::<Option<Uuid>, _>("favicon").is_none());
+
+        let favicon = Uuid::new_v4();
+
+        // Insert an asset.
+        let result = sqlx::query(
+            r#"
+INSERT INTO assets (key, hex, height, width, user_id)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id
+"#,
+        )
+        .bind(favicon)
+        .bind("000000".to_string())
+        .bind(0)
+        .bind(0)
+        .bind(user_id.unwrap())
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(result.try_get::<i64, _>("id").is_ok());
 
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/blogs/{blog_id}/settings/appearance/theme"))
+            .uri(&format!(
+                "/v1/me/blogs/{blog_id}/settings/appearance/favicon",
+            ))
             .set_json(Request {
-                default_theme: Some("light".to_string()),
-                force: true,
+                favicon: Some(favicon),
             })
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
 
+        let json = serde_json::from_str::<Response>(&res_to_string(res).await).unwrap();
+
+        assert_eq!(json.favicon, Some(favicon));
+
         // Blog should get updated in the database.
         let result = sqlx::query(
             r#"
-SELECT default_theme, force_theme FROM blogs
+SELECT favicon FROM blogs
 WHERE id = $1
 "#,
         )
@@ -172,11 +255,7 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(
-            result.get::<Option<String>, _>("default_theme").unwrap(),
-            "light".to_string()
-        );
-        assert!(result.get::<bool, _>("force_theme"));
+        assert_eq!(result.get::<Option<Uuid>, _>("favicon").unwrap(), favicon);
 
         Ok(())
     }
@@ -196,7 +275,7 @@ WITH inserted_user AS (
 )
 INSERT INTO blogs (name, slug, user_id)
 VALUES ($1, $2, (SELECT id FROM inserted_user))
-RETURNING id, default_theme, force_theme
+RETURNING id, favicon
 "#,
         )
         .bind("Sample blog".to_string())
@@ -204,11 +283,29 @@ RETURNING id, default_theme, force_theme
         .fetch_one(&mut *conn)
         .await?;
 
-        // Assert initial values.
-        assert!(result.get::<Option<String>, _>("default_theme").is_none());
-        assert!(!result.get::<bool, _>("force_theme"));
+        // Should be `NULL` initially.
+        assert!(result.get::<Option<Uuid>, _>("favicon").is_none());
 
         let blog_id = result.get::<i64, _>("id");
+        let favicon = Uuid::new_v4();
+
+        // Insert an asset.
+        let result = sqlx::query(
+            r#"
+INSERT INTO assets (key, hex, height, width, user_id)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id
+"#,
+        )
+        .bind(favicon)
+        .bind("000000".to_string())
+        .bind(0)
+        .bind(0)
+        .bind(user_id.unwrap())
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(result.try_get::<i64, _>("id").is_ok());
 
         // Add the current user as an editor.
         let result = sqlx::query(
@@ -226,17 +323,22 @@ VALUES ($1, $2)
 
         let req = test::TestRequest::patch()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/me/blogs/{blog_id}/settings/appearance/theme"))
+            .uri(&format!(
+                "/v1/me/blogs/{blog_id}/settings/appearance/favicon",
+            ))
             .set_json(Request {
-                default_theme: Some("light".to_string()),
-                force: true,
+                favicon: Some(favicon),
             })
             .to_request();
         let res = test::call_service(&app, req).await;
 
         // Should reject the request as the editor has not been accepted yet.
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Missing permission or the blog does not exist").await;
+        assert_toast_error_response(
+            res,
+            "Missing permission, the blog does not exist, or the favicon is invalid",
+        )
+        .await;
 
         // Accept the editor.
         let result = sqlx::query(
@@ -254,20 +356,25 @@ WHERE user_id = $1
 
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/blogs/{blog_id}/settings/appearance/theme"))
+            .uri(&format!(
+                "/v1/me/blogs/{blog_id}/settings/appearance/favicon",
+            ))
             .set_json(Request {
-                default_theme: Some("light".to_string()),
-                force: true,
+                favicon: Some(favicon),
             })
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
 
+        let json = serde_json::from_str::<Response>(&res_to_string(res).await).unwrap();
+
+        assert_eq!(json.favicon, Some(favicon));
+
         // Blog should get updated in the database.
         let result = sqlx::query(
             r#"
-SELECT default_theme, force_theme FROM blogs
+SELECT favicon FROM blogs
 WHERE id = $1
 "#,
         )
@@ -275,17 +382,88 @@ WHERE id = $1
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(
-            result.get::<Option<String>, _>("default_theme").unwrap(),
-            "light".to_string()
-        );
-        assert!(result.get::<bool, _>("force_theme"));
+        assert_eq!(result.get::<Option<Uuid>, _>("favicon").unwrap(), favicon);
 
         Ok(())
     }
 
     #[sqlx::test]
-    async fn can_set_blog_default_theme_to_dark(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_remove_a_favicon(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
+        let favicon = Uuid::new_v4();
+
+        // Insert an asset.
+        let result = sqlx::query(
+            r#"
+INSERT INTO assets (key, hex, height, width, user_id)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id
+"#,
+        )
+        .bind(favicon)
+        .bind("000000".to_string())
+        .bind(0)
+        .bind(0)
+        .bind(user_id.unwrap())
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(result.try_get::<i64, _>("id").is_ok());
+
+        // Insert a blog with favicon.
+        let result = sqlx::query(
+            r#"
+INSERT INTO blogs (name, slug, user_id, favicon)
+VALUES ($1, $2, $3, $4)
+RETURNING id, favicon
+"#,
+        )
+        .bind("Sample blog".to_string())
+        .bind("sample-blog".to_string())
+        .bind(user_id.unwrap())
+        .bind(favicon)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        let blog_id = result.get::<i64, _>("id");
+
+        // Should be present initially.
+        assert_eq!(result.get::<Option<Uuid>, _>("favicon").unwrap(), favicon);
+
+        let req = test::TestRequest::patch()
+            .cookie(cookie.unwrap())
+            .uri(&format!(
+                "/v1/me/blogs/{blog_id}/settings/appearance/favicon",
+            ))
+            .set_json(Request { favicon: None })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Response>(&res_to_string(res).await).unwrap();
+
+        assert!(json.favicon.is_none());
+
+        // Blog should get updated in the database.
+        let result = sqlx::query(
+            r#"
+SELECT favicon FROM blogs
+WHERE id = $1
+"#,
+        )
+        .bind(blog_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(result.get::<Option<Uuid>, _>("favicon").is_none());
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_return_an_error_response_for_an_invalid_favicon(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
@@ -294,7 +472,7 @@ WHERE id = $1
             r#"
 INSERT INTO blogs (name, slug, user_id)
 VALUES ($1, $2, $3)
-RETURNING id, default_theme
+RETURNING id, favicon
 "#,
         )
         .bind("Sample blog".to_string())
@@ -305,154 +483,29 @@ RETURNING id, default_theme
 
         let blog_id = result.get::<i64, _>("id");
 
-        // Should be `NULL` initially.
-        assert!(result.get::<Option<String>, _>("default_theme").is_none());
-
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/blogs/{blog_id}/settings/appearance/theme"))
+            .uri(&format!(
+                "/v1/me/blogs/{blog_id}/settings/appearance/favicon",
+            ))
             .set_json(Request {
-                default_theme: Some("dark".to_string()),
-                force: false,
+                favicon: Some(Uuid::new_v4()),
             })
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        assert!(res.status().is_success());
-
-        // Blog should get updated in the database.
-        let result = sqlx::query(
-            r#"
-SELECT default_theme FROM blogs
-WHERE id = $1
-"#,
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(
+            res,
+            "Missing permission, the blog does not exist, or the favicon is invalid",
         )
-        .bind(blog_id)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert_eq!(
-            result.get::<Option<String>, _>("default_theme").unwrap(),
-            "dark".to_string()
-        );
+        .await;
 
         Ok(())
     }
 
     #[sqlx::test]
-    async fn can_set_blog_default_theme_to_light(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
-
-        // Insert a blog.
-        let result = sqlx::query(
-            r#"
-INSERT INTO blogs (name, slug, user_id)
-VALUES ($1, $2, $3)
-RETURNING id, default_theme
-"#,
-        )
-        .bind("Sample blog".to_string())
-        .bind("sample-blog".to_string())
-        .bind(user_id.unwrap())
-        .fetch_one(&mut *conn)
-        .await?;
-
-        let blog_id = result.get::<i64, _>("id");
-
-        // Should be `NULL` initially.
-        assert!(result.get::<Option<String>, _>("default_theme").is_none());
-
-        let req = test::TestRequest::patch()
-            .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/blogs/{blog_id}/settings/appearance/theme"))
-            .set_json(Request {
-                default_theme: Some("light".to_string()),
-                force: false,
-            })
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // Blog should get updated in the database.
-        let result = sqlx::query(
-            r#"
-SELECT default_theme FROM blogs
-WHERE id = $1
-"#,
-        )
-        .bind(blog_id)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert_eq!(
-            result.get::<Option<String>, _>("default_theme").unwrap(),
-            "light".to_string()
-        );
-
-        Ok(())
-    }
-
-    #[sqlx::test]
-    async fn can_reset_blog_default_theme(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
-
-        // Insert a blog.
-        let result = sqlx::query(
-            r#"
-INSERT INTO blogs (name, slug, user_id, default_theme)
-VALUES ($1, $2, $3, 'light')
-RETURNING id, default_theme
-"#,
-        )
-        .bind("Sample blog".to_string())
-        .bind("sample-blog".to_string())
-        .bind(user_id.unwrap())
-        .fetch_one(&mut *conn)
-        .await?;
-
-        let blog_id = result.get::<i64, _>("id");
-
-        // Should be `light` initially.
-        assert_eq!(
-            result.get::<Option<String>, _>("default_theme").unwrap(),
-            "light".to_string()
-        );
-
-        let req = test::TestRequest::patch()
-            .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/blogs/{blog_id}/settings/appearance/theme"))
-            .set_json(Request {
-                default_theme: None,
-                force: false,
-            })
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // Blog should get updated in the database.
-        let result = sqlx::query(
-            r#"
-SELECT default_theme FROM blogs
-WHERE id = $1
-"#,
-        )
-        .bind(blog_id)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(result.get::<Option<String>, _>("default_theme").is_none());
-
-        Ok(())
-    }
-
-    #[sqlx::test]
-    async fn can_reject_theme_settings_request_for_a_deleted_blog(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
+    async fn can_reject_favicon_request_for_a_deleted_blog(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
@@ -488,16 +541,19 @@ WHERE id = $1
 
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/blogs/{blog_id}/settings/appearance/theme"))
-            .set_json(Request {
-                default_theme: None,
-                force: false,
-            })
+            .uri(&format!(
+                "/v1/me/blogs/{blog_id}/settings/appearance/favicon"
+            ))
+            .set_json(Request { favicon: None })
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Missing permission or the blog does not exist").await;
+        assert_toast_error_response(
+            res,
+            "Missing permission, the blog does not exist, or the favicon is invalid",
+        )
+        .await;
 
         Ok(())
     }
