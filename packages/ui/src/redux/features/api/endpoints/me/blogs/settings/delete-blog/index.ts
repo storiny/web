@@ -5,13 +5,13 @@ import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = (id: string): string => `me/blogs/${id}/settings/delete-blog`;
 
-export type DeleteAccountPayload = BlogDeleteActionSchema & { blog_id: string };
+export type DeleteBlogPayload = BlogDeleteActionSchema & { blog_id: string };
 
 export const { useDeleteBlogMutation: use_delete_blog_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-      deleteBlog: builder.mutation<void, DeleteAccountPayload>({
+      deleteBlog: builder.mutation<void, DeleteBlogPayload>({
         query: ({ blog_id, ...rest }) => ({
           url: `/${SEGMENT(blog_id)}`,
           method: "POST",
