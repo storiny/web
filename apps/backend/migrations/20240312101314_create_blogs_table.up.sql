@@ -69,7 +69,8 @@ CREATE TABLE IF NOT EXISTS blogs
 	is_story_minimal_layout  BOOL           NOT NULL DEFAULT FALSE,
 	is_external              BOOL           NOT NULL DEFAULT FALSE, -- TRUE if hidden from storiny.com network
 	hide_storiny_branding    BOOL           NOT NULL DEFAULT FALSE,
-	default_theme            TEXT,
+	default_theme            TEXT
+		CONSTRAINT default_theme_value CHECK (default_theme IN ('light', 'dark', NULL)),
 	force_theme              BOOL           NOT NULL DEFAULT FALSE,
 	-- Flags
 	has_plus_features        BOOL           NOT NULL DEFAULT FALSE,
