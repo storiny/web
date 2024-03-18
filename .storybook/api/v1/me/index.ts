@@ -20,6 +20,7 @@ import "./stories";
 import "./settings";
 import "./stats";
 import "./followed-tags";
+import "./followed-blogs";
 import "./relations";
 import "./blocked-users";
 import "./muted-users";
