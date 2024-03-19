@@ -89,6 +89,11 @@ const BlogConnectionsClient = ({
     if (on_submit) {
       on_submit(values);
     } else {
+      // Replace empty string with NULL values.
+      Object.keys(values).forEach(
+        (key) => (values[key] = values[key] === "" ? null : values[key])
+      );
+
       mutate_blog_connections({ ...values, blog_id: blog.id })
         .unwrap()
         .then(() => {
