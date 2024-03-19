@@ -43,6 +43,8 @@ pub enum ResourceLimit {
     SendBlogEditorRequest,
     /// The daily limit for sending blog writer requests.
     SendBlogWriterRequest,
+    /// The daily limit for uploading blog fonts.
+    UploadFont,
 }
 
 impl ResourceLimit {
@@ -68,6 +70,7 @@ impl ResourceLimit {
             ResourceLimit::CreateBlog => 10,
             ResourceLimit::SendBlogEditorRequest => 50,
             ResourceLimit::SendBlogWriterRequest => 100,
+            ResourceLimit::UploadFont => 32,
         }
     }
 }

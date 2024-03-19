@@ -86,6 +86,7 @@ hyper = { version = "0.14.27", features = [] }
 atomic_refcell = "0.1.13"
 emojis = "0.6.1"
 markdown = "1.0.0-alpha.16"
+woff2 = "0.3.0"
 
 [dev-dependencies]
 storiny_macros = { version = "0.1.0", path = "macros" }
