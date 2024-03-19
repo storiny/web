@@ -105,7 +105,7 @@ if (typeof document !== "undefined") {
               font-family: blog-primary;
               font-weight: normal;
               font-style: normal;
-              src: url("https://cdn.storiny.com/user-assets/fonts/${blog.font_primary}.woff2")
+              src: url("https://fonts.storiny.com/${blog.font_primary}")
                 format("woff2");
             }`
             }}
@@ -118,7 +118,7 @@ if (typeof document !== "undefined") {
               font-family: blog-secondary;
               font-weight: normal;
               font-style: normal;
-              src: url("https://cdn.storiny.com/user-assets/fonts/${blog.font_secondary}.woff2")
+              src: url("https://fonts.storiny.com/${blog.font_secondary}")
                 format("woff2");
             }`
             }}
@@ -131,7 +131,7 @@ if (typeof document !== "undefined") {
               font-family: blog-code;
               font-weight: normal;
               font-style: normal;
-              src: url("https://cdn.storiny.com/user-assets/fonts/${blog.font_code}.woff2")
+              src: url("https://fonts.storiny.com/${blog.font_code}")
                 format("woff2");
             }`
             }}

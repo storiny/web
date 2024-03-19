@@ -30,7 +30,7 @@ import DashboardGroup from "../../../../../../common/dashboard-group";
 import styles from "./fonts.module.scss";
 
 // Max font file size
-const THREE_MB_IN_BYTES = 3_145_728;
+const TWO_MB_IN_BYTES = 20_97_152;
 
 const FontItem = ({
   type
@@ -51,7 +51,7 @@ const FontItem = ({
   } = use_dropzone({
     /* eslint-disable prefer-snakecase/prefer-snakecase */
     maxFiles: 1,
-    maxSize: THREE_MB_IN_BYTES,
+    maxSize: TWO_MB_IN_BYTES,
     multiple: false,
     autoFocus: false,
     disabled: is_upload_loading || is_delete_loading,
@@ -103,7 +103,7 @@ const FontItem = ({
   const handle_upload = React.useCallback(
     (file: File) => {
       if (file) {
-        upload_font({ file, type, blog_id: blog.id })
+        upload_font({ file, variant: type, blog_id: blog.id })
           .unwrap()
           .then((uploaded) => {
             set_font(uploaded.id);
@@ -123,7 +123,7 @@ const FontItem = ({
    */
   const reset_font = React.useCallback(() => {
     delete_font({
-      type,
+      variant: type,
       blog_id: blog.id
     })
       .unwrap()

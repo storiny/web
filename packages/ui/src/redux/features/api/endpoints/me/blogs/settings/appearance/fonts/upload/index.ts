@@ -8,7 +8,7 @@ export type BlogFontUploadReponse = { id: string };
 export interface BlogFontUploadPayload {
   blog_id: string;
   file: File;
-  type: "primary" | "secondary" | "code";
+  variant: "primary" | "secondary" | "code";
 }
 
 export const { useUploadBlogFontMutation: use_upload_blog_font_mutation } =

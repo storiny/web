@@ -12,7 +12,7 @@ worker.use(
 
 worker.use(
   rest.delete(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/blogs/:blog_id/settings/appearance/fonts/:type`,
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/blogs/:blog_id/settings/appearance/fonts/:variant`,
     (req, res, ctx) => res(ctx.delay(500), ctx.status(200)),
   ),
 );
