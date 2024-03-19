@@ -102,6 +102,7 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::blogs::stats::stories::init_routes(cfg);
     // Me - Blogs - Settings
     v1::me::blogs::settings::banner::init_routes(cfg);
+    v1::me::blogs::settings::logo::init_routes(cfg);
     // Me - Blogs - Settings - Appearance
     v1::me::blogs::settings::appearance::branding::init_routes(cfg);
     v1::me::blogs::settings::appearance::page_layout::init_routes(cfg);
