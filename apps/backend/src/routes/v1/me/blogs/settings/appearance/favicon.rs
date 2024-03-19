@@ -472,7 +472,7 @@ WHERE id = $1
             r#"
 INSERT INTO blogs (name, slug, user_id)
 VALUES ($1, $2, $3)
-RETURNING id, favicon
+RETURNING id
 "#,
         )
         .bind("Sample blog".to_string())
