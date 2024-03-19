@@ -9,8 +9,8 @@ worker.use(
       res(
         ctx.delay(750),
         ctx.json({
-          avatar_id: MOCK_BLOGS[1].banner_id,
-          avatar_hex: MOCK_BLOGS[1].banner_hex,
+          banner_id: MOCK_BLOGS[1].banner_id,
+          banner_hex: MOCK_BLOGS[1].banner_hex,
         }),
       ),
   ),
