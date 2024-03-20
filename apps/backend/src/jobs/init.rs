@@ -3,6 +3,7 @@ use crate::{
     config::get_app_config,
     jobs::{
         cron::{
+            cleanup_blogs::cleanup_blogs,
             cleanup_cache::cleanup_cache,
             cleanup_db::cleanup_db,
             cleanup_s3::cleanup_s3,
@@ -193,7 +194,7 @@ pub async fn start_jobs(
             .register(
                 WorkerBuilder::new("s3-cleanup-worker")
                     .layer(TraceLayer::new())
-                    .data(state)
+                    .data(state.clone())
                     .stream(
                         CronStream::new(
                             // Run every tuesday
@@ -204,6 +205,21 @@ pub async fn start_jobs(
                         .into_stream(),
                     )
                     .build_fn(cleanup_s3),
+            )
+            .register(
+                WorkerBuilder::new("blogs-cleanup-worker")
+                    .layer(TraceLayer::new())
+                    .data(state)
+                    .stream(
+                        CronStream::new(
+                            // Run every wednesday
+                            #[allow(clippy::expect_used)]
+                            Schedule::from_str("0 0 0 * * 3")
+                                .expect("unable to parse the cron schedule"),
+                        )
+                        .into_stream(),
+                    )
+                    .build_fn(cleanup_blogs),
             )
             .on_event(|event| {
                 let worker_id = event.id();
