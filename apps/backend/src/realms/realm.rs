@@ -675,7 +675,7 @@ mod tests {
             get_s3_client,
             TestContext,
         },
-        utils::delete_s3_objects::delete_s3_objects,
+        utils::delete_s3_objects_using_prefix::delete_s3_objects_using_prefix,
     };
     use futures_util::{
         SinkExt,
@@ -735,7 +735,7 @@ mod tests {
         }
 
         async fn teardown(self) {
-            delete_s3_objects(&self.s3_client, S3_DOCS_BUCKET, None, None)
+            delete_s3_objects_using_prefix(&self.s3_client, S3_DOCS_BUCKET, None, None)
                 .await
                 .unwrap();
         }

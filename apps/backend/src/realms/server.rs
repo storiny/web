@@ -688,7 +688,7 @@ pub mod tests {
         },
         utils::{
             deflate_bytes_gzip::deflate_bytes_gzip,
-            delete_s3_objects::delete_s3_objects,
+            delete_s3_objects_using_prefix::delete_s3_objects_using_prefix,
             get_user_sessions::UserSession,
         },
         RedisPool,
@@ -762,7 +762,7 @@ pub mod tests {
                         .expect("failed to FLUSHDB");
                 },
                 async {
-                    delete_s3_objects(&self.s3_client, S3_DOCS_BUCKET, None, None)
+                    delete_s3_objects_using_prefix(&self.s3_client, S3_DOCS_BUCKET, None, None)
                         .await
                         .unwrap()
                 },
