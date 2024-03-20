@@ -214,7 +214,7 @@ mod tests {
             get_s3_client,
             TestContext,
         },
-        utils::delete_s3_objects::delete_s3_objects,
+        utils::delete_s3_objects_using_prefix::delete_s3_objects_using_prefix,
     };
     use sqlx::PgPool;
     use storiny_macros::test_context;
@@ -232,7 +232,7 @@ mod tests {
         }
 
         async fn teardown(self) {
-            delete_s3_objects(
+            delete_s3_objects_using_prefix(
                 &self.s3_client,
                 S3_SITEMAPS_BUCKET,
                 Some("users-".to_string()),

@@ -12,7 +12,7 @@ use crate::{
     },
     utils::{
         deflate_bytes_gzip::deflate_bytes_gzip,
-        delete_s3_objects::delete_s3_objects,
+        delete_s3_objects_using_prefix::delete_s3_objects_using_prefix,
     },
 };
 use apalis::prelude::*;
@@ -56,10 +56,11 @@ pub async fn refresh_sitemap(
     info!("attempting to refresh sitemaps");
 
     let s3_client = &state.s3_client;
-    let deleted_sitemaps = delete_s3_objects(s3_client, S3_SITEMAPS_BUCKET, None, None)
-        .await
-        .map_err(|err| Box::from(err.to_string()))
-        .map_err(Error::Failed)?;
+    let deleted_sitemaps =
+        delete_s3_objects_using_prefix(s3_client, S3_SITEMAPS_BUCKET, None, None)
+            .await
+            .map_err(|err| Box::from(err.to_string()))
+            .map_err(Error::Failed)?;
 
     debug!("deleted {} old sitemap files", deleted_sitemaps);
 
@@ -242,7 +243,7 @@ mod tests {
         }
 
         async fn teardown(self) {
-            delete_s3_objects(&self.s3_client, S3_SITEMAPS_BUCKET, None, None)
+            delete_s3_objects_using_prefix(&self.s3_client, S3_SITEMAPS_BUCKET, None, None)
                 .await
                 .unwrap();
         }

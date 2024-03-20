@@ -10,10 +10,10 @@ use crate::{
     middlewares::identity::identity::Identity,
     utils::{
         check_resource_limit::check_resource_limit,
+        delete_s3_objects::delete_s3_objects,
         incr_resource_limit::incr_resource_limit,
     },
     AppState,
-    S3Client,
 };
 use actix_multipart::form::{
     tempfile::TempFile,
@@ -90,26 +90,6 @@ async fn secure_post(
         .map_err(|_| AppError::from("Invalid blog ID"))?;
 
     handle_upload(form, data, user_id, blog_id).await
-}
-
-/// Deletes a font object from S3.
-///
-/// * `s3_client` - The S3 client instance.
-/// * `key` - The key of the font object.
-async fn delete_font_object(s3_client: &S3Client, key: &str) -> Result<(), AppError> {
-    s3_client
-        .delete_object()
-        .bucket(S3_FONTS_BUCKET)
-        .key(key)
-        .send()
-        .await
-        .map(|_| ())
-        .map_err(|error| {
-            AppError::InternalError(format!(
-                "unable to delete the font object: {:?}",
-                error.into_service_error()
-            ))
-        })
 }
 
 /// Handles the uploading of a font.
@@ -260,7 +240,11 @@ WHERE id = $1
         .await?;
 
         if let Some(previous_font) = result.get::<Option<Uuid>, _>("font") {
-            delete_font_object(s3_client, &previous_font.to_string()).await?;
+            delete_s3_objects(s3_client, S3_FONTS_BUCKET, vec![previous_font.to_string()])
+                .await
+                .map_err(|error| {
+                    AppError::InternalError(format!("unable to delete the font object: {error:?}",))
+                })?;
         }
     }
 
@@ -316,13 +300,25 @@ WHERE id = $2
                     }))
                 }
                 Err(error) => {
-                    delete_font_object(s3_client, &object_key.to_string()).await?;
+                    delete_s3_objects(s3_client, S3_FONTS_BUCKET, vec![object_key.to_string()])
+                        .await
+                        .map_err(|error| {
+                            AppError::InternalError(format!(
+                                "unable to delete the font object: {error:?}",
+                            ))
+                        })?;
+
                     Err(AppError::SqlxError(error))
                 }
             }
         }
         Err(error) => {
-            delete_font_object(s3_client, &object_key.to_string()).await?;
+            delete_s3_objects(s3_client, S3_FONTS_BUCKET, vec![object_key.to_string()])
+                .await
+                .map_err(|error| {
+                    AppError::InternalError(format!("unable to delete the font object: {error:?}",))
+                })?;
+
             Err(AppError::SqlxError(error))
         }
     }
@@ -347,7 +343,7 @@ mod tests {
             RedisTestContext,
             TestContext,
         },
-        utils::delete_s3_objects::delete_s3_objects,
+        utils::delete_s3_objects_using_prefix::delete_s3_objects_using_prefix,
         RedisPool,
         S3Client,
     };
@@ -504,7 +500,7 @@ VALUES ($5, $6, $7, (SELECT id FROM inserted_user), TRUE)
                         .expect("failed to FLUSHDB");
                 },
                 async {
-                    delete_s3_objects(&self.s3_client, S3_FONTS_BUCKET, None, None)
+                    delete_s3_objects_using_prefix(&self.s3_client, S3_FONTS_BUCKET, None, None)
                         .await
                         .unwrap()
                 },

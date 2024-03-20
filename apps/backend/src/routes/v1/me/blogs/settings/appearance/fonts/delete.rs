@@ -5,6 +5,7 @@ use crate::{
         ToastErrorResponse,
     },
     middlewares::identity::identity::Identity,
+    utils::delete_s3_objects::delete_s3_objects,
     AppState,
 };
 use actix_web::{
@@ -117,17 +118,10 @@ SELECT font FROM previous_blog
         let s3_client = &data.s3_client;
 
         // Delete the object from S3.
-        s3_client
-            .delete_object()
-            .bucket(S3_FONTS_BUCKET)
-            .key(object_key.to_string())
-            .send()
+        delete_s3_objects(s3_client, S3_FONTS_BUCKET, vec![object_key.to_string()])
             .await
             .map_err(|error| {
-                AppError::InternalError(format!(
-                    "unable to delete the font from s3: {:?}",
-                    error.into_service_error()
-                ))
+                AppError::InternalError(format!("unable to delete the font from s3: {error:?}",))
             })?;
     }
 
@@ -152,7 +146,7 @@ mod tests {
             init_app_for_test,
             TestContext,
         },
-        utils::delete_s3_objects::delete_s3_objects,
+        utils::delete_s3_objects_using_prefix::delete_s3_objects_using_prefix,
         S3Client,
     };
     use actix_web::test;
@@ -172,7 +166,7 @@ mod tests {
         }
 
         async fn teardown(self) {
-            delete_s3_objects(&self.s3_client, S3_FONTS_BUCKET, None, None)
+            delete_s3_objects_using_prefix(&self.s3_client, S3_FONTS_BUCKET, None, None)
                 .await
                 .unwrap();
         }
