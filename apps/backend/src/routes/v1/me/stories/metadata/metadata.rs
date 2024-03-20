@@ -520,7 +520,7 @@ ORDER BY name
     }
 
     #[sqlx::test]
-    async fn can_reject_invalid_story_splash(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_an_invalid_story_splash(pool: PgPool) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(patch, pool, true, true, None).await;
 
         let req = test::TestRequest::patch()
@@ -545,7 +545,7 @@ ORDER BY name
     }
 
     #[sqlx::test]
-    async fn can_reject_invalid_preview_image(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_reject_an_invalid_preview_image(pool: PgPool) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(patch, pool, true, true, None).await;
 
         let req = test::TestRequest::patch()
