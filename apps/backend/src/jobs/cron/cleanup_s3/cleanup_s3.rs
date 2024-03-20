@@ -470,7 +470,7 @@ SELECT UNNEST($1::UUID[])
             // Generate a single asset.
             generate_dummy_assets(1, &pool, s3_client).await;
 
-            // Update the user_id of the asset.
+            // Update the `user_id` of the asset.
             let result = sqlx::query(
                 r#"
 WITH selected_asset AS (
