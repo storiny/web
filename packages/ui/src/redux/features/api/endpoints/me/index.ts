@@ -14,6 +14,7 @@ export * from "./friend-requests";
 export * from "./friends";
 export * from "./gallery";
 export * from "./history";
+export * from "./leave-blog";
 export * from "./leave-story";
 export * from "./liked-stories";
 export * from "./lookup";

@@ -4,4 +4,5 @@ pub mod connections;
 pub mod delete_blog;
 pub mod logo;
 pub mod newsletter_splash;
+pub mod slug;
 pub mod visibility;

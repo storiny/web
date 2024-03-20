@@ -69,7 +69,7 @@ async fn post(
     let name = &payload.name;
     let slug = slugify!(&payload.slug, separator = "-", max_length = 24);
 
-    // Check if username is reserved.
+    // Check if slug is reserved.
     if RESERVED_KEYWORDS.contains(&slug.as_str()) {
         return Err(FormErrorResponse::new(
             Some(StatusCode::FORBIDDEN),
