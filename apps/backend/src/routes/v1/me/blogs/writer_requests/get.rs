@@ -121,7 +121,9 @@ SELECT COALESCE(
     .await?;
 
     if !result.get::<Option<bool>, _>("found").unwrap_or_default() {
-        return Err(AppError::from("Missing permission or blog does not exist"));
+        return Err(AppError::from(
+            "Missing permission or the blog does not exist",
+        ));
     }
 
     let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new("");
@@ -271,7 +273,7 @@ mod tests {
 
         // Should reject the request initially.
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Missing permission or blog does not exist").await;
+        assert_response_body_text(res, "Missing permission or the blog does not exist").await;
 
         // Change the owner of the blog.
         let result = sqlx::query(
@@ -318,7 +320,7 @@ WHERE id = $2
 
         // Should reject the request initially.
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Missing permission or blog does not exist").await;
+        assert_response_body_text(res, "Missing permission or the blog does not exist").await;
 
         // Add the user as editor.
         let result = sqlx::query(
@@ -342,7 +344,7 @@ VALUES ($1, $2)
 
         // Should still return an error response as the editor invite has not been accepted yet.
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Missing permission or blog does not exist").await;
+        assert_response_body_text(res, "Missing permission or the blog does not exist").await;
 
         // Accept the editor invite.
         let result = sqlx::query(

@@ -6,5 +6,6 @@ pub mod general;
 pub mod logo;
 pub mod newsletter_splash;
 pub mod seo;
+pub mod sidebars;
 pub mod slug;
 pub mod visibility;
