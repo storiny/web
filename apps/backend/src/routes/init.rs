@@ -112,6 +112,7 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::blogs::settings::seo::init_routes(cfg);
     // Me - Blogs - Settings - Sidebars
     v1::me::blogs::settings::sidebars::lsb::init_routes(cfg);
+    v1::me::blogs::settings::sidebars::rsb::init_routes(cfg);
     // Me - Blogs - Settings - Appearance
     v1::me::blogs::settings::appearance::branding::init_routes(cfg);
     v1::me::blogs::settings::appearance::page_layout::init_routes(cfg);
