@@ -179,6 +179,8 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::gallery::post::init_routes(cfg);
     // Me - History
     v1::me::history::init_routes(cfg);
+    // Me - Leave blog
+    v1::me::leave_blog::init_routes(cfg);
     // Me - Leave story
     v1::me::leave_story::init_routes(cfg);
     // Me - Liked comments
