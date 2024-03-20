@@ -18,7 +18,7 @@ use serde::{
     Serialize,
 };
 use sqlx::{
-    Execute,
+    FromRow,
     Postgres,
     QueryBuilder,
     Row,
@@ -47,6 +47,14 @@ struct Request {
     #[validate(length(min = 1, max = 5))]
     #[validate]
     items: Vec<Item>,
+}
+
+#[derive(Debug, FromRow, Serialize, Deserialize)]
+struct ResponseItem {
+    id: i64,
+    name: String,
+    target: String,
+    icon: Option<Uuid>,
 }
 
 #[patch("/v1/me/blogs/{blog_id}/settings/sidebars/lsb")]
@@ -190,15 +198,25 @@ VALUES
         }
     });
 
-    match query_builder.build().execute(&mut *txn).await {
-        Ok(result) => match result.rows_affected() {
-            row_count if row_count != items.len() as u64 => Err(AppError::InternalError(
+    query_builder.push(
+        r#"
+RETURNING id, name, target, icon
+    "#,
+    );
+
+    match query_builder
+        .build_query_as::<ResponseItem>()
+        .fetch_all(&mut *txn)
+        .await
+    {
+        Ok(items) => match items.len() {
+            row_count if row_count != items.len() => Err(AppError::InternalError(
                 "inserted item count does not match the length of provided items".to_string(),
             )),
             _ => {
                 txn.commit().await?;
 
-                Ok(HttpResponse::NoContent().finish())
+                Ok(HttpResponse::Ok().json(items))
             }
         },
         Err(error) => {
@@ -231,10 +249,10 @@ mod tests {
         assert_response_body_text,
         assert_toast_error_response,
         init_app_for_test,
+        res_to_string,
     };
     use actix_web::test;
     use sqlx::{
-        FromRow,
         PgPool,
         Row,
     };
@@ -335,6 +353,10 @@ ORDER BY priority
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<ResponseItem>>(&res_to_string(res).await).unwrap();
+
+        assert_eq!(json.len(), 3);
 
         // Sidebar items should get updated in the database.
         let result = sqlx::query_as::<_, LeftSidebarItem>(
@@ -524,6 +546,10 @@ WHERE user_id = $1
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<ResponseItem>>(&res_to_string(res).await).unwrap();
+
+        assert_eq!(json.len(), 3);
 
         // Sidebar items should get updated in the database.
         let result = sqlx::query_as::<_, LeftSidebarItem>(
