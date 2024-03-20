@@ -18,6 +18,7 @@ pub mod friends;
 pub mod gallery;
 pub mod get;
 pub mod history;
+pub mod leave_blog;
 pub mod leave_story;
 pub mod liked_comments;
 pub mod liked_replies;
