@@ -7,5 +7,5 @@ import "./connections";
 import "./appearance";
 import "./sidebars";
 import "./seo";
-import "./domain";
+import "./slug";
 import "./newsletter-splash";

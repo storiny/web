@@ -20,7 +20,7 @@ import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import CustomState from "~/entities/custom-state";
 import TitleBlock from "~/entities/title-block";
-import { use_blog_domain_settings_mutation } from "~/redux/features";
+import { use_blog_slug_settings_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
 
@@ -28,8 +28,8 @@ import DashboardGroup from "../../../../../common/dashboard-group";
 import DashboardTitle from "../../../../../common/dashboard-title";
 import DashboardWrapper from "../../../../../common/dashboard-wrapper";
 import {
-  BLOG_DOMAIN_SETTINGS_SCHEMA,
-  BlogDomainSettingsSchema
+  BLOG_SLUG_SETTINGS_SCHEMA,
+  BlogSlugSettingsSchema
 } from "./domain.schema";
 import styles from "./styles.module.scss";
 
@@ -76,17 +76,17 @@ const CustomDomainGroup = (): React.ReactElement => (
 const DomainSettingsClient = (): React.ReactElement => {
   const toast = use_toast();
   const blog = use_blog_context();
-  const form = use_form<BlogDomainSettingsSchema>({
-    resolver: zod_resolver(BLOG_DOMAIN_SETTINGS_SCHEMA),
+  const form = use_form<BlogSlugSettingsSchema>({
+    resolver: zod_resolver(BLOG_SLUG_SETTINGS_SCHEMA),
     defaultValues: {
       slug: blog.slug
     }
   });
-  const [mutate_blog_domain_settings, { isLoading: is_loading }] =
-    use_blog_domain_settings_mutation();
+  const [mutate_blog_slug_settings, { isLoading: is_loading }] =
+    use_blog_slug_settings_mutation();
 
-  const handle_submit: SubmitHandler<BlogDomainSettingsSchema> = (values) => {
-    mutate_blog_domain_settings({ ...values, blog_id: blog.id })
+  const handle_submit: SubmitHandler<BlogSlugSettingsSchema> = (values) => {
+    mutate_blog_slug_settings({ ...values, blog_id: blog.id })
       .unwrap()
       .then(() => {
         blog.mutate(values);
@@ -108,7 +108,7 @@ const DomainSettingsClient = (): React.ReactElement => {
       <DashboardTitle>Domain</DashboardTitle>
       <DashboardWrapper>
         <DashboardGroup>
-          <Form<BlogDomainSettingsSchema>
+          <Form<BlogSlugSettingsSchema>
             className={clsx(css["flex-col"], styles.form)}
             disabled={is_loading}
             on_submit={handle_submit}
