@@ -59,6 +59,8 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::auth::external::google::callback::init_routes(cfg);
     // Feed
     v1::feed::init_routes(cfg);
+    // Blogs
+    v1::blogs::archive::init_routes(cfg);
     // Me
     v1::me::get::init_routes(cfg);
     // Me - User activity
