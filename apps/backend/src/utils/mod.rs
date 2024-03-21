@@ -10,6 +10,7 @@ pub mod flag;
 pub mod generate_connection_url;
 pub mod generate_random_username;
 pub mod generate_recovery_codes;
+pub mod generate_story_slug;
 pub mod generate_totp;
 pub mod get_cdn_url;
 pub mod get_client_country;

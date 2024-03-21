@@ -103,7 +103,16 @@ AS
 $$
 BEGIN
 	-- Check if the blog is locked when the story is accepted
-	IF (OLD.accepted_at IS NULL AND NEW.accepted_at IS NOT NULL) THEN
+	IF (
+		OLD.accepted_at IS NULL
+			AND NEW.accepted_at IS NOT NULL
+			AND EXISTS(SELECT
+					   FROM
+						   blogs
+					   WHERE
+							 id = NEW.blog_id
+						 AND is_active IS FALSE
+					  )) THEN
 		RAISE 'Blog is locked'
 			USING ERRCODE = '52010';
 	END IF;

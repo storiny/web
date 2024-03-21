@@ -28,7 +28,7 @@ struct Fragments {
     name = "DELETE /v1/me/blogs/{blog_id}/stories/{story_id}",
     skip_all,
     fields(
-        current_user_id = user.id().ok(),
+        user_id = user.id().ok(),
         blog_id = %path.blog_id,
         story_id = %path.story_id
     ),
@@ -40,7 +40,7 @@ async fn delete(
     user: Identity,
     realm_map: RealmData,
 ) -> Result<HttpResponse, AppError> {
-    let current_user_id = user.id()?;
+    let user_id = user.id()?;
 
     let blog_id = path
         .blog_id
@@ -95,7 +95,7 @@ WHERE
     AND (SELECT found FROM sanity_check) IS TRUE
 "#,
     )
-    .bind(current_user_id)
+    .bind(user_id)
     .bind(story_id)
     .bind(blog_id)
     .execute(&mut *txn)
