@@ -143,23 +143,48 @@ const Meta = (props: StoryProps): React.ReactElement | null => {
         label: story.user?.name || ""
       }}
       className={styles.persona}
+      component_props={{
+        primary_text: {
+          className: css["full-w"]
+        }
+      }}
       primary_text={
-        <span className={css["flex"]} style={{ gap: "4px" }}>
+        <span
+          className={clsx(css.flex, css["full-w"])}
+          style={{ gap: "4px", maxWidth: "calc(100% - 32px)" }}
+        >
           <UserHoverCard identifier={story.user?.id || story.user_id}>
             <Link
-              className={css["t-medium"]}
+              className={clsx(css["t-medium"], css.ellipsis)}
+              fixed_color
               href={`/${story.user?.username}`}
               level={"body2"}
             >
               {story.user?.name}
             </Link>
           </UserHoverCard>
+          {story.blog && (
+            <React.Fragment>
+              <Typography as={"span"} color={"minor"} level={"body2"}>
+                in
+              </Typography>
+              <Link
+                className={clsx(css["t-medium"], css.ellipsis)}
+                fixed_color
+                href={get_blog_url(story.blog)}
+                level={"body2"}
+              >
+                {story.blog.name}
+              </Link>
+            </React.Fragment>
+          )}
           <Typography aria-hidden as={"span"} color={"muted"} level={"body2"}>
             &bull;
           </Typography>
           <NoSsr>
             <Typography
               as={"time"}
+              className={css.ellipsis}
               color={"minor"}
               dateTime={story.published_at || story.created_at}
               level={"body2"}

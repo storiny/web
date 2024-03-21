@@ -91,13 +91,13 @@ SELECT s.id,
 		   , '[]')                  AS "contributors!: Json<Vec<User>>",
 	   -- Blog
 	   CASE
-		   WHEN "s->blog_story->blog".id IS NOT NULL
+		   WHEN "s->blog_stories->blog".id IS NOT NULL
 			   THEN
 			   JSON_BUILD_OBJECT(
-					   'id', "s->blog_story->blog".id,
-					   'name', "s->blog_story->blog".name,
-					   'slug', "s->blog_story->blog".slug,
-					   'domain', "s->blog_story->blog".domain
+					   'id', "s->blog_stories->blog".id,
+					   'name', "s->blog_stories->blog".name,
+					   'slug', "s->blog_stories->blog".slug,
+					   'domain', "s->blog_stories->blog".domain
 			   )
 	   END                          AS "blog: Json<Blog>"
 FROM
@@ -130,14 +130,14 @@ FROM
 		)
 						ON "s->story_tags".story_id = s.id
 		-- Join blog story
-		LEFT OUTER JOIN (blog_stories AS "s->blog_story"
-		INNER JOIN blogs AS "s->blog_story->blog"
-						 ON "s->blog_story->blog".id = "s->blog_story".blog_id
-							 AND "s->blog_story->blog".deleted_at IS NULL
+		LEFT OUTER JOIN (blog_stories AS "s->blog_stories"
+		INNER JOIN blogs AS "s->blog_stories->blog"
+						 ON "s->blog_stories->blog".id = "s->blog_stories".blog_id
+							 AND "s->blog_stories->blog".deleted_at IS NULL
 		)
-						ON "s->blog_story".story_id = s.id
-							AND "s->blog_story".deleted_at IS NULL
-							AND "s->blog_story".accepted_at IS NOT NULL
+						ON "s->blog_stories".story_id = s.id
+							AND "s->blog_stories".deleted_at IS NULL
+							AND "s->blog_stories".accepted_at IS NOT NULL
 WHERE
 	s.slug = $1
 GROUP BY
@@ -157,5 +157,5 @@ GROUP BY
 	"user_status_text?",
 	"user_status_expires_at?",
 	"s->user->status".user_id,
-	"s->blog_story->blog".id
+	"s->blog_stories->blog".id
 LIMIT 1

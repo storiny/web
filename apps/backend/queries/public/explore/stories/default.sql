@@ -22,6 +22,19 @@ WITH explore_stories AS (SELECT
 							 JSON_BUILD_OBJECT('id', u.id, 'name', u.name, 'username', u.username, 'avatar_id',
 											   u.avatar_id, 'avatar_hex', u.avatar_hex, 'public_flags',
 											   u.public_flags)                                  AS "user!: Json<User>",
+							 -- Blog
+							 CASE
+								 WHEN "s->blog_stories->blog".id IS NOT NULL
+									 THEN
+									 JSON_BUILD_OBJECT(
+											 'id', "s->blog_stories->blog".id,
+											 'name', "s->blog_stories->blog".name,
+											 'slug', "s->blog_stories->blog".slug,
+											 'domain', "s->blog_stories->blog".domain,
+											 'logo_id', "s->blog_stories->blog".logo_id,
+											 'logo_hex', "s->blog_stories->blog".logo_hex
+									 )
+							 END                                                                AS "blog: Json<Blog>",
 							 -- Tags
 							 COALESCE(ARRAY_AGG(DISTINCT ("s->story_tags->tag".id, "s->story_tags->tag".name))
 									  FILTER (WHERE "s->story_tags->tag".id IS NOT NULL), '{}') AS "tags!: Vec<Tag>",
@@ -36,6 +49,15 @@ WITH explore_stories AS (SELECT
 												-- Skip stories from private users
 												AND u.is_private IS FALSE
 								 --
+								 -- Join blog stories
+								 LEFT OUTER JOIN (blog_stories AS "s->blog_stories"
+								 -- Join blogs
+								 INNER JOIN blogs AS "s->blog_stories->blog"
+												  ON "s->blog_stories->blog".id = "s->blog_stories".blog_id
+								 )
+												 ON "s->blog_stories".story_id = s.id
+													 AND "s->blog_stories".accepted_at IS NOT NULL
+													 AND "s->blog_stories".deleted_at IS NULL
 								 -- Join story tags
 								 LEFT OUTER JOIN (story_tags AS "s->story_tags"
 								 -- Join tags
@@ -53,7 +75,8 @@ WITH explore_stories AS (SELECT
 							 s.id,
 							 u.id,
 							 s.published_at,
-							 s.read_count
+							 s.read_count,
+							 "s->blog_stories->blog".id
 						 ORDER BY
 							 published_at_date_only DESC,
 							 s.read_count           DESC
@@ -84,6 +107,7 @@ SELECT
 	FALSE AS "is_liked!",
 	-- Joins
 	"user!: Json<User>",
+	"blog: Json<Blog>",
 	"tags!: Vec<Tag>"
 FROM
 	explore_stories;
