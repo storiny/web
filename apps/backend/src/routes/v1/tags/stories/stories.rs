@@ -97,9 +97,9 @@ struct Story {
     is_bookmarked: bool,
 }
 
-#[get("/v1/tag/{tag_name}/stories")]
+#[get("/v1/tags/{tag_name}/stories")]
 #[tracing::instrument(
-    name = "GET /v1/tag/{tag_name}/stories",
+    name = "GET /v1/tags/{tag_name}/stories",
     skip_all,
     fields(
         user_id = tracing::field::Empty,
@@ -134,7 +134,7 @@ async fn get(
         if has_search_query {
             let result = sqlx::query_file_as!(
                 Story,
-                "queries/tag/stories/logged_in_with_query.sql",
+                "queries/tags/stories/logged_in_with_query.sql",
                 search_query,
                 &path.tag_name,
                 10 as i16,
@@ -148,7 +148,7 @@ async fn get(
         } else if sort == "recent" {
             let result = sqlx::query_file_as!(
                 Story,
-                "queries/tag/stories/logged_in_recent.sql",
+                "queries/tags/stories/logged_in_recent.sql",
                 &path.tag_name,
                 10 as i16,
                 (page * 10) as i16,
@@ -161,7 +161,7 @@ async fn get(
         } else {
             let result = sqlx::query_file_as!(
                 Story,
-                "queries/tag/stories/logged_in_popular.sql",
+                "queries/tags/stories/logged_in_popular.sql",
                 &path.tag_name,
                 10 as i16,
                 (page * 10) as i16,
@@ -175,7 +175,7 @@ async fn get(
     } else if has_search_query {
         let result = sqlx::query_file_as!(
             Story,
-            "queries/tag/stories/with_query.sql",
+            "queries/tags/stories/with_query.sql",
             search_query,
             &path.tag_name,
             10 as i16,
@@ -188,7 +188,7 @@ async fn get(
     } else if sort == "recent" {
         let result = sqlx::query_file_as!(
             Story,
-            "queries/tag/stories/recent.sql",
+            "queries/tags/stories/recent.sql",
             &path.tag_name,
             10 as i16,
             (page * 10) as i16,
@@ -200,7 +200,7 @@ async fn get(
     } else {
         let result = sqlx::query_file_as!(
             Story,
-            "queries/tag/stories/popular.sql",
+            "queries/tags/stories/popular.sql",
             &path.tag_name,
             10 as i16,
             (page * 10) as i16,
@@ -275,7 +275,7 @@ mod tests {
         let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
-            .uri("/v1/tag/@invalid_tag_name/stories")
+            .uri("/v1/tags/@invalid_tag_name/stories")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -292,7 +292,7 @@ mod tests {
         let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
-            .uri("/v1/tag/tag-1/stories")
+            .uri("/v1/tags/tag-1/stories")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -319,7 +319,7 @@ mod tests {
         let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
-            .uri("/v1/tag/tag-1/stories?sort=recent")
+            .uri("/v1/tags/tag-1/stories?sort=recent")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -338,7 +338,7 @@ mod tests {
         let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
-            .uri("/v1/tag/tag-1/stories?sort=popular")
+            .uri("/v1/tags/tag-1/stories?sort=popular")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -357,7 +357,7 @@ mod tests {
         let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/tag/tag-1/stories?query={}", encode("two")))
+            .uri(&format!("/v1/tags/tag-1/stories?query={}", encode("two")))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -380,7 +380,7 @@ mod tests {
 
         // Should return all the stories initially.
         let req = test::TestRequest::get()
-            .uri("/v1/tag/tag-1/stories")
+            .uri("/v1/tags/tag-1/stories")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -409,7 +409,7 @@ WHERE id = $1
 
         // Should return only two stories.
         let req = test::TestRequest::get()
-            .uri("/v1/tag/tag-1/stories")
+            .uri("/v1/tags/tag-1/stories")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -438,7 +438,7 @@ WHERE id = $1
 
         // Should return all the stories again.
         let req = test::TestRequest::get()
-            .uri("/v1/tag/tag-1/stories")
+            .uri("/v1/tags/tag-1/stories")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -461,7 +461,7 @@ WHERE id = $1
 
         // Should return all the stories initially.
         let req = test::TestRequest::get()
-            .uri("/v1/tag/tag-1/stories")
+            .uri("/v1/tags/tag-1/stories")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -488,7 +488,7 @@ WHERE id = $1
 
         // Should return only two stories.
         let req = test::TestRequest::get()
-            .uri("/v1/tag/tag-1/stories")
+            .uri("/v1/tags/tag-1/stories")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -515,7 +515,7 @@ WHERE id = $1
 
         // Should return all the stories again.
         let req = test::TestRequest::get()
-            .uri("/v1/tag/tag-1/stories")
+            .uri("/v1/tags/tag-1/stories")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -537,7 +537,7 @@ WHERE id = $1
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri("/v1/tag/tag-1/stories")
+            .uri("/v1/tags/tag-1/stories")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -559,7 +559,7 @@ WHERE id = $1
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri("/v1/tag/tag-1/stories?sort=recent")
+            .uri("/v1/tags/tag-1/stories?sort=recent")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -581,7 +581,7 @@ WHERE id = $1
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri("/v1/tag/tag-1/stories?sort=popular")
+            .uri("/v1/tags/tag-1/stories?sort=popular")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -601,7 +601,7 @@ WHERE id = $1
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/tag/tag-1/stories?query={}", encode("two")))
+            .uri(&format!("/v1/tags/tag-1/stories?query={}", encode("two")))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -626,7 +626,7 @@ WHERE id = $1
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/tag/tag-1/stories?sort=recent")
+            .uri("/v1/tags/tag-1/stories?sort=recent")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -652,7 +652,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri("/v1/tag/tag-1/stories?sort=recent")
+            .uri("/v1/tags/tag-1/stories?sort=recent")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -672,7 +672,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/tag/tag-1/stories?sort=recent")
+            .uri("/v1/tags/tag-1/stories?sort=recent")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -698,7 +698,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri("/v1/tag/tag-1/stories?sort=recent")
+            .uri("/v1/tags/tag-1/stories?sort=recent")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -720,7 +720,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/tag/tag-1/stories?sort=popular")
+            .uri("/v1/tags/tag-1/stories?sort=popular")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -746,7 +746,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri("/v1/tag/tag-1/stories?sort=popular")
+            .uri("/v1/tags/tag-1/stories?sort=popular")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -766,7 +766,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/tag/tag-1/stories?sort=popular")
+            .uri("/v1/tags/tag-1/stories?sort=popular")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -792,7 +792,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri("/v1/tag/tag-1/stories?sort=popular")
+            .uri("/v1/tags/tag-1/stories?sort=popular")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -814,7 +814,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/tag/tag-1/stories?query={}", encode("two")))
+            .uri(&format!("/v1/tags/tag-1/stories?query={}", encode("two")))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -840,7 +840,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/tag/tag-1/stories?query={}", encode("two")))
+            .uri(&format!("/v1/tags/tag-1/stories?query={}", encode("two")))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -860,7 +860,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/tag/tag-1/stories?query={}", encode("two")))
+            .uri(&format!("/v1/tags/tag-1/stories?query={}", encode("two")))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -886,7 +886,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/tag/tag-1/stories?query={}", encode("two")))
+            .uri(&format!("/v1/tags/tag-1/stories?query={}", encode("two")))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -909,7 +909,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
         // Should return all the stories initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/tag/tag-1/stories")
+            .uri("/v1/tags/tag-1/stories")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -939,7 +939,7 @@ WHERE id = $1
         // Should return only two stories.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/tag/tag-1/stories")
+            .uri("/v1/tags/tag-1/stories")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -969,7 +969,7 @@ WHERE id = $1
         // Should return all the stories again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri("/v1/tag/tag-1/stories")
+            .uri("/v1/tags/tag-1/stories")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -993,7 +993,7 @@ WHERE id = $1
         // Should return all the stories initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/tag/tag-1/stories")
+            .uri("/v1/tags/tag-1/stories")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1021,7 +1021,7 @@ WHERE id = $1
         // Should return only two stories.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/tag/tag-1/stories")
+            .uri("/v1/tags/tag-1/stories")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1049,7 +1049,7 @@ WHERE id = $1
         // Should return all the stories again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri("/v1/tag/tag-1/stories")
+            .uri("/v1/tags/tag-1/stories")
             .to_request();
         let res = test::call_service(&app, req).await;
 

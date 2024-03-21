@@ -63,6 +63,7 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::blogs::archive::init_routes(cfg);
     v1::blogs::editors::init_routes(cfg);
     v1::blogs::writers::init_routes(cfg);
+    v1::blogs::feed::init_routes(cfg);
     // Me
     v1::me::get::init_routes(cfg);
     // Me - User activity
@@ -303,11 +304,11 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     // Right sidebar content
     v1::rsb_content::init_routes(cfg);
     // Tag
-    v1::tag::stories::init_routes(cfg);
-    v1::tag::writers::init_routes(cfg);
+    v1::tags::stories::init_routes(cfg);
+    v1::tags::writers::init_routes(cfg);
     // User
-    v1::user::stories::init_routes(cfg);
-    v1::user::followers::init_routes(cfg);
-    v1::user::following::init_routes(cfg);
-    v1::user::friends::init_routes(cfg);
+    v1::users::stories::init_routes(cfg);
+    v1::users::followers::init_routes(cfg);
+    v1::users::following::init_routes(cfg);
+    v1::users::friends::init_routes(cfg);
 }

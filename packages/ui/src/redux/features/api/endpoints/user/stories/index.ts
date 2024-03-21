@@ -2,7 +2,7 @@ import { Story } from "@storiny/types";
 
 import { api_slice } from "~/redux/features/api/slice";
 
-const SEGMENT = (user_id: string): string => `user/${user_id}/stories`;
+const SEGMENT = (user_id: string): string => `users/${user_id}/stories`;
 const ITEMS_PER_PAGE = 10;
 
 export type GetUserStoriesResponse = Story[];

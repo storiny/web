@@ -66,9 +66,9 @@ struct Friend {
     is_blocked: bool,
 }
 
-#[get("/v1/user/{user_id}/friends")]
+#[get("/v1/users/{user_id}/friends")]
 #[tracing::instrument(
-    name = "GET /v1/user/{user_id}/friends",
+    name = "GET /v1/users/{user_id}/friends",
     skip_all,
     fields(
         current_user_id = tracing::field::Empty,
@@ -433,7 +433,7 @@ VALUES ($1, $2, NOW()), ($1, $3, NOW())
         assert_eq!(insert_result.rows_affected(), 2);
 
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -484,7 +484,7 @@ VALUES ($1, $2, NOW())
         .await?;
 
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/friends?sort=old", 1))
+            .uri(&format!("/v1/users/{}/friends?sort=old", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -527,7 +527,7 @@ VALUES ($1, $2, NOW())
         .await?;
 
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/friends?sort=recent", 1))
+            .uri(&format!("/v1/users/{}/friends?sort=recent", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -570,7 +570,7 @@ VALUES ($1, $2, NOW())
         .await?;
 
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/friends?sort=popular", 1))
+            .uri(&format!("/v1/users/{}/friends?sort=popular", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -605,7 +605,7 @@ VALUES ($1, $2, NOW()), ($1, $3, NOW())
         assert_eq!(insert_result.rows_affected(), 2);
 
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/friends?query={}", 1, encode("two")))
+            .uri(&format!("/v1/users/{}/friends?query={}", 1, encode("two")))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -641,7 +641,7 @@ VALUES ($1, $2, NOW()), ($1, $3, NOW())
 
         // Should return friends initially.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -666,7 +666,7 @@ WHERE id = $1
 
         // Should not return friends.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -700,7 +700,7 @@ VALUES ($1, $2, NOW()), ($1, $3, NOW())
 
         // Should return all the friends initially.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -728,7 +728,7 @@ WHERE transmitter_id = $1 AND receiver_id = $2
 
         // Should return only one friend.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -756,7 +756,7 @@ WHERE transmitter_id = $1 AND receiver_id = $2
 
         // Should return all the friends again.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -792,7 +792,7 @@ VALUES ($1, $2, NOW()), ($1, $3, NOW())
 
         // Should return the friend initially.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -819,7 +819,7 @@ WHERE id = $1
 
         // Should return only one friend.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -855,7 +855,7 @@ VALUES ($1, $2, NOW()), ($1, $3, NOW())
 
         // Should return all the friends initially.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -883,7 +883,7 @@ WHERE transmitter_id = $1 AND receiver_id = $2
 
         // Should return only one friend.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -911,7 +911,7 @@ WHERE transmitter_id = $1 AND receiver_id = $2
 
         // Should return all the friends again.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -949,7 +949,7 @@ VALUES ($1, $2, NOW()), ($1, $3, NOW())
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -986,7 +986,7 @@ VALUES ($1, $2, NOW())
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 3))
+            .uri(&format!("/v1/users/{}/friends", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1010,7 +1010,7 @@ VALUES ($1, $2)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/friends", 3))
+            .uri(&format!("/v1/users/{}/friends", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1044,7 +1044,7 @@ VALUES ($1, $2, NOW())
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 3))
+            .uri(&format!("/v1/users/{}/friends", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1068,7 +1068,7 @@ VALUES ($2, $1)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/friends", 3))
+            .uri(&format!("/v1/users/{}/friends", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1102,7 +1102,7 @@ VALUES ($1, $2, NOW())
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 3))
+            .uri(&format!("/v1/users/{}/friends", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1126,7 +1126,7 @@ VALUES ($1, $2)
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 3))
+            .uri(&format!("/v1/users/{}/friends", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1151,7 +1151,7 @@ WHERE
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/friends", 3))
+            .uri(&format!("/v1/users/{}/friends", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1185,7 +1185,7 @@ VALUES ($1, $2, NOW())
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 3))
+            .uri(&format!("/v1/users/{}/friends", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1209,7 +1209,7 @@ VALUES ($1, $2)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/friends", 3))
+            .uri(&format!("/v1/users/{}/friends", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1243,7 +1243,7 @@ VALUES ($1, $2, NOW())
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 3))
+            .uri(&format!("/v1/users/{}/friends", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1267,7 +1267,7 @@ VALUES ($1, $2)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/friends", 3))
+            .uri(&format!("/v1/users/{}/friends", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1308,7 +1308,7 @@ VALUES ($1, $2, NOW())
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/friends?sort=old", 1))
+            .uri(&format!("/v1/users/{}/friends?sort=old", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1354,7 +1354,7 @@ VALUES ($1, $2, NOW())
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/friends?sort=recent", 1))
+            .uri(&format!("/v1/users/{}/friends?sort=recent", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1400,7 +1400,7 @@ VALUES ($1, $2, NOW())
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/friends?sort=popular", 1))
+            .uri(&format!("/v1/users/{}/friends?sort=popular", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1436,7 +1436,7 @@ VALUES ($1, $2, NOW()), ($1, $3, NOW())
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/friends?query={}", 1, encode("two")))
+            .uri(&format!("/v1/users/{}/friends?query={}", 1, encode("two")))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1474,7 +1474,7 @@ VALUES ($1, $2, NOW())
         // Should return friends initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 2))
+            .uri(&format!("/v1/users/{}/friends", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1500,7 +1500,7 @@ WHERE id = $1
         // Should not return friends.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 2))
+            .uri(&format!("/v1/users/{}/friends", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1526,7 +1526,7 @@ VALUES ($1, $2, NOW())
         // Should return friends again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/friends", 2))
+            .uri(&format!("/v1/users/{}/friends", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1560,7 +1560,7 @@ VALUES ($1, $2, NOW())
         // Should return friends initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 2))
+            .uri(&format!("/v1/users/{}/friends", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1586,7 +1586,7 @@ WHERE id = $1
         // Should not return friends.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 2))
+            .uri(&format!("/v1/users/{}/friends", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1612,7 +1612,7 @@ VALUES ($1, $2, NOW())
         // Should return the private friend.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/friends", 2))
+            .uri(&format!("/v1/users/{}/friends", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1648,7 +1648,7 @@ VALUES ($1, $2, NOW())
         // Should return friends initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 2))
+            .uri(&format!("/v1/users/{}/friends", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1675,7 +1675,7 @@ WHERE id = $1
         // Should not return friends.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 2))
+            .uri(&format!("/v1/users/{}/friends", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1701,7 +1701,7 @@ VALUES ($1, $2, NOW())
         // Should return friends again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/friends", 2))
+            .uri(&format!("/v1/users/{}/friends", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1737,7 +1737,7 @@ VALUES ($1, $2, NOW())
         // Should return friends initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1763,7 +1763,7 @@ WHERE id = $1
         // Should still return friends.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1799,7 +1799,7 @@ VALUES ($1, $2, NOW())
         // Should return friends initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1826,7 +1826,7 @@ WHERE id = $1
         // Should still return friends.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1862,7 +1862,7 @@ VALUES ($1, $2, NOW())
         // Should return friends initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 2))
+            .uri(&format!("/v1/users/{}/friends", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1889,7 +1889,7 @@ WHERE id = $1
         // Should not return friends.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 2))
+            .uri(&format!("/v1/users/{}/friends", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1926,7 +1926,7 @@ VALUES ($1, $2, NOW()), ($1, $3, NOW())
         // Should return all the friends initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1955,7 +1955,7 @@ WHERE transmitter_id = $1 AND receiver_id = $2
         // Should return only one friend.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1984,7 +1984,7 @@ WHERE transmitter_id = $1 AND receiver_id = $2
         // Should return all the friends again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -2023,7 +2023,7 @@ VALUES ($1, $2, NOW()), ($1, $3, NOW())
         // Should return all the friends initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -2052,7 +2052,7 @@ WHERE transmitter_id = $1 AND receiver_id = $2
         // Should return only one friend.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -2081,7 +2081,7 @@ WHERE transmitter_id = $1 AND receiver_id = $2
         // Should return all the friends again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/friends", 1))
+            .uri(&format!("/v1/users/{}/friends", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 

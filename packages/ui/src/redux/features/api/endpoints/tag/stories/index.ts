@@ -2,7 +2,7 @@ import { Story } from "@storiny/types";
 
 import { api_slice } from "~/redux/features/api/slice";
 
-const SEGMENT = (tag_name: string): string => `tag/${tag_name}/stories`;
+const SEGMENT = (tag_name: string): string => `tags/${tag_name}/stories`;
 const ITEMS_PER_PAGE = 10;
 
 export type GetTagStoriesResponse = Story[];

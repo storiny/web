@@ -39,9 +39,9 @@ struct Writer {
     is_following: bool,
 }
 
-#[get("/v1/tag/{tag_name}/writers")]
+#[get("/v1/tags/{tag_name}/writers")]
 #[tracing::instrument(
-    name = "GET /v1/tag/{tag_name}/writers",
+    name = "GET /v1/tags/{tag_name}/writers",
     skip_all,
     fields(
         user_id = tracing::field::Empty,
@@ -194,7 +194,7 @@ mod tests {
         let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
-            .uri("/v1/tag/@invalid_tag_name/writers")
+            .uri("/v1/tags/@invalid_tag_name/writers")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -211,7 +211,7 @@ mod tests {
         let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
-            .uri("/v1/tag/tag-1/writers")
+            .uri("/v1/tags/tag-1/writers")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -238,7 +238,7 @@ mod tests {
 
         // Should return all the writers initially.
         let req = test::TestRequest::get()
-            .uri("/v1/tag/tag-1/writers")
+            .uri("/v1/tags/tag-1/writers")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -265,7 +265,7 @@ WHERE id = $1
 
         // Should return only two writers.
         let req = test::TestRequest::get()
-            .uri("/v1/tag/tag-1/writers")
+            .uri("/v1/tags/tag-1/writers")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -292,7 +292,7 @@ WHERE id = $1
 
         // Should return all the writers again.
         let req = test::TestRequest::get()
-            .uri("/v1/tag/tag-1/writers")
+            .uri("/v1/tags/tag-1/writers")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -315,7 +315,7 @@ WHERE id = $1
 
         // Should return all the writers initially.
         let req = test::TestRequest::get()
-            .uri("/v1/tag/tag-1/writers")
+            .uri("/v1/tags/tag-1/writers")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -342,7 +342,7 @@ WHERE id = $1
 
         // Should return only two writers.
         let req = test::TestRequest::get()
-            .uri("/v1/tag/tag-1/writers")
+            .uri("/v1/tags/tag-1/writers")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -369,7 +369,7 @@ WHERE id = $1
 
         // Should return all the writers again.
         let req = test::TestRequest::get()
-            .uri("/v1/tag/tag-1/writers")
+            .uri("/v1/tags/tag-1/writers")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -391,7 +391,7 @@ WHERE id = $1
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri("/v1/tag/tag-1/writers")
+            .uri("/v1/tags/tag-1/writers")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -414,7 +414,7 @@ WHERE id = $1
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/tag/tag-1/writers")
+            .uri("/v1/tags/tag-1/writers")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -439,7 +439,7 @@ VALUES ($1, $2), ($1, $3)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri("/v1/tag/tag-1/writers")
+            .uri("/v1/tags/tag-1/writers")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -466,7 +466,7 @@ VALUES ($1, $2), ($1, $3)
         // Should return all the writers initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/tag/tag-1/writers")
+            .uri("/v1/tags/tag-1/writers")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -494,7 +494,7 @@ WHERE id = $1
         // Should return only two writers.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/tag/tag-1/writers")
+            .uri("/v1/tags/tag-1/writers")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -522,7 +522,7 @@ WHERE id = $1
         // Should return all the writers again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri("/v1/tag/tag-1/writers")
+            .uri("/v1/tags/tag-1/writers")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -546,7 +546,7 @@ WHERE id = $1
         // Should return all the writers initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/tag/tag-1/writers")
+            .uri("/v1/tags/tag-1/writers")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -574,7 +574,7 @@ WHERE id = $1
         // Should return only two writers.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/tag/tag-1/writers")
+            .uri("/v1/tags/tag-1/writers")
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -602,7 +602,7 @@ WHERE id = $1
         // Should return all the writers again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri("/v1/tag/tag-1/writers")
+            .uri("/v1/tags/tag-1/writers")
             .to_request();
         let res = test::call_service(&app, req).await;
 
