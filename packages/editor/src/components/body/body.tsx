@@ -87,7 +87,8 @@ const DOC_STATUS_TO_LABEL_MAP: Partial<Record<DocStatus, string>> = {
   [DOC_STATUS.disconnected]: "Connection lost",
   [DOC_STATUS.join_realm_full | DOC_STATUS.overloaded]:
     "This story has reached the maximum number of live members.",
-  [DOC_STATUS.join_missing_story]: "This story does not exist",
+  [DOC_STATUS.join_missing_story]:
+    "This story does not exist, or you do not have sufficient permissions to edit it.",
   [DOC_STATUS.join_unauthorized]:
     "You are not authorized to access this story.",
   [DOC_STATUS.doc_corrupted]: "This document has been corrupted",

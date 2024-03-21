@@ -218,7 +218,6 @@ async fn enter_realm(
 
         let mut redis_conn = redis_pool.get().await.map_err(|error| {
             error!("unable to acquire a Redis connection from the pool: {error:?}");
-
             EnterRealmError::Internal
         })?;
 
@@ -227,7 +226,6 @@ async fn enter_realm(
             .await
             .map_err(|error| {
                 error!("unable to fetch the session data from Redis: {error:?}");
-
                 EnterRealmError::Internal
             })?
             .ok_or(EnterRealmError::Unauthorized)?;
@@ -251,40 +249,76 @@ async fn enter_realm(
         // This should never throw
         .map_err(|error| {
             error!("unable to acquire a lock on the realm map: {error:?}");
-
             EnterRealmError::Internal
         })?;
 
     let mut txn = db_pool.begin().await.map_err(|error| {
         error!("unable begin a transaction: {error:?}");
-
         EnterRealmError::Internal
     })?;
 
     let story = sqlx::query(
         r#"
-WITH maybe_contributor AS (
-    SELECT role
-    FROM story_contributors
+WITH contributor AS (
+    SELECT role FROM story_contributors
     WHERE
         story_id = $1
         AND user_id = $2
         AND deleted_at IS NULL
         AND accepted_at IS NOT NULL
+),
+blog_story AS (
+    SELECT bs.blog_id
+    FROM
+        blog_stories AS bs
+            INNER JOIN blogs AS b
+                ON bs.blog_id = b.id
+                -- Make sure the blog is active
+                AND b.is_active IS TRUE
+    WHERE
+        bs.story_id = $1
+        AND bs.deleted_at IS NULL
+),
+blog_owner AS (
+    SELECT FROM blogs
+    WHERE
+        id = (SELECT blog_id FROM blog_story)
+        AND user_id = $2
+        AND deleted_at IS NULL
+        AND EXISTS (SELECT FROM blog_story)
+),
+blog_editor AS (
+    SELECT FROM blog_editors
+    WHERE
+        blog_id = (SELECT blog_id FROM blog_story)
+        AND user_id = $2
+        AND accepted_at IS NOT NULL
+        AND deleted_at IS NULL
+        AND EXISTS (SELECT FROM blog_story)
+        AND NOT EXISTS (SELECT FROM blog_owner)
+),
+blog_member AS (
+    SELECT COALESCE(
+        (SELECT TRUE FROM blog_owner),
+        (SELECT TRUE FROM blog_editor)
+    ) AS "is_blog_member"
 )
 SELECT
     id,
     published_at,
     COALESCE(
-        (SELECT role FROM maybe_contributor), 'editor'
-    ) AS "role"
-FROM stories
+        (SELECT role FROM contributor), 'editor'
+    ) AS "role",
+    (SELECT is_blog_member FROM blog_member) AS "is_blog_member"
+FROM
+	stories
 WHERE
     id = $1
     AND deleted_at IS NULL
     AND (
         user_id = $2
-        OR EXISTS(SELECT 1 FROM maybe_contributor)
+        OR EXISTS(SELECT FROM contributor)
+        OR (SELECT is_blog_member FROM blog_member) IS TRUE
     )
 "#,
     )
@@ -297,19 +331,24 @@ WHERE
             EnterRealmError::MissingStory
         } else {
             error!("database error: {error:?}");
-
             EnterRealmError::Internal
         }
     })?;
 
     // Resolve the peer role.
+    let is_blog_member = story
+        .get::<Option<bool>, _>("is_blog_member")
+        .unwrap_or_default();
     let role = story.get::<String, _>("role");
-    let role = PeerRole::from_str(role.as_str()).unwrap_or(PeerRole::Viewer);
+    let role = if is_blog_member {
+        PeerRole::Editor
+    } else {
+        PeerRole::from_str(role.as_str()).unwrap_or(PeerRole::Viewer)
+    };
 
     if let Some(realm) = realm_guard.value() {
         txn.commit().await.map_err(|error| {
             error!("unable to commit the transaction: {error:?}");
-
             EnterRealmError::Internal
         })?;
 
@@ -361,7 +400,6 @@ SELECT
                         EnterRealmError::MissingStory
                     } else {
                         error!("database error: {error:?}");
-
                         EnterRealmError::Internal
                     }
                 })?;
@@ -383,7 +421,6 @@ SELECT
                     Some(value) => value,
                     None => {
                         error!("unable to resolve the final document key");
-
                         return Err(EnterRealmError::Internal);
                     }
                 };
@@ -409,7 +446,6 @@ SELECT
                                 .await
                                 .map_err(|error| {
                                     error!("unable to copy the original document: {error:?}");
-
                                     EnterRealmError::Internal
                                 })?;
                         }
@@ -424,7 +460,6 @@ SELECT
                                     error!(
                                         "unable to delete the orphaned document copy: {error:?}"
                                     );
-
                                     EnterRealmError::Internal
                                 })?;
 
@@ -432,7 +467,6 @@ SELECT
 
                             if !matches!(service_error, HeadObjectError::NotFound(_)) {
                                 error!("unable to head the original document: {service_error:?}");
-
                                 return Err(EnterRealmError::Internal);
                             }
                         }
@@ -455,7 +489,6 @@ WHERE story_id = $1
                         EnterRealmError::MissingStory
                     } else {
                         error!("database error: {error:?}");
-
                         EnterRealmError::Internal
                     }
                 })?
@@ -465,7 +498,6 @@ WHERE story_id = $1
 
         txn.commit().await.map_err(|error| {
             error!("unable to commit the transaction: {error:?}");
-
             EnterRealmError::Internal
         })?;
 
@@ -473,7 +505,6 @@ WHERE story_id = $1
             .await
             .map_err(|error| {
                 error!("unable to fetch the document from s3: {error:?}");
-
                 EnterRealmError::Internal
             })?;
 
@@ -493,7 +524,6 @@ WHERE story_id = $1
             .await
             .map_err(|error| {
                 error!("unable to create a broadcast group: {error:?}");
-
                 EnterRealmError::Internal
             })?;
 
@@ -1065,6 +1095,405 @@ VALUES ($1, $2, 'viewer', NOW())
             let role = realm.get_peer_role(user_id).await.expect("peer not found");
 
             assert_eq!(role, PeerRole::Viewer);
+
+            tx.close().await.unwrap();
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_accept_blog_owners(_ctx: &mut RedisTestContext, pool: PgPool) {
+            let mut conn = pool.acquire().await.unwrap();
+
+            let (endpoint, realm_map, user_id, story_id) =
+                init_realms_server_for_test(pool, None, true, true).await;
+
+            // Change the user of the story.
+            let result = sqlx::query(
+                r#"
+WITH new_user AS (
+    INSERT INTO users (name, username, email)
+    VALUES ('Example user', 'example_user', 'example_user@storiny.com')
+    RETURNING id
+)
+UPDATE stories
+SET user_id = (
+    SELECT id FROM new_user
+)
+WHERE id = $1
+RETURNING user_id
+"#,
+            )
+            .bind(story_id)
+            .fetch_one(&mut *conn)
+            .await
+            .unwrap();
+
+            let story_writer_id = result.get::<i64, _>("user_id");
+
+            // Insert a blog.
+            let result = sqlx::query(
+                r#"
+INSERT INTO blogs (name, slug, user_id)
+VALUES ($1, $2, $3)
+RETURNING id
+"#,
+            )
+            .bind("Sample blog".to_string())
+            .bind("sample-blog".to_string())
+            .bind(user_id)
+            .fetch_one(&mut *conn)
+            .await
+            .unwrap();
+
+            let blog_id = result.get::<i64, _>("id");
+
+            // Add the writer of the story as an editor.
+            let result = sqlx::query(
+                r#"
+INSERT INTO blog_editors (user_id, blog_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
+            )
+            .bind(story_writer_id)
+            .bind(blog_id)
+            .execute(&mut *conn)
+            .await
+            .unwrap();
+
+            assert_eq!(result.rows_affected(), 1);
+
+            // Add the story to the blog.
+            let result = sqlx::query(
+                r#"
+INSERT INTO blog_stories (blog_id, story_id)
+VALUES ($1, $2)
+"#,
+            )
+            .bind(blog_id)
+            .bind(story_id)
+            .execute(&mut *conn)
+            .await
+            .unwrap();
+
+            assert_eq!(result.rows_affected(), 1);
+
+            let (mut tx, _) = peer(endpoint).await;
+
+            tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+
+            // Realm should be present in the map.
+            let realm = realm_map
+                .async_lock(story_id, AsyncLimit::no_limit())
+                .await
+                .unwrap();
+
+            assert!(realm.value().is_some());
+
+            // Peer should have the correct role.
+            let realm = realm.value().unwrap();
+            let role = realm.get_peer_role(user_id).await.expect("peer not found");
+
+            assert_eq!(role, PeerRole::Editor);
+
+            tx.close().await.unwrap();
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_accept_blog_editors(_ctx: &mut RedisTestContext, pool: PgPool) {
+            let mut conn = pool.acquire().await.unwrap();
+
+            let (endpoint, realm_map, user_id, story_id) =
+                init_realms_server_for_test(pool, None, true, true).await;
+
+            // Change the user of the story.
+            let result = sqlx::query(
+                r#"
+WITH new_user AS (
+    INSERT INTO users (name, username, email)
+    VALUES ('Example user', 'example_user', 'example_user@storiny.com')
+    RETURNING id
+)
+UPDATE stories
+SET user_id = (
+    SELECT id FROM new_user
+)
+WHERE id = $1
+RETURNING user_id
+"#,
+            )
+            .bind(story_id)
+            .fetch_one(&mut *conn)
+            .await
+            .unwrap();
+
+            // Insert a blog.
+            let result = sqlx::query(
+                r#"
+INSERT INTO blogs (name, slug, user_id)
+VALUES ($1, $2, $3)
+RETURNING id
+"#,
+            )
+            .bind("Sample blog".to_string())
+            .bind("sample-blog".to_string())
+            .bind(result.get::<i64, _>("user_id"))
+            .fetch_one(&mut *conn)
+            .await
+            .unwrap();
+
+            let blog_id = result.get::<i64, _>("id");
+
+            // Add the current user as an editor.
+            let result = sqlx::query(
+                r#"
+INSERT INTO blog_editors (user_id, blog_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
+            )
+            .bind(user_id)
+            .bind(blog_id)
+            .execute(&mut *conn)
+            .await
+            .unwrap();
+
+            assert_eq!(result.rows_affected(), 1);
+
+            // Add the story to the blog.
+            let result = sqlx::query(
+                r#"
+INSERT INTO blog_stories (blog_id, story_id)
+VALUES ($1, $2)
+"#,
+            )
+            .bind(blog_id)
+            .bind(story_id)
+            .execute(&mut *conn)
+            .await
+            .unwrap();
+
+            assert_eq!(result.rows_affected(), 1);
+
+            let (mut tx, _) = peer(endpoint).await;
+
+            tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+
+            // Realm should be present in the map.
+            let realm = realm_map
+                .async_lock(story_id, AsyncLimit::no_limit())
+                .await
+                .unwrap();
+
+            assert!(realm.value().is_some());
+
+            // Peer should have the correct role.
+            let realm = realm.value().unwrap();
+            let role = realm.get_peer_role(user_id).await.expect("peer not found");
+
+            assert_eq!(role, PeerRole::Editor);
+
+            tx.close().await.unwrap();
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_reject_blog_members_for_a_locked_blog(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            let mut conn = pool.acquire().await.unwrap();
+            let (endpoint, _, user_id, story_id) =
+                init_realms_server_for_test(pool, None, true, true).await;
+
+            // Change the user of the story.
+            let result = sqlx::query(
+                r#"
+WITH new_user AS (
+    INSERT INTO users (name, username, email)
+    VALUES ('Example user', 'example_user', 'example_user@storiny.com')
+    RETURNING id
+)
+UPDATE stories
+SET user_id = (
+    SELECT id FROM new_user
+)
+WHERE id = $1
+RETURNING user_id
+"#,
+            )
+            .bind(story_id)
+            .fetch_one(&mut *conn)
+            .await
+            .unwrap();
+
+            let story_writer_id = result.get::<i64, _>("user_id");
+
+            // Insert a blog.
+            let result = sqlx::query(
+                r#"
+INSERT INTO blogs (name, slug, user_id)
+VALUES ($1, $2, $3)
+RETURNING id
+"#,
+            )
+            .bind("Sample blog".to_string())
+            .bind("sample-blog".to_string())
+            .bind(user_id)
+            .fetch_one(&mut *conn)
+            .await
+            .unwrap();
+
+            let blog_id = result.get::<i64, _>("id");
+
+            // Add the writer of the story as an editor.
+            let result = sqlx::query(
+                r#"
+INSERT INTO blog_editors (user_id, blog_id, accepted_at)
+VALUES ($1, $2, NOW())
+"#,
+            )
+            .bind(story_writer_id)
+            .bind(blog_id)
+            .execute(&mut *conn)
+            .await
+            .unwrap();
+
+            assert_eq!(result.rows_affected(), 1);
+
+            // Add the story to the blog.
+            let result = sqlx::query(
+                r#"
+INSERT INTO blog_stories (blog_id, story_id)
+VALUES ($1, $2)
+"#,
+            )
+            .bind(blog_id)
+            .bind(story_id)
+            .execute(&mut *conn)
+            .await
+            .unwrap();
+
+            assert_eq!(result.rows_affected(), 1);
+
+            // Lock the blog.
+            let result = sqlx::query(
+                r#"
+UPDATE blogs
+SET is_active = FALSE
+WHERE id = $1
+"#,
+            )
+            .bind(blog_id)
+            .execute(&mut *conn)
+            .await
+            .unwrap();
+
+            assert_eq!(result.rows_affected(), 1);
+
+            let (mut tx, mut rx) = peer(endpoint).await;
+
+            timeout(Duration::from_secs(10), async {
+                if let Ok(message) = rx.next().await.unwrap() {
+                    assert_eq!(
+                        message.to_string(),
+                        EnterRealmError::MissingStory.to_string()
+                    );
+                }
+            })
+            .await
+            .expect("no message received");
+
+            tx.close().await.unwrap();
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test]
+        async fn can_reject_pending_blog_editors(_ctx: &mut RedisTestContext, pool: PgPool) {
+            let mut conn = pool.acquire().await.unwrap();
+
+            let (endpoint, _, user_id, story_id) =
+                init_realms_server_for_test(pool, None, true, true).await;
+
+            // Change the user of the story.
+            let result = sqlx::query(
+                r#"
+WITH new_user AS (
+    INSERT INTO users (name, username, email)
+    VALUES ('Example user', 'example_user', 'example_user@storiny.com')
+    RETURNING id
+)
+UPDATE stories
+SET user_id = (
+    SELECT id FROM new_user
+)
+WHERE id = $1
+RETURNING user_id
+"#,
+            )
+            .bind(story_id)
+            .fetch_one(&mut *conn)
+            .await
+            .unwrap();
+
+            // Insert a blog.
+            let result = sqlx::query(
+                r#"
+INSERT INTO blogs (name, slug, user_id)
+VALUES ($1, $2, $3)
+RETURNING id
+"#,
+            )
+            .bind("Sample blog".to_string())
+            .bind("sample-blog".to_string())
+            .bind(result.get::<i64, _>("user_id"))
+            .fetch_one(&mut *conn)
+            .await
+            .unwrap();
+
+            let blog_id = result.get::<i64, _>("id");
+
+            // Add the current user as an editor.
+            let result = sqlx::query(
+                r#"
+INSERT INTO blog_editors (user_id, blog_id)
+VALUES ($1, $2)
+"#,
+            )
+            .bind(user_id)
+            .bind(blog_id)
+            .execute(&mut *conn)
+            .await
+            .unwrap();
+
+            assert_eq!(result.rows_affected(), 1);
+
+            // Add the story to the blog.
+            let result = sqlx::query(
+                r#"
+INSERT INTO blog_stories (blog_id, story_id)
+VALUES ($1, $2)
+"#,
+            )
+            .bind(blog_id)
+            .bind(story_id)
+            .execute(&mut *conn)
+            .await
+            .unwrap();
+
+            assert_eq!(result.rows_affected(), 1);
+
+            let (mut tx, mut rx) = peer(endpoint).await;
+
+            timeout(Duration::from_secs(10), async {
+                if let Ok(message) = rx.next().await.unwrap() {
+                    assert_eq!(
+                        message.to_string(),
+                        EnterRealmError::MissingStory.to_string()
+                    );
+                }
+            })
+            .await
+            .expect("no message received");
 
             tx.close().await.unwrap();
         }
