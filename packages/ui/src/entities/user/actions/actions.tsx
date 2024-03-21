@@ -123,7 +123,7 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
           {!is_self && (
             <>
               <Separator />
-              {logged_in && (
+              {logged_in && typeof user.is_muted !== "undefined" ? (
                 <>
                   <MenuItem
                     check_auth
@@ -136,7 +136,7 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
                   </MenuItem>
                   {element}
                 </>
-              )}
+              ) : null}
               <ReportModal
                 entity_id={user.id}
                 entity_type={"user"}

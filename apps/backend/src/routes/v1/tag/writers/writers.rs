@@ -418,7 +418,7 @@ WHERE id = $1
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be false initially.
+        // Should be `false` initially.
         let writers = serde_json::from_str::<Vec<Writer>>(&res_to_string(res).await).unwrap();
         assert!(writers.iter().all(|writer| !writer.is_following));
 
@@ -443,7 +443,7 @@ VALUES ($1, $2), ($1, $3)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be true.
+        // Should be `true`.
         let writers = serde_json::from_str::<Vec<Writer>>(&res_to_string(res).await).unwrap();
         assert!(
             writers

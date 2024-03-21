@@ -541,7 +541,7 @@ VALUES ($1, $2, NOW())
 
         assert!(res.status().is_success());
 
-        // Should be false initially.
+        // Should be `false` initially.
         let json = serde_json::from_str::<User>(&res_to_string(res).await).unwrap();
         assert!(!json.is_following);
 
@@ -567,7 +567,7 @@ VALUES ($1, $2)
 
         assert!(res.status().is_success());
 
-        // Should be true.
+        // Should be `true`.
         let json = serde_json::from_str::<User>(&res_to_string(res).await).unwrap();
         assert!(json.is_following);
 

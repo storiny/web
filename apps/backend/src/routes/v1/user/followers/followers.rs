@@ -782,7 +782,7 @@ VALUES ($1, $2)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be false initially.
+        // Should be `false` initially.
         let followers = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await).unwrap();
         assert!(followers.iter().all(|follower| !follower.is_following));
 
@@ -806,7 +806,7 @@ VALUES ($1, $2)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be true.
+        // Should be `true`.
         let followers = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await).unwrap();
         assert!(followers.iter().all(|follower| follower.is_following));
 
@@ -840,7 +840,7 @@ VALUES ($1, $2)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be false initially.
+        // Should be `false` initially.
         let followers = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await).unwrap();
         assert!(followers.iter().all(|follower| !follower.is_follower));
 
@@ -864,7 +864,7 @@ VALUES ($2, $1)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be true.
+        // Should be `true`.
         let followers = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await).unwrap();
         assert!(followers.iter().all(|follower| follower.is_follower));
 
@@ -898,7 +898,7 @@ VALUES ($1, $2)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be false initially.
+        // Should be `false` initially.
         let followers = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await).unwrap();
         assert!(followers.iter().all(|follower| !follower.is_friend));
 
@@ -947,7 +947,7 @@ WHERE
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be true.
+        // Should be `true`.
         let followers = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await).unwrap();
         assert!(followers.iter().all(|follower| follower.is_friend));
 
@@ -981,7 +981,7 @@ VALUES ($1, $2)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be false initially.
+        // Should be `false` initially.
         let followers = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await).unwrap();
         assert!(followers.iter().all(|follower| !follower.is_muted));
 
@@ -1005,7 +1005,7 @@ VALUES ($1, $2)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be true.
+        // Should be `true`.
         let followers = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await).unwrap();
         assert!(followers.iter().all(|follower| follower.is_muted));
 
@@ -1039,7 +1039,7 @@ VALUES ($1, $2)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be false initially.
+        // Should be `false` initially.
         let followers = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await).unwrap();
         assert!(followers.iter().all(|follower| !follower.is_blocked));
 
@@ -1063,7 +1063,7 @@ VALUES ($1, $2)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be true.
+        // Should be `true`.
         let followers = serde_json::from_str::<Vec<Follower>>(&res_to_string(res).await).unwrap();
         assert!(followers.iter().all(|follower| follower.is_blocked));
 
