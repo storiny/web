@@ -22,6 +22,19 @@ WITH tag_stories AS (SELECT
 						 JSON_BUILD_OBJECT('id', u.id, 'name', u.name, 'username', u.username, 'avatar_id',
 										   u.avatar_id, 'avatar_hex', u.avatar_hex, 'public_flags',
 										   u.public_flags) AS "user!: Json<User>",
+						 -- Blog
+						 CASE
+							 WHEN "s->blog_stories->blog".id IS NOT NULL
+								 THEN
+								 JSON_BUILD_OBJECT(
+										 'id', "s->blog_stories->blog".id,
+										 'name', "s->blog_stories->blog".name,
+										 'slug', "s->blog_stories->blog".slug,
+										 'domain', "s->blog_stories->blog".domain,
+										 'logo_id', "s->blog_stories->blog".logo_id,
+										 'logo_hex', "s->blog_stories->blog".logo_hex
+								 )
+						 END                               AS "blog: Json<Blog>",
 						 -- Tags
 						 (
 							 COALESCE(ARRAY_AGG(DISTINCT ("s->main_tag->tag".id, "s->main_tag->tag".name))
@@ -54,6 +67,15 @@ WITH tag_stories AS (SELECT
 											  ON "s->story_tags->tag".id = "s->story_tags".tag_id
 												  AND "s->story_tags->tag".name <> $1)
 											 ON "s->story_tags".story_id = s.id
+							 -- Join blog stories
+							 LEFT OUTER JOIN (blog_stories AS "s->blog_stories"
+							 -- Join blogs
+							 INNER JOIN blogs AS "s->blog_stories->blog"
+											  ON "s->blog_stories->blog".id = "s->blog_stories".blog_id
+							 )
+											 ON "s->blog_stories".story_id = s.id
+												 AND "s->blog_stories".accepted_at IS NOT NULL
+												 AND "s->blog_stories".deleted_at IS NULL
 					 WHERE
 						   -- Public
 						   s.visibility = 2
@@ -62,7 +84,8 @@ WITH tag_stories AS (SELECT
 					 GROUP BY
 						 s.id,
 						 u.id,
-						 s.published_at
+						 s.published_at,
+						 "s->blog_stories->blog".id
 					 ORDER BY s.published_at DESC
 					 LIMIT $2 OFFSET $3
 					)
@@ -91,6 +114,7 @@ SELECT
 	FALSE AS "is_liked!",
 	-- Joins
 	"user!: Json<User>",
+	"blog: Json<Blog>",
 	"tags!: Vec<Tag>"
 FROM
 	tag_stories;

@@ -1,0 +1,140 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "WITH blog_stories AS (WITH search_query AS (SELECT PLAINTO_TSQUERY('english', $1) AS tsq\n\t\t\t\t\t\t\t\t\t\t   )\n\t\t\t\t\t  SELECT\n\t\t\t\t\t\t  -- Story\n\t\t\t\t\t\t  s.id,\n\t\t\t\t\t\t  s.title,\n\t\t\t\t\t\t  s.slug                                                             AS \"slug!\",\n\t\t\t\t\t\t  s.description,\n\t\t\t\t\t\t  s.splash_id,\n\t\t\t\t\t\t  s.splash_hex,\n\t\t\t\t\t\t  s.category::TEXT                                                   AS \"category!\",\n\t\t\t\t\t\t  s.age_restriction,\n\t\t\t\t\t\t  s.license,\n\t\t\t\t\t\t  s.user_id,\n\t\t\t\t\t\t  -- Stats\n\t\t\t\t\t\t  s.word_count,\n\t\t\t\t\t\t  s.read_count,\n\t\t\t\t\t\t  s.like_count,\n\t\t\t\t\t\t  s.comment_count,\n\t\t\t\t\t\t  -- Timestamps\n\t\t\t\t\t\t  bs.accepted_at                                                     AS \"published_at!\",\n\t\t\t\t\t\t  s.edited_at,\n\t\t\t\t\t\t  -- Boolean flags\n\t\t\t\t\t\t  \"s->is_bookmarked\".story_id IS NOT NULL                            AS \"is_bookmarked!\",\n\t\t\t\t\t\t  \"s->is_liked\".story_id IS NOT NULL                                 AS \"is_liked!\",\n\t\t\t\t\t\t  -- User\n\t\t\t\t\t\t  JSON_BUILD_OBJECT('id', u.id, 'name', u.name, 'username', u.username, 'avatar_id',\n\t\t\t\t\t\t\t\t\t\t\tu.avatar_id, 'avatar_hex', u.avatar_hex, 'public_flags',\n\t\t\t\t\t\t\t\t\t\t\tu.public_flags)                                  AS \"user!: Json<User>\",\n\t\t\t\t\t\t  -- Tags\n\t\t\t\t\t\t  COALESCE(ARRAY_AGG(DISTINCT (\"s->story_tags->tag\".id, \"s->story_tags->tag\".name))\n\t\t\t\t\t\t\t\t   FILTER (WHERE \"s->story_tags->tag\".id IS NOT NULL), '{}') AS \"tags!: Vec<Tag>\",\n\t\t\t\t\t\t  -- Query score\n\t\t\t\t\t\t  TS_RANK_CD(s.search_vec, (SELECT tsq FROM search_query))           AS \"query_score\",\n\t\t\t\t\t\t  -- Weights\n\t\t\t\t\t\t  bs.accepted_at::DATE                                               AS \"published_at_date_only\"\n\t\t\t\t\t  FROM\n\t\t\t\t\t\t  blog_stories AS bs\n\t\t\t\t\t\t\t  -- Join story\n\t\t\t\t\t\t\t  INNER JOIN stories AS s\n\t\t\t\t\t\t\t\t\t\t ON bs.story_id = s.id\n\t\t\t\t\t\t\t  -- Join user\n\t\t\t\t\t\t\t  INNER JOIN users AS u\n\t\t\t\t\t\t\t\t\t\t ON u.id = s.user_id\n\t\t\t\t\t\t\t\t\t\t\t AND u.deleted_at IS NULL\n\t\t\t\t\t\t\t\t\t\t\t AND u.deactivated_at IS NULL\n\t\t\t\t\t\t\t  -- Join story tags\n\t\t\t\t\t\t\t  LEFT OUTER JOIN (story_tags AS \"s->story_tags\"\n\t\t\t\t\t\t\t  -- Join tags\n\t\t\t\t\t\t\t  INNER JOIN tags AS \"s->story_tags->tag\"\n\t\t\t\t\t\t\t\t\t\t\t   ON \"s->story_tags->tag\".id = \"s->story_tags\".tag_id)\n\t\t\t\t\t\t\t\t\t\t\t  ON \"s->story_tags\".story_id = s.id\n\t\t\t\t\t\t\t  -- Boolean bookmark flag\n\t\t\t\t\t\t\t  LEFT OUTER JOIN bookmarks AS \"s->is_bookmarked\"\n\t\t\t\t\t\t\t\t\t\t\t  ON \"s->is_bookmarked\".story_id = s.id\n\t\t\t\t\t\t\t\t\t\t\t\t  AND \"s->is_bookmarked\".user_id = $5\n\t\t\t\t\t\t\t\t\t\t\t\t  AND \"s->is_bookmarked\".deleted_at IS NULL\n\t\t\t\t\t\t\t  -- Boolean story like flag\n\t\t\t\t\t\t\t  LEFT OUTER JOIN story_likes AS \"s->is_liked\"\n\t\t\t\t\t\t\t\t\t\t\t  ON \"s->is_liked\".story_id = s.id\n\t\t\t\t\t\t\t\t\t\t\t\t  AND \"s->is_liked\".user_id = $5\n\t\t\t\t\t\t\t\t\t\t\t\t  AND \"s->is_liked\".deleted_at IS NULL\n\t\t\t\t\t  WHERE\n\t\t\t\t\t\t\tbs.blog_id = $2\n\t\t\t\t\t\tAND s.search_vec @@ (SELECT tsq FROM search_query)\n\t\t\t\t\t\tAND bs.accepted_at IS NOT NULL\n\t\t\t\t\t\tAND bs.deleted_at IS NULL\n\t\t\t\t\t  GROUP BY\n\t\t\t\t\t\t  s.id,\n\t\t\t\t\t\t  u.id,\n\t\t\t\t\t\t  bs.accepted_at,\n\t\t\t\t\t\t  s.read_count,\n\t\t\t\t\t\t  \"s->is_liked\".story_id,\n\t\t\t\t\t\t  \"s->is_bookmarked\".story_id\n\t\t\t\t\t  ORDER BY\n\t\t\t\t\t\t  query_score            DESC,\n\t\t\t\t\t\t  published_at_date_only DESC,\n\t\t\t\t\t\t  s.read_count           DESC\n\t\t\t\t\t  LIMIT $3 OFFSET $4\n\t\t\t\t\t )\nSELECT\n\t-- Story\n\tid,\n\ttitle,\n\t\"slug!\",\n\tdescription,\n\tsplash_id,\n\tsplash_hex,\n\t\"category!\",\n\tage_restriction,\n\tlicense,\n\tuser_id,\n\t-- Stats\n\tword_count,\n\tread_count,\n\tlike_count,\n\tcomment_count,\n\t-- Timestamps\n\t\"published_at!\",\n\tedited_at,\n\t-- Boolean flags\n\t\"is_bookmarked!\",\n\t\"is_liked!\",\n\t-- Joins\n\t\"user!: Json<User>\",\n\t\"tags!: Vec<Tag>\"\nFROM\n\tblog_stories;\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
+        "name": "title",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "slug!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "splash_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 5,
+        "name": "splash_hex",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "category!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "age_restriction",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 8,
+        "name": "license",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 9,
+        "name": "user_id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 10,
+        "name": "word_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 11,
+        "name": "read_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 12,
+        "name": "like_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 13,
+        "name": "comment_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 14,
+        "name": "published_at!",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 15,
+        "name": "edited_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 16,
+        "name": "is_bookmarked!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 17,
+        "name": "is_liked!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 18,
+        "name": "user!: Json<User>",
+        "type_info": "Json"
+      },
+      {
+        "ordinal": 19,
+        "name": "tags!: Vec<Tag>",
+        "type_info": "RecordArray"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Int8",
+        "Int8",
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      null,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "51597f9fe974d1704445134747b8fd28f19f2aba5fe76ea1f0c49898aaee98b9"
+}

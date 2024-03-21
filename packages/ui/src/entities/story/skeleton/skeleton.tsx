@@ -37,7 +37,7 @@ const StorySkeleton = (props: StorySkeletonProps): React.ReactElement => {
           <div className={clsx(css["flex-col"], story_styles.meta)}>
             <Skeleton className={story_styles.title} height={24} width={256} />
             <div
-              className={clsx(css["flex-center"], story_styles.persona)}
+              className={clsx(css.flex, story_styles.persona)}
               style={{ paddingBlock: is_mobile ? "10px" : "6px" }}
             >
               <Skeleton height={24} shape={"circular"} width={24} />
