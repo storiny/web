@@ -27,7 +27,8 @@ export const DOC_STATUS = {
   lifetime_exceeded /* */: 12,
   // The realm is having too many members.
   overloaded /*        */: 13,
-  // The story was not found while joining the realm.
+  // The story was not found while joining the realm or the user is missing
+  // permission.
   join_missing_story /**/: 14,
   // The join request was rejected because the realm is full.
   join_realm_full /*   */: 15,
