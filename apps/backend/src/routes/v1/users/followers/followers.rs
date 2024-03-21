@@ -66,9 +66,9 @@ struct Follower {
     is_blocked: bool,
 }
 
-#[get("/v1/user/{user_id}/followers")]
+#[get("/v1/users/{user_id}/followers")]
 #[tracing::instrument(
-    name = "GET /v1/user/{user_id}/followers",
+    name = "GET /v1/users/{user_id}/followers",
     skip_all,
     fields(
         current_user_id = tracing::field::Empty,
@@ -378,7 +378,7 @@ VALUES ($2, $1), ($3, $1)
         assert_eq!(insert_result.rows_affected(), 2);
 
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/followers", 1))
+            .uri(&format!("/v1/users/{}/followers", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -427,7 +427,7 @@ VALUES ($1, $2)
         .await?;
 
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/followers?sort=old", 1))
+            .uri(&format!("/v1/users/{}/followers?sort=old", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -470,7 +470,7 @@ VALUES ($1, $2)
         .await?;
 
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/followers?sort=recent", 1))
+            .uri(&format!("/v1/users/{}/followers?sort=recent", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -513,7 +513,7 @@ VALUES ($1, $2)
         .await?;
 
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/followers?sort=popular", 1))
+            .uri(&format!("/v1/users/{}/followers?sort=popular", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -548,7 +548,11 @@ VALUES ($2, $1), ($3, $1)
         assert_eq!(insert_result.rows_affected(), 2);
 
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/followers?query={}", 1, encode("two")))
+            .uri(&format!(
+                "/v1/users/{}/followers?query={}",
+                1,
+                encode("two")
+            ))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -584,7 +588,7 @@ VALUES ($2, $1), ($3, $1)
 
         // Should return all the followers initially.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/followers", 1))
+            .uri(&format!("/v1/users/{}/followers", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -612,7 +616,7 @@ WHERE follower_id = $1 AND followed_id = $2
 
         // Should return only one follower.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/followers", 1))
+            .uri(&format!("/v1/users/{}/followers", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -640,7 +644,7 @@ WHERE follower_id = $1 AND followed_id = $2
 
         // Should return all the followers again.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/followers", 1))
+            .uri(&format!("/v1/users/{}/followers", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -676,7 +680,7 @@ VALUES ($2, $1), ($3, $1)
 
         // Should return all the followers initially.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/followers", 1))
+            .uri(&format!("/v1/users/{}/followers", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -703,7 +707,7 @@ WHERE id = $1
 
         // Should return only one follower.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/followers", 1))
+            .uri(&format!("/v1/users/{}/followers", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -741,7 +745,7 @@ VALUES ($2, $1), ($3, $1)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/followers", 1))
+            .uri(&format!("/v1/users/{}/followers", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -778,7 +782,7 @@ VALUES ($1, $2)
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/followers", 3))
+            .uri(&format!("/v1/users/{}/followers", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -802,7 +806,7 @@ VALUES ($1, $2)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/followers", 3))
+            .uri(&format!("/v1/users/{}/followers", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -836,7 +840,7 @@ VALUES ($1, $2)
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/followers", 3))
+            .uri(&format!("/v1/users/{}/followers", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -860,7 +864,7 @@ VALUES ($2, $1)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/followers", 3))
+            .uri(&format!("/v1/users/{}/followers", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -894,7 +898,7 @@ VALUES ($1, $2)
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/followers", 3))
+            .uri(&format!("/v1/users/{}/followers", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -918,7 +922,7 @@ VALUES ($1, $2)
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/followers", 3))
+            .uri(&format!("/v1/users/{}/followers", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -943,7 +947,7 @@ WHERE
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/followers", 3))
+            .uri(&format!("/v1/users/{}/followers", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -977,7 +981,7 @@ VALUES ($1, $2)
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/followers", 3))
+            .uri(&format!("/v1/users/{}/followers", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1001,7 +1005,7 @@ VALUES ($1, $2)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/followers", 3))
+            .uri(&format!("/v1/users/{}/followers", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1035,7 +1039,7 @@ VALUES ($1, $2)
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/followers", 3))
+            .uri(&format!("/v1/users/{}/followers", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1059,7 +1063,7 @@ VALUES ($1, $2)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/followers", 3))
+            .uri(&format!("/v1/users/{}/followers", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1102,7 +1106,7 @@ VALUES ($1, $2)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/followers?sort=old", 1))
+            .uri(&format!("/v1/users/{}/followers?sort=old", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1148,7 +1152,7 @@ VALUES ($1, $2)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/followers?sort=recent", 1))
+            .uri(&format!("/v1/users/{}/followers?sort=recent", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1194,7 +1198,7 @@ VALUES ($1, $2)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/followers?sort=popular", 1))
+            .uri(&format!("/v1/users/{}/followers?sort=popular", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1230,7 +1234,11 @@ VALUES ($2, $1), ($3, $1)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/followers?query={}", 1, encode("two")))
+            .uri(&format!(
+                "/v1/users/{}/followers?query={}",
+                1,
+                encode("two")
+            ))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1266,7 +1274,7 @@ VALUES ($1, $2)
         // Should return followers initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/followers", 2))
+            .uri(&format!("/v1/users/{}/followers", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1292,7 +1300,7 @@ WHERE id = $1
         // Should not return the private follower.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/followers", 2))
+            .uri(&format!("/v1/users/{}/followers", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1318,7 +1326,7 @@ VALUES ($1, $2, NOW())
         // Should return the private follower.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/followers", 2))
+            .uri(&format!("/v1/users/{}/followers", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1355,7 +1363,7 @@ VALUES ($2, $1), ($3, $1)
         // Should return all the followers initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/followers", 1))
+            .uri(&format!("/v1/users/{}/followers", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1384,7 +1392,7 @@ WHERE follower_id = $1 AND followed_id = $2
         // Should return only one follower.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/followers", 1))
+            .uri(&format!("/v1/users/{}/followers", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1413,7 +1421,7 @@ WHERE follower_id = $1 AND followed_id = $2
         // Should return all the followers again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/followers", 1))
+            .uri(&format!("/v1/users/{}/followers", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 

@@ -2,7 +2,7 @@ import { User } from "@storiny/types";
 
 import { api_slice } from "~/redux/features/api/slice";
 
-const SEGMENT = (tag_name: string): string => `tag/${tag_name}/writers`;
+const SEGMENT = (tag_name: string): string => `tags/${tag_name}/writers`;
 
 export type GetTagWritersResponse = User[];
 

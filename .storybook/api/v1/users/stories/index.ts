@@ -5,15 +5,18 @@ const { worker, rest } = window.msw;
 
 worker.use(
   rest.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/tag/:tag_name/stories`,
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/users/:user_id/stories`,
     (req, res, ctx) =>
       res(
         ctx.delay(1200),
         ctx.json(
-          MOCK_STORIES.slice(0, 10).map((story) => ({ ...story, id: nanoid() }))
-        )
-      )
-  )
+          MOCK_STORIES.slice(0, 10).map((story) => ({
+            ...story,
+            id: nanoid(),
+          })),
+        ),
+      ),
+  ),
 );
 
 export {};

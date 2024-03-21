@@ -77,27 +77,6 @@ async fn get(
 
     let page = query.page.unwrap_or(1) - 1;
 
-    let pg_pool = &data.db_pool;
-    let mut txn = pg_pool.begin().await?;
-
-    let result = sqlx::query(
-        r#"
-SELECT EXISTS (
-    SELECT FROM blogs
-    WHERE
-        id = $1
-        AND deleted_at IS NULL
-)
-"#,
-    )
-    .bind(blog_id)
-    .fetch_one(&mut *txn)
-    .await?;
-
-    if !result.get::<bool, _>("exists") {
-        return Err(AppError::from("Blog does not exist"));
-    }
-
     let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
         r#"
 WITH blog_writers AS (
@@ -214,8 +193,6 @@ FROM blog_writers
     }
 
     let result = db_query.fetch_all(&data.db_pool).await?;
-
-    txn.commit().await?;
 
     Ok(HttpResponse::Ok().json(result))
 }

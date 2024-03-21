@@ -96,9 +96,9 @@ struct Story {
     is_bookmarked: bool,
 }
 
-#[get("/v1/user/{user_id}/stories")]
+#[get("/v1/users/{user_id}/stories")]
 #[tracing::instrument(
-    name = "GET /v1/user/{user_id}/stories",
+    name = "GET /v1/users/{user_id}/stories",
     skip_all,
     fields(
         current_user_id = tracing::field::Empty,
@@ -133,7 +133,7 @@ async fn get(
         if has_search_query {
             let result = sqlx::query_file_as!(
                 Story,
-                "queries/user/stories/logged_in_with_query.sql",
+                "queries/users/stories/logged_in_with_query.sql",
                 search_query,
                 user_id,
                 10 as i16,
@@ -147,7 +147,7 @@ async fn get(
         } else if sort == "recent" {
             let result = sqlx::query_file_as!(
                 Story,
-                "queries/user/stories/logged_in_recent.sql",
+                "queries/users/stories/logged_in_recent.sql",
                 user_id,
                 10 as i16,
                 (page * 10) as i16,
@@ -160,7 +160,7 @@ async fn get(
         } else if sort == "old" {
             let result = sqlx::query_file_as!(
                 Story,
-                "queries/user/stories/logged_in_old.sql",
+                "queries/users/stories/logged_in_old.sql",
                 user_id,
                 10 as i16,
                 (page * 10) as i16,
@@ -173,7 +173,7 @@ async fn get(
         } else {
             let result = sqlx::query_file_as!(
                 Story,
-                "queries/user/stories/logged_in_popular.sql",
+                "queries/users/stories/logged_in_popular.sql",
                 user_id,
                 10 as i16,
                 (page * 10) as i16,
@@ -187,7 +187,7 @@ async fn get(
     } else if has_search_query {
         let result = sqlx::query_file_as!(
             Story,
-            "queries/user/stories/with_query.sql",
+            "queries/users/stories/with_query.sql",
             search_query,
             user_id,
             10 as i16,
@@ -200,7 +200,7 @@ async fn get(
     } else if sort == "recent" {
         let result = sqlx::query_file_as!(
             Story,
-            "queries/user/stories/recent.sql",
+            "queries/users/stories/recent.sql",
             user_id,
             10 as i16,
             (page * 10) as i16,
@@ -212,7 +212,7 @@ async fn get(
     } else if sort == "old" {
         let result = sqlx::query_file_as!(
             Story,
-            "queries/user/stories/old.sql",
+            "queries/users/stories/old.sql",
             user_id,
             10 as i16,
             (page * 10) as i16,
@@ -224,7 +224,7 @@ async fn get(
     } else {
         let result = sqlx::query_file_as!(
             Story,
-            "queries/user/stories/popular.sql",
+            "queries/users/stories/popular.sql",
             user_id,
             10 as i16,
             (page * 10) as i16,
@@ -300,7 +300,7 @@ mod tests {
         let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/stories", 1))
+            .uri(&format!("/v1/users/{}/stories", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -327,7 +327,7 @@ mod tests {
         let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/stories?sort=recent", 1))
+            .uri(&format!("/v1/users/{}/stories?sort=recent", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -350,7 +350,7 @@ mod tests {
         let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/stories?sort=old", 1))
+            .uri(&format!("/v1/users/{}/stories?sort=old", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -373,7 +373,7 @@ mod tests {
         let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/stories?sort=popular", 1))
+            .uri(&format!("/v1/users/{}/stories?sort=popular", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -396,7 +396,7 @@ mod tests {
         let app = init_app_for_test(get, pool, false, false, None).await.0;
 
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/stories?query={}", 1, encode("two")))
+            .uri(&format!("/v1/users/{}/stories?query={}", 1, encode("two")))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -423,7 +423,7 @@ mod tests {
 
         // Should return all the stories initially.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/stories", 1))
+            .uri(&format!("/v1/users/{}/stories", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -452,7 +452,7 @@ WHERE id = $1
 
         // Should return only two stories.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/stories", 1))
+            .uri(&format!("/v1/users/{}/stories", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -481,7 +481,7 @@ WHERE id = $1
 
         // Should return all the stories again.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/stories", 1))
+            .uri(&format!("/v1/users/{}/stories", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -504,7 +504,7 @@ WHERE id = $1
 
         // Should return all the stories initially.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/stories", 1))
+            .uri(&format!("/v1/users/{}/stories", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -531,7 +531,7 @@ WHERE id = $1
 
         // Should return only two stories.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/stories", 1))
+            .uri(&format!("/v1/users/{}/stories", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -558,7 +558,7 @@ WHERE id = $1
 
         // Should return all the stories again.
         let req = test::TestRequest::get()
-            .uri(&format!("/v1/user/{}/stories", 1))
+            .uri(&format!("/v1/users/{}/stories", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -580,7 +580,7 @@ WHERE id = $1
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/stories", 1))
+            .uri(&format!("/v1/users/{}/stories", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -602,7 +602,7 @@ WHERE id = $1
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/stories?sort=recent", 1))
+            .uri(&format!("/v1/users/{}/stories?sort=recent", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -622,7 +622,7 @@ WHERE id = $1
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/stories?sort=old", 1))
+            .uri(&format!("/v1/users/{}/stories?sort=old", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -644,7 +644,7 @@ WHERE id = $1
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/stories?sort=popular", 1))
+            .uri(&format!("/v1/users/{}/stories?sort=popular", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -664,7 +664,7 @@ WHERE id = $1
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/stories?query={}", 1, encode("two")))
+            .uri(&format!("/v1/users/{}/stories?query={}", 1, encode("two")))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -689,7 +689,7 @@ WHERE id = $1
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/stories?sort=recent", 1))
+            .uri(&format!("/v1/users/{}/stories?sort=recent", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -715,7 +715,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/stories?sort=recent", 1))
+            .uri(&format!("/v1/users/{}/stories?sort=recent", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -735,7 +735,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/stories?sort=recent", 1))
+            .uri(&format!("/v1/users/{}/stories?sort=recent", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -761,7 +761,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/stories?sort=recent", 1))
+            .uri(&format!("/v1/users/{}/stories?sort=recent", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -783,7 +783,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/stories?sort=old", 1))
+            .uri(&format!("/v1/users/{}/stories?sort=old", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -809,7 +809,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/stories?sort=old", 1))
+            .uri(&format!("/v1/users/{}/stories?sort=old", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -829,7 +829,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/stories?sort=old", 1))
+            .uri(&format!("/v1/users/{}/stories?sort=old", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -855,7 +855,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/stories?sort=old", 1))
+            .uri(&format!("/v1/users/{}/stories?sort=old", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -877,7 +877,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/stories?sort=popular", 1))
+            .uri(&format!("/v1/users/{}/stories?sort=popular", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -903,7 +903,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/stories?sort=popular", 1))
+            .uri(&format!("/v1/users/{}/stories?sort=popular", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -923,7 +923,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/stories?sort=popular", 1))
+            .uri(&format!("/v1/users/{}/stories?sort=popular", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -949,7 +949,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/stories?sort=popular", 1))
+            .uri(&format!("/v1/users/{}/stories?sort=popular", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -971,7 +971,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/stories?query={}", 1, encode("two")))
+            .uri(&format!("/v1/users/{}/stories?query={}", 1, encode("two")))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -997,7 +997,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/stories?query={}", 1, encode("two")))
+            .uri(&format!("/v1/users/{}/stories?query={}", 1, encode("two")))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1017,7 +1017,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/stories?query={}", 1, encode("two")))
+            .uri(&format!("/v1/users/{}/stories?query={}", 1, encode("two")))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1043,7 +1043,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/stories?query={}", 1, encode("two")))
+            .uri(&format!("/v1/users/{}/stories?query={}", 1, encode("two")))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1066,7 +1066,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
         // Should return all the stories initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/stories", 1))
+            .uri(&format!("/v1/users/{}/stories", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1096,7 +1096,7 @@ WHERE id = $1
         // Should return only two stories.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/stories", 1))
+            .uri(&format!("/v1/users/{}/stories", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1126,7 +1126,7 @@ WHERE id = $1
         // Should return all the stories again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/stories", 1))
+            .uri(&format!("/v1/users/{}/stories", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1150,7 +1150,7 @@ WHERE id = $1
         // Should return all the stories initially.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/stories", 1))
+            .uri(&format!("/v1/users/{}/stories", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1178,7 +1178,7 @@ WHERE id = $1
         // Should return only two stories.
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/user/{}/stories", 1))
+            .uri(&format!("/v1/users/{}/stories", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -1206,7 +1206,7 @@ WHERE id = $1
         // Should return all the stories again.
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/user/{}/stories", 1))
+            .uri(&format!("/v1/users/{}/stories", 1))
             .to_request();
         let res = test::call_service(&app, req).await;
 

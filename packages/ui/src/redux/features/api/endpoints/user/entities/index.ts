@@ -4,7 +4,7 @@ import { api_slice } from "~/redux/features/api/slice";
 
 const ITEMS_PER_PAGE = 10;
 const SEGMENT = (user_id: string, entity_type: GetUserEntityType): string =>
-  `user/${user_id}/${entity_type}`;
+  `users/${user_id}/${entity_type}`;
 
 export type GetUserFollowersResponse = User[];
 export type GetUserEntityType = "followers" | "following" | "friends";
