@@ -109,9 +109,9 @@ struct Blog {
 ///
 /// * `has_plus_features` - The plus features flag.
 fn build_plus_guard<T>(has_plus_features: bool) -> impl Fn(Option<T>) -> Option<T> {
-    return move |value| {
+    move |value| {
         if has_plus_features { value } else { None }
-    };
+    }
 }
 
 /// Returns the blog object.

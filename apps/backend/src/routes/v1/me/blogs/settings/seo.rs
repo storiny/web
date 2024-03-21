@@ -94,7 +94,7 @@ WHERE
     .bind(blog_id)
     .bind(&payload.seo_title)
     .bind(&payload.seo_description)
-    .bind(&payload.preview_image)
+    .bind(payload.preview_image)
     .execute(&data.db_pool)
     .await
     {

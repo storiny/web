@@ -111,7 +111,7 @@ FROM (
                 active_months: item
                     .active_months
                     .iter()
-                    .map(|month| month.clone() as u32)
+                    .map(|month| *month as u32)
                     .collect(),
             })
             .collect(),
