@@ -81,7 +81,7 @@ WHERE
     )
     .bind(user_id)
     .bind(blog_id)
-    .bind(&payload.is_homepage_large_layout)
+    .bind(payload.is_homepage_large_layout)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

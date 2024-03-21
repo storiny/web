@@ -366,7 +366,7 @@ WHERE id = $1
         let json = serde_json::from_str::<Vec<EditorRequest>>(&res_to_string(res).await).unwrap();
 
         assert_eq!(json.len(), 1);
-        assert!(json.iter().find(|item| item.id == 7_i64).is_none());
+        assert!(!json.iter().any(|item| item.id == 7_i64));
 
         // Recover the request.
         let result = sqlx::query(

@@ -179,7 +179,7 @@ VALUES
         query_builder.push(",");
         query_builder.push_bind(&item.target);
         query_builder.push(",");
-        query_builder.push_bind(&item.icon);
+        query_builder.push_bind(item.icon);
         query_builder.push(",");
         query_builder.push_bind((index + 1) as i16);
         query_builder.push(",");

@@ -95,7 +95,7 @@ WHERE
     .bind(user_id)
     .bind(blog_id)
     .bind(&payload.default_theme)
-    .bind(&payload.force)
+    .bind(payload.force)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

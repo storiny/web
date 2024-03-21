@@ -273,7 +273,7 @@ WHERE id = $1
         let json = serde_json::from_str::<Vec<Writer>>(&res_to_string(res).await).unwrap();
 
         assert_eq!(json.len(), 1);
-        assert!(json.iter().find(|item| item.id == 4_i64).is_none());
+        assert!(!json.iter().any(|item| item.id == 4_i64));
 
         // Recover the writer.
         let result = sqlx::query(
@@ -346,7 +346,7 @@ WHERE id = $1
         let json = serde_json::from_str::<Vec<Writer>>(&res_to_string(res).await).unwrap();
 
         assert_eq!(json.len(), 1);
-        assert!(json.iter().find(|item| item.id == 4_i64).is_none());
+        assert!(!json.iter().any(|item| item.id == 4_i64));
 
         // Activate the writer.
         let result = sqlx::query(
@@ -535,7 +535,7 @@ WHERE id = $1
         let json = serde_json::from_str::<Vec<Writer>>(&res_to_string(res).await).unwrap();
 
         assert_eq!(json.len(), 1);
-        assert!(json.iter().find(|item| item.id == 4_i64).is_none());
+        assert!(!json.iter().any(|item| item.id == 4_i64));
 
         // Recover the writer.
         let result = sqlx::query(
@@ -613,7 +613,7 @@ WHERE id = $1
         let json = serde_json::from_str::<Vec<Writer>>(&res_to_string(res).await).unwrap();
 
         assert_eq!(json.len(), 1);
-        assert!(json.iter().find(|item| item.id == 4_i64).is_none());
+        assert!(!json.iter().any(|item| item.id == 4_i64));
 
         // Activate the writer.
         let result = sqlx::query(

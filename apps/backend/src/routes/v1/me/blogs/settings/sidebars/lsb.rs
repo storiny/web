@@ -98,13 +98,11 @@ async fn patch(
         let mut form_errors = Vec::new();
 
         items.iter().enumerate().for_each(|(index, item)| {
-            if item.target != "/" {
-                if Url::parse(&item.target).is_err() {
-                    form_errors.push((
-                        format!("items.{index}.target"),
-                        "Invalid target URL".to_string(),
-                    ));
-                }
+            if item.target != "/" && Url::parse(&item.target).is_err() {
+                form_errors.push((
+                    format!("items.{index}.target"),
+                    "Invalid target URL".to_string(),
+                ));
             }
         });
 
@@ -186,7 +184,7 @@ VALUES
         query_builder.push(",");
         query_builder.push_bind(&item.target);
         query_builder.push(",");
-        query_builder.push_bind(&item.icon);
+        query_builder.push_bind(item.icon);
         query_builder.push(",");
         query_builder.push_bind((index + 1) as i16);
         query_builder.push(",");

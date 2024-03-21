@@ -108,33 +108,27 @@ RETURNING
 
         result.iter().for_each(|row| {
             if let Some(font_key) = row.get::<Option<Uuid>, _>("font_primary") {
-                if let Some(key) = ObjectIdentifier::builder()
+                if let Ok(key) = ObjectIdentifier::builder()
                     .set_key(Some(font_key.to_string()))
                     .build()
-                    // This will never error as the key is always set.
-                    .ok()
                 {
                     font_keys.push(key);
                 }
             }
 
             if let Some(font_key) = row.get::<Option<Uuid>, _>("font_secondary") {
-                if let Some(key) = ObjectIdentifier::builder()
+                if let Ok(key) = ObjectIdentifier::builder()
                     .set_key(Some(font_key.to_string()))
                     .build()
-                    // This will never error as the key is always set.
-                    .ok()
                 {
                     font_keys.push(key);
                 }
             }
 
             if let Some(font_key) = row.get::<Option<Uuid>, _>("font_code") {
-                if let Some(key) = ObjectIdentifier::builder()
+                if let Ok(key) = ObjectIdentifier::builder()
                     .set_key(Some(font_key.to_string()))
                     .build()
-                    // This will never error as the key is always set.
-                    .ok()
                 {
                     font_keys.push(key);
                 }

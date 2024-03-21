@@ -81,7 +81,7 @@ WHERE
     )
     .bind(user_id)
     .bind(blog_id)
-    .bind(&payload.is_story_minimal_layout)
+    .bind(payload.is_story_minimal_layout)
     .execute(&data.db_pool)
     .await?
     .rows_affected()

@@ -82,7 +82,7 @@ WHERE
     )
     .bind(user_id)
     .bind(blog_id)
-    .bind(&payload.hidden)
+    .bind(payload.hidden)
     .execute(&data.db_pool)
     .await?
     .rows_affected()
