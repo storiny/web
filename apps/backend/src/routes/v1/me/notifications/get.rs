@@ -299,7 +299,7 @@ VALUES ($1, $2)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be true initially as users are subscribed to all the notifications by default.
+        // Should be `true` initially as users are subscribed to all the notifications by default.
         let json = serde_json::from_str::<Vec<Notification>>(&res_to_string(res).await).unwrap();
         assert!(json.iter().all(|notification| notification.is_subscribed));
 

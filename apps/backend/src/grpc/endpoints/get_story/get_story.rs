@@ -1516,7 +1516,7 @@ WHERE id = $1
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.is_liked);
 
                     // Like the story.
@@ -1543,7 +1543,7 @@ VALUES ($1, $2)
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.is_liked);
                 }),
             )
@@ -1569,7 +1569,7 @@ VALUES ($1, $2)
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.is_bookmarked);
 
                     // Bookmark the story.
@@ -1596,7 +1596,7 @@ VALUES ($1, $2)
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.is_bookmarked);
                 }),
             )
@@ -1622,7 +1622,7 @@ VALUES ($1, $2)
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.user.unwrap().is_following);
 
                     // Follow the user.
@@ -1649,7 +1649,7 @@ VALUES ($1, $2)
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.user.unwrap().is_following);
                 }),
             )
@@ -1675,7 +1675,7 @@ VALUES ($1, $2)
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.user.unwrap().is_follower);
 
                     // Add the user as follower.
@@ -1702,7 +1702,7 @@ VALUES ($2, $1)
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.user.unwrap().is_follower);
                 }),
             )
@@ -1728,7 +1728,7 @@ VALUES ($2, $1)
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.user.unwrap().is_friend);
 
                     // Send a friend request to the user.
@@ -1782,7 +1782,7 @@ WHERE transmitter_id = $1
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.user.unwrap().is_friend);
                 }),
             )
@@ -1808,7 +1808,7 @@ WHERE transmitter_id = $1
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.user.unwrap().is_blocked_by_user);
 
                     // Get blocked by the user.
@@ -1835,7 +1835,7 @@ VALUES ($2, $1)
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.user.unwrap().is_blocked_by_user);
                 }),
             )
@@ -1861,7 +1861,7 @@ VALUES ($2, $1)
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.user.unwrap().is_self);
 
                     // Update the writer of the story.
@@ -1889,7 +1889,7 @@ WHERE id = $2
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.user.unwrap().is_self);
                 }),
             )
@@ -2148,7 +2148,7 @@ WHERE slug = $1
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.is_liked);
 
                     // Like the story.
@@ -2175,7 +2175,7 @@ VALUES ($1, $2)
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.is_liked);
                 }),
             )
@@ -2201,7 +2201,7 @@ VALUES ($1, $2)
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.is_bookmarked);
 
                     // Bookmark the story.
@@ -2228,7 +2228,7 @@ VALUES ($1, $2)
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.is_bookmarked);
                 }),
             )
@@ -2254,7 +2254,7 @@ VALUES ($1, $2)
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.user.unwrap().is_following);
 
                     // Follow the user.
@@ -2281,7 +2281,7 @@ VALUES ($1, $2)
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.user.unwrap().is_following);
                 }),
             )
@@ -2307,7 +2307,7 @@ VALUES ($1, $2)
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.user.unwrap().is_follower);
 
                     // Add the user as follower.
@@ -2334,7 +2334,7 @@ VALUES ($2, $1)
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.user.unwrap().is_follower);
                 }),
             )
@@ -2360,7 +2360,7 @@ VALUES ($2, $1)
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.user.unwrap().is_friend);
 
                     // Send a friend request to the user.
@@ -2414,7 +2414,7 @@ WHERE transmitter_id = $1
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.user.unwrap().is_friend);
                 }),
             )
@@ -2440,7 +2440,7 @@ WHERE transmitter_id = $1
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.user.unwrap().is_blocked_by_user);
 
                     // Get blocked by the user.
@@ -2467,7 +2467,7 @@ VALUES ($2, $1)
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.user.unwrap().is_blocked_by_user);
                 }),
             )
@@ -2493,7 +2493,7 @@ VALUES ($2, $1)
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.user.unwrap().is_self);
 
                     // Update the writer of the story.
@@ -2521,7 +2521,7 @@ WHERE id = $2
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.user.unwrap().is_self);
                 }),
             )

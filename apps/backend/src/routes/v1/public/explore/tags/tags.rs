@@ -344,7 +344,7 @@ mod tests {
 
         let tags = serde_json::from_str::<Vec<Tag>>(&res_to_string(res).await).unwrap();
 
-        // Should be false initially.
+        // Should be `false` initially.
         assert_eq!(tags.len(), 2);
         assert!(tags.iter().all(|tag| !tag.is_following));
 
@@ -371,7 +371,7 @@ VALUES ($2, $1), ($3, $1)
 
         let tags = serde_json::from_str::<Vec<Tag>>(&res_to_string(res).await).unwrap();
 
-        // Should be true.
+        // Should be `true`.
         assert_eq!(tags.len(), 2);
         assert!(tags.iter().all(|tag| tag.is_following));
 

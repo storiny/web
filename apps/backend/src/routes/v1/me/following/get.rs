@@ -310,7 +310,7 @@ VALUES ($1, $2)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be false initially.
+        // Should be `false` initially.
         let json = serde_json::from_str::<Vec<Following>>(&res_to_string(res).await).unwrap();
         let followed_user = &json[0];
         assert!(!followed_user.is_follower);
@@ -335,7 +335,7 @@ VALUES ($2, $1)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be true.
+        // Should be `true`.
         let json = serde_json::from_str::<Vec<Following>>(&res_to_string(res).await).unwrap();
         let followed_user = &json[0];
         assert!(followed_user.is_follower);
@@ -368,7 +368,7 @@ VALUES ($1, $2)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be false initially.
+        // Should be `false` initially.
         let json = serde_json::from_str::<Vec<Following>>(&res_to_string(res).await).unwrap();
         let followed_user = &json[0];
         assert!(!followed_user.is_friend);
@@ -418,7 +418,7 @@ WHERE transmitter_id = $1
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be true.
+        // Should be `true`.
         let json = serde_json::from_str::<Vec<Following>>(&res_to_string(res).await).unwrap();
         let followed_user = &json[0];
         assert!(followed_user.is_friend);
@@ -451,7 +451,7 @@ VALUES ($1, $2)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be false initially.
+        // Should be `false` initially.
         let json = serde_json::from_str::<Vec<Following>>(&res_to_string(res).await).unwrap();
         let followed_user = &json[0];
         assert!(!followed_user.is_muted);
@@ -476,7 +476,7 @@ VALUES ($1, $2)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be true.
+        // Should be `true`.
         let json = serde_json::from_str::<Vec<Following>>(&res_to_string(res).await).unwrap();
         let followed_user = &json[0];
         assert!(followed_user.is_muted);

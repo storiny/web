@@ -583,7 +583,7 @@ WHERE id = $1
                     .unwrap()
                     .into_inner();
 
-                // Should be false initially.
+                // Should be `false` initially.
                 assert!(!response.is_owner);
 
                 // Change the owner of the blog.
@@ -611,7 +611,7 @@ WHERE id = $2
                     .unwrap()
                     .into_inner();
 
-                // Should be true.
+                // Should be `true`.
                 assert!(response.is_owner);
             }),
         )
@@ -633,7 +633,7 @@ WHERE id = $2
                     .unwrap()
                     .into_inner();
 
-                // Should be false initially.
+                // Should be `false` initially.
                 assert!(!response.is_editor);
 
                 // Receive an editor invite.
@@ -687,7 +687,7 @@ WHERE user_id = $1
                     .unwrap()
                     .into_inner();
 
-                // Should be true.
+                // Should be `true`.
                 assert!(response.is_editor);
             }),
         )
@@ -709,7 +709,7 @@ WHERE user_id = $1
                     .unwrap()
                     .into_inner();
 
-                // Should be false initially.
+                // Should be `false` initially.
                 assert!(!response.is_writer);
 
                 // Receive a writer invite.
@@ -764,7 +764,7 @@ WHERE receiver_id = $1
                     .unwrap()
                     .into_inner();
 
-                // Should be true.
+                // Should be `true`.
                 assert!(response.is_writer);
             }),
         )
@@ -786,7 +786,7 @@ WHERE receiver_id = $1
                     .unwrap()
                     .into_inner();
 
-                // Should be false initially.
+                // Should be `false` initially.
                 assert!(!response.is_following);
 
                 // Follow the blog.
@@ -813,7 +813,7 @@ VALUES ($1, $2)
                     .unwrap()
                     .into_inner();
 
-                // Should be true.
+                // Should be `true`.
                 assert!(response.is_following);
             }),
         )
@@ -904,7 +904,7 @@ WHERE id = $1
                     .unwrap()
                     .into_inner();
 
-                // Should be false initially.
+                // Should be `false` initially.
                 assert!(!response.is_owner);
 
                 // Change the owner of the blog.
@@ -932,7 +932,7 @@ WHERE id = $2
                     .unwrap()
                     .into_inner();
 
-                // Should be true.
+                // Should be `true`.
                 assert!(response.is_owner);
             }),
         )
@@ -954,7 +954,7 @@ WHERE id = $2
                     .unwrap()
                     .into_inner();
 
-                // Should be false initially.
+                // Should be `false` initially.
                 assert!(!response.is_editor);
 
                 // Receive an editor invite.
@@ -1008,7 +1008,7 @@ WHERE user_id = $1
                     .unwrap()
                     .into_inner();
 
-                // Should be true.
+                // Should be `true`.
                 assert!(response.is_editor);
             }),
         )
@@ -1030,7 +1030,7 @@ WHERE user_id = $1
                     .unwrap()
                     .into_inner();
 
-                // Should be false initially.
+                // Should be `false` initially.
                 assert!(!response.is_writer);
 
                 // Receive a writer invite.
@@ -1085,7 +1085,7 @@ WHERE receiver_id = $1
                     .unwrap()
                     .into_inner();
 
-                // Should be true.
+                // Should be `true`.
                 assert!(response.is_writer);
             }),
         )
@@ -1107,7 +1107,7 @@ WHERE receiver_id = $1
                     .unwrap()
                     .into_inner();
 
-                // Should be false initially.
+                // Should be `false` initially.
                 assert!(!response.is_following);
 
                 // Follow the blog.
@@ -1134,7 +1134,7 @@ VALUES ($1, $2)
                     .unwrap()
                     .into_inner();
 
-                // Should be true.
+                // Should be `true`.
                 assert!(response.is_following);
             }),
         )
