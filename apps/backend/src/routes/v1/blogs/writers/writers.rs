@@ -17,7 +17,6 @@ use sqlx::{
     FromRow,
     Postgres,
     QueryBuilder,
-    Row,
 };
 use uuid::Uuid;
 use validator::Validate;
