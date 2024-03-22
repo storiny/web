@@ -300,7 +300,7 @@ WHERE id = $1
         test_grpc_service(
             pool,
             true,
-            Box::new(|mut client, pool, _, user_id| async move {
+            Box::new(|mut client, pool, _, _user_id| async move {
                 let response = client
                     .get_story_metadata(Request::new(GetStoryMetadataRequest {
                         id_or_slug: 3_i64.to_string(),
@@ -861,7 +861,7 @@ WHERE id = $1
         test_grpc_service(
             pool,
             true,
-            Box::new(|mut client, pool, _, user_id| async move {
+            Box::new(|mut client, pool, _, _user_id| async move {
                 let response = client
                     .get_story_metadata(Request::new(GetStoryMetadataRequest {
                         id_or_slug: "some-story".to_string(),
