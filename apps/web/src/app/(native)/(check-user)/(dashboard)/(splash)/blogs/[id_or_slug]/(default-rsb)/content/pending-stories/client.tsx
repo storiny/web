@@ -274,6 +274,7 @@ const ContentPendingStoriesClient = (
           load_more={load_more}
           stories={items}
           story_props={{
+            is_blog: true,
             custom_action: (story) => <RemoveStoryAction story_id={story.id} />
           }}
         />

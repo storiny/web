@@ -19,11 +19,11 @@ export const { useUploadBlogFontMutation: use_upload_blog_font_mutation } =
         BlogFontUploadReponse,
         BlogFontUploadPayload
       >({
-        query: ({ blog_id, type, file }) => {
+        query: ({ blog_id, variant, file }) => {
           const body = new FormData();
           body.append("Content-Type", file.type);
           body.append("file", file);
-          body.append("type", type);
+          body.append("variant", variant);
 
           return {
             url: `/${SEGMENT(blog_id)}`,

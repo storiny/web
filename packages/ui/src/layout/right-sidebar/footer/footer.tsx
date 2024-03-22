@@ -20,9 +20,14 @@ const RightSidebarFooter = ({
       Help
     </Link>
     {!is_blog && (
-      <Link href={"/branding"} level={"body3"}>
-        Brand
-      </Link>
+      <>
+        <Link href={"/membership"} level={"body3"}>
+          Storiny+
+        </Link>
+        <Link href={"/branding"} level={"body3"}>
+          Brand
+        </Link>
+      </>
     )}
     <Link href={process.env.NEXT_PUBLIC_STATUS_PAGE_URL || "/"} level={"body3"}>
       Service status

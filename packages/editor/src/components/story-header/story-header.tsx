@@ -72,15 +72,15 @@ const StoryActions = (): React.ReactElement => {
 
   return (
     <div className={css["flex-center"]}>
-      {!blog && (
+      {!blog?.id && (
         <IconButton
-          aria-label={`${is_bookmarked ? "Un-bookmark" : "Bbookmark"} story`}
+          aria-label={`${is_bookmarked ? "Un-bookmark" : "Bookmark"} story`}
           auto_size
           check_auth
           onClick={(): void => {
             dispatch(boolean_action("bookmarks", story.id));
           }}
-          title={`${is_bookmarked ? "Un-bookmark" : "Bbookmark"} story`}
+          title={`${is_bookmarked ? "Un-bookmark" : "Bookmark"} story`}
           variant={"ghost"}
         >
           {is_bookmarked ? <BookmarkIcon no_stroke /> : <BookmarkPlusIcon />}
@@ -110,7 +110,7 @@ const StoryActions = (): React.ReactElement => {
         >
           Copy link to story
         </MenuItem>
-        {is_larger_than_desktop && !blog ? (
+        {is_larger_than_desktop && !blog?.id ? (
           <React.Fragment>
             <Separator />
             <MenuItem

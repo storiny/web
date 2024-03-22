@@ -8,9 +8,9 @@
 
 .input {
   width: 100%;
-  max-width: 300px;
+  max-width: 300px !important;
 
   @include breakpoints.media("<mobile") {
-    max-width: 100%;
+    max-width: 100% !important;
   }
 }

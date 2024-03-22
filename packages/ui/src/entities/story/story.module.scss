@@ -20,6 +20,7 @@
 .main {
   justify-content: space-between;
   gap: 16px;
+  width: 100%;
 
   @include breakpoints.media(">=mobile") {
     &.large {
@@ -52,6 +53,7 @@
 
 .meta {
   gap: 8px;
+  width: 100%;
 }
 
 .title {

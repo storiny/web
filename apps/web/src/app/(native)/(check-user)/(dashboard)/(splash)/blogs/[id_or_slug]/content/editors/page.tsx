@@ -3,8 +3,7 @@ import "server-only";
 import { notFound as not_found, redirect } from "next/navigation";
 import React from "react";
 
-import { use_blog_context } from "~/common/context/blog";
-import { get_blog_editors_info } from "~/common/grpc";
+import { get_blog, get_blog_editors_info } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
 import { get_user } from "~/common/utils/get-user";
 
@@ -17,12 +16,6 @@ const Page = async ({
 }): Promise<React.ReactElement | undefined> => {
   try {
     const { id_or_slug } = params;
-    const blog = use_blog_context();
-
-    if (blog.role !== "owner") {
-      not_found();
-    }
-
     const user_id = await get_user();
 
     if (!user_id) {
@@ -31,6 +24,15 @@ const Page = async ({
           `/me/blogs/${id_or_slug}/content/editors`
         )}`
       );
+    }
+
+    const blog = await get_blog({
+      identifier: id_or_slug,
+      current_user_id: user_id
+    });
+
+    if (!blog.is_owner) {
+      not_found();
     }
 
     const blog_editors_info_response = await get_blog_editors_info({

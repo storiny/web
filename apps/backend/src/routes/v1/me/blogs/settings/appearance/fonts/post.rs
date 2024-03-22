@@ -26,7 +26,10 @@ use actix_web::{
     web,
     HttpResponse,
 };
-use mime::FONT_WOFF2;
+use mime::{
+    APPLICATION_OCTET_STREAM,
+    FONT_WOFF2,
+};
 use serde::{
     Deserialize,
     Serialize,
@@ -164,6 +167,8 @@ SELECT COALESCE(
     let font_file = &form.file;
     let file_name = &font_file.file_name.clone().unwrap_or_default();
     let font_mime_type = &font_file.content_type;
+    let supported_font_mimes: Vec<String> =
+        vec![FONT_WOFF2.to_string(), APPLICATION_OCTET_STREAM.to_string()];
 
     tracing::Span::current().record("file_name", file_name);
 
@@ -171,11 +176,10 @@ SELECT COALESCE(
         tracing::Span::current().record("mime_type", mime.to_string());
     }
 
+    // This will never panic
     #[allow(clippy::unwrap_used)]
     if font_mime_type.is_none()
-        ||
-        // This will never panic
-        font_mime_type.clone().unwrap().to_string() != FONT_WOFF2.to_string()
+        || !supported_font_mimes.contains(&font_mime_type.clone().unwrap().to_string())
     {
         debug!("received a font with unknown format: {font_mime_type:?}");
         return Err(ToastErrorResponse::new(None, "Unsupported font format").into());

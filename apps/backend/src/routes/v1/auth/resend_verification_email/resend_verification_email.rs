@@ -86,6 +86,7 @@ async fn post(
 SELECT
     id,
     name,
+    email_verified,
     last_login_at
 FROM users
 WHERE email = $1
@@ -110,6 +111,11 @@ WHERE email = $1
             AppError::SqlxError(error)
         }
     })?;
+
+    // Check if the email has already been verified.
+    if user.get::<bool, _>("email_verified") {
+        return Err(ToastErrorResponse::new(None, "This e-mail has already been verified").into());
+    }
 
     let user_id = user.get::<i64, _>("id");
 
@@ -243,6 +249,7 @@ mod tests {
     use super::*;
     use crate::test_utils::{
         assert_form_error_response,
+        assert_toast_error_response,
         exceed_resource_lock_attempts,
         get_resource_lock_attempts,
         init_app_for_test,
@@ -275,6 +282,41 @@ mod tests {
             )],
         )
         .await;
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_reject_a_resend_verification_email_request_for_a_verified_user(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let app = init_app_for_test(post, pool, false, false, None).await.0;
+
+        // Manually verify the email for the user.
+        let result = sqlx::query(
+            r#"
+UPDATE users
+SET email_verified = TRUE
+WHERE email = $1
+        "#,
+        )
+        .bind("someone@example.com".to_string())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let req = test::TestRequest::post()
+            .uri("/v1/auth/resend-verification-email")
+            .set_json(Request {
+                email: "someone@example.com".to_string(),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "This e-mail has already been verified").await;
 
         Ok(())
     }

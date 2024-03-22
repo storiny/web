@@ -344,7 +344,6 @@ WITH blog_story AS (
         bs.story_id = $2
         AND bs.blog_id = $3
         AND bs.deleted_at IS NULL
-        AND bs.accepted_at IS NOT NULL
 ), blog_as_owner AS (
     SELECT 1 FROM blogs
     WHERE
@@ -436,6 +435,12 @@ WITH updated_document AS (
     UPDATE documents
     SET is_editable = FALSE
     WHERE story_id = $1
+), updated_blog_story AS (
+    UPDATE blog_stories
+    SET accepted_at = NOW()
+    WHERE
+        story_id = $1
+        AND accepted_at IS NULL
 )
 UPDATE stories
 SET
@@ -969,69 +974,6 @@ VALUES ($1, $2, NOW())
 
         assert!(res.status().is_client_error());
         assert_toast_error_response(res, "Story does not exist or has not been edited yet").await;
-
-        Ok(())
-    }
-
-    #[sqlx::test]
-    async fn should_not_edit_a_pending_story(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) =
-            init_app_for_test(services![post, put], pool, true, false, None).await;
-
-        // Insert a blog.
-        let result = sqlx::query(
-            r#"
-INSERT INTO blogs (name, slug, user_id)
-VALUES ($1, $2, $3)
-RETURNING id
-"#,
-        )
-        .bind("Sample blog".to_string())
-        .bind("sample-blog".to_string())
-        .bind(user_id.unwrap())
-        .fetch_one(&mut *conn)
-        .await?;
-
-        let blog_id = result.get::<i64, _>("id");
-
-        // Insert a published story.
-        let result = sqlx::query(
-            r#"
-INSERT INTO stories (id, user_id, published_at)
-VALUES ($1, $2, NOW())
-"#,
-        )
-        .bind(2_i64)
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        // Add story to the blog.
-        let result = sqlx::query(
-            r#"
-INSERT INTO blog_stories (blog_id, story_id)
-VALUES ($1, $2)
-"#,
-        )
-        .bind(blog_id)
-        .bind(2_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        let req = test::TestRequest::put()
-            .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/blogs/{blog_id}/stories/{}", 2))
-            .set_json(Request { word_count: 25_u16 })
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_client_error());
-        assert_toast_error_response(res, "Missing permission or the story is unavailable").await;
 
         Ok(())
     }

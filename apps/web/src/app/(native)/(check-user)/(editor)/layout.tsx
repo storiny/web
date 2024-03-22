@@ -3,7 +3,7 @@ import React from "react";
 
 import css from "~/theme/main.module.scss";
 
-import DashboardSplashLayout from "../(dashboard)/me/(splash)/layout";
+import DashboardSplashLayout from "../(dashboard)/(splash)/layout";
 
 const DashboardEditorLayout = ({
   children
