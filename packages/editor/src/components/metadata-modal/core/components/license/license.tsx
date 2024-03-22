@@ -6,7 +6,6 @@ import FormSelect from "~/components/form-select";
 import Option from "~/components/option";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
-import css from "~/theme/main.module.scss";
 
 import { StoryMetadataSchema } from "../../../schema";
 

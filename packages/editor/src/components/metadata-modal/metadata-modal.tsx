@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { Provider, useAtom as use_atom } from "jotai";
 import React from "react";
 
+import { use_app_router } from "~/common/utils";
 import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
 import IconButton from "~/components/icon-button";
 import Modal from "~/components/modal";
@@ -12,6 +13,7 @@ import ScrollArea from "~/components/scroll-area";
 import TabPanel from "~/components/tab-panel";
 import { use_toast } from "~/components/toast";
 import { use_media_query } from "~/hooks/use-media-query";
+import BlogIcon from "~/icons/blog";
 import ChevronIcon from "~/icons/chevron";
 import FileIcon from "~/icons/file";
 import LicenseIcon from "~/icons/license";
@@ -21,6 +23,7 @@ import StoryIcon from "~/icons/story";
 import { use_story_metadata_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
+import { get_form_dirty_fields } from "~/utils/get-form-dirty-fields";
 import { handle_api_error } from "~/utils/handle-api-error";
 import { is_form_error } from "~/utils/is-form-error";
 
@@ -29,6 +32,7 @@ import {
   sidebar_tab_atom,
   StoryMetadataModalSidebarTabsValue
 } from "./core/atoms";
+import BlogTab from "./core/components/blog";
 import GeneralTab from "./core/components/general";
 import LicenseTab from "./core/components/license";
 import NavigationScreen from "./core/components/navigation-screen/navigation-screen";
@@ -44,8 +48,10 @@ const StoryMetadataModalImpl = (
 ): React.ReactElement => {
   const { children, story, set_story } = props;
   const toast = use_toast();
+  const router = use_app_router();
   const reset_atoms = use_reset_story_metadata_modal_atoms();
   const [open, set_open] = React.useState<boolean>(false);
+  const [done, set_done] = React.useState<boolean>(false);
   const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
   const [nav_segment, set_nav_segment] = use_atom(nav_segment_atom);
   const [value, set_value] = use_atom(sidebar_tab_atom);
@@ -68,7 +74,8 @@ const StoryMetadataModalImpl = (
       splash_id: story.splash_id || null,
       tags: story.tags.map(({ name }) => name),
       title: story.title,
-      visibility: story.visibility
+      visibility: story.visibility,
+      blog_id: story.blog?.id
     },
     resolver: zod_resolver(STORY_METADATA_SCHEMA)
   });
@@ -87,14 +94,34 @@ const StoryMetadataModalImpl = (
   );
 
   const handle_submit: SubmitHandler<StoryMetadataSchema> = (values) => {
-    // `splash_hex` is not needed in the request
-    mutate_story_metadata({ ...values, splash_hex: undefined, id: story.id })
+    const modified_values = get_form_dirty_fields(
+      form.formState.dirtyFields,
+      values
+    );
+
+    mutate_story_metadata({
+      ...modified_values,
+      // `splash_hex` is not needed in the request
+      splash_hex: undefined,
+      id: story.id
+    })
       .unwrap()
-      .then(() => {
+      .then((res) => {
+        reset(values);
+
+        if (res.has_blog_modified) {
+          set_done(true);
+
+          return router.refresh();
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { blog_id: _, ...other } = values;
+
         set_open(false);
         set_story({
           ...story,
-          ...values,
+          ...other,
           id: story.id,
           // We simply use the tag's name as the ID since the ID part is not
           // used anywhere in the editor.
@@ -104,7 +131,6 @@ const StoryMetadataModalImpl = (
         // Update document title
         document.title = `Editing ${values.title || story.title} — Storiny`;
 
-        reset(values);
         toast("Story metadata updated", "success");
       })
       .catch((error) => {
@@ -159,7 +185,7 @@ const StoryMetadataModalImpl = (
           </ModalFooterButton>
           <ModalFooterButton
             compact={is_smaller_than_tablet}
-            disabled={!form.formState.isDirty}
+            disabled={done || !form.formState.isDirty}
             loading={is_loading}
             onClick={(event): void => {
               event.preventDefault(); // Prevent closing of modal
@@ -184,6 +210,9 @@ const StoryMetadataModalImpl = (
           <ModalSidebarList>
             <ModalSidebarItem decorator={<FileIcon />} value={"general"}>
               General
+            </ModalSidebarItem>
+            <ModalSidebarItem decorator={<BlogIcon />} value={"blog"}>
+              Blog
             </ModalSidebarItem>
             <ModalSidebarItem decorator={<SeoIcon />} value={"seo"}>
               SEO
@@ -252,6 +281,7 @@ const StoryMetadataModalImpl = (
           {is_smaller_than_tablet ? (
             {
               home: <NavigationScreen />,
+              blog: <BlogTab />,
               general: <GeneralTab />,
               seo: <SeoTab />,
               license: <LicenseTab />,
@@ -265,6 +295,13 @@ const StoryMetadataModalImpl = (
                 value={"general"}
               >
                 <GeneralTab />
+              </TabPanel>
+              <TabPanel
+                className={clsx(css["flex-col"], styles.x, styles["tab-panel"])}
+                tabIndex={-1}
+                value={"blog"}
+              >
+                <BlogTab />
               </TabPanel>
               <TabPanel
                 className={clsx(css["flex-col"], styles.x, styles["tab-panel"])}
