@@ -40,14 +40,16 @@ const EditorLayout = ({
           read_only={status === "deleted" || read_only || role === "viewer"}
         >
           <React.Fragment>
-            {blog ? (
-              <BlogNavbar />
-            ) : read_only ? (
-              <Navbar />
+            {read_only ? (
+              blog ? (
+                <BlogNavbar />
+              ) : (
+                <Navbar />
+              )
             ) : (
               <EditorNavbar status={status} />
             )}
-            {blog ? (
+            {blog && read_only ? (
               <BlogLeftSidebar />
             ) : (
               <EditorLeftSidebar read_only={read_only} status={status} />

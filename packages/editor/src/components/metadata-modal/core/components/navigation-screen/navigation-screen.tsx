@@ -4,6 +4,7 @@ import React from "react";
 
 import NavigationItem from "~/components/navigation-item";
 import Separator from "~/components/separator";
+import BlogIcon from "~/icons/blog";
 import FileIcon from "~/icons/file";
 import LicenseIcon from "~/icons/license";
 import SeoIcon from "~/icons/seo";
@@ -23,6 +24,13 @@ const NavigationScreen = (): React.ReactElement => {
           onClick={(): void => set_nav_segment("general")}
         >
           General
+        </NavigationItem>
+        <Separator invert_margin />
+        <NavigationItem
+          decorator={<BlogIcon />}
+          onClick={(): void => set_nav_segment("blog")}
+        >
+          Blog
         </NavigationItem>
         <Separator invert_margin />
         <NavigationItem
