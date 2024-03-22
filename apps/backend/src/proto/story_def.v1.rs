@@ -251,7 +251,9 @@ pub struct GetStoryMetadataResponse {
     /// Joins
     #[prost(message, optional, tag="26")]
     pub user: ::core::option::Option<super::super::user_def::v1::BareUser>,
-    #[prost(message, repeated, tag="27")]
+    #[prost(message, optional, tag="27")]
+    pub blog: ::core::option::Option<super::super::blog_def::v1::BareBlog>,
+    #[prost(message, repeated, tag="28")]
     pub tags: ::prost::alloc::vec::Vec<super::super::tag_def::v1::Tag>,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]

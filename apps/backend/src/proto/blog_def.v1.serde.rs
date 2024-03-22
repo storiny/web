@@ -133,6 +133,12 @@ impl serde::Serialize for BareBlog {
         if !self.name.is_empty() {
             len += 1;
         }
+        if self.logo_id.is_some() {
+            len += 1;
+        }
+        if self.logo_hex.is_some() {
+            len += 1;
+        }
         let mut struct_ser = serializer.serialize_struct("blog_def.v1.BareBlog", len)?;
         if !self.id.is_empty() {
             struct_ser.serialize_field("id", &self.id)?;
@@ -145,6 +151,12 @@ impl serde::Serialize for BareBlog {
         }
         if !self.name.is_empty() {
             struct_ser.serialize_field("name", &self.name)?;
+        }
+        if let Some(v) = self.logo_id.as_ref() {
+            struct_ser.serialize_field("logoId", v)?;
+        }
+        if let Some(v) = self.logo_hex.as_ref() {
+            struct_ser.serialize_field("logoHex", v)?;
         }
         struct_ser.end()
     }
@@ -160,6 +172,10 @@ impl<'de> serde::Deserialize<'de> for BareBlog {
             "slug",
             "domain",
             "name",
+            "logo_id",
+            "logoId",
+            "logo_hex",
+            "logoHex",
         ];
 
         #[allow(clippy::enum_variant_names)]
@@ -168,6 +184,8 @@ impl<'de> serde::Deserialize<'de> for BareBlog {
             Slug,
             Domain,
             Name,
+            LogoId,
+            LogoHex,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
@@ -193,6 +211,8 @@ impl<'de> serde::Deserialize<'de> for BareBlog {
                             "slug" => Ok(GeneratedField::Slug),
                             "domain" => Ok(GeneratedField::Domain),
                             "name" => Ok(GeneratedField::Name),
+                            "logoId" | "logo_id" => Ok(GeneratedField::LogoId),
+                            "logoHex" | "logo_hex" => Ok(GeneratedField::LogoHex),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -216,6 +236,8 @@ impl<'de> serde::Deserialize<'de> for BareBlog {
                 let mut slug__ = None;
                 let mut domain__ = None;
                 let mut name__ = None;
+                let mut logo_id__ = None;
+                let mut logo_hex__ = None;
                 while let Some(k) = map.next_key()? {
                     match k {
                         GeneratedField::Id => {
@@ -242,6 +264,18 @@ impl<'de> serde::Deserialize<'de> for BareBlog {
                             }
                             name__ = Some(map.next_value()?);
                         }
+                        GeneratedField::LogoId => {
+                            if logo_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("logoId"));
+                            }
+                            logo_id__ = map.next_value()?;
+                        }
+                        GeneratedField::LogoHex => {
+                            if logo_hex__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("logoHex"));
+                            }
+                            logo_hex__ = map.next_value()?;
+                        }
                     }
                 }
                 Ok(BareBlog {
@@ -249,6 +283,8 @@ impl<'de> serde::Deserialize<'de> for BareBlog {
                     slug: slug__.unwrap_or_default(),
                     domain: domain__,
                     name: name__.unwrap_or_default(),
+                    logo_id: logo_id__,
+                    logo_hex: logo_hex__,
                 })
             }
         }

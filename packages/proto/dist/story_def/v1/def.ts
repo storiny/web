@@ -297,6 +297,7 @@ export interface GetStoryMetadataResponse {
     | undefined;
   /** Joins */
   user: BareUser | undefined;
+  blog?: BareBlog | undefined;
   tags: Tag[];
 }
 
@@ -1889,6 +1890,7 @@ function createBaseGetStoryMetadataResponse(): GetStoryMetadataResponse {
     first_published_at: undefined,
     deleted_at: undefined,
     user: undefined,
+    blog: undefined,
     tags: [],
   };
 }
@@ -1973,8 +1975,11 @@ export const GetStoryMetadataResponse = {
     if (message.user !== undefined) {
       BareUser.encode(message.user, writer.uint32(210).fork()).ldelim();
     }
+    if (message.blog !== undefined) {
+      BareBlog.encode(message.blog, writer.uint32(218).fork()).ldelim();
+    }
     for (const v of message.tags) {
-      Tag.encode(v!, writer.uint32(218).fork()).ldelim();
+      Tag.encode(v!, writer.uint32(226).fork()).ldelim();
     }
     return writer;
   },
@@ -2173,6 +2178,13 @@ export const GetStoryMetadataResponse = {
             break;
           }
 
+          message.blog = BareBlog.decode(reader, reader.uint32());
+          continue;
+        case 28:
+          if (tag !== 226) {
+            break;
+          }
+
           message.tags.push(Tag.decode(reader, reader.uint32()));
           continue;
       }
@@ -2214,6 +2226,7 @@ export const GetStoryMetadataResponse = {
       first_published_at: isSet(object.first_published_at) ? globalThis.String(object.first_published_at) : undefined,
       deleted_at: isSet(object.deleted_at) ? globalThis.String(object.deleted_at) : undefined,
       user: isSet(object.user) ? BareUser.fromJSON(object.user) : undefined,
+      blog: isSet(object.blog) ? BareBlog.fromJSON(object.blog) : undefined,
       tags: globalThis.Array.isArray(object?.tags) ? object.tags.map((e: any) => Tag.fromJSON(e)) : [],
     };
   },
@@ -2298,6 +2311,9 @@ export const GetStoryMetadataResponse = {
     if (message.user !== undefined) {
       obj.user = BareUser.toJSON(message.user);
     }
+    if (message.blog !== undefined) {
+      obj.blog = BareBlog.toJSON(message.blog);
+    }
     if (message.tags?.length) {
       obj.tags = message.tags.map((e) => Tag.toJSON(e));
     }
@@ -2335,6 +2351,7 @@ export const GetStoryMetadataResponse = {
     message.first_published_at = object.first_published_at ?? undefined;
     message.deleted_at = object.deleted_at ?? undefined;
     message.user = (object.user !== undefined && object.user !== null) ? BareUser.fromPartial(object.user) : undefined;
+    message.blog = (object.blog !== undefined && object.blog !== null) ? BareBlog.fromPartial(object.blog) : undefined;
     message.tags = object.tags?.map((e) => Tag.fromPartial(e)) || [];
     return message;
   },

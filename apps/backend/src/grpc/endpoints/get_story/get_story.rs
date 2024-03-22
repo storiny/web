@@ -58,6 +58,8 @@ struct Blog {
     name: String,
     slug: String,
     domain: Option<String>,
+    logo_id: Option<Uuid>,
+    logo_hex: Option<String>,
 }
 
 #[derive(Debug, FromRow)]
@@ -334,6 +336,8 @@ SET created_at = NOW()
             name: value.name.clone(),
             slug: value.slug.clone(),
             domain: value.domain.clone(),
+            logo_id: value.logo_id.map(|value| value.to_string()),
+            logo_hex: value.logo_hex.clone(),
         }),
         is_bookmarked: story.is_bookmarked,
         is_liked: story.is_liked,
