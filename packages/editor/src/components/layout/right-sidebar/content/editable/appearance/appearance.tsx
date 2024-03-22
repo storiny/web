@@ -1,5 +1,4 @@
 import { get_shortcut_label } from "@storiny/shared/src/utils/get-shortcut-label";
-import { clsx } from "clsx";
 import {
   useAtomValue as use_atom_value,
   useSetAtom as use_set_atom
