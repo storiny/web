@@ -1215,6 +1215,9 @@ impl serde::Serialize for GetStoryMetadataResponse {
         if self.user.is_some() {
             len += 1;
         }
+        if self.blog.is_some() {
+            len += 1;
+        }
         if !self.tags.is_empty() {
             len += 1;
         }
@@ -1303,6 +1306,9 @@ impl serde::Serialize for GetStoryMetadataResponse {
         if let Some(v) = self.user.as_ref() {
             struct_ser.serialize_field("user", v)?;
         }
+        if let Some(v) = self.blog.as_ref() {
+            struct_ser.serialize_field("blog", v)?;
+        }
         if !self.tags.is_empty() {
             struct_ser.serialize_field("tags", &self.tags)?;
         }
@@ -1359,6 +1365,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryMetadataResponse {
             "deleted_at",
             "deletedAt",
             "user",
+            "blog",
             "tags",
         ];
 
@@ -1390,6 +1397,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryMetadataResponse {
             FirstPublishedAt,
             DeletedAt,
             User,
+            Blog,
             Tags,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
@@ -1438,6 +1446,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryMetadataResponse {
                             "firstPublishedAt" | "first_published_at" => Ok(GeneratedField::FirstPublishedAt),
                             "deletedAt" | "deleted_at" => Ok(GeneratedField::DeletedAt),
                             "user" => Ok(GeneratedField::User),
+                            "blog" => Ok(GeneratedField::Blog),
                             "tags" => Ok(GeneratedField::Tags),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
@@ -1484,6 +1493,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryMetadataResponse {
                 let mut first_published_at__ = None;
                 let mut deleted_at__ = None;
                 let mut user__ = None;
+                let mut blog__ = None;
                 let mut tags__ = None;
                 while let Some(k) = map.next_key()? {
                     match k {
@@ -1643,6 +1653,12 @@ impl<'de> serde::Deserialize<'de> for GetStoryMetadataResponse {
                             }
                             user__ = map.next_value()?;
                         }
+                        GeneratedField::Blog => {
+                            if blog__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("blog"));
+                            }
+                            blog__ = map.next_value()?;
+                        }
                         GeneratedField::Tags => {
                             if tags__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("tags"));
@@ -1678,6 +1694,7 @@ impl<'de> serde::Deserialize<'de> for GetStoryMetadataResponse {
                     first_published_at: first_published_at__,
                     deleted_at: deleted_at__,
                     user: user__,
+                    blog: blog__,
                     tags: tags__.unwrap_or_default(),
                 })
             }

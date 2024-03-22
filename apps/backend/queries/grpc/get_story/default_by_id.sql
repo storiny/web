@@ -97,7 +97,9 @@ SELECT s.id,
 					   'id', "s->blog_stories->blog".id,
 					   'name', "s->blog_stories->blog".name,
 					   'slug', "s->blog_stories->blog".slug,
-					   'domain', "s->blog_stories->blog".domain
+					   'domain', "s->blog_stories->blog".domain,
+					   'logo_id', "s->blog_stories->blog".logo_id,
+					   'logo_hex', "s->blog_stories->blog".logo_hex
 			   )
 	   END                          AS "blog: Json<Blog>"
 FROM

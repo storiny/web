@@ -8,6 +8,8 @@ export interface BareBlog {
   slug: string;
   domain?: string | undefined;
   name: string;
+  logo_id?: string | undefined;
+  logo_hex?: string | undefined;
 }
 
 export interface LeftSidebarItem {
@@ -171,7 +173,7 @@ export interface GetBlogSitemapResponse {
 }
 
 function createBaseBareBlog(): BareBlog {
-  return { id: "", slug: "", domain: undefined, name: "" };
+  return { id: "", slug: "", domain: undefined, name: "", logo_id: undefined, logo_hex: undefined };
 }
 
 export const BareBlog = {
@@ -187,6 +189,12 @@ export const BareBlog = {
     }
     if (message.name !== "") {
       writer.uint32(34).string(message.name);
+    }
+    if (message.logo_id !== undefined) {
+      writer.uint32(42).string(message.logo_id);
+    }
+    if (message.logo_hex !== undefined) {
+      writer.uint32(50).string(message.logo_hex);
     }
     return writer;
   },
@@ -226,6 +234,20 @@ export const BareBlog = {
 
           message.name = reader.string();
           continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.logo_id = reader.string();
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.logo_hex = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -241,6 +263,8 @@ export const BareBlog = {
       slug: isSet(object.slug) ? globalThis.String(object.slug) : "",
       domain: isSet(object.domain) ? globalThis.String(object.domain) : undefined,
       name: isSet(object.name) ? globalThis.String(object.name) : "",
+      logo_id: isSet(object.logo_id) ? globalThis.String(object.logo_id) : undefined,
+      logo_hex: isSet(object.logo_hex) ? globalThis.String(object.logo_hex) : undefined,
     };
   },
 
@@ -258,6 +282,12 @@ export const BareBlog = {
     if (message.name !== "") {
       obj.name = message.name;
     }
+    if (message.logo_id !== undefined) {
+      obj.logo_id = message.logo_id;
+    }
+    if (message.logo_hex !== undefined) {
+      obj.logo_hex = message.logo_hex;
+    }
     return obj;
   },
 
@@ -270,6 +300,8 @@ export const BareBlog = {
     message.slug = object.slug ?? "";
     message.domain = object.domain ?? undefined;
     message.name = object.name ?? "";
+    message.logo_id = object.logo_id ?? undefined;
+    message.logo_hex = object.logo_hex ?? undefined;
     return message;
   },
 };

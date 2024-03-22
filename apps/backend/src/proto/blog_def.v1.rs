@@ -12,6 +12,10 @@ pub struct BareBlog {
     pub domain: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, tag="4")]
     pub name: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="5")]
+    pub logo_id: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="6")]
+    pub logo_hex: ::core::option::Option<::prost::alloc::string::String>,
 }
 // Main blog request
 

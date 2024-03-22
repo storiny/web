@@ -70,4 +70,4 @@ export type Story = {
   StoryOptionalProps &
   UserSpecificStoryProps;
 
-export type DocUserRole = "editor" | "viewer" | "reader";
+export type DocUserRole = "blog-member" | "editor" | "viewer" | "reader";
