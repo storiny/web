@@ -1,5 +1,4 @@
 import { get_shortcut_label } from "@storiny/shared/src/utils/get-shortcut-label";
-import { clsx } from "clsx";
 import React from "react";
 
 import Option from "~/components/option";
