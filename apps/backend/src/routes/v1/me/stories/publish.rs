@@ -108,7 +108,7 @@ WHERE
     })?;
 
     let story_slug =
-        generate_story_slug(&mut *txn, &story_id, &story.get::<String, _>("title")).await?;
+        generate_story_slug(&mut txn, &story_id, &story.get::<String, _>("title")).await?;
 
     let story = sqlx::query(
         r#"
