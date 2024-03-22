@@ -109,10 +109,10 @@ const StoryMetadataModalImpl = (
       .then((res) => {
         reset(values);
 
-        if (res.has_blog_modified) {
+        if (res?.has_blog_modified) {
           set_done(true);
-
-          return router.refresh();
+          router.refresh();
+          return;
         }
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

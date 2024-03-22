@@ -1,3 +1,5 @@
+"use client";
+
 import { Blog } from "@storiny/types";
 import React from "react";
 

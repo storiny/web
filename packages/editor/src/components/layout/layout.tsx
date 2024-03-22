@@ -33,6 +33,7 @@ const EditorLayout = ({
   "read_only" | "story" | "status" | "role" | "is_writer"
 >): React.ReactElement => {
   const blog = use_blog_context();
+
   return (
     <Provider>
       <HydrateMetadata is_writer={Boolean(is_writer)} role={role} story={story}>
@@ -41,7 +42,7 @@ const EditorLayout = ({
         >
           <React.Fragment>
             {read_only ? (
-              blog ? (
+              blog?.id ? (
                 <BlogNavbar />
               ) : (
                 <Navbar />
@@ -49,7 +50,7 @@ const EditorLayout = ({
             ) : (
               <EditorNavbar status={status} />
             )}
-            {blog && read_only ? (
+            {Boolean(blog?.id) && read_only ? (
               <BlogLeftSidebar />
             ) : (
               <EditorLeftSidebar read_only={read_only} status={status} />

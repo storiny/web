@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import React from "react";
 
+import { use_blog_context } from "~/common/context/blog";
 import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
@@ -14,10 +15,11 @@ const Page = ({
   disable_redirect?: boolean;
 }): React.ReactElement => {
   const should_redirect = use_media_query(BREAKPOINTS.up("desktop"));
+  const blog = use_blog_context();
 
   // Redirect if sidebars are visible.
   if (should_redirect && !disable_redirect) {
-    redirect("/me/account/profile");
+    redirect(`/blogs/${blog.slug}/settings/general`);
   }
 
   return <DashboardNavigationScreen />;

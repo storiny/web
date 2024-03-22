@@ -50,9 +50,9 @@ import { StoryProps } from "./story.props";
  * @param props Story props
  */
 const get_story_url = (props: StoryProps): string => {
-  const { story, is_deleted, is_contributable, is_draft } = props;
+  const { story, is_deleted, is_contributable, is_draft, is_blog } = props;
 
-  if (is_draft || is_contributable || is_deleted) {
+  if (is_blog || is_draft || is_contributable || is_deleted) {
     return `/doc/${story.id}`;
   }
 
@@ -602,6 +602,7 @@ const Story = (props: StoryProps): React.ReactElement => {
     is_extended,
     is_deleted,
     is_draft: is_draft_prop,
+    is_blog,
     is_contributable,
     enable_ssr,
     virtual,

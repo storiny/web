@@ -616,7 +616,7 @@ WHERE id = $2
 
     txn.commit().await?;
 
-    Ok(HttpResponse::NoContent().json(Response { has_blog_modified }))
+    Ok(HttpResponse::Ok().json(Response { has_blog_modified }))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {

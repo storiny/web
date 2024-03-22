@@ -72,7 +72,6 @@ const preferences_schema = z.object({
     .catch("dark"),
   show_appearance_alert: z.boolean().catch(true),
   show_accessibility_alert: z.boolean().catch(true),
-  show_font_settings_notification: z.boolean().catch(true),
   haptic_feedback: z.boolean().catch(false),
   reduced_motion: z
     .union([z.literal("system"), z.literal("enabled"), z.literal("disabled")])
@@ -135,15 +134,6 @@ export const preferences_slice = create_slice({
           ? "show_appearance_alert"
           : "show_accessibility_alert"
       ] = action.payload[1];
-    },
-    /**
-     * Mutates the font settings notification visibility
-     */
-    set_font_settings_notification_visibility: (
-      state,
-      action: PayloadAction<boolean>
-    ) => {
-      state["show_font_settings_notification"] = action.payload;
     },
     /**
      * Changes the reduced motion settings
@@ -234,15 +224,13 @@ const {
   toggle_code_ligatures,
   toggle_code_wrapping,
   toggle_haptic_feedback,
-  toggle_code_gutters,
-  set_font_settings_notification_visibility
+  toggle_code_gutters
 } = preferences_slice.actions;
 
 export {
   hydrate_state,
   set_alert_visibility,
   set_code_font,
-  set_font_settings_notification_visibility,
   set_reading_font,
   set_reading_font_size,
   set_reduced_motion,

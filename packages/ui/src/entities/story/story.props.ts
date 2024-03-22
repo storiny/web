@@ -11,6 +11,10 @@ export interface StoryProps extends React.ComponentPropsWithoutRef<"article"> {
    */
   enable_ssr?: boolean;
   /**
+   * If `true`, the story link points to the editable document.
+   */
+  is_blog?: boolean;
+  /**
    * If `true`, renders with contributable properties
    */
   is_contributable?: boolean;

@@ -31,7 +31,7 @@ const Preview = (): React.ReactElement => {
           style={{ opacity: "15%", pointerEvents: "none", maxWidth: "100%" }}
         >
           <div className={clsx(css["flex-center"], styles.header)}>
-            {user?.avatar_id ? (
+            {user ? (
               <Avatar
                 alt={""}
                 avatar_id={user.avatar_id}

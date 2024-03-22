@@ -159,6 +159,9 @@ if (typeof document !== "undefined") {
               | "dark"
               | null,
             domain: blog.domain ?? null,
+            seo_title: blog.seo_title ?? null,
+            seo_description: blog.seo_description ?? null,
+            preview_image: blog.preview_image ?? null,
             website_url: blog.website_url ?? null,
             public_email: blog.public_email ?? null,
             github_url: blog.github_url ?? null,
