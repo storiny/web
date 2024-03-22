@@ -40,6 +40,7 @@ struct Blog {
     #[serde(with = "crate::iso8601::time")]
     created_at: OffsetDateTime,
     // Boolean flags
+    is_active: bool,
     is_owner: bool,
     is_editor: bool,
     is_writer: bool,
@@ -81,6 +82,7 @@ WITH user_blogs AS (
             -- Timestamps
             created_at,
             -- Boolean flags
+            is_active,
             TRUE AS "is_owner",
             FALSE AS "is_editor",
             FALSE AS "is_writer"
@@ -106,6 +108,7 @@ WITH user_blogs AS (
             -- Timestamps
             b.created_at,
             -- Boolean flags
+            is_active,
             FALSE AS "is_owner",
             TRUE AS "is_editor",
             FALSE AS "is_writer"
@@ -133,6 +136,7 @@ WITH user_blogs AS (
             -- Timestamps
             b.created_at,
             -- Boolean flags
+            is_active,
             FALSE AS "is_owner",
             FALSE AS "is_editor",
             TRUE AS "is_writer"
@@ -161,6 +165,7 @@ SELECT
     -- Timestamps
     created_at,
     -- Boolean flags
+    is_active,
     is_owner,
     is_editor,
     is_writer
