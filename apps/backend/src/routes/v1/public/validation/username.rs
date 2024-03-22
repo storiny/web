@@ -99,7 +99,7 @@ mod tests {
         let req = test::TestRequest::post()
             .uri("/v1/public/validation/username")
             .set_json(Request {
-                username: RESERVED_KEYWORDS[0].to_string(),
+                username: RESERVED_KEYWORDS[10].to_string(),
             })
             .to_request();
         let res = test::call_service(&app, req).await;
