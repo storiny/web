@@ -365,7 +365,7 @@ test.describe("embed", () => {
                   <div>
                     <div>
                       <div>
-                        <span><span>Tt</span></span>
+                        <span><span>TT</span></span>
                         <span>
                           Test title
                           <span>example.com</span>
