@@ -326,6 +326,213 @@ WHERE id = $1
         Ok(())
     }
 
+    // Blog stories
+
+    #[sqlx::test(fixtures("user", "blog"))]
+    async fn can_cascade_story_soft_delete_to_blog_stories(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
+
+        // Add the story to the blog.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO blog_stories (blog_id, story_id)
+VALUES ($1, $2)
+RETURNING deleted_at
+"#,
+        )
+        .bind(3_i64)
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Soft-delete the story
+        sqlx::query(
+            r#"
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog story should be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_stories
+WHERE blog_id = $1 AND story_id = $2
+"#,
+        )
+        .bind(3_i64)
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the story
+        sqlx::query(
+            r#"
+UPDATE stories
+SET deleted_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog story should be restored
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_stories
+WHERE blog_id = $1 AND story_id = $2
+"#,
+        )
+        .bind(3_i64)
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user", "blog"))]
+    async fn should_not_soft_delete_blog_stories_when_the_story_is_unpublished(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
+
+        // Add the story to the blog.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO blog_stories (blog_id, story_id)
+VALUES ($1, $2)
+RETURNING deleted_at
+"#,
+        )
+        .bind(3_i64)
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Unpublish the story
+        sqlx::query(
+            r#"
+UPDATE stories
+SET published_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog story should not be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_stories
+WHERE blog_id = $1 AND story_id = $2
+"#,
+        )
+        .bind(3_i64)
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user", "blog"))]
+    async fn can_set_accepted_at_field_to_null_when_the_story_is_unpublished(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
+
+        // Add the story to the blog.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO blog_stories (blog_id, story_id, accepted_at)
+VALUES ($1, $2, NOW())
+RETURNING accepted_at
+"#,
+        )
+        .bind(3_i64)
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("accepted_at")
+                .is_some()
+        );
+
+        // Unpublish the story
+        sqlx::query(
+            r#"
+UPDATE stories
+SET published_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // `accepted_at` should be NULL
+        let result = sqlx::query(
+            r#"
+SELECT accepted_at FROM blog_stories
+WHERE blog_id = $1 AND story_id = $2
+"#,
+        )
+        .bind(3_i64)
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("accepted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
     // Story contributors
 
     #[sqlx::test(fixtures("user"))]
@@ -3072,6 +3279,139 @@ WHERE id = $1
 
     //
 
+    #[sqlx::test(fixtures("user", "blog"))]
+    async fn should_not_restore_blog_stories_from_deleted_blogs_when_cascading_story(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
+
+        // Add the story to the blog.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO blog_stories (blog_id, story_id)
+VALUES ($1, $2)
+RETURNING deleted_at
+"#,
+        )
+        .bind(3_i64)
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        // Soft-delete the story
+        sqlx::query(
+            r#"
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Soft-delete the blog
+        sqlx::query(
+            r#"
+UPDATE blogs
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+        )
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog story should be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_stories
+WHERE blog_id = $1 AND story_id = $2
+"#,
+        )
+        .bind(3_i64)
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the story
+        sqlx::query(
+            r#"
+UPDATE stories
+SET deleted_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog story should still be soft-deleted
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_stories
+WHERE blog_id = $1 AND story_id = $2
+"#,
+        )
+        .bind(3_i64)
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the blog
+        sqlx::query(
+            r#"
+UPDATE blogs
+SET deleted_at = NULL
+WHERE id = $1
+"#,
+        )
+        .bind(3_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog story should get restored
+        let result = sqlx::query(
+            r#"
+SELECT deleted_at FROM blog_stories
+WHERE blog_id = $1 AND story_id = $2
+"#,
+        )
+        .bind(3_i64)
+        .bind(story_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    //
+
     #[sqlx::test(fixtures("user"))]
     async fn should_not_restore_story_contributors_from_deleted_users_when_cascading_story(
         pool: PgPool,
@@ -5173,6 +5513,55 @@ SELECT EXISTS (
 "#,
         )
         .bind(insert_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user", "blog"))]
+    async fn can_delete_blog_story_on_story_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
+
+        // Add the story to the blog.
+        let insert_result = sqlx::query(
+            r#"
+INSERT INTO blog_stories (blog_id, story_id)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(3_i64)
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        // Delete the story
+        sqlx::query(
+            r#"
+DELETE FROM stories
+WHERE id = $1
+"#,
+        )
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blog story should get deleted
+        let result = sqlx::query(
+            r#"
+SELECT EXISTS (
+    SELECT 1 FROM blog_stories
+    WHERE blog_id = $1 AND story_id = $2
+)
+"#,
+        )
+        .bind(3_i64)
+        .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
 

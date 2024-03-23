@@ -26,6 +26,7 @@ const Typography = forward_ref<TypographyProps, TypographyElement>(
       as: Component,
       level = "body1",
       color = "major",
+      weight,
       scale,
       ellipsis,
       disable_hovercards,
@@ -56,6 +57,7 @@ const Typography = forward_ref<TypographyProps, TypographyElement>(
                 ? "t-legible-fg"
                 : `t-${color}`
             ],
+            typeof weight === "string" && css[`t-${weight}`],
             scale
               ? TYPOGRAPHY_SCALE_TO_CLASSNAME_MAP[scale]
               : TYPOGRAPHY_LEVEL_TO_CLASSNAME_MAP[level],

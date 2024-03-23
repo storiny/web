@@ -13,7 +13,6 @@ use crate::{
         incr_resource_limit::incr_resource_limit,
     },
     AppState,
-    S3Client,
 };
 use actix_multipart::form::{
     tempfile::TempFile,
@@ -45,6 +44,7 @@ use serde::{
 };
 use std::cmp;
 
+use crate::utils::delete_s3_objects::delete_s3_objects;
 use actix_web::http::StatusCode;
 use sqlx::Row;
 use std::io::{
@@ -108,26 +108,6 @@ async fn secure_post(
     handle_upload(form, data, user_id).await
 }
 
-/// Deletes an orphaned object from S3 if the database operation fails for some reason.
-///
-/// * `s3_client` - The S3 client instance.
-/// * `key` - The key of the orphaned object.
-async fn delete_orphaned_object(s3_client: &S3Client, key: &str) -> Result<(), AppError> {
-    s3_client
-        .delete_object()
-        .bucket(S3_UPLOADS_BUCKET)
-        .key(key)
-        .send()
-        .await
-        .map(|_| ())
-        .map_err(|error| {
-            AppError::InternalError(format!(
-                "removing orphaned object due to database error failed: {:?}",
-                error.into_service_error()
-            ))
-        })
-}
-
 /// Handles the uploading of an image.
 ///
 /// * `form` - The multipart form data.
@@ -175,7 +155,7 @@ async fn handle_upload(
         // This will never panic
         !supported_image_mimes.contains(&image_mime_type.clone().unwrap().to_string())
     {
-        debug!("received an image with unknown format: {image_mime_type:?}",);
+        debug!("received an image with unknown format: {image_mime_type:?}");
 
         return Err(ToastErrorResponse::new(None, "Unsupported image type").into());
     }
@@ -406,13 +386,27 @@ RETURNING id, rating
                     }))
                 }
                 Err(error) => {
-                    delete_orphaned_object(s3_client, &object_key.to_string()).await?;
+                    delete_s3_objects(s3_client, S3_UPLOADS_BUCKET, vec![object_key.to_string()])
+                        .await
+                        .map_err(|error| {
+                            AppError::InternalError(format!(
+                                "removing orphaned object due to database error failed: {error:?}",
+                            ))
+                        })?;
+
                     Err(AppError::SqlxError(error))
                 }
             }
         }
         Err(error) => {
-            delete_orphaned_object(s3_client, &object_key.to_string()).await?;
+            delete_s3_objects(s3_client, S3_UPLOADS_BUCKET, vec![object_key.to_string()])
+                .await
+                .map_err(|error| {
+                    AppError::InternalError(format!(
+                        "removing orphaned object due to database error failed: {error:?}",
+                    ))
+                })?;
+
             Err(AppError::SqlxError(error))
         }
     }
@@ -436,7 +430,7 @@ mod tests {
             RedisTestContext,
             TestContext,
         },
-        utils::delete_s3_objects::delete_s3_objects,
+        utils::delete_s3_objects_using_prefix::delete_s3_objects_using_prefix,
         RedisPool,
         S3Client,
     };
@@ -582,7 +576,7 @@ VALUES ($1, $2, $3, $4)
                         .expect("failed to FLUSHDB");
                 },
                 async {
-                    delete_s3_objects(&self.s3_client, S3_UPLOADS_BUCKET, None, None)
+                    delete_s3_objects_using_prefix(&self.s3_client, S3_UPLOADS_BUCKET, None, None)
                         .await
                         .unwrap()
                 },

@@ -32,6 +32,19 @@ WITH history_result AS (WITH search_query AS (SELECT PLAINTO_TSQUERY('english', 
 									'avatar_hex', su.avatar_hex,
 									'public_flags', su.public_flags
 							)                                                        AS "user!: Json<User>",
+							-- Blog
+							CASE
+								WHEN "s->blog_stories->blog".id IS NOT NULL
+									THEN
+									JSON_BUILD_OBJECT(
+											'id', "s->blog_stories->blog".id,
+											'name', "s->blog_stories->blog".name,
+											'slug', "s->blog_stories->blog".slug,
+											'domain', "s->blog_stories->blog".domain,
+											'logo_id', "s->blog_stories->blog".logo_id,
+											'logo_hex', "s->blog_stories->blog".logo_hex
+									)
+							END                                                      AS "blog: Json<Blog>",
 							-- Tags
 							COALESCE(
 											ARRAY_AGG(
@@ -50,6 +63,15 @@ WITH history_result AS (WITH search_query AS (SELECT PLAINTO_TSQUERY('english', 
 								-- Join story user
 								INNER JOIN users su
 										   ON su.id = s.user_id
+								-- Join blog stories
+								LEFT OUTER JOIN (blog_stories AS "s->blog_stories"
+								-- Join blogs
+								INNER JOIN blogs AS "s->blog_stories->blog"
+												 ON "s->blog_stories->blog".id = "s->blog_stories".blog_id
+								)
+												ON "s->blog_stories".story_id = s.id
+													AND "s->blog_stories".accepted_at IS NOT NULL
+													AND "s->blog_stories".deleted_at IS NULL
 								-- Join story tags
 								LEFT OUTER JOIN (story_tags AS "s->story_tags"
 								-- Join tags
@@ -74,6 +96,7 @@ WITH history_result AS (WITH search_query AS (SELECT PLAINTO_TSQUERY('english', 
 							s.id,
 							su.id,
 							h.created_at,
+							"s->blog_stories->blog".id,
 							"s->is_liked".story_id,
 							"s->is_bookmarked".story_id
 						ORDER BY
@@ -106,6 +129,7 @@ SELECT
 	"is_liked!",
 	-- Joins
 	"user!: Json<User>",
+	"blog: Json<Blog>",
 	"tags!: Vec<Tag>"
 FROM
 	history_result

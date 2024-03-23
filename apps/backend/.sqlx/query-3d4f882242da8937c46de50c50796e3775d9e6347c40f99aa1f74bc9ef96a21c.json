@@ -1,0 +1,215 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT u.id,\n\t   u.name,\n\t   u.username,\n\t   u.bio,\n\t   u.rendered_bio                                                AS \"rendered_bio!\",\n\t   u.avatar_id,\n\t   u.avatar_hex,\n\t   u.banner_id,\n\t   u.banner_hex,\n\t   u.location,\n\t   u.public_flags,\n\t   u.is_private,\n\t   -- Stats\n\t   u.story_count,\n\t   u.follower_count,\n\t   u.is_plus_member,\n\t   -- Handle `following_list_visibility`\n\t   CASE\n\t\t   WHEN (\n\t\t\t   -- Everyone\n\t\t\t   u.following_list_visibility = 1\n\t\t\t\t   -- Friends\n\t\t\t\t   OR (\n\t\t\t\t   u.following_list_visibility = 2\n\t\t\t\t\t   AND \"u->is_friend\".transmitter_id IS NOT NULL\n\t\t\t\t   )\n\t\t\t\t   -- Self\n\t\t\t\t   OR u.id = $2\n\t\t\t   )\n\t\t\t   THEN u.following_count\n\t   END                                                           AS \"following_count\",\n\t   -- Handle `friend_list_visibility`\n\t   CASE\n\t\t   WHEN (\n\t\t\t   -- Everyone\n\t\t\t   u.friend_list_visibility = 1\n\t\t\t\t   -- Friends\n\t\t\t\t   OR (\n\t\t\t\t   u.friend_list_visibility = 2\n\t\t\t\t\t   AND \"u->is_friend\".transmitter_id IS NOT NULL\n\t\t\t\t   )\n\t\t\t\t   -- Self\n\t\t\t\t   OR u.id = $2\n\t\t\t   )\n\t\t\t   THEN u.friend_count\n\t   END                                                           AS \"friend_count\",\n\t   -- Timestamps\n\t   u.created_at,\n\t   -- Connections\n\t   COALESCE(ARRAY_AGG(DISTINCT\n\t\t\t\t(\"u->connection\".provider, \"u->connection\".provider_identifier, \"u->connection\".display_name))\n\t\t\t\tFILTER (WHERE \"u->connection\".id IS NOT NULL), '{}') AS \"connections!: Vec<ProfileConnection>\",\n\t   -- Status\n\t   -- Use a discrete column to deserialize it into `OffsetDateTime`.\n\t   \"u->status\".expires_at                                        AS \"status_expires_at?\",\n\t   \"u->status\".duration                                          AS \"status_duration?\",\n\t   \"u->status\".emoji                                             AS \"status_emoji?\",\n\t   \"u->status\".text                                              AS \"status_text?\",\n\t   \"u->status\".visibility                                        AS \"status_visibility?\",\n\t   CASE\n\t\t   WHEN \"u->status\".user_id IS NOT NULL AND (\n\t\t\t   -- Global\n\t\t\t   \"u->status\".visibility = 1\n\t\t\t\t   -- Followers\n\t\t\t\t   OR (\"u->status\".visibility = 2 AND \"u->is_following\".follower_id IS NOT NULL)\n\t\t\t\t   -- Friends\n\t\t\t\t   OR (\"u->status\".visibility = 3 AND \"u->is_friend\".transmitter_id IS NOT NULL)\n\t\t\t\t   -- Self\n\t\t\t\t   OR u.id = $2\n\t\t\t   )\n\t\t\t   THEN TRUE\n\t\t   ELSE FALSE\n\t   END                                                           AS \"has_status!\",\n\t   -- Boolean flags\n\t   \"u->is_following\".follower_id IS NOT NULL                     AS \"is_following!\",\n\t   \"u->is_follower\".follower_id IS NOT NULL                      AS \"is_follower!\",\n\t   \"u->is_friend\".transmitter_id IS NOT NULL                     AS \"is_friend!\",\n\t   \"u->is_subscribed\".follower_id IS NOT NULL                    AS \"is_subscribed!\",\n\t   \"u->is_friend_request_sent\".transmitter_id IS NOT NULL        AS \"is_friend_request_sent!\",\n\t   \"u->is_blocked_by_user\".blocker_id IS NOT NULL                AS \"is_blocked_by_user!\",\n\t   \"u->is_blocked\".blocker_id IS NOT NULL                        AS \"is_blocked!\",\n\t   \"u->is_muted\".muter_id IS NOT NULL                            AS \"is_muted!\"\nFROM\n\tusers u\n\t\t-- Join status\n\t\tLEFT OUTER JOIN user_statuses AS \"u->status\"\n\t\t\t\t\t\tON u.id = \"u->status\".user_id\n\t\t\t\t\t\t\tAND (\"u->status\".expires_at IS NULL\n\t\t\t\t\t\t\t\tOR \"u->status\".expires_at > NOW())\n\t\t-- Join connections\n\t\tLEFT OUTER JOIN connections AS \"u->connection\"\n\t\t\t\t\t\tON \"u->connection\".user_id = u.id\n\t\t\t\t\t\t\tAND \"u->connection\".hidden IS FALSE\n\t\t-- Boolean following flag\n\t\tLEFT OUTER JOIN relations AS \"u->is_following\"\n\t\t\t\t\t\tON \"u->is_following\".followed_id = u.id\n\t\t\t\t\t\t\tAND \"u->is_following\".follower_id = $2\n\t\t\t\t\t\t\tAND \"u->is_following\".deleted_at IS NULL\n\t\t-- Boolean follower flag\n\t\tLEFT OUTER JOIN relations AS \"u->is_follower\"\n\t\t\t\t\t\tON \"u->is_follower\".follower_id = u.id\n\t\t\t\t\t\t\tAND \"u->is_follower\".followed_id = $2\n\t\t\t\t\t\t\tAND \"u->is_follower\".deleted_at IS NULL\n\t\t-- Boolean friend flag\n\t\tLEFT OUTER JOIN friends AS \"u->is_friend\"\n\t\t\t\t\t\tON (\n\t\t\t\t\t\t\t   (\"u->is_friend\".transmitter_id = u.id AND \"u->is_friend\".receiver_id = $2)\n\t\t\t\t\t\t\t\t   OR\n\t\t\t\t\t\t\t   (\"u->is_friend\".receiver_id = u.id AND \"u->is_friend\".transmitter_id = $2)\n\t\t\t\t\t\t\t   )\n\t\t\t\t\t\t\tAND \"u->is_friend\".accepted_at IS NOT NULL\n\t\t\t\t\t\t\tAND \"u->is_friend\".deleted_at IS NULL\n\t\t-- Boolean subscribed flag\n\t\tLEFT OUTER JOIN relations AS \"u->is_subscribed\"\n\t\t\t\t\t\tON \"u->is_subscribed\".followed_id = u.id\n\t\t\t\t\t\t\tAND \"u->is_subscribed\".follower_id = $2\n\t\t\t\t\t\t\tAND \"u->is_subscribed\".subscribed_at IS NOT NULL\n\t\t\t\t\t\t\tAND \"u->is_subscribed\".deleted_at IS NULL\n\t\t-- Boolean friend request sent flag\n\t\tLEFT OUTER JOIN friends AS \"u->is_friend_request_sent\"\n\t\t\t\t\t\tON (\"u->is_friend_request_sent\".receiver_id = u.id AND\n\t\t\t\t\t\t\t\"u->is_friend_request_sent\".transmitter_id = $2)\n\t\t\t\t\t\t\tAND \"u->is_friend_request_sent\".accepted_at IS NULL\n\t\t\t\t\t\t\tAND \"u->is_friend_request_sent\".deleted_at IS NULL\n\t\t-- Boolean blocked by user flag\n\t\tLEFT OUTER JOIN blocks AS \"u->is_blocked_by_user\"\n\t\t\t\t\t\tON \"u->is_blocked_by_user\".blocker_id = u.id\n\t\t\t\t\t\t\tAND \"u->is_blocked_by_user\".blocked_id = $2\n\t\t\t\t\t\t\tAND \"u->is_blocked_by_user\".deleted_at IS NULL\n\t\t-- Boolean blocked flag\n\t\tLEFT OUTER JOIN blocks AS \"u->is_blocked\"\n\t\t\t\t\t\tON \"u->is_blocked\".blocked_id = u.id\n\t\t\t\t\t\t\tAND \"u->is_blocked\".blocker_id = $2\n\t\t\t\t\t\t\tAND \"u->is_blocked\".deleted_at IS NULL\n\t\t-- Boolean muted flag\n\t\tLEFT OUTER JOIN mutes AS \"u->is_muted\"\n\t\t\t\t\t\tON \"u->is_muted\".muted_id = u.id\n\t\t\t\t\t\t\tAND \"u->is_muted\".muter_id = $2\n\t\t\t\t\t\t\tAND \"u->is_muted\".deleted_at IS NULL\nWHERE\n\t  u.username = $1\n  AND u.deactivated_at IS NULL\n  AND u.deleted_at IS NULL\nGROUP BY\n\tu.id,\n\t\"u->status\".expires_at,\n\t\"u->status\".duration,\n\t\"u->status\".emoji,\n\t\"u->status\".text,\n\t\"u->status\".visibility,\n\t\"u->status\".user_id,\n\t\"u->is_following\".follower_id,\n\t\"u->is_follower\".follower_id,\n\t\"u->is_friend\".transmitter_id,\n\t\"u->is_subscribed\".follower_id,\n\t\"u->is_friend_request_sent\".transmitter_id,\n\t\"u->is_blocked_by_user\".blocker_id,\n\t\"u->is_blocked\".blocker_id,\n\t\"u->is_muted\".muter_id\nLIMIT 1\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "username",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "bio",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "rendered_bio!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "avatar_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 6,
+        "name": "avatar_hex",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "banner_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 8,
+        "name": "banner_hex",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 9,
+        "name": "location",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "public_flags",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 11,
+        "name": "is_private",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 12,
+        "name": "story_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 13,
+        "name": "follower_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 14,
+        "name": "is_plus_member",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 15,
+        "name": "following_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 16,
+        "name": "friend_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 17,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 18,
+        "name": "connections!: Vec<ProfileConnection>",
+        "type_info": "RecordArray"
+      },
+      {
+        "ordinal": 19,
+        "name": "status_expires_at?",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 20,
+        "name": "status_duration?",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 21,
+        "name": "status_emoji?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 22,
+        "name": "status_text?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 23,
+        "name": "status_visibility?",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 24,
+        "name": "has_status!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 25,
+        "name": "is_following!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 26,
+        "name": "is_follower!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 27,
+        "name": "is_friend!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 28,
+        "name": "is_subscribed!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 29,
+        "name": "is_friend_request_sent!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 30,
+        "name": "is_blocked_by_user!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 31,
+        "name": "is_blocked!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 32,
+        "name": "is_muted!",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      null,
+      null,
+      false,
+      null,
+      true,
+      false,
+      true,
+      true,
+      false,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "3d4f882242da8937c46de50c50796e3775d9e6347c40f99aa1f74bc9ef96a21c"
+}

@@ -19,6 +19,8 @@ import common_styles from "../common/avatar-size.module.scss";
 import styles from "./avatar.module.scss";
 import { AvatarProps, AvatarSize } from "./avatar.props";
 
+const AVATAR_CACHE = new Set<string>([]);
+
 /**
  * Computes a unique hue value based on the given string
  * @param str String
@@ -70,12 +72,19 @@ const Avatar = forward_ref<AvatarProps, "span">((props, ref) => {
   const { size: avatar_group_size } =
     React.useContext(AvatarGroupContext) || {};
   const size = avatar_group_size || size_prop || "md";
-  const [status, set_status] = React.useState<ImageLoadingStatus>("loading");
-  let final_src = src;
+  const final_src = avatar_id
+    ? get_cdn_url(avatar_id, AVATAR_IMAGE_SIZE_MAP[size])
+    : src;
+  const is_image_cached = AVATAR_CACHE.has(final_src || "");
+  const [status, set_status] = React.useState<ImageLoadingStatus>(
+    is_image_cached ? "loaded" : "loading"
+  );
 
-  if (avatar_id) {
-    final_src = get_cdn_url(avatar_id, AVATAR_IMAGE_SIZE_MAP[size]);
-  }
+  React.useEffect(() => {
+    if (final_src && status === "loaded") {
+      AVATAR_CACHE.add(final_src);
+    }
+  }, [status, final_src]);
 
   return (
     <Root
@@ -86,6 +95,7 @@ const Avatar = forward_ref<AvatarProps, "span">((props, ref) => {
         size && common_styles[size],
         !borderless && styles.border,
         status === "loaded" && styles.loaded,
+        is_image_cached && styles["no-animation"],
         className
       )}
       ref={ref}
@@ -102,7 +112,9 @@ const Avatar = forward_ref<AvatarProps, "span">((props, ref) => {
             {...slot_props?.image}
             alt={alt}
             className={clsx(styles.image, slot_props?.image?.className)}
-            onLoadingStatusChange={set_status}
+            onLoadingStatusChange={(next_status): void =>
+              status === "loaded" ? undefined : set_status(next_status)
+            }
             src={final_src}
           />
         )}

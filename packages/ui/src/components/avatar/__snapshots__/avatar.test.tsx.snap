@@ -10,7 +10,7 @@ exports[`<Avatar /> matches snapshot 1`] = `
     data-testid="fallback"
     style="--bg: hsl(79deg 35% 50%); --fg: var(--snow);"
   >
-    Ta
+    TA
   </span>
 </span>
 `;

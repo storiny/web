@@ -96,7 +96,7 @@ impl Flag {
     /// Predicate method for determining whether all the flags do not exist among the existing
     /// flags.
     ///
-    /// * `mask` - Mask to chekc.
+    /// * `mask` - Mask to check.
     pub fn not_all_of(&self, mask: Mask) -> bool {
         self.test_flag(&mask, true, true)
     }
@@ -213,13 +213,11 @@ mod tests {
         flags.add_flag(UserFlag::Verified);
 
         assert!(flags.has_all_of(Mask::Multiple(vec![UserFlag::Staff, UserFlag::Verified])));
-        assert!(
-            !flags.has_all_of(Mask::Multiple(vec![
-                UserFlag::Staff,
-                UserFlag::Verified,
-                UserFlag::EarlyUser
-            ]))
-        );
+        assert!(!flags.has_all_of(Mask::Multiple(vec![
+            UserFlag::Staff,
+            UserFlag::Verified,
+            UserFlag::EarlyUser
+        ])));
     }
 
     #[test]
@@ -249,9 +247,7 @@ mod tests {
         flags.add_flag(UserFlag::Staff);
         flags.add_flag(UserFlag::Verified);
 
-        assert!(
-            !flags.not_all_of(Mask::Multiple(vec![UserFlag::Staff, UserFlag::Verified]))
-        );
+        assert!(!flags.not_all_of(Mask::Multiple(vec![UserFlag::Staff, UserFlag::Verified])));
         assert!(flags.not_all_of(Mask::Multiple(vec![
             UserFlag::Staff,
             UserFlag::Verified,

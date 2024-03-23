@@ -28,6 +28,7 @@ const User = (props: UserProps): React.ReactElement => {
   const {
     action_type = "default",
     hide_action,
+    custom_action,
     className,
     user,
     virtual,
@@ -77,7 +78,7 @@ const User = (props: UserProps): React.ReactElement => {
               )}
             </Typography>
             {is_mobile ? (
-              <Typography className={css["t-minor"]} ellipsis>
+              <Typography color={"minor"} ellipsis>
                 @{user.username}
               </Typography>
             ) : (
@@ -128,7 +129,7 @@ const User = (props: UserProps): React.ReactElement => {
         </NextLink>
         <Grow />
         <div className={clsx(css["flex"], styles.actions)}>
-          {!is_self && action_type === "default" ? (
+          {!custom_action && !is_self && action_type === "default" ? (
             <Button
               auto_size
               check_auth
@@ -142,14 +143,19 @@ const User = (props: UserProps): React.ReactElement => {
             </Button>
           ) : null}
           {!hide_action && (
-            <UserActions action_type={action_type} user={user} />
+            <UserActions
+              action_type={action_type}
+              custom_action={custom_action}
+              user={user}
+            />
           )}
         </div>
       </div>
       {Boolean((user.rendered_bio || "").trim()) && (
         <Typography
           as={NextLink}
-          className={clsx(css["t-minor"], styles.bio)}
+          className={styles.bio}
+          color={"minor"}
           href={user_url}
           level={"body2"}
         >

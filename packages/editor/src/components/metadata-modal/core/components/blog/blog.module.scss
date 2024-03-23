@@ -1,0 +1,43 @@
+.x {
+  &.logo {
+    --avatar-size: 32px;
+  }
+
+  &.logo, &.fallback {
+    border-radius: var(--radius-md) !important;
+  }
+
+  &.item {
+    padding-inline: 16px;
+
+    &:first-of-type {
+      margin-top: 8px;
+    }
+
+    &:not(.inactive, .selected):hover {
+      background-color: var(--bg-elevation-md);
+    }
+  }
+
+  &.persona {
+    justify-content: flex-start;
+    padding-block: 8px;
+    width: 100%;
+
+    &:not(.selected) {
+      cursor: pointer;
+    }
+
+    &.inactive {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+
+  &.scroll-area {
+    overflow: hidden;
+    height: 220px;
+    border: 1px solid var(--divider);
+    border-radius: var(--radius-md);
+  }
+}

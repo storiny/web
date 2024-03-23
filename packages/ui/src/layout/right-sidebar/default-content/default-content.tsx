@@ -37,8 +37,10 @@ export const TitleWithIcon = ({
     <Typography
       {...rest}
       as={"span"}
-      className={clsx(css["t-minor"], css["t-bold"], className)}
+      className={className}
+      color={"minor"}
       level={"body2"}
+      weight={"bold"}
     >
       {children}
     </Typography>

@@ -1,0 +1,97 @@
+@use "breakpoints";
+
+.preview {
+  position: relative;
+
+  @include breakpoints.media("<mobile") {
+    margin-inline: var(--grid-compensation);
+    width: auto;
+  }
+}
+
+.banner {
+  width: 100%;
+  position: relative;
+  min-height: 192px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(0 0 0 / 0%) 0%, rgba(0 0 0 / 25%) 100%);
+  }
+}
+
+.navbar {
+  position: absolute;
+  width: 100%;
+  padding: 12px 48px;
+  justify-content: space-between !important;
+
+  @include breakpoints.media("<mobile") {
+    padding: 12px 24px;
+  }
+}
+
+.logo {
+  & > path {
+    fill: var(--snow) !important;
+  }
+}
+
+.actions {
+  gap: 8px;
+
+  & > span {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    min-height: 22px;
+    border-radius: 50%;
+    background-color: var(--bg-body);
+  }
+}
+
+.body {
+  width: 100%;
+  z-index: 1;
+}
+
+.lsb, .body, .rsb {
+  background-color: var(--bg-elevation-xs);
+}
+
+.lsb, .rsb {
+  border-color: var(--divider);
+  border-style: solid;
+  min-width: 142px;
+  height: 100%;
+  min-height: 214px;
+  margin-top: -64px;
+
+  @include breakpoints.media("<desktop") {
+    min-width: 128px;
+  }
+
+  @include breakpoints.media("<mobile") {
+    min-width: 48px;
+  }
+}
+
+.lsb {
+  border-width: 0 1px 0 0;
+  border-top-right-radius: var(--radius-md);
+}
+
+.rsb {
+  border-width: 0 0 0 1px;
+  border-top-left-radius: var(--radius-md);
+}
+
+.main {
+  border-top: 1px solid var(--divider);
+  flex-grow: 1;
+}

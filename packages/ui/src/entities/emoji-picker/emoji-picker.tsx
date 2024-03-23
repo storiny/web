@@ -41,7 +41,7 @@ const Main = dynamic(() => import("./core/components/main"), {
         >
           <CloudOffIcon />
           <Spacer orientation={"vertical"} />
-          <Typography className={css["t-minor"]} level={"body3"}>
+          <Typography color={"minor"} level={"body3"}>
             Network error
           </Typography>
           <Spacer orientation={"vertical"} size={2} />
@@ -118,7 +118,7 @@ const EmojiPicker = (props: EmojiPickerProps): React.ReactElement => {
           >
             <HoveredEmoji />
           </span>
-          <Typography className={css["t-bold"]} level={"body2"}>
+          <Typography level={"body2"} weight={"bold"}>
             Pick an emoji
           </Typography>
           <Grow />

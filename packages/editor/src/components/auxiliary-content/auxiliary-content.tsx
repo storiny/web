@@ -9,6 +9,7 @@ import dynamic from "next/dynamic";
 import React from "react";
 import { useIntersectionObserver as use_intersection_observer } from "react-intersection-observer-hook";
 
+import { use_blog_context } from "~/common/context/blog";
 import { dynamic_loader } from "~/common/dynamic";
 import Divider from "~/components/divider";
 import NoSsr from "~/components/no-ssr";
@@ -19,6 +20,7 @@ import Tab from "~/components/tab";
 import Tabs from "~/components/tabs";
 import TabsList from "~/components/tabs-list";
 import Typography from "~/components/typography";
+import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import { use_media_query } from "~/hooks/use-media-query";
 import { use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
@@ -83,6 +85,7 @@ const HeaderTabs = ({
 
 const Content = (): React.ReactElement => {
   const story = use_atom_value(story_metadata_atom);
+  const blog = use_blog_context();
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
   const comment_count =
     use_app_selector(
@@ -92,6 +95,7 @@ const Content = (): React.ReactElement => {
     is_smaller_than_desktop ? "suggested" : "comments"
   );
   const [sort, set_sort] = React.useState<StoryCommentsSortValue>("most-liked");
+  use_handle_dynamic_state("most-liked", set_sort);
 
   const handle_sort_change = React.useCallback(
     (next_sort: StoryCommentsSortValue) => {
@@ -108,20 +112,22 @@ const Content = (): React.ReactElement => {
 
   return (
     <NoSsr>
-      <header className={clsx(css["flex-col"], styles.header)}>
+      <header
+        className={clsx(
+          css["flex-col"],
+          styles.header,
+          blog?.is_story_minimal_layout && styles["minimal-layout"]
+        )}
+      >
         {is_smaller_than_desktop && (
           <HeaderTabs on_change={set_value} value={value} />
         )}
         {value === "comments" && (
           <div className={clsx(css["full-h"], css["flex-center"])}>
             <Typography
-              className={clsx(
-                css["t-bold"],
-                css["f-grow"],
-                styles.x,
-                styles["header-label"]
-              )}
+              className={clsx(css["f-grow"], styles.x, styles["header-label"])}
               level={"body2"}
+              weight={"bold"}
             >
               {story.disable_comments ? "No" : abbreviate_number(comment_count)}{" "}
               {comment_count === 1 ? "comment" : "comments"}

@@ -107,7 +107,7 @@ const StoryWriter = (): React.ReactElement => {
       {(user.rendered_bio || "").trim() ? (
         <React.Fragment>
           <Spacer orientation={"vertical"} size={2} />
-          <Typography as={"div"} className={css["t-minor"]} level={"body2"}>
+          <Typography as={"div"} color={"minor"} level={"body2"}>
             <BioParser content={user.rendered_bio} />
           </Typography>
         </React.Fragment>

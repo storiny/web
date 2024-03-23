@@ -1,0 +1,69 @@
+@use "breakpoints";
+
+.preview {
+  background-color: var(--bg-elevation-xs);
+  min-height: 260px;
+
+  @include breakpoints.media("<mobile") {
+    margin-inline: var(--grid-compensation);
+    width: auto;
+  }
+}
+
+.navbar {
+  --border-color: var(--inverted-400);
+
+  border-bottom: 1px solid var(--divider);
+  background-color: var(--bg-elevation-sm);
+  gap: 12px;
+  height: 52px;
+}
+
+.lsb, .rsb {
+  border-color: var(--divider);
+  border-style: solid;
+  min-width: 180px;
+  height: 100%;
+
+  @include breakpoints.media("<desktop") {
+    min-width: 64px;
+  }
+
+  @include breakpoints.media("<mobile") {
+    display: none;
+  }
+}
+
+.lsb {
+  border-width: 0 1px 0 0;
+}
+
+.rsb {
+  border-width: 0 0 0 1px;
+}
+
+.body {
+  position: relative;
+  overflow: hidden;
+}
+
+.caret {
+  width: 42px;
+  position: absolute;
+
+  &:first-of-type {
+    top: 35%;
+    left: 20%;
+  }
+
+  &:nth-last-of-type(2) {
+    top: 60%;
+    left: 55%;
+  }
+
+  &:last-of-type {
+    top: 15%;
+    right: 20%;
+    transform: scaleX(-1);
+  }
+}

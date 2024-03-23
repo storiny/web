@@ -1,0 +1,57 @@
+@use "breakpoints";
+
+.form {
+  gap: 32px;
+  padding: 12px 8px;
+}
+
+.item {
+  gap: 16px;
+}
+
+.column {
+  gap: 8px;
+  width: 100%;
+
+  @include breakpoints.media(">=desktop") {
+    width: 360px;
+  }
+}
+
+.top-row {
+  gap: 10px;
+  align-items: flex-start !important;
+}
+
+.icon, .divider {
+  margin-top: 1px;
+}
+
+.icon {
+  gap: 6px;
+}
+
+.icon-button {
+  --size: 30px;
+
+  appearance: none;
+  border: none;
+  outline: none;
+  height: var(--size);
+  width: var(--size);
+  min-height: var(--size);
+  min-width: var(--size);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+
+  @include breakpoints.media("<tablet") {
+    --size: 36px;
+  }
+}
+
+.add-item {
+  margin: 8px auto;
+}

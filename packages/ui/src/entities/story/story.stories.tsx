@@ -3,7 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import { MOCK_STORIES } from "../../mocks";
+import { MOCK_BLOGS, MOCK_STORIES } from "../../mocks";
 import StorySkeleton from "./skeleton";
 import Story from "./story";
 
@@ -18,6 +18,14 @@ export default meta;
 type TStory = StoryObj<typeof Story>;
 
 export const Default: TStory = {};
+
+export const WithBlog: TStory = {
+  args: { story: { ...MOCK_STORIES[8], blog: MOCK_BLOGS[0] } }
+};
+
+export const Large: TStory = {
+  args: { is_large: true }
+};
 
 export const Extended: TStory = {
   args: { is_extended: true }
@@ -37,4 +45,8 @@ export const Skeleton: TStory = {
 
 export const SmallSkeleton: TStory = {
   render: () => <StorySkeleton is_small />
+};
+
+export const LargeSkeleton: TStory = {
+  render: () => <StorySkeleton is_large />
 };

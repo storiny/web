@@ -87,14 +87,15 @@ const DOC_STATUS_TO_LABEL_MAP: Partial<Record<DocStatus, string>> = {
   [DOC_STATUS.disconnected]: "Connection lost",
   [DOC_STATUS.join_realm_full | DOC_STATUS.overloaded]:
     "This story has reached the maximum number of live members.",
-  [DOC_STATUS.join_missing_story]: "This story does not exist",
+  [DOC_STATUS.join_missing_story]:
+    "This story does not exist, or you do not have sufficient permissions to edit it.",
   [DOC_STATUS.join_unauthorized]:
     "You are not authorized to access this story.",
   [DOC_STATUS.doc_corrupted]: "This document has been corrupted",
   [DOC_STATUS.lifetime_exceeded]:
     "This document has been terminated due to inactivity. Reload this window to reconnect.",
   [DOC_STATUS.internal_error]:
-    "Unable to connect to the server. Please check your network connection and try again later",
+    "This document has been terminated due to an internal reason or network failure. Please reload this window to reconnect.",
   [DOC_STATUS.stale_peer]:
     "You have been disconnected due to inactivity. Reload this window to reconnect.",
   [DOC_STATUS.role_upgraded]:

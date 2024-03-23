@@ -37,7 +37,7 @@ struct Request {
 async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpResponse, AppError> {
     let slugged_username = slugify!(&payload.username, separator = "_", max_length = 24);
 
-    // Chekc if username is reserved.
+    // Check if username is reserved.
     if RESERVED_KEYWORDS.contains(&slugged_username.as_str()) {
         return Err(AppError::from("Bad username"));
     }
@@ -99,7 +99,7 @@ mod tests {
         let req = test::TestRequest::post()
             .uri("/v1/public/validation/username")
             .set_json(Request {
-                username: RESERVED_KEYWORDS[0].to_string(),
+                username: RESERVED_KEYWORDS[10].to_string(),
             })
             .to_request();
         let res = test::call_service(&app, req).await;

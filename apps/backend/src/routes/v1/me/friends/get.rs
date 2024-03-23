@@ -310,7 +310,7 @@ VALUES ($1, $2, NOW())
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be false initially.
+        // Should be `false` initially.
         let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
         let friend = &json[0];
         assert!(!friend.is_follower);
@@ -335,7 +335,7 @@ VALUES ($2, $1)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be true.
+        // Should be `true`.
         let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
         let friend = &json[0];
         assert!(friend.is_follower);
@@ -368,7 +368,7 @@ VALUES ($1, $2, NOW())
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be false initially.
+        // Should be `false` initially.
         let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
         let friend = &json[0];
         assert!(!friend.is_following);
@@ -393,7 +393,7 @@ VALUES ($1, $2)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be true.
+        // Should be `true`.
         let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
         let friend = &json[0];
         assert!(friend.is_following);
@@ -426,7 +426,7 @@ VALUES ($1, $2, NOW())
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be false initially.
+        // Should be `false` initially.
         let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
         let friend = &json[0];
         assert!(!friend.is_muted);
@@ -451,7 +451,7 @@ VALUES ($1, $2)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be true.
+        // Should be `true`.
         let json = serde_json::from_str::<Vec<Friend>>(&res_to_string(res).await).unwrap();
         let friend = &json[0];
         assert!(friend.is_muted);

@@ -62,21 +62,18 @@ const RecommendedStory = ({ story }: { story: Story }): React.ReactElement => {
                 {user?.name}
               </Link>
             </UserHoverCard>
-            <Typography
-              aria-hidden
-              as={"span"}
-              className={css["t-muted"]}
-              level={"body2"}
-            >
+            <Typography aria-hidden as={"span"} color={"muted"} level={"body2"}>
               &bull;
             </Typography>
             <NoSsr>
               <Typography
                 as={"time"}
-                className={clsx(css["t-minor"], css["t-medium"], css.ellipsis)}
+                className={css.ellipsis}
+                color={"minor"}
                 dateTime={story.published_at!}
                 level={"body2"}
                 title={format_date(story.published_at!)}
+                weight={"medium"}
               >
                 {format_date(
                   story.published_at!,
@@ -117,11 +114,7 @@ const RecommendedStories = (): React.ReactElement => {
     />
   ) : (
     <>
-      <Typography
-        as={"span"}
-        className={clsx(css["t-minor"], css["t-bold"])}
-        level={"body2"}
-      >
+      <Typography as={"span"} color={"minor"} level={"body2"} weight={"bold"}>
         Continue reading
       </Typography>
       <div className={clsx(css["flex-col"], styles["recommended-stories"])}>

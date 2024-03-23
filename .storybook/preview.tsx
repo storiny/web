@@ -52,7 +52,9 @@ const preview: Preview = {
 // in Node environment, so we need to check if we're in the browser.
 if (typeof global.process === "undefined") {
   const worker = setup_worker();
-  worker.start().then(() => undefined);
+  worker
+    .start({ quiet: true, onUnhandledRequest: "bypass" })
+    .then(() => undefined);
   // Expose worker globally
   window.msw = { worker, rest };
   // Register global endpoints

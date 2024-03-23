@@ -78,6 +78,7 @@ struct Profile {
     is_blocked_by_user: bool,
     is_blocked: bool,
     is_muted: bool,
+    is_plus_member: bool,
 }
 
 /// Returns the user profile object.
@@ -178,6 +179,7 @@ pub async fn get_profile(
         is_blocked: profile.is_blocked,
         is_muted: profile.is_muted,
         is_self: current_user_id.is_some_and(|user_id| user_id == profile.id),
+        is_plus_member: profile.is_plus_member,
     }))
 }
 
@@ -329,7 +331,7 @@ WHERE id = $1
                     .unwrap()
                     .into_inner();
 
-                // Should be false initially.
+                // Should be `false` initially.
                 assert!(!response.is_following);
 
                 // Follow the user.
@@ -356,7 +358,7 @@ VALUES ($1, $2)
                     .unwrap()
                     .into_inner();
 
-                // Should be true.
+                // Should be `true`.
                 assert!(response.is_following);
             }),
         )
@@ -378,7 +380,7 @@ VALUES ($1, $2)
                     .unwrap()
                     .into_inner();
 
-                // Should be false initially.
+                // Should be `false` initially.
                 assert!(!response.is_follower);
 
                 // Add the user as follower.
@@ -405,7 +407,7 @@ VALUES ($2, $1)
                     .unwrap()
                     .into_inner();
 
-                // Should be true.
+                // Should be `true`.
                 assert!(response.is_follower);
             }),
         )
@@ -429,7 +431,7 @@ VALUES ($2, $1)
                     .unwrap()
                     .into_inner();
 
-                // Should be false initially.
+                // Should be `false` initially.
                 assert!(!response.is_friend);
                 assert!(!response.is_friend_request_sent);
 
@@ -486,7 +488,7 @@ WHERE transmitter_id = $1
                     .unwrap()
                     .into_inner();
 
-                // Should be true.
+                // Should be `true`.
                 assert!(response.is_friend);
                 // Friend request should get accepted.
                 assert!(!response.is_friend_request_sent);
@@ -525,7 +527,7 @@ VALUES ($1, $2, NULL)
                     .unwrap()
                     .into_inner();
 
-                // Should be false initially.
+                // Should be `false` initially.
                 assert!(!response.is_subscribed);
 
                 // Subscribe to the user.
@@ -552,7 +554,7 @@ WHERE follower_id = $1
                     .unwrap()
                     .into_inner();
 
-                // Should be true.
+                // Should be `true`.
                 assert!(response.is_subscribed);
             }),
         )
@@ -574,7 +576,7 @@ WHERE follower_id = $1
                     .unwrap()
                     .into_inner();
 
-                // Should be false initially.
+                // Should be `false` initially.
                 assert!(!response.is_blocked_by_user);
 
                 // Get blocked by the user.
@@ -601,7 +603,7 @@ VALUES ($2, $1)
                     .unwrap()
                     .into_inner();
 
-                // Should be true.
+                // Should be `true`.
                 assert!(response.is_blocked_by_user);
             }),
         )
@@ -623,7 +625,7 @@ VALUES ($2, $1)
                     .unwrap()
                     .into_inner();
 
-                // Should be false initially.
+                // Should be `false` initially.
                 assert!(!response.is_blocked);
 
                 // Block the user.
@@ -650,7 +652,7 @@ VALUES ($1, $2)
                     .unwrap()
                     .into_inner();
 
-                // Should be true.
+                // Should be `true`.
                 assert!(response.is_blocked);
             }),
         )
@@ -672,7 +674,7 @@ VALUES ($1, $2)
                     .unwrap()
                     .into_inner();
 
-                // Should be false initially.
+                // Should be `false` initially.
                 assert!(!response.is_muted);
 
                 // Mute the user.
@@ -699,7 +701,7 @@ VALUES ($1, $2)
                     .unwrap()
                     .into_inner();
 
-                // Should be true.
+                // Should be `true`.
                 assert!(response.is_muted);
             }),
         )

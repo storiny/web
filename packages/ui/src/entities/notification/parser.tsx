@@ -77,7 +77,7 @@ const NotificationParser = ({
 }: InterweaveProps): React.ReactElement => (
   <Interweave
     {...rest}
-    allowList={["a", "b", "del", "em", "p", "span", "div"]}
+    allowList={["a", "b", "del", "em", "p", "span", "div", "strong"]}
     containerTagName={"div"}
     content={content}
     transform={transform}

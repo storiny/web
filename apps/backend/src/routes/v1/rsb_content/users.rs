@@ -323,7 +323,7 @@ WHERE id = $1
         let mut conn = pool.acquire().await?;
         let result = get_rsb_content_users(Some(1_i64), &pool).await?;
 
-        // Should be false initially.
+        // Should be `false` initially.
         assert!(result.iter().all(|user| !user.is_following));
 
         // Follow the user.
@@ -342,7 +342,7 @@ VALUES ($1, $2)
 
         let result = get_rsb_content_users(Some(1_i64), &pool).await?;
 
-        // Should be true.
+        // Should be `true`.
         assert!(result.iter().all(|user| user.is_following));
 
         Ok(())
@@ -355,7 +355,7 @@ VALUES ($1, $2)
         let mut conn = pool.acquire().await?;
         let result = get_rsb_content_users(Some(1_i64), &pool).await?;
 
-        // Should be false initially.
+        // Should be `false` initially.
         assert!(result.iter().all(|user| !user.is_muted));
 
         // Mute the user.
@@ -374,7 +374,7 @@ VALUES ($1, $2)
 
         let result = get_rsb_content_users(Some(1_i64), &pool).await?;
 
-        // Should be true.
+        // Should be `true`.
         assert!(result.iter().all(|user| user.is_muted));
 
         Ok(())

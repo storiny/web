@@ -39,8 +39,9 @@ type StoryTag = Omit<
 
 export type Story = {
   age_restriction: StoryAgeRestriction;
+  blog?: { domain: string | null; id: string; name: string; slug: string };
   category: StoryCategory;
-  contributors: User[];
+  contributors?: User[];
   created_at: string;
   deleted_at: string | null;
   description: string | null;
@@ -69,4 +70,4 @@ export type Story = {
   StoryOptionalProps &
   UserSpecificStoryProps;
 
-export type DocUserRole = "editor" | "viewer" | "reader";
+export type DocUserRole = "blog-member" | "editor" | "viewer" | "reader";

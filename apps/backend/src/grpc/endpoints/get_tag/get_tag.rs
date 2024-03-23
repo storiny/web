@@ -197,7 +197,7 @@ mod tests {
                     .unwrap()
                     .into_inner();
 
-                // Should be false initially.
+                // Should be `false` initially.
                 assert!(!response.is_following);
 
                 // Follow the tag.
@@ -224,7 +224,7 @@ VALUES ($1, $2)
                     .unwrap()
                     .into_inner();
 
-                // Should be true.
+                // Should be `true`.
                 assert!(response.is_following);
             }),
         )

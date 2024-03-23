@@ -59,7 +59,7 @@ const RatingModal = ({
 }): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         Assigning a rating to this image will help us give suitable warnings to
         users who may prefer not to view it.
       </Typography>

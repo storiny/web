@@ -1,0 +1,77 @@
+@use "breakpoints";
+
+@font-face {
+  font-family: prata;
+  font-weight: normal;
+  font-style: normal;
+  src: url("https://cdn.storiny.com/web-assets/fonts/prata.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: trykker;
+  font-weight: normal;
+  font-style: normal;
+  src: url("https://cdn.storiny.com/web-assets/fonts/trykker.woff2") format("woff2");
+}
+
+.preview {
+  --font-prata: prata, var(--font-primary);
+  --font-trykker: trykker, var(--font-secondary);
+
+  @include breakpoints.media("<mobile") {
+    margin-inline: var(--grid-compensation);
+    width: auto;
+  }
+}
+
+.lsb, .body, .rsb {
+  background-color: var(--bg-elevation-xs);
+}
+
+.lsb, .rsb {
+  border-color: var(--divider);
+  border-style: solid;
+  min-width: 142px;
+
+  @include breakpoints.media("<desktop") {
+    min-width: 64px;
+  }
+
+  @include breakpoints.media("<mobile") {
+    display: none;
+  }
+}
+
+.lsb {
+  border-width: 1px 1px 0 0;
+  border-top-right-radius: var(--radius-md);
+}
+
+.rsb {
+  border-width: 1px 0 0 1px;
+  border-top-left-radius: var(--radius-md);
+}
+
+.body {
+  margin-top: 64px;
+  border-top: 1px solid var(--divider);
+  padding: 48px;
+  gap: 12px;
+  flex-grow: 1;
+
+  @include breakpoints.media("<mobile") {
+    margin-top: 0;
+    padding: 32px;
+    border-bottom: 1px solid var(--divider);
+  }
+}
+
+.x {
+  &.heading {
+    font-family: var(--font-prata);
+  }
+
+  &.body-text {
+    font-family: var(--font-trykker);
+  }
+}

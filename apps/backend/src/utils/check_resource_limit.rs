@@ -14,11 +14,11 @@ use redis::AsyncCommands;
 ///
 /// * `redis_pool` - The Redis connection pool.
 /// * `resource_limit` - The resource limit variant.
-/// * `user_id` - The user ID value for the resource limit record.
+/// * `resource_id` - The resource ID value for the resource limit record.
 pub async fn check_resource_limit(
     redis_pool: &RedisPool,
     resource_limit: ResourceLimit,
-    user_id: i64,
+    resource_id: i64,
 ) -> anyhow::Result<bool> {
     let mut conn = redis_pool.get().await.map_err(|error| {
         anyhow!("unable to acquire a connection from the Redis pool: {error:?}")
@@ -26,7 +26,7 @@ pub async fn check_resource_limit(
 
     let limit = conn
         .get::<_, Option<u32>>(&format!(
-            "{}:{}:{user_id}",
+            "{}:{}:{resource_id}",
             RedisNamespace::ResourceLimit,
             resource_limit as i32
         ))

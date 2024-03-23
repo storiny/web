@@ -62,11 +62,11 @@ const StoryStats = (): React.ReactElement => {
       ) : null}
       <div className={clsx(css["flex-center"], styles.main)}>
         <Typography
-          className={css["t-medium"]}
           level={"body2"}
           title={`${read_count.toLocaleString()} ${
             read_count === 1 ? "read" : "reads"
           }`}
+          weight={"medium"}
         >
           {abbreviate_number(read_count)} {read_count === 1 ? "read" : "reads"}
         </Typography>

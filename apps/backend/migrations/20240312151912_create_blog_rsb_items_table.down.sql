@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS blog_rsb_items CASCADE;

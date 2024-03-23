@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package api_service.v1;
 
+import "blog_def/v1/def.proto";
 import "comment_def/v1/def.proto";
 import "connection_settings_def/v1/def.proto";
 import "credential_settings_def/v1/def.proto";
@@ -94,6 +95,10 @@ service ApiService {
    */
   rpc GetUserRelationsInfo(user_def.v1.GetUserRelationsInfoRequest) returns (user_def.v1.GetUserRelationsInfoResponse) {}
   /**
+   * Returns the user's blogs details
+   */
+  rpc GetUserBlogsInfo(blog_def.v1.GetUserBlogsInfoRequest) returns (blog_def.v1.GetUserBlogsInfoResponse) {}
+  /**
    * Returns the user's block count
    */
   rpc GetUserBlockCount(user_def.v1.GetUserBlockCountRequest) returns (user_def.v1.GetUserBlockCountResponse) {}
@@ -117,6 +122,34 @@ service ApiService {
    * Creates a new draft
    */
   rpc CreateDraft(story_def.v1.CreateDraftRequest) returns (story_def.v1.CreateDraftResponse) {}
+  /**
+   * Returns the blog's data
+   */
+  rpc GetBlog(blog_def.v1.GetBlogRequest) returns (blog_def.v1.GetBlogResponse) {}
+  /**
+   * Returns the blog's archive data
+   */
+  rpc GetBlogArchive(blog_def.v1.GetBlogArchiveRequest) returns (blog_def.v1.GetBlogArchiveResponse) {}
+  /**
+   * Returns the blog's pending story count
+   */
+  rpc GetBlogPendingStoryCount(blog_def.v1.GetBlogPendingStoryCountRequest) returns (blog_def.v1.GetBlogPendingStoryCountResponse) {}
+  /**
+   * Returns the blog's published story count
+   */
+  rpc GetBlogPublishedStoryCount(blog_def.v1.GetBlogPublishedStoryCountRequest) returns (blog_def.v1.GetBlogPublishedStoryCountResponse) {}
+  /**
+   * Returns the blog's editors details
+   */
+  rpc GetBlogEditorsInfo(blog_def.v1.GetBlogEditorsInfoRequest) returns (blog_def.v1.GetBlogEditorsInfoResponse) {}
+  /**
+   * Returns the blog's writers details
+   */
+  rpc GetBlogWritersInfo(blog_def.v1.GetBlogWritersInfoRequest) returns (blog_def.v1.GetBlogWritersInfoResponse) {}
+  /**
+   * Returns the blog's sitemap
+   */
+  rpc GetBlogSitemap(blog_def.v1.GetBlogSitemapRequest) returns (blog_def.v1.GetBlogSitemapResponse) {}
 }
 
 // This is necessary to generate an output file using tonic.

@@ -1,5 +1,4 @@
 import { SUPPORT_ARTICLE_MAP } from "@storiny/shared/src/constants/support-articles";
-import { Story } from "@storiny/types";
 import { clsx } from "clsx";
 import NextLink from "next/link";
 import React from "react";
@@ -43,19 +42,21 @@ import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import { handle_api_error } from "~/utils/handle-api-error";
 
+import { StoryProps } from "../story.props";
+
 const StoryActions = ({
   story,
   is_draft,
   is_extended,
   is_contributable,
-  overlay
+  overlay,
+  custom_action
 }: {
-  is_contributable?: boolean;
-  is_draft?: boolean;
-  is_extended?: boolean;
   overlay?: boolean;
-  story: Story;
-}): React.ReactElement => {
+} & Pick<
+  StoryProps,
+  "custom_action" | "is_draft" | "is_contributable" | "is_extended" | "story"
+>): React.ReactElement => {
   const toast = use_toast();
   const share = use_web_share(toast);
   const copy = use_clipboard();
@@ -287,7 +288,9 @@ const StoryActions = ({
         </IconButton>
       }
     >
-      {is_draft ? (
+      {custom_action ? (
+        custom_action(story)
+      ) : is_draft ? (
         is_contributable ? (
           leave_story_element
         ) : (

@@ -2,8 +2,8 @@
   --font-system: -apple-system, "BlinkMacSystemFont", avenir next, avenir,
   segoe ui, helvetica neue, helvetica, "Cantarell", "Ubuntu", roboto, noto,
   arial, sans-serif;
-  --font-monospace: "Menlo", "Consolas", "Monaco", "Liberation Mono",
+  --font-monospace: blog-code, "Menlo", "Consolas", "Monaco", "Liberation Mono",
   "Lucida Console", monospace;
-  --font-primary: var(--font-cabinet-grotesk), var(--font-secondary);
-  --font-secondary: var(--font-satoshi), var(--font-system);
+  --font-primary: blog-primary, var(--font-cabinet-grotesk), var(--font-secondary);
+  --font-secondary: blog-secondary, var(--font-satoshi), var(--font-system);
 }

@@ -35,7 +35,7 @@ const ColorPickerCore = dynamic(
           >
             <CloudOffIcon />
             <Spacer orientation={"vertical"} />
-            <Typography className={css["t-minor"]} level={"body3"}>
+            <Typography color={"minor"} level={"body3"}>
               Network error
             </Typography>
             <Spacer orientation={"vertical"} size={2} />
@@ -73,7 +73,7 @@ const ColorPicker = (props: ColorPickerProps): React.ReactElement => {
         >
           <div className={clsx(css["flex-center"], styles.header)}>
             <Preview />
-            <Typography className={css["t-bold"]} level={"body2"}>
+            <Typography level={"body2"} weight={"bold"}>
               Pick a color
             </Typography>
             <Grow />

@@ -4,7 +4,8 @@ import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = (id: string): string => `me/stories/${id}/metadata`;
 
-export type StoryMetadataResponse = void;
+export type StoryMetadataResponse = { has_blog_modified: boolean };
+
 export interface StoryMetadataPayload extends Partial<StoryMetadataSchema> {
   id: string;
 }

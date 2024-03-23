@@ -71,10 +71,10 @@ const StatusBar = (): React.ReactElement => (
       css["flex-center"],
       css["f-grow"],
       css["t-mono"],
-      css["t-minor"],
       styles.x,
       styles["status-bar"]
     )}
+    color={"minor"}
   >
     <Rotation />
   </Typography>

@@ -1,0 +1,47 @@
+@use "breakpoints";
+
+.blog {
+  --block-padding: 8px;
+
+  padding-block: var(--block-padding);
+  gap: 16px;
+
+  @include breakpoints.media("<mobile") {
+    --block-padding: 14px;
+  }
+
+  &.virtual {
+    padding-block: calc(12px + var(--block-padding));
+  }
+}
+
+.main {
+  gap: 8px;
+  width: 100%;
+
+  &.has-logo {
+    --inline-padding: 20px;
+
+    max-width: calc(100% - calc(64px + var(--inline-padding))); // 100% - (width of logo + inline padding)
+
+    @include breakpoints.media("<mobile") {
+      --inline-padding: 16px;
+    }
+  }
+}
+
+.description {
+  word-wrap: break-word;
+  gap: 8px; // Gap for skeleton
+}
+
+.x {
+  &.logo {
+    border-radius: var(--radius-md);
+    height: 64px;
+    width: 64px;
+    min-width: 64px;
+    min-height: 64px;
+    border: none;
+  }
+}

@@ -147,7 +147,7 @@ const UserHoverCardContent = ({
           </Link>
         </div>
         {Boolean((user.rendered_bio || "").trim()) && (
-          <Typography as={"div"} className={clsx(css["t-minor"], styles.bio)}>
+          <Typography as={"div"} className={styles.bio} color={"minor"}>
             <BioParser content={user.rendered_bio} disable_hovercards />
           </Typography>
         )}

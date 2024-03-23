@@ -56,11 +56,11 @@ pub async fn clean_assets(
     db_pool: &Pool<Postgres>,
     s3_client: &S3Client,
     index: Option<u16>,
-) -> Result<(), JobError> {
+) -> Result<(), Error> {
     // We currently limit the amount of recursive calls to 50,000 (we can delete a maximum of 50
     // million assets at once). Consider raising this limit if needed.
     if index.unwrap_or_default() >= 50_000 {
-        return Err(JobError::Failed(Box::from(format!(
+        return Err(Error::Failed(Box::from(format!(
             "too many assets to delete: {}",
             index.unwrap_or_default() as u32 * CHUNK_SIZE
         ))));
@@ -75,7 +75,7 @@ pub async fn clean_assets(
             .begin()
             .await
             .map_err(Box::new)
-            .map_err(|err| JobError::Failed(err))?;
+            .map_err(|err| Error::Failed(err))?;
 
         let result = sqlx::query(
             r#"
@@ -98,7 +98,7 @@ RETURNING key
         .fetch_all(&mut *txn)
         .await
         .map_err(Box::new)
-        .map_err(|err| JobError::Failed(err))?
+        .map_err(|err| Error::Failed(err))?
         .iter()
         .filter_map(|row| {
             ObjectIdentifier::builder()
@@ -119,7 +119,7 @@ RETURNING key
                 .set_objects(Some(result))
                 .build()
                 .map_err(Box::new)
-                .map_err(|error| JobError::Failed(error))?;
+                .map_err(|error| Error::Failed(error))?;
 
             s3_client
                 .delete_objects()
@@ -128,13 +128,13 @@ RETURNING key
                 .send()
                 .await
                 .map_err(|error| Box::new(error.into_service_error()))
-                .map_err(|error| JobError::Failed(error))?;
+                .map_err(|error| Error::Failed(error))?;
         }
 
         txn.commit()
             .await
             .map_err(Box::new)
-            .map_err(|err| JobError::Failed(err))?;
+            .map_err(|err| Error::Failed(err))?;
     }
 
     // Recurse if there are more rows to return.
@@ -156,11 +156,11 @@ pub async fn clean_documents(
     db_pool: &Pool<Postgres>,
     s3_client: &S3Client,
     index: Option<u16>,
-) -> Result<(), JobError> {
+) -> Result<(), Error> {
     // We currently limit the amount of recursive calls to 50,000 (we can delete a maximum of 50
     // million docs at once). Consider raising this limit if needed.
     if index.unwrap_or_default() >= 50_000 {
-        return Err(JobError::Failed(Box::from(format!(
+        return Err(Error::Failed(Box::from(format!(
             "too many docs to delete: {}",
             index.unwrap_or_default() as u32 * CHUNK_SIZE
         ))));
@@ -175,7 +175,7 @@ pub async fn clean_documents(
             .begin()
             .await
             .map_err(Box::new)
-            .map_err(|err| JobError::Failed(err))?;
+            .map_err(|err| Error::Failed(err))?;
 
         let result = sqlx::query(
             r#"
@@ -198,7 +198,7 @@ RETURNING key
         .fetch_all(&mut *txn)
         .await
         .map_err(Box::new)
-        .map_err(|err| JobError::Failed(err))?
+        .map_err(|err| Error::Failed(err))?
         .iter()
         .filter_map(|row| {
             ObjectIdentifier::builder()
@@ -219,7 +219,7 @@ RETURNING key
                 .set_objects(Some(result))
                 .build()
                 .map_err(Box::new)
-                .map_err(|error| JobError::Failed(error))?;
+                .map_err(|error| Error::Failed(error))?;
 
             s3_client
                 .delete_objects()
@@ -228,13 +228,13 @@ RETURNING key
                 .send()
                 .await
                 .map_err(|error| Box::new(error.into_service_error()))
-                .map_err(|error| JobError::Failed(error))?;
+                .map_err(|error| Error::Failed(error))?;
         }
 
         txn.commit()
             .await
             .map_err(Box::new)
-            .map_err(|err| JobError::Failed(err))?;
+            .map_err(|err| Error::Failed(err))?;
     }
 
     // Recurse if there are more rows to return.
@@ -248,10 +248,8 @@ RETURNING key
 /// Deletes stale rows from the `assets` and the `documents` table, along with the attached objects
 /// from the S3 bucket.
 #[tracing::instrument(name = "JOB cleanup_s3", skip_all, ret, err)]
-pub async fn cleanup_s3(_: S3CleanupJob, ctx: JobContext) -> Result<(), JobError> {
+pub async fn cleanup_s3(_: S3CleanupJob, state: Data<Arc<SharedJobState>>) -> Result<(), Error> {
     info!("starting S3 cleanup");
-
-    let state = ctx.data::<Arc<SharedJobState>>()?;
 
     future::try_join(
         clean_assets(&state.db_pool, &state.s3_client, None),
@@ -270,11 +268,11 @@ mod tests {
     use crate::{
         test_utils::{
             count_s3_objects,
-            get_job_ctx_for_test,
+            get_job_state_for_test,
             get_s3_client,
             TestContext,
         },
-        utils::delete_s3_objects::delete_s3_objects,
+        utils::delete_s3_objects_using_prefix::delete_s3_objects_using_prefix,
     };
     use sqlx::PgPool;
     use storiny_macros::test_context;
@@ -293,8 +291,8 @@ mod tests {
 
         async fn teardown(self) {
             future::try_join(
-                delete_s3_objects(&self.s3_client, S3_UPLOADS_BUCKET, None, None),
-                delete_s3_objects(&self.s3_client, S3_DOCS_BUCKET, None, None),
+                delete_s3_objects_using_prefix(&self.s3_client, S3_UPLOADS_BUCKET, None, None),
+                delete_s3_objects_using_prefix(&self.s3_client, S3_DOCS_BUCKET, None, None),
             )
             .await
             .unwrap();
@@ -406,8 +404,8 @@ SELECT UNNEST($1::UUID[])
             // Generate some assets.
             generate_dummy_assets(5, &pool, s3_client).await;
 
-            let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
-            let result = cleanup_s3(S3CleanupJob(Utc::now()), ctx).await;
+            let state = get_job_state_for_test(pool.clone(), Some(s3_client.clone())).await;
+            let result = cleanup_s3(S3CleanupJob(Utc::now()), state).await;
 
             assert!(result.is_ok());
 
@@ -439,8 +437,8 @@ SELECT UNNEST($1::UUID[])
             // Generate a large number of assets.
             generate_dummy_assets(2500, &pool, s3_client).await;
 
-            let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
-            let result = cleanup_s3(S3CleanupJob(Utc::now()), ctx).await;
+            let state = get_job_state_for_test(pool.clone(), Some(s3_client.clone())).await;
+            let result = cleanup_s3(S3CleanupJob(Utc::now()), state).await;
 
             assert!(result.is_ok());
 
@@ -472,7 +470,7 @@ SELECT UNNEST($1::UUID[])
             // Generate a single asset.
             generate_dummy_assets(1, &pool, s3_client).await;
 
-            // Update the user_id of the asset.
+            // Update the `user_id` of the asset.
             let result = sqlx::query(
                 r#"
 WITH selected_asset AS (
@@ -489,8 +487,8 @@ WHERE id = (SELECT id FROM selected_asset)
 
             assert_eq!(result.rows_affected(), 1);
 
-            let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
-            let result = cleanup_s3(S3CleanupJob(Utc::now()), ctx).await;
+            let state = get_job_state_for_test(pool.clone(), Some(s3_client.clone())).await;
+            let result = cleanup_s3(S3CleanupJob(Utc::now()), state).await;
 
             assert!(result.is_ok());
 
@@ -524,8 +522,8 @@ WHERE id = (SELECT id FROM selected_asset)
             // Generate some documents.
             generate_dummy_documents(5, &pool, s3_client).await;
 
-            let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
-            let result = cleanup_s3(S3CleanupJob(Utc::now()), ctx).await;
+            let state = get_job_state_for_test(pool.clone(), Some(s3_client.clone())).await;
+            let result = cleanup_s3(S3CleanupJob(Utc::now()), state).await;
 
             assert!(result.is_ok());
 
@@ -557,8 +555,8 @@ WHERE id = (SELECT id FROM selected_asset)
             // Generate a large number of documents.
             generate_dummy_documents(2500, &pool, s3_client).await;
 
-            let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
-            let result = cleanup_s3(S3CleanupJob(Utc::now()), ctx).await;
+            let state = get_job_state_for_test(pool.clone(), Some(s3_client.clone())).await;
+            let result = cleanup_s3(S3CleanupJob(Utc::now()), state).await;
 
             assert!(result.is_ok());
 
@@ -594,8 +592,8 @@ WHERE id = (SELECT id FROM selected_asset)
 
             assert_eq!(result.len(), 1);
 
-            let ctx = get_job_ctx_for_test(pool.clone(), Some(s3_client.clone())).await;
-            let result = cleanup_s3(S3CleanupJob(Utc::now()), ctx).await;
+            let state = get_job_state_for_test(pool.clone(), Some(s3_client.clone())).await;
+            let result = cleanup_s3(S3CleanupJob(Utc::now()), state).await;
 
             assert!(result.is_ok());
 

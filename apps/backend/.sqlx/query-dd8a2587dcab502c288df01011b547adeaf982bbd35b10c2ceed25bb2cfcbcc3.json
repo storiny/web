@@ -1,0 +1,145 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "WITH stories_result AS (SELECT\n\t\t\t\t\t\t\t-- Story\n\t\t\t\t\t\t\ts.id,\n\t\t\t\t\t\t\ts.title,\n\t\t\t\t\t\t\ts.slug,\n\t\t\t\t\t\t\ts.description,\n\t\t\t\t\t\t\ts.splash_id,\n\t\t\t\t\t\t\ts.splash_hex,\n\t\t\t\t\t\t\ts.category::TEXT                        AS \"category!\",\n\t\t\t\t\t\t\ts.age_restriction,\n\t\t\t\t\t\t\ts.license,\n\t\t\t\t\t\t\ts.user_id,\n\t\t\t\t\t\t\t-- Stats\n\t\t\t\t\t\t\ts.word_count,\n\t\t\t\t\t\t\ts.read_count,\n\t\t\t\t\t\t\ts.like_count,\n\t\t\t\t\t\t\ts.comment_count,\n\t\t\t\t\t\t\t-- Timestamps\n\t\t\t\t\t\t\ts.created_at,\n\t\t\t\t\t\t\ts.published_at,\n\t\t\t\t\t\t\ts.edited_at,\n\t\t\t\t\t\t\t-- Boolean flags\n\t\t\t\t\t\t\t\"s->is_liked\".story_id IS NOT NULL      AS \"is_liked!\",\n\t\t\t\t\t\t\t\"s->is_bookmarked\".story_id IS NOT NULL AS \"is_bookmarked!\",\n\t\t\t\t\t\t\t-- User\n\t\t\t\t\t\t\tJSON_BUILD_OBJECT(\n\t\t\t\t\t\t\t\t\t'id', su.id,\n\t\t\t\t\t\t\t\t\t'name', su.name,\n\t\t\t\t\t\t\t\t\t'username', su.username,\n\t\t\t\t\t\t\t\t\t'avatar_id', su.avatar_id,\n\t\t\t\t\t\t\t\t\t'avatar_hex', su.avatar_hex,\n\t\t\t\t\t\t\t\t\t'public_flags', su.public_flags\n\t\t\t\t\t\t\t)                                       AS \"user!: Json<User>\",\n\t\t\t\t\t\t\t-- Tags\n\t\t\t\t\t\t\tCASE\n\t\t\t\t\t\t\t\tWHEN s.published_at IS NOT NULL\n\t\t\t\t\t\t\t\t\tTHEN\n\t\t\t\t\t\t\t\t\tCOALESCE(\n\t\t\t\t\t\t\t\t\t\t\t\t\tARRAY_AGG(\n\t\t\t\t\t\t\t\t\t\t\t\t\tDISTINCT (\"s->story_tags->tag\".id, \"s->story_tags->tag\".name)\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t ) FILTER (\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tWHERE \"s->story_tags->tag\".id IS NOT NULL\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t), '{}'\n\t\t\t\t\t\t\t\t\t)\n\t\t\t\t\t\t\t\tELSE '{}'\n\t\t\t\t\t\t\tEND                                     AS \"tags!: Vec<Tag>\"\n\t\t\t\t\t\tFROM\n\t\t\t\t\t\t\tblog_stories AS bs\n\t\t\t\t\t\t\t\t-- Join story\n\t\t\t\t\t\t\t\tINNER JOIN stories AS s\n\t\t\t\t\t\t\t\t\t\t   ON s.id = bs.story_id\n\t\t\t\t\t\t\t\t-- Join user\n\t\t\t\t\t\t\t\tINNER JOIN users AS su\n\t\t\t\t\t\t\t\t\t\t   ON su.id = s.user_id\n\t\t\t\t\t\t\t\t-- Join story tags\n\t\t\t\t\t\t\t\tLEFT OUTER JOIN (story_tags AS \"s->story_tags\"\n\t\t\t\t\t\t\t\tINNER JOIN tags AS \"s->story_tags->tag\"\n\t\t\t\t\t\t\t\t\t\t\t\t ON \"s->story_tags->tag\".id = \"s->story_tags\".tag_id)\n\t\t\t\t\t\t\t\t\t\t\t\tON \"s->story_tags\".story_id = s.id\n\t\t\t\t\t\t\t\t-- Boolean story like flag\n\t\t\t\t\t\t\t\tLEFT OUTER JOIN story_likes AS \"s->is_liked\"\n\t\t\t\t\t\t\t\t\t\t\t\tON \"s->is_liked\".story_id = s.id\n\t\t\t\t\t\t\t\t\t\t\t\t\tAND \"s->is_liked\".user_id = $2\n\t\t\t\t\t\t\t\t\t\t\t\t\tAND \"s->is_liked\".deleted_at IS NULL\n\t\t\t\t\t\t\t\t-- Boolean bookmark flag\n\t\t\t\t\t\t\t\tLEFT OUTER JOIN bookmarks AS \"s->is_bookmarked\"\n\t\t\t\t\t\t\t\t\t\t\t\tON \"s->is_bookmarked\".story_id = s.id\n\t\t\t\t\t\t\t\t\t\t\t\t\tAND \"s->is_bookmarked\".user_id = $2\n\t\t\t\t\t\t\t\t\t\t\t\t\tAND \"s->is_bookmarked\".deleted_at IS NULL\n\t\t\t\t\t\tWHERE\n\t\t\t\t\t\t\t  bs.blog_id = $1\n\t\t\t\t\t\t  AND bs.accepted_at IS NULL\n\t\t\t\t\t\t  AND bs.deleted_at IS NULL\n\t\t\t\t\t\tGROUP BY\n\t\t\t\t\t\t\ts.id,\n\t\t\t\t\t\t\tsu.id,\n\t\t\t\t\t\t\tbs.created_at,\n\t\t\t\t\t\t\t\"s->is_liked\".story_id,\n\t\t\t\t\t\t\t\"s->is_bookmarked\".story_id\n\t\t\t\t\t\tORDER BY bs.created_at\n\t\t\t\t\t\tLIMIT $3 OFFSET $4\n\t\t\t\t\t   )\nSELECT\n\t-- Story\n\tid,\n\ttitle,\n\tslug,\n\tdescription,\n\tsplash_id,\n\tsplash_hex,\n\t\"category!\",\n\tage_restriction,\n\tlicense,\n\tuser_id,\n\t-- Stats\n\tword_count,\n\tread_count,\n\tlike_count,\n\tcomment_count,\n\t-- Timestamps\n\tcreated_at,\n\tpublished_at,\n\tedited_at,\n\t-- Boolean flags\n\t\"is_bookmarked!\",\n\t\"is_liked!\",\n\t-- Joins\n\t\"user!: Json<User>\",\n\t\"tags!: Vec<Tag>\"\nFROM\n\tstories_result\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
+        "name": "title",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "slug",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "splash_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 5,
+        "name": "splash_hex",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "category!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "age_restriction",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 8,
+        "name": "license",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 9,
+        "name": "user_id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 10,
+        "name": "word_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 11,
+        "name": "read_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 12,
+        "name": "like_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 13,
+        "name": "comment_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 14,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 15,
+        "name": "published_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 16,
+        "name": "edited_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 17,
+        "name": "is_bookmarked!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 18,
+        "name": "is_liked!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 19,
+        "name": "user!: Json<User>",
+        "type_info": "Json"
+      },
+      {
+        "ordinal": 20,
+        "name": "tags!: Vec<Tag>",
+        "type_info": "RecordArray"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Int8",
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      null,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "dd8a2587dcab502c288df01011b547adeaf982bbd35b10c2ceed25bb2cfcbcc3"
+}

@@ -52,23 +52,15 @@ const PopularStory = (props: PopularStoryProps): React.ReactElement | null => {
                 {user.name}
               </Link>
             </UserHoverCard>
-            <Typography
-              aria-hidden
-              as={"span"}
-              className={css["t-muted"]}
-              level={"body2"}
-            >
+            <Typography aria-hidden as={"span"} color={"muted"} level={"body2"}>
               &bull;
             </Typography>
             <Typography
               as={"span"}
-              className={clsx(
-                css["t-minor"],
-                css["t-medium"],
-                css["flex-center"],
-                styles["trending-text"]
-              )}
+              className={clsx(css["flex-center"], styles["trending-text"])}
+              color={"minor"}
               level={"body2"}
+              weight={"medium"}
             >
               <TrendingUpIcon size={14} />
               {abbreviate_number(story.read_count)}

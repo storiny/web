@@ -23,6 +23,11 @@
   border-block: 1px solid var(--divider);
   overflow: hidden;
 
+  &.is-blog {
+    border-inline: 1px solid var(--divider);
+    border-radius: var(--radius-md);
+  }
+
   @include breakpoints.media("<desktop") {
     grid-column: 4 / -4;
     border-radius: var(--radius-md);
@@ -37,8 +42,8 @@
     width: 100vw !important;
     margin-inline: 0 !important;
     grid-column: unset !important;
-    border-inline: none;
-    border-radius: 0;
+    border-inline: none !important;
+    border-radius: 0 !important;
   }
 }
 

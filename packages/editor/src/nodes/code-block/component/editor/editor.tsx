@@ -10,6 +10,7 @@ import React from "react";
 import use_resize_observer from "use-resize-observer";
 import { Text as YText } from "yjs";
 
+import { use_blog_context } from "~/common/context/blog";
 import Divider from "~/components/divider";
 import Option from "~/components/option";
 import Select from "~/components/select";
@@ -69,6 +70,7 @@ const CodeBlockEditor = ({
   const [language_status, set_language_status] = React.useState<
     "loading" | "loaded" | "error"
   >(language === null ? "loaded" : "loading");
+  const blog = use_blog_context();
   const language_compartment = React.useMemo(() => new Compartment(), []);
   const wrap_compartment = React.useMemo(() => new Compartment(), []);
   const theme_compartment = React.useMemo(() => new Compartment(), []);
@@ -323,7 +325,13 @@ const CodeBlockEditor = ({
         data-testid={"code-block-node"}
         ref={resize_observer_ref}
       >
-        <div className={clsx(css["flex-col"], styles.content)}>
+        <div
+          className={clsx(
+            css["flex-col"],
+            styles.content,
+            blog?.is_story_minimal_layout && styles["is-blog"]
+          )}
+        >
           <div className={clsx(css["flex-center"], styles.header)}>
             <div className={clsx(css.flex, styles.info)}>
               <span className={clsx(css["flex-center"], styles.icon)}>

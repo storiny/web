@@ -1,5 +1,6 @@
 /* eslint-disable */
 import _m0 from "protobufjs/minimal";
+import { BareBlog } from "../../blog_def/v1/def";
 import { Tag } from "../../tag_def/v1/def";
 import { BareUser, ExtendedUser } from "../../user_def/v1/def";
 
@@ -250,6 +251,9 @@ export interface GetStoryResponse {
   user: ExtendedUser | undefined;
   contributors: BareUser[];
   tags: Tag[];
+  blog?:
+    | BareBlog
+    | undefined;
   /** User specific props */
   is_bookmarked: boolean;
   is_liked: boolean;
@@ -293,6 +297,7 @@ export interface GetStoryMetadataResponse {
     | undefined;
   /** Joins */
   user: BareUser | undefined;
+  blog?: BareBlog | undefined;
   tags: Tag[];
 }
 
@@ -1205,6 +1210,7 @@ function createBaseGetStoryResponse(): GetStoryResponse {
     user: undefined,
     contributors: [],
     tags: [],
+    blog: undefined,
     is_bookmarked: false,
     is_liked: false,
     reading_session_token: "",
@@ -1306,14 +1312,17 @@ export const GetStoryResponse = {
     for (const v of message.tags) {
       Tag.encode(v!, writer.uint32(250).fork()).ldelim();
     }
+    if (message.blog !== undefined) {
+      BareBlog.encode(message.blog, writer.uint32(258).fork()).ldelim();
+    }
     if (message.is_bookmarked === true) {
-      writer.uint32(256).bool(message.is_bookmarked);
+      writer.uint32(264).bool(message.is_bookmarked);
     }
     if (message.is_liked === true) {
-      writer.uint32(264).bool(message.is_liked);
+      writer.uint32(272).bool(message.is_liked);
     }
     if (message.reading_session_token !== "") {
-      writer.uint32(274).string(message.reading_session_token);
+      writer.uint32(282).string(message.reading_session_token);
     }
     return writer;
   },
@@ -1543,21 +1552,28 @@ export const GetStoryResponse = {
           message.tags.push(Tag.decode(reader, reader.uint32()));
           continue;
         case 32:
-          if (tag !== 256) {
+          if (tag !== 258) {
             break;
           }
 
-          message.is_bookmarked = reader.bool();
+          message.blog = BareBlog.decode(reader, reader.uint32());
           continue;
         case 33:
           if (tag !== 264) {
             break;
           }
 
-          message.is_liked = reader.bool();
+          message.is_bookmarked = reader.bool();
           continue;
         case 34:
-          if (tag !== 274) {
+          if (tag !== 272) {
+            break;
+          }
+
+          message.is_liked = reader.bool();
+          continue;
+        case 35:
+          if (tag !== 282) {
             break;
           }
 
@@ -1609,6 +1625,7 @@ export const GetStoryResponse = {
         ? object.contributors.map((e: any) => BareUser.fromJSON(e))
         : [],
       tags: globalThis.Array.isArray(object?.tags) ? object.tags.map((e: any) => Tag.fromJSON(e)) : [],
+      blog: isSet(object.blog) ? BareBlog.fromJSON(object.blog) : undefined,
       is_bookmarked: isSet(object.is_bookmarked) ? globalThis.Boolean(object.is_bookmarked) : false,
       is_liked: isSet(object.is_liked) ? globalThis.Boolean(object.is_liked) : false,
       reading_session_token: isSet(object.reading_session_token) ? globalThis.String(object.reading_session_token) : "",
@@ -1710,6 +1727,9 @@ export const GetStoryResponse = {
     if (message.tags?.length) {
       obj.tags = message.tags.map((e) => Tag.toJSON(e));
     }
+    if (message.blog !== undefined) {
+      obj.blog = BareBlog.toJSON(message.blog);
+    }
     if (message.is_bookmarked === true) {
       obj.is_bookmarked = message.is_bookmarked;
     }
@@ -1760,6 +1780,7 @@ export const GetStoryResponse = {
       : undefined;
     message.contributors = object.contributors?.map((e) => BareUser.fromPartial(e)) || [];
     message.tags = object.tags?.map((e) => Tag.fromPartial(e)) || [];
+    message.blog = (object.blog !== undefined && object.blog !== null) ? BareBlog.fromPartial(object.blog) : undefined;
     message.is_bookmarked = object.is_bookmarked ?? false;
     message.is_liked = object.is_liked ?? false;
     message.reading_session_token = object.reading_session_token ?? "";
@@ -1869,6 +1890,7 @@ function createBaseGetStoryMetadataResponse(): GetStoryMetadataResponse {
     first_published_at: undefined,
     deleted_at: undefined,
     user: undefined,
+    blog: undefined,
     tags: [],
   };
 }
@@ -1953,8 +1975,11 @@ export const GetStoryMetadataResponse = {
     if (message.user !== undefined) {
       BareUser.encode(message.user, writer.uint32(210).fork()).ldelim();
     }
+    if (message.blog !== undefined) {
+      BareBlog.encode(message.blog, writer.uint32(218).fork()).ldelim();
+    }
     for (const v of message.tags) {
-      Tag.encode(v!, writer.uint32(218).fork()).ldelim();
+      Tag.encode(v!, writer.uint32(226).fork()).ldelim();
     }
     return writer;
   },
@@ -2153,6 +2178,13 @@ export const GetStoryMetadataResponse = {
             break;
           }
 
+          message.blog = BareBlog.decode(reader, reader.uint32());
+          continue;
+        case 28:
+          if (tag !== 226) {
+            break;
+          }
+
           message.tags.push(Tag.decode(reader, reader.uint32()));
           continue;
       }
@@ -2194,6 +2226,7 @@ export const GetStoryMetadataResponse = {
       first_published_at: isSet(object.first_published_at) ? globalThis.String(object.first_published_at) : undefined,
       deleted_at: isSet(object.deleted_at) ? globalThis.String(object.deleted_at) : undefined,
       user: isSet(object.user) ? BareUser.fromJSON(object.user) : undefined,
+      blog: isSet(object.blog) ? BareBlog.fromJSON(object.blog) : undefined,
       tags: globalThis.Array.isArray(object?.tags) ? object.tags.map((e: any) => Tag.fromJSON(e)) : [],
     };
   },
@@ -2278,6 +2311,9 @@ export const GetStoryMetadataResponse = {
     if (message.user !== undefined) {
       obj.user = BareUser.toJSON(message.user);
     }
+    if (message.blog !== undefined) {
+      obj.blog = BareBlog.toJSON(message.blog);
+    }
     if (message.tags?.length) {
       obj.tags = message.tags.map((e) => Tag.toJSON(e));
     }
@@ -2315,6 +2351,7 @@ export const GetStoryMetadataResponse = {
     message.first_published_at = object.first_published_at ?? undefined;
     message.deleted_at = object.deleted_at ?? undefined;
     message.user = (object.user !== undefined && object.user !== null) ? BareUser.fromPartial(object.user) : undefined;
+    message.blog = (object.blog !== undefined && object.blog !== null) ? BareBlog.fromPartial(object.blog) : undefined;
     message.tags = object.tags?.map((e) => Tag.fromPartial(e)) || [];
     return message;
   },

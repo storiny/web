@@ -418,7 +418,7 @@ mod tests {
             RedisTestContext,
             TestContext,
         },
-        utils::delete_s3_objects::delete_s3_objects,
+        utils::delete_s3_objects_using_prefix::delete_s3_objects_using_prefix,
         RedisPool,
     };
     use actix_http::StatusCode;
@@ -455,7 +455,7 @@ mod tests {
                         .expect("failed to FLUSHDB");
                 },
                 async {
-                    delete_s3_objects(&self.s3_client, S3_UPLOADS_BUCKET, None, None)
+                    delete_s3_objects_using_prefix(&self.s3_client, S3_UPLOADS_BUCKET, None, None)
                         .await
                         .unwrap()
                 },

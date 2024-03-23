@@ -1,0 +1,138 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "WITH blog_stories AS (SELECT\n\t\t\t\t\t\t  -- Story\n\t\t\t\t\t\t  s.id,\n\t\t\t\t\t\t  s.title,\n\t\t\t\t\t\t  s.slug                                                             AS \"slug!\",\n\t\t\t\t\t\t  s.description,\n\t\t\t\t\t\t  s.splash_id,\n\t\t\t\t\t\t  s.splash_hex,\n\t\t\t\t\t\t  s.category::TEXT                                                   AS \"category!\",\n\t\t\t\t\t\t  s.age_restriction,\n\t\t\t\t\t\t  s.license,\n\t\t\t\t\t\t  s.user_id,\n\t\t\t\t\t\t  -- Stats\n\t\t\t\t\t\t  s.word_count,\n\t\t\t\t\t\t  s.read_count,\n\t\t\t\t\t\t  s.like_count,\n\t\t\t\t\t\t  s.comment_count,\n\t\t\t\t\t\t  -- Timestamps\n\t\t\t\t\t\t  bs.accepted_at                                                     AS \"published_at!\",\n\t\t\t\t\t\t  s.edited_at,\n\t\t\t\t\t\t  -- User\n\t\t\t\t\t\t  JSON_BUILD_OBJECT('id', u.id, 'name', u.name, 'username', u.username, 'avatar_id',\n\t\t\t\t\t\t\t\t\t\t\tu.avatar_id, 'avatar_hex', u.avatar_hex, 'public_flags',\n\t\t\t\t\t\t\t\t\t\t\tu.public_flags)                                  AS \"user!: Json<User>\",\n\t\t\t\t\t\t  -- Tags\n\t\t\t\t\t\t  COALESCE(ARRAY_AGG(DISTINCT (\"s->story_tags->tag\".id, \"s->story_tags->tag\".name))\n\t\t\t\t\t\t\t\t   FILTER (WHERE \"s->story_tags->tag\".id IS NOT NULL), '{}') AS \"tags!: Vec<Tag>\"\n\t\t\t\t\t  FROM\n\t\t\t\t\t\t  blog_stories AS bs\n\t\t\t\t\t\t\t  -- Join story\n\t\t\t\t\t\t\t  INNER JOIN stories AS s\n\t\t\t\t\t\t\t\t\t\t ON bs.story_id = s.id\n\t\t\t\t\t\t\t  -- Join user\n\t\t\t\t\t\t\t  INNER JOIN users AS u\n\t\t\t\t\t\t\t\t\t\t ON u.id = s.user_id\n\t\t\t\t\t\t\t\t\t\t\t AND u.deleted_at IS NULL\n\t\t\t\t\t\t\t\t\t\t\t AND u.deactivated_at IS NULL\n\t\t\t\t\t\t\t  -- Join story tags\n\t\t\t\t\t\t\t  LEFT OUTER JOIN (story_tags AS \"s->story_tags\"\n\t\t\t\t\t\t\t  -- Join tags\n\t\t\t\t\t\t\t  INNER JOIN tags AS \"s->story_tags->tag\"\n\t\t\t\t\t\t\t\t\t\t\t   ON \"s->story_tags->tag\".id = \"s->story_tags\".tag_id)\n\t\t\t\t\t\t\t\t\t\t\t  ON \"s->story_tags\".story_id = s.id\n\t\t\t\t\t  WHERE\n\t\t\t\t\t\t\tbs.blog_id = $1\n\t\t\t\t\t\tAND bs.accepted_at IS NOT NULL\n\t\t\t\t\t\tAND bs.deleted_at IS NULL\n\t\t\t\t\t  GROUP BY\n\t\t\t\t\t\t  s.id,\n\t\t\t\t\t\t  u.id,\n\t\t\t\t\t\t  bs.accepted_at\n\t\t\t\t\t  ORDER BY bs.accepted_at DESC\n\t\t\t\t\t  LIMIT $2 OFFSET $3\n\t\t\t\t\t )\nSELECT\n\t-- Story\n\tid,\n\ttitle,\n\t\"slug!\",\n\tdescription,\n\tsplash_id,\n\tsplash_hex,\n\t\"category!\",\n\tage_restriction,\n\tlicense,\n\tuser_id,\n\t-- Stats\n\tword_count,\n\tread_count,\n\tlike_count,\n\tcomment_count,\n\t-- Timestamps\n\t\"published_at!\",\n\tedited_at,\n\t-- Boolean flags\n\tFALSE AS \"is_bookmarked!\",\n\tFALSE AS \"is_liked!\",\n\t-- Joins\n\t\"user!: Json<User>\",\n\t\"tags!: Vec<Tag>\"\nFROM\n\tblog_stories;\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
+        "name": "title",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "slug!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "splash_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 5,
+        "name": "splash_hex",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "category!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "age_restriction",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 8,
+        "name": "license",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 9,
+        "name": "user_id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 10,
+        "name": "word_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 11,
+        "name": "read_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 12,
+        "name": "like_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 13,
+        "name": "comment_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 14,
+        "name": "published_at!",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 15,
+        "name": "edited_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 16,
+        "name": "is_bookmarked!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 17,
+        "name": "is_liked!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 18,
+        "name": "user!: Json<User>",
+        "type_info": "Json"
+      },
+      {
+        "ordinal": 19,
+        "name": "tags!: Vec<Tag>",
+        "type_info": "RecordArray"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      null,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "a6420d8d3db74286d918e0052b14867c1b64817408c256d9cd2a315a5be0d1ea"
+}

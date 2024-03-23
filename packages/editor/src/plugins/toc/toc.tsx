@@ -372,7 +372,8 @@ const TableOfContentsPlugin = (): React.ReactElement => {
     </ul>
   ) : (
     <Typography
-      className={clsx(css["t-muted"], css["t-center"])}
+      className={css["t-center"]}
+      color={"muted"}
       level={"body2"}
       style={{ display: "table-cell", verticalAlign: "middle" }}
     >

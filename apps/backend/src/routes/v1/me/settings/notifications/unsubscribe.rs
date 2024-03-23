@@ -57,6 +57,12 @@ SET
         NotificationEntityType::FriendReqAccept | NotificationEntityType::FriendReqReceived => {
             "push_friend_requests"
         }
+        NotificationEntityType::CollabReqAccept | NotificationEntityType::CollabReqReceived => {
+            "push_collaboration_requests"
+        }
+        NotificationEntityType::BlogEditorInvite | NotificationEntityType::BlogWriterInvite => {
+            "push_blog_requests"
+        }
         NotificationEntityType::FollowerAdd => "push_followers",
         NotificationEntityType::CommentAdd => "push_comments",
         NotificationEntityType::ReplyAdd => "push_replies",

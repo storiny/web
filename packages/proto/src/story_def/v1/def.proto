@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package story_def.v1;
 
+import "blog_def/v1/def.proto";
 import "tag_def/v1/def.proto";
 import "user_def/v1/def.proto";
 
@@ -134,11 +135,12 @@ message GetStoryResponse {
   user_def.v1.ExtendedUser user /*             */ = 29;
   repeated user_def.v1.BareUser contributors /**/ = 30;
   repeated tag_def.v1.Tag tags /*              */ = 31;
+  optional blog_def.v1.BareBlog blog /*        */ = 32;
   // User specific props
-  bool is_bookmarked /*                        */ = 32;
-  bool is_liked /*                             */ = 33;
+  bool is_bookmarked /*                        */ = 33;
+  bool is_liked /*                             */ = 34;
   // Reading session token
-  string reading_session_token /*              */ = 34;
+  string reading_session_token /*              */ = 35;
 }
 
 // Story metadata request
@@ -177,5 +179,6 @@ message GetStoryMetadataResponse {
   optional string deleted_at /*          */ = 25;
   // Joins
   user_def.v1.BareUser user /*           */ = 26;
-  repeated tag_def.v1.Tag tags /*        */ = 27;
+  optional blog_def.v1.BareBlog blog /*  */ = 27;
+  repeated tag_def.v1.Tag tags /*        */ = 28;
 }

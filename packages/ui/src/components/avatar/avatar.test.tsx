@@ -138,7 +138,7 @@ describe("<Avatar />", () => {
       );
 
       await screen.findByTestId("fallback");
-      expect(getByTestId("fallback")).toHaveTextContent(/^F$/);
+      expect(getByTestId("fallback")).toHaveTextContent(/^FI$/);
     });
 
     it("uses `alt` when `label` is not provided", async () => {
@@ -176,7 +176,7 @@ describe("<Avatar />", () => {
       expect(getByTestId("fallback")).toHaveTextContent(/^$/);
     });
 
-    it("does not break on non-english names", async () => {
+    it("handles non-english names", async () => {
       const { getByTestId } = render_test_with_provider(
         <Avatar
           alt={"Test avatar"}
@@ -191,7 +191,7 @@ describe("<Avatar />", () => {
       );
 
       await screen.findByTestId("fallback");
-      expect(getByTestId("fallback")).toHaveTextContent(/^$/);
+      expect(getByTestId("fallback")).toHaveTextContent(/^あや$/);
     });
   });
 

@@ -8,6 +8,10 @@ Disallow: /handler$
 Disallow: /new$
 Disallow: /api/
 Disallow: /doc/
+Disallow: /me$
+Disallow: /me/
+Disallow: /blogs$
+Disallow: /blogs/
 Disallow: /gateway-error
 
 User-agent: Mediapartners-Google
