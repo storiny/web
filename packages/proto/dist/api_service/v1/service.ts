@@ -9,6 +9,24 @@ import type {
   UntypedServiceImplementation,
 } from "@grpc/grpc-js";
 import _m0 from "protobufjs/minimal";
+import {
+  GetBlogArchiveRequest,
+  GetBlogArchiveResponse,
+  GetBlogEditorsInfoRequest,
+  GetBlogEditorsInfoResponse,
+  GetBlogPendingStoryCountRequest,
+  GetBlogPendingStoryCountResponse,
+  GetBlogPublishedStoryCountRequest,
+  GetBlogPublishedStoryCountResponse,
+  GetBlogRequest,
+  GetBlogResponse,
+  GetBlogSitemapRequest,
+  GetBlogSitemapResponse,
+  GetBlogWritersInfoRequest,
+  GetBlogWritersInfoResponse,
+  GetUserBlogsInfoRequest,
+  GetUserBlogsInfoResponse,
+} from "../../blog_def/v1/def";
 import { GetCommentRequest, GetCommentResponse } from "../../comment_def/v1/def";
 import { GetConnectionSettingsRequest, GetConnectionSettingsResponse } from "../../connection_settings_def/v1/def";
 import { GetCredentialSettingsRequest, GetCredentialSettingsResponse } from "../../credential_settings_def/v1/def";
@@ -321,6 +339,17 @@ export const ApiServiceService = {
       Buffer.from(GetUserRelationsInfoResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetUserRelationsInfoResponse.decode(value),
   },
+  /** Returns the user's blogs details */
+  getUserBlogsInfo: {
+    path: "/api_service.v1.ApiService/GetUserBlogsInfo",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetUserBlogsInfoRequest) => Buffer.from(GetUserBlogsInfoRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetUserBlogsInfoRequest.decode(value),
+    responseSerialize: (value: GetUserBlogsInfoResponse) =>
+      Buffer.from(GetUserBlogsInfoResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetUserBlogsInfoResponse.decode(value),
+  },
   /** Returns the user's block count */
   getUserBlockCount: {
     path: "/api_service.v1.ApiService/GetUserBlockCount",
@@ -384,6 +413,84 @@ export const ApiServiceService = {
     responseSerialize: (value: CreateDraftResponse) => Buffer.from(CreateDraftResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => CreateDraftResponse.decode(value),
   },
+  /** Returns the blog's data */
+  getBlog: {
+    path: "/api_service.v1.ApiService/GetBlog",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetBlogRequest) => Buffer.from(GetBlogRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetBlogRequest.decode(value),
+    responseSerialize: (value: GetBlogResponse) => Buffer.from(GetBlogResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetBlogResponse.decode(value),
+  },
+  /** Returns the blog's archive data */
+  getBlogArchive: {
+    path: "/api_service.v1.ApiService/GetBlogArchive",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetBlogArchiveRequest) => Buffer.from(GetBlogArchiveRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetBlogArchiveRequest.decode(value),
+    responseSerialize: (value: GetBlogArchiveResponse) => Buffer.from(GetBlogArchiveResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetBlogArchiveResponse.decode(value),
+  },
+  /** Returns the blog's pending story count */
+  getBlogPendingStoryCount: {
+    path: "/api_service.v1.ApiService/GetBlogPendingStoryCount",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetBlogPendingStoryCountRequest) =>
+      Buffer.from(GetBlogPendingStoryCountRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetBlogPendingStoryCountRequest.decode(value),
+    responseSerialize: (value: GetBlogPendingStoryCountResponse) =>
+      Buffer.from(GetBlogPendingStoryCountResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetBlogPendingStoryCountResponse.decode(value),
+  },
+  /** Returns the blog's published story count */
+  getBlogPublishedStoryCount: {
+    path: "/api_service.v1.ApiService/GetBlogPublishedStoryCount",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetBlogPublishedStoryCountRequest) =>
+      Buffer.from(GetBlogPublishedStoryCountRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetBlogPublishedStoryCountRequest.decode(value),
+    responseSerialize: (value: GetBlogPublishedStoryCountResponse) =>
+      Buffer.from(GetBlogPublishedStoryCountResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetBlogPublishedStoryCountResponse.decode(value),
+  },
+  /** Returns the blog's editors details */
+  getBlogEditorsInfo: {
+    path: "/api_service.v1.ApiService/GetBlogEditorsInfo",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetBlogEditorsInfoRequest) =>
+      Buffer.from(GetBlogEditorsInfoRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetBlogEditorsInfoRequest.decode(value),
+    responseSerialize: (value: GetBlogEditorsInfoResponse) =>
+      Buffer.from(GetBlogEditorsInfoResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetBlogEditorsInfoResponse.decode(value),
+  },
+  /** Returns the blog's writers details */
+  getBlogWritersInfo: {
+    path: "/api_service.v1.ApiService/GetBlogWritersInfo",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetBlogWritersInfoRequest) =>
+      Buffer.from(GetBlogWritersInfoRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetBlogWritersInfoRequest.decode(value),
+    responseSerialize: (value: GetBlogWritersInfoResponse) =>
+      Buffer.from(GetBlogWritersInfoResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetBlogWritersInfoResponse.decode(value),
+  },
+  /** Returns the blog's sitemap */
+  getBlogSitemap: {
+    path: "/api_service.v1.ApiService/GetBlogSitemap",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetBlogSitemapRequest) => Buffer.from(GetBlogSitemapRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetBlogSitemapRequest.decode(value),
+    responseSerialize: (value: GetBlogSitemapResponse) => Buffer.from(GetBlogSitemapResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetBlogSitemapResponse.decode(value),
+  },
 } as const;
 
 export interface ApiServiceServer extends UntypedServiceImplementation {
@@ -425,6 +532,8 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getFollowedTagCount: handleUnaryCall<GetFollowedTagCountRequest, GetFollowedTagCountResponse>;
   /** Returns the user's relations details */
   getUserRelationsInfo: handleUnaryCall<GetUserRelationsInfoRequest, GetUserRelationsInfoResponse>;
+  /** Returns the user's blogs details */
+  getUserBlogsInfo: handleUnaryCall<GetUserBlogsInfoRequest, GetUserBlogsInfoResponse>;
   /** Returns the user's block count */
   getUserBlockCount: handleUnaryCall<GetUserBlockCountRequest, GetUserBlockCountResponse>;
   /** Returns the user's mute count */
@@ -437,6 +546,20 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getComment: handleUnaryCall<GetCommentRequest, GetCommentResponse>;
   /** Creates a new draft */
   createDraft: handleUnaryCall<CreateDraftRequest, CreateDraftResponse>;
+  /** Returns the blog's data */
+  getBlog: handleUnaryCall<GetBlogRequest, GetBlogResponse>;
+  /** Returns the blog's archive data */
+  getBlogArchive: handleUnaryCall<GetBlogArchiveRequest, GetBlogArchiveResponse>;
+  /** Returns the blog's pending story count */
+  getBlogPendingStoryCount: handleUnaryCall<GetBlogPendingStoryCountRequest, GetBlogPendingStoryCountResponse>;
+  /** Returns the blog's published story count */
+  getBlogPublishedStoryCount: handleUnaryCall<GetBlogPublishedStoryCountRequest, GetBlogPublishedStoryCountResponse>;
+  /** Returns the blog's editors details */
+  getBlogEditorsInfo: handleUnaryCall<GetBlogEditorsInfoRequest, GetBlogEditorsInfoResponse>;
+  /** Returns the blog's writers details */
+  getBlogWritersInfo: handleUnaryCall<GetBlogWritersInfoRequest, GetBlogWritersInfoResponse>;
+  /** Returns the blog's sitemap */
+  getBlogSitemap: handleUnaryCall<GetBlogSitemapRequest, GetBlogSitemapResponse>;
 }
 
 export interface ApiServiceClient extends Client {
@@ -744,6 +867,22 @@ export interface ApiServiceClient extends Client {
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetUserRelationsInfoResponse) => void,
   ): ClientUnaryCall;
+  /** Returns the user's blogs details */
+  getUserBlogsInfo(
+    request: GetUserBlogsInfoRequest,
+    callback: (error: ServiceError | null, response: GetUserBlogsInfoResponse) => void,
+  ): ClientUnaryCall;
+  getUserBlogsInfo(
+    request: GetUserBlogsInfoRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetUserBlogsInfoResponse) => void,
+  ): ClientUnaryCall;
+  getUserBlogsInfo(
+    request: GetUserBlogsInfoRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetUserBlogsInfoResponse) => void,
+  ): ClientUnaryCall;
   /** Returns the user's block count */
   getUserBlockCount(
     request: GetUserBlockCountRequest,
@@ -839,6 +978,118 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: CreateDraftResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the blog's data */
+  getBlog(
+    request: GetBlogRequest,
+    callback: (error: ServiceError | null, response: GetBlogResponse) => void,
+  ): ClientUnaryCall;
+  getBlog(
+    request: GetBlogRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetBlogResponse) => void,
+  ): ClientUnaryCall;
+  getBlog(
+    request: GetBlogRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetBlogResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the blog's archive data */
+  getBlogArchive(
+    request: GetBlogArchiveRequest,
+    callback: (error: ServiceError | null, response: GetBlogArchiveResponse) => void,
+  ): ClientUnaryCall;
+  getBlogArchive(
+    request: GetBlogArchiveRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetBlogArchiveResponse) => void,
+  ): ClientUnaryCall;
+  getBlogArchive(
+    request: GetBlogArchiveRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetBlogArchiveResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the blog's pending story count */
+  getBlogPendingStoryCount(
+    request: GetBlogPendingStoryCountRequest,
+    callback: (error: ServiceError | null, response: GetBlogPendingStoryCountResponse) => void,
+  ): ClientUnaryCall;
+  getBlogPendingStoryCount(
+    request: GetBlogPendingStoryCountRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetBlogPendingStoryCountResponse) => void,
+  ): ClientUnaryCall;
+  getBlogPendingStoryCount(
+    request: GetBlogPendingStoryCountRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetBlogPendingStoryCountResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the blog's published story count */
+  getBlogPublishedStoryCount(
+    request: GetBlogPublishedStoryCountRequest,
+    callback: (error: ServiceError | null, response: GetBlogPublishedStoryCountResponse) => void,
+  ): ClientUnaryCall;
+  getBlogPublishedStoryCount(
+    request: GetBlogPublishedStoryCountRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetBlogPublishedStoryCountResponse) => void,
+  ): ClientUnaryCall;
+  getBlogPublishedStoryCount(
+    request: GetBlogPublishedStoryCountRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetBlogPublishedStoryCountResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the blog's editors details */
+  getBlogEditorsInfo(
+    request: GetBlogEditorsInfoRequest,
+    callback: (error: ServiceError | null, response: GetBlogEditorsInfoResponse) => void,
+  ): ClientUnaryCall;
+  getBlogEditorsInfo(
+    request: GetBlogEditorsInfoRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetBlogEditorsInfoResponse) => void,
+  ): ClientUnaryCall;
+  getBlogEditorsInfo(
+    request: GetBlogEditorsInfoRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetBlogEditorsInfoResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the blog's writers details */
+  getBlogWritersInfo(
+    request: GetBlogWritersInfoRequest,
+    callback: (error: ServiceError | null, response: GetBlogWritersInfoResponse) => void,
+  ): ClientUnaryCall;
+  getBlogWritersInfo(
+    request: GetBlogWritersInfoRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetBlogWritersInfoResponse) => void,
+  ): ClientUnaryCall;
+  getBlogWritersInfo(
+    request: GetBlogWritersInfoRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetBlogWritersInfoResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the blog's sitemap */
+  getBlogSitemap(
+    request: GetBlogSitemapRequest,
+    callback: (error: ServiceError | null, response: GetBlogSitemapResponse) => void,
+  ): ClientUnaryCall;
+  getBlogSitemap(
+    request: GetBlogSitemapRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetBlogSitemapResponse) => void,
+  ): ClientUnaryCall;
+  getBlogSitemap(
+    request: GetBlogSitemapRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetBlogSitemapResponse) => void,
   ): ClientUnaryCall;
 }
 

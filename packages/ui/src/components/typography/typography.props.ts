@@ -4,6 +4,7 @@ import React from "react";
 import { PolymorphicProps } from "~/types/index";
 
 export type TypographyColor = "muted" | "minor" | "major" | "legible";
+export type TypographyWeight = "bold" | "medium" | "regular";
 
 export type TypographyScale =
   | "display1"
@@ -89,4 +90,8 @@ export type TypographyProps = Omit<
     ellipsis_cell?: React.ComponentPropsWithoutRef<"span">;
     link?: Partial<LinkProps> & React.ComponentPropsWithoutRef<"a">;
   };
+  /**
+   * The font weight of the component.
+   */
+  weight?: TypographyWeight;
 };

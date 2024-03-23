@@ -45,13 +45,10 @@ const ErrorState = React.forwardRef<HTMLDivElement, ErrorStateProps>(
           {type === "server" ? <ServerErrorIcon /> : <CloudOffIcon />}
         </span>
         <div className={clsx(css["flex-col"], css["t-center"], styles.content)}>
-          <Typography
-            className={clsx(css["t-bold"], css["t-major"])}
-            level={"body2"}
-          >
+          <Typography color={"major"} level={"body2"} weight={"bold"}>
             {type === "server" ? "Server" : "Network"} error
           </Typography>
-          <Typography className={css["t-minor"]} level={"body3"}>
+          <Typography color={"minor"} level={"body3"}>
             {type === "server" ? (
               <>
                 An invalid response was received from the server. Please check

@@ -13,6 +13,7 @@ SELECT u.id,
 	   -- Stats
 	   u.story_count,
 	   u.follower_count,
+	   u.is_plus_member,
 	   -- Handle `following_list_visibility`
 	   CASE
 		   -- Everyone

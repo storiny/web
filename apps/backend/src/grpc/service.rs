@@ -2,6 +2,24 @@ use crate::{
     config,
     grpc::{
         defs::{
+            blog_def::v1::{
+                GetBlogArchiveRequest,
+                GetBlogArchiveResponse,
+                GetBlogEditorsInfoRequest,
+                GetBlogEditorsInfoResponse,
+                GetBlogPendingStoryCountRequest,
+                GetBlogPendingStoryCountResponse,
+                GetBlogPublishedStoryCountRequest,
+                GetBlogPublishedStoryCountResponse,
+                GetBlogRequest,
+                GetBlogResponse,
+                GetBlogSitemapRequest,
+                GetBlogSitemapResponse,
+                GetBlogWritersInfoRequest,
+                GetBlogWritersInfoResponse,
+                GetUserBlogsInfoRequest,
+                GetUserBlogsInfoResponse,
+            },
             comment_def::v1::{
                 GetCommentRequest,
                 GetCommentResponse,
@@ -278,5 +296,62 @@ impl ApiService for GrpcService {
         request: Request<ValidateStoryRequest>,
     ) -> Result<Response<ValidateStoryResponse>, Status> {
         endpoints::validate_story::validate_story(self, request).await
+    }
+
+    async fn get_blog(
+        &self,
+        request: Request<GetBlogRequest>,
+    ) -> Result<Response<GetBlogResponse>, Status> {
+        endpoints::get_blog::get_blog(self, request).await
+    }
+
+    async fn get_blog_archive(
+        &self,
+        request: Request<GetBlogArchiveRequest>,
+    ) -> Result<Response<GetBlogArchiveResponse>, Status> {
+        endpoints::get_blog_archive::get_blog_archive(self, request).await
+    }
+
+    async fn get_blog_editors_info(
+        &self,
+        request: Request<GetBlogEditorsInfoRequest>,
+    ) -> Result<Response<GetBlogEditorsInfoResponse>, Status> {
+        endpoints::get_blog_editors_info::get_blog_editors_info(self, request).await
+    }
+
+    async fn get_blog_pending_story_count(
+        &self,
+        request: Request<GetBlogPendingStoryCountRequest>,
+    ) -> Result<Response<GetBlogPendingStoryCountResponse>, Status> {
+        endpoints::get_blog_pending_story_count::get_blog_pending_story_count(self, request).await
+    }
+
+    async fn get_blog_published_story_count(
+        &self,
+        request: Request<GetBlogPublishedStoryCountRequest>,
+    ) -> Result<Response<GetBlogPublishedStoryCountResponse>, Status> {
+        endpoints::get_blog_published_story_count::get_blog_published_story_count(self, request)
+            .await
+    }
+
+    async fn get_blog_sitemap(
+        &self,
+        request: Request<GetBlogSitemapRequest>,
+    ) -> Result<Response<GetBlogSitemapResponse>, Status> {
+        endpoints::get_blog_sitemap::get_blog_sitemap(self, request).await
+    }
+
+    async fn get_blog_writers_info(
+        &self,
+        request: Request<GetBlogWritersInfoRequest>,
+    ) -> Result<Response<GetBlogWritersInfoResponse>, Status> {
+        endpoints::get_blog_writers_info::get_blog_writers_info(self, request).await
+    }
+
+    async fn get_user_blogs_info(
+        &self,
+        request: Request<GetUserBlogsInfoRequest>,
+    ) -> Result<Response<GetUserBlogsInfoResponse>, Status> {
+        endpoints::get_user_blogs_info::get_user_blogs_info(self, request).await
     }
 }

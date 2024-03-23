@@ -13,6 +13,7 @@ import Typography from "~/components/typography";
 import NotificationParser from "~/entities/notification/parser";
 import { use_media_query } from "~/hooks/use-media-query";
 import AtIcon from "~/icons/at";
+import BlogIcon from "~/icons/blog";
 import CommentIcon from "~/icons/comment";
 import ContributionIcon from "~/icons/contribution";
 import HeartIcon from "~/icons/heart";
@@ -21,6 +22,7 @@ import ReplyIcon from "~/icons/reply";
 import ShieldIcon from "~/icons/shield";
 import StoryIcon from "~/icons/story";
 import TagIcon from "~/icons/tag";
+import UserIcon from "~/icons/user";
 import UserCheckIcon from "~/icons/user-check";
 import UserHeartIcon from "~/icons/user-heart";
 import UserPlusIcon from "~/icons/user-plus";
@@ -52,10 +54,14 @@ const NOTIFICATION_BADGE_CONTENT_MAP: Record<
   [NotificationType.STORY_ADD_BY_USER /*  */]: <StoryIcon />,
   [NotificationType.STORY_ADD_BY_TAG /*   */]: <TagIcon no_stroke />,
   [NotificationType.SYSTEM /*             */]: <VerifiedIcon />,
-  [NotificationType.LOGIN_ATTEMPT /*      */]: <VerifiedIcon />
+  [NotificationType.LOGIN_ATTEMPT /*      */]: <VerifiedIcon />,
+  [NotificationType.BLOG_EDITOR_INVITE /* */]: <BlogIcon />,
+  [NotificationType.BLOG_WRITER_INVITE /* */]: <BlogIcon />
 };
 
 const NOTIFICATION_BADGE_COLOR_MAP: Record<NotificationType, string> = {
+  [NotificationType.BLOG_EDITOR_INVITE /* */]: "var(--lemon-500)",
+  [NotificationType.BLOG_WRITER_INVITE /* */]: "var(--lemon-500)",
   [NotificationType.STORY_LIKE /*         */]: "var(--blush-100)",
   [NotificationType.FRIEND_REQ_ACCEPT /*  */]: "var(--blush-100)",
   [NotificationType.FRIEND_REQ_RECEIVED /**/]: "var(--beryl-200)",
@@ -115,7 +121,7 @@ const Notification = (props: NotificationProps): React.ReactElement => {
         }
         visible={!is_mobile}
       >
-        {is_system ? (
+        {is_system || !notification.actor ? (
           <Avatar
             borderless={!is_mobile}
             className={styles["system-avatar"]}
@@ -128,7 +134,7 @@ const Notification = (props: NotificationProps): React.ReactElement => {
               }
             }}
           >
-            {SYSTEM_ICON_MAP[notification.type]}
+            {SYSTEM_ICON_MAP[notification.type] || <UserIcon />}
           </Avatar>
         ) : (
           <Avatar
@@ -145,7 +151,7 @@ const Notification = (props: NotificationProps): React.ReactElement => {
         <Typography as={"div"} className={styles.content}>
           <NotificationParser content={notification.rendered_content} />
         </Typography>
-        <Typography className={css["t-minor"]} level={"body2"}>
+        <Typography color={"minor"} level={"body2"}>
           <DateTime
             date={notification.created_at}
             format={DateFormat.RELATIVE_CAPITALIZED}

@@ -22,7 +22,11 @@ export const Default: Story = {
   decorators: [
     (Story): React.ReactElement =>
       render_with_state(
-        <HydrateMetadata story={MOCK_STORIES[0]}>
+        <HydrateMetadata
+          is_writer={false}
+          role={"reader"}
+          story={MOCK_STORIES[0]}
+        >
           <Story />
         </HydrateMetadata>,
         { ignore_primitive_providers: true, logged_in: true }

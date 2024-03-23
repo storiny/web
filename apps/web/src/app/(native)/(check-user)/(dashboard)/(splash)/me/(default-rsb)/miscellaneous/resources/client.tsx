@@ -1,0 +1,70 @@
+"use client";
+
+import clsx from "clsx";
+import NextLink from "next/link";
+import React from "react";
+
+import NavigationItem from "~/components/navigation-item";
+import Separator from "~/components/separator";
+import Spacer from "~/components/spacer";
+import ExternalLinkIcon from "~/icons/external-link";
+import css from "~/theme/main.module.scss";
+
+import DashboardTitle from "../../../../common/dashboard-title";
+import DashboardWrapper from "../../../../common/dashboard-wrapper";
+import styles from "./styles.module.scss";
+
+const MiscellaneousResourcesClient = (): React.ReactElement => (
+  <React.Fragment>
+    <DashboardTitle>Additional resources</DashboardTitle>
+    <DashboardWrapper className={styles.wrapper}>
+      <div className={clsx(css["flex-col"], styles.container)}>
+        {[
+          ["About", "/about"],
+          ["Media kit", "/branding"],
+          ["Service Status", process.env.NEXT_PUBLIC_STATUS_PAGE_URL || "/"],
+          ["Help", "mailto:support@storiny.com"]
+        ].map(([title, href]) => (
+          <React.Fragment key={href}>
+            <NavigationItem
+              as={NextLink}
+              end_decorator={<ExternalLinkIcon />}
+              href={href}
+              target={"_blank"}
+            >
+              {title}
+            </NavigationItem>
+            <Separator className={css["hide-last"]} invert_margin />
+          </React.Fragment>
+        ))}
+      </div>
+      <div className={clsx(css["flex-col"], styles.container)}>
+        {[
+          ["Privacy Policy", "/legal/policies/privacy"],
+          ["Terms of Use", "/legal/terms/tos"],
+          ["Community Guidelines", "/legal/terms/community-guidelines"],
+          ["Username Policy", "/legal/policies/username"],
+          ["Logo Policy", "/legal/policies/logo"],
+          ["Trademark Policy", "/legal/policies/trademark"],
+          ["Content Removal Policy", "/legal/policies/content-removal"],
+          ["Acceptable Use Policy", "/legal/use-policies/general"]
+        ].map(([title, href]) => (
+          <React.Fragment key={href}>
+            <NavigationItem
+              as={NextLink}
+              end_decorator={<ExternalLinkIcon />}
+              href={href}
+              target={"_blank"}
+            >
+              {title}
+            </NavigationItem>
+            <Separator className={css["hide-last"]} invert_margin />
+          </React.Fragment>
+        ))}
+      </div>
+    </DashboardWrapper>
+    <Spacer orientation={"vertical"} size={10} />
+  </React.Fragment>
+);
+
+export default MiscellaneousResourcesClient;

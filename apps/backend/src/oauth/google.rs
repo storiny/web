@@ -46,6 +46,6 @@ pub fn get_google_oauth_client(
     )
     .set_redirect_uri(
         #[allow(clippy::unwrap_used)]
-        RedirectUrl::new(format!("{api_server_url}/{redirect_path}",)).unwrap(),
+        RedirectUrl::new(format!("{api_server_url}/{redirect_path}")).unwrap(),
     )
 }

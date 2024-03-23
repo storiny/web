@@ -23,7 +23,8 @@ export interface InputProps
    */
   decorator?: React.ReactNode;
   /**
-   * The element placed after the children. Accepts IconButton and Select.
+   * The element placed after the children. Accepts IconButton, Select, or a
+   * React element.
    */
   end_decorator?: React.ReactNode;
   /**
@@ -48,4 +49,9 @@ export interface InputProps
     spinner_increment_button?: React.ComponentPropsWithoutRef<"button">;
     spinner_separator?: React.ComponentPropsWithoutRef<"span">;
   };
+  /**
+   * If `true`, the end decorator will not be styled.
+   * @default false
+   */
+  unstyled_end_decorator?: boolean;
 }

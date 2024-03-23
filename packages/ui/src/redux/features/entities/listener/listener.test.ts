@@ -135,4 +135,22 @@ describe("entities_listener", () => {
       expect(store.getState().entities.tag_follower_counts[test_id]).toEqual(0);
     });
   });
+
+  describe("blog follower", () => {
+    it("syncs count on toggling blog follower", () => {
+      const store = setup_store(undefined, true);
+
+      // Follow blog
+      store.dispatch(boolean_action("followed_blogs", test_id));
+      expect(store.getState().entities.blog_follower_counts[test_id]).toEqual(
+        1
+      );
+
+      // Unfollow blog
+      store.dispatch(boolean_action("followed_blogs", test_id));
+      expect(store.getState().entities.blog_follower_counts[test_id]).toEqual(
+        0
+      );
+    });
+  });
 });

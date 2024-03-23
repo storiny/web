@@ -9,13 +9,20 @@ import Tooltip from "~/components/tooltip";
 import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
-import { capitalize } from "~/utils/capitalize";
 
 import { awareness_atom } from "../../../../atoms";
 import { UserState } from "../../../../collaboration/provider";
 import styles from "./presence.module.scss";
 
 type UserStateWithClientId = UserState & { client_id: number };
+
+const ROLE_TO_DISPLAY_NAME_MAP: Record<UserStateWithClientId["role"], string> =
+  {
+    "blog-member": "Blog member",
+    viewer: "Viewer",
+    editor: "Editor",
+    reader: "Reader"
+  };
 
 // Participant
 
@@ -24,7 +31,10 @@ const Participant = ({
 }: {
   presence: UserState;
 }): React.ReactElement => (
-  <Tooltip content={presence.name} right_slot={capitalize(presence.role)}>
+  <Tooltip
+    content={presence.name}
+    right_slot={ROLE_TO_DISPLAY_NAME_MAP[presence.role]}
+  >
     <Avatar
       alt={""}
       avatar_id={presence.avatar_id}
@@ -57,7 +67,12 @@ const EditorPresence = (): React.ReactElement => {
             client_id
           })) as UserStateWithClientId[];
 
-        set_editors(presences.filter((presence) => presence.role === "editor"));
+        set_editors(
+          presences.filter(
+            (presence) =>
+              presence.role === "editor" || presence.role === "blog-member"
+          )
+        );
         set_viewers(presences.filter((presence) => presence.role === "viewer"));
       }
     };

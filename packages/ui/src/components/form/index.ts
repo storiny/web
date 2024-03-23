@@ -17,7 +17,7 @@ export * from "./use-form-field";
 export { zodResolver as zod_resolver } from "@hookform/resolvers/zod";
 export type { SubmitHandler } from "react-hook-form";
 export {
+  useFieldArray as use_field_array,
   useForm as use_form,
   useFormContext as use_form_context,
-  useWatch as use_watch
-} from "react-hook-form";
+  useWatch as use_watch} from "react-hook-form";

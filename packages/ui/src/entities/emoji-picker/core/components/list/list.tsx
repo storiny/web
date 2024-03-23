@@ -154,8 +154,10 @@ Group.displayName = "Group";
 
 const GroupHeader = React.memo<{ index: number }>(({ index }) => (
   <Typography
-    className={clsx(css["t-medium"], css["t-minor"], styles["group-title"])}
+    className={styles["group-title"]}
+    color={"minor"}
     level={"body2"}
+    weight={"medium"}
   >
     {capitalize(GROUPS[index].id.replace(/-/g, " "))}
   </Typography>
@@ -240,7 +242,7 @@ const EmojiList = React.forwardRef<
           className={clsx(css["flex-col"], styles.empty)}
           style={{ height: LIST_HEIGHT }}
         >
-          <Typography className={css["t-medium"]} level={"body2"}>
+          <Typography level={"body2"} weight={"medium"}>
             Could not find any emoji for &quot;
             <span style={{ wordBreak: "break-all" }}>{query}</span>&quot;
           </Typography>

@@ -9,7 +9,7 @@ export type GetStoryContributorsResponse = {
   created_at: string;
   has_accepted: boolean;
   id: string;
-  role: Omit<DocUserRole, "reader">;
+  role: Omit<DocUserRole, "reader" | "blog-member">;
   user: User | null;
   user_id: string;
 }[];

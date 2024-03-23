@@ -83,7 +83,6 @@ WHERE
             // Remove the peer from the realm.
             if let Some(realm_inner) = realm.value() {
                 debug!("realm is present in the map, removing the peer");
-
                 realm_inner.remove_peer(contributor_user_id, false).await;
             }
 

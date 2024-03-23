@@ -100,7 +100,7 @@ WHERE id = $1
 
     let slugged_username = slugify!(&payload.new_username, separator = "_", max_length = 24);
 
-    // Chekc if username is reserved.
+    // Check if username is reserved.
     if RESERVED_KEYWORDS.contains(&slugged_username.as_str()) {
         return Err(FormErrorResponse::new(
             Some(StatusCode::FORBIDDEN),

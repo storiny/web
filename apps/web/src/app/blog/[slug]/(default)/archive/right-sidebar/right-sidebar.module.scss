@@ -1,0 +1,23 @@
+.timeline {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--divider);
+  padding: 12px;
+  gap: 24px;
+}
+
+.item {
+  gap: 4px;
+}
+
+.months {
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  padding-block: 4px;
+}
+
+.month {
+  &:not(.available) {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+}

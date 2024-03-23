@@ -330,7 +330,7 @@ mod tests {
         let json = serde_json::from_str::<Vec<Reply>>(&res_to_string(res).await);
         let replies = json.unwrap();
 
-        // Should be false initially.
+        // Should be `false` initially.
         assert!(replies.iter().all(|reply| !reply.is_liked));
 
         // Like the replies.
@@ -357,7 +357,7 @@ VALUES ($1, $2), ($1, $3)
         let json = serde_json::from_str::<Vec<Reply>>(&res_to_string(res).await);
         let replies = json.unwrap();
 
-        // Should be true.
+        // Should be `true`.
         assert!(replies.iter().all(|reply| reply.is_liked));
 
         Ok(())

@@ -1,0 +1,9 @@
+@use "breakpoints";
+
+.divider {
+  max-height: 30px;
+
+  @include breakpoints.media("<tablet") {
+    max-height: 36px;
+  }
+}

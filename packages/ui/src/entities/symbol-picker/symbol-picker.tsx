@@ -43,7 +43,7 @@ const List = dynamic(() => import("./core/components/list"), {
         >
           <CloudOffIcon />
           <Spacer orientation={"vertical"} />
-          <Typography className={css["t-minor"]} level={"body3"}>
+          <Typography color={"minor"} level={"body3"}>
             Network error
           </Typography>
           <Spacer orientation={"vertical"} size={2} />
@@ -108,7 +108,7 @@ const SymbolPicker = (props: SymbolPickerProps): React.ReactElement => {
           <span className={clsx(css["flex-center"], styles.icon)}>
             <HoveredSymbol />
           </span>
-          <Typography className={css["t-bold"]} level={"body2"}>
+          <Typography level={"body2"} weight={"bold"}>
             Pick a symbol
           </Typography>
           <Grow />

@@ -57,10 +57,10 @@ const Splash = (): React.ReactElement => {
 
   return (
     <div className={clsx(css["flex-col"], image_styles.block)}>
-      <Typography className={css["t-bold"]} level={"body2"}>
+      <Typography level={"body2"} weight={"bold"}>
         Splash image
       </Typography>
-      <Typography className={css["t-minor"]} level={"body3"}>
+      <Typography color={"minor"} level={"body3"}>
         Including a relevant splash image can attract more readers to your
         story. Please avoid using images with watermarks or low resolution.
         Additionally, ensure that the image adheres to our{" "}

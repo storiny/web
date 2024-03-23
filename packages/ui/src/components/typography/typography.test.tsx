@@ -13,7 +13,8 @@ import {
   TypographyElement,
   TypographyLevel,
   TypographyProps,
-  TypographyScale
+  TypographyScale,
+  TypographyWeight
 } from "./typography.props";
 
 const TYPOGRAPHY_SCALES = Object.keys(
@@ -120,6 +121,24 @@ describe("<Typography />", () => {
     it(`renders \`${color}\` color`, () => {
       const { getByTestId } = render_test_with_provider(
         <Typography color={color} data-testid={"typography"}>
+          Test
+        </Typography>
+      );
+
+      expect(getByTestId("typography")).toHaveClass(className);
+    });
+  });
+
+  (
+    [
+      ["regular", "t-regular"],
+      ["medium", "t-medium"],
+      ["bold", "t-bold"]
+    ] as [TypographyWeight, string][]
+  ).forEach(([weight, className]) => {
+    it(`renders \`${weight}\` weight`, () => {
+      const { getByTestId } = render_test_with_provider(
+        <Typography data-testid={"typography"} weight={weight}>
           Test
         </Typography>
       );

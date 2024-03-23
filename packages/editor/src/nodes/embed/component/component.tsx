@@ -350,7 +350,8 @@ const EmbedComponent = ({
                   role={"button"}
                 >
                   <Typography
-                    className={clsx(css["t-center"], css["t-minor"])}
+                    className={css["t-center"]}
+                    color={"minor"}
                     level={"body2"}
                   >
                     Embed unavailable

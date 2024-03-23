@@ -64,11 +64,7 @@ const StoryPersona = (props: {
         >
           {story.title}
         </Link>
-        <Typography
-          className={clsx(css["t-minor"], css["t-medium"])}
-          ellipsis
-          level={"body3"}
-        >
+        <Typography color={"minor"} ellipsis level={"body3"} weight={"medium"}>
           <DateTime
             date={created_at}
             format={DateFormat.RELATIVE_CAPITALIZED}
@@ -188,9 +184,10 @@ const Comment = (props: CommentProps): React.ReactElement => {
                 }
                 secondary_text={
                   <Typography
-                    className={clsx(css["t-medium"], css["t-minor"])}
+                    color={"minor"}
                     ellipsis
                     level={"body3"}
+                    weight={"medium"}
                   >
                     <Link href={`/${comment.user?.username || ""}`}>
                       @{comment.user?.username}
@@ -213,7 +210,8 @@ const Comment = (props: CommentProps): React.ReactElement => {
           </div>
           {hidden && !hide_hidden_overlay ? (
             <Typography
-              className={clsx(css["t-minor"], styles.hidden)}
+              className={styles.hidden}
+              color={"minor"}
               level={"body2"}
             >
               This comment has been hidden at the request of the story author.{" "}
@@ -241,8 +239,9 @@ const Comment = (props: CommentProps): React.ReactElement => {
                     <span className={clsx(css["flex-center"], styles.stat)}>
                       <HeartIcon />{" "}
                       <Typography
-                        className={clsx(css["t-medium"], css["t-minor"])}
+                        color={"minor"}
                         level={"body3"}
+                        weight={"medium"}
                       >
                         {abbreviate_number(like_count)}{" "}
                         {like_count === 1 ? "like" : "likes"}
@@ -252,8 +251,9 @@ const Comment = (props: CommentProps): React.ReactElement => {
                     <span className={clsx(css["flex-center"], styles.stat)}>
                       <ReplyIcon />{" "}
                       <Typography
-                        className={clsx(css["t-medium"], css["t-minor"])}
+                        color={"minor"}
                         level={"body3"}
+                        weight={"medium"}
                       >
                         {abbreviate_number(reply_count)}{" "}
                         {reply_count === 1 ? "reply" : "replies"}

@@ -1,0 +1,174 @@
+syntax = "proto3";
+
+package blog_def.v1;
+
+// Blog
+
+message BareBlog {
+  string id /*               */ = 1;
+  string slug /*             */ = 2;
+  optional string domain /*  */ = 3;
+  string name /*             */ = 4;
+  optional string logo_id /* */ = 5;
+  optional string logo_hex /**/ = 6;
+}
+
+// Main blog request
+
+message LeftSidebarItem {
+  string id /*           */ = 1;
+  string name /*         */ = 2;
+  optional string icon /**/ = 3;
+  string target /*       */ = 4;
+}
+
+message RightSidebarItem {
+  string id /*                     */ = 1;
+  string primary_text /*           */ = 2;
+  optional string secondary_text /**/ = 3;
+  optional string icon /*          */ = 4;
+  string target /*                 */ = 5;
+}
+
+message GetBlogRequest {
+  string identifier /*              */ = 1;
+  optional string current_user_id /**/ = 2;
+}
+
+message GetBlogResponse {
+  string id /*                            */ = 1;
+  string name /*                          */ = 2;
+  string slug /*                          */ = 3;
+  optional string description /*          */ = 4;
+  // Banner
+  optional string banner_id /*            */ = 5;
+  optional string banner_hex /*           */ = 6;
+  // Logo
+  optional string logo_id /*              */ = 7;
+  optional string logo_hex /*             */ = 8;
+  // Newsletter splash
+  optional string newsletter_splash_id /* */ = 9;
+  optional string newsletter_splash_hex /**/ = 10;
+  // Mark
+  optional string mark_light /*           */ = 11;
+  optional string mark_dark /*            */ = 12;
+  // Font
+  optional string font_code /*            */ = 13;
+  optional string font_primary /*         */ = 14;
+  optional string font_secondary /*       */ = 15;
+  // Theme
+  optional string default_theme /*        */ = 16;
+  bool force_theme /*                     */ = 17;
+  optional string favicon /*              */ = 18;
+  bool hide_storiny_branding /*           */ = 19;
+  bool is_homepage_large_layout /*        */ = 20;
+  bool is_story_minimal_layout /*         */ = 21;
+  // SEO
+  optional string seo_description /*      */ = 22;
+  optional string seo_title /*            */ = 23;
+  optional string preview_image /*        */ = 24;
+  // Boolean flags
+  bool is_following /*                    */ = 25;
+  bool is_owner /*                        */ = 26;
+  bool is_editor /*                       */ = 27;
+  bool is_writer /*                       */ = 28;
+  bool is_external /*                     */ = 29;
+  bool has_plus_features /*               */ = 30;
+  // Connections
+  optional string website_url /*          */ = 31;
+  optional string public_email /*         */ = 32;
+  optional string github_url /*           */ = 33;
+  optional string instagram_url /*        */ = 34;
+  optional string linkedin_url /*         */ = 35;
+  optional string youtube_url /*          */ = 36;
+  optional string twitter_url /*          */ = 37;
+  optional string twitch_url /*           */ = 38;
+  // Other props
+  optional string domain /*               */ = 39;
+  string created_at /*                    */ = 40;
+  string category /*                      */ = 41;
+  string user_id /*                       */ = 42;
+  string rsb_items_label /*               */ = 43;
+  repeated LeftSidebarItem lsb_items /*   */ = 44;
+  repeated RightSidebarItem rsb_items /*  */ = 45;
+}
+
+// Blog archive request
+
+message ArchiveTimeline {
+  uint32 year /*                  */ = 1;
+  repeated uint32 active_months /**/ = 2;
+}
+
+message GetBlogArchiveRequest {
+  string slug = 1;
+}
+
+message GetBlogArchiveResponse {
+  uint32 story_count /*               */ = 1;
+  repeated ArchiveTimeline timeline /**/ = 2;
+}
+
+// Get user blogs info
+
+message GetUserBlogsInfoRequest {
+  string user_id = 1;
+}
+
+message GetUserBlogsInfoResponse {
+  uint32 blog_count /*                */ = 1;
+  uint32 pending_blog_request_count /**/ = 2;
+  bool can_create_blog /*             */ = 3;
+}
+
+// Blog pending stories info
+
+message GetBlogPendingStoryCountRequest {
+  string identifier = 1;
+}
+
+message GetBlogPendingStoryCountResponse {
+  uint32 pending_story_count = 1;
+}
+
+// Blog published stories info
+
+message GetBlogPublishedStoryCountRequest {
+  string identifier = 1;
+}
+
+message GetBlogPublishedStoryCountResponse {
+  uint32 published_story_count = 1;
+}
+
+// Blog editors info
+
+message GetBlogEditorsInfoRequest {
+  string identifier = 1;
+}
+
+message GetBlogEditorsInfoResponse {
+  uint32 editor_count /*                */ = 1;
+  uint32 pending_editor_request_count /**/ = 2;
+}
+
+// Blog writers info
+
+message GetBlogWritersInfoRequest {
+  string identifier = 1;
+}
+
+message GetBlogWritersInfoResponse {
+  uint32 writer_count /*                */ = 1;
+  uint32 pending_writer_request_count /**/ = 2;
+}
+
+// Blog sitemap
+
+message GetBlogSitemapRequest {
+  string identifier = 1;
+}
+
+message GetBlogSitemapResponse {
+  string content = 1;
+}

@@ -46,7 +46,7 @@ mod tests {
 
         assert_eq!(
             encode_cdn_url(cdn_url, "https://storiny.com/example.jpg", key, "w@640"),
-            format!("{cdn_url}/remote/{}/{digest}/{url_hex}", "w@640",)
+            format!("{cdn_url}/remote/{}/{digest}/{url_hex}", "w@640")
         );
     }
 }

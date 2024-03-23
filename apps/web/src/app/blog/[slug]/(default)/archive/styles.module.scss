@@ -1,0 +1,22 @@
+@use "breakpoints";
+
+.x {
+  &.status-header {
+    padding-inline: 20px;
+    padding-block: 10.5px;
+    align-items: center;
+    box-shadow: none;
+    background: var(--bg-body);
+
+    @include breakpoints.media("<tablet") {
+      border-top: 1px solid var(--divider);
+      top: var(--header-height) !important;
+    }
+  }
+}
+
+@include breakpoints.media("<tablet") {
+  .page-title {
+    display: none !important;
+  }
+}

@@ -54,6 +54,7 @@ use actix_web::{
 };
 use lockable::LockableHashMap;
 use rand::Rng;
+use redis::aio::ConnectionManager;
 use serde::Deserialize;
 use sqlx::{
     PgPool,
@@ -64,6 +65,7 @@ use storiny_session::{
     storage::RedisSessionStore,
     SessionMiddleware,
 };
+use tracing::error;
 use user_agent_parser::UserAgentParser;
 
 #[derive(Deserialize)]
@@ -117,23 +119,29 @@ pub async fn init_app_for_test(
 
     // Redis pool
     let redis_pool = get_redis_pool();
+    let redis_client =
+        redis::Client::open(redis_connection_string.clone()).expect("Cannot build Redis client");
+    let redis_connection_manager = match ConnectionManager::new(redis_client).await {
+        Ok(manager) => {
+            println!("connected to Redis");
+            manager
+        }
+        Err(error) => {
+            error!("unable to connect to Redis: {error:?}");
+            std::process::exit(1);
+        }
+    };
 
     // Background jobs
-    let story_add_by_user_job_data = web::Data::new(
-        JobStorage::<NotifyStoryAddByUserJob>::connect(redis_connection_string.to_string())
-            .await
-            .unwrap(),
-    );
-    let story_add_by_tag_job_data = web::Data::new(
-        JobStorage::<NotifyStoryAddByTagJob>::connect(redis_connection_string.to_string())
-            .await
-            .unwrap(),
-    );
-    let templated_email_job_data = web::Data::new(
-        JobStorage::<TemplatedEmailJob>::connect(redis_connection_string.to_string())
-            .await
-            .unwrap(),
-    );
+    let story_add_by_user_job_data = web::Data::new(JobStorage::<NotifyStoryAddByUserJob>::new(
+        redis_connection_manager.clone(),
+    ));
+    let story_add_by_tag_job_data = web::Data::new(JobStorage::<NotifyStoryAddByTagJob>::new(
+        redis_connection_manager.clone(),
+    ));
+    let templated_email_job_data = web::Data::new(JobStorage::<TemplatedEmailJob>::new(
+        redis_connection_manager,
+    ));
 
     // GeoIP service
     let geo_db = maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();

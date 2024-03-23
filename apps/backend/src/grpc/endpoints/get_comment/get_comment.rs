@@ -206,9 +206,7 @@ GROUP BY
             id: comment.user.id.to_string(),
             name: comment.user.name.clone(),
             username: comment.user.username.clone(),
-            avatar_id: comment
-                .user
-                .avatar_id.map(|value| value.to_string()),
+            avatar_id: comment.user.avatar_id.map(|value| value.to_string()),
             avatar_hex: comment.user.avatar_hex.clone(),
             public_flags: comment.user.public_flags as u32,
         }),
@@ -323,7 +321,7 @@ WHERE id = $1
                     .unwrap()
                     .into_inner();
 
-                // Should be false initially.
+                // Should be `false` initially.
                 assert!(!response.is_liked);
 
                 // Like the comment.
@@ -350,7 +348,7 @@ VALUES ($1, $2)
                     .unwrap()
                     .into_inner();
 
-                // Should be true.
+                // Should be `true`.
                 assert!(response.is_liked);
             }),
         )

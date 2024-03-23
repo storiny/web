@@ -1,5 +1,6 @@
 export { DeviceType } from "@storiny/proto/dist/login_activity_def/v1/def";
 export {
+  IncomingBlogRequest,
   IncomingCollaborationRequest,
   IncomingFriendRequest,
   RelationVisibility

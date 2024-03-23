@@ -26,7 +26,7 @@ const Page = async ({
       maxAge: 0,
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       sameSite: "none",
-      domain: "storiny.com",
+      domain: ".storiny.com",
       secure: true,
       path: "/"
     });

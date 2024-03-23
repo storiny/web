@@ -115,7 +115,7 @@ WHERE
     })?;
 
     match sqlx::query(
-        r#"
+        r#"                        
 WITH target_story AS (
         SELECT FROM stories
         WHERE
@@ -182,7 +182,7 @@ WHERE
                 if matches!(error_kind, sqlx::error::ErrorKind::UniqueViolation) {
                     return Err(AppError::ToastError(ToastErrorResponse::new(
                         Some(StatusCode::CONFLICT),
-                        "User is already a contributor",
+                        "User is already a contributor or the request is still pending",
                     )));
                 }
 

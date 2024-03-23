@@ -29,6 +29,7 @@ const RightSidebar = (props: RightSidebarProps): React.ReactElement | null => {
     component_props,
     children,
     hide_footer,
+    is_blog,
     ...rest
   } = props;
   const sticky_ref = use_sticky({
@@ -72,7 +73,7 @@ const RightSidebar = (props: RightSidebarProps): React.ReactElement | null => {
             <>
               <Grow />
               <Separator />
-              <RightSidebarFooter />
+              <RightSidebarFooter is_blog={is_blog} />
             </>
           )}
         </div>

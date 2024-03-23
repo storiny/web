@@ -130,6 +130,12 @@ SELECT
             OR
                 -- 11 = Story add by tag
                 (ns.push_tags IS TRUE AND "nu->notification".entity_type = 11)
+            OR
+                -- 12 = Collaboration request accept, 13 = Collaboration request received
+                (ns.push_collaboration_requests IS TRUE AND ("nu->notification".entity_type = 12 OR "nu->notification".entity_type = 13))
+            OR
+                -- 14 = Blog editor invite, 15 = Blog writer invite
+                (ns.push_blog_requests IS TRUE AND ("nu->notification".entity_type = 14 OR "nu->notification".entity_type = 15))
             )
         THEN TRUE
         ELSE FALSE
@@ -293,7 +299,7 @@ VALUES ($1, $2)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be true initially as users are subscribed to all the notifications by default.
+        // Should be `true` initially as users are subscribed to all the notifications by default.
         let json = serde_json::from_str::<Vec<Notification>>(&res_to_string(res).await).unwrap();
         assert!(json.iter().all(|notification| notification.is_subscribed));
 

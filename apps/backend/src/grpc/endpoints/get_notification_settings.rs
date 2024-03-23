@@ -38,14 +38,16 @@ pub async fn get_notification_settings(
         r#"
 SELECT
     -- Push
-    push_features_and_updates AS "features_and_updates",
-    push_stories              AS "stories",
-    push_story_likes          AS "story_likes",
-    push_tags                 AS "tags",
-    push_comments             AS "comments",
-    push_replies              AS "replies",
-    push_followers            AS "new_followers",
-    push_friend_requests      AS "friend_requests",
+    push_features_and_updates   AS "features_and_updates",
+    push_stories                AS "stories",
+    push_story_likes            AS "story_likes",
+    push_tags                   AS "tags",
+    push_comments               AS "comments",
+    push_replies                AS "replies",
+    push_followers              AS "new_followers",
+    push_friend_requests        AS "friend_requests",
+    push_collaboration_requests AS "collaboration_requests",
+    push_blog_requests          AS "blog_requests",
     -- Mail
     mail_login_activity,
     mail_features_and_updates,
@@ -79,6 +81,8 @@ WHERE
         replies: notification_settings.get::<bool, _>("replies"),
         new_followers: notification_settings.get::<bool, _>("new_followers"),
         friend_requests: notification_settings.get::<bool, _>("friend_requests"),
+        collaboration_requests: notification_settings.get::<bool, _>("collaboration_requests"),
+        blog_requests: notification_settings.get::<bool, _>("blog_requests"),
         mail_login_activity: notification_settings.get::<bool, _>("mail_login_activity"),
         mail_features_and_updates: notification_settings
             .get::<bool, _>("mail_features_and_updates"),
@@ -119,6 +123,8 @@ SET
     push_replies = FALSE,
     push_followers = FALSE,
     push_friend_requests = FALSE,
+    push_collaboration_requests = FALSE,
+    push_blog_requests = FALSE,
     -- Mail
     mail_login_activity = FALSE,
     mail_features_and_updates = FALSE,
@@ -153,6 +159,8 @@ WHERE user_id = $1
                         replies: false,
                         new_followers: false,
                         friend_requests: false,
+                        collaboration_requests: false,
+                        blog_requests: false,
                         mail_login_activity: false,
                         mail_features_and_updates: false,
                         mail_newsletters: false,

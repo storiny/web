@@ -168,12 +168,16 @@ const LoggedInMenu = ({
     </MenuItemWithLink>
     <Separator />
     <ThemeToggleItem />
-    {/* TODO(future): <MenuItem decorator={<ExplicitIcon />}>Safe mode</MenuItem>*/}
     <Separator />
     <MenuItemWithLink check_auth decorator={<SettingsIcon />} href={"/me"}>
       Settings
     </MenuItemWithLink>
-    <MenuItem decorator={<QuestionMarkIcon />}>Help</MenuItem>
+    <MenuItemWithLink
+      decorator={<QuestionMarkIcon />}
+      href={"mailto:support@storiny.com"}
+    >
+      Help
+    </MenuItemWithLink>
     <MenuItemWithLink check_auth decorator={<LogoutIcon />} href={"/logout"}>
       Logout
     </MenuItemWithLink>
@@ -188,7 +192,12 @@ const LoggedOutMenu = ({
   <Menu trigger={trigger}>
     <ThemeToggleItem />
     <Separator />
-    <MenuItem decorator={<QuestionMarkIcon />}>Help</MenuItem>
+    <MenuItemWithLink
+      decorator={<QuestionMarkIcon />}
+      href={"mailto:support@storiny.com"}
+    >
+      Help
+    </MenuItemWithLink>
   </Menu>
 );
 

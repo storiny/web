@@ -35,6 +35,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
     decorator,
     auto_size,
     end_decorator,
+    unstyled_end_decorator,
     autoFocus: auto_focus,
     color = "inverted",
     size: size_prop = "md",
@@ -171,18 +172,22 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
             </button>
           </span>
         ) : end_decorator ? (
-          <span
-            {...slot_props?.end_decorator}
-            className={clsx(
-              css["fit-w"],
-              css["flex-center"],
-              disabled && styles.disabled,
-              styles["end-decorator"],
-              slot_props?.end_decorator?.className
-            )}
-          >
-            {end_decorator}
-          </span>
+          unstyled_end_decorator ? (
+            end_decorator
+          ) : (
+            <span
+              {...slot_props?.end_decorator}
+              className={clsx(
+                css["fit-w"],
+                css["flex-center"],
+                disabled && styles.disabled,
+                styles["end-decorator"],
+                slot_props?.end_decorator?.className
+              )}
+            >
+              {end_decorator}
+            </span>
+          )
         ) : null}
       </Container>
     </InputContext.Provider>

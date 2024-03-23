@@ -20,7 +20,7 @@ import { EMBED_SCHEMA, EmbedSchema } from "./schema";
 const EmbedModalContent = (): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         You can embed content from external sites directly inside your story. If
         embeds from your provided site are not supported, a website preview will
         be displayed instead.{" "}

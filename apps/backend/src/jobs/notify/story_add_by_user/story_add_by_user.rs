@@ -33,14 +33,13 @@ impl Job for NotifyStoryAddByUserJob {
 )]
 pub async fn notify_story_add_by_user(
     job: NotifyStoryAddByUserJob,
-    ctx: JobContext,
-) -> Result<(), JobError> {
+    state: Data<Arc<SharedJobState>>,
+) -> Result<(), Error> {
     debug!(
         "attempting to insert notifications for story with ID `{}`",
         job.story_id
     );
 
-    let state = ctx.data::<Arc<SharedJobState>>()?;
     let result = sqlx::query(
         r#"
 WITH published_story AS (
@@ -101,7 +100,7 @@ WHERE EXISTS (SELECT 1 FROM published_story)
     .execute(&state.db_pool)
     .await
     .map_err(Box::new)
-    .map_err(|err| JobError::Failed(err))?;
+    .map_err(|err| Error::Failed(err))?;
 
     debug!(
         "inserted `{}` notifications for story with ID `{}`",
@@ -115,7 +114,7 @@ WHERE EXISTS (SELECT 1 FROM published_story)
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::get_job_ctx_for_test;
+    use crate::test_utils::get_job_state_for_test;
     use sqlx::{
         PgPool,
         Row,
@@ -124,9 +123,9 @@ mod tests {
     #[sqlx::test(fixtures("story_add_by_user"))]
     async fn can_notify_story_add_by_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let ctx = get_job_ctx_for_test(pool, None).await;
+        let state = get_job_state_for_test(pool, None).await;
         let result =
-            notify_story_add_by_user(NotifyStoryAddByUserJob { story_id: 4_i64 }, ctx).await;
+            notify_story_add_by_user(NotifyStoryAddByUserJob { story_id: 4_i64 }, state).await;
 
         assert!(result.is_ok());
 
@@ -156,7 +155,7 @@ WHERE notification_id = (
     #[sqlx::test(fixtures("story_add_by_user"))]
     async fn should_not_notify_followers_for_a_private_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let ctx = get_job_ctx_for_test(pool, None).await;
+        let state = get_job_state_for_test(pool, None).await;
 
         // Make the user private.
         let result = sqlx::query(
@@ -179,7 +178,7 @@ WHERE id = $1
         assert_eq!(result.rows_affected(), 1);
 
         let result =
-            notify_story_add_by_user(NotifyStoryAddByUserJob { story_id: 4_i64 }, ctx).await;
+            notify_story_add_by_user(NotifyStoryAddByUserJob { story_id: 4_i64 }, state).await;
 
         assert!(result.is_ok());
 
@@ -208,7 +207,7 @@ SELECT EXISTS (
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let ctx = get_job_ctx_for_test(pool, None).await;
+        let state = get_job_state_for_test(pool, None).await;
 
         // Unpublish the story.
         let result = sqlx::query(
@@ -225,7 +224,7 @@ WHERE id = $1
         assert_eq!(result.rows_affected(), 1);
 
         let result =
-            notify_story_add_by_user(NotifyStoryAddByUserJob { story_id: 4_i64 }, ctx).await;
+            notify_story_add_by_user(NotifyStoryAddByUserJob { story_id: 4_i64 }, state).await;
 
         assert!(result.is_ok());
 
@@ -252,7 +251,7 @@ SELECT EXISTS (
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let ctx = get_job_ctx_for_test(pool, None).await;
+        let state = get_job_state_for_test(pool, None).await;
 
         // Soft-delete the story.
         let result = sqlx::query(
@@ -269,7 +268,7 @@ WHERE id = $1
         assert_eq!(result.rows_affected(), 1);
 
         let result =
-            notify_story_add_by_user(NotifyStoryAddByUserJob { story_id: 4_i64 }, ctx).await;
+            notify_story_add_by_user(NotifyStoryAddByUserJob { story_id: 4_i64 }, state).await;
 
         assert!(result.is_ok());
 

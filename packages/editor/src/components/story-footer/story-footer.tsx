@@ -40,12 +40,8 @@ const License = (): React.ReactElement | null => {
   return (
     <div className={clsx(css["flex"], styles["footer-row"])}>
       <Typography
-        className={clsx(
-          css["flex-center"],
-          css["t-minor"],
-          styles.x,
-          styles.stat
-        )}
+        className={clsx(css["flex-center"], styles.x, styles.stat)}
+        color={"minor"}
         level={"body2"}
       >
         {LICENSE_ICON_MAP[story.license]}
@@ -64,11 +60,11 @@ const Actions = (): React.ReactElement => {
   return (
     <div className={css["flex-center"]}>
       <Typography
-        className={css["t-medium"]}
         level={"body2"}
         title={`${read_count.toLocaleString()} ${
           read_count === 1 ? "read" : "reads"
         }`}
+        weight={"medium"}
       >
         {abbreviate_number(read_count)} {read_count === 1 ? "read" : "reads"}
       </Typography>
@@ -104,12 +100,8 @@ const StoryFooter = (): React.ReactElement | null => {
         <div className={clsx(css["flex"], styles["footer-row"])}>
           {story.category !== StoryCategory.OTHERS && (
             <Typography
-              className={clsx(
-                css["flex-center"],
-                css["t-minor"],
-                styles.x,
-                styles.stat
-              )}
+              className={clsx(css["flex-center"], styles.x, styles.stat)}
+              color={"minor"}
               level={"body2"}
             >
               {CATEGORY_ICON_MAP[story.category]}
@@ -120,12 +112,8 @@ const StoryFooter = (): React.ReactElement | null => {
             <NoSsr>
               <Typography
                 as={"time"}
-                className={clsx(
-                  css["flex-center"],
-                  css["t-minor"],
-                  styles.x,
-                  styles.stat
-                )}
+                className={clsx(css["flex-center"], styles.x, styles.stat)}
+                color={"minor"}
                 dateTime={story.edited_at!}
                 level={"body2"}
                 title={format_date(story.edited_at!, DateFormat.LONG)}

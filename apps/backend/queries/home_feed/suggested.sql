@@ -25,11 +25,25 @@ WITH suggested_stories AS (SELECT
 							   JSON_BUILD_OBJECT('id', u.id, 'name', u.name, 'username', u.username, 'avatar_id',
 												 u.avatar_id, 'avatar_hex', u.avatar_hex, 'public_flags',
 												 u.public_flags)                                  AS "user!: Json<User>",
+							   -- Blog
+							   CASE
+								   WHEN "s->blog_stories->blog".id IS NOT NULL
+									   THEN
+									   JSON_BUILD_OBJECT(
+											   'id', "s->blog_stories->blog".id,
+											   'name', "s->blog_stories->blog".name,
+											   'slug', "s->blog_stories->blog".slug,
+											   'domain', "s->blog_stories->blog".domain,
+											   'logo_id', "s->blog_stories->blog".logo_id,
+											   'logo_hex', "s->blog_stories->blog".logo_hex
+									   )
+							   END                                                                AS "blog: Json<Blog>",
 							   -- Tags
 							   COALESCE(ARRAY_AGG(DISTINCT ("s->story_tags->tag".id, "s->story_tags->tag".name))
 										FILTER (WHERE "s->story_tags->tag".id IS NOT NULL), '{}') AS "tags!: Vec<Tag>",
 							   -- Weights
 							   COUNT(DISTINCT "s->story_tags->follower")                          AS "followed_tags_weight",
+							   COUNT(DISTINCT "s->blog_stories->follower")                        AS "followed_blogs_weight",
 							   COUNT(DISTINCT "s->histories")                                     AS "histories_weight",
 							   COUNT(DISTINCT "s->bookmarks")                                     AS "bookmarks_weight",
 							   s.published_at::DATE                                               AS "published_at_date_only"
@@ -106,12 +120,26 @@ WITH suggested_stories AS (SELECT
 													   AND "s->bookmarks".user_id = $1
 													   AND "s->bookmarks".deleted_at IS NULL
 								   --
+								   -- Join blog stories
+								   LEFT OUTER JOIN (blog_stories AS "s->blog_stories"
+								   -- Join blogs
+								   INNER JOIN blogs AS "s->blog_stories->blog"
+													ON "s->blog_stories->blog".id = "s->blog_stories".blog_id
+								   )
+												   ON "s->blog_stories".story_id = s.id
+													   AND "s->blog_stories".accepted_at IS NOT NULL
+													   AND "s->blog_stories".deleted_at IS NULL
 								   -- Join story tags
 								   LEFT OUTER JOIN (story_tags AS "s->story_tags"
 								   -- Join tags
 								   INNER JOIN tags AS "s->story_tags->tag"
 													ON "s->story_tags->tag".id = "s->story_tags".tag_id)
 												   ON "s->story_tags".story_id = s.id
+								   -- Join followed blogs for current user
+								   LEFT OUTER JOIN blog_followers AS "s->blog_stories->follower"
+												   ON "s->blog_stories->follower".blog_id = "s->blog_stories".blog_id
+													   AND "s->blog_stories->follower".user_id = $1
+													   AND "s->blog_stories->follower".deleted_at IS NULL
 								   -- Join followed tags for current user
 								   LEFT OUTER JOIN tag_followers AS "s->story_tags->follower"
 												   ON "s->story_tags->follower".tag_id = "s->story_tags".tag_id
@@ -126,10 +154,12 @@ WITH suggested_stories AS (SELECT
 							   s.id,
 							   u.id,
 							   s.published_at,
+							   "s->blog_stories->blog".id,
 							   "s->is_bookmarked".story_id,
 							   "s->is_liked".story_id
 						   ORDER BY
 							   published_at_date_only DESC,
+							   followed_blogs_weight  DESC,
 							   followed_tags_weight   DESC,
 							   histories_weight       DESC,
 							   bookmarks_weight       DESC
@@ -160,6 +190,7 @@ SELECT
 	"is_liked!",
 	-- Joins
 	"user!: Json<User>",
+	"blog: Json<Blog>",
 	"tags!: Vec<Tag>"
 FROM
 	suggested_stories;

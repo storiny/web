@@ -25,7 +25,7 @@ import { CodeBlockTitleProps } from "./title.props";
 const CodeBlockTitleModal = (): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={css["t-minor"]} level={"body2"}>
+      <Typography color={"minor"} level={"body2"}>
         Set a title for the code block. This can represent the file name or an
         arbitrary text.
       </Typography>

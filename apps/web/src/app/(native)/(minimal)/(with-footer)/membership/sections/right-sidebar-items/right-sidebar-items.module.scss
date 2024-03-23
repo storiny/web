@@ -1,0 +1,69 @@
+@use "breakpoints";
+
+.preview {
+  @include breakpoints.media("<mobile") {
+    margin-inline: var(--grid-compensation);
+    width: auto;
+  }
+}
+
+.divider {
+  padding: 8px 12px;
+  width: 100%;
+}
+
+.item {
+  gap: 12px;
+  align-items: center;
+}
+
+.item-icon {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  font-size: 28px;
+  line-height: 100%;
+}
+
+.lsb, .body, .rsb {
+  background-color: var(--bg-elevation-xs);
+}
+
+.lsb, .rsb {
+  border-color: var(--divider);
+  border-style: solid;
+}
+
+.lsb {
+  border-width: 1px 1px 0 0;
+  border-top-right-radius: var(--radius-md);
+  min-width: 96px;
+
+  @include breakpoints.media("<desktop") {
+    min-width: 64px;
+  }
+
+  @include breakpoints.media("<mobile") {
+    display: none;
+  }
+}
+
+.rsb {
+  border-width: 1px 0 0 1px;
+  border-top-left-radius: var(--radius-md);
+  align-items: flex-start !important;
+  gap: 16px;
+  padding: 16px 16px 32px 24px;
+  min-width: 320px;
+
+  @include breakpoints.media("<tablet") {
+    min-width: 256px;
+  }
+}
+
+.body {
+  margin-top: 64px;
+  border-top: 1px solid var(--divider);
+  flex-grow: 1;
+}

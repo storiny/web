@@ -2,6 +2,7 @@ import { atomWithReset as atom_with_reset } from "jotai/utils";
 
 export type StoryMetadataModalSidebarTabsValue =
   | "general"
+  | "blog"
   | "seo"
   | "license"
   | "settings";

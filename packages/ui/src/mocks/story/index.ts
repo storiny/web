@@ -198,7 +198,7 @@ export const MOCK_STORIES: Story[] = [
     seo_description: null,
     seo_title: null,
     slug: "office-shenanigans-pranks-memes-and-workplace-woes",
-    splash_hex: "2b3c46",
+    splash_hex: null,
     splash_id: null,
     like_count: 402,
     read_count: 13492,

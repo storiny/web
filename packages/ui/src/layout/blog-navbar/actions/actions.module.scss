@@ -1,0 +1,84 @@
+@use "breakpoints";
+
+.actions {
+  gap: 8px;
+
+  &.transparent {
+    gap: 12px;
+
+    & .action {
+      --size: 32px;
+
+      background-color: rgba(255 255 255 / 50%);
+      backdrop-filter: blur(5px);
+
+      &:hover:not(:active) {
+        background-color: var(--bg-elevation-lg);
+      }
+
+      @include breakpoints.media("<mobile") {
+        &:not([data-persistent]) {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+@at-root html[data-theme="dark"] {
+  .actions.transparent .action {
+    background-color: rgba(0 0 0 / 50%);
+  }
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 4px 12px;
+  min-width: 180px;
+}
+
+.menu-item {
+  border-radius: var(--radius-md);
+}
+
+.trigger {
+  --icon-size: 14px;
+  --icon-stroke: var(--fg-minor);
+
+  appearance: none;
+  border: none;
+  outline: none;
+  text-decoration: none;
+  user-select: none;
+  background: none;
+  gap: 6px;
+  cursor: pointer;
+
+  &.transparent {
+    border-radius: var(--radius-md);
+    padding: 0;
+  }
+
+  &:not(.transparent) {
+    border-radius: 32px; // Same as avatar radius
+    padding-inline-end: 6px;
+  }
+}
+
+.error-avatar {
+  --icon-size: 16px;
+}
+
+.x {
+  &.avatar.transparent {
+    border-radius: var(--radius-md);
+    outline-offset: -1px;
+  }
+
+  &.fallback.transparent {
+    border-radius: var(--radius-md);
+  }
+}
