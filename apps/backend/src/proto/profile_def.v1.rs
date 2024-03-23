@@ -69,5 +69,7 @@ pub struct GetProfileResponse {
     pub is_muted: bool,
     #[prost(bool, tag="28")]
     pub is_self: bool,
+    #[prost(bool, tag="29")]
+    pub is_plus_member: bool,
 }
 // @@protoc_insertion_point(module)

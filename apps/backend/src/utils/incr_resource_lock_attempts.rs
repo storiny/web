@@ -82,13 +82,13 @@ pub async fn incr_resource_lock_attempts(
             let next_expiry = get_next_backoff_duration(attempts);
 
             pipe.incr(&cache_key, 1)
-                .expire(&cache_key, next_expiry as usize)
+                .expire(&cache_key, next_expiry as i64)
                 .ignore();
         } else {
             // Increment the existing attempts or create a new record. Always reset the expiry to 24
             // hours on every incorrect attempt.
             pipe.incr(&cache_key, 1)
-                .expire(&cache_key, HOURS_24_AS_SECONDS as usize)
+                .expire(&cache_key, HOURS_24_AS_SECONDS as i64)
                 .ignore();
         }
 

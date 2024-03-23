@@ -33,21 +33,20 @@ impl Job for NotifyStoryAddByTagJob {
 )]
 pub async fn notify_story_add_by_tag(
     job: NotifyStoryAddByTagJob,
-    ctx: JobContext,
-) -> Result<(), JobError> {
+    state: Data<Arc<SharedJobState>>,
+) -> Result<(), Error> {
     debug!(
         "attempting to insert notifications for story with ID `{}`",
         job.story_id
     );
 
-    let state = ctx.data::<Arc<SharedJobState>>()?;
     let result = sqlx::query(r#"SELECT public.notify_tag_followers($1, $2)"#)
         .bind(job.story_id)
         .bind(NotificationEntityType::StoryAddByTag as i16)
         .execute(&state.db_pool)
         .await
         .map_err(Box::new)
-        .map_err(|err| JobError::Failed(err))?;
+        .map_err(|err| Error::Failed(err))?;
 
     debug!(
         "inserted `{}` notifications for story with ID `{}`",
@@ -61,14 +60,15 @@ pub async fn notify_story_add_by_tag(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::get_job_ctx_for_test;
+    use crate::test_utils::get_job_state_for_test;
     use sqlx::PgPool;
 
     #[sqlx::test(fixtures("story_add_by_tag"))]
     async fn can_notify_story_add_by_tag(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let ctx = get_job_ctx_for_test(pool, None).await;
-        let result = notify_story_add_by_tag(NotifyStoryAddByTagJob { story_id: 5_i64 }, ctx).await;
+        let state = get_job_state_for_test(pool, None).await;
+        let result =
+            notify_story_add_by_tag(NotifyStoryAddByTagJob { story_id: 5_i64 }, state).await;
 
         assert!(result.is_ok());
 
@@ -112,8 +112,9 @@ WHERE id = $2
 
         assert_eq!(result.rows_affected(), 1);
 
-        let ctx = get_job_ctx_for_test(pool, None).await;
-        let result = notify_story_add_by_tag(NotifyStoryAddByTagJob { story_id: 5_i64 }, ctx).await;
+        let state = get_job_state_for_test(pool, None).await;
+        let result =
+            notify_story_add_by_tag(NotifyStoryAddByTagJob { story_id: 5_i64 }, state).await;
 
         assert!(result.is_ok());
 

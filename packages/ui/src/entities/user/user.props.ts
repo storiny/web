@@ -8,6 +8,10 @@ export interface UserProps extends React.ComponentPropsWithoutRef<"div"> {
    */
   action_type?: "default" | "block" | "mute";
   /**
+   * A custom action item for the action menu.
+   */
+  custom_action?: (user: User) => React.ReactNode;
+  /**
    * If `true`, skips rendering the action button.
    */
   hide_action?: boolean;

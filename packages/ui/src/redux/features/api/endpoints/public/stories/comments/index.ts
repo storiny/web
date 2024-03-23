@@ -1,5 +1,5 @@
 import { Comment } from "@storiny/types";
-import { StoryResponsesSortValue } from "@storiny/web/src/app/(check-user)/(dashboard)/me/(splash)/(default-lsb)/content/stories/[story_id]/responses/client";
+import { StoryResponsesSortValue } from "@storiny/web/src/app/(native)/(check-user)/(dashboard)/(splash)/me/content/stories/[story_id]/responses/client";
 
 import { api_slice } from "~/redux/features/api/slice";
 

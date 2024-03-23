@@ -26,6 +26,7 @@ const FormInput = React.forwardRef<HTMLFieldSetElement, FormInputProps>(
       type = "text",
       helper_text,
       form_slot_props,
+      is_field_disabled = (): boolean => false,
       ...rest
     } = props;
     const form = use_form_context();
@@ -39,42 +40,45 @@ const FormInput = React.forwardRef<HTMLFieldSetElement, FormInputProps>(
         render={({
           field,
           fieldState: { invalid, error }
-        }): React.ReactElement => (
-          <FormItem
-            {...form_slot_props?.form_item}
-            disabled={disabled}
-            ref={ref}
-            required={required}
-          >
-            {label && (
-              <FormLabel {...form_slot_props?.label}>{label}</FormLabel>
-            )}
-            <FormControl {...form_slot_props?.control}>
-              <Input
-                {...rest}
-                color={invalid || error ? "ruby" : rest?.color}
-                disabled={disabled}
-                required={required}
-                type={type}
-                {...field}
-                onChange={(event): void =>
-                  field.onChange(
-                    type === "number"
-                      ? // Parse integers
-                        Number.parseInt(event.target.value, 10)
-                      : event.target.value
-                  )
-                }
-              />
-            </FormControl>
-            {helper_text && (
-              <FormHelperText {...form_slot_props?.helper_text}>
-                {helper_text}
-              </FormHelperText>
-            )}
-            <FormMessage {...form_slot_props?.message} />
-          </FormItem>
-        )}
+        }): React.ReactElement => {
+          const is_disabled = is_field_disabled(field);
+          return (
+            <FormItem
+              {...form_slot_props?.form_item}
+              disabled={disabled || is_disabled}
+              ref={ref}
+              required={required}
+            >
+              {label && (
+                <FormLabel {...form_slot_props?.label}>{label}</FormLabel>
+              )}
+              <FormControl {...form_slot_props?.control}>
+                <Input
+                  {...rest}
+                  color={invalid || error ? "ruby" : rest?.color}
+                  disabled={disabled || is_disabled}
+                  required={required}
+                  type={type}
+                  {...field}
+                  onChange={(event): void =>
+                    field.onChange(
+                      type === "number"
+                        ? // Parse integers
+                          Number.parseInt(event.target.value, 10)
+                        : event.target.value
+                    )
+                  }
+                />
+              </FormControl>
+              {helper_text && (
+                <FormHelperText {...form_slot_props?.helper_text}>
+                  {helper_text}
+                </FormHelperText>
+              )}
+              <FormMessage {...form_slot_props?.message} />
+            </FormItem>
+          );
+        }}
       />
     );
   }

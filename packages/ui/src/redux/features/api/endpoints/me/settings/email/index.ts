@@ -1,5 +1,5 @@
 import { ContentType } from "@storiny/shared";
-import { EmailSettingsSchema } from "@storiny/web/src/app/(check-user)/(dashboard)/me/(splash)/(default-lsb)/(default-rsb)/account/credentials/email-group";
+import { EmailSettingsSchema } from "@storiny/web/src/app/(native)/(check-user)/(dashboard)/(splash)/me/(default-rsb)/account/credentials/email-group";
 
 import { api_slice } from "~/redux/features/api/slice";
 

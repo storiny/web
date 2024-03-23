@@ -69,7 +69,7 @@ const WebpageEmbed = ({
           ) : null}
           {metadata.description && (
             <div className={clsx(css["flex"], styles.footer)}>
-              <Typography className={css["t-minor"]} level={"body2"}>
+              <Typography color={"minor"} level={"body2"}>
                 {metadata.description}
               </Typography>
             </div>
@@ -105,7 +105,7 @@ const WebpageEmbed = ({
               {metadata.title || "Unknown site"}
             </Link>
             {metadata.description && (
-              <Typography className={css["t-minor"]} level={"body2"}>
+              <Typography color={"minor"} level={"body2"}>
                 {metadata.description}
               </Typography>
             )}

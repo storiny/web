@@ -1,0 +1,32 @@
+@use "breakpoints";
+
+.content {
+  height: 100%;
+
+  @include breakpoints.media(">=mobile") {
+    height: 400px;
+  }
+}
+
+.control-bar {
+  align-items: stretch;
+  border-bottom: 1px solid var(--divider);
+}
+
+.x {
+  &.input {
+    border-radius: 0;
+    background-color: transparent;
+
+    &:not([data-focused="true"]) {
+      border: none;
+    }
+  }
+
+  &.scroll-area {
+    overflow: hidden;
+    height: 100%;
+    padding-inline: 16px;
+    padding-top: 12px;
+  }
+}

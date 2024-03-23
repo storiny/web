@@ -7,7 +7,7 @@ const SEGMENT = (story_id: string, user_id: string): string =>
   `me/stories/${story_id}/contributors/${user_id}`;
 
 export interface UpdateContributorPayload {
-  role: Exclude<DocUserRole, "reader">;
+  role: Exclude<DocUserRole, "reader" | "blog-member">;
   story_id: string;
   user_id: string;
 }

@@ -21,6 +21,8 @@ pub enum NotificationEntityType {
     StoryAddByTag = 11,
     CollabReqAccept = 12,
     CollabReqReceived = 13,
+    BlogEditorInvite = 14,
+    BlogWriterInvite = 15,
 }
 
 impl TryFrom<u16> for NotificationEntityType {
@@ -39,6 +41,12 @@ impl TryFrom<u16> for NotificationEntityType {
             }
             x if x == NotificationEntityType::FriendReqReceived as u16 => {
                 Ok(NotificationEntityType::FriendReqReceived)
+            }
+            x if x == NotificationEntityType::CollabReqAccept as u16 => {
+                Ok(NotificationEntityType::CollabReqAccept)
+            }
+            x if x == NotificationEntityType::CollabReqReceived as u16 => {
+                Ok(NotificationEntityType::CollabReqReceived)
             }
             x if x == NotificationEntityType::FollowerAdd as u16 => {
                 Ok(NotificationEntityType::FollowerAdd)
@@ -60,6 +68,12 @@ impl TryFrom<u16> for NotificationEntityType {
             }
             x if x == NotificationEntityType::StoryAddByTag as u16 => {
                 Ok(NotificationEntityType::StoryAddByTag)
+            }
+            x if x == NotificationEntityType::BlogEditorInvite as u16 => {
+                Ok(NotificationEntityType::BlogEditorInvite)
+            }
+            x if x == NotificationEntityType::BlogWriterInvite as u16 => {
+                Ok(NotificationEntityType::BlogWriterInvite)
             }
             _ => Err(()),
         }

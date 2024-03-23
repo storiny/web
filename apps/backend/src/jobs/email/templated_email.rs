@@ -44,12 +44,14 @@ impl Job for TemplatedEmailJob {
     ),
     err
 )]
-pub async fn send_templated_email(job: TemplatedEmailJob, ctx: JobContext) -> Result<(), JobError> {
+pub async fn send_templated_email(
+    job: TemplatedEmailJob,
+    state: Data<Arc<SharedJobState>>,
+) -> Result<(), Error> {
     let template_name = job.template.to_string();
 
     debug!("attempting to send a templated email (`{template_name}`)");
 
-    let state = ctx.data::<Arc<SharedJobState>>()?;
     let message_id = send_email(&state.ses_client, job).await?;
 
     debug!(
@@ -65,7 +67,7 @@ pub async fn send_templated_email(job: TemplatedEmailJob, ctx: JobContext) -> Re
 async fn send_email(
     _ses_client: &SesClient,
     _job: TemplatedEmailJob,
-) -> Result<Option<String>, JobError> {
+) -> Result<Option<String>, Error> {
     Ok(Some("test".to_string()))
 }
 
@@ -77,7 +79,7 @@ async fn send_email(
 async fn send_email(
     ses_client: &SesClient,
     job: TemplatedEmailJob,
-) -> Result<Option<String>, JobError> {
+) -> Result<Option<String>, Error> {
     ses_client
         .send_email()
         .from_email_address(EMAIL_SOURCE)
@@ -95,7 +97,7 @@ async fn send_email(
         .send()
         .await
         .map_err(|error| Box::new(error.into_service_error()))
-        .map_err(|error| JobError::Failed(error))
+        .map_err(|error| Error::Failed(error))
         .map(|output| output.message_id)
 }
 
@@ -104,20 +106,20 @@ mod tests {
     use super::*;
     use crate::{
         constants::email_template::EmailTemplate,
-        test_utils::get_job_ctx_for_test,
+        test_utils::get_job_state_for_test,
     };
     use sqlx::PgPool;
 
     #[sqlx::test]
     async fn can_send_a_templated_email(pool: PgPool) {
-        let ctx = get_job_ctx_for_test(pool, None).await;
+        let state = get_job_state_for_test(pool, None).await;
         let result = send_templated_email(
             TemplatedEmailJob {
                 destination: "someone@storiny.com".to_string(),
                 template: EmailTemplate::EmailVerification,
                 template_data: "".to_string(),
             },
-            ctx,
+            state,
         )
         .await;
 

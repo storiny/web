@@ -93,13 +93,13 @@ const SuspendedEditorRightSidebarContent = (
             <RightSidebarFooter />
           </React.Fragment>
         ) : status === "deleted" ? (
-          <Typography className={css["t-minor"]} level={"body2"}>
+          <Typography color={"minor"} level={"body2"}>
             You are currently viewing a static version of this deleted story. If
             you do not restore it, the story will be permanently pruned within
             30 days from the date of deletion.
           </Typography>
         ) : story_metadata.role === "viewer" ? (
-          <Typography className={css["t-minor"]} level={"body2"}>
+          <Typography color={"minor"} level={"body2"}>
             You are currently viewing a live version of this story in read-only
             mode.
             <br />

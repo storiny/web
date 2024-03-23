@@ -6,5 +6,17 @@ import * as Sentry from "@sentry/nextjs";
 Sentry.init({
   dsn: "https://563fb5e46f4cb639c7f8c839f4046416@o4506393718554624.ingest.sentry.io/4506393724977152",
   integrations: [new CaptureConsole({ levels: ["error"] })],
+  beforeSend: (event) => {
+    const error_message = String(event.message);
+
+    if (
+      error_message.startsWith("ResizeObserver loop") ||
+      error_message.startsWith("Failed to fetch")
+    ) {
+      return null;
+    }
+
+    return event;
+  },
   tracesSampleRate: 0.2
 });

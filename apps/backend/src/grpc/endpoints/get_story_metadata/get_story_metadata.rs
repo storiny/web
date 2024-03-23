@@ -1,6 +1,7 @@
 use crate::{
     grpc::{
         defs::{
+            blog_def::v1::BareBlog,
             story_def::v1::{
                 GetStoryMetadataRequest,
                 GetStoryMetadataResponse,
@@ -12,7 +13,11 @@ use crate::{
     },
     utils::to_iso8601::to_iso8601,
 };
-use sqlx::FromRow;
+use serde::Deserialize;
+use sqlx::{
+    types::Json,
+    FromRow,
+};
 use time::OffsetDateTime;
 use tonic::{
     Request,
@@ -26,6 +31,16 @@ use uuid::Uuid;
 struct Tag {
     id: String,
     name: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct Blog {
+    id: i64,
+    name: String,
+    slug: String,
+    domain: Option<String>,
+    logo_id: Option<Uuid>,
+    logo_hex: Option<String>,
 }
 
 #[derive(Debug, FromRow)]
@@ -60,6 +75,7 @@ struct Story {
     // Joins
     doc_key: Uuid,
     tags: Vec<Tag>,
+    blog: Option<Json<Blog>>,
     // User
     user_name: String,
     user_username: String,
@@ -166,6 +182,14 @@ pub async fn get_story_metadata(
                 name: tag.name.clone(),
             })
             .collect::<Vec<_>>(),
+        blog: story.blog.map(|value| BareBlog {
+            id: value.id.to_string(),
+            name: value.name.clone(),
+            slug: value.slug.clone(),
+            domain: value.domain.clone(),
+            logo_id: value.logo_id.map(|value| value.to_string()),
+            logo_hex: value.logo_hex.clone(),
+        }),
     }))
 }
 
@@ -173,11 +197,16 @@ pub async fn get_story_metadata(
 mod tests {
     use super::*;
     use crate::test_utils::test_grpc_service;
-    use sqlx::PgPool;
+    use sqlx::{
+        PgPool,
+        Row,
+    };
     use tonic::{
         Code,
         Request,
     };
+
+    // By ID
 
     #[sqlx::test(fixtures("get_story_metadata"))]
     async fn can_return_a_story_metadata_by_id(pool: PgPool) {
@@ -261,6 +290,201 @@ WHERE id = $1
                     .await;
 
                 assert!(response.is_ok());
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_story_metadata"))]
+    async fn can_return_a_story_metadata_with_blog_by_id(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, _user_id| async move {
+                let response = client
+                    .get_story_metadata(Request::new(GetStoryMetadataRequest {
+                        id_or_slug: 3_i64.to_string(),
+                        user_id: 2_i64.to_string(),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be `None` initially.
+                assert!(response.blog.is_none());
+
+                // Add the story to the blog.
+                let result = sqlx::query(
+                    r#"
+WITH inserted_blog AS (
+    INSERT INTO blogs (name, slug, user_id)
+    VALUES ('Test blog', 'test-blog', $1)
+    RETURNING id
+)
+INSERT INTO blog_stories (story_id, blog_id)
+VALUES ($2, (SELECT id FROM inserted_blog))
+"#,
+                )
+                .bind(2_i64)
+                .bind(3_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_story_metadata(Request::new(GetStoryMetadataRequest {
+                        id_or_slug: 3_i64.to_string(),
+                        user_id: 2_i64.to_string(),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should return the blog.
+                assert!(response.blog.is_some());
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_story_metadata"))]
+    async fn can_return_a_story_metadata_for_a_blog_owner_by_id(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                // Create a blog.
+                let result = sqlx::query(
+                    r#"
+WITH inserted_blog AS (
+    INSERT INTO blogs (name, slug, user_id)
+    VALUES ('Test blog', 'test-blog', $1)
+    RETURNING id
+)
+INSERT INTO blog_editors (user_id, blog_id, accepted_at)
+VALUES ($2, (SELECT id FROM inserted_blog), NOW())
+RETURNING blog_id
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(2_i64)
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                let blog_id = result.get::<i64, _>("blog_id");
+
+                // Add the story to the blog.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO blog_stories (story_id, blog_id)
+VALUES ($1, $2)
+"#,
+                )
+                .bind(3_i64)
+                .bind(blog_id)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_story_metadata(Request::new(GetStoryMetadataRequest {
+                        id_or_slug: 3_i64.to_string(),
+                        user_id: user_id.unwrap().to_string(),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should return the correct role.
+                assert_eq!(response.role, "blog-member".to_string());
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_story_metadata"))]
+    async fn can_return_a_story_metadata_for_a_blog_editor_by_id(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                // Create a blog.
+                let result = sqlx::query(
+                    r#"
+WITH inserted_blog AS (
+    INSERT INTO blogs (name, slug, user_id)
+    VALUES ('Test blog', 'test-blog', $1)
+    RETURNING id
+)
+INSERT INTO blog_editors (user_id, blog_id)
+VALUES ($2, (SELECT id FROM inserted_blog))
+RETURNING blog_id
+"#,
+                )
+                .bind(2_i64)
+                .bind(user_id.unwrap())
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                let blog_id = result.get::<i64, _>("blog_id");
+
+                // Add the story to the blog.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO blog_stories (story_id, blog_id)
+VALUES ($1, $2)
+"#,
+                )
+                .bind(3_i64)
+                .bind(blog_id)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_story_metadata(Request::new(GetStoryMetadataRequest {
+                        id_or_slug: 3_i64.to_string(),
+                        user_id: user_id.unwrap().to_string(),
+                    }))
+                    .await;
+
+                // Should throw as the editor has not been accepted yet.
+                assert_eq!(response.unwrap_err().code(), Code::NotFound);
+
+                // Accept the story.
+                let result = sqlx::query(
+                    r#"
+UPDATE blog_editors
+SET accepted_at = NOW()
+WHERE user_id = $1
+"#,
+                )
+                .bind(user_id.unwrap())
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_story_metadata(Request::new(GetStoryMetadataRequest {
+                        id_or_slug: 3_i64.to_string(),
+                        user_id: user_id.unwrap().to_string(),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should return the correct role.
+                assert_eq!(response.role, "blog-member".to_string());
             }),
         )
         .await;
@@ -403,7 +627,147 @@ WHERE id = $1
         .await;
     }
 
-    //
+    #[sqlx::test(fixtures("get_story_metadata"))]
+    async fn should_not_return_a_soft_deleted_story_metadata_for_a_blog_owner_by_id(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                // Create a blog.
+                let result = sqlx::query(
+                    r#"
+WITH inserted_blog AS (
+    INSERT INTO blogs (name, slug, user_id)
+    VALUES ('Test blog', 'test-blog', $1)
+    RETURNING id
+)
+INSERT INTO blog_editors (user_id, blog_id, accepted_at)
+VALUES ($2, (SELECT id FROM inserted_blog), NOW())
+RETURNING blog_id
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(2_i64)
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                let blog_id = result.get::<i64, _>("blog_id");
+
+                // Add the story to the blog.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO blog_stories (story_id, blog_id)
+VALUES ($1, $2)
+"#,
+                )
+                .bind(3_i64)
+                .bind(blog_id)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                // Soft-delete the story.
+                let result = sqlx::query(
+                    r#"
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+                )
+                .bind(3_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_story_metadata(Request::new(GetStoryMetadataRequest {
+                        id_or_slug: 3_i64.to_string(),
+                        user_id: user_id.unwrap().to_string(),
+                    }))
+                    .await;
+
+                assert_eq!(response.unwrap_err().code(), Code::NotFound);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_story_metadata"))]
+    async fn should_not_return_a_soft_deleted_story_metadata_for_a_blog_editor_by_id(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                // Create a blog.
+                let result = sqlx::query(
+                    r#"
+WITH inserted_blog AS (
+    INSERT INTO blogs (name, slug, user_id)
+    VALUES ('Test blog', 'test-blog', $1)
+    RETURNING id
+)
+INSERT INTO blog_editors (user_id, blog_id, accepted_at)
+VALUES ($2, (SELECT id FROM inserted_blog), NOW())
+RETURNING blog_id
+"#,
+                )
+                .bind(2_i64)
+                .bind(user_id.unwrap())
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                let blog_id = result.get::<i64, _>("blog_id");
+
+                // Add the story to the blog.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO blog_stories (story_id, blog_id)
+VALUES ($1, $2)
+"#,
+                )
+                .bind(3_i64)
+                .bind(blog_id)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                // Soft-delete the story.
+                let result = sqlx::query(
+                    r#"
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+                )
+                .bind(3_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_story_metadata(Request::new(GetStoryMetadataRequest {
+                        id_or_slug: 3_i64.to_string(),
+                        user_id: user_id.unwrap().to_string(),
+                    }))
+                    .await;
+
+                assert_eq!(response.unwrap_err().code(), Code::NotFound);
+            }),
+        )
+        .await;
+    }
+
+    // By slug
 
     #[sqlx::test(fixtures("get_story_metadata"))]
     async fn can_return_a_story_metadata_by_slug(pool: PgPool) {
@@ -487,6 +851,201 @@ WHERE id = $1
                     .await;
 
                 assert!(response.is_ok());
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_story_metadata"))]
+    async fn can_return_a_story_metadata_with_blog_by_slug(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, _user_id| async move {
+                let response = client
+                    .get_story_metadata(Request::new(GetStoryMetadataRequest {
+                        id_or_slug: "some-story".to_string(),
+                        user_id: 2_i64.to_string(),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be `None` initially.
+                assert!(response.blog.is_none());
+
+                // Add the story to the blog.
+                let result = sqlx::query(
+                    r#"
+WITH inserted_blog AS (
+    INSERT INTO blogs (name, slug, user_id)
+    VALUES ('Test blog', 'test-blog', $1)
+    RETURNING id
+)
+INSERT INTO blog_stories (story_id, blog_id)
+VALUES ($2, (SELECT id FROM inserted_blog))
+"#,
+                )
+                .bind(2_i64)
+                .bind(3_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_story_metadata(Request::new(GetStoryMetadataRequest {
+                        id_or_slug: "some-story".to_string(),
+                        user_id: 2_i64.to_string(),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should return the blog.
+                assert!(response.blog.is_some());
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_story_metadata"))]
+    async fn can_return_a_story_metadata_for_a_blog_owner_by_slug(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                // Create a blog.
+                let result = sqlx::query(
+                    r#"
+WITH inserted_blog AS (
+    INSERT INTO blogs (name, slug, user_id)
+    VALUES ('Test blog', 'test-blog', $1)
+    RETURNING id
+)
+INSERT INTO blog_editors (user_id, blog_id, accepted_at)
+VALUES ($2, (SELECT id FROM inserted_blog), NOW())
+RETURNING blog_id
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(2_i64)
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                let blog_id = result.get::<i64, _>("blog_id");
+
+                // Add the story to the blog.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO blog_stories (story_id, blog_id)
+VALUES ($1, $2)
+"#,
+                )
+                .bind(3_i64)
+                .bind(blog_id)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_story_metadata(Request::new(GetStoryMetadataRequest {
+                        id_or_slug: "some-story".to_string(),
+                        user_id: user_id.unwrap().to_string(),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should return the correct role.
+                assert_eq!(response.role, "blog-member".to_string());
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_story_metadata"))]
+    async fn can_return_a_story_metadata_for_a_blog_editor_by_slug(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                // Create a blog.
+                let result = sqlx::query(
+                    r#"
+WITH inserted_blog AS (
+    INSERT INTO blogs (name, slug, user_id)
+    VALUES ('Test blog', 'test-blog', $1)
+    RETURNING id
+)
+INSERT INTO blog_editors (user_id, blog_id)
+VALUES ($2, (SELECT id FROM inserted_blog))
+RETURNING blog_id
+"#,
+                )
+                .bind(2_i64)
+                .bind(user_id.unwrap())
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                let blog_id = result.get::<i64, _>("blog_id");
+
+                // Add the story to the blog.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO blog_stories (story_id, blog_id)
+VALUES ($1, $2)
+"#,
+                )
+                .bind(3_i64)
+                .bind(blog_id)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_story_metadata(Request::new(GetStoryMetadataRequest {
+                        id_or_slug: "some-story".to_string(),
+                        user_id: user_id.unwrap().to_string(),
+                    }))
+                    .await;
+
+                // Should throw as the editor has not been accepted yet.
+                assert_eq!(response.unwrap_err().code(), Code::NotFound);
+
+                // Accept the story.
+                let result = sqlx::query(
+                    r#"
+UPDATE blog_editors
+SET accepted_at = NOW()
+WHERE user_id = $1
+"#,
+                )
+                .bind(user_id.unwrap())
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_story_metadata(Request::new(GetStoryMetadataRequest {
+                        id_or_slug: "some-story".to_string(),
+                        user_id: user_id.unwrap().to_string(),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should return the correct role.
+                assert_eq!(response.role, "blog-member".to_string());
             }),
         )
         .await;
@@ -597,6 +1156,150 @@ VALUES ($1, $2, 'viewer', NOW())
                 )
                 .bind(user_id.unwrap())
                 .bind(3_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                // Soft-delete the story.
+                let result = sqlx::query(
+                    r#"
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+                )
+                .bind(3_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_story_metadata(Request::new(GetStoryMetadataRequest {
+                        id_or_slug: "some-story".to_string(),
+                        user_id: user_id.unwrap().to_string(),
+                    }))
+                    .await;
+
+                assert_eq!(response.unwrap_err().code(), Code::NotFound);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_story_metadata"))]
+    async fn should_not_return_a_soft_deleted_story_metadata_for_a_blog_owner_by_slug(
+        pool: PgPool,
+    ) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                // Create a blog.
+                let result = sqlx::query(
+                    r#"
+WITH inserted_blog AS (
+    INSERT INTO blogs (name, slug, user_id)
+    VALUES ('Test blog', 'test-blog', $1)
+    RETURNING id
+)
+INSERT INTO blog_editors (user_id, blog_id, accepted_at)
+VALUES ($2, (SELECT id FROM inserted_blog), NOW())
+RETURNING blog_id
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(2_i64)
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                let blog_id = result.get::<i64, _>("blog_id");
+
+                // Add the story to the blog.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO blog_stories (story_id, blog_id)
+VALUES ($1, $2)
+"#,
+                )
+                .bind(3_i64)
+                .bind(blog_id)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                // Soft-delete the story.
+                let result = sqlx::query(
+                    r#"
+UPDATE stories
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+                )
+                .bind(3_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_story_metadata(Request::new(GetStoryMetadataRequest {
+                        id_or_slug: "some-story".to_string(),
+                        user_id: user_id.unwrap().to_string(),
+                    }))
+                    .await;
+
+                assert_eq!(response.unwrap_err().code(), Code::NotFound);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_story_metadata"))]
+    async fn should_not_return_a_soft_deleted_story_metadata_for_a_blog_editor_by_slug(
+        pool: PgPool,
+    ) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                // Create a blog.
+                let result = sqlx::query(
+                    r#"
+WITH inserted_blog AS (
+    INSERT INTO blogs (name, slug, user_id)
+    VALUES ('Test blog', 'test-blog', $1)
+    RETURNING id
+)
+INSERT INTO blog_editors (user_id, blog_id, accepted_at)
+VALUES ($2, (SELECT id FROM inserted_blog), NOW())
+RETURNING blog_id
+"#,
+                )
+                .bind(2_i64)
+                .bind(user_id.unwrap())
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                let blog_id = result.get::<i64, _>("blog_id");
+
+                // Add the story to the blog.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO blog_stories (story_id, blog_id)
+VALUES ($1, $2)
+"#,
+                )
+                .bind(3_i64)
+                .bind(blog_id)
                 .execute(&pool)
                 .await
                 .unwrap();

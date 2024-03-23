@@ -1,0 +1,21 @@
+.feature {
+  gap: 8px;
+  max-width: 100%;
+}
+
+.icon {
+  --icon-size: 12px;
+  --icon-stroke: var(--inverted-0);
+  --icon-stroke-width: 1.5px;
+
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  border-radius: var(--radius-sm);
+  background-color: var(--inverted-400);
+}
+
+.content {
+  min-width: 0;
+}

@@ -1,4 +1,5 @@
 import React from "react";
+import { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 import {
   FormHelperTextProps,
@@ -23,6 +24,13 @@ export interface FormInputProps extends InputProps {
    * The helper text content placed below the control.
    */
   helper_text?: React.ReactNode;
+  /**
+   * Predicate function for determining whether the input is disabled based on the field object.
+   * @param field
+   */
+  is_field_disabled?: (
+    field: ControllerRenderProps<FieldValues, string>
+  ) => boolean;
   /**
    * The label for the form component.
    */

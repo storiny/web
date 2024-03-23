@@ -11,16 +11,12 @@ import React from "react";
 import { get_session_token } from "~/common/utils/get-session-token";
 import CriticalStyles from "~/theme/critical";
 
-import CriticalFonts from "./fonts/critical";
 import ObserverErrorHandler from "./observer";
 import PostHogProvider from "./ph-provider";
 import { PreloadResources } from "./preload-resources";
 import SelfXSSWarning from "./selfxss-warning";
 import StateProvider from "./state-provider";
-// @ts-expect-error text file import
-import theme_sync from "./theme-sync.txt";
 
-const LazyFonts = dynamic(() => import("./fonts/lazy"));
 const Progress = dynamic(() => import("./progress"));
 const PostHogPageView = dynamic(() => import("./page-view"), {
   ssr: false
@@ -39,23 +35,7 @@ const RootLayout = ({
     <html lang="en" suppressHydrationWarning>
       <head>
         <PreloadResources />
-        {/* Apply theme from localStorage as soon as possible */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: theme_sync
-          }}
-          nonce={nonce}
-        />
         <meta content={nonce ?? ""} name={"csp-nonce"} />
-        <link href="/favicon.ico" rel="icon" sizes="any" />
-        <link
-          href="/favicon.dark.ico"
-          media="(prefers-color-scheme: dark)"
-          rel="shortcut icon"
-        />
-        <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
-        <link href="/icons/apple-touch-icon.png" rel="apple-touch-icon" />
-        <link color="#000000" href="/pinned.svg" rel="mask-icon" />
         <link
           href="/opensearch.xml"
           rel="search"
@@ -63,8 +43,6 @@ const RootLayout = ({
           type="application/opensearchdescription+xml"
         />
         <CriticalStyles />
-        <CriticalFonts />
-        <LazyFonts />
       </head>
       <PostHogProvider>
         <body dir={"ltr"}>

@@ -18,12 +18,33 @@ exports[`<AvatarGroup /> matches snapshot 1`] = `
   </span>
   <span
     class="avatar md border"
-  />
+  >
+    <span
+      class="flex-center fallback"
+      style="--bg: hsl(26deg 35% 50%); --fg: var(--snow);"
+    >
+      TE
+    </span>
+  </span>
   <span
     class="avatar md border"
-  />
+  >
+    <span
+      class="flex-center fallback"
+      style="--bg: hsl(26deg 35% 50%); --fg: var(--snow);"
+    >
+      TE
+    </span>
+  </span>
   <span
     class="avatar md border"
-  />
+  >
+    <span
+      class="flex-center fallback"
+      style="--bg: hsl(26deg 35% 50%); --fg: var(--snow);"
+    >
+      TE
+    </span>
+  </span>
 </div>
 `;

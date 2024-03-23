@@ -613,7 +613,7 @@ VALUES ($1, $2, $3, $4, TRUE)
             res,
             &serde_json::to_string(&Response {
                 result: "success".to_string(),
-                is_first_login: true, // Should be true.
+                is_first_login: true, // Should be `true`.
             })
             .unwrap_or_default(),
         )

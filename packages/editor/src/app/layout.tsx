@@ -9,7 +9,7 @@ const RootLayout = ({
 }: {
   children: React.ReactNode;
 }): React.ReactElement => (
-  <html lang="en">
+  <html lang="en" suppressHydrationWarning>
     <body dir={"ltr"}>{children}</body>
   </html>
 );

@@ -27,10 +27,10 @@ const PreviewImage = (): React.ReactElement => {
   const preview_image = form.watch("preview_image");
   return (
     <div className={clsx(css["flex-col"], image_styles.block)}>
-      <Typography className={css["t-bold"]} level={"body2"}>
+      <Typography level={"body2"} weight={"bold"}>
         Preview image
       </Typography>
-      <Typography className={css["t-minor"]} level={"body3"}>
+      <Typography color={"minor"} level={"body3"}>
         This image will serve as a preview for your story when it is embedded on
         other platforms. Please use an image with exact dimensions of 1200px
         width and 630px height, or leave it to the default image.

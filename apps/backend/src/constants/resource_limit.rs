@@ -1,6 +1,6 @@
-/// The daily resource limit for individual user. The enum value is used as cache key part (`part`
-/// in `namespace:part:user_id`). Actual limit for individual resource type is returned from the
-/// [ResourceLimit::get_limit] method.
+/// The daily resource limit for individual resource. The enum value is used as cache key part
+/// (`part` in `namespace:part:resource_id`). Actual limit for individual resource type is returned
+/// from the [ResourceLimit::get_limit] method.
 #[derive(Debug, Copy, Clone)]
 #[repr(i32)]
 pub enum ResourceLimit {
@@ -12,6 +12,8 @@ pub enum ResourceLimit {
     CreateReply,
     /// The daily limit for creating stories.
     CreateStory,
+    /// The daily limit for creating blogs.
+    CreateBlog,
     /// The daily limit for liking stories.
     LikeStory,
     /// The daily limit for liking comments.
@@ -22,19 +24,27 @@ pub enum ResourceLimit {
     BlockUser,
     /// The daily limit for muting users.
     MuteUser,
-    /// The daily limit for sending friend requests.
-    SendFriendRequest,
     /// The daily limit for following users.
     FollowUser,
     /// The daily limit for following tags.
     FollowTag,
+    /// The daily limit for following blogs.
+    FollowBlog,
     /// The daily limit for bookmarking stories.
     BookmarkStory,
     /// The daily limit for creating reports. This is computed on the basis of IP address rather
     /// the user ID as the user need not be logged-in to create a report.
     CreateReport,
+    /// The daily limit for sending friend requests.
+    SendFriendRequest,
     /// The daily limit for sending collaboration requests.
     SendCollabRequest,
+    /// The daily limit for sending blog editor requests.
+    SendBlogEditorRequest,
+    /// The daily limit for sending blog writer requests.
+    SendBlogWriterRequest,
+    /// The daily limit for uploading blog fonts.
+    UploadFont,
 }
 
 impl ResourceLimit {
@@ -54,8 +64,13 @@ impl ResourceLimit {
             ResourceLimit::SendCollabRequest => 50,
             ResourceLimit::FollowUser => 400,
             ResourceLimit::FollowTag => 400,
+            ResourceLimit::FollowBlog => 400,
             ResourceLimit::BookmarkStory => 400,
             ResourceLimit::CreateReport => 25,
+            ResourceLimit::CreateBlog => 10,
+            ResourceLimit::SendBlogEditorRequest => 50,
+            ResourceLimit::SendBlogWriterRequest => 100,
+            ResourceLimit::UploadFont => 32,
         }
     }
 }

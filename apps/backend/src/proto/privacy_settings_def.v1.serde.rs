@@ -114,6 +114,9 @@ impl serde::Serialize for GetPrivacySettingsResponse {
         if self.incoming_collaboration_requests != 0 {
             len += 1;
         }
+        if self.incoming_blog_requests != 0 {
+            len += 1;
+        }
         if self.following_list_visibility != 0 {
             len += 1;
         }
@@ -139,6 +142,11 @@ impl serde::Serialize for GetPrivacySettingsResponse {
             let v = IncomingCollaborationRequest::from_i32(self.incoming_collaboration_requests)
                 .ok_or_else(|| serde::ser::Error::custom(format!("Invalid variant {}", self.incoming_collaboration_requests)))?;
             struct_ser.serialize_field("incomingCollaborationRequests", &v)?;
+        }
+        if self.incoming_blog_requests != 0 {
+            let v = IncomingBlogRequest::from_i32(self.incoming_blog_requests)
+                .ok_or_else(|| serde::ser::Error::custom(format!("Invalid variant {}", self.incoming_blog_requests)))?;
+            struct_ser.serialize_field("incomingBlogRequests", &v)?;
         }
         if self.following_list_visibility != 0 {
             let v = RelationVisibility::from_i32(self.following_list_visibility)
@@ -170,6 +178,8 @@ impl<'de> serde::Deserialize<'de> for GetPrivacySettingsResponse {
             "incomingFriendRequests",
             "incoming_collaboration_requests",
             "incomingCollaborationRequests",
+            "incoming_blog_requests",
+            "incomingBlogRequests",
             "following_list_visibility",
             "followingListVisibility",
             "friend_list_visibility",
@@ -183,6 +193,7 @@ impl<'de> serde::Deserialize<'de> for GetPrivacySettingsResponse {
             AllowSensitiveMedia,
             IncomingFriendRequests,
             IncomingCollaborationRequests,
+            IncomingBlogRequests,
             FollowingListVisibility,
             FriendListVisibility,
         }
@@ -211,6 +222,7 @@ impl<'de> serde::Deserialize<'de> for GetPrivacySettingsResponse {
                             "allowSensitiveMedia" | "allow_sensitive_media" => Ok(GeneratedField::AllowSensitiveMedia),
                             "incomingFriendRequests" | "incoming_friend_requests" => Ok(GeneratedField::IncomingFriendRequests),
                             "incomingCollaborationRequests" | "incoming_collaboration_requests" => Ok(GeneratedField::IncomingCollaborationRequests),
+                            "incomingBlogRequests" | "incoming_blog_requests" => Ok(GeneratedField::IncomingBlogRequests),
                             "followingListVisibility" | "following_list_visibility" => Ok(GeneratedField::FollowingListVisibility),
                             "friendListVisibility" | "friend_list_visibility" => Ok(GeneratedField::FriendListVisibility),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
@@ -237,6 +249,7 @@ impl<'de> serde::Deserialize<'de> for GetPrivacySettingsResponse {
                 let mut allow_sensitive_media__ = None;
                 let mut incoming_friend_requests__ = None;
                 let mut incoming_collaboration_requests__ = None;
+                let mut incoming_blog_requests__ = None;
                 let mut following_list_visibility__ = None;
                 let mut friend_list_visibility__ = None;
                 while let Some(k) = map.next_key()? {
@@ -271,6 +284,12 @@ impl<'de> serde::Deserialize<'de> for GetPrivacySettingsResponse {
                             }
                             incoming_collaboration_requests__ = Some(map.next_value::<IncomingCollaborationRequest>()? as i32);
                         }
+                        GeneratedField::IncomingBlogRequests => {
+                            if incoming_blog_requests__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("incomingBlogRequests"));
+                            }
+                            incoming_blog_requests__ = Some(map.next_value::<IncomingBlogRequest>()? as i32);
+                        }
                         GeneratedField::FollowingListVisibility => {
                             if following_list_visibility__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("followingListVisibility"));
@@ -291,12 +310,95 @@ impl<'de> serde::Deserialize<'de> for GetPrivacySettingsResponse {
                     allow_sensitive_media: allow_sensitive_media__.unwrap_or_default(),
                     incoming_friend_requests: incoming_friend_requests__.unwrap_or_default(),
                     incoming_collaboration_requests: incoming_collaboration_requests__.unwrap_or_default(),
+                    incoming_blog_requests: incoming_blog_requests__.unwrap_or_default(),
                     following_list_visibility: following_list_visibility__.unwrap_or_default(),
                     friend_list_visibility: friend_list_visibility__.unwrap_or_default(),
                 })
             }
         }
         deserializer.deserialize_struct("privacy_settings_def.v1.GetPrivacySettingsResponse", FIELDS, GeneratedVisitor)
+    }
+}
+impl serde::Serialize for IncomingBlogRequest {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let variant = match self {
+            Self::Unspecified => 0,
+            Self::Everyone => 1,
+            Self::Following => 2,
+            Self::Friends => 3,
+            Self::None => 4,
+        };
+        serializer.serialize_i32(variant)
+    }
+}
+impl<'de> serde::Deserialize<'de> for IncomingBlogRequest {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "INCOMING_BLOG_REQUEST_UNSPECIFIED",
+            "INCOMING_BLOG_REQUEST_EVERYONE",
+            "INCOMING_BLOG_REQUEST_FOLLOWING",
+            "INCOMING_BLOG_REQUEST_FRIENDS",
+            "INCOMING_BLOG_REQUEST_NONE",
+        ];
+
+        struct GeneratedVisitor;
+
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = IncomingBlogRequest;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                write!(formatter, "expected one of: {:?}", &FIELDS)
+            }
+
+            fn visit_i64<E>(self, v: i64) -> std::result::Result<Self::Value, E>
+            where
+                E: serde::de::Error,
+            {
+                use std::convert::TryFrom;
+                i32::try_from(v)
+                    .ok()
+                    .and_then(IncomingBlogRequest::from_i32)
+                    .ok_or_else(|| {
+                        serde::de::Error::invalid_value(serde::de::Unexpected::Signed(v), &self)
+                    })
+            }
+
+            fn visit_u64<E>(self, v: u64) -> std::result::Result<Self::Value, E>
+            where
+                E: serde::de::Error,
+            {
+                use std::convert::TryFrom;
+                i32::try_from(v)
+                    .ok()
+                    .and_then(IncomingBlogRequest::from_i32)
+                    .ok_or_else(|| {
+                        serde::de::Error::invalid_value(serde::de::Unexpected::Unsigned(v), &self)
+                    })
+            }
+
+            fn visit_str<E>(self, value: &str) -> std::result::Result<Self::Value, E>
+            where
+                E: serde::de::Error,
+            {
+                match value {
+                    "INCOMING_BLOG_REQUEST_UNSPECIFIED" => Ok(IncomingBlogRequest::Unspecified),
+                    "INCOMING_BLOG_REQUEST_EVERYONE" => Ok(IncomingBlogRequest::Everyone),
+                    "INCOMING_BLOG_REQUEST_FOLLOWING" => Ok(IncomingBlogRequest::Following),
+                    "INCOMING_BLOG_REQUEST_FRIENDS" => Ok(IncomingBlogRequest::Friends),
+                    "INCOMING_BLOG_REQUEST_NONE" => Ok(IncomingBlogRequest::None),
+                    _ => Err(serde::de::Error::unknown_variant(value, FIELDS)),
+                }
+            }
+        }
+        deserializer.deserialize_any(GeneratedVisitor)
     }
 }
 impl serde::Serialize for IncomingCollaborationRequest {

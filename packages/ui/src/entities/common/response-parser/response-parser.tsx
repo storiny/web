@@ -56,7 +56,7 @@ const ResponseParser = ({
 }: InterweaveProps): React.ReactElement => (
   <Interweave
     {...rest}
-    allowList={["a", "b", "del", "em", "p", "code"]}
+    allowList={["a", "b", "del", "em", "p", "code", "strong"]}
     containerTagName={"div"}
     content={content}
     transform={transform}

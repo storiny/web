@@ -7,7 +7,7 @@ const SEGMENT = (story_id: string): string =>
   `me/stories/${story_id}/contributors`;
 
 export interface InviteContributorPayload {
-  role: Exclude<DocUserRole, "reader">;
+  role: Exclude<DocUserRole, "reader" | "blog-member">;
   story_id: string;
   username: string;
 }

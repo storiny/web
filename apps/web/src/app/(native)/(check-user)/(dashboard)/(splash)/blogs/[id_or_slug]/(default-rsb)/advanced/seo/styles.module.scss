@@ -1,0 +1,57 @@
+@use "breakpoints";
+
+.form {
+  padding: 0 16px 12px;
+  gap: 6px;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.input {
+  width: 100%;
+  max-width: 300px;
+
+  @include breakpoints.media("<mobile") {
+    max-width: 100%;
+  }
+}
+
+.preview-image {
+  gap: 12px;
+}
+
+.container {
+  padding-block: 8px;
+}
+
+.actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.placeholder {
+  --icon-size: 24px;
+
+  background-color: var(--bg-elevation-md);
+  cursor: pointer;
+}
+
+.x {
+  &.image {
+    position: relative;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--divider);
+    width: 292px;
+    max-width: 100%;
+  }
+
+  &.sitemap-url {
+    user-select: all;
+    width: fit-content;
+    padding: 8px 12px;
+    background-color: var(--bg-elevation-xs);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--divider);
+  }
+}

@@ -137,7 +137,7 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
       {result.isLoading ? (
         // Loading area
         <div className={clsx(css["flex-col"], css["flex-center"])}>
-          <Typography className={css["t-medium"]} level={"body3"}>
+          <Typography level={"body3"} weight={"medium"}>
             Uploading image...
           </Typography>
           <Spacer orientation={"vertical"} size={1.5} />
@@ -147,7 +147,8 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
         // Uplaod error area
         <React.Fragment>
           <Typography
-            className={clsx(css["t-minor"], css["t-center"])}
+            className={css["t-center"]}
+            color={"minor"}
             level={"body2"}
           >
             {"data" in result.error &&
@@ -183,7 +184,8 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
             size={2.25}
           />
           <Typography
-            className={clsx(css["t-minor"], css["t-center"])}
+            className={css["t-center"]}
+            color={"minor"}
             level={"body2"}
           >
             Image uploaded

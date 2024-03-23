@@ -5,6 +5,7 @@ use crate::{
         ToastErrorResponse,
     },
     middlewares::identity::identity::Identity,
+    utils::delete_s3_objects::delete_s3_objects,
     AppState,
 };
 use actix_web::{
@@ -70,17 +71,10 @@ WHERE
     let asset_key = asset.get::<Uuid, _>("key");
 
     // Delete the object from S3.
-    s3_client
-        .delete_object()
-        .bucket(S3_UPLOADS_BUCKET)
-        .key(asset_key.to_string())
-        .send()
+    delete_s3_objects(s3_client, S3_UPLOADS_BUCKET, vec![asset_key.to_string()])
         .await
         .map_err(|error| {
-            AppError::InternalError(format!(
-                "unable to delete the asset from s3: {:?}",
-                error.into_service_error()
-            ))
+            AppError::InternalError(format!("unable to delete the asset from s3: {error:?}",))
         })?;
 
     sqlx::query(
@@ -105,63 +99,38 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{
-        assert_toast_error_response,
-        init_app_for_test,
+    use crate::{
+        test_utils::{
+            assert_toast_error_response,
+            count_s3_objects,
+            get_s3_client,
+            init_app_for_test,
+            TestContext,
+        },
+        utils::delete_s3_objects_using_prefix::delete_s3_objects_using_prefix,
+        S3Client,
     };
     use actix_web::test;
     use sqlx::PgPool;
+    use storiny_macros::test_context;
 
-    #[sqlx::test]
-    async fn can_delete_an_asset(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
+    struct LocalTestContext {
+        s3_client: S3Client,
+    }
 
-        // Insert an asset.
-        let insert_result = sqlx::query(
-            r#"
-INSERT INTO assets (key, hex, height, width, user_id)
-VALUES ($1, $2, $3, $4, $5)
-RETURNING id
-"#,
-        )
-        .bind(Uuid::new_v4())
-        .bind("000000".to_string())
-        .bind(0)
-        .bind(0)
-        .bind(user_id)
-        .fetch_one(&mut *conn)
-        .await?;
+    #[async_trait::async_trait]
+    impl TestContext for LocalTestContext {
+        async fn setup() -> LocalTestContext {
+            LocalTestContext {
+                s3_client: get_s3_client().await,
+            }
+        }
 
-        assert!(insert_result.try_get::<i64, _>("id").is_ok());
-
-        let req = test::TestRequest::delete()
-            .cookie(cookie.unwrap())
-            .uri(&format!(
-                "/v1/me/assets/{}",
-                insert_result.get::<i64, _>("id")
-            ))
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // Should be deleted from the database.
-        let result = sqlx::query(
-            r#"
-SELECT EXISTS (
-    SELECT 1 FROM assets
-    WHERE id = $1
-)
-"#,
-        )
-        .bind(insert_result.get::<i64, _>("id"))
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(!result.get::<bool, _>("exists"));
-
-        Ok(())
+        async fn teardown(self) {
+            delete_s3_objects_using_prefix(&self.s3_client, S3_UPLOADS_BUCKET, None, None)
+                .await
+                .unwrap();
+        }
     }
 
     #[sqlx::test]
@@ -178,5 +147,86 @@ SELECT EXISTS (
         assert_toast_error_response(res, "Asset not found").await;
 
         Ok(())
+    }
+
+    mod serial {
+        use super::*;
+
+        #[test_context(LocalTestContext)]
+        #[sqlx::test]
+        async fn can_delete_an_asset(ctx: &mut LocalTestContext, pool: PgPool) -> sqlx::Result<()> {
+            let mut conn = pool.acquire().await?;
+            let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false, None).await;
+            let asset_key = Uuid::new_v4();
+
+            // Upload an asset to S3.
+            ctx.s3_client
+                .put_object()
+                .bucket(S3_UPLOADS_BUCKET)
+                .key(asset_key.to_string())
+                .send()
+                .await
+                .unwrap();
+
+            // Asset should be present in the bucket.
+            let result = count_s3_objects(&ctx.s3_client, S3_UPLOADS_BUCKET, None, None)
+                .await
+                .unwrap();
+
+            assert_eq!(result, 1_u32);
+
+            // Insert an asset.
+            let insert_result = sqlx::query(
+                r#"
+INSERT INTO assets (key, hex, height, width, user_id)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id
+"#,
+            )
+            .bind(asset_key)
+            .bind("000000".to_string())
+            .bind(0)
+            .bind(0)
+            .bind(user_id)
+            .fetch_one(&mut *conn)
+            .await?;
+
+            assert!(insert_result.try_get::<i64, _>("id").is_ok());
+
+            let req = test::TestRequest::delete()
+                .cookie(cookie.unwrap())
+                .uri(&format!(
+                    "/v1/me/assets/{}",
+                    insert_result.get::<i64, _>("id")
+                ))
+                .to_request();
+            let res = test::call_service(&app, req).await;
+
+            assert!(res.status().is_success());
+
+            // Should be deleted from the database.
+            let result = sqlx::query(
+                r#"
+SELECT EXISTS (
+    SELECT 1 FROM assets
+    WHERE id = $1
+)
+"#,
+            )
+            .bind(insert_result.get::<i64, _>("id"))
+            .fetch_one(&mut *conn)
+            .await?;
+
+            assert!(!result.get::<bool, _>("exists"));
+
+            // Asset should not be present in the bucket.
+            let result = count_s3_objects(&ctx.s3_client, S3_UPLOADS_BUCKET, None, None)
+                .await
+                .unwrap();
+
+            assert_eq!(result, 0);
+
+            Ok(())
+        }
     }
 }

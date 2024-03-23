@@ -42,8 +42,9 @@ const StatBars = <T extends StatBarsData>(
             {label}
           </Typography>
           <Typography
-            className={clsx(css["t-medium"], styles.value)}
+            className={styles.value}
             level={"body3"}
+            weight={"medium"}
           >
             {abbreviate_number(value)}{" "}
             <span className={css["t-minor"]}>

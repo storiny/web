@@ -1,5 +1,5 @@
 import { ContentType } from "@storiny/shared";
-import { SiteNotificationsSchema } from "@storiny/web/src/app/(check-user)/(dashboard)/me/(splash)/(default-lsb)/(default-rsb)/account/notifications/site-notifications";
+import { SiteNotificationsSchema } from "@storiny/web/src/app/(native)/(check-user)/(dashboard)/(splash)/me/(default-rsb)/account/notifications/site-notifications";
 
 import { api_slice } from "~/redux/features/api/slice";
 

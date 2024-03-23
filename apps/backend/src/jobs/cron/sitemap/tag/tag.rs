@@ -4,7 +4,7 @@ use crate::{
     utils::deflate_bytes_gzip::deflate_bytes_gzip,
     S3Client,
 };
-use apalis::prelude::JobError;
+use apalis::prelude::Error;
 use async_recursion::async_recursion;
 use sitemap_rs::{
     url::{
@@ -43,7 +43,7 @@ pub async fn generate_tag_sitemap(
     web_server_url: &str,
     index: Option<u16>,
     offset: Option<u32>,
-) -> Result<GenerateSitemapResponse, JobError> {
+) -> Result<GenerateSitemapResponse, Error> {
     // We can currently generate entries for upto 500 million tags (10_000 files x 50_0000
     // entries per file) across 10,000 sitemap files. Raise this value (would require multiple
     // sitemap index files) when we exceed this limit :)
@@ -70,7 +70,7 @@ LIMIT $1 OFFSET $2
     .fetch_all(db_pool)
     .await
     .map_err(Box::new)
-    .map_err(|err| JobError::Failed(err))?
+    .map_err(|err| Error::Failed(err))?
     .iter()
     .filter_map(|row| {
         Url::builder(format!("{web_server_url}/tag/{}", row.name))
@@ -97,19 +97,19 @@ LIMIT $1 OFFSET $2
         // This should never error as the number of rows are always <= 50,000
         let url_set = UrlSet::new(result)
             .map_err(Box::new)
-            .map_err(|err| JobError::Failed(err))?;
+            .map_err(|err| Error::Failed(err))?;
 
         let mut buffer = Vec::new();
 
         url_set
             .write(&mut buffer)
             .map_err(Box::new)
-            .map_err(|err| JobError::Failed(err))?;
+            .map_err(|err| Error::Failed(err))?;
 
         let compressed_bytes = deflate_bytes_gzip(&buffer, None)
             .await
             .map_err(Box::new)
-            .map_err(|err| JobError::Failed(err))?;
+            .map_err(|err| Error::Failed(err))?;
 
         debug!(
             "sitemap size after compression: {} bytes",
@@ -130,7 +130,7 @@ LIMIT $1 OFFSET $2
             .send()
             .await
             .map_err(|error| Box::new(error.into_service_error()))
-            .map_err(|error| JobError::Failed(error))?;
+            .map_err(|error| Error::Failed(error))?;
 
         generated_result.url_count += result_length;
         generated_result.file_count += 1;
@@ -164,7 +164,7 @@ mod tests {
             get_s3_client,
             TestContext,
         },
-        utils::delete_s3_objects::delete_s3_objects,
+        utils::delete_s3_objects_using_prefix::delete_s3_objects_using_prefix,
     };
     use sqlx::PgPool;
     use storiny_macros::test_context;
@@ -182,7 +182,7 @@ mod tests {
         }
 
         async fn teardown(self) {
-            delete_s3_objects(
+            delete_s3_objects_using_prefix(
                 &self.s3_client,
                 S3_SITEMAPS_BUCKET,
                 Some("tags-".to_string()),

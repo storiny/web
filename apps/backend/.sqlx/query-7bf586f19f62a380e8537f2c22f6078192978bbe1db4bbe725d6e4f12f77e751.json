@@ -1,0 +1,145 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "WITH liked_stories AS (WITH search_query AS (SELECT PLAINTO_TSQUERY('english', $1) AS tsq\n\t\t\t\t\t\t\t\t\t\t\t)\n\t\t\t\t\t   SELECT\n\t\t\t\t\t\t   -- Story\n\t\t\t\t\t\t   s.id,\n\t\t\t\t\t\t   s.title,\n\t\t\t\t\t\t   s.slug                                                   AS \"slug!\",\n\t\t\t\t\t\t   s.description,\n\t\t\t\t\t\t   s.splash_id,\n\t\t\t\t\t\t   s.splash_hex,\n\t\t\t\t\t\t   s.category::TEXT                                         AS \"category!\",\n\t\t\t\t\t\t   s.age_restriction,\n\t\t\t\t\t\t   s.license,\n\t\t\t\t\t\t   s.user_id,\n\t\t\t\t\t\t   -- Stats\n\t\t\t\t\t\t   s.word_count,\n\t\t\t\t\t\t   s.read_count,\n\t\t\t\t\t\t   s.like_count,\n\t\t\t\t\t\t   s.comment_count,\n\t\t\t\t\t\t   -- Timestamps\n\t\t\t\t\t\t   s.published_at                                           AS \"published_at!\",\n\t\t\t\t\t\t   s.edited_at,\n\t\t\t\t\t\t   -- Boolean flags\n\t\t\t\t\t\t   \"s->is_bookmarked\".story_id IS NOT NULL                  AS \"is_bookmarked!\",\n\t\t\t\t\t\t   -- User\n\t\t\t\t\t\t   JSON_BUILD_OBJECT(\n\t\t\t\t\t\t\t\t   'id', su.id,\n\t\t\t\t\t\t\t\t   'name', su.name,\n\t\t\t\t\t\t\t\t   'username', su.username,\n\t\t\t\t\t\t\t\t   'avatar_id', su.avatar_id,\n\t\t\t\t\t\t\t\t   'avatar_hex', su.avatar_hex,\n\t\t\t\t\t\t\t\t   'public_flags', su.public_flags\n\t\t\t\t\t\t   )                                                        AS \"user!: Json<User>\",\n\t\t\t\t\t\t   -- Blog\n\t\t\t\t\t\t   CASE\n\t\t\t\t\t\t\t   WHEN \"s->blog_stories->blog\".id IS NOT NULL\n\t\t\t\t\t\t\t\t   THEN\n\t\t\t\t\t\t\t\t   JSON_BUILD_OBJECT(\n\t\t\t\t\t\t\t\t\t\t   'id', \"s->blog_stories->blog\".id,\n\t\t\t\t\t\t\t\t\t\t   'name', \"s->blog_stories->blog\".name,\n\t\t\t\t\t\t\t\t\t\t   'slug', \"s->blog_stories->blog\".slug,\n\t\t\t\t\t\t\t\t\t\t   'domain', \"s->blog_stories->blog\".domain,\n\t\t\t\t\t\t\t\t\t\t   'logo_id', \"s->blog_stories->blog\".logo_id,\n\t\t\t\t\t\t\t\t\t\t   'logo_hex', \"s->blog_stories->blog\".logo_hex\n\t\t\t\t\t\t\t\t   )\n\t\t\t\t\t\t   END                                                      AS \"blog: Json<Blog>\",\n\t\t\t\t\t\t   -- Tags\n\t\t\t\t\t\t   COALESCE(\n\t\t\t\t\t\t\t\t\t\t   ARRAY_AGG(\n\t\t\t\t\t\t\t\t\t\t   DISTINCT (\"s->story_tags->tag\".id, \"s->story_tags->tag\".name)\n\t\t\t\t\t\t\t\t\t\t\t\t\t) FILTER (\n\t\t\t\t\t\t\t\t\t\t\t   WHERE \"s->story_tags->tag\".id IS NOT NULL\n\t\t\t\t\t\t\t\t\t\t\t   ), '{}'\n\t\t\t\t\t\t   )                                                        AS \"tags!: Vec<Tag>\",\n\t\t\t\t\t\t   -- Query score\n\t\t\t\t\t\t   TS_RANK_CD(s.search_vec, (SELECT tsq FROM search_query)) AS \"query_score\"\n\t\t\t\t\t   FROM\n\t\t\t\t\t\t   story_likes sl\n\t\t\t\t\t\t\t   -- Join story\n\t\t\t\t\t\t\t   INNER JOIN stories s\n\t\t\t\t\t\t\t\t\t\t  ON s.id = sl.story_id\n\t\t\t\t\t\t\t   -- Join story user\n\t\t\t\t\t\t\t   INNER JOIN users su\n\t\t\t\t\t\t\t\t\t\t  ON su.id = s.user_id\n\t\t\t\t\t\t\t   -- Join blog stories\n\t\t\t\t\t\t\t   LEFT OUTER JOIN (blog_stories AS \"s->blog_stories\"\n\t\t\t\t\t\t\t   -- Join blogs\n\t\t\t\t\t\t\t   INNER JOIN blogs AS \"s->blog_stories->blog\"\n\t\t\t\t\t\t\t\t\t\t\t\tON \"s->blog_stories->blog\".id = \"s->blog_stories\".blog_id\n\t\t\t\t\t\t\t   )\n\t\t\t\t\t\t\t\t\t\t\t   ON \"s->blog_stories\".story_id = s.id\n\t\t\t\t\t\t\t\t\t\t\t\t   AND \"s->blog_stories\".accepted_at IS NOT NULL\n\t\t\t\t\t\t\t\t\t\t\t\t   AND \"s->blog_stories\".deleted_at IS NULL\n\t\t\t\t\t\t\t   -- Join story tags\n\t\t\t\t\t\t\t   LEFT OUTER JOIN (story_tags AS \"s->story_tags\"\n\t\t\t\t\t\t\t   -- Join tags\n\t\t\t\t\t\t\t   INNER JOIN tags AS \"s->story_tags->tag\"\n\t\t\t\t\t\t\t\t\t\t\t\tON \"s->story_tags->tag\".id = \"s->story_tags\".tag_id)\n\t\t\t\t\t\t\t\t\t\t\t   ON \"s->story_tags\".story_id = s.id\n\t\t\t\t\t\t\t   -- Boolean bookmark flag\n\t\t\t\t\t\t\t   LEFT OUTER JOIN bookmarks AS \"s->is_bookmarked\"\n\t\t\t\t\t\t\t\t\t\t\t   ON \"s->is_bookmarked\".story_id = s.id\n\t\t\t\t\t\t\t\t\t\t\t\t   AND \"s->is_bookmarked\".user_id = $2\n\t\t\t\t\t\t\t\t\t\t\t\t   AND \"s->is_bookmarked\".deleted_at IS NULL\n\t\t\t\t\t   WHERE\n\t\t\t\t\t\t\t sl.user_id = $2\n\t\t\t\t\t\t AND s.search_vec @@ (SELECT tsq FROM search_query)\n\t\t\t\t\t\t AND sl.deleted_at IS NULL\n\t\t\t\t\t   GROUP BY\n\t\t\t\t\t\t   s.id,\n\t\t\t\t\t\t   su.id,\n\t\t\t\t\t\t   sl.created_at,\n\t\t\t\t\t\t   \"s->blog_stories->blog\".id,\n\t\t\t\t\t\t   \"s->is_bookmarked\".story_id\n\t\t\t\t\t   ORDER BY\n\t\t\t\t\t\t   query_score   DESC,\n\t\t\t\t\t\t   sl.created_at DESC\n\t\t\t\t\t   LIMIT $3 OFFSET $4\n\t\t\t\t\t  )\nSELECT\n\t-- Story\n\tid,\n\ttitle,\n\t\"slug!\",\n\tdescription,\n\tsplash_id,\n\tsplash_hex,\n\t\"category!\",\n\tage_restriction,\n\tlicense,\n\tuser_id,\n\t-- Stats\n\tword_count,\n\tread_count,\n\tlike_count,\n\tcomment_count,\n\t-- Timestamps\n\t\"published_at!\",\n\tedited_at,\n\t-- Boolean flags\n\t\"is_bookmarked!\",\n\tTRUE AS \"is_liked!\",\n\t-- Joins\n\t\"user!: Json<User>\",\n\t\"blog: Json<Blog>\",\n\t\"tags!: Vec<Tag>\"\nFROM\n\tliked_stories\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
+        "name": "title",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "slug!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "splash_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 5,
+        "name": "splash_hex",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "category!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "age_restriction",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 8,
+        "name": "license",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 9,
+        "name": "user_id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 10,
+        "name": "word_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 11,
+        "name": "read_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 12,
+        "name": "like_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 13,
+        "name": "comment_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 14,
+        "name": "published_at!",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 15,
+        "name": "edited_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 16,
+        "name": "is_bookmarked!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 17,
+        "name": "is_liked!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 18,
+        "name": "user!: Json<User>",
+        "type_info": "Json"
+      },
+      {
+        "ordinal": 19,
+        "name": "blog: Json<Blog>",
+        "type_info": "Json"
+      },
+      {
+        "ordinal": 20,
+        "name": "tags!: Vec<Tag>",
+        "type_info": "RecordArray"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Int8",
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      null,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "7bf586f19f62a380e8537f2c22f6078192978bbe1db4bbe725d6e4f12f77e751"
+}

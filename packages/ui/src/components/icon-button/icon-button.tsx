@@ -2,7 +2,9 @@
 
 import { VIBRATION_PATTERNS } from "@storiny/shared";
 import { dev_console } from "@storiny/shared/src/utils/dev-log";
+import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { is_test_env } from "@storiny/shared/src/utils/is-test-env";
+import { use_blog_context } from "@storiny/web/src/common/context/blog";
 import clsx from "clsx";
 import { usePathname as use_pathname } from "next/navigation";
 import React from "react";
@@ -48,6 +50,7 @@ const IconButton = forward_ref<IconButtonProps, "button">((props, ref) => {
   const disabled = Boolean(input_disabled || disabled_prop || loading);
   const logged_in = use_app_selector(select_is_logged_in);
   const haptic_feedback = use_app_selector(select_haptic_feedback);
+  const blog = use_blog_context();
   const should_login = check_auth && !logged_in;
   const Component = should_login ? "a" : as;
   const size = auto_size
@@ -56,7 +59,11 @@ const IconButton = forward_ref<IconButtonProps, "button">((props, ref) => {
       : size_prop
     : size_prop;
   const to =
-    pathname && pathname !== "/" ? `?to=${encodeURIComponent(pathname)}` : "";
+    pathname && pathname !== "/"
+      ? `?to=${encodeURIComponent(
+          `${blog?.id ? `${get_blog_url(blog)}` : ""}${pathname}`
+        )}`
+      : "";
 
   /**
    * Handles click event
@@ -102,7 +109,9 @@ const IconButton = forward_ref<IconButtonProps, "button">((props, ref) => {
       tabIndex={disabled ? -1 : 0}
       {...(should_login
         ? {
-            href: `/login${to}`
+            href: `${
+              blog?.id ? process.env.NEXT_PUBLIC_WEB_URL : ""
+            }/login${to}`
           }
         : {})}
       {...(Component === "button"

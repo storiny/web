@@ -1,0 +1,26 @@
+@use "breakpoints";
+
+.logo-settings {
+  gap: 12px;
+}
+
+.header {
+  gap: 18px;
+  padding-right: 18px;
+  justify-content: flex-start;
+}
+
+.x {
+  &.logo {
+    --size: 72px;
+    --font-size: 20px;
+
+    @include breakpoints.media("<desktop") {
+      --size: 80px;
+    }
+  }
+
+  &.logo, &.fallback {
+    border-radius: var(--radius-md) !important;
+  }
+}

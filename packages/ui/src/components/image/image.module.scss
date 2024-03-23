@@ -4,9 +4,6 @@
   object-fit: cover;
   object-position: center;
   border-radius: inherit;
-  animation-timing-function: ease-in;
-  animation-duration: 220ms;
-  animation-fill-mode: backwards;
 }
 
 .image {
@@ -14,11 +11,20 @@
   position: relative;
   width: var(--width, 100%);
   height: var(--height, 100%);
-  animation-timing-function: ease-out;
-  animation-duration: 200ms;
-  animation-delay: 500ms; // Delay for image animation
-  animation-fill-mode: forwards;
   background-color: var(--hex, var(--divider));
+
+  &:not(.no-animation) {
+    animation-timing-function: ease-out;
+    animation-duration: 200ms;
+    animation-delay: 500ms; // Delay for image animation
+    animation-fill-mode: forwards;
+
+    & .native-image {
+      animation-timing-function: ease-in;
+      animation-duration: 220ms;
+      animation-fill-mode: backwards;
+    }
+  }
 
   &.loaded {
     animation-name: fade-background-out; // Hide background as images can be transparent
