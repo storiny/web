@@ -1,0 +1,209 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT s.id,\n\t   s.title,\n\t   s.slug,\n\t   s.description,\n\t   s.splash_id,\n\t   s.splash_hex,\n\t   s.category::TEXT       AS \"category!\",\n\t   s.age_restriction,\n\t   s.visibility,\n\t   s.license,\n\t   s.user_id,\n\t   s.disable_comments,\n\t   s.disable_public_revision_history,\n\t   s.disable_toc,\n\t   s.canonical_url,\n\t   s.seo_description,\n\t   s.seo_title,\n\t   s.preview_image,\n\t   -- Timestamps\n\t   s.created_at,\n\t   s.edited_at,\n\t   s.deleted_at,\n\t   s.published_at,\n\t   s.first_published_at,\n\t   -- Joins\n\t   \"s->document\".key      AS \"doc_key\",\n\t   CASE\n\t\t   WHEN (\n\t\t\t   \"s->blog_stories->blog->editor\".id IS NOT NULL\n\t\t\t\t   OR \"s->blog_stories->blog\".user_id = $2\n\t\t\t   )\n\t\t\t   THEN 'blog-member'\n\t\t   WHEN \"s->contributor\".id IS NOT NULL\n\t\t\t   THEN \"s->contributor\".role\n\t\t   ELSE 'editor'\n\t   END                    AS \"role!\",\n\t   -- User\n\t   \"s->user\".name         AS user_name,\n\t   \"s->user\".username     AS user_username,\n\t   \"s->user\".avatar_id    AS user_avatar_id,\n\t   \"s->user\".avatar_hex   AS user_avatar_hex,\n\t   \"s->user\".public_flags AS user_public_flags,\n\t   -- Tags\n\t   (\n\t\t   -- Draft tags\n\t\t   COALESCE(\n\t\t\t\t\t\t   ARRAY_AGG(\n\t\t\t\t\t\t   DISTINCT (\"s->draft_tags\".name, \"s->draft_tags\".name)\n\t\t\t\t\t\t\t\t\t) FILTER (\n\t\t\t\t\t\t\t   WHERE \"s->draft_tags\".name IS NOT NULL\n\t\t\t\t\t\t\t   ), '{}'\n\t\t   ) ||\n\t\t\t   -- Story tags\n\t\t   COALESCE(\n\t\t\t\t\t\t   ARRAY_AGG(\n\t\t\t\t\t   -- We need to cast the BIGINT id to string\n\t\t\t\t\t\t   DISTINCT (\"s->story_tags->tag\".id::TEXT, \"s->story_tags->tag\".name)\n\t\t\t\t\t\t\t\t\t) FILTER (\n\t\t\t\t\t\t\t   WHERE \"s->story_tags->tag\".id IS NOT NULL\n\t\t\t\t\t\t\t   ), '{}'\n\t\t   ))                 AS \"tags!: Vec<Tag>\",\n\t   -- Blog\n\t   CASE\n\t\t   WHEN \"s->blog_stories->blog\".id IS NOT NULL\n\t\t\t   THEN\n\t\t\t   JSON_BUILD_OBJECT(\n\t\t\t\t\t   'id', \"s->blog_stories->blog\".id,\n\t\t\t\t\t   'name', \"s->blog_stories->blog\".name,\n\t\t\t\t\t   'slug', \"s->blog_stories->blog\".slug,\n\t\t\t\t\t   'domain', \"s->blog_stories->blog\".domain,\n\t\t\t\t\t   'logo_id', \"s->blog_stories->blog\".logo_id,\n\t\t\t\t\t   'logo_hex', \"s->blog_stories->blog\".logo_hex\n\t\t\t   )\n\t   END                    AS \"blog: Json<Blog>\"\nFROM\n\tstories s\n\t\t-- Join document\n\t\tINNER JOIN documents AS \"s->document\"\n\t\t\t\t   ON s.id = \"s->document\".story_id\n\t\t\t\t\t   AND \"s->document\".is_editable IS FALSE\n\t\t-- Join user\n\t\tINNER JOIN users \"s->user\"\n\t\t\t\t   ON \"s->user\".id = s.user_id\n\t\t-- Join blog stories\n\t\tLEFT OUTER JOIN (blog_stories AS \"s->blog_stories\"\n\t\t-- Join blogs\n\t\tINNER JOIN blogs AS \"s->blog_stories->blog\"\n\t\t\t\t\t\t ON \"s->blog_stories->blog\".id = \"s->blog_stories\".blog_id\n\t\t\t\t\t\t\t AND \"s->blog_stories->blog\".deleted_at IS NULL\n\t\t)\n\t\t\t\t\t\tON \"s->blog_stories\".story_id = s.id\n\t\t\t\t\t\t\tAND \"s->blog_stories\".deleted_at IS NULL\n\t\t-- Join blog editor\n\t\tLEFT OUTER JOIN blog_editors AS \"s->blog_stories->blog->editor\"\n\t\t\t\t\t\tON \"s->blog_stories->blog->editor\".user_id = $2\n\t\t\t\t\t\t\tAND \"s->blog_stories->blog->editor\".blog_id = \"s->blog_stories->blog\".id\n\t\t\t\t\t\t\tAND \"s->blog_stories->blog->editor\".accepted_at IS NOT NULL\n\t\t\t\t\t\t\tAND \"s->blog_stories->blog->editor\".deleted_at IS NULL\n\t\t-- Join contributor\n\t\tLEFT OUTER JOIN story_contributors \"s->contributor\"\n\t\t\t\t\t\tON \"s->contributor\".story_id = s.id\n\t\t\t\t\t\t\tAND \"s->contributor\".user_id = $2\n\t\t\t\t\t\t\tAND \"s->contributor\".accepted_at IS NOT NULL\n\t\t\t\t\t\t\tAND \"s->contributor\".deleted_at IS NULL\n\t\t-- Join draft tags\n\t\tLEFT OUTER JOIN draft_tags AS \"s->draft_tags\"\n\t\t\t\t\t\tON \"s->draft_tags\".story_id = s.id\n\t\t--\n\t\t-- Join story tags\n\t\tLEFT OUTER JOIN (story_tags AS \"s->story_tags\"\n\t\tINNER JOIN tags AS \"s->story_tags->tag\"\n\t\t\t\t\t\t ON \"s->story_tags->tag\".id = \"s->story_tags\".tag_id\n\t\t)\n\t\t\t\t\t\tON \"s->story_tags\".story_id = s.id\nWHERE\n\t  s.id = $1\n  AND (\n\t\t  s.user_id = $2\n\t\t\t  OR \"s->contributor\".id IS NOT NULL\n\t\t\t  OR \"s->blog_stories->blog->editor\".id IS NOT NULL\n\t\t\t  OR \"s->blog_stories->blog\".user_id = $2\n\t\t  )\nGROUP BY\n\ts.id,\n\t\"s->contributor\".id,\n\t\"s->blog_stories->blog->editor\".id,\n\t\"s->blog_stories->blog\".user_id,\n\t\"s->blog_stories->blog\".id,\n\tdoc_key,\n\tuser_name,\n\tuser_username,\n\tuser_avatar_id,\n\tuser_avatar_hex,\n\tuser_public_flags\nLIMIT 1\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
+        "name": "title",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "slug",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "splash_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 5,
+        "name": "splash_hex",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "category!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "age_restriction",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 8,
+        "name": "visibility",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 9,
+        "name": "license",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 10,
+        "name": "user_id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 11,
+        "name": "disable_comments",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 12,
+        "name": "disable_public_revision_history",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 13,
+        "name": "disable_toc",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 14,
+        "name": "canonical_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 15,
+        "name": "seo_description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 16,
+        "name": "seo_title",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 17,
+        "name": "preview_image",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 18,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 19,
+        "name": "edited_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 20,
+        "name": "deleted_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 21,
+        "name": "published_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 22,
+        "name": "first_published_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 23,
+        "name": "doc_key",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 24,
+        "name": "role!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 25,
+        "name": "user_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 26,
+        "name": "user_username",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 27,
+        "name": "user_avatar_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 28,
+        "name": "user_avatar_hex",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 29,
+        "name": "user_public_flags",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 30,
+        "name": "tags!: Vec<Tag>",
+        "type_info": "RecordArray"
+      },
+      {
+        "ordinal": 31,
+        "name": "blog: Json<Blog>",
+        "type_info": "Json"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      null,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      null,
+      false,
+      false,
+      true,
+      true,
+      false,
+      null,
+      null
+    ]
+  },
+  "hash": "71238ab66d129cee7f6b71a1aef8165709db9c67de1b4733dee9ab17345ad613"
+}
