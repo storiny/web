@@ -10,8 +10,8 @@ import { Organization, WithContext } from "schema-dts";
 import BlogContextProvider from "~/common/context/blog";
 import { get_blog, GetBlogResponse } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
-import { is_valid_blog_slug } from "~/common/utils";
 import { get_user } from "~/common/utils/get-user";
+import { is_valid_blog_slug } from "~/common/utils/is-valid-blog-slug";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import CriticalFonts from "../../fonts/critical";

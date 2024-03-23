@@ -1,11 +1,11 @@
-import { BLOG_PROPS } from "@storiny/shared";
+// These values need to be hardcoded here as dynamic code evaluation is not
+// supported in the `middleware.ts`.
+const MIN_LENGTH = 3;
+const MAX_LENGTH = 24;
 
 /**
  * Predicate function for validating blog slugs
  * @param slug Blog slug
  */
 export const is_valid_blog_slug = (slug = ""): boolean =>
-  !(
-    slug.length < BLOG_PROPS.slug.min_length ||
-    slug.length > BLOG_PROPS.slug.max_length
-  );
+  slug.length > MIN_LENGTH && slug.length < MAX_LENGTH;

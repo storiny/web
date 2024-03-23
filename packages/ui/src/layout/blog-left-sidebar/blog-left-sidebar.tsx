@@ -1,6 +1,8 @@
 "use client";
 
 import { ImageSize } from "@storiny/shared";
+import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
+import { use_blog_context } from "@storiny/web/src/common/context/blog";
 import clsx from "clsx";
 import { usePathname as use_pathname } from "next/dist/client/components/navigation";
 import NextLink from "next/link";
@@ -21,9 +23,21 @@ import { use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
-import { use_blog_context } from "../../../../../apps/web/src/common/context/blog";
 import styles from "./blog-left-sidebar.module.scss";
 import { BlogLeftSidebarProps } from "./blog-left-sidebar.props";
+
+/**
+ * Returns the value for a tab using its target URL.
+ * @param target The target URL.
+ * @param blog_url The URL of the blog.
+ */
+const get_tab_value = (target: string, blog_url: string): string => {
+  if (target.startsWith(blog_url)) {
+    return target.replace(blog_url, "");
+  }
+
+  return target;
+};
 
 const AnchorTab = ({
   href,
@@ -55,6 +69,7 @@ const BlogLeftSidebar = ({
   const blog = use_blog_context();
   const pathname = use_pathname();
   const logged_in = use_app_selector(select_is_logged_in);
+  const blog_url = get_blog_url(blog);
 
   return (
     <LeftSidebar
@@ -104,7 +119,13 @@ const BlogLeftSidebar = ({
               }
               href={item.target}
               key={item.id}
-              value={item.target}
+              value={
+                (blog.lsb_items || []).filter(
+                  (value) => value.target === item.target
+                ).length > 1
+                  ? item.target
+                  : get_tab_value(item.target, blog_url)
+              }
             >
               {item.name}
             </AnchorTab>

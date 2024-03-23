@@ -17,6 +17,6 @@
 
 @include breakpoints.media("<tablet") {
   .page-title {
-    display: none;
+    display: none !important;
   }
 }

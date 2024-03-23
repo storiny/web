@@ -138,7 +138,7 @@ async fn post(
     }
     // Ignore internal referrals
     .and_then(|host| {
-        if host.contains("storiny.com") {
+        if host == "storiny.com" || host == "www.storiny.com" {
             None
         } else {
             Some(host.replace("www.", ""))

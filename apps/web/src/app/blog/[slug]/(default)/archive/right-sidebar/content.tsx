@@ -9,7 +9,7 @@ import Link from "~/components/link";
 import Typography from "~/components/typography";
 import css from "~/theme/main.module.scss";
 
-import { get_valid_month, get_valid_year } from "../[year]/[month]/page";
+import { get_valid_month, get_valid_year } from "../[year]/[month]";
 import styles from "./right-sidebar.module.scss";
 
 interface Props {

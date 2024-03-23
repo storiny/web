@@ -2,6 +2,7 @@
 
 import { ImageSize } from "@storiny/shared";
 import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
+import { use_blog_context } from "@storiny/web/src/common/context/blog";
 import { use_app_router } from "@storiny/web/src/common/utils";
 import clsx from "clsx";
 import NextLink from "next/link";
@@ -48,16 +49,19 @@ import { StoryProps } from "./story.props";
 /**
  * Returns the story URL
  * @param props Story props
+ * @param is_on_blog Whether this story is rendered on a blog
  */
-const get_story_url = (props: StoryProps): string => {
+const get_story_url = (props: StoryProps, is_on_blog: boolean): string => {
   const { story, is_deleted, is_contributable, is_draft, is_blog } = props;
 
   if (is_blog || is_draft || is_contributable || is_deleted) {
     return `/doc/${story.id}`;
   }
 
-  if (story.blog) {
-    return `${get_blog_url(story.blog)}/${story.slug ?? story.id}`;
+  if (story.blog || is_on_blog) {
+    return `${story.blog ? get_blog_url(story.blog) : ""}/${
+      story.slug ?? story.id
+    }`;
   }
 
   return `/${story.user?.username || "story"}/${story.slug ?? story.id}`;
@@ -216,6 +220,7 @@ const Splash = (props: StoryProps): React.ReactElement => {
     story,
     custom_action
   } = props;
+  const blog = use_blog_context();
   const router = use_app_router();
   const dispatch = use_app_dispatch();
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
@@ -225,7 +230,7 @@ const Splash = (props: StoryProps): React.ReactElement => {
   const is_liked = use_app_selector(
     (state) => state.entities.liked_stories[story.id]
   );
-  const story_url = get_story_url(props);
+  const story_url = get_story_url(props, Boolean(blog?.id));
   const is_small = is_extended || is_contributable || is_deleted || is_draft;
   const show_interactive_buttons = Boolean(
     !is_extended && !is_contributable && !is_deleted && !is_draft
@@ -602,13 +607,13 @@ const Story = (props: StoryProps): React.ReactElement => {
     is_extended,
     is_deleted,
     is_draft: is_draft_prop,
-    is_blog,
     is_contributable,
     enable_ssr,
     virtual,
     custom_action,
     ...rest
   } = props;
+  const blog = use_blog_context();
   const is_draft = is_draft_prop ?? story.published_at === null;
   const dispatch = use_app_dispatch();
   const is_user_blocked = use_app_selector(
@@ -616,7 +621,7 @@ const Story = (props: StoryProps): React.ReactElement => {
   );
   const [collapsed, set_collapsed] = React.useState(is_user_blocked);
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const story_url = get_story_url({ ...props, is_draft });
+  const story_url = get_story_url({ ...props, is_draft }, Boolean(blog?.id));
   const is_small = is_extended || is_contributable || is_deleted || is_draft;
 
   React.useEffect(() => {

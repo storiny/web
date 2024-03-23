@@ -16,7 +16,7 @@ interface Props {
 }
 
 const ArchiveRightSidebar = ({ archive }: Props): React.ReactElement => (
-  <RightSidebar>
+  <RightSidebar is_blog>
     <DefaultBlogRightSidebarContent />
     <Separator />
     <SuspendedArchiveRightSidebarContent archive={archive} />

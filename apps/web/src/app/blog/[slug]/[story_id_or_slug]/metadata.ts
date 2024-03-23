@@ -4,8 +4,8 @@ import type { Metadata } from "next";
 import { notFound as not_found } from "next/dist/client/components/not-found";
 
 import { get_story } from "~/common/grpc";
-import { is_valid_blog_slug } from "~/common/utils";
 import { get_user } from "~/common/utils/get-user";
+import { is_valid_blog_slug } from "~/common/utils/is-valid-blog-slug";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 export const generateMetadata = async ({

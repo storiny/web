@@ -1,7 +1,7 @@
 import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { NextMiddleware, NextResponse } from "next/server";
 
-import { is_valid_blog_slug } from "~/common/utils";
+import { is_valid_blog_slug } from "~/common/utils/is-valid-blog-slug";
 
 // Third-party frame sources.
 const CSP_FRAME_SRC = [
@@ -65,11 +65,7 @@ export const middleware: NextMiddleware = (request) => {
     }
   }
 
-  // Skip adding CSP directives in development environment.
-  if (process.env.NODE_ENV === "development") {
-    return;
-  }
-
+  // Add CSP directives.
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const csp_header = `
     default-src 'self';
@@ -91,8 +87,11 @@ export const middleware: NextMiddleware = (request) => {
   const csp_header_value = csp_header.replace(/\s{2,}/g, " ").trim();
 
   const request_headers = new Headers(request.headers);
-  request_headers.set("x-nonce", nonce);
-  request_headers.set("Content-Security-Policy", csp_header_value);
+
+  if (process.env.NODE_ENV !== "development") {
+    request_headers.set("x-nonce", nonce);
+    request_headers.set("Content-Security-Policy", csp_header_value);
+  }
 
   let response = NextResponse.next({
     request: {
@@ -117,10 +116,26 @@ export const middleware: NextMiddleware = (request) => {
     "staff.storiny.com"
   ];
 
-  if (hostname && !native_domains.includes(hostname)) {
+  if (process.env.NODE_ENV === "development") {
+    native_domains.push("storiny.local");
+  }
+
+  if (
+    hostname &&
+    !native_domains.includes(hostname) &&
+    hostname.includes(".") // Period is present on all valid hosts
+  ) {
     const url = request.nextUrl.clone();
-    const value = /\.storiny\.com$/i.test(hostname)
-      ? hostname.replace(".storiny.com", "")
+    const value = (process.env.NODE_ENV === "development"
+      ? /\.storiny\.local$/i
+      : /\.storiny\.com$/i
+    ).test(hostname)
+      ? hostname.replace(
+          `.storiny.${
+            process.env.NODE_ENV === "development" ? "local" : "com"
+          }`,
+          ""
+        )
       : hostname;
 
     if (url.pathname === "/robots.txt") {
@@ -142,7 +157,9 @@ export const middleware: NextMiddleware = (request) => {
     });
   }
 
-  response.headers.set("Content-Security-Policy", csp_header_value);
+  if (process.env.NODE_ENV !== "development") {
+    response.headers.set("Content-Security-Policy", csp_header_value);
+  }
 
   return response;
 };
