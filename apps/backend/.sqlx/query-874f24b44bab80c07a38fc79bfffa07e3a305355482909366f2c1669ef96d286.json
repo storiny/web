@@ -1,0 +1,323 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "WITH incremented_view_count AS (\n\tUPDATE stories\n\t\tSET view_count = view_count + 1\n\t\tWHERE\n\t\t\tslug = $1\n\t\t\t\tAND published_at IS NOT NULL\n\t\t\t\tAND deleted_at IS NULL\n\t\t\t\t\t\t\t   )\nSELECT s.id,\n\t   s.title,\n\t   s.slug,\n\t   s.description,\n\t   s.splash_id,\n\t   s.splash_hex,\n\t   s.category::TEXT                                     AS \"category!\",\n\t   s.age_restriction,\n\t   s.visibility,\n\t   s.license,\n\t   s.user_id,\n\t   s.disable_comments,\n\t   s.disable_public_revision_history,\n\t   s.disable_toc,\n\t   s.canonical_url,\n\t   s.seo_description,\n\t   s.seo_title,\n\t   s.preview_image,\n\t   -- Stats\n\t   s.like_count,\n\t   s.read_count,\n\t   s.word_count,\n\t   s.comment_count,\n\t   -- Timestamps\n\t   s.created_at,\n\t   s.edited_at,\n\t   s.deleted_at,\n\t   s.published_at,\n\t   s.first_published_at,\n\t   -- Joins\n\t   \"s->document\".key                                    AS \"doc_key\",\n\t   -- Boolean flags\n\t   \"s->is_bookmarked\".story_id IS NOT NULL              AS \"is_bookmarked!\",\n\t   \"s->is_liked\".story_id IS NOT NULL                   AS \"is_liked!\",\n\t   -- User\n\t   \"s->user\".name                                       AS user_name,\n\t   \"s->user\".username                                   AS user_username,\n\t   \"s->user\".rendered_bio                               AS \"user_rendered_bio!\",\n\t   \"s->user\".location                                   AS user_location,\n\t   \"s->user\".avatar_id                                  AS user_avatar_id,\n\t   \"s->user\".avatar_hex                                 AS user_avatar_hex,\n\t   \"s->user\".public_flags                               AS user_public_flags,\n\t   \"s->user\".is_private                                 AS user_is_private,\n\t   \"s->user\".created_at                                 AS user_created_at,\n\t   \"s->user\".follower_count                             AS user_follower_count,\n\t   -- User boolean flags\n\t   \"s->user->is_following\".follower_id IS NOT NULL      AS \"user_is_following!\",\n\t   \"s->user->is_follower\".follower_id IS NOT NULL       AS \"user_is_follower!\",\n\t   \"s->user->is_friend\".transmitter_id IS NOT NULL      AS \"user_is_friend!\",\n\t   \"s->user->is_blocked_by_user\".blocker_id IS NOT NULL AS \"user_is_blocked_by_user!\",\n\t   -- User status\n\t   \"s->user->status\".emoji                              AS \"user_status_emoji?\",\n\t   \"s->user->status\".text                               AS \"user_status_text?\",\n\t   \"s->user->status\".expires_at                         AS \"user_status_expires_at?\",\n\t   CASE\n\t\t   WHEN \"s->user->status\".user_id IS NOT NULL AND (\n\t\t\t   -- Global\n\t\t\t   \"s->user->status\".visibility = 1\n\t\t\t\t   -- Followers\n\t\t\t\t   OR (\"s->user->status\".visibility = 2 AND \"s->user->is_following\".follower_id IS NOT NULL)\n\t\t\t\t   -- Friends\n\t\t\t\t   OR (\"s->user->status\".visibility = 3 AND \"s->user->is_friend\".transmitter_id IS NOT NULL)\n\t\t\t   )\n\t\t\t   THEN TRUE\n\t\t   ELSE FALSE\n\t   END                                                  AS \"user_has_status!\",\n\t   -- Tags\n\t   COALESCE(\n\t\t\t\t\t   ARRAY_AGG(\n\t\t\t\t\t   DISTINCT (\"s->story_tags->tag\".id, \"s->story_tags->tag\".name)\n\t\t\t\t\t\t\t\t) FILTER (\n\t\t\t\t\t\t   WHERE \"s->story_tags->tag\".id IS NOT NULL\n\t\t\t\t\t\t   ), '{}'\n\t   )                                                    AS \"tags!: Vec<Tag>\",\n\t   -- Contributors\n\t   COALESCE(\n\t\t\t\t\t   JSONB_AGG(\n\t\t\t\t\t   DISTINCT JSONB_BUILD_OBJECT(\n\t\t\t\t\t\t\t   'id', \"s->contributors->user\".id,\n\t\t\t\t\t\t\t   'name', \"s->contributors->user\".name,\n\t\t\t\t\t\t\t   'username', \"s->contributors->user\".username,\n\t\t\t\t\t\t\t   'avatar_id', \"s->contributors->user\".avatar_id,\n\t\t\t\t\t\t\t   'avatar_hex', \"s->contributors->user\".avatar_hex,\n\t\t\t\t\t\t\t   'public_flags', \"s->contributors->user\".public_flags\n\t\t\t\t\t\t\t\t)\n\t\t\t\t\t\t\t\t) FILTER ( WHERE \"s->contributors->user\".id IS NOT NULL )\n\t\t   , '[]')                                          AS \"contributors!: Json<Vec<User>>\",\n\t   -- Blog\n\t   CASE\n\t\t   WHEN \"s->blog_stories->blog\".id IS NOT NULL\n\t\t\t   THEN\n\t\t\t   JSON_BUILD_OBJECT(\n\t\t\t\t\t   'id', \"s->blog_stories->blog\".id,\n\t\t\t\t\t   'name', \"s->blog_stories->blog\".name,\n\t\t\t\t\t   'slug', \"s->blog_stories->blog\".slug,\n\t\t\t\t\t   'domain', \"s->blog_stories->blog\".domain,\n\t\t\t\t\t   'logo_id', \"s->blog_stories->blog\".logo_id,\n\t\t\t\t\t   'logo_hex', \"s->blog_stories->blog\".logo_hex\n\t\t\t   )\n\t   END                                                  AS \"blog: Json<Blog>\"\nFROM\n\tstories s\n\t\t-- Join document\n\t\tINNER JOIN documents AS \"s->document\"\n\t\t\t\t   ON s.id = \"s->document\".story_id\n\t\t\t\t\t   AND \"s->document\".is_editable IS FALSE\n\t\t-- Join user\n\t\tINNER JOIN users \"s->user\"\n\t\t\t\t   ON \"s->user\".id = s.user_id\n\t\t-- Join user status\n\t\tLEFT OUTER JOIN user_statuses AS \"s->user->status\"\n\t\t\t\t\t\tON \"s->user\".id = \"s->user->status\".user_id\n\t\t\t\t\t\t\tAND (\"s->user->status\".expires_at IS NULL\n\t\t\t\t\t\t\t\tOR \"s->user->status\".expires_at > NOW())\n\t\t-- Join contributors\n\t\tLEFT OUTER JOIN (story_contributors AS \"s->contributors\"\n\t\tINNER JOIN users AS \"s->contributors->user\"\n\t\t\t\t\t\t ON \"s->contributors->user\".id = \"s->contributors\".user_id\n\t\t)\n\t\t\t\t\t\tON \"s->contributors\".story_id = s.id\n\t\t\t\t\t\t\tAND \"s->contributors\".role = 'editor'\n\t\t\t\t\t\t\tAND \"s->contributors\".accepted_at IS NOT NULL\n\t\t\t\t\t\t\tAND \"s->contributors\".deleted_at IS NULL\n\t\t-- Join story tags\n\t\tLEFT OUTER JOIN (story_tags AS \"s->story_tags\"\n\t\tINNER JOIN tags AS \"s->story_tags->tag\"\n\t\t\t\t\t\t ON \"s->story_tags->tag\".id = \"s->story_tags\".tag_id\n\t\t)\n\t\t\t\t\t\tON \"s->story_tags\".story_id = s.id\n\t\t-- Join blog story\n\t\tLEFT OUTER JOIN (blog_stories AS \"s->blog_stories\"\n\t\tINNER JOIN blogs AS \"s->blog_stories->blog\"\n\t\t\t\t\t\t ON \"s->blog_stories->blog\".id = \"s->blog_stories\".blog_id\n\t\t\t\t\t\t\t AND \"s->blog_stories->blog\".deleted_at IS NULL\n\t\t)\n\t\t\t\t\t\tON \"s->blog_stories\".story_id = s.id\n\t\t\t\t\t\t\tAND \"s->blog_stories\".deleted_at IS NULL\n\t\t\t\t\t\t\tAND \"s->blog_stories\".accepted_at IS NOT NULL\n\t\t-- Boolean bookmark flag\n\t\tLEFT OUTER JOIN bookmarks AS \"s->is_bookmarked\"\n\t\t\t\t\t\tON \"s->is_bookmarked\".story_id = s.id\n\t\t\t\t\t\t\tAND \"s->is_bookmarked\".user_id = $2\n\t\t\t\t\t\t\tAND \"s->is_bookmarked\".deleted_at IS NULL\n\t\t-- Boolean story like flag\n\t\tLEFT OUTER JOIN story_likes AS \"s->is_liked\"\n\t\t\t\t\t\tON \"s->is_liked\".story_id = s.id\n\t\t\t\t\t\t\tAND \"s->is_liked\".user_id = $2\n\t\t\t\t\t\t\tAND \"s->is_liked\".deleted_at IS NULL\n\t\t-- Boolean user following flag\n\t\tLEFT OUTER JOIN relations AS \"s->user->is_following\"\n\t\t\t\t\t\tON \"s->user->is_following\".followed_id = \"s->user\".id\n\t\t\t\t\t\t\tAND \"s->user->is_following\".follower_id = $2\n\t\t\t\t\t\t\tAND \"s->user->is_following\".deleted_at IS NULL\n\t\t-- Boolean user follower flag\n\t\tLEFT OUTER JOIN relations AS \"s->user->is_follower\"\n\t\t\t\t\t\tON \"s->user->is_follower\".follower_id = \"s->user\".id\n\t\t\t\t\t\t\tAND \"s->user->is_follower\".followed_id = $2\n\t\t\t\t\t\t\tAND \"s->user->is_follower\".deleted_at IS NULL\n\t\t-- Boolean user friend flag\n\t\tLEFT OUTER JOIN friends AS \"s->user->is_friend\"\n\t\t\t\t\t\tON (\n\t\t\t\t\t\t\t   (\"s->user->is_friend\".transmitter_id = \"s->user\".id AND\n\t\t\t\t\t\t\t\t\"s->user->is_friend\".receiver_id = $2)\n\t\t\t\t\t\t\t\t   OR\n\t\t\t\t\t\t\t   (\"s->user->is_friend\".receiver_id = \"s->user\".id AND\n\t\t\t\t\t\t\t\t\"s->user->is_friend\".transmitter_id = $2)\n\t\t\t\t\t\t\t   )\n\t\t\t\t\t\t\tAND \"s->user->is_friend\".accepted_at IS NOT NULL\n\t\t\t\t\t\t\tAND \"s->user->is_friend\".deleted_at IS NULL\n\t\t-- Booolean user blocked by user flag\n\t\tLEFT OUTER JOIN blocks AS \"s->user->is_blocked_by_user\"\n\t\t\t\t\t\tON \"s->user->is_blocked_by_user\".blocker_id = \"s->user\".id\n\t\t\t\t\t\t\tAND \"s->user->is_blocked_by_user\".blocked_id = $2\n\t\t\t\t\t\t\tAND \"s->user->is_blocked_by_user\".deleted_at IS NULL\nWHERE\n\ts.slug = $1\nGROUP BY\n\ts.id,\n\tdoc_key,\n\tuser_name,\n\tuser_username,\n\t\"user_rendered_bio!\",\n\tuser_location,\n\tuser_avatar_id,\n\tuser_avatar_hex,\n\tuser_public_flags,\n\tuser_is_private,\n\tuser_created_at,\n\tuser_follower_count,\n\t\"user_status_emoji?\",\n\t\"user_status_text?\",\n\t\"user_status_expires_at?\",\n\t\"s->user->status\".user_id,\n\t\"s->user->is_following\".follower_id,\n\t\"s->user->is_follower\".follower_id,\n\t\"s->user->is_friend\".transmitter_id,\n\t\"s->user->is_blocked_by_user\".blocker_id,\n\t\"s->is_liked\".story_id,\n\t\"s->is_bookmarked\".story_id,\n\t\"s->blog_stories->blog\".id\nLIMIT 1\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
+        "name": "title",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "slug",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "splash_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 5,
+        "name": "splash_hex",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "category!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "age_restriction",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 8,
+        "name": "visibility",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 9,
+        "name": "license",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 10,
+        "name": "user_id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 11,
+        "name": "disable_comments",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 12,
+        "name": "disable_public_revision_history",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 13,
+        "name": "disable_toc",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 14,
+        "name": "canonical_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 15,
+        "name": "seo_description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 16,
+        "name": "seo_title",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 17,
+        "name": "preview_image",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 18,
+        "name": "like_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 19,
+        "name": "read_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 20,
+        "name": "word_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 21,
+        "name": "comment_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 22,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 23,
+        "name": "edited_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 24,
+        "name": "deleted_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 25,
+        "name": "published_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 26,
+        "name": "first_published_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 27,
+        "name": "doc_key",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 28,
+        "name": "is_bookmarked!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 29,
+        "name": "is_liked!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 30,
+        "name": "user_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 31,
+        "name": "user_username",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 32,
+        "name": "user_rendered_bio!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 33,
+        "name": "user_location",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 34,
+        "name": "user_avatar_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 35,
+        "name": "user_avatar_hex",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 36,
+        "name": "user_public_flags",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 37,
+        "name": "user_is_private",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 38,
+        "name": "user_created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 39,
+        "name": "user_follower_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 40,
+        "name": "user_is_following!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 41,
+        "name": "user_is_follower!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 42,
+        "name": "user_is_friend!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 43,
+        "name": "user_is_blocked_by_user!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 44,
+        "name": "user_status_emoji?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 45,
+        "name": "user_status_text?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 46,
+        "name": "user_status_expires_at?",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 47,
+        "name": "user_has_status!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 48,
+        "name": "tags!: Vec<Tag>",
+        "type_info": "RecordArray"
+      },
+      {
+        "ordinal": 49,
+        "name": "contributors!: Json<Vec<User>>",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 50,
+        "name": "blog: Json<Blog>",
+        "type_info": "Json"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      null,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      null,
+      null,
+      false,
+      false,
+      true,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      null,
+      null,
+      null,
+      null,
+      true,
+      true,
+      true,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "874f24b44bab80c07a38fc79bfffa07e3a305355482909366f2c1669ef96d286"
+}
