@@ -6,7 +6,7 @@ import React from "react";
 
 import { get_blog_archive } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
-import { is_valid_blog_slug } from "~/common/utils";
+import { is_valid_blog_slug } from "~/common/utils/is-valid-blog-slug";
 import Typography from "~/components/typography";
 import PageTitle from "~/entities/page-title";
 import css from "~/theme/main.module.scss";
@@ -36,7 +36,10 @@ const BlogArchiveLayout = async ({
       <React.Fragment>
         <main data-root={"true"}>
           <BlogContent />
-          <PageTitle back_button_href={"/"} className={styles["page-title"]}>
+          <PageTitle
+            back_button_href={"/"}
+            className={clsx(styles["page-title"], css["no-sidenav"])}
+          >
             Archive
           </PageTitle>
           {archive.story_count !== 0 && (

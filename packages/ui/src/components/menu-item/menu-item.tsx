@@ -1,7 +1,9 @@
 "use client";
 
 import { Item } from "@radix-ui/react-dropdown-menu";
+import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { is_test_env } from "@storiny/shared/src/utils/is-test-env";
+import { use_blog_context } from "@storiny/web/src/common/context/blog";
 import clsx from "clsx";
 import { usePathname as use_pathname } from "next/navigation";
 import React from "react";
@@ -29,13 +31,16 @@ const MenuItem = forward_ref<MenuItemProps, "div">((props, ref) => {
   } = props;
   const pathname = use_pathname();
   const logged_in = use_app_selector(select_is_logged_in);
+  const blog = use_blog_context();
   const should_login = check_auth && !logged_in;
   const Component = should_login ? "a" : as;
   const to =
     typeof (rest as any)?.href === "string"
       ? `?to=${encodeURIComponent((rest as any).href)}`
       : pathname && pathname !== "/"
-        ? `?to=${encodeURIComponent(pathname)}`
+        ? `?to=${encodeURIComponent(
+            `${blog?.id ? `${get_blog_url(blog)}` : ""}${pathname}`
+          )}`
         : "";
 
   /**
@@ -76,7 +81,9 @@ const MenuItem = forward_ref<MenuItemProps, "div">((props, ref) => {
       ref={ref}
       {...(should_login
         ? {
-            href: `/login${to}`
+            href: `${
+              blog?.id ? process.env.NEXT_PUBLIC_WEB_URL : ""
+            }/login${to}`
           }
         : {})}
     >

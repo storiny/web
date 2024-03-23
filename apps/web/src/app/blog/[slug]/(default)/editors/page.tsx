@@ -1,8 +1,11 @@
 "use client";
 
+import { clsx } from "clsx";
+import dynamic from "next/dynamic";
 import React from "react";
 
 import { use_blog_context } from "~/common/context/blog";
+import { dynamic_loader } from "~/common/dynamic";
 import { UserListSkeleton, VirtualizedUserList } from "~/common/user";
 import ErrorState from "~/entities/error-state";
 import PageTitle from "~/entities/page-title";
@@ -11,8 +14,13 @@ import {
   get_query_error_type,
   use_get_blog_editors_query
 } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 
 import styles from "../archive/styles.module.scss";
+
+const EmptyState = dynamic(() => import("./empty-state"), {
+  loading: dynamic_loader()
+});
 
 const Page = (): React.ReactElement => {
   const blog = use_blog_context();
@@ -38,10 +46,13 @@ const Page = (): React.ReactElement => {
 
   return (
     <>
-      <PageTitle back_button_href={"/"} className={styles["page-title"]}>
+      <PageTitle
+        back_button_href={"/"}
+        className={clsx(styles["page-title"], css["no-sidenav"])}
+      >
         Editors
       </PageTitle>
-      {is_error || (!is_fetching && !items.length) ? (
+      {is_error ? (
         <ErrorState
           auto_size
           component_props={{
@@ -50,6 +61,8 @@ const Page = (): React.ReactElement => {
           retry={refetch}
           type={get_query_error_type(error)}
         />
+      ) : !is_fetching && !items.length ? (
+        <EmptyState />
       ) : is_loading || (is_fetching && page === 1) ? (
         <UserListSkeleton />
       ) : (

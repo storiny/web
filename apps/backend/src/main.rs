@@ -346,7 +346,7 @@ fn main() -> io::Result<()> {
                                 .cookie_domain(if config.is_dev {
                                     None
                                 } else {
-                                    Some("storiny.com".into())
+                                    Some(".storiny.com".into())
                                 })
                                 .cookie_path("/".to_string())
                                 .cookie_secure(!config.is_dev)

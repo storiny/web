@@ -1,6 +1,7 @@
 "use client";
 
 import { ImageSize } from "@storiny/shared";
+import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { clsx } from "clsx";
 import NextLink from "next/link";
 import { usePathname as use_pathname } from "next/navigation";
@@ -13,15 +14,30 @@ import Tab, { TabProps } from "~/components/tab";
 import Tabs from "~/components/tabs";
 import TabsList from "~/components/tabs-list";
 import Typography from "~/components/typography";
+import { use_media_query } from "~/hooks/use-media-query";
 import MailPlusIcon from "~/icons/mail-plus";
 import UserPlusIcon from "~/icons/user-plus";
 import BlogConnections from "~/layout/common/blog-connections";
 import { boolean_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import styles from "./content.module.scss";
+
+/**
+ * Returns the value for a tab using its target URL.
+ * @param target The target URL.
+ * @param blog_url The URL of the blog.
+ */
+const get_tab_value = (target: string, blog_url: string): string => {
+  if (target.startsWith(blog_url)) {
+    return target.replace(blog_url, "");
+  }
+
+  return target;
+};
 
 const AnchorTab = ({
   href,
@@ -67,9 +83,15 @@ const FollowButton = (): React.ReactElement => {
   );
 };
 
-const BlogContent = (): React.ReactElement => {
+const BlogContent = (): React.ReactElement | null => {
+  const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
   const blog = use_blog_context();
   const pathname = use_pathname();
+  const blog_url = get_blog_url(blog);
+
+  if (!is_smaller_than_tablet) {
+    return null;
+  }
 
   return (
     <div className={clsx(css["flex-col"], styles.content)}>
@@ -122,7 +144,13 @@ const BlogContent = (): React.ReactElement => {
               }
               href={item.target}
               key={item.id}
-              value={item.target}
+              value={
+                (blog.lsb_items || []).filter(
+                  (value) => value.target === item.target
+                ).length > 1
+                  ? item.target
+                  : get_tab_value(item.target, blog_url)
+              }
             >
               {item.name}
             </AnchorTab>

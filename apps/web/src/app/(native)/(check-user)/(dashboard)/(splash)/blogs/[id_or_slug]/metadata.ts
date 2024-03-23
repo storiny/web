@@ -2,9 +2,9 @@ import { Metadata } from "next";
 import { notFound as not_found } from "next/dist/client/components/not-found";
 
 import { get_blog } from "~/common/grpc";
-import { is_valid_blog_slug } from "~/common/utils";
 import { get_user } from "~/common/utils/get-user";
 import { is_snowflake } from "~/common/utils/is-snowflake";
+import { is_valid_blog_slug } from "~/common/utils/is-valid-blog-slug";
 
 export const generateMetadata = async ({
   params

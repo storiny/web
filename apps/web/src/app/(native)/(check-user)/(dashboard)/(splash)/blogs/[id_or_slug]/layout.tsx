@@ -8,9 +8,9 @@ import React from "react";
 import BlogContextProvider from "~/common/context/blog";
 import { get_blog } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
-import { is_valid_blog_slug } from "~/common/utils";
 import { get_user } from "~/common/utils/get-user";
 import { is_snowflake } from "~/common/utils/is-snowflake";
+import { is_valid_blog_slug } from "~/common/utils/is-valid-blog-slug";
 
 import DashboardFooter from "../../common/footer";
 import BlogDashboardLeftSidebar from "./left-sidebar";

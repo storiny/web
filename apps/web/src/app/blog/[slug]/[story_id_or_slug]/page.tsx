@@ -1,5 +1,6 @@
 import "server-only";
 
+import { Status } from "@grpc/grpc-js/build/src/constants";
 import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { Story } from "@storiny/types";
 import { notFound as not_found, redirect } from "next/navigation";
@@ -7,9 +8,9 @@ import React from "react";
 
 import { get_story } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
-import { is_valid_blog_slug } from "~/common/utils";
 import { get_doc_by_key } from "~/common/utils/get-doc-by-key";
 import { get_user } from "~/common/utils/get-user";
+import { is_valid_blog_slug } from "~/common/utils/is-valid-blog-slug";
 
 import Component from "./component";
 import RestrictedStory from "./restricted";
@@ -77,6 +78,13 @@ const Page = async ({
 
     return <Component doc={doc} story={story_response as Story} />;
   } catch (e) {
+    const err_code = e?.code;
+
+    // Redirect to storiny.com
+    if (err_code === Status.NOT_FOUND) {
+      redirect(`${process.env.NEXT_PUBLIC_WEB_URL}/${story_id_or_slug}`);
+    }
+
     handle_exception(e);
   }
 };
