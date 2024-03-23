@@ -15,11 +15,7 @@ const TitleBlock = (props: TitleBlockProps): React.ReactElement => {
         {title}
       </Typography>
       <Spacer orientation={"vertical"} />
-      <Typography
-        className={css["t-minor"]}
-        level={"body2"}
-        {...component_props?.content}
-      >
+      <Typography color={"minor"} level={"body2"} {...component_props?.content}>
         {children}
       </Typography>
     </div>

@@ -140,9 +140,7 @@ const Status = forward_ref<StatusProps, "span">((props, ref) => {
 
   if (is_editable && !disable_modal) {
     return (
-      <StatusContext.Provider
-        value={{ user_id, editable, is_editable, ...rest }}
-      >
+      <StatusContext.Provider value={{ user_id, is_editable, ...rest }}>
         <StatusModal
           modal_props={modal_props}
           trigger={({ open_modal }): React.ReactElement => (

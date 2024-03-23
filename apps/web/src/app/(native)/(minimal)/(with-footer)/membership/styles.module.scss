@@ -1,0 +1,76 @@
+@use "breakpoints";
+
+.hero {
+  height: calc(100vh - var(--header-height));
+  padding-top: 50px;
+
+  @include breakpoints.media("<mobile") {
+    height: 80vh;
+  }
+}
+
+.wordmark {
+  max-width: 420px;
+
+  @include breakpoints.media("<mobile") {
+    max-width: 70vw;
+  }
+}
+
+.tagline {
+  max-width: 640px;
+}
+
+.splash-image {
+  max-width: 960px;
+  width: 100%;
+
+  @include breakpoints.media(">=desktop") {
+    min-width: 960px;
+  }
+}
+
+.article {
+  padding-bottom: 64px;
+  gap: 72px;
+
+  @include breakpoints.media("<mobile") {
+    gap: 42px;
+  }
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 72px;
+}
+
+.section-header {
+  gap: 48px;
+
+  @include breakpoints.media("<desktop") {
+    gap: 12px;
+    flex-direction: column;
+  }
+}
+
+.preview {
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+}
+
+.x {
+  &.section-title {
+    @include breakpoints.media(">=desktop") {
+      width: 200px;
+    }
+  }
+
+  &.divider {
+    text-align: center;
+    font-size: 48px;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 14px;
+    user-select: none;
+  }
+}

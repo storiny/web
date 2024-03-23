@@ -26,6 +26,8 @@ interface UserOptionalProps {
   allow_sensitive_content?: boolean;
   connections?: Connection<false>[];
   email?: string;
+  // Subscription
+  is_plus_member?: boolean;
   mfa_enabled?: boolean;
   // Multifactor auth
   mfa_secret?: string | null;

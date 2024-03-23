@@ -68,3 +68,17 @@
     display: none;
   }
 }
+
+/* Desktop */
+
+.above-desktop {
+  @include breakpoints.media("<desktop") {
+    display: none !important;
+  }
+}
+
+.below-desktop {
+  @include breakpoints.media(">=desktop") {
+    display: none !important;
+  }
+}

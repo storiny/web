@@ -1,5 +1,5 @@
 import { Story } from "@storiny/types";
-import { StoriesSortValue } from "@storiny/web/src/app/(check-user)/(dashboard)/me/(splash)/(default-lsb)/content/stories/client";
+import { StoriesSortValue } from "@storiny/web/src/app/(native)/(check-user)/(dashboard)/(splash)/me/content/stories/client";
 
 import { api_slice } from "~/redux/features/api/slice";
 

@@ -6,7 +6,9 @@ import "./history";
 import "./contributions";
 import "./unread-notifications";
 import "./collaboration-requests";
+import "./blog-requests";
 import "./leave-story";
+import "./leave-blog";
 import "./notifications";
 import "./friend-requests";
 import "./gallery";
@@ -18,6 +20,7 @@ import "./stories";
 import "./settings";
 import "./stats";
 import "./followed-tags";
+import "./followed-blogs";
 import "./relations";
 import "./blocked-users";
 import "./muted-users";
@@ -29,6 +32,7 @@ import "./flow";
 import "./subscriptions";
 import "./status";
 import "./lookup";
+import "./blogs";
 
 import { MOCK_USERS } from "@storiny/ui/src/mocks";
 

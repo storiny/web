@@ -5,6 +5,7 @@ use crate::{
     },
     grpc::{
         defs::{
+            blog_def::v1::BareBlog,
             story_def::v1::{
                 GetStoryRequest,
                 GetStoryResponse,
@@ -51,6 +52,16 @@ struct User {
     public_flags: i32,
 }
 
+#[derive(Debug, Deserialize)]
+struct Blog {
+    id: i64,
+    name: String,
+    slug: String,
+    domain: Option<String>,
+    logo_id: Option<Uuid>,
+    logo_hex: Option<String>,
+}
+
 #[derive(Debug, FromRow)]
 struct Story {
     id: i64,
@@ -86,6 +97,7 @@ struct Story {
     deleted_at: Option<OffsetDateTime>,
     doc_key: Uuid,
     // Joins
+    blog: Option<Json<Blog>>,
     contributors: Json<Vec<User>>,
     tags: Vec<Tag>,
     // Boolean flags
@@ -184,7 +196,6 @@ pub async fn get_story(
             Status::not_found("Story not found")
         } else {
             error!("database error: {error:?}");
-
             Status::internal("Database error")
         }
     })?;
@@ -228,7 +239,7 @@ SET created_at = NOW()
             );
 
             redis_conn
-                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as usize)
+                .set_ex::<_, _, ()>(&cache_key, 0, MAXIMUM_READING_SESSION_DURATION as u64)
                 .await
                 .map_err(|error| {
                     error!("unable to start a reading session for the user: {error:?}");
@@ -320,6 +331,14 @@ SET created_at = NOW()
                 public_flags: user.public_flags as u32,
             })
             .collect::<Vec<_>>(),
+        blog: story.blog.map(|value| BareBlog {
+            id: value.id.to_string(),
+            name: value.name.clone(),
+            slug: value.slug.clone(),
+            domain: value.domain.clone(),
+            logo_id: value.logo_id.map(|value| value.to_string()),
+            logo_hex: value.logo_hex.clone(),
+        }),
         is_bookmarked: story.is_bookmarked,
         is_liked: story.is_liked,
         reading_session_token: reading_session_token.to_string(),
@@ -407,7 +426,90 @@ WHERE id = $1
                     assert!(!user.is_blocked_by_user);
                     assert!(!user.is_self);
 
+                    assert!(response.blog.is_none());
                     assert!(response.contributors.is_empty());
+                }),
+            )
+            .await;
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_a_story_with_blog_by_id(_ctx: &mut RedisTestContext, pool: PgPool) {
+            test_grpc_service(
+                pool,
+                false,
+                Box::new(|mut client, pool, _, _| async move {
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: None,
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should be `None` initially.
+                    assert!(response.blog.is_none());
+
+                    // Add the story to a blog.
+                    let result = sqlx::query(
+                        r#"
+WITH inserted_blog AS (
+    INSERT INTO blogs (name, slug, user_id)
+    VALUES ('Test blog', 'test-blog', $1)
+    RETURNING id
+)
+INSERT INTO blog_stories (story_id, blog_id)
+VALUES ($2, (SELECT id FROM inserted_blog))
+"#,
+                    )
+                    .bind(2_i64)
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: None,
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should still be `None` as the story has not been accepted yet.
+                    assert!(response.blog.is_none());
+
+                    // Accept the story.
+                    let result = sqlx::query(
+                        r#"
+UPDATE blog_stories
+SET accepted_at = NOW()
+WHERE story_id = $1
+"#,
+                    )
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: None,
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should return the blog.
+                    assert!(response.blog.is_some());
                 }),
             )
             .await;
@@ -744,6 +846,88 @@ WHERE slug = $1
                     .unwrap();
 
                     assert_eq!(result.get::<i64, _>("view_count"), 1_i64);
+                }),
+            )
+            .await;
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_a_story_with_blog_by_slug(_ctx: &mut RedisTestContext, pool: PgPool) {
+            test_grpc_service(
+                pool,
+                false,
+                Box::new(|mut client, pool, _, _| async move {
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: None,
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should be `None` initially.
+                    assert!(response.blog.is_none());
+
+                    // Add the story to a blog.
+                    let result = sqlx::query(
+                        r#"
+WITH inserted_blog AS (
+    INSERT INTO blogs (name, slug, user_id)
+    VALUES ('Test blog', 'test-blog', $1)
+    RETURNING id
+)
+INSERT INTO blog_stories (story_id, blog_id)
+VALUES ($2, (SELECT id FROM inserted_blog))
+"#,
+                    )
+                    .bind(2_i64)
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: None,
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should still be `None` as the story has not been accepted yet.
+                    assert!(response.blog.is_none());
+
+                    // Accept the story.
+                    let result = sqlx::query(
+                        r#"
+UPDATE blog_stories
+SET accepted_at = NOW()
+WHERE story_id = $1
+"#,
+                    )
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: None,
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should return the blog.
+                    assert!(response.blog.is_some());
                 }),
             )
             .await;
@@ -1126,6 +1310,91 @@ WHERE id = $1
 
         #[test_context(RedisTestContext)]
         #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_a_story_with_blog_by_id_when_logged_in(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                true,
+                Box::new(|mut client, pool, _, user_id| async move {
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should be `None` initially.
+                    assert!(response.blog.is_none());
+
+                    // Add the story to a blog.
+                    let result = sqlx::query(
+                        r#"
+WITH inserted_blog AS (
+    INSERT INTO blogs (name, slug, user_id)
+    VALUES ('Test blog', 'test-blog', $1)
+    RETURNING id
+)
+INSERT INTO blog_stories (story_id, blog_id)
+VALUES ($2, (SELECT id FROM inserted_blog))
+"#,
+                    )
+                    .bind(2_i64)
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should still be `None` as the story has not been accepted yet.
+                    assert!(response.blog.is_none());
+
+                    // Accept the story.
+                    let result = sqlx::query(
+                        r#"
+UPDATE blog_stories
+SET accepted_at = NOW()
+WHERE story_id = $1
+"#,
+                    )
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should return the blog.
+                    assert!(response.blog.is_some());
+                }),
+            )
+            .await;
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
         async fn can_return_an_unpublished_story_by_id_when_logged_in(
             _ctx: &mut RedisTestContext,
             pool: PgPool,
@@ -1251,7 +1520,7 @@ WHERE id = $1
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.is_liked);
 
                     // Like the story.
@@ -1278,7 +1547,7 @@ VALUES ($1, $2)
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.is_liked);
                 }),
             )
@@ -1304,7 +1573,7 @@ VALUES ($1, $2)
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.is_bookmarked);
 
                     // Bookmark the story.
@@ -1331,7 +1600,7 @@ VALUES ($1, $2)
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.is_bookmarked);
                 }),
             )
@@ -1357,7 +1626,7 @@ VALUES ($1, $2)
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.user.unwrap().is_following);
 
                     // Follow the user.
@@ -1384,7 +1653,7 @@ VALUES ($1, $2)
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.user.unwrap().is_following);
                 }),
             )
@@ -1410,7 +1679,7 @@ VALUES ($1, $2)
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.user.unwrap().is_follower);
 
                     // Add the user as follower.
@@ -1437,7 +1706,7 @@ VALUES ($2, $1)
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.user.unwrap().is_follower);
                 }),
             )
@@ -1463,7 +1732,7 @@ VALUES ($2, $1)
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.user.unwrap().is_friend);
 
                     // Send a friend request to the user.
@@ -1517,7 +1786,7 @@ WHERE transmitter_id = $1
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.user.unwrap().is_friend);
                 }),
             )
@@ -1543,7 +1812,7 @@ WHERE transmitter_id = $1
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.user.unwrap().is_blocked_by_user);
 
                     // Get blocked by the user.
@@ -1570,7 +1839,7 @@ VALUES ($2, $1)
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.user.unwrap().is_blocked_by_user);
                 }),
             )
@@ -1596,7 +1865,7 @@ VALUES ($2, $1)
                         .unwrap()
                         .into_inner();
 
-                    // Should be false initially.
+                    // Should be `false` initially.
                     assert!(!response.user.unwrap().is_self);
 
                     // Update the writer of the story.
@@ -1624,474 +1893,8 @@ WHERE id = $2
                         .unwrap()
                         .into_inner();
 
-                    // Should be true.
+                    // Should be `true`.
                     assert!(response.user.unwrap().is_self);
-                }),
-            )
-            .await;
-        }
-
-        //
-
-        #[test_context(RedisTestContext)]
-        #[sqlx::test(fixtures("get_story"))]
-        async fn can_return_is_liked_flag_for_story_by_slug_when_logged_in(
-            _ctx: &mut RedisTestContext,
-            pool: PgPool,
-        ) {
-            test_grpc_service(
-                pool,
-                true,
-                Box::new(|mut client, pool, _, user_id| async move {
-                    let response = client
-                        .get_story(Request::new(GetStoryRequest {
-                            id_or_slug: "some-story".to_string(),
-                            current_user_id: user_id.map(|value| value.to_string()),
-                        }))
-                        .await
-                        .unwrap()
-                        .into_inner();
-
-                    // Should be false initially.
-                    assert!(!response.is_liked);
-
-                    // Like the story.
-                    let result = sqlx::query(
-                        r#"
-INSERT INTO story_likes (user_id, story_id)
-VALUES ($1, $2)
-"#,
-                    )
-                    .bind(user_id.unwrap())
-                    .bind(3_i64)
-                    .execute(&pool)
-                    .await
-                    .unwrap();
-
-                    assert_eq!(result.rows_affected(), 1);
-
-                    let response = client
-                        .get_story(Request::new(GetStoryRequest {
-                            id_or_slug: "some-story".to_string(),
-                            current_user_id: user_id.map(|value| value.to_string()),
-                        }))
-                        .await
-                        .unwrap()
-                        .into_inner();
-
-                    // Should be true.
-                    assert!(response.is_liked);
-                }),
-            )
-            .await;
-        }
-
-        #[test_context(RedisTestContext)]
-        #[sqlx::test(fixtures("get_story"))]
-        async fn can_return_is_bookmarked_flag_for_story_by_slug_when_logged_in(
-            _ctx: &mut RedisTestContext,
-            pool: PgPool,
-        ) {
-            test_grpc_service(
-                pool,
-                true,
-                Box::new(|mut client, pool, _, user_id| async move {
-                    let response = client
-                        .get_story(Request::new(GetStoryRequest {
-                            id_or_slug: "some-story".to_string(),
-                            current_user_id: user_id.map(|value| value.to_string()),
-                        }))
-                        .await
-                        .unwrap()
-                        .into_inner();
-
-                    // Should be false initially.
-                    assert!(!response.is_bookmarked);
-
-                    // Bookmark the story.
-                    let result = sqlx::query(
-                        r#"
-INSERT INTO bookmarks (user_id, story_id)
-VALUES ($1, $2)
-"#,
-                    )
-                    .bind(user_id.unwrap())
-                    .bind(3_i64)
-                    .execute(&pool)
-                    .await
-                    .unwrap();
-
-                    assert_eq!(result.rows_affected(), 1);
-
-                    let response = client
-                        .get_story(Request::new(GetStoryRequest {
-                            id_or_slug: "some-story".to_string(),
-                            current_user_id: user_id.map(|value| value.to_string()),
-                        }))
-                        .await
-                        .unwrap()
-                        .into_inner();
-
-                    // Should be true.
-                    assert!(response.is_bookmarked);
-                }),
-            )
-            .await;
-        }
-
-        #[test_context(RedisTestContext)]
-        #[sqlx::test(fixtures("get_story"))]
-        async fn can_return_user_is_following_flag_for_story_by_slug_when_logged_in(
-            _ctx: &mut RedisTestContext,
-            pool: PgPool,
-        ) {
-            test_grpc_service(
-                pool,
-                true,
-                Box::new(|mut client, pool, _, user_id| async move {
-                    let response = client
-                        .get_story(Request::new(GetStoryRequest {
-                            id_or_slug: "some-story".to_string(),
-                            current_user_id: user_id.map(|value| value.to_string()),
-                        }))
-                        .await
-                        .unwrap()
-                        .into_inner();
-
-                    // Should be false initially.
-                    assert!(!response.user.unwrap().is_following);
-
-                    // Follow the user.
-                    let result = sqlx::query(
-                        r#"
-INSERT INTO relations (follower_id, followed_id)
-VALUES ($1, $2)
-"#,
-                    )
-                    .bind(user_id.unwrap())
-                    .bind(2_i64)
-                    .execute(&pool)
-                    .await
-                    .unwrap();
-
-                    assert_eq!(result.rows_affected(), 1);
-
-                    let response = client
-                        .get_story(Request::new(GetStoryRequest {
-                            id_or_slug: "some-story".to_string(),
-                            current_user_id: user_id.map(|value| value.to_string()),
-                        }))
-                        .await
-                        .unwrap()
-                        .into_inner();
-
-                    // Should be true.
-                    assert!(response.user.unwrap().is_following);
-                }),
-            )
-            .await;
-        }
-
-        #[test_context(RedisTestContext)]
-        #[sqlx::test(fixtures("get_story"))]
-        async fn can_return_user_is_follower_flag_for_story_by_slug_when_logged_in(
-            _ctx: &mut RedisTestContext,
-            pool: PgPool,
-        ) {
-            test_grpc_service(
-                pool,
-                true,
-                Box::new(|mut client, pool, _, user_id| async move {
-                    let response = client
-                        .get_story(Request::new(GetStoryRequest {
-                            id_or_slug: "some-story".to_string(),
-                            current_user_id: user_id.map(|value| value.to_string()),
-                        }))
-                        .await
-                        .unwrap()
-                        .into_inner();
-
-                    // Should be false initially.
-                    assert!(!response.user.unwrap().is_follower);
-
-                    // Add the user as follower.
-                    let result = sqlx::query(
-                        r#"
-INSERT INTO relations (follower_id, followed_id)
-VALUES ($2, $1)
-"#,
-                    )
-                    .bind(user_id.unwrap())
-                    .bind(2_i64)
-                    .execute(&pool)
-                    .await
-                    .unwrap();
-
-                    assert_eq!(result.rows_affected(), 1);
-
-                    let response = client
-                        .get_story(Request::new(GetStoryRequest {
-                            id_or_slug: "some-story".to_string(),
-                            current_user_id: user_id.map(|value| value.to_string()),
-                        }))
-                        .await
-                        .unwrap()
-                        .into_inner();
-
-                    // Should be true.
-                    assert!(response.user.unwrap().is_follower);
-                }),
-            )
-            .await;
-        }
-
-        #[test_context(RedisTestContext)]
-        #[sqlx::test(fixtures("get_story"))]
-        async fn can_return_user_is_friend_flag_for_story_by_slug_when_logged_in(
-            _ctx: &mut RedisTestContext,
-            pool: PgPool,
-        ) {
-            test_grpc_service(
-                pool,
-                true,
-                Box::new(|mut client, pool, _, user_id| async move {
-                    let response = client
-                        .get_story(Request::new(GetStoryRequest {
-                            id_or_slug: "some-story".to_string(),
-                            current_user_id: user_id.map(|value| value.to_string()),
-                        }))
-                        .await
-                        .unwrap()
-                        .into_inner();
-
-                    // Should be false initially.
-                    assert!(!response.user.unwrap().is_friend);
-
-                    // Send a friend request to the user.
-                    let result = sqlx::query(
-                        r#"
-INSERT INTO friends (transmitter_id, receiver_id)
-VALUES ($1, $2)
-"#,
-                    )
-                    .bind(user_id.unwrap())
-                    .bind(2_i64)
-                    .execute(&pool)
-                    .await
-                    .unwrap();
-
-                    assert_eq!(result.rows_affected(), 1);
-
-                    let response = client
-                        .get_story(Request::new(GetStoryRequest {
-                            id_or_slug: "some-story".to_string(),
-                            current_user_id: user_id.map(|value| value.to_string()),
-                        }))
-                        .await
-                        .unwrap()
-                        .into_inner();
-
-                    // Should still be false as the friend request has not been not accepted yet.
-                    assert!(!response.user.unwrap().is_friend);
-
-                    // Accept the friend request.
-                    let result = sqlx::query(
-                        r#"
-UPDATE friends
-SET accepted_at = NOW()
-WHERE transmitter_id = $1
-"#,
-                    )
-                    .bind(user_id.unwrap())
-                    .execute(&pool)
-                    .await
-                    .unwrap();
-
-                    assert_eq!(result.rows_affected(), 1);
-
-                    let response = client
-                        .get_story(Request::new(GetStoryRequest {
-                            id_or_slug: "some-story".to_string(),
-                            current_user_id: user_id.map(|value| value.to_string()),
-                        }))
-                        .await
-                        .unwrap()
-                        .into_inner();
-
-                    // Should be true.
-                    assert!(response.user.unwrap().is_friend);
-                }),
-            )
-            .await;
-        }
-
-        #[test_context(RedisTestContext)]
-        #[sqlx::test(fixtures("get_story"))]
-        async fn can_return_user_is_blocked_by_user_flag_for_story_by_slug_when_logged_in(
-            _ctx: &mut RedisTestContext,
-            pool: PgPool,
-        ) {
-            test_grpc_service(
-                pool,
-                true,
-                Box::new(|mut client, pool, _, user_id| async move {
-                    let response = client
-                        .get_story(Request::new(GetStoryRequest {
-                            id_or_slug: "some-story".to_string(),
-                            current_user_id: user_id.map(|value| value.to_string()),
-                        }))
-                        .await
-                        .unwrap()
-                        .into_inner();
-
-                    // Should be false initially.
-                    assert!(!response.user.unwrap().is_blocked_by_user);
-
-                    // Get blocked by the user.
-                    let result = sqlx::query(
-                        r#"
-INSERT INTO blocks (blocker_id, blocked_id)
-VALUES ($2, $1)
-"#,
-                    )
-                    .bind(user_id.unwrap())
-                    .bind(2_i64)
-                    .execute(&pool)
-                    .await
-                    .unwrap();
-
-                    assert_eq!(result.rows_affected(), 1);
-
-                    let response = client
-                        .get_story(Request::new(GetStoryRequest {
-                            id_or_slug: "some-story".to_string(),
-                            current_user_id: user_id.map(|value| value.to_string()),
-                        }))
-                        .await
-                        .unwrap()
-                        .into_inner();
-
-                    // Should be true.
-                    assert!(response.user.unwrap().is_blocked_by_user);
-                }),
-            )
-            .await;
-        }
-
-        #[test_context(RedisTestContext)]
-        #[sqlx::test(fixtures("get_story"))]
-        async fn can_return_is_self_flag_for_story_by_slug_when_logged_in(
-            _ctx: &mut RedisTestContext,
-            pool: PgPool,
-        ) {
-            test_grpc_service(
-                pool,
-                true,
-                Box::new(|mut client, pool, _, user_id| async move {
-                    let response = client
-                        .get_story(Request::new(GetStoryRequest {
-                            id_or_slug: "some-story".to_string(),
-                            current_user_id: user_id.map(|value| value.to_string()),
-                        }))
-                        .await
-                        .unwrap()
-                        .into_inner();
-
-                    // Should be false initially.
-                    assert!(!response.user.unwrap().is_self);
-
-                    // Update the writer of the story.
-                    let result = sqlx::query(
-                        r#"
-UPDATE stories
-SET user_id = $1
-WHERE id = $2
-"#,
-                    )
-                    .bind(user_id.unwrap())
-                    .bind(3_i64)
-                    .execute(&pool)
-                    .await
-                    .unwrap();
-
-                    assert_eq!(result.rows_affected(), 1);
-
-                    let response = client
-                        .get_story(Request::new(GetStoryRequest {
-                            id_or_slug: "some-story".to_string(),
-                            current_user_id: user_id.map(|value| value.to_string()),
-                        }))
-                        .await
-                        .unwrap()
-                        .into_inner();
-
-                    // Should be true.
-                    assert!(response.user.unwrap().is_self);
-                }),
-            )
-            .await;
-        }
-
-        //
-
-        #[test_context(RedisTestContext)]
-        #[sqlx::test(fixtures("get_story"))]
-        async fn can_update_history_when_reading_the_story_again_when_logged_in(
-            _ctx: &mut RedisTestContext,
-            pool: PgPool,
-        ) {
-            test_grpc_service(
-                pool,
-                true,
-                Box::new(|mut client, pool, _, user_id| async move {
-                    let response = client
-                        .get_story(Request::new(GetStoryRequest {
-                            id_or_slug: 3_i64.to_string(),
-                            current_user_id: user_id.map(|value| value.to_string()),
-                        }))
-                        .await;
-
-                    assert!(response.is_ok());
-
-                    // Should insert a history record.
-                    let result = sqlx::query(
-                        r#"
-SELECT created_at FROM histories
-WHERE user_id = $1
-"#,
-                    )
-                    .bind(user_id.unwrap())
-                    .fetch_one(&pool)
-                    .await
-                    .unwrap();
-
-                    let previous_created_at = result.get::<OffsetDateTime, _>("created_at");
-
-                    // Read the story again.
-                    let response = client
-                        .get_story(Request::new(GetStoryRequest {
-                            id_or_slug: 3_i64.to_string(),
-                            current_user_id: user_id.map(|value| value.to_string()),
-                        }))
-                        .await;
-
-                    assert!(response.is_ok());
-
-                    // Should update the history record.
-                    let result = sqlx::query(
-                        r#"
-SELECT created_at FROM histories
-WHERE user_id = $1
-"#,
-                    )
-                    .bind(user_id.unwrap())
-                    .fetch_one(&pool)
-                    .await
-                    .unwrap();
-
-                    let current_created_at = result.get::<OffsetDateTime, _>("created_at");
-
-                    assert!(current_created_at > previous_created_at);
                 }),
             )
             .await;
@@ -2132,6 +1935,91 @@ WHERE slug = $1
                     .unwrap();
 
                     assert_eq!(result.get::<i64, _>("view_count"), 1_i64);
+                }),
+            )
+            .await;
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_a_story_with_blog_by_slug_when_logged_in(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                true,
+                Box::new(|mut client, pool, _, user_id| async move {
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should be `None` initially.
+                    assert!(response.blog.is_none());
+
+                    // Add the story to a blog.
+                    let result = sqlx::query(
+                        r#"
+WITH inserted_blog AS (
+    INSERT INTO blogs (name, slug, user_id)
+    VALUES ('Test blog', 'test-blog', $1)
+    RETURNING id
+)
+INSERT INTO blog_stories (story_id, blog_id)
+VALUES ($2, (SELECT id FROM inserted_blog))
+"#,
+                    )
+                    .bind(2_i64)
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should still be `None` as the story has not been accepted yet.
+                    assert!(response.blog.is_none());
+
+                    // Accept the story.
+                    let result = sqlx::query(
+                        r#"
+UPDATE blog_stories
+SET accepted_at = NOW()
+WHERE story_id = $1
+"#,
+                    )
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should return the blog.
+                    assert!(response.blog.is_some());
                 }),
             )
             .await;
@@ -2238,6 +2126,472 @@ WHERE slug = $1
                     .unwrap();
 
                     assert_eq!(result.get::<i64, _>("view_count"), 0);
+                }),
+            )
+            .await;
+        }
+
+        //
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_is_liked_flag_for_story_by_slug_when_logged_in(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                true,
+                Box::new(|mut client, pool, _, user_id| async move {
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should be `false` initially.
+                    assert!(!response.is_liked);
+
+                    // Like the story.
+                    let result = sqlx::query(
+                        r#"
+INSERT INTO story_likes (user_id, story_id)
+VALUES ($1, $2)
+"#,
+                    )
+                    .bind(user_id.unwrap())
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should be `true`.
+                    assert!(response.is_liked);
+                }),
+            )
+            .await;
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_is_bookmarked_flag_for_story_by_slug_when_logged_in(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                true,
+                Box::new(|mut client, pool, _, user_id| async move {
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should be `false` initially.
+                    assert!(!response.is_bookmarked);
+
+                    // Bookmark the story.
+                    let result = sqlx::query(
+                        r#"
+INSERT INTO bookmarks (user_id, story_id)
+VALUES ($1, $2)
+"#,
+                    )
+                    .bind(user_id.unwrap())
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should be `true`.
+                    assert!(response.is_bookmarked);
+                }),
+            )
+            .await;
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_user_is_following_flag_for_story_by_slug_when_logged_in(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                true,
+                Box::new(|mut client, pool, _, user_id| async move {
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should be `false` initially.
+                    assert!(!response.user.unwrap().is_following);
+
+                    // Follow the user.
+                    let result = sqlx::query(
+                        r#"
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($1, $2)
+"#,
+                    )
+                    .bind(user_id.unwrap())
+                    .bind(2_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should be `true`.
+                    assert!(response.user.unwrap().is_following);
+                }),
+            )
+            .await;
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_user_is_follower_flag_for_story_by_slug_when_logged_in(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                true,
+                Box::new(|mut client, pool, _, user_id| async move {
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should be `false` initially.
+                    assert!(!response.user.unwrap().is_follower);
+
+                    // Add the user as follower.
+                    let result = sqlx::query(
+                        r#"
+INSERT INTO relations (follower_id, followed_id)
+VALUES ($2, $1)
+"#,
+                    )
+                    .bind(user_id.unwrap())
+                    .bind(2_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should be `true`.
+                    assert!(response.user.unwrap().is_follower);
+                }),
+            )
+            .await;
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_user_is_friend_flag_for_story_by_slug_when_logged_in(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                true,
+                Box::new(|mut client, pool, _, user_id| async move {
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should be `false` initially.
+                    assert!(!response.user.unwrap().is_friend);
+
+                    // Send a friend request to the user.
+                    let result = sqlx::query(
+                        r#"
+INSERT INTO friends (transmitter_id, receiver_id)
+VALUES ($1, $2)
+"#,
+                    )
+                    .bind(user_id.unwrap())
+                    .bind(2_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should still be false as the friend request has not been not accepted yet.
+                    assert!(!response.user.unwrap().is_friend);
+
+                    // Accept the friend request.
+                    let result = sqlx::query(
+                        r#"
+UPDATE friends
+SET accepted_at = NOW()
+WHERE transmitter_id = $1
+"#,
+                    )
+                    .bind(user_id.unwrap())
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should be `true`.
+                    assert!(response.user.unwrap().is_friend);
+                }),
+            )
+            .await;
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_user_is_blocked_by_user_flag_for_story_by_slug_when_logged_in(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                true,
+                Box::new(|mut client, pool, _, user_id| async move {
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should be `false` initially.
+                    assert!(!response.user.unwrap().is_blocked_by_user);
+
+                    // Get blocked by the user.
+                    let result = sqlx::query(
+                        r#"
+INSERT INTO blocks (blocker_id, blocked_id)
+VALUES ($2, $1)
+"#,
+                    )
+                    .bind(user_id.unwrap())
+                    .bind(2_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should be `true`.
+                    assert!(response.user.unwrap().is_blocked_by_user);
+                }),
+            )
+            .await;
+        }
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_return_is_self_flag_for_story_by_slug_when_logged_in(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                true,
+                Box::new(|mut client, pool, _, user_id| async move {
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should be `false` initially.
+                    assert!(!response.user.unwrap().is_self);
+
+                    // Update the writer of the story.
+                    let result = sqlx::query(
+                        r#"
+UPDATE stories
+SET user_id = $1
+WHERE id = $2
+"#,
+                    )
+                    .bind(user_id.unwrap())
+                    .bind(3_i64)
+                    .execute(&pool)
+                    .await
+                    .unwrap();
+
+                    assert_eq!(result.rows_affected(), 1);
+
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: "some-story".to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await
+                        .unwrap()
+                        .into_inner();
+
+                    // Should be `true`.
+                    assert!(response.user.unwrap().is_self);
+                }),
+            )
+            .await;
+        }
+
+        //
+
+        #[test_context(RedisTestContext)]
+        #[sqlx::test(fixtures("get_story"))]
+        async fn can_update_history_when_reading_the_story_again_when_logged_in(
+            _ctx: &mut RedisTestContext,
+            pool: PgPool,
+        ) {
+            test_grpc_service(
+                pool,
+                true,
+                Box::new(|mut client, pool, _, user_id| async move {
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await;
+
+                    assert!(response.is_ok());
+
+                    // Should insert a history record.
+                    let result = sqlx::query(
+                        r#"
+SELECT created_at FROM histories
+WHERE user_id = $1
+"#,
+                    )
+                    .bind(user_id.unwrap())
+                    .fetch_one(&pool)
+                    .await
+                    .unwrap();
+
+                    let previous_created_at = result.get::<OffsetDateTime, _>("created_at");
+
+                    // Read the story again.
+                    let response = client
+                        .get_story(Request::new(GetStoryRequest {
+                            id_or_slug: 3_i64.to_string(),
+                            current_user_id: user_id.map(|value| value.to_string()),
+                        }))
+                        .await;
+
+                    assert!(response.is_ok());
+
+                    // Should update the history record.
+                    let result = sqlx::query(
+                        r#"
+SELECT created_at FROM histories
+WHERE user_id = $1
+"#,
+                    )
+                    .bind(user_id.unwrap())
+                    .fetch_one(&pool)
+                    .await
+                    .unwrap();
+
+                    let current_created_at = result.get::<OffsetDateTime, _>("created_at");
+
+                    assert!(current_created_at > previous_created_at);
                 }),
             )
             .await;

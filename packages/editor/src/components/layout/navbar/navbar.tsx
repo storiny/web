@@ -2,6 +2,7 @@
 
 import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
 import { SUPPORT_ARTICLE_MAP } from "@storiny/shared/src/constants/support-articles";
+import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import SuspenseLoader from "@storiny/web/src/common/suspense-loader";
 import clsx from "clsx";
 import { useAtom as use_atom, useAtomValue as use_atom_value } from "jotai";
@@ -26,6 +27,7 @@ import ChevronIcon from "~/icons/chevron";
 import QuestionMarkIcon from "~/icons/question-mark";
 import VersionHistoryIcon from "~/icons/version-history";
 import {
+  use_publish_blog_story_mutation,
   use_publish_story_mutation,
   use_recover_draft_mutation,
   use_recover_story_mutation
@@ -110,14 +112,19 @@ const Publish = ({
   status: Exclude<StoryStatus, "deleted">;
 }): React.ReactElement => {
   const toast = use_toast();
-  const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const router = use_app_router();
   const story = use_atom_value(story_metadata_atom);
+  const role = story.role;
   const [editor] = use_lexical_composer_context();
   const tk_count_ref = React.useRef<number>(0);
   const word_count_ref = React.useRef<number>(1);
   const [doc_status, set_doc_status] = use_atom(doc_status_atom);
-  const [publish_story] = use_publish_story_mutation();
+  const [publish_user_story, { isLoading: is_publish_user_story_loading }] =
+    use_publish_story_mutation();
+  const [publish_blog_story, { isLoading: is_publish_blog_story_loading }] =
+    use_publish_blog_story_mutation();
+  const is_loading =
+    is_publish_user_story_loading || is_publish_blog_story_loading;
 
   /**
    * Publishes the story
@@ -125,22 +132,48 @@ const Publish = ({
   const handle_publish = React.useCallback(() => {
     set_doc_status(DOC_STATUS.publishing);
 
-    publish_story({ id: story.id, status, word_count: word_count_ref.current })
+    (role === "blog-member"
+      ? publish_blog_story({
+          story_id: story.id,
+          blog_id: story.blog?.id || "",
+          status,
+          word_count: word_count_ref.current
+        })
+      : publish_user_story({
+          id: story.id,
+          status,
+          word_count: word_count_ref.current
+        })
+    )
       .unwrap()
       .then(() =>
-        router.replace(`/${story.user?.username || "story"}/${story.id}`)
+        router.replace(
+          role === "blog-member"
+            ? `${get_blog_url(story.blog || {})}/${story.id}`
+            : `/${story.user?.username || "story"}/${story.id}`
+        )
       )
       .catch((error) => {
         set_doc_status(DOC_STATUS.connected);
-        handle_api_error(error, toast, null, "Could not publish your story");
+        handle_api_error(error, toast, null, "Could not publish this story");
       });
-  }, [publish_story, router, set_doc_status, status, story, toast]);
+  }, [
+    publish_blog_story,
+    publish_user_story,
+    role,
+    router,
+    set_doc_status,
+    status,
+    story,
+    toast
+  ]);
 
   const [element] = use_confirmation(
     ({ open_confirmation }) => (
       <Button
         check_auth
         disabled={disabled || !is_doc_editable(doc_status)}
+        loading={is_loading}
         onClick={(event): void => {
           event.preventDefault(); // Prevent opening the modal
 
@@ -172,9 +205,7 @@ const Publish = ({
             .catch(() => toast("Could not process your story", "error"));
         }}
       >
-        {story.published_at && !is_smaller_than_mobile
-          ? "Publish changes"
-          : "Publish"}
+        Publish
       </Button>
     ),
     {
@@ -334,7 +365,10 @@ const EditorNavbar = ({
           <Recover is_draft={!story.published_at} />
         ) : (
           <Publish
-            disabled={document_loading || !story.is_writer}
+            disabled={
+              document_loading ||
+              (!story.is_writer && story.role !== "blog-member")
+            }
             status={status}
           />
         )}

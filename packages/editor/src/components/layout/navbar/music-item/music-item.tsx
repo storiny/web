@@ -18,7 +18,7 @@ const MusicItemContent = dynamic(() => import("./content"), {
   loading: ({ isLoading: is_loading, error, retry }) =>
     error && !is_loading ? (
       <React.Fragment>
-        <Typography className={css["t-minor"]} level={"body2"}>
+        <Typography color={"minor"} level={"body2"}>
           Unable to load the player
         </Typography>
         <Button

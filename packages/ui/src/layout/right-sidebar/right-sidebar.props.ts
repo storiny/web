@@ -16,4 +16,9 @@ export interface RightSidebarProps
    * @default false
    */
   hide_footer?: boolean;
+  /**
+   * Whether the sidebar is a blog sidebar.
+   * @default false
+   */
+  is_blog?: boolean;
 }

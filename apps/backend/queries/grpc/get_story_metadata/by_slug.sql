@@ -25,6 +25,11 @@ SELECT s.id,
 	   -- Joins
 	   "s->document".key      AS "doc_key",
 	   CASE
+		   WHEN (
+			   "s->blog_stories->blog->editor".id IS NOT NULL
+				   OR "s->blog_stories->blog".user_id = $2
+			   )
+			   THEN 'blog-member'
 		   WHEN "s->contributor".id IS NOT NULL
 			   THEN "s->contributor".role
 		   ELSE 'editor'
@@ -53,7 +58,20 @@ SELECT s.id,
 									) FILTER (
 							   WHERE "s->story_tags->tag".id IS NOT NULL
 							   ), '{}'
-		   ))                 AS "tags!: Vec<Tag>"
+		   ))                 AS "tags!: Vec<Tag>",
+	   -- Blog
+	   CASE
+		   WHEN "s->blog_stories->blog".id IS NOT NULL
+			   THEN
+			   JSON_BUILD_OBJECT(
+					   'id', "s->blog_stories->blog".id,
+					   'name', "s->blog_stories->blog".name,
+					   'slug', "s->blog_stories->blog".slug,
+					   'domain', "s->blog_stories->blog".domain,
+					   'logo_id', "s->blog_stories->blog".logo_id,
+					   'logo_hex', "s->blog_stories->blog".logo_hex
+			   )
+	   END                    AS "blog: Json<Blog>"
 FROM
 	stories s
 		-- Join document
@@ -63,6 +81,21 @@ FROM
 		-- Join user
 		INNER JOIN users "s->user"
 				   ON "s->user".id = s.user_id
+		-- Join blog stories
+		LEFT OUTER JOIN (blog_stories AS "s->blog_stories"
+		-- Join blogs
+		INNER JOIN blogs AS "s->blog_stories->blog"
+						 ON "s->blog_stories->blog".id = "s->blog_stories".blog_id
+							 AND "s->blog_stories->blog".deleted_at IS NULL
+		)
+						ON "s->blog_stories".story_id = s.id
+							AND "s->blog_stories".deleted_at IS NULL
+		-- Join blog editor
+		LEFT OUTER JOIN blog_editors AS "s->blog_stories->blog->editor"
+						ON "s->blog_stories->blog->editor".user_id = $2
+							AND "s->blog_stories->blog->editor".blog_id = "s->blog_stories->blog".id
+							AND "s->blog_stories->blog->editor".accepted_at IS NOT NULL
+							AND "s->blog_stories->blog->editor".deleted_at IS NULL
 		-- Join contributor
 		LEFT OUTER JOIN story_contributors "s->contributor"
 						ON "s->contributor".story_id = s.id
@@ -75,16 +108,24 @@ FROM
 		--
 		-- Join story tags
 		LEFT OUTER JOIN (story_tags AS "s->story_tags"
-		-- Join tags
 		INNER JOIN tags AS "s->story_tags->tag"
-						 ON "s->story_tags->tag".id = "s->story_tags".tag_id)
+						 ON "s->story_tags->tag".id = "s->story_tags".tag_id
+		)
 						ON "s->story_tags".story_id = s.id
 WHERE
 	  s.slug = $1
-  AND (s.user_id = $2 OR "s->contributor".id IS NOT NULL)
+  AND (
+		  s.user_id = $2
+			  OR "s->contributor".id IS NOT NULL
+			  OR "s->blog_stories->blog->editor".id IS NOT NULL
+			  OR "s->blog_stories->blog".user_id = $2
+		  )
 GROUP BY
 	s.id,
 	"s->contributor".id,
+	"s->blog_stories->blog->editor".id,
+	"s->blog_stories->blog".user_id,
+	"s->blog_stories->blog".id,
 	doc_key,
 	user_name,
 	user_username,

@@ -1,16 +1,17 @@
-import { add_bookmark_listener } from "~/redux/features/entities/listener/bookmark";
-import { add_followed_tag_listener } from "~/redux/features/entities/listener/followed-tag";
-import { add_follower_listener } from "~/redux/features/entities/listener/follower";
-import { add_following_listener } from "~/redux/features/entities/listener/following";
-import { add_friend_listener } from "~/redux/features/entities/listener/friend";
-import { add_liked_comment_listener } from "~/redux/features/entities/listener/liked-comment";
-import { add_liked_reply_listener } from "~/redux/features/entities/listener/liked-reply";
-import { add_liked_story_listener } from "~/redux/features/entities/listener/liked-story";
-import { add_mute_listener } from "~/redux/features/entities/listener/mute";
-import { add_subscription_listener } from "~/redux/features/entities/listener/subscription";
 import { AppStartListening } from "~/redux/listener-middleware";
 
 import { add_block_listener } from "./block";
+import { add_bookmark_listener } from "./bookmark";
+import { add_followed_blog_listener } from "./followed-blog";
+import { add_followed_tag_listener } from "./followed-tag";
+import { add_follower_listener } from "./follower";
+import { add_following_listener } from "./following";
+import { add_friend_listener } from "./friend";
+import { add_liked_comment_listener } from "./liked-comment";
+import { add_liked_reply_listener } from "./liked-reply";
+import { add_liked_story_listener } from "./liked-story";
+import { add_mute_listener } from "./mute";
+import { add_subscription_listener } from "./subscription";
 
 export const add_entities_listeners = (
   start_listening: AppStartListening
@@ -18,6 +19,7 @@ export const add_entities_listeners = (
   [
     add_block_listener,
     add_followed_tag_listener,
+    add_followed_blog_listener,
     add_follower_listener,
     add_following_listener,
     add_friend_listener,

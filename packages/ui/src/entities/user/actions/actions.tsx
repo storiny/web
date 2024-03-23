@@ -26,7 +26,7 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 import { UserActionsProps } from "./actions.props";
 
 const UserActions = (props: UserActionsProps): React.ReactElement | null => {
-  const { user, action_type } = props;
+  const { user, action_type, custom_action } = props;
   const toast = use_toast();
   const share = use_web_share(toast);
   const copy = use_clipboard();
@@ -66,7 +66,7 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
     }
   );
 
-  if (is_mobile && action_type === "default") {
+  if (is_mobile && action_type === "default" && !custom_action) {
     return null;
   }
 
@@ -83,70 +83,76 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
         </IconButton>
       }
     >
-      <MenuItem
-        decorator={<ShareIcon />}
-        onClick={(): void =>
-          share(
-            `${user.name} (@${user.username})`,
-            `${process.env.NEXT_PUBLIC_WEB_URL}/${user.username}`
-          )
-        }
-      >
-        Share this user
-      </MenuItem>
-      <MenuItem
-        decorator={<CopyIcon />}
-        onClick={(): void =>
-          copy(`${process.env.NEXT_PUBLIC_WEB_URL}/${user.username}`)
-        }
-      >
-        Copy link to profile
-      </MenuItem>
-      {is_follower && (
-        <>
-          <Separator />
+      {custom_action ? (
+        custom_action(user)
+      ) : (
+        <React.Fragment>
           <MenuItem
-            check_auth
-            decorator={<UserXIcon />}
-            onClick={(): void => {
-              dispatch(boolean_action("followers", user.id, false));
-            }}
+            decorator={<ShareIcon />}
+            onClick={(): void =>
+              share(
+                `${user.name} (@${user.username})`,
+                `${process.env.NEXT_PUBLIC_WEB_URL}/${user.username}`
+              )
+            }
           >
-            Remove this follower
+            Share this user
           </MenuItem>
-        </>
-      )}
-      {!is_self && (
-        <>
-          <Separator />
-          {logged_in && (
+          <MenuItem
+            decorator={<CopyIcon />}
+            onClick={(): void =>
+              copy(`${process.env.NEXT_PUBLIC_WEB_URL}/${user.username}`)
+            }
+          >
+            Copy link to profile
+          </MenuItem>
+          {is_follower && (
             <>
+              <Separator />
               <MenuItem
                 check_auth
-                decorator={<MuteIcon />}
+                decorator={<UserXIcon />}
                 onClick={(): void => {
-                  dispatch(boolean_action("mutes", user.id));
+                  dispatch(boolean_action("followers", user.id, false));
                 }}
               >
-                {is_muted ? "Unmute" : "Mute"} this user
+                Remove this follower
               </MenuItem>
-              {element}
             </>
           )}
-          <ReportModal
-            entity_id={user.id}
-            entity_type={"user"}
-            trigger={({ open_modal }): React.ReactElement => (
-              <MenuItem
-                decorator={<ReportIcon />}
-                onClick={open_modal}
-                onSelect={(event): void => event.preventDefault()}
-              >
-                Report this user
-              </MenuItem>
-            )}
-          />
-        </>
+          {!is_self && (
+            <>
+              <Separator />
+              {logged_in && typeof user.is_muted !== "undefined" ? (
+                <>
+                  <MenuItem
+                    check_auth
+                    decorator={<MuteIcon />}
+                    onClick={(): void => {
+                      dispatch(boolean_action("mutes", user.id));
+                    }}
+                  >
+                    {is_muted ? "Unmute" : "Mute"} this user
+                  </MenuItem>
+                  {element}
+                </>
+              ) : null}
+              <ReportModal
+                entity_id={user.id}
+                entity_type={"user"}
+                trigger={({ open_modal }): React.ReactElement => (
+                  <MenuItem
+                    decorator={<ReportIcon />}
+                    onClick={open_modal}
+                    onSelect={(event): void => event.preventDefault()}
+                  >
+                    Report this user
+                  </MenuItem>
+                )}
+              />
+            </>
+          )}
+        </React.Fragment>
       )}
     </Menu>
   ) : (
@@ -167,8 +173,8 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
           ? "Unblock"
           : "Block"
         : is_muted
-        ? "Unmute"
-        : "Mute"}
+          ? "Unmute"
+          : "Mute"}
     </Button>
   );
 };

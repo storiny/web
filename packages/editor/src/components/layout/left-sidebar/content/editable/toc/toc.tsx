@@ -21,10 +21,7 @@ const EditorToc = ({
   return (
     <div className={clsx(css["flex-col"], read_only && css["full-h"])}>
       <div className={css["flex-center"]}>
-        <Typography
-          className={clsx(css["t-minor"], css["t-medium"])}
-          level={"body2"}
-        >
+        <Typography color={"minor"} level={"body2"} weight={"medium"}>
           Table of contents
         </Typography>
         <Spacer className={css["f-grow"]} />
@@ -59,7 +56,8 @@ const EditorToc = ({
       >
         {story.disable_toc ? (
           <Typography
-            className={clsx(css["t-muted"], css["t-center"])}
+            className={css["t-center"]}
+            color={"muted"}
             level={"body2"}
             style={{ display: "table-cell", verticalAlign: "middle" }}
           >

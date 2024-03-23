@@ -1,5 +1,4 @@
 import { get_shortcut_label } from "@storiny/shared/src/utils/get-shortcut-label";
-import { clsx } from "clsx";
 import {
   useAtomValue as use_atom_value,
   useSetAtom as use_set_atom
@@ -31,10 +30,7 @@ const Appearance = ({
 
   return (
     <div className={css["flex-col"]}>
-      <Typography
-        className={clsx(css["t-minor"], css["t-medium"])}
-        level={"body2"}
-      >
+      <Typography color={"minor"} level={"body2"} weight={"medium"}>
         Appearance
       </Typography>
       <Spacer orientation={"vertical"} size={2} />

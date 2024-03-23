@@ -38,13 +38,11 @@ const CustomState = React.forwardRef<HTMLDivElement, CustomStateProps>(
           <span className={clsx(css["flex-center"], styles.icon)}>{icon}</span>
         )}
         <div className={clsx(css["flex-col"], css["t-center"], styles.content)}>
-          <Typography
-            className={clsx(css["t-bold"], css["t-major"], styles.title)}
-          >
+          <Typography className={styles.title} color={"major"} weight={"bold"}>
             {title}
           </Typography>
           {description && (
-            <Typography className={css["t-minor"]} level={"body2"}>
+            <Typography color={"minor"} level={"body2"}>
               {description}
             </Typography>
           )}

@@ -1,0 +1,42 @@
+@use "breakpoints";
+
+.banner-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  gap: 6px;
+}
+
+.placeholder {
+  --icon-size: 24px;
+
+  background-color: var(--bg-elevation-md);
+}
+
+.preview {
+  --icon-size: 36px;
+  --icon-stroke: var(--fg-muted);
+
+  gap: 8px;
+  text-align: center;
+  border-bottom: 1px solid var(--divider);
+}
+
+.x {
+  &.aspect-ratio {
+    position: relative;
+    width: auto;
+    margin-inline: var(--grid-compensation);
+
+    @include breakpoints.media("<desktop", ">=mobile") {
+      // Exclude sidenav width
+      width: calc(100vw - 72px);
+      margin-left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+
+  &.banner {
+    width: auto;
+  }
+}

@@ -27,7 +27,7 @@ use tokio::{
     },
     task::JoinHandle,
 };
-use tracing::warn;
+use tracing::trace;
 use yrs::{
     encoding::write::Write,
     updates::{
@@ -178,7 +178,7 @@ impl BroadcastGroup {
                     let mut sink = sink.lock().await;
 
                     if let Err(error) = sink.send(message).await {
-                        warn!("subscription: failed to send the sync message");
+                        trace!("subscription: failed to send the sync message");
                         return Err(Error::Other(Box::new(error)));
                     }
                 }

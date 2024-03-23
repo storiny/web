@@ -1,0 +1,18 @@
+@use "breakpoints";
+
+.divider {
+  max-height: 68px;
+
+  @include breakpoints.media("<tablet") {
+    max-height: 80px;
+  }
+}
+
+.label-input {
+  width: 100%;
+  margin-right: auto;
+
+  @include breakpoints.media(">=desktop") {
+    width: 300px;
+  }
+}

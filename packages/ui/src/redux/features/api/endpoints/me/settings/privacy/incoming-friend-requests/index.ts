@@ -1,5 +1,5 @@
 import { ContentType } from "@storiny/shared";
-import { FriendRequestsSchema } from "@storiny/web/src/app/(check-user)/(dashboard)/me/(splash)/(default-lsb)/(default-rsb)/account/privacy/site-safety/friend-requests";
+import { FriendRequestsSchema } from "@storiny/web/src/app/(native)/(check-user)/(dashboard)/(splash)/me/(default-rsb)/account/privacy/site-safety/friend-requests";
 
 import { api_slice } from "~/redux/features/api/slice";
 

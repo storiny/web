@@ -67,7 +67,8 @@ const EditorLoader = ({
       </React.Fragment>
     )}
     <Typography
-      className={clsx(css["t-minor"], styles.x, styles.label)}
+      className={clsx(styles.x, styles.label)}
+      color={"minor"}
       level={"body2"}
     >
       {label}

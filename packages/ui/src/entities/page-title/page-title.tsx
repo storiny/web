@@ -1,3 +1,5 @@
+"use client";
+
 import { use_app_router } from "@storiny/web/src/common/utils";
 import clsx from "clsx";
 import NextLink from "next/link";

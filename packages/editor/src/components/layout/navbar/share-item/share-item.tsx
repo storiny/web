@@ -132,7 +132,7 @@ const ShareItemModal = (): React.ReactElement => {
   return (
     <React.Fragment>
       <Description asChild>
-        <Typography className={css["t-minor"]} level={"body2"}>
+        <Typography color={"minor"} level={"body2"}>
           You can invite users to contribute to this story. Their edits will be
           credited, and their names will be displayed publicly alongside the
           story until you remove them.

@@ -20,6 +20,13 @@
 .main {
   justify-content: space-between;
   gap: 16px;
+  width: 100%;
+
+  @include breakpoints.media(">=mobile") {
+    &.large {
+      flex-direction: column-reverse !important;
+    }
+  }
 
   @include breakpoints.media("<mobile") {
     flex-direction: column;
@@ -46,6 +53,7 @@
 
 .meta {
   gap: 8px;
+  width: 100%;
 }
 
 .title {
@@ -60,7 +68,8 @@
 }
 
 .persona {
-  width: fit-content;
+  width: 100%;
+  align-items: center;
 }
 
 .deleted-label {
@@ -83,8 +92,23 @@
   align-self: flex-start;
   position: relative;
 
-  @include breakpoints.media("<800px") {
-    --size: 200px !important;
+  @include breakpoints.media(">=mobile") {
+    &.large {
+      --size: 100%;
+
+      height: 240px;
+
+      & .splash-img {
+        object-position: center;
+        object-fit: cover;
+      }
+    }
+  }
+
+  &:not(.large) {
+    @include breakpoints.media("<800px") {
+      --size: 200px;
+    }
   }
 
   @include breakpoints.media("<mobile") {

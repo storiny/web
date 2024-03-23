@@ -10,6 +10,24 @@ import {
 } from "@grpc/grpc-js";
 import { ApiServiceClient } from "@storiny/proto/dist/api_service/v1/service";
 import {
+  GetBlogArchiveRequest,
+  GetBlogArchiveResponse,
+  GetBlogEditorsInfoRequest,
+  GetBlogEditorsInfoResponse,
+  GetBlogPendingStoryCountRequest,
+  GetBlogPendingStoryCountResponse,
+  GetBlogPublishedStoryCountRequest,
+  GetBlogPublishedStoryCountResponse,
+  GetBlogRequest,
+  GetBlogResponse,
+  GetBlogSitemapRequest,
+  GetBlogSitemapResponse,
+  GetBlogWritersInfoRequest,
+  GetBlogWritersInfoResponse,
+  GetUserBlogsInfoRequest,
+  GetUserBlogsInfoResponse
+} from "@storiny/proto/dist/blog_def/v1/def";
+import {
   GetCommentRequest,
   GetCommentResponse
 } from "@storiny/proto/dist/comment_def/v1/def";
@@ -238,6 +256,11 @@ const grpc_hub = {
       global.grpc_client.getUserRelationsInfo
     )
   ),
+  get_user_blogs_info: cache(
+    promisify<GetUserBlogsInfoRequest, GetUserBlogsInfoResponse>(
+      global.grpc_client.getUserBlogsInfo
+    )
+  ),
   get_username: cache(
     promisify<GetUsernameRequest, GetUsernameResponse>(
       global.grpc_client.getUsername
@@ -251,6 +274,41 @@ const grpc_hub = {
   verify_email: cache(
     promisify<VerifyEmailRequest, VerifyEmailResponse>(
       global.grpc_client.verifyEmail
+    )
+  ),
+  get_blog: cache(
+    promisify<GetBlogRequest, GetBlogResponse>(global.grpc_client.getBlog)
+  ),
+  get_blog_archive: cache(
+    promisify<GetBlogArchiveRequest, GetBlogArchiveResponse>(
+      global.grpc_client.getBlogArchive
+    )
+  ),
+  get_blog_pending_story_count: cache(
+    promisify<
+      GetBlogPendingStoryCountRequest,
+      GetBlogPendingStoryCountResponse
+    >(global.grpc_client.getBlogPendingStoryCount)
+  ),
+  get_blog_published_story_count: cache(
+    promisify<
+      GetBlogPublishedStoryCountRequest,
+      GetBlogPublishedStoryCountResponse
+    >(global.grpc_client.getBlogPublishedStoryCount)
+  ),
+  get_blog_editors_info: cache(
+    promisify<GetBlogEditorsInfoRequest, GetBlogEditorsInfoResponse>(
+      global.grpc_client.getBlogEditorsInfo
+    )
+  ),
+  get_blog_writers_info: cache(
+    promisify<GetBlogWritersInfoRequest, GetBlogWritersInfoResponse>(
+      global.grpc_client.getBlogWritersInfo
+    )
+  ),
+  get_blog_sitemap: cache(
+    promisify<GetBlogSitemapRequest, GetBlogSitemapResponse>(
+      global.grpc_client.getBlogSitemap
     )
   )
 } as const;
@@ -279,14 +337,29 @@ export const {
   get_login_activity,
   get_token,
   get_profile,
+  get_user_blogs_info,
   create_draft,
   verify_email,
   get_comment,
-  get_username
+  get_username,
+  get_blog,
+  get_blog_archive,
+  get_blog_pending_story_count,
+  get_blog_published_story_count,
+  get_blog_editors_info,
+  get_blog_writers_info,
+  get_blog_sitemap
 } = global.grpc_hub as typeof grpc_hub;
 
 export {
   CreateDraftResponse,
+  GetBlogArchiveResponse,
+  GetBlogEditorsInfoResponse,
+  GetBlogPendingStoryCountResponse,
+  GetBlogPublishedStoryCountResponse,
+  GetBlogResponse,
+  GetBlogSitemapResponse,
+  GetBlogWritersInfoResponse,
   GetCommentResponse,
   GetConnectionSettingsResponse,
   GetContributionsInfoResponse,
@@ -305,10 +378,10 @@ export {
   GetTagResponse,
   GetTokenResponse,
   GetUserBlockCountResponse,
+  GetUserBlogsInfoResponse,
   GetUserIdResponse,
   GetUserMuteCountResponse,
   GetUsernameResponse,
   GetUserRelationsInfoResponse,
   ValidateStoryResponse,
-  VerifyEmailResponse
-};
+  VerifyEmailResponse};

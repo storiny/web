@@ -42,6 +42,7 @@ export interface GetProfileResponse {
   is_blocked: boolean;
   is_muted: boolean;
   is_self: boolean;
+  is_plus_member: boolean;
 }
 
 function createBaseGetProfileRequest(): GetProfileRequest {
@@ -148,6 +149,7 @@ function createBaseGetProfileResponse(): GetProfileResponse {
     is_blocked: false,
     is_muted: false,
     is_self: false,
+    is_plus_member: false,
   };
 }
 
@@ -236,6 +238,9 @@ export const GetProfileResponse = {
     }
     if (message.is_self === true) {
       writer.uint32(224).bool(message.is_self);
+    }
+    if (message.is_plus_member === true) {
+      writer.uint32(232).bool(message.is_plus_member);
     }
     return writer;
   },
@@ -443,6 +448,13 @@ export const GetProfileResponse = {
 
           message.is_self = reader.bool();
           continue;
+        case 29:
+          if (tag !== 232) {
+            break;
+          }
+
+          message.is_plus_member = reader.bool();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -486,6 +498,7 @@ export const GetProfileResponse = {
       is_blocked: isSet(object.is_blocked) ? globalThis.Boolean(object.is_blocked) : false,
       is_muted: isSet(object.is_muted) ? globalThis.Boolean(object.is_muted) : false,
       is_self: isSet(object.is_self) ? globalThis.Boolean(object.is_self) : false,
+      is_plus_member: isSet(object.is_plus_member) ? globalThis.Boolean(object.is_plus_member) : false,
     };
   },
 
@@ -575,6 +588,9 @@ export const GetProfileResponse = {
     if (message.is_self === true) {
       obj.is_self = message.is_self;
     }
+    if (message.is_plus_member === true) {
+      obj.is_plus_member = message.is_plus_member;
+    }
     return obj;
   },
 
@@ -613,6 +629,7 @@ export const GetProfileResponse = {
     message.is_blocked = object.is_blocked ?? false;
     message.is_muted = object.is_muted ?? false;
     message.is_self = object.is_self ?? false;
+    message.is_plus_member = object.is_plus_member ?? false;
     return message;
   },
 };

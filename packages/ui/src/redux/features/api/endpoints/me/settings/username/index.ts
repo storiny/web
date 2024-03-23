@@ -1,5 +1,5 @@
 import { ContentType } from "@storiny/shared";
-import { UsernameSettingsSchema } from "@storiny/web/src/app/(check-user)/(dashboard)/me/(splash)/(default-lsb)/account/profile/username-settings";
+import { UsernameSettingsSchema } from "@storiny/web/src/app/(native)/(check-user)/(dashboard)/(splash)/me/account/profile/username-settings";
 
 import { api_slice } from "~/redux/features/api/slice";
 

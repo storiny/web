@@ -1,7 +1,9 @@
+import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { clsx } from "clsx";
 import { useAtom as use_atom, useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
+import { use_blog_context } from "~/common/context/blog";
 import Button from "~/components/button";
 import IconButton from "~/components/icon-button";
 import Link from "~/components/link";
@@ -61,21 +63,29 @@ const StoryActions = (): React.ReactElement => {
     (state) => state.entities.mutes[story.user?.id || ""]
   );
   const is_self = story.user_id === user?.id;
+  const blog = use_blog_context();
+  const story_url = blog
+    ? `${get_blog_url(blog)}/${story.slug}`
+    : `${process.env.NEXT_PUBLIC_WEB_URL}/${story.user?.username || "story"}/${
+        story.slug
+      }`;
 
   return (
     <div className={css["flex-center"]}>
-      <IconButton
-        aria-label={`${is_bookmarked ? "Un-bookmark" : "Bbookmark"} story`}
-        auto_size
-        check_auth
-        onClick={(): void => {
-          dispatch(boolean_action("bookmarks", story.id));
-        }}
-        title={`${is_bookmarked ? "Un-bookmark" : "Bbookmark"} story`}
-        variant={"ghost"}
-      >
-        {is_bookmarked ? <BookmarkIcon no_stroke /> : <BookmarkPlusIcon />}
-      </IconButton>
+      {!blog?.id && (
+        <IconButton
+          aria-label={`${is_bookmarked ? "Un-bookmark" : "Bookmark"} story`}
+          auto_size
+          check_auth
+          onClick={(): void => {
+            dispatch(boolean_action("bookmarks", story.id));
+          }}
+          title={`${is_bookmarked ? "Un-bookmark" : "Bookmark"} story`}
+          variant={"ghost"}
+        >
+          {is_bookmarked ? <BookmarkIcon no_stroke /> : <BookmarkPlusIcon />}
+        </IconButton>
+      )}
       <Menu
         trigger={
           <IconButton
@@ -90,30 +100,17 @@ const StoryActions = (): React.ReactElement => {
       >
         <MenuItem
           decorator={<ShareIcon />}
-          onClick={(): void =>
-            share(
-              story.title,
-              `${process.env.NEXT_PUBLIC_WEB_URL}/${
-                story.user?.username || "story"
-              }/${story.slug}`
-            )
-          }
+          onClick={(): void => share(story.title, story_url)}
         >
           Share
         </MenuItem>
         <MenuItem
           decorator={<CopyIcon />}
-          onClick={(): void =>
-            copy(
-              `${process.env.NEXT_PUBLIC_WEB_URL}/${
-                story.user?.username || "story"
-              }/${story.slug}`
-            )
-          }
+          onClick={(): void => copy(story_url)}
         >
           Copy link to story
         </MenuItem>
-        {is_larger_than_desktop && (
+        {is_larger_than_desktop && !blog?.id ? (
           <React.Fragment>
             <Separator />
             <MenuItem
@@ -129,7 +126,7 @@ const StoryActions = (): React.ReactElement => {
               {sidebars_collapsed ? "Expand" : "Collapse"} sidebars
             </MenuItem>
           </React.Fragment>
-        )}
+        ) : null}
         {!is_self && (
           <>
             <Separator />
@@ -260,12 +257,8 @@ const StoryHeader = (): React.ReactElement => {
         <NoSsr>
           <Typography
             as={"time"}
-            className={clsx(
-              css["flex-center"],
-              css["t-minor"],
-              styles.x,
-              styles.stat
-            )}
+            className={clsx(css["flex-center"], styles.x, styles.stat)}
+            color={"minor"}
             dateTime={story.published_at!}
             level={"body2"}
             title={format_date(story.published_at!, DateFormat.LONG)}
@@ -281,12 +274,8 @@ const StoryHeader = (): React.ReactElement => {
         </NoSsr>
         <Typography
           aria-label={`${get_read_time(story.word_count, user?.wpm)} min read`}
-          className={clsx(
-            css["flex-center"],
-            css["t-minor"],
-            styles.x,
-            styles.stat
-          )}
+          className={clsx(css["flex-center"], styles.x, styles.stat)}
+          color={"minor"}
           level={"body2"}
           title={`${get_read_time(story.word_count, user?.wpm)} min read`}
         >

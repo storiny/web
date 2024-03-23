@@ -1,5 +1,9 @@
 export interface StorySkeletonProps {
   /**
+   * If `true`, renders a large skeleton
+   */
+  is_large?: boolean;
+  /**
    * If `true`, renders a compact skeleton
    */
   is_small?: boolean;

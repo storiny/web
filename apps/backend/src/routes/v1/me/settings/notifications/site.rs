@@ -25,6 +25,8 @@ struct Request {
     replies: bool,
     new_followers: bool,
     friend_requests: bool,
+    collaboration_requests: bool,
+    blog_requests: bool,
 }
 
 #[patch("/v1/me/settings/notifications/site")]
@@ -55,7 +57,9 @@ SET
     push_comments = $6,
     push_replies = $7,
     push_followers = $8,
-    push_friend_requests = $9
+    push_friend_requests = $9,
+    push_collaboration_requests = $10,
+    push_blog_requests = $11
 WHERE user_id = $1
 "#,
     )
@@ -68,6 +72,8 @@ WHERE user_id = $1
     .bind(payload.replies)
     .bind(payload.new_followers)
     .bind(payload.friend_requests)
+    .bind(payload.collaboration_requests)
+    .bind(payload.blog_requests)
     .execute(&data.db_pool)
     .await?
     .rows_affected()
@@ -112,6 +118,8 @@ mod tests {
                 replies: false,
                 new_followers: false,
                 friend_requests: false,
+                collaboration_requests: false,
+                blog_requests: false,
             })
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -129,7 +137,9 @@ SELECT
     push_comments,
     push_replies,
     push_followers,
-    push_friend_requests
+    push_friend_requests,
+    push_collaboration_requests,
+    push_blog_requests
 FROM notification_settings
 WHERE user_id = $1
 "#,
@@ -146,6 +156,8 @@ WHERE user_id = $1
         assert!(!result.get::<bool, _>("push_replies"));
         assert!(!result.get::<bool, _>("push_followers"));
         assert!(!result.get::<bool, _>("push_friend_requests"));
+        assert!(!result.get::<bool, _>("push_collaboration_requests"));
+        assert!(!result.get::<bool, _>("push_blog_requests"));
 
         // Enable all the site notifications.
         let req = test::TestRequest::patch()
@@ -160,6 +172,8 @@ WHERE user_id = $1
                 replies: true,
                 new_followers: true,
                 friend_requests: true,
+                collaboration_requests: true,
+                blog_requests: true,
             })
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -177,7 +191,9 @@ SELECT
     push_comments,
     push_replies,
     push_followers,
-    push_friend_requests
+    push_friend_requests,
+    push_collaboration_requests,
+    push_blog_requests
 FROM notification_settings
 WHERE user_id = $1
 "#,
@@ -194,6 +210,8 @@ WHERE user_id = $1
         assert!(result.get::<bool, _>("push_replies"));
         assert!(result.get::<bool, _>("push_followers"));
         assert!(result.get::<bool, _>("push_friend_requests"));
+        assert!(result.get::<bool, _>("push_collaboration_requests"));
+        assert!(result.get::<bool, _>("push_blog_requests"));
 
         Ok(())
     }

@@ -3,6 +3,7 @@ export * from "./disable-account";
 export * from "./export-data";
 export * from "./following-list";
 export * from "./friend-list";
+export * from "./incoming-blog-requests";
 export * from "./incoming-collaboration-requests";
 export * from "./incoming-friend-requests";
 export * from "./private-account";

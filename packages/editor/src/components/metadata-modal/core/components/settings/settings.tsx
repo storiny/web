@@ -31,7 +31,7 @@ const SettingsTab = (): React.ReactElement => (
         label={"Public"}
         value={String(StoryVisibility.PUBLIC)}
       >
-        <Typography className={css["t-minor"]} level={"body3"}>
+        <Typography color={"minor"} level={"body3"}>
           Public stories are visible to everyone and can be featured in home
           feeds, recommended stories, and search results. However, if your
           account is private, your public stories will only be visible to your
@@ -44,14 +44,14 @@ const SettingsTab = (): React.ReactElement => (
         label={"Unlisted"}
         value={String(StoryVisibility.UNLISTED)}
       >
-        <Typography className={css["t-minor"]} level={"body3"}>
+        <Typography color={"minor"} level={"body3"}>
           Unlisted stories are not displayed in the home feed or search results,
           and can only be accessed via a direct link.
         </Typography>
       </FormRadio>
     </FormRadioGroup>
     <Spacer orientation={"vertical"} size={3} />
-    <Typography className={css["t-bold"]} level={"body2"}>
+    <Typography level={"body2"} weight={"bold"}>
       Miscellaneous
     </Typography>
     <Spacer orientation={"vertical"} size={2} />

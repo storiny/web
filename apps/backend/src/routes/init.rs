@@ -59,6 +59,11 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::auth::external::google::callback::init_routes(cfg);
     // Feed
     v1::feed::init_routes(cfg);
+    // Blogs
+    v1::blogs::archive::init_routes(cfg);
+    v1::blogs::editors::init_routes(cfg);
+    v1::blogs::writers::init_routes(cfg);
+    v1::blogs::feed::init_routes(cfg);
     // Me
     v1::me::get::init_routes(cfg);
     // Me - User activity
@@ -74,6 +79,56 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::blocked_users::get::init_routes(cfg);
     v1::me::blocked_users::post::init_routes(cfg);
     v1::me::blocked_users::delete::init_routes(cfg);
+    // Me - Blog requests
+    v1::me::blog_requests::get::init_routes(cfg);
+    v1::me::blog_requests::post::init_routes(cfg);
+    v1::me::blog_requests::delete::init_routes(cfg);
+    // Me - Blogs
+    v1::me::blogs::get::init_routes(cfg);
+    v1::me::blogs::post::init_routes(cfg);
+    // Me - Blogs - Editors
+    v1::me::blogs::editors::invite::init_routes(cfg);
+    v1::me::blogs::editors::remove::init_routes(cfg);
+    // Me - Blogs - Writers
+    v1::me::blogs::writers::invite::init_routes(cfg);
+    v1::me::blogs::writers::remove::init_routes(cfg);
+    // Me - Blogs - Stories
+    v1::me::blogs::stories::remove::init_routes(cfg);
+    v1::me::blogs::stories::publish::init_routes(cfg);
+    // Me - Blogs - Editor requests
+    v1::me::blogs::editor_requests::get::init_routes(cfg);
+    v1::me::blogs::editor_requests::cancel::init_routes(cfg);
+    // Me - Blogs - Writer requests
+    v1::me::blogs::writer_requests::get::init_routes(cfg);
+    v1::me::blogs::writer_requests::cancel::init_routes(cfg);
+    // Me - Blogs - Content
+    v1::me::blogs::content::pending_stories::init_routes(cfg);
+    v1::me::blogs::content::published_stories::init_routes(cfg);
+    // Me - Blogs - Stats
+    v1::me::blogs::stats::stories::init_routes(cfg);
+    // Me - Blogs - Settings
+    v1::me::blogs::settings::banner::init_routes(cfg);
+    v1::me::blogs::settings::logo::init_routes(cfg);
+    v1::me::blogs::settings::newsletter_splash::init_routes(cfg);
+    v1::me::blogs::settings::visibility::init_routes(cfg);
+    v1::me::blogs::settings::connections::init_routes(cfg);
+    v1::me::blogs::settings::delete_blog::init_routes(cfg);
+    v1::me::blogs::settings::slug::init_routes(cfg);
+    v1::me::blogs::settings::general::init_routes(cfg);
+    v1::me::blogs::settings::seo::init_routes(cfg);
+    // Me - Blogs - Settings - Sidebars
+    v1::me::blogs::settings::sidebars::lsb::init_routes(cfg);
+    v1::me::blogs::settings::sidebars::rsb::init_routes(cfg);
+    // Me - Blogs - Settings - Appearance
+    v1::me::blogs::settings::appearance::branding::init_routes(cfg);
+    v1::me::blogs::settings::appearance::page_layout::init_routes(cfg);
+    v1::me::blogs::settings::appearance::story_layout::init_routes(cfg);
+    v1::me::blogs::settings::appearance::theme::init_routes(cfg);
+    v1::me::blogs::settings::appearance::favicon::init_routes(cfg);
+    v1::me::blogs::settings::appearance::mark::init_routes(cfg);
+    // Me - Blogs - Settings - Appearance - Fonts
+    v1::me::blogs::settings::appearance::fonts::post::init_routes(cfg);
+    v1::me::blogs::settings::appearance::fonts::delete::init_routes(cfg);
     // Me - Bookmarks
     v1::me::bookmarks::get::init_routes(cfg);
     v1::me::bookmarks::post::init_routes(cfg);
@@ -102,6 +157,9 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     // Me - Flow
     v1::me::flow::onboarding::tags::init_routes(cfg);
     v1::me::flow::onboarding::writers::init_routes(cfg);
+    // Me - Followed blogs
+    v1::me::followed_blogs::post::init_routes(cfg);
+    v1::me::followed_blogs::delete::init_routes(cfg);
     // Me - Followed tags
     v1::me::followed_tags::get::init_routes(cfg);
     v1::me::followed_tags::post::init_routes(cfg);
@@ -127,6 +185,8 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::gallery::post::init_routes(cfg);
     // Me - History
     v1::me::history::init_routes(cfg);
+    // Me - Leave blog
+    v1::me::leave_blog::init_routes(cfg);
     // Me - Leave story
     v1::me::leave_story::init_routes(cfg);
     // Me - Liked comments
@@ -183,6 +243,7 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::settings::privacy::friend_list::init_routes(cfg);
     v1::me::settings::privacy::incoming_friend_requests::init_routes(cfg);
     v1::me::settings::privacy::incoming_collaboration_requests::init_routes(cfg);
+    v1::me::settings::privacy::incoming_blog_requests::init_routes(cfg);
     v1::me::settings::privacy::private_account::init_routes(cfg);
     v1::me::settings::privacy::read_history::init_routes(cfg);
     v1::me::settings::privacy::sensitive_content::init_routes(cfg);
@@ -244,11 +305,11 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     // Right sidebar content
     v1::rsb_content::init_routes(cfg);
     // Tag
-    v1::tag::stories::init_routes(cfg);
-    v1::tag::writers::init_routes(cfg);
+    v1::tags::stories::init_routes(cfg);
+    v1::tags::writers::init_routes(cfg);
     // User
-    v1::user::stories::init_routes(cfg);
-    v1::user::followers::init_routes(cfg);
-    v1::user::following::init_routes(cfg);
-    v1::user::friends::init_routes(cfg);
+    v1::users::stories::init_routes(cfg);
+    v1::users::followers::init_routes(cfg);
+    v1::users::following::init_routes(cfg);
+    v1::users::friends::init_routes(cfg);
 }

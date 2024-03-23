@@ -31,7 +31,9 @@ const FONT_FAMILIES: Record<string, string> = {
 const LazyFonts = (): React.ReactElement => (
   <style
     dangerouslySetInnerHTML={{
-      __html: `:root{${get_font_families_css(FONT_FAMILIES)}}`
+      __html: `:root {
+  ${get_font_families_css(FONT_FAMILIES)}
+}`
     }}
   />
 );

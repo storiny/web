@@ -57,7 +57,7 @@ const BioParser = ({
 }: InterweaveProps & { disable_hovercards?: boolean }): React.ReactElement => (
   <Interweave
     {...rest}
-    allowList={["a", "b", "del", "em", "p"]}
+    allowList={["a", "b", "del", "em", "p", "strong"]}
     containerTagName={"div"}
     content={content}
     transform={get_transformer(disable_hovercards)}

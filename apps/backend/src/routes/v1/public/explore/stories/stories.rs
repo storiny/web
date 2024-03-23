@@ -44,6 +44,17 @@ struct User {
     public_flags: i32,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+struct Blog {
+    #[serde(with = "crate::snowflake_id")]
+    id: i64,
+    name: String,
+    slug: String,
+    domain: Option<String>,
+    logo_id: Option<Uuid>,
+    logo_hex: Option<String>,
+}
+
 #[derive(sqlx::Type, Debug, Serialize, Deserialize)]
 struct Tag {
     #[serde(with = "crate::snowflake_id")]
@@ -77,6 +88,7 @@ struct Story {
     edited_at: Option<OffsetDateTime>,
     // Joins
     user: Json<User>,
+    blog: Option<Json<Blog>>,
     tags: Vec<Tag>,
     // Boolean flags
     is_liked: bool,
@@ -509,7 +521,7 @@ WHERE id = $1
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be false initially.
+        // Should be `false` initially.
         let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
         assert!(stories.iter().all(|story| !story.is_liked));
 
@@ -535,7 +547,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be true.
+        // Should be `true`.
         let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
         assert!(stories.iter().all(|story| story.is_liked));
 
@@ -555,7 +567,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be false initially.
+        // Should be `false` initially.
         let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
         assert!(stories.iter().all(|story| !story.is_bookmarked));
 
@@ -581,7 +593,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be true.
+        // Should be `true`.
         let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
         assert!(stories.iter().all(|story| story.is_bookmarked));
 
@@ -606,7 +618,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be false initially.
+        // Should be `false` initially.
         let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
         assert!(stories.iter().all(|story| !story.is_liked));
 
@@ -635,7 +647,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be true.
+        // Should be `true`.
         let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
         assert!(stories.iter().all(|story| story.is_liked));
 
@@ -658,7 +670,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be false initially.
+        // Should be `false` initially.
         let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
         assert!(stories.iter().all(|story| !story.is_bookmarked));
 
@@ -687,7 +699,7 @@ VALUES ($1, $2), ($1, $3), ($1, $4)
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should be true.
+        // Should be `true`.
         let stories = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await).unwrap();
         assert!(stories.iter().all(|story| story.is_bookmarked));
 

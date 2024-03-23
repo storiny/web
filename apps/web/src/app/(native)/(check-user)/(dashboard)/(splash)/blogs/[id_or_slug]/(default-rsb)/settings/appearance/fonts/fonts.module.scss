@@ -1,0 +1,67 @@
+@use "breakpoints";
+
+.content {
+  padding: 12px 8px;
+  gap: 16px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+
+  @include breakpoints.media("<mobile") {
+    flex-direction: column;
+    gap: 32px;
+  }
+}
+
+.item {
+  padding-inline: 16px;
+  gap: 14px;
+  min-width: 140px;
+  max-width: 100%;
+
+  @include breakpoints.media("<mobile") {
+    padding-inline: 0;
+    width: 100%;
+  }
+}
+
+.drop-zone {
+  --icon-size: 24px;
+  --icon-stroke: var(--inverted-100);
+
+  appearance: none;
+  box-shadow: none;
+  outline: none;
+  background: none;
+  border-radius: var(--radius-md);
+  border: 1.5px dashed var(--divider);
+  cursor: pointer;
+  min-width: 142px;
+  min-height: 142px;
+  padding: 48px;
+
+  &.active {
+    border-color: var(--inverted-400);
+  }
+
+  &.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+    cursor: wait;
+  }
+
+  @include breakpoints.media("<mobile") {
+    width: 100%;
+  }
+}
+
+.preview {
+  font-size: 36px;
+  line-height: 36px;
+  user-select: none;
+  text-align: center;
+}
+
+.footer {
+  gap: 10px;
+  min-height: 21px;
+}

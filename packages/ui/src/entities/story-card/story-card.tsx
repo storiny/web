@@ -66,55 +66,46 @@ const StoryCard = (props: StoryCardProps): React.ReactElement => {
           {story.title}
         </Link>
         {story.description && (
-          <Typography className={css["t-minor"]} level={"body2"}>
+          <Typography color={"minor"} level={"body2"}>
             {story.description}
           </Typography>
         )}
         <footer className={clsx(css["flex"], styles.footer)}>
           <Typography
             as={"span"}
-            className={clsx(
-              css["t-medium"],
-              css["t-minor"],
-              css["flex-center"],
-              styles.stat
-            )}
+            className={clsx(css["flex-center"], styles.stat)}
+            color={"minor"}
             level={"body2"}
             title={`${abbreviate_number(story.read_count)} ${
               story.read_count === 1 ? "read" : "reads"
             }`}
+            weight={"medium"}
           >
             <ReadsIcon />
             {abbreviate_number(story.read_count)}
           </Typography>
           <Typography
             as={"span"}
-            className={clsx(
-              css["t-medium"],
-              css["t-minor"],
-              css["flex-center"],
-              styles.stat
-            )}
+            className={clsx(css["flex-center"], styles.stat)}
+            color={"minor"}
             level={"body2"}
             title={`${abbreviate_number(story.like_count)} ${
               story.like_count === 1 ? "like" : "likes"
             }`}
+            weight={"medium"}
           >
             <HeartIcon />
             {abbreviate_number(story.like_count)}
           </Typography>
           <Typography
             as={"span"}
-            className={clsx(
-              css["t-medium"],
-              css["t-minor"],
-              css["flex-center"],
-              styles.stat
-            )}
+            className={clsx(css["flex-center"], styles.stat)}
+            color={"minor"}
             level={"body2"}
             title={`${abbreviate_number(story.comment_count)} ${
               story.comment_count === 1 ? "comment" : "comments"
             }`}
+            weight={"medium"}
           >
             <CommentIcon />
             {abbreviate_number(story.comment_count)}

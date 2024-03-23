@@ -1,0 +1,116 @@
+version: "3.8"
+
+services:
+  minio:
+    image: minio/minio
+    container_name: "storiny-minio"
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./docker/tmp/minio:/data
+    networks:
+      - custom-net
+    environment:
+      MINIO_ROOT_USER: "${AWS_ACCESS_KEY_ID:-minio_user}"
+      MINIO_ROOT_PASSWORD: "${AWS_SECRET_ACCESS_KEY:-minio_pass}"
+    command: server --console-address ":9001" /data
+
+  init-buckets:
+    image: minio/mc
+    container_name: "storiny-init-buckets"
+    depends_on:
+      - minio
+    networks:
+      - custom-net
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add objstore http://storiny-minio:9000 minio_user minio_pass;
+      /usr/bin/mc mb objstore/base-3939361a;
+      /usr/bin/mc mb objstore/docs-84b42278;
+      /usr/bin/mc mb objstore/uploads-ec0f63c5;
+      /usr/bin/mc mb objstore/sitemaps-1fbc3def;
+      /usr/bin/mc mb objstore/fonts-54d17847;
+      /usr/bin/mc anonymous set public objstore/base-3939361a;
+      /usr/bin/mc anonymous set public objstore/docs-84b42278;
+      /usr/bin/mc anonymous set public objstore/uploads-ec0f63c5;
+      /usr/bin/mc anonymous set public objstore/sitemaps-1fbc3def;
+      /usr/bin/mc anonymous set public objstore/fonts-54d17847;
+      exit 0;
+      "
+
+  redis:
+    container_name: "storiny-redis"
+    image: bitnami/redis
+    restart: always
+    environment:
+      REDIS_AOF_ENABLED: "no"
+      REDIS_PASSWORD: "redis_local"
+      REDIS_PORT_NUMBER: 7000
+      REDIS_ACLFILE: "/opt/bitnami/redis/mounted-etc/users.acl"
+    ports:
+      - "6379:7000"
+    volumes:
+      - ./docker/tmp/redis:/bitnami/redis/data
+      - ./docker/redis/overrides.conf:/opt/bitnami/redis/mounted-etc/overrides.conf
+      - ./docker/redis/users.acl:/opt/bitnami/redis/mounted-etc/users.acl
+    command: /opt/bitnami/scripts/redis/run.sh --maxmemory 100mb
+
+#  postgres:
+#    container_name: "storiny-postgres"
+#    image: postgres
+#    restart: always
+#    environment:
+#      POSTGRES_USER: "postgres"
+#      POSTGRES_PASSWORD: "pg_pass"
+#      POSTGRES_DB: "primary"
+#      PGDATA: "/var/lib/postgresql/data/pgdata"
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - ./docker/tmp/postgres:/var/lib/postgresql/data
+
+#  elasticsearch:
+#    container_name: "storiny-elasticsearch"
+#    image: elasticsearch:8.6.0
+#    restart: always
+#    environment:
+#      bootstrap.memory_lock: true
+#      xpack.security.enabled: false
+#      xpack.security.enrollment.enabled: false
+#      discovery.type: "single-node"
+#      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+#      ELASTIC_USERNAME: "${ELASTIC_USER:-elastic}"
+#      ELASTIC_PASSWORD: "${ELASTIC_PASSWORD:-elastic_pass}"
+#    ulimits:
+#      memlock:
+#        soft: -1
+#        hard: -1
+#    networks:
+#      - default
+#    ports:
+#      - "9300:9300"
+#      - "9200:9200"
+#    volumes:
+#      - ./docker/tmp/elasticsearch:/usr/share/elasticsearch/data
+#
+#  kibana:
+#    container_name: "storiny-kibana"
+#    image: kibana:8.6.0
+#    restart: always
+#    networks:
+#      - default
+#    depends_on:
+#      - elasticsearch
+#    environment:
+#      CSP_STRICT: false
+#      ELASTICSEARCH_HOSTS: "http://storiny-elasticsearch:9200"
+#      ELASTICSEARCH_USERNAME: "kibana_system"
+#      ELASTICSEARCH_PASSWORD: "kibana_pass"
+#    ports:
+#      - "5601:5601"
+
+networks:
+  custom-net:
+    name: internal

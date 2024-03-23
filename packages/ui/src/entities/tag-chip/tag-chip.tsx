@@ -53,14 +53,11 @@ const TagChip = (props: TagChipProps): React.ReactElement => {
             story_count === 1 ? "story" : "stories"
           }`}
           as={"span"}
-          className={clsx(
-            css["flex-center"],
-            css["t-medium"],
-            !disabled && css["t-minor"],
-            styles.stat
-          )}
+          className={clsx(css["flex-center"], styles.stat)}
+          color={disabled ? "major" : "minor"}
           data-first-child={"true"}
           level={"body3"}
+          weight={"medium"}
         >
           <StoriesIcon />
           {abbreviate_number(story_count)}
@@ -72,14 +69,11 @@ const TagChip = (props: TagChipProps): React.ReactElement => {
             follower_count === 1 ? "follower" : "followers"
           }`}
           as={"span"}
-          className={clsx(
-            css["flex-center"],
-            css["t-medium"],
-            !disabled && css["t-minor"],
-            styles.stat
-          )}
+          className={clsx(css["flex-center"], styles.stat)}
+          color={disabled ? "major" : "minor"}
           data-first-child={String(typeof story_count === "undefined")}
           level={"body3"}
+          weight={"medium"}
         >
           <UsersIcon />
           {abbreviate_number(follower_count)}

@@ -346,7 +346,7 @@ fn main() -> io::Result<()> {
                                 .cookie_domain(if config.is_dev {
                                     None
                                 } else {
-                                    Some("storiny.com".into())
+                                    Some(".storiny.com".into())
                                 })
                                 .cookie_path("/".to_string())
                                 .cookie_secure(!config.is_dev)
@@ -362,7 +362,7 @@ fn main() -> io::Result<()> {
                             Cors::permissive()
                         } else {
                             Cors::default()
-                                .allowed_origin(&config.web_server_url)
+                                .allow_any_origin()
                                 .allow_any_header()
                                 .allow_any_method()
                                 .supports_credentials()
