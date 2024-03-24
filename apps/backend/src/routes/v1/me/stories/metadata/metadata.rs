@@ -291,6 +291,20 @@ WHERE
                 .parse::<i64>()
                 .map_err(|_| AppError::from("Invalid blog ID"))?;
 
+            // Delete previous blog.
+            sqlx::query(
+                r#"
+DELETE FROM blog_stories
+WHERE
+    story_id = $1
+    AND blog_id <> $2
+"#,
+            )
+            .bind(story_id)
+            .bind(blog_id)
+            .execute(&mut *txn)
+            .await?;
+
             sqlx::query(
                     r#"
 INSERT INTO blog_stories (story_id, blog_id)
