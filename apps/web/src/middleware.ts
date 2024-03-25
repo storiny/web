@@ -5,22 +5,20 @@ import { is_valid_blog_slug } from "~/common/utils/is-valid-blog-slug";
 
 // Third-party frame sources.
 const CSP_FRAME_SRC = [
-  "https://twitter.com",
+  "twitter.com",
   "platform.twitter.com",
   "syndication.twitter.com"
 ].join(" ");
 
 // Third-party script sources.
 const CSP_SCRIPT_SRC = [
-  "https://cdn.syndication.twimg.com",
+  "cdn.syndication.twimg.com",
   "api.twitter.com",
   "platform.twitter.com"
 ].join(" ");
 
 // Third-party style sources.
-const CSP_STYLE_SRC = ["https://ton.twimg.com", "platform.twitter.com"].join(
-  " "
-);
+const CSP_STYLE_SRC = ["ton.twimg.com", "platform.twitter.com"].join(" ");
 
 /**
  * Next.js middleware function
