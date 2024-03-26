@@ -34,6 +34,10 @@ const next_config = {
         {
           key: "X-Frame-Options",
           value: "SAMEORIGIN"
+        },
+        {
+          key: "Access-Control-Allow-Origin",
+          value: "*"
         }
       ]
     }
