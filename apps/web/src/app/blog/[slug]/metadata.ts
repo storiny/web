@@ -26,7 +26,7 @@ export const generateMetadata = async ({
 
     const user_id = await get_user();
     const blog = await get_blog({
-      identifier: params.slug,
+      identifier: slug,
       current_user_id: user_id || undefined
     });
     const parent = await resolving;
@@ -60,10 +60,10 @@ export const generateMetadata = async ({
               rel: "apple-touch-icon",
               url: blog.logo_id
                 ? get_cdn_url(blog.logo_id, ImageSize.W_320)
-                : "/icons/apple-touch-icon.png"
+                : `${process.env.NEXT_PUBLIC_WEB_URL}/icons/apple-touch-icon.png`
             }
           ]
-        : parent.icons,
+        : parent?.icons,
       openGraph: {
         title: blog.seo_title || blog.name,
         description: blog.seo_description || blog.description,
