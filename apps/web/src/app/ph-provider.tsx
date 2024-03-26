@@ -8,7 +8,13 @@ if (typeof window !== "undefined") {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     ui_host: "https://app.posthog.com",
-    capture_pageview: false
+    capture_pageview: false,
+    loaded: (ph) => {
+      // Only track events on storiny.com
+      if (window.origin !== "https://storiny.com") {
+        ph.opt_out_capturing();
+      }
+    }
   });
 }
 
