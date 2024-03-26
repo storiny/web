@@ -26,10 +26,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   /* eslint-disable prefer-snakecase/prefer-snakecase */
   metadataBase: new URL(process.env.NEXT_PUBLIC_WEB_URL!),
-  title: {
-    template: "%s — Storiny",
-    default: "Storiny – Share your story"
-  },
+
   description,
   manifest: "/app.webmanifest",
   openGraph: {
