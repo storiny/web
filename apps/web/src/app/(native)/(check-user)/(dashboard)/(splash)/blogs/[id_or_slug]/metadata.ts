@@ -29,8 +29,8 @@ export const generateMetadata = async ({
     return {
       /* eslint-disable prefer-snakecase/prefer-snakecase */
       title: {
-        template: `%s — ${blog.name}`,
-        default: `Dashboard — ${blog.name}`
+        template: `%s (${blog.name})`,
+        default: `Dashboard (${blog.name})`
       }
       /* eslint-enable prefer-snakecase/prefer-snakecase */
     };

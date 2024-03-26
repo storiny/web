@@ -14,6 +14,11 @@ const PostHogPageview = (): null => {
 
   React.useEffect(() => {
     if (pathname && posthog) {
+      // Only track events on storiny.com
+      if (window.origin !== "https://storiny.com") {
+        return;
+      }
+
       let url = window.origin + pathname;
 
       if (search_params.toString()) {
