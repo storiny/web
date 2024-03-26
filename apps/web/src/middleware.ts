@@ -66,14 +66,15 @@ export const middleware: NextMiddleware = (request) => {
   // Add CSP directives.
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const csp_header = `
-    default-src 'self';
+    default-src 'self' storiny.com *.storiny.com;
     script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${CSP_SCRIPT_SRC};
     style-src 'self' 'unsafe-inline' ${CSP_STYLE_SRC};
     frame-src 'self' ${process.env.NEXT_PUBLIC_DISCOVERY_URL} ${CSP_FRAME_SRC};
     img-src 'self' blob: data: *;
     media-src 'self' ${process.env.NEXT_PUBLIC_CDN_URL};
     font-src 'self' ${process.env.NEXT_PUBLIC_CDN_URL};
-    connect-src 'self' wss://realms.storiny.com *.storiny.com *.sentry.io *.tile.openstreetmap.fr;
+    connect-src 'self' wss://realms.storiny.com storiny.com *.storiny.com *.sentry.io *.tile.openstreetmap.fr;
+    manifest-src 'self' storiny.com *.storiny.com;
     object-src 'none';
     base-uri 'self';
     form-action 'self';

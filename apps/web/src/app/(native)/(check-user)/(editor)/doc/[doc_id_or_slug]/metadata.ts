@@ -1,3 +1,5 @@
+import { Status } from "@grpc/grpc-js/build/src/constants";
+import { captureException as capture_exception } from "@sentry/nextjs";
 import type { Metadata } from "next";
 
 import { get_story_metadata } from "~/common/grpc";
@@ -21,7 +23,13 @@ export const generateMetadata = async ({
       title: `Editing ${story_metadata_response.title || "document"}`,
       robots: { follow: false, index: false }
     };
-  } catch {
+  } catch (err) {
+    const err_code = err?.code;
+
+    if (err_code !== Status.NOT_FOUND && err_code !== Status.UNAUTHENTICATED) {
+      capture_exception(err);
+    }
+
     return {
       title: "Editing document",
       robots: { follow: false, index: false }

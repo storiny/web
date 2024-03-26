@@ -1,3 +1,5 @@
+import { Status } from "@grpc/grpc-js/build/src/constants";
+import { captureException as capture_exception } from "@sentry/nextjs";
 import { Metadata } from "next";
 import { notFound as not_found } from "next/dist/client/components/not-found";
 
@@ -32,7 +34,13 @@ export const generateMetadata = async ({
       }
       /* eslint-enable prefer-snakecase/prefer-snakecase */
     };
-  } catch {
+  } catch (err) {
+    const err_code = err?.code;
+
+    if (err_code !== Status.NOT_FOUND && err_code !== Status.UNAUTHENTICATED) {
+      capture_exception(err);
+    }
+
     return { title: "Unknown blog" };
   }
 };
