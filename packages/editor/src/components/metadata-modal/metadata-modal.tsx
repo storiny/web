@@ -75,7 +75,7 @@ const StoryMetadataModalImpl = (
       tags: story.tags.map(({ name }) => name),
       title: story.title,
       visibility: story.visibility,
-      blog_id: story.blog?.id
+      blog_id: story.blog?.id || null
     },
     resolver: zod_resolver(STORY_METADATA_SCHEMA)
   });
