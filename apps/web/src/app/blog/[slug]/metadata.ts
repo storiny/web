@@ -1,9 +1,12 @@
+import { Status } from "@grpc/grpc-js/build/src/constants";
+import { captureException as capture_exception } from "@sentry/nextjs";
 import { ImageSize } from "@storiny/shared";
 import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { Metadata, ResolvingMetadata } from "next";
 import { notFound as not_found } from "next/dist/client/components/not-found";
 
 import { get_blog } from "~/common/grpc";
+import { get_user } from "~/common/utils/get-user";
 import { is_valid_blog_slug } from "~/common/utils/is-valid-blog-slug";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
@@ -21,8 +24,10 @@ export const generateMetadata = async ({
       return not_found();
     }
 
+    const user_id = await get_user();
     const blog = await get_blog({
-      identifier: slug
+      identifier: params.slug,
+      current_user_id: user_id || undefined
     });
     const parent = await resolving;
     const blog_url = get_blog_url(blog);
@@ -89,7 +94,13 @@ export const generateMetadata = async ({
       archives: `${blog_url}/archive`
       /* eslint-enable prefer-snakecase/prefer-snakecase */
     };
-  } catch {
+  } catch (err) {
+    const err_code = err?.code;
+
+    if (err_code !== Status.NOT_FOUND && err_code !== Status.UNAUTHENTICATED) {
+      capture_exception(err);
+    }
+
     return { title: "Unknown blog" };
   }
 };
