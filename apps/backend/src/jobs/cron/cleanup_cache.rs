@@ -24,7 +24,7 @@ impl Job for CacheCleanupJob {
 }
 
 /// Job for cleaning done and killed jobs from the cache.
-#[tracing::instrument(name = "JOB cleanup_cache", skip_all, ret, err)]
+#[tracing::instrument(name = "JOB cleanup_cache", skip_all, err)]
 pub async fn cleanup_cache(
     _: CacheCleanupJob,
     storage_map: Data<Arc<JobStorageMap>>,

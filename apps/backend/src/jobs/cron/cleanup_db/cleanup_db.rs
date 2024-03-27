@@ -193,7 +193,7 @@ WHERE NOT EXISTS (
 ///
 /// - Notifications that do not have any related row in `notification_outs` table will be
 ///   permanently deleted.
-#[tracing::instrument(name = "JOB cleanup_db", skip_all, ret, err)]
+#[tracing::instrument(name = "JOB cleanup_db", skip_all, err)]
 pub async fn cleanup_db(
     _: DatabaseCleanupJob,
     state: Data<Arc<SharedJobState>>,
