@@ -41,10 +41,8 @@ const PageHeader = ({
   sort,
   on_sort_change,
   on_query_change,
-  disabled,
   has_banner
 }: {
-  disabled?: boolean;
   has_banner: boolean;
   on_query_change: (next_query: string) => void;
   on_sort_change: (next_sort: BlogFeedSortValue) => void;
@@ -67,8 +65,6 @@ const PageHeader = ({
       <Input
         autoFocus={!!search_params.get("search")}
         decorator={<SearchIcon />}
-        disabled={disabled}
-        id={"feed-search"}
         onChange={(event): void => on_query_change(event.target.value)}
         placeholder={"Search"}
         size={"lg"}
@@ -77,7 +73,6 @@ const PageHeader = ({
       />
       <Divider orientation={"vertical"} />
       <Select
-        disabled={disabled}
         onValueChange={on_sort_change}
         slot_props={{
           trigger: {
@@ -196,7 +191,6 @@ const Page = (): React.ReactElement => {
       >
         <BlogContent />
         <PageHeader
-          disabled={!query && !items.length && !is_fetching}
           has_banner={Boolean(blog.banner_id)}
           on_query_change={handle_query_change}
           on_sort_change={handle_sort_change}
