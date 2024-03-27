@@ -256,7 +256,11 @@ const Actions = ({
                 className={clsx(css["flex-center"], styles.trigger)}
               >
                 {["idle", "loading"].includes(auth_status) ? (
-                  <Skeleton height={32} shape={"circular"} width={32} />
+                  <Skeleton
+                    height={32}
+                    shape={is_transparent ? "rectangular" : "circular"}
+                    width={32}
+                  />
                 ) : (
                   <Avatar
                     className={clsx(
