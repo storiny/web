@@ -145,8 +145,7 @@ const FontItem = ({
             font-family: blog-font-preview-${type};
             font-weight: normal;
             font-style: normal;
-            src: url("https://cdn.storiny.com/user-assets/fonts/${font}.woff2")
-              format("woff2");
+            src: url("https://fonts.storiny.com/${font}") format("woff2");
           }
         `}</style>
       )}
