@@ -8,7 +8,7 @@ import { setup_store } from "~/redux/store";
 const DISABLE_SYMC =
   typeof window !== "undefined" &&
   process.env.NODE_ENV !== "development" &&
-  window.origin !== "https://storiny.com";
+  window.origin !== process.env.NEXT_PUBLIC_WEB_URL;
 
 // Standalone provider as functions from client components
 // cannot be called on server components.
