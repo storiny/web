@@ -90,7 +90,10 @@ const BlogNavbar = (props: BlogNavbarProps): React.ReactElement => {
             <Logo role={"presentation"} size={28} />
           )}
         </NextLink>
-        <Actions is_transparent={is_transparent} />
+        <Actions
+          force_theme={blog.force_theme}
+          is_transparent={is_transparent}
+        />
       </nav>
     </header>
   );
