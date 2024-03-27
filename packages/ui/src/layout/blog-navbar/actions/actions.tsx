@@ -4,7 +4,6 @@ import { use_blog_context } from "@storiny/web/src/common/context/blog";
 import { use_app_router } from "@storiny/web/src/common/utils";
 import clsx from "clsx";
 import NextLink from "next/link";
-import { usePathname as use_pathname } from "next/navigation";
 import React from "react";
 
 import Avatar from "~/components/avatar";
@@ -188,10 +187,9 @@ const LoggedOutMenu = ({
 };
 
 const SearchAction = (): React.ReactElement => {
-  const pathname = use_pathname();
   const blog = use_blog_context();
   const router = use_app_router();
-  const homepage_path = `/blog/${blog.domain ?? blog.slug}`;
+  const blog_url = get_blog_url(blog);
 
   return (
     <IconButton
@@ -199,13 +197,7 @@ const SearchAction = (): React.ReactElement => {
       className={styles.action}
       data-persistent={""}
       onClick={(): void => {
-        if (pathname === homepage_path) {
-          (
-            document.getElementById("feed-search") as HTMLInputElement | null
-          )?.focus();
-        } else {
-          router.push(`${homepage_path}/?search`);
-        }
+        router.push(`${blog_url}/?search`);
       }}
       title={"Search"}
       variant={"ghost"}
@@ -256,7 +248,11 @@ const Actions = ({
                 className={clsx(css["flex-center"], styles.trigger)}
               >
                 {["idle", "loading"].includes(auth_status) ? (
-                  <Skeleton height={32} shape={"circular"} width={32} />
+                  <Skeleton
+                    height={32}
+                    shape={is_transparent ? "rectangular" : "circular"}
+                    width={32}
+                  />
                 ) : (
                   <Avatar
                     className={clsx(

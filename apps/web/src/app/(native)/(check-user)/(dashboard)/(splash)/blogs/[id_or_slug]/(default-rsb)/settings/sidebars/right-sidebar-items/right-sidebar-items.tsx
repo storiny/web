@@ -83,7 +83,7 @@ const Icon = ({ index }: { index: number }): React.ReactElement => {
             aria-label={"Edit icon"}
             className={clsx(css.focusable, common_styles["icon-button"])}
             style={{
-              backgroundImage: get_cdn_url(icon, ImageSize.W_64)
+              backgroundImage: `url("${get_cdn_url(icon, ImageSize.W_64)}")`
             }}
             title={"Edit icon"}
             type={"button"}
