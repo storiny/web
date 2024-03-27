@@ -50,6 +50,13 @@ const PageHeader = ({
   sort: BlogFeedSortValue;
 }): React.ReactElement => {
   const search_params = use_search_params();
+  const input_ref = React.useRef<HTMLInputElement | null>(null);
+
+  React.useEffect(() => {
+    if (input_ref.current && search_params.get("search") !== null) {
+      input_ref.current.focus();
+    }
+  }, [search_params]);
 
   return (
     <div
@@ -63,10 +70,10 @@ const PageHeader = ({
       )}
     >
       <Input
-        autoFocus={!!search_params.get("search")}
         decorator={<SearchIcon />}
         onChange={(event): void => on_query_change(event.target.value)}
         placeholder={"Search"}
+        ref={input_ref}
         size={"lg"}
         type={"search"}
         value={query}
