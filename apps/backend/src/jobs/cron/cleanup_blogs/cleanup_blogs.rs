@@ -169,7 +169,7 @@ RETURNING
 
 /// Deletes stale blogs from the database. Also deletes the fonts associated with the blog from the
 /// object storage.
-#[tracing::instrument(name = "JOB cleanup_blogs", skip_all, ret, err)]
+#[tracing::instrument(name = "JOB cleanup_blogs", skip_all, err)]
 pub async fn cleanup_blogs(
     _: BlogsCleanupJob,
     state: Data<Arc<SharedJobState>>,

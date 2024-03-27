@@ -11,6 +11,7 @@ import React from "react";
 import { get_session_token } from "~/common/utils/get-session-token";
 import CriticalStyles from "~/theme/critical";
 
+import CriticalFonts from "./fonts/critical";
 import ObserverErrorHandler from "./observer";
 import PostHogProvider from "./ph-provider";
 import { PreloadResources } from "./preload-resources";
@@ -43,6 +44,7 @@ const RootLayout = ({
           type="application/opensearchdescription+xml"
         />
         <CriticalStyles />
+        <CriticalFonts />
       </head>
       <PostHogProvider>
         <body dir={"ltr"}>
