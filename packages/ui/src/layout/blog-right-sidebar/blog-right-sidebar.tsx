@@ -1,6 +1,7 @@
 "use client";
 
 import { ImageSize } from "@storiny/shared";
+import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { use_blog_context } from "@storiny/web/src/common/context/blog";
 import clsx from "clsx";
 import NextLink from "next/link";
@@ -77,6 +78,7 @@ const BlogRightSidebar = ({
   ...rest
 }: BlogRightSidebarProps): React.ReactElement | null => {
   const blog = use_blog_context();
+  const blog_url = get_blog_url(blog);
 
   return (
     <RightSidebar
@@ -109,7 +111,11 @@ const BlogRightSidebar = ({
           {blog.rsb_items?.map((item) => (
             <NextLink
               className={clsx(css.flex, styles.item)}
-              href={item.target}
+              href={
+                (item.target || "").startsWith(blog_url)
+                  ? item.target.replace(blog_url, "")
+                  : item.target
+              }
               key={item.id}
               rel={"noreferrer"}
               target={"_blank"}
