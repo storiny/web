@@ -112,11 +112,11 @@ pub async fn start_jobs(
         let templated_email_storage: JobStorage<TemplatedEmailJob> =
             JobStorage::new(connection_manager);
 
-        let job_storage_map = JobStorageMap {
+        let job_storage_map = Arc::new(JobStorageMap {
             story_add_by_user: story_add_by_user_storage.clone(),
             story_add_by_tag: story_add_by_tag_storage.clone(),
             templated_email: templated_email_storage.clone(),
-        };
+        });
 
         Monitor::<TokioExecutor>::new()
             // Push notifications
@@ -126,7 +126,7 @@ pub async fn start_jobs(
                     .layer(TraceLayer::new())
                     .data(story_add_by_user_state.clone())
                     .with_storage(story_add_by_user_storage)
-                    .build_fn(notify_story_add_by_user),
+                    .build(service_fn(notify_story_add_by_user)),
             )
             .register_with_count(
                 4,
@@ -134,7 +134,7 @@ pub async fn start_jobs(
                     .layer(TraceLayer::new())
                     .data(story_add_by_tag_state.clone())
                     .with_storage(story_add_by_tag_storage)
-                    .build_fn(notify_story_add_by_tag),
+                    .build(service_fn(notify_story_add_by_tag)),
             )
             // Email
             .register_with_count(
@@ -143,7 +143,7 @@ pub async fn start_jobs(
                     .layer(TraceLayer::new())
                     .data(templated_email_state.clone())
                     .with_storage(templated_email_storage)
-                    .build_fn(send_templated_email),
+                    .build(service_fn(send_templated_email)),
             )
             // Cron
             .register(
@@ -159,7 +159,7 @@ pub async fn start_jobs(
                         )
                         .into_stream(),
                     )
-                    .build_fn(cleanup_cache),
+                    .build(service_fn(cleanup_cache)),
             )
             .register(
                 WorkerBuilder::new("sitemap-worker")
@@ -174,7 +174,7 @@ pub async fn start_jobs(
                         )
                         .into_stream(),
                     )
-                    .build_fn(refresh_sitemap),
+                    .build(service_fn(refresh_sitemap)),
             )
             .register(
                 WorkerBuilder::new("db-cleanup-worker")
@@ -189,7 +189,7 @@ pub async fn start_jobs(
                         )
                         .into_stream(),
                     )
-                    .build_fn(cleanup_db),
+                    .build(service_fn(cleanup_db)),
             )
             .register(
                 WorkerBuilder::new("s3-cleanup-worker")
@@ -204,12 +204,12 @@ pub async fn start_jobs(
                         )
                         .into_stream(),
                     )
-                    .build_fn(cleanup_s3),
+                    .build(service_fn(cleanup_s3)),
             )
             .register(
                 WorkerBuilder::new("blogs-cleanup-worker")
                     .layer(TraceLayer::new())
-                    .data(state)
+                    .data(state.clone())
                     .stream(
                         CronStream::new(
                             // Run every wednesday
@@ -219,7 +219,7 @@ pub async fn start_jobs(
                         )
                         .into_stream(),
                     )
-                    .build_fn(cleanup_blogs),
+                    .build(service_fn(cleanup_blogs)),
             )
             .on_event(|event| {
                 let worker_id = event.id();

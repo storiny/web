@@ -14,7 +14,6 @@ import { get_user } from "~/common/utils/get-user";
 import { is_valid_blog_slug } from "~/common/utils/is-valid-blog-slug";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
-import CriticalFonts from "../../fonts/critical";
 import SyncBlogState from "./sync-state";
 
 const generate_json_ld = (
@@ -98,7 +97,6 @@ if (typeof document !== "undefined") {
           }}
           nonce={nonce}
         />
-        <CriticalFonts />
         {blog.font_primary && (
           <style
             dangerouslySetInnerHTML={{

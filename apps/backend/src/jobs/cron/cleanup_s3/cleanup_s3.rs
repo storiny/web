@@ -247,7 +247,7 @@ RETURNING key
 
 /// Deletes stale rows from the `assets` and the `documents` table, along with the attached objects
 /// from the S3 bucket.
-#[tracing::instrument(name = "JOB cleanup_s3", skip_all, ret, err)]
+#[tracing::instrument(name = "JOB cleanup_s3", skip_all, err)]
 pub async fn cleanup_s3(_: S3CleanupJob, state: Data<Arc<SharedJobState>>) -> Result<(), Error> {
     info!("starting S3 cleanup");
 
