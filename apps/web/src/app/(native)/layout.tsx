@@ -13,6 +13,10 @@ const LazyFonts = dynamic(() => import("../fonts/lazy"));
 export const metadata: Metadata = {
   /* eslint-disable prefer-snakecase/prefer-snakecase */
   applicationName: "Storiny",
+  title: {
+    template: "%s — Storiny",
+    default: "Storiny – Share your story"
+  },
   icons: [
     {
       rel: "icon",
