@@ -53,6 +53,7 @@ pub async fn generate_preset_sitemap(
         build_url_entry(web_server_url, "/privacy", 0.7, None)?,
         build_url_entry(web_server_url, "/guidelines", 0.7, None)?,
         build_url_entry(web_server_url, "/cookies", 0.7, None)?,
+        build_url_entry(web_server_url, "/membership", 0.7, None)?,
     ];
 
     let preset_count = presets.len();
