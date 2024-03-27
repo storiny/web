@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import { headers } from "next/headers";
 import React from "react";
 
-import CriticalFonts from "../fonts/critical";
 // @ts-expect-error text file import
 import theme_sync from "../theme-sync.txt";
 
@@ -58,7 +57,6 @@ const NativeLayout = ({
         }}
         nonce={nonce}
       />
-      <CriticalFonts />
       <LazyFonts />
       {children}
     </React.Fragment>
