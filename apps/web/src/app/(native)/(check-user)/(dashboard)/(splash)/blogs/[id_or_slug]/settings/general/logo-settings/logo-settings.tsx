@@ -83,6 +83,7 @@ const BlogLogoSettings = (): React.ReactElement | null => {
           className={clsx(styles.x, styles.logo)}
           hex={blog.logo_hex}
           label={blog.name}
+          size={"lg"}
           slot_props={{
             fallback: {
               className: clsx(styles.x, styles.fallback)
