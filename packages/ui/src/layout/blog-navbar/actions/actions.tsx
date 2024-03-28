@@ -148,7 +148,11 @@ const LoggedInMenu = ({
     >
       Help
     </MenuItemWithLink>
-    <MenuItemWithLink check_auth decorator={<LogoutIcon />} href={"/logout"}>
+    <MenuItemWithLink
+      check_auth
+      decorator={<LogoutIcon />}
+      href={`${process.env.NEXT_PUBLIC_WEB_URL}/logout`}
+    >
       Logout
     </MenuItemWithLink>
   </Menu>
