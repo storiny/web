@@ -24,7 +24,7 @@ import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 import { DateFormat, format_date } from "~/utils/format-date";
 
-import { story_metadata_atom } from "../../atoms";
+import { sidebars_collapsed_atom, story_metadata_atom } from "../../atoms";
 import LikeButton from "../layout/right-sidebar/content/read-only/stats/like-button";
 import styles from "./story-footer.module.scss";
 
@@ -77,6 +77,7 @@ const Actions = (): React.ReactElement => {
 const StoryFooter = (): React.ReactElement | null => {
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
+  const is_collapsed = use_atom_value(sidebars_collapsed_atom);
   const story = use_atom_value(story_metadata_atom);
 
   if (!story.published_at) {
@@ -88,14 +89,14 @@ const StoryFooter = (): React.ReactElement | null => {
       <Spacer orientation={"vertical"} size={15} />
       <Divider />
       <Spacer orientation={"vertical"} size={3} />
-      {is_smaller_than_desktop && (
+      {is_smaller_than_desktop || is_collapsed ? (
         <React.Fragment>
           <Actions />
           <Spacer orientation={"vertical"} size={3} />
           <Divider />
           <Spacer orientation={"vertical"} size={3} />
         </React.Fragment>
-      )}
+      ) : null}
       {story.category !== StoryCategory.OTHERS || Boolean(story.edited_at) ? (
         <div className={clsx(css["flex"], styles["footer-row"])}>
           {story.category !== StoryCategory.OTHERS && (
