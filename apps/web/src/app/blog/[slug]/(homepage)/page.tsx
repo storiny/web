@@ -170,12 +170,12 @@ const Page = (): React.ReactElement => {
         <Image
           alt={""}
           aria-hidden={"true"}
-          className={styles.banner}
+          className={clsx(styles.x, styles.banner)}
           hex={blog.banner_hex}
           img_key={blog.banner_id}
           slot_props={{
             image: {
-              className: styles["banner-img"],
+              className: clsx(styles.x, styles["banner-img"]),
               loading: "eager",
               draggable: false,
               sizes: "100vw",

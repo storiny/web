@@ -1,38 +1,5 @@
 @use "breakpoints";
 
-.banner {
-  width: 100%;
-  position: fixed;
-  left: 0;
-  top: 0;
-  pointer-events: none;
-
-  &::after {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    background: linear-gradient(180deg, rgba(0 0 0 / 0%) 45.5%, rgba(0 0 0 / 14%) 100%);
-  }
-
-  height: 116px;
-
-  @include breakpoints.media(">=tablet") {
-    height: 180px;
-  }
-
-  @include breakpoints.media(">=desktop") {
-    height: 365px;
-  }
-}
-
-.banner-img {
-  object-fit: cover;
-  object-position: center;
-}
-
 .header {
   &.has-banner {
     border-top: 1px solid var(--divider);
@@ -59,5 +26,40 @@
     @include breakpoints.media(">=desktop") {
       margin-top: 300px;
     }
+  }
+}
+
+.x {
+  &.banner {
+    width: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+
+    &::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: linear-gradient(180deg, rgba(0 0 0 / 0%) 45.5%, rgba(0 0 0 / 14%) 100%);
+    }
+
+    height: 116px;
+
+    @include breakpoints.media(">=tablet") {
+      height: 180px;
+    }
+
+    @include breakpoints.media(">=desktop") {
+      height: 365px;
+    }
+  }
+
+  &.banner-img {
+    object-fit: cover;
+    object-position: center;
   }
 }
