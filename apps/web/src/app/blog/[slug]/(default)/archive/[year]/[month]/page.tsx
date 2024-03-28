@@ -20,5 +20,4 @@ const Page = ({
   return <ArchivePage month={month} year={year} />;
 };
 
-export { metadata } from "./metadata";
 export default Page;

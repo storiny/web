@@ -32,6 +32,9 @@ import { BlogLeftSidebarProps } from "./blog-left-sidebar.props";
  * @param blog_url The URL of the blog.
  */
 const get_tab_value = (target: string, blog_url: string): string => {
+  if (target === blog_url) {
+    return "/";
+  }
   if (target.startsWith(blog_url)) {
     return target.replace(blog_url, "");
   }
@@ -92,7 +95,11 @@ const BlogLeftSidebar = ({
         className={styles.tabs}
         orientation={"vertical"}
         role={undefined}
-        value={pathname || "/"}
+        value={
+          (pathname || "/").startsWith("/archive/")
+            ? "/archive"
+            : pathname || "/"
+        }
       >
         <TabsList
           aria-orientation={undefined}

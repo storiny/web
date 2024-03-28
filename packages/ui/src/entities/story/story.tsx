@@ -173,10 +173,25 @@ const Meta = (props: StoryProps): React.ReactElement | null => {
                 in
               </Typography>
               <Link
-                className={clsx(css["t-medium"], css.ellipsis)}
+                className={clsx(
+                  css["t-medium"],
+                  css.ellipsis,
+                  styles.x,
+                  Boolean(story.blog.logo_id) && styles["blog-logo"]
+                )}
                 fixed_color
                 href={get_blog_url(story.blog)}
                 level={"body2"}
+                style={
+                  {
+                    "--logo-url": story.blog.logo_id
+                      ? `url("${get_cdn_url(
+                          story.blog.logo_id,
+                          ImageSize.W_64
+                        )}")`
+                      : undefined
+                  } as React.CSSProperties
+                }
               >
                 {story.blog.name}
               </Link>
