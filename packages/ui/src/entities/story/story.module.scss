@@ -147,3 +147,25 @@
 .tags-container {
   gap: 6px;
 }
+
+.x {
+  &.blog-logo {
+    padding-left: 24px;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: var(--radius-xs);
+      transform: translateY(-50%);
+      background-image: var(--logo-url);
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+  }
+}
