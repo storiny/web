@@ -1,3 +1,5 @@
+"use client";
+
 import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection as use_lexical_node_selection } from "@lexical/react/useLexicalNodeSelection";
 import { mergeRegister as merge_register } from "@lexical/utils";
@@ -19,6 +21,7 @@ import { useHotkeys as use_hot_keys } from "react-hotkeys-hook";
 import { useIntersectionObserver as use_intersection_observer } from "react-intersection-observer-hook";
 import use_resize_observer from "use-resize-observer";
 
+import { use_blog_context } from "~/common/context/blog";
 import Popover from "~/components/popover";
 import Spinner from "~/components/spinner";
 import Typography from "~/components/typography";
@@ -55,6 +58,7 @@ const EmbedComponent = ({
   url: string;
 }): React.ReactElement | null => {
   const theme = use_app_selector(select_resolved_theme);
+  const blog = use_blog_context();
   const [editor] = use_lexical_composer_context();
   const set_overflowing_figures = use_set_atom(overflowing_figures_atom);
   const [loading, set_loading] = React.useState<boolean>(true);
@@ -359,7 +363,11 @@ const EmbedComponent = ({
                 </div>
               ) : (
                 <div
-                  className={clsx(css["flex-center"], styles.content)}
+                  className={clsx(
+                    css["flex-center"],
+                    styles.content,
+                    blog?.is_story_minimal_layout && styles.radius
+                  )}
                   data-layout={layout}
                   data-loading={String(loading)}
                   ref={content_ref}

@@ -204,10 +204,7 @@ export const preferences_slice = create_slice({
      */
     set_theme: (state, action: PayloadAction<Theme>) => {
       state.theme = action.payload;
-
-      if (typeof window !== "undefined") {
-        state.resolved_theme = resolve_theme_value(action.payload);
-      }
+      state.resolved_theme = resolve_theme_value(action.payload);
     }
   }
 });

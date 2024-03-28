@@ -45,6 +45,13 @@
   &[data-layout="fill"] {
     grid-column: 5 / -5;
     margin-inline: var(--grid-compensation);
+
+    @include breakpoints.media(">=desktop") {
+      &.radius {
+        overflow: hidden;
+        border-radius: var(--radius-sm);
+      }
+    }
   }
 
   /* Overflow layout (stretch over both the sidebars) */
