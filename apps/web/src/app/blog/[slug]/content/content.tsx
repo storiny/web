@@ -32,6 +32,10 @@ import styles from "./content.module.scss";
  * @param blog_url The URL of the blog.
  */
 const get_tab_value = (target: string, blog_url: string): string => {
+  if (target === blog_url) {
+    return "/";
+  }
+
   if (target.startsWith(blog_url)) {
     return target.replace(blog_url, "");
   }
@@ -117,7 +121,11 @@ const BlogContent = (): React.ReactElement | null => {
         className={styles.tabs}
         orientation={"horizontal"}
         role={undefined}
-        value={pathname || "/"}
+        value={
+          (pathname || "/").startsWith("/archive/")
+            ? "/archive"
+            : pathname || "/"
+        }
       >
         <TabsList
           aria-orientation={undefined}
