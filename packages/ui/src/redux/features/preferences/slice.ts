@@ -114,7 +114,7 @@ export const preferences_slice = create_slice({
   initialState: preferences_initial_state,
   reducers: {
     /**
-     * Sycns the state to the browser
+     * Syncs the state to the browser
      */
     sync_to_browser: () => undefined,
     /**
