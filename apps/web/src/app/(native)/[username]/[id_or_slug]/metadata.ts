@@ -1,6 +1,7 @@
 import { Status } from "@grpc/grpc-js/build/src/constants";
 import { captureException as capture_exception } from "@sentry/nextjs";
 import { ImageSize } from "@storiny/shared";
+import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import type { Metadata } from "next";
 
 import { get_story } from "~/common/grpc";
@@ -59,6 +60,13 @@ export const generateMetadata = async ({
       },
       alternates: {
         canonical: story_response.canonical_url
+          ? story_response.canonical_url
+          : story_response.blog
+            ? `${get_blog_url({
+                slug: story_response.blog?.slug,
+                domain: story_response.blog?.domain || null
+              })}/${story_response.slug}`
+            : undefined
       }
       /* eslint-enable prefer-snakecase/prefer-snakecase */
     };

@@ -207,7 +207,7 @@ const EmbedComponent = ({
           }
         }
       })
-      .catch(() => set_error(true))
+      .catch((err) => set_error(true))
       .finally(() => set_loading(false));
   }, [editor, node_key, theme, url]);
 
