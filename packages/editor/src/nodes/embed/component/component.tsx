@@ -103,7 +103,7 @@ const EmbedComponent = ({
   const generate_embed = React.useCallback(() => {
     const embed_url = `${process.env.NEXT_PUBLIC_DISCOVERY_URL}/embed/${url}?theme=${theme}`;
 
-    fetch(embed_url)
+    fetch(embed_url, { mode: "no-cors" })
       .then(async (response) => {
         if (!response.ok) {
           set_error(true);
