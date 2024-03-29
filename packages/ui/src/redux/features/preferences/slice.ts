@@ -314,6 +314,10 @@ export const add_preferences_listeners = (
               })
             )
           );
+        } else if (typeof theme_value !== "undefined") {
+          listener_api.dispatch(
+            set_theme((theme_value as "light" | "dark" | null) || "system")
+          );
         }
       } catch (e) {
         dev_console.error(e);
