@@ -47,7 +47,7 @@ const Blog = (props: BlogProps): React.ReactElement => {
           href={blog_url}
           img_key={blog.logo_id}
           rel={"noreferrer"}
-          size={ImageSize.W_64}
+          size={ImageSize.W_128}
           target={"_blank"}
           title={"Visit blog"}
         />
