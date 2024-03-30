@@ -50,8 +50,8 @@ const GroupComponent = ({
 const DashboardNavigationScreen = (): React.ReactElement => {
   const [query, set_query] = React.useState<string>("");
   const [results, set_results] = React.useState<Group<DashboardSegment>[]>([]);
-  use_handle_dynamic_state("", set_query);
-  use_handle_dynamic_state([], set_results);
+  use_handle_dynamic_state<typeof query>("", set_query);
+  use_handle_dynamic_state<typeof results>([], set_results);
 
   return (
     <NoSsr fallback={<SuspenseLoader style={{ minHeight: "250px" }} />}>

@@ -116,11 +116,17 @@ export const handler = (r: Request): void | undefined => {
     const resize_option = get_resize_option(parsed_width);
 
     if (["uploads", "dl"].includes(req_type)) {
+      const is_favicon = /\.ico/.test(uri);
+
       // Uploads bucket
       return pass_to_proxy(
         r,
         `internal${
-          type === "dl" ? "/return_attachment:true/" : resize_option || "/"
+          type === "dl"
+            ? "/return_attachment:true/"
+            : is_favicon
+              ? "/resize:fit:48:48:0:0/extend_ar:false:ce:0:0/format:ico/"
+              : resize_option || "/"
         }plain/${UPLOADS_BUCKET}/${key}`
       );
     }

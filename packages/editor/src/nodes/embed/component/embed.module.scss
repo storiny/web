@@ -75,6 +75,11 @@
   /* Twitter embed */
   & iframe[id^="twitter-widget-"] {
     border-radius: 13px !important;
+    margin-inline: auto !important;
+
+    @include breakpoints.media("<mobile") {
+      max-width: calc(100% - 32px) !important;
+    }
   }
 }
 

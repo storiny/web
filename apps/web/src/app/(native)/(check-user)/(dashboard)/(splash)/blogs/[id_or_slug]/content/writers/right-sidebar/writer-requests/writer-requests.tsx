@@ -63,8 +63,8 @@ Scroller.displayName = "Scroller";
 const WriterRequestsModal = (): React.ReactElement => {
   const [query, set_query] = React.useState<string>("");
   const [page, set_page] = React.useState<number>(1);
-  use_handle_dynamic_state(1, set_page);
-  use_handle_dynamic_state("", set_query);
+  use_handle_dynamic_state<typeof page>(1, set_page);
+  use_handle_dynamic_state<typeof query>("", set_query);
   const set_render_key = use_set_atom(render_key_atom);
   const blog = use_blog_context();
   const debounced_query = use_debounce(query);
