@@ -4,6 +4,12 @@ import { StoryCategory } from "../../enums";
 import { ZOD_MESSAGES } from "../messages";
 
 /**
+ * The variable set on the `window` object that holds the default theme value
+ * for the blog.
+ */
+export const BLOG_GLOBAL_THEME_VARIABLE = "__STORINY_DEFAULT_BLOG_THEME__";
+
+/**
  * Alphanumeric, underscore and hyphen regex
  */
 export const BLOG_SLUG_REGEX = /^[\w_-]+$/;

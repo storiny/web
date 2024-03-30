@@ -49,7 +49,7 @@ export const generateMetadata = async ({
             {
               rel: "icon",
               sizes: "any",
-              url: "/favicon.ico"
+              url: `${blog_url}/favicon.ico`
             },
             {
               rel: "icon",

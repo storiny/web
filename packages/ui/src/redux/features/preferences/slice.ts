@@ -116,7 +116,9 @@ export const preferences_slice = create_slice({
     /**
      * Syncs the state to the browser
      */
-    sync_to_browser: () => undefined,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    sync_to_browser: (_, _action: PayloadAction<{ theme?: Theme }>) =>
+      undefined,
     /**
      * Hydrates state from localStorage
      */
@@ -295,28 +297,39 @@ export const add_preferences_listeners = (
    */
   start_listening({
     actionCreator: sync_to_browser,
-    effect: (_, listener_api) => {
+    effect: ({ payload }, listener_api) => {
       try {
+        const theme_param = payload?.theme;
         const client_value = localStorage.getItem(PREFERENCES_STORAGE_KEY);
-        const theme_value = localStorage.getItem(THEME_STORAGE_KEY);
+
+        let theme_value =
+          typeof theme_param === "string"
+            ? theme_param
+            : localStorage.getItem(THEME_STORAGE_KEY);
+
+        theme_value = ["light", "dark", "system"].includes(
+          theme_value || "system"
+        )
+          ? (theme_value as "light" | "dark" | "system")
+          : "system";
 
         if (client_value) {
           listener_api.dispatch(
             hydrate_state(
               preferences_schema.parse({
                 ...JSON.parse(decompress_from_utf16(client_value)),
-                theme: theme_value || "system",
+                theme: theme_value,
                 resolved_theme: resolve_theme_value(
-                  ["light", "dark"].includes(theme_value || "")
+                  ["light", "dark"].includes(theme_value)
                     ? (theme_value as "light" | "dark")
                     : "system"
                 )
               })
             )
           );
-        } else if (typeof theme_value !== "undefined") {
+        } else {
           listener_api.dispatch(
-            set_theme((theme_value as "light" | "dark" | null) || "system")
+            set_theme(theme_value as "light" | "dark" | "system")
           );
         }
       } catch (e) {
