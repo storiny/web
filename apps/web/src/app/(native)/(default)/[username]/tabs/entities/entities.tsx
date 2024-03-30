@@ -29,7 +29,7 @@ interface Props {
 const EntitiesTab = (props: Props): React.ReactElement => {
   const { query, sort, user_id, username, entity_type } = props;
   const [page, set_page] = React.useState<number>(1);
-  use_handle_dynamic_state(1, set_page);
+  use_handle_dynamic_state<typeof page>(1, set_page);
   const debounced_query = use_debounce(query);
   const {
     data,

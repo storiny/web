@@ -156,8 +156,11 @@ const Page = ({
     tab === "stories" ? "recent" : "popular"
   );
   const [query, set_query] = React.useState<string>("");
-  use_handle_dynamic_state("", set_query);
-  use_handle_dynamic_state(tab === "stories" ? "recent" : "popular", set_sort);
+  use_handle_dynamic_state<typeof query>("", set_query);
+  use_handle_dynamic_state<typeof sort>(
+    tab === "stories" ? "recent" : "popular",
+    set_sort
+  );
   // Hide the content initially when the target user is being blocked
   const [content_hidden, set_content_hidden] = React.useState<boolean>(
     Boolean(profile.is_blocked)

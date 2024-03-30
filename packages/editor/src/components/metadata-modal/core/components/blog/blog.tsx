@@ -1,6 +1,6 @@
 import { Blog } from "@storiny/types";
 import { clsx } from "clsx";
-import { Provider,useAtom as use_atom } from "jotai";
+import { Provider, useAtom as use_atom } from "jotai";
 import {
   atom,
   useAtomValue as use_atom_value,
@@ -52,7 +52,7 @@ Scroller.displayName = "Scroller";
 
 const List = (): React.ReactElement => {
   const [page, set_page] = React.useState<number>(1);
-  use_handle_dynamic_state(1, set_page);
+  use_handle_dynamic_state<typeof page>(1, set_page);
   const set_render_key = use_set_atom(render_key_atom);
   const {
     data,

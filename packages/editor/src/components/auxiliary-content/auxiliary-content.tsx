@@ -95,7 +95,7 @@ const Content = (): React.ReactElement => {
     is_smaller_than_desktop ? "suggested" : "comments"
   );
   const [sort, set_sort] = React.useState<StoryCommentsSortValue>("most-liked");
-  use_handle_dynamic_state("most-liked", set_sort);
+  use_handle_dynamic_state<typeof sort>("most-liked", set_sort);
 
   const handle_sort_change = React.useCallback(
     (next_sort: StoryCommentsSortValue) => {

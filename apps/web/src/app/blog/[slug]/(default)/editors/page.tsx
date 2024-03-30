@@ -25,7 +25,7 @@ const EmptyState = dynamic(() => import("./empty-state"), {
 const Page = (): React.ReactElement => {
   const blog = use_blog_context();
   const [page, set_page] = React.useState<number>(1);
-  use_handle_dynamic_state(1, set_page);
+  use_handle_dynamic_state<typeof page>(1, set_page);
   const {
     data,
     isLoading: is_loading,

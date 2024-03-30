@@ -373,9 +373,9 @@ const ContentResponsesClient = (props: ResponsesProps): React.ReactElement => {
       : "comments"
   );
   const [page, set_page] = React.useState<number>(1);
-  use_handle_dynamic_state("recent", set_sort);
-  use_handle_dynamic_state("", set_query);
-  use_handle_dynamic_state(1, set_page);
+  use_handle_dynamic_state<typeof sort>("recent", set_sort);
+  use_handle_dynamic_state<typeof query>("", set_query);
+  use_handle_dynamic_state<typeof page>(1, set_page);
 
   const load_more = React.useCallback(
     () => set_page((prev_state) => prev_state + 1),

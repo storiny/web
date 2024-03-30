@@ -1,3 +1,4 @@
+pub mod blogs;
 pub mod cards;
 pub mod comments;
 pub mod explore;
