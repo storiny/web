@@ -1,5 +1,6 @@
 "use client";
 
+import { BLOG_GLOBAL_THEME_VARIABLE } from "@storiny/shared";
 import { usePostHog as use_posthog } from "posthog-js/react";
 import React from "react";
 
@@ -22,7 +23,18 @@ const Initializer = (): null => {
   const posthog = use_posthog();
 
   React.useEffect(() => {
-    dispatch(sync_to_browser());
+    const blog_theme_value =
+      typeof window !== "undefined" &&
+      (String(window[BLOG_GLOBAL_THEME_VARIABLE as keyof typeof window]) as
+        | "light"
+        | "dark"
+        | "system");
+
+    dispatch(
+      sync_to_browser({
+        theme: blog_theme_value === false ? undefined : blog_theme_value
+      })
+    );
 
     const fetch_data = (): void => {
       dispatch(fetch_user());
