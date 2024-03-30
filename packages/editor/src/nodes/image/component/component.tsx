@@ -373,7 +373,8 @@ const ImageComponent = ({
             data-visible={String(visible)}
           />
         )}
-        {images.length === 1 &&
+        {editable &&
+        images.length === 1 &&
         resizable &&
         focused &&
         $is_node_selection(selection) ? (

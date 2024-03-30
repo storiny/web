@@ -183,7 +183,7 @@ const StatusHeader = ({
 const Client = (): React.ReactElement => {
   const [value, set_value] = React.useState<NotificationsTabValue>("unread");
   const [page, set_page] = React.useState<number>(1);
-  use_handle_dynamic_state(1, set_page);
+  use_handle_dynamic_state<typeof page>(1, set_page);
   const {
     data,
     isLoading: is_loading,

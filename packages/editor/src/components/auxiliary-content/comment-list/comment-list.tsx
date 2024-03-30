@@ -23,7 +23,7 @@ const EditorAuxiliaryContentCommentList = (
   const { sort, set_sort } = props;
   const story = use_atom_value(story_metadata_atom);
   const [page, set_page] = React.useState<number>(1);
-  use_handle_dynamic_state(1, set_page);
+  use_handle_dynamic_state<typeof page>(1, set_page);
   const {
     data,
     isLoading: is_loading,

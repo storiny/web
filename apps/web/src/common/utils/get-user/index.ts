@@ -34,7 +34,7 @@ export const get_user = async (): Promise<string | null> => {
 
       // Session not found
       if (err_code === Status.NOT_FOUND) {
-        redirect("/logout");
+        redirect(`${process.env.NEXT_PUBLIC_WEB_URL}/logout`);
       }
 
       handle_exception(e);
