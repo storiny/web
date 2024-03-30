@@ -32,7 +32,11 @@ const Initializer = (): null => {
 
     dispatch(
       sync_to_browser({
-        theme: blog_theme_value === false ? undefined : blog_theme_value
+        theme:
+          blog_theme_value === false ||
+          !["light", "dark", "system"].includes(blog_theme_value)
+            ? undefined
+            : blog_theme_value
       })
     );
 
