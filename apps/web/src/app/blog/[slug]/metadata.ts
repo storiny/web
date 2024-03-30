@@ -38,6 +38,7 @@ export const generateMetadata = async ({
         template: `%s — ${blog.seo_title || blog.name}`,
         default: blog.seo_title || blog.name
       },
+      manifest: `${blog_url}/app.webmanifest`,
       applicationName: blog.name,
       description: blog.seo_description || blog.description,
       publisher: "Storiny",
@@ -45,6 +46,11 @@ export const generateMetadata = async ({
       category: blog.category,
       icons: blog.favicon
         ? [
+            {
+              rel: "icon",
+              sizes: "any",
+              url: "/favicon.ico"
+            },
             {
               rel: "icon",
               sizes: "any",
