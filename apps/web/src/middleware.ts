@@ -137,13 +137,16 @@ export const middleware: NextMiddleware = (request) => {
         )
       : hostname;
 
-    if (url.pathname === "/robots.txt") {
-      return NextResponse.rewrite(new URL(`/api/robots/${value}`, request.url));
-    }
-
-    if (url.pathname === "/sitemap.xml") {
+    if (
+      [
+        "/robots.txt",
+        "/sitemap.xml",
+        "/favicon.ico",
+        "/app.webmanifest"
+      ].includes(url.pathname)
+    ) {
       return NextResponse.rewrite(
-        new URL(`/api/sitemaps/${value}`, request.url)
+        new URL(`/api/blogs/${value}${url.pathname}`, request.url)
       );
     }
 
