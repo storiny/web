@@ -150,7 +150,11 @@ const BlogContent = (): React.ReactElement | null => {
                   />
                 ) : undefined
               }
-              href={item.target}
+              href={
+                (item.target || "").startsWith(blog_url)
+                  ? item.target.replace(blog_url, "")
+                  : item.target
+              }
               key={item.id}
               value={
                 (blog.lsb_items || []).filter(

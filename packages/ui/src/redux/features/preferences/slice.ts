@@ -114,7 +114,7 @@ export const preferences_slice = create_slice({
   initialState: preferences_initial_state,
   reducers: {
     /**
-     * Sycns the state to the browser
+     * Syncs the state to the browser
      */
     sync_to_browser: () => undefined,
     /**
@@ -204,10 +204,7 @@ export const preferences_slice = create_slice({
      */
     set_theme: (state, action: PayloadAction<Theme>) => {
       state.theme = action.payload;
-
-      if (typeof window !== "undefined") {
-        state.resolved_theme = resolve_theme_value(action.payload);
-      }
+      state.resolved_theme = resolve_theme_value(action.payload);
     }
   }
 });
@@ -316,6 +313,10 @@ export const add_preferences_listeners = (
                 )
               })
             )
+          );
+        } else if (typeof theme_value !== "undefined") {
+          listener_api.dispatch(
+            set_theme((theme_value as "light" | "dark" | null) || "system")
           );
         }
       } catch (e) {
