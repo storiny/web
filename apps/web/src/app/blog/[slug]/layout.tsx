@@ -1,6 +1,10 @@
 import "server-only";
 
-import { ImageSize, StoryCategory } from "@storiny/shared";
+import {
+  BLOG_GLOBAL_THEME_VARIABLE,
+  ImageSize,
+  StoryCategory
+} from "@storiny/shared";
 import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { notFound as not_found } from "next/dist/client/components/not-found";
 import { headers } from "next/headers";
@@ -89,6 +93,12 @@ ${
 }
 
 sync_theme();
+
+if (typeof window !== "undefined") {
+    window["${BLOG_GLOBAL_THEME_VARIABLE}"] = "${
+      blog.default_theme || "system"
+    }";
+}
 
 if (typeof document !== "undefined") {
   document.onload = sync_theme;

@@ -116,7 +116,9 @@ export const preferences_slice = create_slice({
     /**
      * Syncs the state to the browser
      */
-    sync_to_browser: () => undefined,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    sync_to_browser: (_, _action: PayloadAction<{ theme?: Theme }>) =>
+      undefined,
     /**
      * Hydrates state from localStorage
      */
@@ -295,10 +297,14 @@ export const add_preferences_listeners = (
    */
   start_listening({
     actionCreator: sync_to_browser,
-    effect: (_, listener_api) => {
+    effect: ({ payload }, listener_api) => {
       try {
+        const theme_param = payload?.theme;
         const client_value = localStorage.getItem(PREFERENCES_STORAGE_KEY);
-        const theme_value = localStorage.getItem(THEME_STORAGE_KEY);
+        const theme_value =
+          typeof theme_param === "string"
+            ? theme_param
+            : localStorage.getItem(THEME_STORAGE_KEY);
 
         if (client_value) {
           listener_api.dispatch(
