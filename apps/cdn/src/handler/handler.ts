@@ -127,7 +127,7 @@ export const handler = (r: Request): void | undefined => {
             : is_favicon
               ? "/resize:fit:48:48:0:0/extend_ar:false:ce:0:0/format:ico/"
               : resize_option || "/"
-        }plain/${UPLOADS_BUCKET}/${key}`
+        }plain/${UPLOADS_BUCKET}/${key.replace(".ico", "")}`
       );
     }
 
