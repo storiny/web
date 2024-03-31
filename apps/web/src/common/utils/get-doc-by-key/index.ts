@@ -1,5 +1,4 @@
 import { GetObjectCommand } from "@aws-sdk/client-s3";
-import { redirect } from "next/navigation";
 
 import { get_s3_client } from "~/common/client/s3";
 
