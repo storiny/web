@@ -30,12 +30,12 @@ export const handle_exception = (err: ServiceError): void => {
   if (err_code === Status.UNAUTHENTICATED) {
     // This case indicates that the auth token is missing from the environment.
     if (err.message === "missing_client_auth_token") {
-      redirect("/gateway-error");
+      throw new Error("gateway_error");
     }
 
     redirect("/login");
   }
 
   // Gateway error
-  redirect("/gateway-error");
+  throw new Error("gateway_error");
 };

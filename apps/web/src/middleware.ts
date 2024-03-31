@@ -84,7 +84,6 @@ export const middleware: NextMiddleware = (request) => {
 
   // Replace newline characters and spaces
   const csp_header_value = csp_header.replace(/\s{2,}/g, " ").trim();
-
   const request_headers = new Headers(request.headers);
 
   if (process.env.NODE_ENV !== "development") {
