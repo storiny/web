@@ -9,46 +9,65 @@ export const CODE_BLOCK_DARK_THEME = (read_only: boolean): Extension =>
     read_only,
     styles: [
       /* eslint-disable prefer-snakecase/prefer-snakecase */
-      { tag: t.keyword, color: "#bb9af7" },
-      { tag: [t.name, t.deleted, t.character, t.macroName], color: "#c0caf5" },
-      { tag: [t.propertyName], color: "#7aa2f7" },
+      {
+        tag: t.comment,
+        color: "#acb6bf8c"
+      },
+      {
+        tag: t.string,
+        color: "#aad94c"
+      },
+      {
+        tag: t.regexp,
+        color: "#95e6cb"
+      },
+      {
+        tag: [t.number, t.bool, t.null],
+        color: "#d2a6ff"
+      },
+      {
+        tag: [t.keyword, t.definitionKeyword, t.modifier, t.special(t.brace)],
+        color: "#ff8f40"
+      },
+      {
+        tag: t.operator,
+        color: "#f29668"
+      },
+      {
+        tag: t.separator,
+        color: "#bfbdb6b3"
+      },
+      {
+        tag: [t.punctuation, t.variableName],
+        color: "#bfbdb6"
+      },
       {
         tag: [
-          t.processingInstruction,
-          t.string,
-          t.inserted,
-          t.special(t.string)
+          t.attributeName,
+          t.definition(t.propertyName),
+          t.function(t.variableName)
         ],
-        color: "#9ece6a"
+        color: "#ffb454"
       },
-      { tag: [t.function(t.variableName), t.labelName], color: "#7aa2f7" },
-      {
-        tag: [t.color, t.constant(t.name), t.standard(t.name)],
-        color: "#bb9af7"
-      },
-      { tag: [t.definition(t.name), t.separator], color: "#c0caf5" },
-      { tag: [t.className], color: "#c0caf5" },
       {
         tag: [
-          t.number,
-          t.changed,
-          t.annotation,
-          t.modifier,
+          t.tagName,
+          t.className,
+          t.typeName,
+          t.definition(t.typeName),
           t.self,
-          t.namespace
+          t.labelName
         ],
-        color: "#ff9e64"
+        color: "#39bae6"
       },
-      { tag: [t.typeName], color: "#0db9d7" },
-      { tag: [t.operator, t.operatorKeyword], color: "#bb9af7" },
-      { tag: [t.url, t.escape, t.regexp, t.link], color: "#b4f9f8" },
-      { tag: [t.meta, t.comment], color: "#848693" },
+      {
+        tag: t.angleBracket,
+        color: "#39bae680"
+      },
       { tag: t.strong, fontWeight: "bold" },
       { tag: t.emphasis, fontStyle: "italic" },
       { tag: t.link, textDecoration: "underline" },
-      { tag: t.heading, fontWeight: "bold", color: "#89ddff" },
-      { tag: [t.atom, t.bool, t.special(t.variableName)], color: "#c0caf5" },
-      { tag: t.invalid, color: "#ff5370" },
+      { tag: t.heading, fontWeight: "bold" },
       { tag: t.strikethrough, textDecoration: "line-through" }
       /* eslint-enable prefer-snakecase/prefer-snakecase */
     ]
