@@ -10,8 +10,9 @@ Sentry.init({
     const error_message = String(event.message);
 
     if (
-      error_message.startsWith("ResizeObserver loop") ||
-      error_message.startsWith("Failed to fetch")
+      /ResizeObserver/i.test(error_message) ||
+      error_message.startsWith("Failed to fetch") ||
+      error_message === "NEXT_REDIRECT"
     ) {
       return null;
     }
