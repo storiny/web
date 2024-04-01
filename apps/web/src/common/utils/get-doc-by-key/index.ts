@@ -1,5 +1,4 @@
 import { GetObjectCommand } from "@aws-sdk/client-s3";
-import { redirect } from "next/navigation";
 
 import { get_s3_client } from "~/common/client/s3";
 
@@ -18,7 +17,7 @@ export const get_doc_by_key = async (key: string): Promise<Uint8Array> => {
   if (!response.Body) {
     // Although this should never happen in practice, let's handle the missing
     // document file by returning a gateway error to the client.
-    redirect("/gateway-error");
+    throw new Error("gateway_error");
   }
 
   return await response.Body.transformToByteArray();

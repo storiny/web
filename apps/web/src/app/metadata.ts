@@ -1,7 +1,7 @@
 import { Metadata, Viewport } from "next";
 
 const description =
-  "Discover stories from your favourite writers on Storiny, the platform that fosters the narratives within you.";
+  "Storiny is the paywall-free place to collaboratively share your stories, manage your own blogs, and discover stories from your favorite writers.";
 
 /**
  * Site-wide viewport config
