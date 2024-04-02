@@ -307,9 +307,7 @@ export const add_preferences_listeners = (
             ? theme_param
             : localStorage.getItem(THEME_STORAGE_KEY);
 
-        theme_value = ["light", "dark", "system"].includes(
-          theme_value || "system"
-        )
+        theme_value = ["light", "dark", "system"].includes(theme_value || "")
           ? (theme_value as "light" | "dark" | "system")
           : "system";
 
