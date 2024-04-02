@@ -28,7 +28,7 @@ aws-sdk-sesv2 = "1.3.0"
 chrono = "0.4.31"
 colors-transform = "0.2.11"
 cookie = { version = "0.18.0", features = ["private", "signed"] }
-deadpool-redis = { git = "https://github.com/bikeshedder/deadpool.git" }
+deadpool-redis = "0.15.0"
 derive_more = "0.99.17"
 dominant_color = "0.4.0"
 dotenv = "0.15.0"
