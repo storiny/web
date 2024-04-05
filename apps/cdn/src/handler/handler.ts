@@ -1,4 +1,4 @@
-import { NATIVE_REGEX, REMOTE_REGEX } from "../constants/regex";
+import { NATIVE_REGEX, REMOTE_REGEX, THUMB_REGEX } from "../constants/regex";
 import { RequestType } from "../types";
 import { decode_hex } from "../utils/decode-hex";
 import { get_width } from "../utils/get-width";
@@ -97,6 +97,16 @@ export const handler = (r: Request): void | undefined => {
       }
     }
 
+    const [, thumb_key] = THUMB_REGEX.exec(uri) || [];
+
+    // Thumbnail
+    if (thumb_key) {
+      return pass_to_proxy(
+        r,
+        `internal/resize:fit:720:404:0:0/extend_ar:false:ce:0:0/format:png/plain/${UPLOADS_BUCKET}/${thumb_key}`
+      );
+    }
+
     // Native S3 bucket
     const [, type, parsed_width, key] = NATIVE_REGEX.exec(uri) || [];
 
@@ -128,11 +138,6 @@ export const handler = (r: Request): void | undefined => {
               ? "/resize:fit:48:48:0:0/extend_ar:false:ce:0:0/format:ico/"
               : resize_option || "/"
         }plain/${UPLOADS_BUCKET}/${key.replace(".ico", "")}`
-      );
-    } else if (req_type === "thumb") {
-      return pass_to_proxy(
-        r,
-        `internal/resize:fit:720:404:0:0/extend_ar:false:ce:0:0/format:png/plain/${UPLOADS_BUCKET}/${key}`
       );
     }
 
