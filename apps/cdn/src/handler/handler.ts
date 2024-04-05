@@ -115,10 +115,10 @@ export const handler = (r: Request): void | undefined => {
     const req_type = type as RequestType;
     const resize_option = get_resize_option(parsed_width);
 
+    // Uploads bucket
     if (["uploads", "dl"].includes(req_type)) {
       const is_favicon = /\.ico/.test(uri);
 
-      // Uploads bucket
       return pass_to_proxy(
         r,
         `internal${
@@ -129,10 +129,16 @@ export const handler = (r: Request): void | undefined => {
               : resize_option || "/"
         }plain/${UPLOADS_BUCKET}/${key.replace(".ico", "")}`
       );
+    } else if (req_type === "thumb") {
+      return pass_to_proxy(
+        r,
+        `internal/resize:fit:720:404:0:0/extend_ar:false:ce:0:0/format:png/plain/${UPLOADS_BUCKET}/${key}`
+      );
     }
 
     // Use base bucket
     r.headersOut["X-Robots-Tag"] = "noindex";
+
     return pass_to_proxy(
       r,
       `internal${resize_option || "/"}plain/${BASE_BUCKET}/${key}`
