@@ -1,1 +1,1 @@
-export type RequestType = "remote" | "uploads" | "dl";
+export type RequestType = "remote" | "uploads" | "dl" | "thumb";
