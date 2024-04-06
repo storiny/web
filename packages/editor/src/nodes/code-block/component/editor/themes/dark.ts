@@ -10,65 +10,84 @@ export const CODE_BLOCK_DARK_THEME = (read_only: boolean): Extension =>
     styles: [
       /* eslint-disable prefer-snakecase/prefer-snakecase */
       {
-        tag: t.comment,
-        color: "#acb6bf8c"
-      },
-      {
-        tag: t.string,
-        color: "#aad94c"
-      },
-      {
-        tag: t.regexp,
-        color: "#95e6cb"
-      },
-      {
-        tag: [t.number, t.bool, t.null],
-        color: "#d2a6ff"
-      },
-      {
-        tag: [t.keyword, t.definitionKeyword, t.modifier, t.special(t.brace)],
-        color: "#ff8f40"
-      },
-      {
-        tag: t.operator,
-        color: "#f29668"
-      },
-      {
-        tag: t.separator,
-        color: "#bfbdb6b3"
-      },
-      {
-        tag: [t.punctuation, t.variableName],
-        color: "#bfbdb6"
-      },
-      {
         tag: [
-          t.attributeName,
-          t.definition(t.propertyName),
-          t.function(t.variableName)
+          t.keyword,
+          t.operatorKeyword,
+          t.modifier,
+          t.color,
+          t.constant(t.name),
+          t.standard(t.name),
+          t.standard(t.tagName),
+          t.special(t.brace),
+          t.atom,
+          t.bool,
+          t.special(t.variableName)
         ],
-        color: "#ffb454"
+        color: "#569cd6"
+      },
+      {
+        tag: [t.controlKeyword, t.moduleKeyword],
+        color: "#c586c0"
       },
       {
         tag: [
-          t.tagName,
-          t.className,
+          t.name,
+          t.deleted,
+          t.character,
+          t.macroName,
+          t.propertyName,
+          t.variableName,
+          t.labelName,
+          t.definition(t.name)
+        ],
+        color: "#9cdcfe"
+      },
+      { tag: t.heading, fontWeight: "bold", color: "#9cdcfe" },
+      {
+        tag: [
           t.typeName,
-          t.definition(t.typeName),
+          t.className,
+          t.tagName,
+          t.number,
+          t.changed,
+          t.annotation,
           t.self,
-          t.labelName
+          t.namespace
         ],
-        color: "#39bae6"
+        color: "#4ec9b0"
       },
       {
-        tag: t.angleBracket,
-        color: "#39bae680"
+        tag: [t.function(t.variableName), t.function(t.propertyName)],
+        color: "#dcdcaa"
       },
+      { tag: [t.number], color: "#b5cea8" },
+      {
+        tag: [
+          t.operator,
+          t.punctuation,
+          t.separator,
+          t.url,
+          t.escape,
+          t.regexp
+        ],
+        color: "#d4d4d4"
+      },
+      {
+        tag: [
+          t.special(t.string),
+          t.processingInstruction,
+          t.string,
+          t.inserted
+        ],
+        color: "#ce9178"
+      },
+      { tag: [t.angleBracket], color: "#808080" },
       { tag: t.strong, fontWeight: "bold" },
       { tag: t.emphasis, fontStyle: "italic" },
-      { tag: t.link, textDecoration: "underline" },
-      { tag: t.heading, fontWeight: "bold" },
-      { tag: t.strikethrough, textDecoration: "line-through" }
+      { tag: t.strikethrough, textDecoration: "line-through" },
+      { tag: [t.meta, t.comment], color: "#6a9955" },
+      { tag: t.link, color: "#6a9955", textDecoration: "underline" },
+      { tag: t.invalid, color: "#f44747" }
       /* eslint-enable prefer-snakecase/prefer-snakecase */
     ]
   });
