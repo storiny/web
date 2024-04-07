@@ -1,4 +1,4 @@
-import { NATIVE_REGEX, REMOTE_REGEX } from "../constants/regex";
+import { NATIVE_REGEX, REMOTE_REGEX, THUMB_REGEX } from "../constants/regex";
 import { RequestType } from "../types";
 import { decode_hex } from "../utils/decode-hex";
 import { get_width } from "../utils/get-width";
@@ -97,6 +97,16 @@ export const handler = (r: Request): void | undefined => {
       }
     }
 
+    const [, thumb_key] = THUMB_REGEX.exec(uri) || [];
+
+    // Thumbnail
+    if (thumb_key) {
+      return pass_to_proxy(
+        r,
+        `internal/resize:fit:720:404:0:0/extend_ar:false:ce:0:0/format:png/plain/${UPLOADS_BUCKET}/${thumb_key}`
+      );
+    }
+
     // Native S3 bucket
     const [, type, parsed_width, key] = NATIVE_REGEX.exec(uri) || [];
 
@@ -115,10 +125,10 @@ export const handler = (r: Request): void | undefined => {
     const req_type = type as RequestType;
     const resize_option = get_resize_option(parsed_width);
 
+    // Uploads bucket
     if (["uploads", "dl"].includes(req_type)) {
       const is_favicon = /\.ico/.test(uri);
 
-      // Uploads bucket
       return pass_to_proxy(
         r,
         `internal${
@@ -133,6 +143,7 @@ export const handler = (r: Request): void | undefined => {
 
     // Use base bucket
     r.headersOut["X-Robots-Tag"] = "noindex";
+
     return pass_to_proxy(
       r,
       `internal${resize_option || "/"}plain/${BASE_BUCKET}/${key}`

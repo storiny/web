@@ -35,6 +35,12 @@ import {
   GetNotificationSettingsRequest,
   GetNotificationSettingsResponse,
 } from "../../notification_settings_def/v1/def";
+import {
+  GetStoryOpenGraphDataRequest,
+  GetStoryOpenGraphDataResponse,
+  GetTagOpenGraphDataRequest,
+  GetTagOpenGraphDataResponse,
+} from "../../open_graph_def/v1/def";
 import { GetPrivacySettingsRequest, GetPrivacySettingsResponse } from "../../privacy_settings_def/v1/def";
 import { GetProfileRequest, GetProfileResponse } from "../../profile_def/v1/def";
 import {
@@ -491,6 +497,30 @@ export const ApiServiceService = {
     responseSerialize: (value: GetBlogSitemapResponse) => Buffer.from(GetBlogSitemapResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetBlogSitemapResponse.decode(value),
   },
+  /** Returns the story's open graph data */
+  getStoryOpenGraphData: {
+    path: "/api_service.v1.ApiService/GetStoryOpenGraphData",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetStoryOpenGraphDataRequest) =>
+      Buffer.from(GetStoryOpenGraphDataRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetStoryOpenGraphDataRequest.decode(value),
+    responseSerialize: (value: GetStoryOpenGraphDataResponse) =>
+      Buffer.from(GetStoryOpenGraphDataResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetStoryOpenGraphDataResponse.decode(value),
+  },
+  /** Returns the tag's open graph data */
+  getTagOpenGraphData: {
+    path: "/api_service.v1.ApiService/GetTagOpenGraphData",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetTagOpenGraphDataRequest) =>
+      Buffer.from(GetTagOpenGraphDataRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetTagOpenGraphDataRequest.decode(value),
+    responseSerialize: (value: GetTagOpenGraphDataResponse) =>
+      Buffer.from(GetTagOpenGraphDataResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetTagOpenGraphDataResponse.decode(value),
+  },
 } as const;
 
 export interface ApiServiceServer extends UntypedServiceImplementation {
@@ -560,6 +590,10 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getBlogWritersInfo: handleUnaryCall<GetBlogWritersInfoRequest, GetBlogWritersInfoResponse>;
   /** Returns the blog's sitemap */
   getBlogSitemap: handleUnaryCall<GetBlogSitemapRequest, GetBlogSitemapResponse>;
+  /** Returns the story's open graph data */
+  getStoryOpenGraphData: handleUnaryCall<GetStoryOpenGraphDataRequest, GetStoryOpenGraphDataResponse>;
+  /** Returns the tag's open graph data */
+  getTagOpenGraphData: handleUnaryCall<GetTagOpenGraphDataRequest, GetTagOpenGraphDataResponse>;
 }
 
 export interface ApiServiceClient extends Client {
@@ -1090,6 +1124,38 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetBlogSitemapResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the story's open graph data */
+  getStoryOpenGraphData(
+    request: GetStoryOpenGraphDataRequest,
+    callback: (error: ServiceError | null, response: GetStoryOpenGraphDataResponse) => void,
+  ): ClientUnaryCall;
+  getStoryOpenGraphData(
+    request: GetStoryOpenGraphDataRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetStoryOpenGraphDataResponse) => void,
+  ): ClientUnaryCall;
+  getStoryOpenGraphData(
+    request: GetStoryOpenGraphDataRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetStoryOpenGraphDataResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the tag's open graph data */
+  getTagOpenGraphData(
+    request: GetTagOpenGraphDataRequest,
+    callback: (error: ServiceError | null, response: GetTagOpenGraphDataResponse) => void,
+  ): ClientUnaryCall;
+  getTagOpenGraphData(
+    request: GetTagOpenGraphDataRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetTagOpenGraphDataResponse) => void,
+  ): ClientUnaryCall;
+  getTagOpenGraphData(
+    request: GetTagOpenGraphDataRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetTagOpenGraphDataResponse) => void,
   ): ClientUnaryCall;
 }
 

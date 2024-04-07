@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package open_graph_def.v1;
+
+// Get story open graph data request
+
+message GetStoryOpenGraphDataRequest {
+  string id = 1;
+}
+
+message GetStoryOpenGraphDataResponse {
+  string id /*                     */ = 1;
+  string title /*                  */ = 2;
+  optional string description /*   */ = 3;
+  optional string splash_id /*     */ = 4;
+  uint32 like_count /*             */ = 5;
+  uint32 read_count /*             */ = 6;
+  uint32 comment_count /*          */ = 7;
+  bool is_private /*               */ = 8;
+  // User
+  string user_name /*              */ = 9;
+  optional string user_avatar_id /**/ = 10;
+}
+
+// Get tag open graph data request
+
+message GetTagOpenGraphDataRequest {
+  string id = 1;
+}
+
+message GetTagOpenGraphDataResponse {
+  string id /*            */ = 1;
+  string name /*          */ = 2;
+  uint32 story_count /*   */ = 3;
+  uint32 follower_count /**/ = 4;
+}
