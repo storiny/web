@@ -41,6 +41,12 @@ use crate::{
                 GetNotificationSettingsRequest,
                 GetNotificationSettingsResponse,
             },
+            open_graph_def::v1::{
+                GetStoryOpenGraphDataRequest,
+                GetStoryOpenGraphDataResponse,
+                GetTagOpenGraphDataRequest,
+                GetTagOpenGraphDataResponse,
+            },
             privacy_settings_def::v1::{
                 GetPrivacySettingsRequest,
                 GetPrivacySettingsResponse,
@@ -353,5 +359,19 @@ impl ApiService for GrpcService {
         request: Request<GetUserBlogsInfoRequest>,
     ) -> Result<Response<GetUserBlogsInfoResponse>, Status> {
         endpoints::get_user_blogs_info::get_user_blogs_info(self, request).await
+    }
+
+    async fn get_story_open_graph_data(
+        &self,
+        request: Request<GetStoryOpenGraphDataRequest>,
+    ) -> Result<Response<GetStoryOpenGraphDataResponse>, Status> {
+        endpoints::get_story_open_graph_data::get_story_open_graph_data(self, request).await
+    }
+
+    async fn get_tag_open_graph_data(
+        &self,
+        request: Request<GetTagOpenGraphDataRequest>,
+    ) -> Result<Response<GetTagOpenGraphDataResponse>, Status> {
+        endpoints::get_tag_open_graph_data::get_tag_open_graph_data(self, request).await
     }
 }
