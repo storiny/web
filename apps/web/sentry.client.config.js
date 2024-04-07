@@ -12,7 +12,8 @@ Sentry.init({
     if (
       /ResizeObserver/i.test(error_message) ||
       error_message.startsWith("Failed to fetch") ||
-      error_message === "NEXT_REDIRECT"
+      error_message === "NEXT_REDIRECT" ||
+      error_message === "NEXT_NOT_FOUND"
     ) {
       return null;
     }

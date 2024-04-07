@@ -8,6 +8,7 @@ import "connection_settings_def/v1/def.proto";
 import "credential_settings_def/v1/def.proto";
 import "login_activity_def/v1/def.proto";
 import "notification_settings_def/v1/def.proto";
+import "open_graph_def/v1/def.proto";
 import "privacy_settings_def/v1/def.proto";
 import "profile_def/v1/def.proto";
 import "response_def/v1/def.proto";
@@ -150,6 +151,14 @@ service ApiService {
    * Returns the blog's sitemap
    */
   rpc GetBlogSitemap(blog_def.v1.GetBlogSitemapRequest) returns (blog_def.v1.GetBlogSitemapResponse) {}
+  /**
+   * Returns the story's open graph data
+   */
+  rpc GetStoryOpenGraphData(open_graph_def.v1.GetStoryOpenGraphDataRequest) returns (open_graph_def.v1.GetStoryOpenGraphDataResponse) {}
+  /**
+   * Returns the tag's open graph data
+   */
+  rpc GetTagOpenGraphData(open_graph_def.v1.GetTagOpenGraphDataRequest) returns (open_graph_def.v1.GetTagOpenGraphDataResponse) {}
 }
 
 // This is necessary to generate an output file using tonic.
