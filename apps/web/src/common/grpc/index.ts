@@ -3,11 +3,13 @@
 import "server-only";
 
 import {
-  ChannelCredentials,
   credentials,
-  Metadata,
+  InterceptingCall,
+  Interceptor,
+  RequesterBuilder,
   ServiceError
 } from "@grpc/grpc-js";
+import { CompressionAlgorithms } from "@grpc/grpc-js/build/src/compression-algorithms";
 import { ApiServiceClient } from "@storiny/proto/dist/api_service/v1/service";
 import {
   GetBlogArchiveRequest,
@@ -128,29 +130,27 @@ const promisify =
       );
     });
 
-const grpc_creds =
-  process.env.NODE_ENV === "development"
-    ? credentials.createInsecure()
-    : ((): ChannelCredentials => {
-        const channel_creds = credentials.createSsl();
+/**
+ * Authentication interceptor for the channel.
+ */
+const auth_interceptor: Interceptor = (options, next_call) => {
+  const requester = new RequesterBuilder()
+    .withStart((metadata, listener, next) => {
+      metadata.set("authorization", `Bearer ${process.env.GRPC_SECRET_TOKEN}`);
+      next(metadata, listener);
+    })
+    .build();
 
-        const call_creds = credentials.createFromMetadataGenerator(
-          (_, callback) => {
-            const metadata = new Metadata();
-            metadata.add(
-              "authorization",
-              `Bearer ${process.env.GRPC_SECRET_TOKEN}`
-            );
-            callback(null, metadata);
-          }
-        );
-
-        return credentials.combineChannelCredentials(channel_creds, call_creds);
-      })();
+  return new InterceptingCall(next_call(options), requester);
+};
 
 global.grpc_client = new ApiServiceClient(
   process.env.GRPC_ENDPOINT as string,
-  grpc_creds
+  credentials.createInsecure(),
+  {
+    interceptors: [auth_interceptor],
+    "grpc.default_compression_algorithm": CompressionAlgorithms.gzip
+  }
 );
 
 const grpc_hub = {
@@ -384,4 +384,5 @@ export {
   GetUsernameResponse,
   GetUserRelationsInfoResponse,
   ValidateStoryResponse,
-  VerifyEmailResponse};
+  VerifyEmailResponse
+};
