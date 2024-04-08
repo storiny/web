@@ -63,7 +63,7 @@ strum_macros = "0.25.3"
 thiserror = "1.0.48"
 time = { version = "0.3.29", features = ["formatting", "macros", "serde"] }
 tokio = "1.32.0"
-tonic = { version = "0.11.0", features = ["gzip", "tls", "transport"] }
+tonic = { version = "0.11.0", features = ["gzip", "transport"] }
 tonic-health = "0.11.0"
 totp-rs = { version = "5.4.0", features = ["qr", "gen_secret", "otpauth"] }
 tracing-actix-web = "0.7.9"
