@@ -73,15 +73,14 @@ const generate_json_ld = (story: Props["story"]): Graph => ({
       discussionUrl: `${process.env.NEXT_PUBLIC_WEB_URL}/${
         story.user?.username || "story"
       }/${story.slug}#auxiliary-content`,
-      // TODO: Replace with dynamic image
-      image: story.splash_id
-        ? {
-            "@type": "ImageObject",
-            height: 630 as unknown as string,
-            url: get_cdn_url(story.splash_id, ImageSize.W_1440),
-            width: 1200 as unknown as string
-          }
-        : undefined,
+      image: {
+        "@type": "ImageObject",
+        height: 630 as unknown as string,
+        url: story.preview_image
+          ? get_cdn_url(story.preview_image, ImageSize.W_1440)
+          : `${process.env.NEXT_PUBLIC_OG_SERVER_URL}/stories/${story.id}`,
+        width: 1200 as unknown as string
+      },
       commentCount: story.comment_count,
       wordCount: story.word_count,
       author: {
