@@ -81,7 +81,7 @@ async fn post(req: HttpRequest, path: web::Path<Fragments>) -> impl Responder {
     HttpResponse::Ok().finish()
 }
 
-// An emty endpoint
+// An empty endpoint
 #[get("/__empty__")]
 pub async fn empty_service() -> impl Responder {
     HttpResponse::Ok().finish()
