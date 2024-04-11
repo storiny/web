@@ -9,7 +9,6 @@ import {
 import React from "react";
 
 import SuspenseLoader from "~/common/suspense-loader";
-import Divider from "~/components/divider";
 import { Root, Scrollbar, Thumb, Viewport } from "~/components/scroll-area";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
@@ -20,7 +19,6 @@ import { get_query_error_type, use_get_blogs_query } from "~/redux/features";
 
 import { story_metadata_atom } from "../../../../../atoms";
 import styles from "./blog.module.scss";
-import BlogItem from "./item";
 import BlogList from "./list";
 import { selected_blog_atom } from "./selected-blog";
 
@@ -120,14 +118,6 @@ const BlogTabImpl = (): React.ReactElement => {
         blog&apos;s editors before being published.
       </Typography>
       <Spacer orientation={"vertical"} size={3} />
-      {selected_blog && (
-        <React.Fragment>
-          <BlogItem blog={selected_blog} />
-          <Spacer orientation={"vertical"} size={3} />
-          <Divider />
-          <Spacer orientation={"vertical"} size={3} />
-        </React.Fragment>
-      )}
       <Root className={clsx(styles.x, styles["scroll-area"])} type={"auto"}>
         <List />
       </Root>
