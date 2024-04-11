@@ -1,16 +1,18 @@
-import Editor from "@storiny/editor";
 import { ImageSize, StoryAgeRestriction, StoryLicense } from "@storiny/shared";
 import { CATEGORY_LABEL_MAP } from "@storiny/shared/src/constants/category-icon-map";
 import { LICENSE_LABEL_MAP } from "@storiny/shared/src/constants/license-icon-map";
 import { Story } from "@storiny/types";
 import { clsx } from "clsx";
 import { decompressSync as decompress_sync } from "fflate";
+import dynamic from "next/dynamic";
 import React from "react";
 import { Graph } from "schema-dts";
 
 import SplashScreen from "~/layout/splash-screen";
 import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
+
+const Editor = dynamic(() => import("@storiny/editor"), { ssr: false });
 
 interface Props {
   doc: Array<number>;

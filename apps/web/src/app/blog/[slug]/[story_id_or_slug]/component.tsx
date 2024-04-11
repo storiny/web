@@ -1,6 +1,5 @@
 "use client";
 
-import Editor from "@storiny/editor";
 import { ImageSize, StoryAgeRestriction, StoryLicense } from "@storiny/shared";
 import { CATEGORY_LABEL_MAP } from "@storiny/shared/src/constants/category-icon-map";
 import { LICENSE_LABEL_MAP } from "@storiny/shared/src/constants/license-icon-map";
@@ -8,6 +7,7 @@ import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { Story } from "@storiny/types";
 import { clsx } from "clsx";
 import { decompressSync as decompress_sync } from "fflate";
+import dynamic from "next/dynamic";
 import React from "react";
 import { BlogPosting, WithContext } from "schema-dts";
 
@@ -17,6 +17,8 @@ import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import { CC_LICENSE_DOC_MAP } from "../../../(native)/[username]/[id_or_slug]/component";
+
+const Editor = dynamic(() => import("@storiny/editor"), { ssr: false });
 
 interface Props {
   blog: BlogContextValue;
