@@ -9,6 +9,7 @@ import {
   RequesterBuilder,
   ServiceError
 } from "@grpc/grpc-js";
+import { CompressionAlgorithms } from "@grpc/grpc-js/build/src/compression-algorithms";
 import { ApiServiceClient } from "@storiny/proto/dist/api_service/v1/service";
 import {
   GetBlogArchiveRequest,
@@ -147,9 +148,8 @@ global.grpc_client = new ApiServiceClient(
   process.env.GRPC_ENDPOINT as string,
   credentials.createInsecure(),
   {
-    interceptors: [auth_interceptor]
-    // TODO: Uncomment once the server-side compression is implemented
-    // "grpc.default_compression_algorithm": CompressionAlgorithms.gzip
+    interceptors: [auth_interceptor],
+    "grpc.default_compression_algorithm": CompressionAlgorithms.gzip
   }
 );
 
