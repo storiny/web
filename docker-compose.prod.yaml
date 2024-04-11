@@ -25,7 +25,6 @@ services:
     environment:
       HOSTNAME: 0.0.0.0
       PORT: 3000
-      NODE_TLS_REJECT_UNAUTHORIZED: 0
       AWS_SECRET_ACCESS_KEY: "${WEB_AWS_SECRET_ACCESS_KEY}"
       AWS_ACCESS_KEY_ID: "${WEB_AWS_ACCESS_KEY_ID}"
       AWS_REGION: us-east-1
@@ -94,6 +93,23 @@ services:
       PROXY_KEY_SECRET: "${PROXY_KEY_SECRET}"
       REDIS_HOST: "${REDIS_HOST}"
       REDIS_PORT: "${REDIS_PORT}"
+
+  # Open graph server
+  open_graph:
+    container_name: "storiny_og"
+    network_mode: "host"
+    image: 992532056584.dkr.ecr.us-east-1.amazonaws.com/storiny_og
+    restart: always
+    environment:
+      IS_DEV: false
+      HOST: 127.0.0.1
+      PORT: 8084
+      CDN_SERVER_URL: https://cdn.storiny.com
+      RPC_SERVER_URL: http://127.0.0.1:50051
+      RPC_SECRET_TOKEN: "${GRPC_SECRET_TOKEN}"
+      REDIS_HOST: "${REDIS_HOST}"
+      REDIS_PORT: "${REDIS_PORT}"
+      SENTRY_DSN: "https://2391007cb131a49d166c5b7c45191d04@o4506393718554624.ingest.us.sentry.io/4507032075239424"
 
   # Image proxy server
   imgproxy:

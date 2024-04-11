@@ -35,19 +35,15 @@ export const generateMetadata = async ({
         }/${story_response.slug}`,
         description:
           story_response.seo_description || story_response.description,
-        // TODO: Replace with dynamic images
-        images: story_response.preview_image
-          ? [
-              {
-                url: get_cdn_url(
-                  story_response.preview_image,
-                  ImageSize.W_1440
-                ),
-                width: 1200,
-                height: 630
-              }
-            ]
-          : undefined
+        images: [
+          {
+            url: story_response.preview_image
+              ? get_cdn_url(story_response.preview_image, ImageSize.W_1440)
+              : `${process.env.NEXT_PUBLIC_OG_SERVER_URL}/stories/${story_response.id}`,
+            width: 1200,
+            height: 630
+          }
+        ]
       },
       twitter: {
         card: "summary_large_image",

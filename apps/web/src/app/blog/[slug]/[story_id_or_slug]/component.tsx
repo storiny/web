@@ -1,6 +1,5 @@
 "use client";
 
-import Editor from "@storiny/editor";
 import { ImageSize, StoryAgeRestriction, StoryLicense } from "@storiny/shared";
 import { CATEGORY_LABEL_MAP } from "@storiny/shared/src/constants/category-icon-map";
 import { LICENSE_LABEL_MAP } from "@storiny/shared/src/constants/license-icon-map";
@@ -8,6 +7,7 @@ import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { Story } from "@storiny/types";
 import { clsx } from "clsx";
 import { decompressSync as decompress_sync } from "fflate";
+import dynamic from "next/dynamic";
 import React from "react";
 import { BlogPosting, WithContext } from "schema-dts";
 
@@ -17,6 +17,8 @@ import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import { CC_LICENSE_DOC_MAP } from "../../../(native)/[username]/[id_or_slug]/component";
+
+const Editor = dynamic(() => import("@storiny/editor"), { ssr: false });
 
 interface Props {
   blog: BlogContextValue;
@@ -42,15 +44,14 @@ const generate_json_ld = ({
     dateModified: story.edited_at || undefined,
     url: `${blog_url}/${story.slug}`,
     discussionUrl: `${blog_url}/${story.slug}#auxiliary-content`,
-    // TODO: Replace with dynamic image
-    image: story.splash_id
-      ? {
-          "@type": "ImageObject",
-          height: 630 as unknown as string,
-          url: get_cdn_url(story.splash_id, ImageSize.W_1440),
-          width: 1200 as unknown as string
-        }
-      : undefined,
+    image: {
+      "@type": "ImageObject",
+      height: 630 as unknown as string,
+      url: story.preview_image
+        ? get_cdn_url(story.preview_image, ImageSize.W_1440)
+        : `${process.env.NEXT_PUBLIC_OG_SERVER_URL}/stories/${story.id}`,
+      width: 1200 as unknown as string
+    },
     commentCount: story.comment_count,
     wordCount: story.word_count,
     author: {
