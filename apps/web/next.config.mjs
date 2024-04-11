@@ -74,6 +74,8 @@ const next_config = {
   experimental: {
     optimizePackageImports: [
       "@storiny/ui",
+      "@storiny/editor",
+      "@storiny/shared",
       "~/icons",
       "~/components",
       "~/entities"

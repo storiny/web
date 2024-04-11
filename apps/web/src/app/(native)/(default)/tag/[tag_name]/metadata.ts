@@ -29,12 +29,20 @@ export const generateMetadata = async ({
         siteName: "Storiny",
         title: `#${tag_name}`,
         url: `${process.env.NEXT_PUBLIC_WEB_URL}/tag/${tag_name}`,
-        description
+        description,
+        images: [
+          {
+            url: `${process.env.NEXT_PUBLIC_OG_SERVER_URL}/tags/${tag.id}`,
+            width: 1200,
+            height: 630
+          }
+        ]
       },
       twitter: {
-        card: "summary",
+        card: "summary_large_image",
         title: `#${tag_name}`,
-        description
+        description,
+        images: [`${process.env.NEXT_PUBLIC_OG_SERVER_URL}/tags/${tag.id}`]
       }
       /* eslint-enable prefer-snakecase/prefer-snakecase */
     };

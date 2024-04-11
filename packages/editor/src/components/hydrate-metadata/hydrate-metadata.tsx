@@ -37,7 +37,7 @@ const HydrateMetadata = ({
     dispatch(sync_with_story(story));
   }, [dispatch, story]);
 
-  return children;
+  return <React.Fragment>{children}</React.Fragment>;
 };
 
 export default HydrateMetadata;

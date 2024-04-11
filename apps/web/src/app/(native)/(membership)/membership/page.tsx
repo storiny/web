@@ -8,7 +8,7 @@ import Typography from "~/components/typography";
 import { PlusBadge } from "~/entities/badges";
 import css from "~/theme/main.module.scss";
 
-import { VisuallyHidden } from "../../../(branding)/branding/visually-hidden";
+import { VisuallyHidden } from "../../(branding)/branding/visually-hidden";
 import BasicFeatures from "./sections/basic-features";
 import CollaborationSection from "./sections/collaboration";
 import CustomBrandingSection from "./sections/custom-branding";
