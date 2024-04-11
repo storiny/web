@@ -16,6 +16,7 @@ use std::{
 };
 use tonic::{
     codec::CompressionEncoding,
+    codegen::InterceptedService,
     metadata::{
         Ascii,
         MetadataValue,
@@ -79,13 +80,14 @@ pub async fn start_grpc_server(
                     .accept_compressed(CompressionEncoding::Gzip),
                 )
         } else {
-            // TODO: Add compression after https://github.com/hyperium/tonic/issues/1553 is resolved.
-            let api_service = ApiServiceServer::with_interceptor(
-                GrpcService {
+            let api_service = InterceptedService::new(
+                ApiServiceServer::new(GrpcService {
                     redis_pool,
                     config,
                     db_pool,
-                },
+                })
+                .accept_compressed(CompressionEncoding::Gzip)
+                .send_compressed(CompressionEncoding::Gzip),
                 move |req: Request<()>| {
                     let auth_token: MetadataValue<_> = match format!("Bearer {secret_token}")
                         .parse()
