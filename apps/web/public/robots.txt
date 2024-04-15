@@ -1,8 +1,7 @@
 User-agent: *
 Disallow: /auth$
+Disallow: /login?to=*$
 Disallow: /logout$
-Disallow: /login$
-Disallow: /signup$
 Disallow: /profile$
 Disallow: /handler$
 Disallow: /new$
