@@ -53,6 +53,7 @@ struct User {
     status: Option<Status>,
     // Boolean flags
     is_following: bool,
+    is_plus_member: bool,
 }
 
 #[get("/v1/public/cards/user/{identifier}")]
@@ -91,6 +92,7 @@ SELECT
     u.story_count,
     u.follower_count,
     u.public_flags,
+    u.is_plus_member,
     status.emoji AS "status_emoji",
     status.text AS "status_text",
 "#,
@@ -231,6 +233,7 @@ AND u.deleted_at IS NULL
             },
             // Boolean flags
             is_following: row.get::<bool, _>("is_following"),
+            is_plus_member: row.get::<bool, _>("is_plus_member"),
         })
         .fetch_one(&data.db_pool)
         .await
