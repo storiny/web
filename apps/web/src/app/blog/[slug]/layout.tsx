@@ -112,7 +112,7 @@ if (typeof document !== "undefined") {
             dangerouslySetInnerHTML={{
               __html: `@font-face {
               font-family: blog-primary;
-              font-weight: normal;
+              font-weight: 100 900;
               font-style: normal;
               src: url("https://fonts.storiny.com/${blog.font_primary}")
                 format("woff2");
@@ -125,7 +125,7 @@ if (typeof document !== "undefined") {
             dangerouslySetInnerHTML={{
               __html: `@font-face {
               font-family: blog-secondary;
-              font-weight: normal;
+              font-weight: 100 900;
               font-style: normal;
               src: url("https://fonts.storiny.com/${blog.font_secondary}")
                 format("woff2");
