@@ -211,7 +211,7 @@ const EmbedComponent = ({
           }
         }
       })
-      .catch((err) => set_error(true))
+      .catch(() => set_error(true))
       .finally(() => set_loading(false));
   }, [editor, node_key, theme, url]);
 
@@ -304,14 +304,14 @@ const EmbedComponent = ({
         data-testid={"embed-node"}
         ref={container_ref}
       >
-        {layout === "overflow" && (
+        {layout === "overflow" && !blog?.is_story_minimal_layout ? (
           <span
             aria-hidden
             className={figure_styles["left-banner"]}
             data-layout={layout}
             data-visible={String(visible)}
           />
-        )}
+        ) : null}
         {metadata ? (
           <div
             className={clsx(css["flex-center"], styles.content)}
@@ -379,14 +379,14 @@ const EmbedComponent = ({
             <EmbedNodeControls layout={layout} node_key={node_key} />
           </Popover>
         )}
-        {layout === "overflow" && (
+        {layout === "overflow" && !blog?.is_story_minimal_layout ? (
           <span
             aria-hidden
             className={figure_styles["right-banner"]}
             data-layout={layout}
             data-visible={String(visible)}
           />
-        )}
+        ) : null}
       </div>
       {/* Compensate for the absolute position of the embed element */}
       <div
