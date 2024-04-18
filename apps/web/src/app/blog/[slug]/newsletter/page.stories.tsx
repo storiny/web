@@ -15,7 +15,14 @@ const meta: Meta<typeof NewsletterPage> = {
   component: NewsletterPage,
   args: {
     ...MOCK_BLOGS[0],
-    user: MOCK_USERS[0],
+    description: MOCK_BLOGS[0].description || undefined,
+    newsletter_splash_id: MOCK_BLOGS[0].newsletter_splash_id || undefined,
+    newsletter_splash_hex: MOCK_BLOGS[0].newsletter_splash_hex || undefined,
+    user: {
+      ...MOCK_USERS[0],
+      avatar_id: MOCK_USERS[0].avatar_id || undefined,
+      avatar_hex: MOCK_USERS[0].avatar_hex || undefined
+    },
     is_subscribed: false
   },
   parameters: {
@@ -41,6 +48,20 @@ export const Default: Story = {
   ]
 };
 
+export const LoggedIn: Story = {
+  decorators: [
+    (Story): React.ReactElement =>
+      render_with_state(
+        <StorybookBlogLayout>
+          <BlogNewsletterLayout>
+            <Story />
+          </BlogNewsletterLayout>
+        </StorybookBlogLayout>,
+        { ignore_primitive_providers: true, logged_in: true }
+      )
+  ]
+};
+
 export const WithoutSplash: Story = {
   ...Default,
   args: {
@@ -50,9 +71,9 @@ export const WithoutSplash: Story = {
 };
 
 export const Subscribed: Story = {
-  ...Default,
+  ...LoggedIn,
   args: {
-    ...Default.args,
+    ...LoggedIn.args,
     is_subscribed: true
   }
 };

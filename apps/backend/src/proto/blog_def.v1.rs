@@ -298,7 +298,7 @@ pub struct GetBlogNewsletterInfoResponse {
     pub newsletter_splash_hex: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(message, optional, tag="6")]
     pub user: ::core::option::Option<super::super::user_def::v1::BareUser>,
-    #[prost(bool, optional, tag="7")]
-    pub is_subscribed: ::core::option::Option<bool>,
+    #[prost(bool, tag="7")]
+    pub is_subscribed: bool,
 }
 // @@protoc_insertion_point(module)

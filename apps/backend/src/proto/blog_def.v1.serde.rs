@@ -833,7 +833,7 @@ impl serde::Serialize for GetBlogNewsletterInfoResponse {
         if self.user.is_some() {
             len += 1;
         }
-        if self.is_subscribed.is_some() {
+        if self.is_subscribed {
             len += 1;
         }
         let mut struct_ser = serializer.serialize_struct("blog_def.v1.GetBlogNewsletterInfoResponse", len)?;
@@ -855,8 +855,8 @@ impl serde::Serialize for GetBlogNewsletterInfoResponse {
         if let Some(v) = self.user.as_ref() {
             struct_ser.serialize_field("user", v)?;
         }
-        if let Some(v) = self.is_subscribed.as_ref() {
-            struct_ser.serialize_field("isSubscribed", v)?;
+        if self.is_subscribed {
+            struct_ser.serialize_field("isSubscribed", &self.is_subscribed)?;
         }
         struct_ser.end()
     }
@@ -985,7 +985,7 @@ impl<'de> serde::Deserialize<'de> for GetBlogNewsletterInfoResponse {
                             if is_subscribed__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isSubscribed"));
                             }
-                            is_subscribed__ = map.next_value()?;
+                            is_subscribed__ = Some(map.next_value()?);
                         }
                     }
                 }
@@ -996,7 +996,7 @@ impl<'de> serde::Deserialize<'de> for GetBlogNewsletterInfoResponse {
                     newsletter_splash_id: newsletter_splash_id__,
                     newsletter_splash_hex: newsletter_splash_hex__,
                     user: user__,
-                    is_subscribed: is_subscribed__,
+                    is_subscribed: is_subscribed__.unwrap_or_default(),
                 })
             }
         }
