@@ -185,7 +185,7 @@ export interface GetBlogNewsletterInfoResponse {
   newsletter_splash_id?: string | undefined;
   newsletter_splash_hex?: string | undefined;
   user: BareUser | undefined;
-  is_subscribed?: boolean | undefined;
+  is_subscribed: boolean;
 }
 
 function createBaseBareBlog(): BareBlog {
@@ -2475,7 +2475,7 @@ function createBaseGetBlogNewsletterInfoResponse(): GetBlogNewsletterInfoRespons
     newsletter_splash_id: undefined,
     newsletter_splash_hex: undefined,
     user: undefined,
-    is_subscribed: undefined,
+    is_subscribed: false,
   };
 }
 
@@ -2499,7 +2499,7 @@ export const GetBlogNewsletterInfoResponse = {
     if (message.user !== undefined) {
       BareUser.encode(message.user, writer.uint32(50).fork()).ldelim();
     }
-    if (message.is_subscribed !== undefined) {
+    if (message.is_subscribed === true) {
       writer.uint32(56).bool(message.is_subscribed);
     }
     return writer;
@@ -2582,7 +2582,7 @@ export const GetBlogNewsletterInfoResponse = {
         ? globalThis.String(object.newsletter_splash_hex)
         : undefined,
       user: isSet(object.user) ? BareUser.fromJSON(object.user) : undefined,
-      is_subscribed: isSet(object.is_subscribed) ? globalThis.Boolean(object.is_subscribed) : undefined,
+      is_subscribed: isSet(object.is_subscribed) ? globalThis.Boolean(object.is_subscribed) : false,
     };
   },
 
@@ -2606,7 +2606,7 @@ export const GetBlogNewsletterInfoResponse = {
     if (message.user !== undefined) {
       obj.user = BareUser.toJSON(message.user);
     }
-    if (message.is_subscribed !== undefined) {
+    if (message.is_subscribed === true) {
       obj.is_subscribed = message.is_subscribed;
     }
     return obj;
@@ -2625,7 +2625,7 @@ export const GetBlogNewsletterInfoResponse = {
     message.newsletter_splash_id = object.newsletter_splash_id ?? undefined;
     message.newsletter_splash_hex = object.newsletter_splash_hex ?? undefined;
     message.user = (object.user !== undefined && object.user !== null) ? BareUser.fromPartial(object.user) : undefined;
-    message.is_subscribed = object.is_subscribed ?? undefined;
+    message.is_subscribed = object.is_subscribed ?? false;
     return message;
   },
 };

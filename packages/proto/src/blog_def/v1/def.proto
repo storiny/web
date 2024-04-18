@@ -189,5 +189,5 @@ message GetBlogNewsletterInfoResponse {
   optional string newsletter_splash_id /* */ = 4;
   optional string newsletter_splash_hex /**/ = 5;
   user_def.v1.BareUser user /*            */ = 6;
-  optional bool is_subscribed /*          */ = 7;
+  bool is_subscribed /*                   */ = 7;
 }
