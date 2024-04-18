@@ -1,28 +1,32 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import BlogLeftSidebar from "~/layout/blog-left-sidebar";
-import BlogNavbar from "~/layout/blog-navbar";
-import BlogRightSidebar from "~/layout/blog-right-sidebar";
+import Navbar from "~/layout/navbar";
 import SplashScreen from "~/layout/splash-screen";
 import css from "~/theme/main.module.scss";
 
-const BlogHomepageLayout = ({
+import auth_styles from "../../../(native)/(auth)/layout.module.scss";
+
+const BlogNewsletterLayout = ({
   children
 }: {
   children: React.ReactNode;
 }): React.ReactElement => (
   <React.Fragment>
-    <div
-      className={clsx(css["grid"], css["grid-container"], css["no-sidenav"])}
-    >
-      <BlogNavbar />
-      <BlogLeftSidebar is_homepage />
-      <main data-root={"true"}>{children}</main>
-      <BlogRightSidebar is_homepage />
+    <div className={clsx(css["grid"], css["grid-container"], css.minimal)}>
+      <Navbar variant={"minimal"} />
+      {/* Need to make the <main /> styles more specific */}
+      <main
+        className={clsx(auth_styles.x, auth_styles.main)}
+        data-root={"true"}
+      >
+        <div className={clsx(css["flex-col"], auth_styles.container)}>
+          {children}
+        </div>
+      </main>
       <SplashScreen />
     </div>
   </React.Fragment>
 );
 
-export default BlogHomepageLayout;
+export default BlogNewsletterLayout;

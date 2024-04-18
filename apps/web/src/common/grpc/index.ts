@@ -16,6 +16,8 @@ import {
   GetBlogArchiveResponse,
   GetBlogEditorsInfoRequest,
   GetBlogEditorsInfoResponse,
+  GetBlogNewsletterInfoRequest,
+  GetBlogNewsletterInfoResponse,
   GetBlogPendingStoryCountRequest,
   GetBlogPendingStoryCountResponse,
   GetBlogPublishedStoryCountRequest,
@@ -27,8 +29,7 @@ import {
   GetBlogWritersInfoRequest,
   GetBlogWritersInfoResponse,
   GetUserBlogsInfoRequest,
-  GetUserBlogsInfoResponse
-} from "@storiny/proto/dist/blog_def/v1/def";
+  GetUserBlogsInfoResponse} from "@storiny/proto/dist/blog_def/v1/def";
 import {
   GetCommentRequest,
   GetCommentResponse
@@ -306,6 +307,11 @@ const grpc_hub = {
       global.grpc_client.getBlogWritersInfo
     )
   ),
+  get_blog_newsletter_info: cache(
+    promisify<GetBlogNewsletterInfoRequest, GetBlogNewsletterInfoResponse>(
+      global.grpc_client.getBlogNewsletterInfo
+    )
+  ),
   get_blog_sitemap: cache(
     promisify<GetBlogSitemapRequest, GetBlogSitemapResponse>(
       global.grpc_client.getBlogSitemap
@@ -348,13 +354,15 @@ export const {
   get_blog_published_story_count,
   get_blog_editors_info,
   get_blog_writers_info,
-  get_blog_sitemap
+  get_blog_sitemap,
+  get_blog_newsletter_info
 } = global.grpc_hub as typeof grpc_hub;
 
 export {
   CreateDraftResponse,
   GetBlogArchiveResponse,
   GetBlogEditorsInfoResponse,
+  GetBlogNewsletterInfoResponse,
   GetBlogPendingStoryCountResponse,
   GetBlogPublishedStoryCountResponse,
   GetBlogResponse,

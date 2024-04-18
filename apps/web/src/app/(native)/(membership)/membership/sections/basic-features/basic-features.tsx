@@ -33,7 +33,6 @@ const BasicFeatures = (): React.ReactElement => (
           src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/animations/pricing/basic/render.webm`}
           type="video/webm"
         />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           alt=""
           className={styles["video-fallback"]}
