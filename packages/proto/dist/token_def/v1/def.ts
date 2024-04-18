@@ -8,6 +8,7 @@ export const TokenType = {
   EMAIL_VERIFICATION: 1,
   PASSWORD_RESET: 2,
   PASSWORD_ADD: 3,
+  NEWSLETTER_SUBSCRIBE: 4,
   UNRECOGNIZED: -1,
 } as const;
 
@@ -27,6 +28,9 @@ export function tokenTypeFromJSON(object: any): TokenType {
     case 3:
     case "TOKEN_TYPE_PASSWORD_ADD":
       return TokenType.PASSWORD_ADD;
+    case 4:
+    case "TOKEN_TYPE_NEWSLETTER_SUBSCRIBE":
+      return TokenType.NEWSLETTER_SUBSCRIBE;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -44,6 +48,8 @@ export function tokenTypeToJSON(object: TokenType): string {
       return "TOKEN_TYPE_PASSWORD_RESET";
     case TokenType.PASSWORD_ADD:
       return "TOKEN_TYPE_PASSWORD_ADD";
+    case TokenType.NEWSLETTER_SUBSCRIBE:
+      return "TOKEN_TYPE_NEWSLETTER_SUBSCRIBE";
     case TokenType.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";
@@ -66,6 +72,13 @@ export interface VerifyEmailRequest {
 }
 
 export interface VerifyEmailResponse {
+}
+
+export interface VerifyNewsletterSubscriptionRequest {
+  identifier: string;
+}
+
+export interface VerifyNewsletterSubscriptionResponse {
 }
 
 function createBaseGetTokenRequest(): GetTokenRequest {
@@ -312,6 +325,114 @@ export const VerifyEmailResponse = {
   },
   fromPartial<I extends Exact<DeepPartial<VerifyEmailResponse>, I>>(_: I): VerifyEmailResponse {
     const message = createBaseVerifyEmailResponse();
+    return message;
+  },
+};
+
+function createBaseVerifyNewsletterSubscriptionRequest(): VerifyNewsletterSubscriptionRequest {
+  return { identifier: "" };
+}
+
+export const VerifyNewsletterSubscriptionRequest = {
+  encode(message: VerifyNewsletterSubscriptionRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.identifier !== "") {
+      writer.uint32(10).string(message.identifier);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): VerifyNewsletterSubscriptionRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseVerifyNewsletterSubscriptionRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.identifier = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): VerifyNewsletterSubscriptionRequest {
+    return { identifier: isSet(object.identifier) ? globalThis.String(object.identifier) : "" };
+  },
+
+  toJSON(message: VerifyNewsletterSubscriptionRequest): unknown {
+    const obj: any = {};
+    if (message.identifier !== "") {
+      obj.identifier = message.identifier;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<VerifyNewsletterSubscriptionRequest>, I>>(
+    base?: I,
+  ): VerifyNewsletterSubscriptionRequest {
+    return VerifyNewsletterSubscriptionRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<VerifyNewsletterSubscriptionRequest>, I>>(
+    object: I,
+  ): VerifyNewsletterSubscriptionRequest {
+    const message = createBaseVerifyNewsletterSubscriptionRequest();
+    message.identifier = object.identifier ?? "";
+    return message;
+  },
+};
+
+function createBaseVerifyNewsletterSubscriptionResponse(): VerifyNewsletterSubscriptionResponse {
+  return {};
+}
+
+export const VerifyNewsletterSubscriptionResponse = {
+  encode(_: VerifyNewsletterSubscriptionResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): VerifyNewsletterSubscriptionResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseVerifyNewsletterSubscriptionResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): VerifyNewsletterSubscriptionResponse {
+    return {};
+  },
+
+  toJSON(_: VerifyNewsletterSubscriptionResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<VerifyNewsletterSubscriptionResponse>, I>>(
+    base?: I,
+  ): VerifyNewsletterSubscriptionResponse {
+    return VerifyNewsletterSubscriptionResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<VerifyNewsletterSubscriptionResponse>, I>>(
+    _: I,
+  ): VerifyNewsletterSubscriptionResponse {
+    const message = createBaseVerifyNewsletterSubscriptionResponse();
     return message;
   },
 };

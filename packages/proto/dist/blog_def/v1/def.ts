@@ -1,5 +1,6 @@
 /* eslint-disable */
 import _m0 from "protobufjs/minimal";
+import { BareUser } from "../../user_def/v1/def";
 
 export const protobufPackage = "blog_def.v1";
 
@@ -170,6 +171,21 @@ export interface GetBlogSitemapRequest {
 
 export interface GetBlogSitemapResponse {
   content: string;
+}
+
+export interface GetBlogNewsletterInfoRequest {
+  identifier: string;
+  current_user_id?: string | undefined;
+}
+
+export interface GetBlogNewsletterInfoResponse {
+  id: string;
+  name: string;
+  description?: string | undefined;
+  newsletter_splash_id?: string | undefined;
+  newsletter_splash_hex?: string | undefined;
+  user: BareUser | undefined;
+  is_subscribed?: boolean | undefined;
 }
 
 function createBaseBareBlog(): BareBlog {
@@ -2373,6 +2389,243 @@ export const GetBlogSitemapResponse = {
   fromPartial<I extends Exact<DeepPartial<GetBlogSitemapResponse>, I>>(object: I): GetBlogSitemapResponse {
     const message = createBaseGetBlogSitemapResponse();
     message.content = object.content ?? "";
+    return message;
+  },
+};
+
+function createBaseGetBlogNewsletterInfoRequest(): GetBlogNewsletterInfoRequest {
+  return { identifier: "", current_user_id: undefined };
+}
+
+export const GetBlogNewsletterInfoRequest = {
+  encode(message: GetBlogNewsletterInfoRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.identifier !== "") {
+      writer.uint32(10).string(message.identifier);
+    }
+    if (message.current_user_id !== undefined) {
+      writer.uint32(18).string(message.current_user_id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetBlogNewsletterInfoRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetBlogNewsletterInfoRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.identifier = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.current_user_id = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetBlogNewsletterInfoRequest {
+    return {
+      identifier: isSet(object.identifier) ? globalThis.String(object.identifier) : "",
+      current_user_id: isSet(object.current_user_id) ? globalThis.String(object.current_user_id) : undefined,
+    };
+  },
+
+  toJSON(message: GetBlogNewsletterInfoRequest): unknown {
+    const obj: any = {};
+    if (message.identifier !== "") {
+      obj.identifier = message.identifier;
+    }
+    if (message.current_user_id !== undefined) {
+      obj.current_user_id = message.current_user_id;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetBlogNewsletterInfoRequest>, I>>(base?: I): GetBlogNewsletterInfoRequest {
+    return GetBlogNewsletterInfoRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetBlogNewsletterInfoRequest>, I>>(object: I): GetBlogNewsletterInfoRequest {
+    const message = createBaseGetBlogNewsletterInfoRequest();
+    message.identifier = object.identifier ?? "";
+    message.current_user_id = object.current_user_id ?? undefined;
+    return message;
+  },
+};
+
+function createBaseGetBlogNewsletterInfoResponse(): GetBlogNewsletterInfoResponse {
+  return {
+    id: "",
+    name: "",
+    description: undefined,
+    newsletter_splash_id: undefined,
+    newsletter_splash_hex: undefined,
+    user: undefined,
+    is_subscribed: undefined,
+  };
+}
+
+export const GetBlogNewsletterInfoResponse = {
+  encode(message: GetBlogNewsletterInfoResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.name !== "") {
+      writer.uint32(18).string(message.name);
+    }
+    if (message.description !== undefined) {
+      writer.uint32(26).string(message.description);
+    }
+    if (message.newsletter_splash_id !== undefined) {
+      writer.uint32(34).string(message.newsletter_splash_id);
+    }
+    if (message.newsletter_splash_hex !== undefined) {
+      writer.uint32(42).string(message.newsletter_splash_hex);
+    }
+    if (message.user !== undefined) {
+      BareUser.encode(message.user, writer.uint32(50).fork()).ldelim();
+    }
+    if (message.is_subscribed !== undefined) {
+      writer.uint32(56).bool(message.is_subscribed);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetBlogNewsletterInfoResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetBlogNewsletterInfoResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.description = reader.string();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.newsletter_splash_id = reader.string();
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.newsletter_splash_hex = reader.string();
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.user = BareUser.decode(reader, reader.uint32());
+          continue;
+        case 7:
+          if (tag !== 56) {
+            break;
+          }
+
+          message.is_subscribed = reader.bool();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetBlogNewsletterInfoResponse {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
+      description: isSet(object.description) ? globalThis.String(object.description) : undefined,
+      newsletter_splash_id: isSet(object.newsletter_splash_id)
+        ? globalThis.String(object.newsletter_splash_id)
+        : undefined,
+      newsletter_splash_hex: isSet(object.newsletter_splash_hex)
+        ? globalThis.String(object.newsletter_splash_hex)
+        : undefined,
+      user: isSet(object.user) ? BareUser.fromJSON(object.user) : undefined,
+      is_subscribed: isSet(object.is_subscribed) ? globalThis.Boolean(object.is_subscribed) : undefined,
+    };
+  },
+
+  toJSON(message: GetBlogNewsletterInfoResponse): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.description !== undefined) {
+      obj.description = message.description;
+    }
+    if (message.newsletter_splash_id !== undefined) {
+      obj.newsletter_splash_id = message.newsletter_splash_id;
+    }
+    if (message.newsletter_splash_hex !== undefined) {
+      obj.newsletter_splash_hex = message.newsletter_splash_hex;
+    }
+    if (message.user !== undefined) {
+      obj.user = BareUser.toJSON(message.user);
+    }
+    if (message.is_subscribed !== undefined) {
+      obj.is_subscribed = message.is_subscribed;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetBlogNewsletterInfoResponse>, I>>(base?: I): GetBlogNewsletterInfoResponse {
+    return GetBlogNewsletterInfoResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetBlogNewsletterInfoResponse>, I>>(
+    object: I,
+  ): GetBlogNewsletterInfoResponse {
+    const message = createBaseGetBlogNewsletterInfoResponse();
+    message.id = object.id ?? "";
+    message.name = object.name ?? "";
+    message.description = object.description ?? undefined;
+    message.newsletter_splash_id = object.newsletter_splash_id ?? undefined;
+    message.newsletter_splash_hex = object.newsletter_splash_hex ?? undefined;
+    message.user = (object.user !== undefined && object.user !== null) ? BareUser.fromPartial(object.user) : undefined;
+    message.is_subscribed = object.is_subscribed ?? undefined;
     return message;
   },
 };

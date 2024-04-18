@@ -3,10 +3,11 @@ syntax = "proto3";
 package token_def.v1;
 
 enum TokenType {
-  TOKEN_TYPE_UNSPECIFIED /*       */ = 0;
-  TOKEN_TYPE_EMAIL_VERIFICATION /**/ = 1;
-  TOKEN_TYPE_PASSWORD_RESET /*    */ = 2;
-  TOKEN_TYPE_PASSWORD_ADD /*      */ = 3;
+  TOKEN_TYPE_UNSPECIFIED /*         */ = 0;
+  TOKEN_TYPE_EMAIL_VERIFICATION /*  */ = 1;
+  TOKEN_TYPE_PASSWORD_RESET /*      */ = 2;
+  TOKEN_TYPE_PASSWORD_ADD /*        */ = 3;
+  TOKEN_TYPE_NEWSLETTER_SUBSCRIBE /**/ = 4;
 }
 
 message GetTokenRequest {
@@ -27,3 +28,11 @@ message VerifyEmailRequest {
 }
 
 message VerifyEmailResponse {}
+
+// Newsletter subscription
+
+message VerifyNewsletterSubscriptionRequest {
+  string identifier = 1;
+}
+
+message VerifyNewsletterSubscriptionResponse {}
