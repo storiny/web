@@ -1,133 +1,23 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { MOCK_BLOGS, MOCK_STORIES, MOCK_USERS } from "@storiny/ui/src/mocks";
+import { MOCK_BLOGS, MOCK_USERS } from "@storiny/ui/src/mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import { GetStoryResponse } from "~/common/grpc";
 import { render_with_state } from "~/redux/mock";
 
 import StorybookBlogLayout from "../layout.storybook";
-import StoryComponent from "./component";
-import RestrictedStory from "./restricted";
+import NewsletterPage from "./client";
+import BlogNewsletterLayout from "./layout";
 
-// Binary sample document
-const READ_ONLY_DATA = [
-  31, 139, 8, 0, 167, 40, 12, 101, 2, 3, 205, 86, 205, 138, 29, 69, 20, 238,
-  190, 127, 19, 39, 33, 152, 152, 7, 56, 100, 51, 89, 220, 25, 66, 124, 0, 137,
-  232, 144, 4, 81, 113, 226, 78, 24, 234, 118, 87, 223, 46, 110, 117, 159, 78,
-  85, 245, 244, 180, 48, 50, 139, 128, 184, 8, 136, 184, 72, 64, 20, 81, 92, 68,
-  17, 151, 226, 34, 228, 1, 220, 139, 187, 144, 39, 240, 17, 252, 170, 238, 207,
-  204, 56, 195, 100, 38, 97, 192, 75, 119, 245, 169, 243, 87, 231, 191, 110,
-  212, 137, 58, 75, 127, 63, 253, 235, 217, 149, 63, 226, 58, 186, 16, 119, 241,
-  188, 55, 140, 59, 203, 113, 247, 206, 227, 190, 255, 6, 240, 155, 5, 56, 236,
-  196, 221, 203, 120, 255, 140, 127, 223, 35, 127, 219, 153, 129, 241, 185, 128,
-  248, 228, 6, 62, 81, 47, 192, 94, 225, 245, 41, 219, 87, 1, 19, 192, 95, 207,
-  207, 193, 232, 251, 56, 142, 162, 232, 90, 244, 121, 116, 173, 183, 132, 247,
-  190, 135, 186, 123, 208, 49, 187, 253, 235, 209, 124, 157, 67, 216, 249, 247,
-  52, 103, 61, 189, 252, 240, 146, 97, 118, 254, 221, 220, 76, 149, 217, 220,
-  116, 109, 37, 55, 55, 51, 54, 133, 0, 74, 149, 169, 44, 23, 36, 49, 254, 47,
-  221, 186, 86, 99, 91, 112, 138, 53, 149, 78, 40, 125, 75, 138, 84, 149, 99,
-  250, 231, 187, 7, 95, 28, 175, 238, 69, 154, 222, 86, 85, 165, 92, 75, 35,
-  158, 127, 121, 72, 77, 206, 52, 41, 101, 67, 46, 23, 142, 38, 162, 28, 11, 88,
-  111, 113, 220, 79, 15, 41, 225, 90, 167, 100, 39, 194, 201, 17, 11, 147, 190,
-  69, 183, 221, 138, 37, 103, 106, 57, 164, 162, 165, 204, 40, 89, 166, 67, 186,
-  189, 178, 37, 201, 74, 89, 146, 114, 212, 40, 151, 123, 34, 55, 37, 201, 86,
-  218, 53, 186, 155, 179, 149, 84, 8, 99, 235, 74, 9, 109, 41, 17, 37, 217, 220,
-  200, 148, 180, 154, 72, 42, 121, 196, 105, 11, 197, 163, 218, 170, 82, 90,
-  136, 156, 194, 211, 83, 6, 161, 118, 148, 114, 185, 226, 104, 36, 41, 99, 214,
-  18, 246, 187, 92, 182, 43, 198, 27, 226, 72, 104, 77, 89, 93, 146, 40, 83, 26,
-  139, 194, 219, 191, 193, 133, 116, 10, 96, 96, 164, 177, 4, 23, 44, 119, 78,
-  75, 114, 204, 8, 83, 81, 129, 193, 41, 68, 193, 139, 89, 39, 12, 244, 243,
-  182, 207, 155, 20, 73, 78, 12, 65, 51, 12, 68, 13, 233, 2, 114, 18, 231, 180,
-  92, 15, 17, 50, 120, 238, 79, 174, 140, 116, 174, 61, 67, 223, 63, 40, 113,
-  46, 252, 160, 219, 100, 69, 3, 31, 78, 32, 179, 130, 106, 56, 1, 27, 106, 136,
-  147, 9, 28, 12, 158, 18, 227, 36, 70, 164, 19, 70, 253, 132, 130, 16, 100, 27,
-  149, 57, 170, 171, 74, 154, 164, 118, 107, 40, 37, 106, 132, 157, 86, 128,
-  245, 17, 206, 125, 184, 188, 20, 103, 96, 255, 8, 250, 90, 42, 120, 75, 161,
-  214, 228, 118, 34, 171, 121, 105, 49, 50, 149, 213, 102, 22, 77, 107, 105,
-  163, 213, 91, 210, 58, 156, 187, 225, 144, 62, 28, 190, 118, 102, 49, 188,
-  122, 55, 135, 107, 165, 110, 97, 124, 139, 236, 163, 152, 104, 108, 36, 122,
-  167, 97, 51, 33, 133, 26, 97, 210, 140, 74, 104, 124, 67, 33, 195, 224, 88,
-  187, 74, 171, 176, 77, 2, 123, 135, 71, 246, 229, 140, 83, 133, 24, 131, 50,
-  165, 135, 13, 20, 105, 129, 19, 64, 127, 21, 151, 62, 204, 217, 29, 202, 241,
-  62, 21, 57, 27, 245, 41, 151, 8, 173, 169, 189, 236, 148, 241, 37, 227, 123,
-  162, 153, 183, 81, 143, 86, 243, 217, 220, 123, 53, 223, 110, 98, 166, 40,
-  237, 21, 61, 223, 125, 132, 220, 128, 159, 32, 41, 19, 135, 12, 138, 44, 3,
-  96, 209, 129, 150, 100, 41, 205, 184, 165, 218, 34, 174, 161, 178, 18, 97, 70,
-  140, 9, 86, 40, 107, 21, 151, 118, 72, 105, 237, 219, 221, 207, 128, 144, 123,
-  229, 130, 202, 218, 98, 140, 121, 1, 175, 197, 49, 162, 68, 153, 102, 54, 100,
-  43, 145, 200, 51, 236, 230, 117, 156, 33, 183, 69, 81, 105, 52, 136, 145, 86,
-  121, 97, 140, 215, 133, 199, 150, 158, 239, 126, 237, 93, 86, 9, 186, 162,
-  165, 156, 97, 43, 252, 16, 21, 198, 83, 1, 102, 192, 208, 49, 237, 88, 173,
-  182, 124, 180, 239, 213, 160, 73, 51, 21, 45, 224, 37, 68, 230, 177, 129, 45,
-  132, 172, 56, 207, 23, 34, 132, 233, 9, 120, 72, 21, 55, 210, 120, 172, 86,
-  227, 124, 166, 21, 196, 73, 32, 138, 130, 125, 91, 135, 67, 68, 130, 25, 137,
-  57, 233, 135, 234, 251, 92, 174, 30, 105, 181, 191, 147, 20, 102, 166, 193,
-  93, 132, 70, 55, 92, 96, 32, 100, 42, 241, 166, 55, 194, 200, 133, 27, 48,
-  161, 80, 219, 50, 93, 245, 54, 166, 104, 46, 205, 213, 204, 45, 111, 57, 230,
-  123, 200, 141, 194, 44, 39, 171, 10, 165, 133, 9, 137, 195, 208, 57, 58, 92,
-  35, 204, 30, 244, 108, 170, 80, 23, 6, 84, 136, 58, 89, 218, 153, 193, 103,
-  150, 200, 143, 193, 109, 112, 103, 148, 161, 222, 125, 121, 165, 202, 58, 163,
-  96, 14, 10, 207, 79, 195, 185, 137, 161, 126, 103, 215, 39, 6, 41, 227, 150,
-  73, 130, 117, 168, 196, 69, 165, 194, 185, 180, 70, 160, 1, 169, 18, 84, 36,
-  12, 211, 113, 237, 157, 168, 63, 184, 21, 189, 27, 13, 206, 45, 13, 206, 45,
-  3, 236, 7, 232, 113, 39, 128, 243, 237, 15, 7, 183, 151, 194, 218, 11, 235,
-  151, 7, 73, 247, 227, 217, 22, 42, 111, 249, 103, 138, 14, 12, 23, 215, 163,
-  5, 205, 35, 47, 44, 200, 79, 230, 82, 211, 237, 47, 83, 112, 190, 253, 49,
-  238, 226, 79, 30, 13, 226, 65, 188, 30, 225, 185, 57, 253, 116, 129, 232, 2,
-  154, 97, 227, 126, 220, 187, 249, 32, 142, 159, 196, 81, 211, 213, 206, 52,
-  75, 179, 89, 177, 19, 237, 204, 48, 157, 252, 70, 211, 115, 114, 219, 1, 1,
-  36, 214, 215, 80, 244, 98, 108, 68, 149, 239, 113, 189, 152, 227, 172, 164,
-  166, 187, 215, 15, 236, 142, 211, 216, 191, 87, 179, 147, 39, 179, 225, 179,
-  102, 144, 169, 113, 109, 246, 177, 247, 195, 117, 81, 199, 91, 75, 93, 161,
-  93, 211, 187, 139, 219, 178, 59, 145, 109, 243, 198, 117, 252, 86, 15, 46,
-  221, 92, 110, 67, 69, 248, 13, 76, 104, 247, 157, 184, 223, 168, 212, 229, 59,
-  187, 87, 6, 185, 244, 77, 190, 179, 187, 124, 222, 98, 172, 200, 117, 244, 52,
-  155, 157, 184, 233, 101, 74, 235, 102, 41, 17, 149, 47, 189, 147, 154, 122,
-  241, 224, 229, 114, 136, 126, 84, 106, 223, 252, 63, 167, 54, 126, 244, 236,
-  231, 223, 150, 227, 168, 247, 47, 133, 104, 224, 11, 50, 13, 0, 0
-];
-
-const STORY_USER: NonNullable<GetStoryResponse["user"]> = {
-  id: MOCK_USERS[5].id,
-  username: MOCK_USERS[5].username,
-  rendered_bio: MOCK_USERS[5].rendered_bio,
-  name: MOCK_USERS[5].name,
-  avatar_id: MOCK_USERS[5].avatar_id || undefined,
-  avatar_hex: MOCK_USERS[5].avatar_hex || undefined,
-  public_flags: MOCK_USERS[5].public_flags,
-  is_private: MOCK_USERS[5].is_private,
-  created_at: MOCK_USERS[5].created_at,
-  follower_count: MOCK_USERS[5].follower_count,
-  location: MOCK_USERS[5].location,
-  is_blocked_by_user: false,
-  is_follower: false,
-  is_following: false,
-  is_friend: false,
-  is_self: false,
-  status: undefined
-};
-
-const meta: Meta<typeof StoryComponent> = {
-  title: "pages/blog/story",
-  component: StoryComponent,
+const meta: Meta<typeof NewsletterPage> = {
+  title: "pages/blog/newsletter",
+  component: NewsletterPage,
   args: {
-    doc: READ_ONLY_DATA,
-    story: {
-      ...MOCK_STORIES[5],
-      blog: MOCK_BLOGS[0]
-    }
+    ...MOCK_BLOGS[0],
+    user: MOCK_USERS[0],
+    is_subscribed: false
   },
-  decorators: [
-    (Story): React.ReactElement =>
-      render_with_state(
-        <StorybookBlogLayout blog={{ is_story_minimal_layout: false }}>
-          <Story />
-        </StorybookBlogLayout>,
-        { ignore_primitive_providers: true }
-      )
-  ],
   parameters: {
     layout: "fullscreen"
   },
@@ -135,76 +25,34 @@ const meta: Meta<typeof StoryComponent> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof StoryComponent>;
+type Story = StoryObj<typeof NewsletterPage>;
 
-export const Default: Story = {};
-
-export const LoggedIn: Story = {
+export const Default: Story = {
   decorators: [
     (Story): React.ReactElement =>
       render_with_state(
-        <StorybookBlogLayout blog={{ is_story_minimal_layout: false }}>
-          <Story />
+        <StorybookBlogLayout>
+          <BlogNewsletterLayout>
+            <Story />
+          </BlogNewsletterLayout>
         </StorybookBlogLayout>,
-        { logged_in: true }
+        { ignore_primitive_providers: true }
       )
   ]
 };
 
-export const Unpublished: Story = {
-  decorators: [
-    (): React.ReactElement =>
-      render_with_state(
-        <StorybookBlogLayout blog={{ is_story_minimal_layout: false }}>
-          <RestrictedStory type={"unpublished"} user={STORY_USER} />
-        </StorybookBlogLayout>,
-        {
-          ignore_primitive_providers: true
-        }
-      )
-  ]
-};
-
-export const Blocked: Story = {
-  decorators: [
-    (): React.ReactElement =>
-      render_with_state(
-        <StorybookBlogLayout blog={{ is_story_minimal_layout: false }}>
-          <RestrictedStory type={"user-blocked"} user={STORY_USER} />
-        </StorybookBlogLayout>,
-        {
-          ignore_primitive_providers: true
-        }
-      )
-  ]
-};
-
-export const MinimalLayout: Story = {
-  decorators: [
-    (Story): React.ReactElement =>
-      render_with_state(
-        <StorybookBlogLayout blog={{ is_story_minimal_layout: true }}>
-          <Story />
-        </StorybookBlogLayout>,
-        {
-          ignore_primitive_providers: true
-        }
-      )
-  ]
-};
-
-export const WithContributors: Story = {
+export const WithoutSplash: Story = {
   ...Default,
   args: {
-    doc: READ_ONLY_DATA,
-    story: { ...MOCK_STORIES[5], contributors: MOCK_USERS.slice(0, 3) }
+    ...Default.args,
+    newsletter_splash_id: undefined
   }
 };
 
-export const CommentsDisabled: Story = {
+export const Subscribed: Story = {
   ...Default,
   args: {
-    doc: READ_ONLY_DATA,
-    story: { ...MOCK_STORIES[5], disable_comments: true }
+    ...Default.args,
+    is_subscribed: true
   }
 };

@@ -230,6 +230,7 @@ impl serde::Serialize for TokenType {
             Self::EmailVerification => 1,
             Self::PasswordReset => 2,
             Self::PasswordAdd => 3,
+            Self::NewsletterSubscribe => 4,
         };
         serializer.serialize_i32(variant)
     }
@@ -245,6 +246,7 @@ impl<'de> serde::Deserialize<'de> for TokenType {
             "TOKEN_TYPE_EMAIL_VERIFICATION",
             "TOKEN_TYPE_PASSWORD_RESET",
             "TOKEN_TYPE_PASSWORD_ADD",
+            "TOKEN_TYPE_NEWSLETTER_SUBSCRIBE",
         ];
 
         struct GeneratedVisitor;
@@ -291,6 +293,7 @@ impl<'de> serde::Deserialize<'de> for TokenType {
                     "TOKEN_TYPE_EMAIL_VERIFICATION" => Ok(TokenType::EmailVerification),
                     "TOKEN_TYPE_PASSWORD_RESET" => Ok(TokenType::PasswordReset),
                     "TOKEN_TYPE_PASSWORD_ADD" => Ok(TokenType::PasswordAdd),
+                    "TOKEN_TYPE_NEWSLETTER_SUBSCRIBE" => Ok(TokenType::NewsletterSubscribe),
                     _ => Err(serde::de::Error::unknown_variant(value, FIELDS)),
                 }
             }
@@ -458,5 +461,167 @@ impl<'de> serde::Deserialize<'de> for VerifyEmailResponse {
             }
         }
         deserializer.deserialize_struct("token_def.v1.VerifyEmailResponse", FIELDS, GeneratedVisitor)
+    }
+}
+impl serde::Serialize for VerifyNewsletterSubscriptionRequest {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if !self.identifier.is_empty() {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("token_def.v1.VerifyNewsletterSubscriptionRequest", len)?;
+        if !self.identifier.is_empty() {
+            struct_ser.serialize_field("identifier", &self.identifier)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for VerifyNewsletterSubscriptionRequest {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "identifier",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            Identifier,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "identifier" => Ok(GeneratedField::Identifier),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = VerifyNewsletterSubscriptionRequest;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct token_def.v1.VerifyNewsletterSubscriptionRequest")
+            }
+
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<VerifyNewsletterSubscriptionRequest, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut identifier__ = None;
+                while let Some(k) = map.next_key()? {
+                    match k {
+                        GeneratedField::Identifier => {
+                            if identifier__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("identifier"));
+                            }
+                            identifier__ = Some(map.next_value()?);
+                        }
+                    }
+                }
+                Ok(VerifyNewsletterSubscriptionRequest {
+                    identifier: identifier__.unwrap_or_default(),
+                })
+            }
+        }
+        deserializer.deserialize_struct("token_def.v1.VerifyNewsletterSubscriptionRequest", FIELDS, GeneratedVisitor)
+    }
+}
+impl serde::Serialize for VerifyNewsletterSubscriptionResponse {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let len = 0;
+        let struct_ser = serializer.serialize_struct("token_def.v1.VerifyNewsletterSubscriptionResponse", len)?;
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for VerifyNewsletterSubscriptionResponse {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                            Err(serde::de::Error::unknown_field(value, FIELDS))
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = VerifyNewsletterSubscriptionResponse;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct token_def.v1.VerifyNewsletterSubscriptionResponse")
+            }
+
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<VerifyNewsletterSubscriptionResponse, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                while map.next_key::<GeneratedField>()?.is_some() {
+                    let _ = map.next_value::<serde::de::IgnoredAny>()?;
+                }
+                Ok(VerifyNewsletterSubscriptionResponse {
+                })
+            }
+        }
+        deserializer.deserialize_struct("token_def.v1.VerifyNewsletterSubscriptionResponse", FIELDS, GeneratedVisitor)
     }
 }

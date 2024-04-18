@@ -273,4 +273,32 @@ pub struct GetBlogSitemapResponse {
     #[prost(string, tag="1")]
     pub content: ::prost::alloc::string::String,
 }
+// Blog newsletter
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetBlogNewsletterInfoRequest {
+    #[prost(string, tag="1")]
+    pub identifier: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="2")]
+    pub current_user_id: ::core::option::Option<::prost::alloc::string::String>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetBlogNewsletterInfoResponse {
+    #[prost(string, tag="1")]
+    pub id: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub name: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="3")]
+    pub description: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="4")]
+    pub newsletter_splash_id: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="5")]
+    pub newsletter_splash_hex: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(message, optional, tag="6")]
+    pub user: ::core::option::Option<super::super::user_def::v1::BareUser>,
+    #[prost(bool, optional, tag="7")]
+    pub is_subscribed: ::core::option::Option<bool>,
+}
 // @@protoc_insertion_point(module)

@@ -698,6 +698,311 @@ impl<'de> serde::Deserialize<'de> for GetBlogEditorsInfoResponse {
         deserializer.deserialize_struct("blog_def.v1.GetBlogEditorsInfoResponse", FIELDS, GeneratedVisitor)
     }
 }
+impl serde::Serialize for GetBlogNewsletterInfoRequest {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if !self.identifier.is_empty() {
+            len += 1;
+        }
+        if self.current_user_id.is_some() {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("blog_def.v1.GetBlogNewsletterInfoRequest", len)?;
+        if !self.identifier.is_empty() {
+            struct_ser.serialize_field("identifier", &self.identifier)?;
+        }
+        if let Some(v) = self.current_user_id.as_ref() {
+            struct_ser.serialize_field("currentUserId", v)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for GetBlogNewsletterInfoRequest {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "identifier",
+            "current_user_id",
+            "currentUserId",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            Identifier,
+            CurrentUserId,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "identifier" => Ok(GeneratedField::Identifier),
+                            "currentUserId" | "current_user_id" => Ok(GeneratedField::CurrentUserId),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = GetBlogNewsletterInfoRequest;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct blog_def.v1.GetBlogNewsletterInfoRequest")
+            }
+
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetBlogNewsletterInfoRequest, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut identifier__ = None;
+                let mut current_user_id__ = None;
+                while let Some(k) = map.next_key()? {
+                    match k {
+                        GeneratedField::Identifier => {
+                            if identifier__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("identifier"));
+                            }
+                            identifier__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::CurrentUserId => {
+                            if current_user_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("currentUserId"));
+                            }
+                            current_user_id__ = map.next_value()?;
+                        }
+                    }
+                }
+                Ok(GetBlogNewsletterInfoRequest {
+                    identifier: identifier__.unwrap_or_default(),
+                    current_user_id: current_user_id__,
+                })
+            }
+        }
+        deserializer.deserialize_struct("blog_def.v1.GetBlogNewsletterInfoRequest", FIELDS, GeneratedVisitor)
+    }
+}
+impl serde::Serialize for GetBlogNewsletterInfoResponse {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if !self.id.is_empty() {
+            len += 1;
+        }
+        if !self.name.is_empty() {
+            len += 1;
+        }
+        if self.description.is_some() {
+            len += 1;
+        }
+        if self.newsletter_splash_id.is_some() {
+            len += 1;
+        }
+        if self.newsletter_splash_hex.is_some() {
+            len += 1;
+        }
+        if self.user.is_some() {
+            len += 1;
+        }
+        if self.is_subscribed.is_some() {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("blog_def.v1.GetBlogNewsletterInfoResponse", len)?;
+        if !self.id.is_empty() {
+            struct_ser.serialize_field("id", &self.id)?;
+        }
+        if !self.name.is_empty() {
+            struct_ser.serialize_field("name", &self.name)?;
+        }
+        if let Some(v) = self.description.as_ref() {
+            struct_ser.serialize_field("description", v)?;
+        }
+        if let Some(v) = self.newsletter_splash_id.as_ref() {
+            struct_ser.serialize_field("newsletterSplashId", v)?;
+        }
+        if let Some(v) = self.newsletter_splash_hex.as_ref() {
+            struct_ser.serialize_field("newsletterSplashHex", v)?;
+        }
+        if let Some(v) = self.user.as_ref() {
+            struct_ser.serialize_field("user", v)?;
+        }
+        if let Some(v) = self.is_subscribed.as_ref() {
+            struct_ser.serialize_field("isSubscribed", v)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for GetBlogNewsletterInfoResponse {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "id",
+            "name",
+            "description",
+            "newsletter_splash_id",
+            "newsletterSplashId",
+            "newsletter_splash_hex",
+            "newsletterSplashHex",
+            "user",
+            "is_subscribed",
+            "isSubscribed",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            Id,
+            Name,
+            Description,
+            NewsletterSplashId,
+            NewsletterSplashHex,
+            User,
+            IsSubscribed,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "id" => Ok(GeneratedField::Id),
+                            "name" => Ok(GeneratedField::Name),
+                            "description" => Ok(GeneratedField::Description),
+                            "newsletterSplashId" | "newsletter_splash_id" => Ok(GeneratedField::NewsletterSplashId),
+                            "newsletterSplashHex" | "newsletter_splash_hex" => Ok(GeneratedField::NewsletterSplashHex),
+                            "user" => Ok(GeneratedField::User),
+                            "isSubscribed" | "is_subscribed" => Ok(GeneratedField::IsSubscribed),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = GetBlogNewsletterInfoResponse;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct blog_def.v1.GetBlogNewsletterInfoResponse")
+            }
+
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetBlogNewsletterInfoResponse, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut id__ = None;
+                let mut name__ = None;
+                let mut description__ = None;
+                let mut newsletter_splash_id__ = None;
+                let mut newsletter_splash_hex__ = None;
+                let mut user__ = None;
+                let mut is_subscribed__ = None;
+                while let Some(k) = map.next_key()? {
+                    match k {
+                        GeneratedField::Id => {
+                            if id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("id"));
+                            }
+                            id__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::Name => {
+                            if name__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("name"));
+                            }
+                            name__ = Some(map.next_value()?);
+                        }
+                        GeneratedField::Description => {
+                            if description__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("description"));
+                            }
+                            description__ = map.next_value()?;
+                        }
+                        GeneratedField::NewsletterSplashId => {
+                            if newsletter_splash_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("newsletterSplashId"));
+                            }
+                            newsletter_splash_id__ = map.next_value()?;
+                        }
+                        GeneratedField::NewsletterSplashHex => {
+                            if newsletter_splash_hex__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("newsletterSplashHex"));
+                            }
+                            newsletter_splash_hex__ = map.next_value()?;
+                        }
+                        GeneratedField::User => {
+                            if user__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("user"));
+                            }
+                            user__ = map.next_value()?;
+                        }
+                        GeneratedField::IsSubscribed => {
+                            if is_subscribed__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("isSubscribed"));
+                            }
+                            is_subscribed__ = map.next_value()?;
+                        }
+                    }
+                }
+                Ok(GetBlogNewsletterInfoResponse {
+                    id: id__.unwrap_or_default(),
+                    name: name__.unwrap_or_default(),
+                    description: description__,
+                    newsletter_splash_id: newsletter_splash_id__,
+                    newsletter_splash_hex: newsletter_splash_hex__,
+                    user: user__,
+                    is_subscribed: is_subscribed__,
+                })
+            }
+        }
+        deserializer.deserialize_struct("blog_def.v1.GetBlogNewsletterInfoResponse", FIELDS, GeneratedVisitor)
+    }
+}
 impl serde::Serialize for GetBlogPendingStoryCountRequest {
     #[allow(deprecated)]
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
