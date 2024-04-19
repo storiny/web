@@ -1,4 +1,6 @@
 // @generated
+// Get token
+
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetTokenRequest {
@@ -10,7 +12,6 @@ pub struct GetTokenRequest {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetTokenResponse {
-    /// Base props
     #[prost(bool, tag="1")]
     pub is_valid: bool,
     #[prost(bool, tag="2")]
@@ -39,6 +40,8 @@ pub struct VerifyNewsletterSubscriptionRequest {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct VerifyNewsletterSubscriptionResponse {
+    #[prost(bool, tag="1")]
+    pub is_valid: bool,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
@@ -47,7 +50,6 @@ pub enum TokenType {
     EmailVerification = 1,
     PasswordReset = 2,
     PasswordAdd = 3,
-    NewsletterSubscribe = 4,
 }
 impl TokenType {
     /// String value of the enum field names used in the ProtoBuf definition.
@@ -60,7 +62,6 @@ impl TokenType {
             TokenType::EmailVerification => "TOKEN_TYPE_EMAIL_VERIFICATION",
             TokenType::PasswordReset => "TOKEN_TYPE_PASSWORD_RESET",
             TokenType::PasswordAdd => "TOKEN_TYPE_PASSWORD_ADD",
-            TokenType::NewsletterSubscribe => "TOKEN_TYPE_NEWSLETTER_SUBSCRIBE",
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
@@ -70,7 +71,6 @@ impl TokenType {
             "TOKEN_TYPE_EMAIL_VERIFICATION" => Some(Self::EmailVerification),
             "TOKEN_TYPE_PASSWORD_RESET" => Some(Self::PasswordReset),
             "TOKEN_TYPE_PASSWORD_ADD" => Some(Self::PasswordAdd),
-            "TOKEN_TYPE_NEWSLETTER_SUBSCRIBE" => Some(Self::NewsletterSubscribe),
             _ => None,
         }
     }

@@ -1,22 +1,18 @@
 "use client";
 
-import { ImageSize, USER_PROPS } from "@storiny/shared";
+import { USER_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import PlusPattern from "~/brand/plus-pattern";
-import { GetBlogNewsletterInfoResponse } from "~/common/grpc";
 import { use_app_router } from "~/common/utils";
 import Button from "~/components/button";
 import Checkbox from "~/components/checkbox";
 import Divider from "~/components/divider";
 import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
 import FormInput from "~/components/form-input";
-import Link from "~/components/link";
 import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
-import Persona from "~/entities/persona";
 import CheckIcon from "~/icons/check";
 import MailPlusIcon from "~/icons/mail-plus";
 import {
@@ -26,16 +22,13 @@ import {
 } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
-import { get_cdn_url } from "~/utils/get-cdn-url";
 import { handle_api_error } from "~/utils/handle-api-error";
 
+import { use_blog_newsletter_info_context } from "./context";
 import {
   NEWSLETTER_SUBSCRIBE_SCHEMA,
   NewsletterSubscribeSchema
 } from "./schema";
-import styles from "./styles.module.scss";
-
-type Props = GetBlogNewsletterInfoResponse;
 
 const LoggedOutForm = ({
   blog_id
@@ -217,79 +210,21 @@ const LoggedInForm = ({
   );
 };
 
-const Client = (props: Props): React.ReactElement => {
-  const { id, newsletter_splash_id, name, description, user, is_subscribed } =
-    props;
+const Client = (): React.ReactElement => {
+  const { id, user, is_subscribed } = use_blog_newsletter_info_context();
   const logged_in = use_app_selector(select_is_logged_in);
 
   return (
     <React.Fragment>
-      <div
-        className={clsx(
-          css["full-w"],
-          css["full-h"],
-          styles.splash,
-          newsletter_splash_id && styles["has-splash"]
-        )}
-        role={"presentation"}
-        style={
-          {
-            "--splash-url": newsletter_splash_id
-              ? `url("${get_cdn_url(newsletter_splash_id, ImageSize.W_2440)}")`
-              : undefined
-          } as React.CSSProperties
-        }
-      >
-        {!newsletter_splash_id && <PlusPattern />}
-      </div>
-      <div className={clsx(css["flex-col"], styles.content)}>
-        <Typography as={"h1"} scale={"xl"}>
-          {name}
-        </Typography>
-        <Spacer orientation={"vertical"} size={2} />
-        <Persona
-          avatar={{
-            alt: `${user?.name}'s avatar`,
-            hex: user?.avatar_hex,
-            avatar_id: user?.avatar_id,
-            label: user?.name
-          }}
-          primary_text={
-            <span>
-              <Typography as={"span"} color={"minor"}>
-                By
-              </Typography>{" "}
-              <Link
-                fixed_color
-                href={`${process.env.NEXT_PUBLIC_WEB_URL}/${user?.username}`}
-                target={"_blank"}
-                title={`View ${user?.name}'s profile`}
-              >
-                {user?.name}
-              </Link>
-            </span>
-          }
+      {logged_in ? (
+        <LoggedInForm
+          blog_id={id}
+          is_subscribed={is_subscribed}
+          user_name={user?.name || ""}
         />
-        {Boolean((description || "").trim().length) && (
-          <React.Fragment>
-            <Spacer orientation={"vertical"} size={3} />
-            <Typography color={"minor"} level={"body2"}>
-              {description}
-            </Typography>
-          </React.Fragment>
-        )}
-        <Spacer className={css["f-grow"]} orientation={"vertical"} size={10} />
-        {logged_in ? (
-          <LoggedInForm
-            blog_id={id}
-            is_subscribed={is_subscribed}
-            user_name={user?.name || ""}
-          />
-        ) : (
-          <LoggedOutForm blog_id={id} />
-        )}
-        <Spacer orientation={"vertical"} size={2} />
-      </div>
+      ) : (
+        <LoggedOutForm blog_id={id} />
+      )}
     </React.Fragment>
   );
 };
