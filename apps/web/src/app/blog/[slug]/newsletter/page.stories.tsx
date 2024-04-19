@@ -8,23 +8,11 @@ import { render_with_state } from "~/redux/mock";
 
 import StorybookBlogLayout from "../layout.storybook";
 import NewsletterPage from "./client";
-import BlogNewsletterLayout from "./layout";
+import StorybookBlogNewsletterLayout from "./layout.storybook";
 
 const meta: Meta<typeof NewsletterPage> = {
   title: "pages/blog/newsletter",
   component: NewsletterPage,
-  args: {
-    ...MOCK_BLOGS[0],
-    description: MOCK_BLOGS[0].description || undefined,
-    newsletter_splash_id: MOCK_BLOGS[0].newsletter_splash_id || undefined,
-    newsletter_splash_hex: MOCK_BLOGS[0].newsletter_splash_hex || undefined,
-    user: {
-      ...MOCK_USERS[0],
-      avatar_id: MOCK_USERS[0].avatar_id || undefined,
-      avatar_hex: MOCK_USERS[0].avatar_hex || undefined
-    },
-    is_subscribed: false
-  },
   parameters: {
     layout: "fullscreen"
   },
@@ -39,9 +27,24 @@ export const Default: Story = {
     (Story): React.ReactElement =>
       render_with_state(
         <StorybookBlogLayout>
-          <BlogNewsletterLayout>
+          <StorybookBlogNewsletterLayout
+            response={{
+              ...MOCK_BLOGS[0],
+              description: MOCK_BLOGS[0].description || undefined,
+              newsletter_splash_id:
+                MOCK_BLOGS[0].newsletter_splash_id || undefined,
+              newsletter_splash_hex:
+                MOCK_BLOGS[0].newsletter_splash_hex || undefined,
+              user: {
+                ...MOCK_USERS[0],
+                avatar_id: MOCK_USERS[0].avatar_id || undefined,
+                avatar_hex: MOCK_USERS[0].avatar_hex || undefined
+              },
+              is_subscribed: false
+            }}
+          >
             <Story />
-          </BlogNewsletterLayout>
+          </StorybookBlogNewsletterLayout>
         </StorybookBlogLayout>,
         { ignore_primitive_providers: true }
       )
@@ -53,9 +56,24 @@ export const LoggedIn: Story = {
     (Story): React.ReactElement =>
       render_with_state(
         <StorybookBlogLayout>
-          <BlogNewsletterLayout>
+          <StorybookBlogNewsletterLayout
+            response={{
+              ...MOCK_BLOGS[0],
+              description: MOCK_BLOGS[0].description || undefined,
+              newsletter_splash_id:
+                MOCK_BLOGS[0].newsletter_splash_id || undefined,
+              newsletter_splash_hex:
+                MOCK_BLOGS[0].newsletter_splash_hex || undefined,
+              user: {
+                ...MOCK_USERS[0],
+                avatar_id: MOCK_USERS[0].avatar_id || undefined,
+                avatar_hex: MOCK_USERS[0].avatar_hex || undefined
+              },
+              is_subscribed: false
+            }}
+          >
             <Story />
-          </BlogNewsletterLayout>
+          </StorybookBlogNewsletterLayout>
         </StorybookBlogLayout>,
         { ignore_primitive_providers: true, logged_in: true }
       )
@@ -63,17 +81,57 @@ export const LoggedIn: Story = {
 };
 
 export const WithoutSplash: Story = {
-  ...Default,
-  args: {
-    ...Default.args,
-    newsletter_splash_id: undefined
-  }
+  decorators: [
+    (Story): React.ReactElement =>
+      render_with_state(
+        <StorybookBlogLayout>
+          <StorybookBlogNewsletterLayout
+            response={{
+              ...MOCK_BLOGS[0],
+              description: MOCK_BLOGS[0].description || undefined,
+              newsletter_splash_id: undefined,
+              newsletter_splash_hex: undefined,
+              user: {
+                ...MOCK_USERS[0],
+                avatar_id: MOCK_USERS[0].avatar_id || undefined,
+                avatar_hex: MOCK_USERS[0].avatar_hex || undefined
+              },
+              is_subscribed: false
+            }}
+          >
+            <Story />
+          </StorybookBlogNewsletterLayout>
+        </StorybookBlogLayout>,
+        { ignore_primitive_providers: true }
+      )
+  ]
 };
 
 export const Subscribed: Story = {
-  ...LoggedIn,
-  args: {
-    ...LoggedIn.args,
-    is_subscribed: true
-  }
+  decorators: [
+    (Story): React.ReactElement =>
+      render_with_state(
+        <StorybookBlogLayout>
+          <StorybookBlogNewsletterLayout
+            response={{
+              ...MOCK_BLOGS[0],
+              description: MOCK_BLOGS[0].description || undefined,
+              newsletter_splash_id:
+                MOCK_BLOGS[0].newsletter_splash_id || undefined,
+              newsletter_splash_hex:
+                MOCK_BLOGS[0].newsletter_splash_hex || undefined,
+              user: {
+                ...MOCK_USERS[0],
+                avatar_id: MOCK_USERS[0].avatar_id || undefined,
+                avatar_hex: MOCK_USERS[0].avatar_hex || undefined
+              },
+              is_subscribed: true
+            }}
+          >
+            <Story />
+          </StorybookBlogNewsletterLayout>
+        </StorybookBlogLayout>,
+        { ignore_primitive_providers: true, logged_in: true }
+      )
+  ]
 };

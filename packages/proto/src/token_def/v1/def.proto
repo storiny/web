@@ -3,12 +3,13 @@ syntax = "proto3";
 package token_def.v1;
 
 enum TokenType {
-  TOKEN_TYPE_UNSPECIFIED /*         */ = 0;
-  TOKEN_TYPE_EMAIL_VERIFICATION /*  */ = 1;
-  TOKEN_TYPE_PASSWORD_RESET /*      */ = 2;
-  TOKEN_TYPE_PASSWORD_ADD /*        */ = 3;
-  TOKEN_TYPE_NEWSLETTER_SUBSCRIBE /**/ = 4;
+  TOKEN_TYPE_UNSPECIFIED /*       */ = 0;
+  TOKEN_TYPE_EMAIL_VERIFICATION /**/ = 1;
+  TOKEN_TYPE_PASSWORD_RESET /*    */ = 2;
+  TOKEN_TYPE_PASSWORD_ADD /*      */ = 3;
 }
+
+// Get token
 
 message GetTokenRequest {
   string identifier /**/ = 1;
@@ -16,7 +17,6 @@ message GetTokenRequest {
 }
 
 message GetTokenResponse {
-  // Base props
   bool is_valid /*  */ = 1;
   bool is_expired /**/ = 2;
 }
@@ -35,4 +35,6 @@ message VerifyNewsletterSubscriptionRequest {
   string identifier = 1;
 }
 
-message VerifyNewsletterSubscriptionResponse {}
+message VerifyNewsletterSubscriptionResponse {
+  bool is_valid = 1;
+}

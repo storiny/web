@@ -8,7 +8,6 @@ export const TokenType = {
   EMAIL_VERIFICATION: 1,
   PASSWORD_RESET: 2,
   PASSWORD_ADD: 3,
-  NEWSLETTER_SUBSCRIBE: 4,
   UNRECOGNIZED: -1,
 } as const;
 
@@ -28,9 +27,6 @@ export function tokenTypeFromJSON(object: any): TokenType {
     case 3:
     case "TOKEN_TYPE_PASSWORD_ADD":
       return TokenType.PASSWORD_ADD;
-    case 4:
-    case "TOKEN_TYPE_NEWSLETTER_SUBSCRIBE":
-      return TokenType.NEWSLETTER_SUBSCRIBE;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -48,8 +44,6 @@ export function tokenTypeToJSON(object: TokenType): string {
       return "TOKEN_TYPE_PASSWORD_RESET";
     case TokenType.PASSWORD_ADD:
       return "TOKEN_TYPE_PASSWORD_ADD";
-    case TokenType.NEWSLETTER_SUBSCRIBE:
-      return "TOKEN_TYPE_NEWSLETTER_SUBSCRIBE";
     case TokenType.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";
@@ -62,7 +56,6 @@ export interface GetTokenRequest {
 }
 
 export interface GetTokenResponse {
-  /** Base props */
   is_valid: boolean;
   is_expired: boolean;
 }
@@ -79,6 +72,7 @@ export interface VerifyNewsletterSubscriptionRequest {
 }
 
 export interface VerifyNewsletterSubscriptionResponse {
+  is_valid: boolean;
 }
 
 function createBaseGetTokenRequest(): GetTokenRequest {
@@ -391,11 +385,14 @@ export const VerifyNewsletterSubscriptionRequest = {
 };
 
 function createBaseVerifyNewsletterSubscriptionResponse(): VerifyNewsletterSubscriptionResponse {
-  return {};
+  return { is_valid: false };
 }
 
 export const VerifyNewsletterSubscriptionResponse = {
-  encode(_: VerifyNewsletterSubscriptionResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(message: VerifyNewsletterSubscriptionResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.is_valid === true) {
+      writer.uint32(8).bool(message.is_valid);
+    }
     return writer;
   },
 
@@ -406,6 +403,13 @@ export const VerifyNewsletterSubscriptionResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.is_valid = reader.bool();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -415,12 +419,15 @@ export const VerifyNewsletterSubscriptionResponse = {
     return message;
   },
 
-  fromJSON(_: any): VerifyNewsletterSubscriptionResponse {
-    return {};
+  fromJSON(object: any): VerifyNewsletterSubscriptionResponse {
+    return { is_valid: isSet(object.is_valid) ? globalThis.Boolean(object.is_valid) : false };
   },
 
-  toJSON(_: VerifyNewsletterSubscriptionResponse): unknown {
+  toJSON(message: VerifyNewsletterSubscriptionResponse): unknown {
     const obj: any = {};
+    if (message.is_valid === true) {
+      obj.is_valid = message.is_valid;
+    }
     return obj;
   },
 
@@ -430,9 +437,10 @@ export const VerifyNewsletterSubscriptionResponse = {
     return VerifyNewsletterSubscriptionResponse.fromPartial(base ?? ({} as any));
   },
   fromPartial<I extends Exact<DeepPartial<VerifyNewsletterSubscriptionResponse>, I>>(
-    _: I,
+    object: I,
   ): VerifyNewsletterSubscriptionResponse {
     const message = createBaseVerifyNewsletterSubscriptionResponse();
+    message.is_valid = object.is_valid ?? false;
     return message;
   },
 };
