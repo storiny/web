@@ -43,3 +43,22 @@ export const Default: Story = {
       )
   ]
 };
+
+export const WithoutPlusFeatures: Story = {
+  decorators: [
+    (Story): React.ReactElement =>
+      render_with_state(
+        <DashboardLayout>
+          <DashboardSplashLayout>
+            <StorybookBlogDashboardLayout
+              blog={{ has_plus_features: false }}
+              role={"owner"}
+            >
+              <Story />
+            </StorybookBlogDashboardLayout>
+          </DashboardSplashLayout>
+        </DashboardLayout>,
+        { ignore_primitive_providers: false, logged_in: true }
+      )
+  ]
+};

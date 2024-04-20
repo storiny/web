@@ -5,6 +5,7 @@ import React from "react";
 import PlusPattern from "~/brand/plus-pattern";
 import { GetBlogNewsletterInfoResponse } from "~/common/grpc";
 import Link from "~/components/link";
+import Main from "~/components/main";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import Persona from "~/entities/persona";
@@ -51,10 +52,7 @@ const StorybookBlogNewsletterLayout = ({
           {!newsletter_splash_id && <PlusPattern />}
         </div>
         {/* Need to make the <main /> styles more specific */}
-        <main
-          className={clsx(auth_styles.x, auth_styles.main)}
-          data-root={"true"}
-        >
+        <Main className={clsx(auth_styles.x, auth_styles.main)}>
           <div className={clsx(css["flex-col"], auth_styles.container)}>
             <div className={clsx(css["flex-col"], styles.content)}>
               <Typography as={"h1"} scale={"xl"}>
@@ -101,7 +99,7 @@ const StorybookBlogNewsletterLayout = ({
               <Spacer orientation={"vertical"} size={1} />
             </div>
           </div>
-        </main>
+        </Main>
         <SplashScreen />
       </div>
     </BlogNewsletterInfoContext.Provider>
