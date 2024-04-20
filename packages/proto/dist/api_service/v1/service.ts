@@ -16,6 +16,8 @@ import {
   GetBlogEditorsInfoResponse,
   GetBlogNewsletterInfoRequest,
   GetBlogNewsletterInfoResponse,
+  GetBlogNewsletterRequest,
+  GetBlogNewsletterResponse,
   GetBlogPendingStoryCountRequest,
   GetBlogPendingStoryCountResponse,
   GetBlogPublishedStoryCountRequest,
@@ -518,6 +520,17 @@ export const ApiServiceService = {
     responseSerialize: (value: GetBlogSitemapResponse) => Buffer.from(GetBlogSitemapResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetBlogSitemapResponse.decode(value),
   },
+  /** Returns the blog's newsletter */
+  getBlogNewsletter: {
+    path: "/api_service.v1.ApiService/GetBlogNewsletter",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetBlogNewsletterRequest) => Buffer.from(GetBlogNewsletterRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetBlogNewsletterRequest.decode(value),
+    responseSerialize: (value: GetBlogNewsletterResponse) =>
+      Buffer.from(GetBlogNewsletterResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetBlogNewsletterResponse.decode(value),
+  },
   /** Returns the blog's newsletter details */
   getBlogNewsletterInfo: {
     path: "/api_service.v1.ApiService/GetBlogNewsletterInfo",
@@ -628,6 +641,8 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getBlogWritersInfo: handleUnaryCall<GetBlogWritersInfoRequest, GetBlogWritersInfoResponse>;
   /** Returns the blog's sitemap */
   getBlogSitemap: handleUnaryCall<GetBlogSitemapRequest, GetBlogSitemapResponse>;
+  /** Returns the blog's newsletter */
+  getBlogNewsletter: handleUnaryCall<GetBlogNewsletterRequest, GetBlogNewsletterResponse>;
   /** Returns the blog's newsletter details */
   getBlogNewsletterInfo: handleUnaryCall<GetBlogNewsletterInfoRequest, GetBlogNewsletterInfoResponse>;
   /** Returns the story's open graph data */
@@ -1180,6 +1195,22 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetBlogSitemapResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the blog's newsletter */
+  getBlogNewsletter(
+    request: GetBlogNewsletterRequest,
+    callback: (error: ServiceError | null, response: GetBlogNewsletterResponse) => void,
+  ): ClientUnaryCall;
+  getBlogNewsletter(
+    request: GetBlogNewsletterRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetBlogNewsletterResponse) => void,
+  ): ClientUnaryCall;
+  getBlogNewsletter(
+    request: GetBlogNewsletterRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetBlogNewsletterResponse) => void,
   ): ClientUnaryCall;
   /** Returns the blog's newsletter details */
   getBlogNewsletterInfo(

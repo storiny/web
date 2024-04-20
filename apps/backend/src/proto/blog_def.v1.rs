@@ -259,6 +259,20 @@ pub struct GetBlogWritersInfoResponse {
     #[prost(uint32, tag="2")]
     pub pending_writer_request_count: u32,
 }
+// Blog newsletter info
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetBlogNewsletterInfoRequest {
+    #[prost(string, tag="1")]
+    pub identifier: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetBlogNewsletterInfoResponse {
+    #[prost(uint32, tag="1")]
+    pub subscriber_count: u32,
+}
 // Blog sitemap
 
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -277,7 +291,7 @@ pub struct GetBlogSitemapResponse {
 
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetBlogNewsletterInfoRequest {
+pub struct GetBlogNewsletterRequest {
     #[prost(string, tag="1")]
     pub identifier: ::prost::alloc::string::String,
     #[prost(string, optional, tag="2")]
@@ -285,7 +299,7 @@ pub struct GetBlogNewsletterInfoRequest {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetBlogNewsletterInfoResponse {
+pub struct GetBlogNewsletterResponse {
     #[prost(string, tag="1")]
     pub id: ::prost::alloc::string::String,
     #[prost(string, tag="2")]
