@@ -709,10 +709,195 @@ impl serde::Serialize for GetBlogNewsletterInfoRequest {
         if !self.identifier.is_empty() {
             len += 1;
         }
+        let mut struct_ser = serializer.serialize_struct("blog_def.v1.GetBlogNewsletterInfoRequest", len)?;
+        if !self.identifier.is_empty() {
+            struct_ser.serialize_field("identifier", &self.identifier)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for GetBlogNewsletterInfoRequest {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "identifier",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            Identifier,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "identifier" => Ok(GeneratedField::Identifier),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = GetBlogNewsletterInfoRequest;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct blog_def.v1.GetBlogNewsletterInfoRequest")
+            }
+
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetBlogNewsletterInfoRequest, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut identifier__ = None;
+                while let Some(k) = map.next_key()? {
+                    match k {
+                        GeneratedField::Identifier => {
+                            if identifier__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("identifier"));
+                            }
+                            identifier__ = Some(map.next_value()?);
+                        }
+                    }
+                }
+                Ok(GetBlogNewsletterInfoRequest {
+                    identifier: identifier__.unwrap_or_default(),
+                })
+            }
+        }
+        deserializer.deserialize_struct("blog_def.v1.GetBlogNewsletterInfoRequest", FIELDS, GeneratedVisitor)
+    }
+}
+impl serde::Serialize for GetBlogNewsletterInfoResponse {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if self.subscriber_count != 0 {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("blog_def.v1.GetBlogNewsletterInfoResponse", len)?;
+        if self.subscriber_count != 0 {
+            struct_ser.serialize_field("subscriberCount", &self.subscriber_count)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for GetBlogNewsletterInfoResponse {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "subscriber_count",
+            "subscriberCount",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            SubscriberCount,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "subscriberCount" | "subscriber_count" => Ok(GeneratedField::SubscriberCount),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = GetBlogNewsletterInfoResponse;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct blog_def.v1.GetBlogNewsletterInfoResponse")
+            }
+
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetBlogNewsletterInfoResponse, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut subscriber_count__ = None;
+                while let Some(k) = map.next_key()? {
+                    match k {
+                        GeneratedField::SubscriberCount => {
+                            if subscriber_count__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("subscriberCount"));
+                            }
+                            subscriber_count__ = 
+                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
+                            ;
+                        }
+                    }
+                }
+                Ok(GetBlogNewsletterInfoResponse {
+                    subscriber_count: subscriber_count__.unwrap_or_default(),
+                })
+            }
+        }
+        deserializer.deserialize_struct("blog_def.v1.GetBlogNewsletterInfoResponse", FIELDS, GeneratedVisitor)
+    }
+}
+impl serde::Serialize for GetBlogNewsletterRequest {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if !self.identifier.is_empty() {
+            len += 1;
+        }
         if self.current_user_id.is_some() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("blog_def.v1.GetBlogNewsletterInfoRequest", len)?;
+        let mut struct_ser = serializer.serialize_struct("blog_def.v1.GetBlogNewsletterRequest", len)?;
         if !self.identifier.is_empty() {
             struct_ser.serialize_field("identifier", &self.identifier)?;
         }
@@ -722,7 +907,7 @@ impl serde::Serialize for GetBlogNewsletterInfoRequest {
         struct_ser.end()
     }
 }
-impl<'de> serde::Deserialize<'de> for GetBlogNewsletterInfoRequest {
+impl<'de> serde::Deserialize<'de> for GetBlogNewsletterRequest {
     #[allow(deprecated)]
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
     where
@@ -770,13 +955,13 @@ impl<'de> serde::Deserialize<'de> for GetBlogNewsletterInfoRequest {
         }
         struct GeneratedVisitor;
         impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
-            type Value = GetBlogNewsletterInfoRequest;
+            type Value = GetBlogNewsletterRequest;
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                formatter.write_str("struct blog_def.v1.GetBlogNewsletterInfoRequest")
+                formatter.write_str("struct blog_def.v1.GetBlogNewsletterRequest")
             }
 
-            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetBlogNewsletterInfoRequest, V::Error>
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetBlogNewsletterRequest, V::Error>
                 where
                     V: serde::de::MapAccess<'de>,
             {
@@ -798,16 +983,16 @@ impl<'de> serde::Deserialize<'de> for GetBlogNewsletterInfoRequest {
                         }
                     }
                 }
-                Ok(GetBlogNewsletterInfoRequest {
+                Ok(GetBlogNewsletterRequest {
                     identifier: identifier__.unwrap_or_default(),
                     current_user_id: current_user_id__,
                 })
             }
         }
-        deserializer.deserialize_struct("blog_def.v1.GetBlogNewsletterInfoRequest", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct("blog_def.v1.GetBlogNewsletterRequest", FIELDS, GeneratedVisitor)
     }
 }
-impl serde::Serialize for GetBlogNewsletterInfoResponse {
+impl serde::Serialize for GetBlogNewsletterResponse {
     #[allow(deprecated)]
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
@@ -836,7 +1021,7 @@ impl serde::Serialize for GetBlogNewsletterInfoResponse {
         if self.is_subscribed {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("blog_def.v1.GetBlogNewsletterInfoResponse", len)?;
+        let mut struct_ser = serializer.serialize_struct("blog_def.v1.GetBlogNewsletterResponse", len)?;
         if !self.id.is_empty() {
             struct_ser.serialize_field("id", &self.id)?;
         }
@@ -861,7 +1046,7 @@ impl serde::Serialize for GetBlogNewsletterInfoResponse {
         struct_ser.end()
     }
 }
-impl<'de> serde::Deserialize<'de> for GetBlogNewsletterInfoResponse {
+impl<'de> serde::Deserialize<'de> for GetBlogNewsletterResponse {
     #[allow(deprecated)]
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
     where
@@ -926,13 +1111,13 @@ impl<'de> serde::Deserialize<'de> for GetBlogNewsletterInfoResponse {
         }
         struct GeneratedVisitor;
         impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
-            type Value = GetBlogNewsletterInfoResponse;
+            type Value = GetBlogNewsletterResponse;
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                formatter.write_str("struct blog_def.v1.GetBlogNewsletterInfoResponse")
+                formatter.write_str("struct blog_def.v1.GetBlogNewsletterResponse")
             }
 
-            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetBlogNewsletterInfoResponse, V::Error>
+            fn visit_map<V>(self, mut map: V) -> std::result::Result<GetBlogNewsletterResponse, V::Error>
                 where
                     V: serde::de::MapAccess<'de>,
             {
@@ -989,7 +1174,7 @@ impl<'de> serde::Deserialize<'de> for GetBlogNewsletterInfoResponse {
                         }
                     }
                 }
-                Ok(GetBlogNewsletterInfoResponse {
+                Ok(GetBlogNewsletterResponse {
                     id: id__.unwrap_or_default(),
                     name: name__.unwrap_or_default(),
                     description: description__,
@@ -1000,7 +1185,7 @@ impl<'de> serde::Deserialize<'de> for GetBlogNewsletterInfoResponse {
                 })
             }
         }
-        deserializer.deserialize_struct("blog_def.v1.GetBlogNewsletterInfoResponse", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct("blog_def.v1.GetBlogNewsletterResponse", FIELDS, GeneratedVisitor)
     }
 }
 impl serde::Serialize for GetBlogPendingStoryCountRequest {

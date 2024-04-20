@@ -6,7 +6,7 @@ import { notFound as not_found } from "next/dist/client/components/not-found";
 import React from "react";
 
 import PlusPattern from "~/brand/plus-pattern";
-import { get_blog_newsletter_info } from "~/common/grpc";
+import { get_blog_newsletter } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
 import { get_user } from "~/common/utils/get-user";
 import { is_valid_blog_slug } from "~/common/utils/is-valid-blog-slug";
@@ -36,7 +36,7 @@ const BlogNewsletterLayout = async ({
     }
 
     const user_id = await get_user();
-    const response = await get_blog_newsletter_info({
+    const response = await get_blog_newsletter({
       identifier: params.slug,
       current_user_id: user_id || undefined
     });

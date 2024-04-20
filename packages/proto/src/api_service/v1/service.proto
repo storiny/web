@@ -156,6 +156,10 @@ service ApiService {
    */
   rpc GetBlogSitemap(blog_def.v1.GetBlogSitemapRequest) returns (blog_def.v1.GetBlogSitemapResponse) {}
   /**
+   * Returns the blog's newsletter
+   */
+  rpc GetBlogNewsletter(blog_def.v1.GetBlogNewsletterRequest) returns (blog_def.v1.GetBlogNewsletterResponse) {}
+  /**
    * Returns the blog's newsletter details
    */
   rpc GetBlogNewsletterInfo(blog_def.v1.GetBlogNewsletterInfoRequest) returns (blog_def.v1.GetBlogNewsletterInfoResponse) {}

@@ -18,6 +18,8 @@ import {
   GetBlogEditorsInfoResponse,
   GetBlogNewsletterInfoRequest,
   GetBlogNewsletterInfoResponse,
+  GetBlogNewsletterRequest,
+  GetBlogNewsletterResponse,
   GetBlogPendingStoryCountRequest,
   GetBlogPendingStoryCountResponse,
   GetBlogPublishedStoryCountRequest,
@@ -321,6 +323,11 @@ const grpc_hub = {
       global.grpc_client.getBlogNewsletterInfo
     )
   ),
+  get_blog_newsletter: cache(
+    promisify<GetBlogNewsletterRequest, GetBlogNewsletterResponse>(
+      global.grpc_client.getBlogNewsletter
+    )
+  ),
   get_blog_sitemap: cache(
     promisify<GetBlogSitemapRequest, GetBlogSitemapResponse>(
       global.grpc_client.getBlogSitemap
@@ -353,6 +360,7 @@ export const {
   get_token,
   get_profile,
   get_user_blogs_info,
+  get_blog_newsletter,
   create_draft,
   verify_email,
   get_comment,
@@ -373,6 +381,7 @@ export {
   GetBlogArchiveResponse,
   GetBlogEditorsInfoResponse,
   GetBlogNewsletterInfoResponse,
+  GetBlogNewsletterResponse,
   GetBlogPendingStoryCountResponse,
   GetBlogPublishedStoryCountResponse,
   GetBlogResponse,

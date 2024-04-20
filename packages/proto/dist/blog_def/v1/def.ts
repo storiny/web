@@ -165,6 +165,14 @@ export interface GetBlogWritersInfoResponse {
   pending_writer_request_count: number;
 }
 
+export interface GetBlogNewsletterInfoRequest {
+  identifier: string;
+}
+
+export interface GetBlogNewsletterInfoResponse {
+  subscriber_count: number;
+}
+
 export interface GetBlogSitemapRequest {
   identifier: string;
 }
@@ -173,12 +181,12 @@ export interface GetBlogSitemapResponse {
   content: string;
 }
 
-export interface GetBlogNewsletterInfoRequest {
+export interface GetBlogNewsletterRequest {
   identifier: string;
   current_user_id?: string | undefined;
 }
 
-export interface GetBlogNewsletterInfoResponse {
+export interface GetBlogNewsletterResponse {
   id: string;
   name: string;
   description?: string | undefined;
@@ -2279,6 +2287,122 @@ export const GetBlogWritersInfoResponse = {
   },
 };
 
+function createBaseGetBlogNewsletterInfoRequest(): GetBlogNewsletterInfoRequest {
+  return { identifier: "" };
+}
+
+export const GetBlogNewsletterInfoRequest = {
+  encode(message: GetBlogNewsletterInfoRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.identifier !== "") {
+      writer.uint32(10).string(message.identifier);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetBlogNewsletterInfoRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetBlogNewsletterInfoRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.identifier = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetBlogNewsletterInfoRequest {
+    return { identifier: isSet(object.identifier) ? globalThis.String(object.identifier) : "" };
+  },
+
+  toJSON(message: GetBlogNewsletterInfoRequest): unknown {
+    const obj: any = {};
+    if (message.identifier !== "") {
+      obj.identifier = message.identifier;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetBlogNewsletterInfoRequest>, I>>(base?: I): GetBlogNewsletterInfoRequest {
+    return GetBlogNewsletterInfoRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetBlogNewsletterInfoRequest>, I>>(object: I): GetBlogNewsletterInfoRequest {
+    const message = createBaseGetBlogNewsletterInfoRequest();
+    message.identifier = object.identifier ?? "";
+    return message;
+  },
+};
+
+function createBaseGetBlogNewsletterInfoResponse(): GetBlogNewsletterInfoResponse {
+  return { subscriber_count: 0 };
+}
+
+export const GetBlogNewsletterInfoResponse = {
+  encode(message: GetBlogNewsletterInfoResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.subscriber_count !== 0) {
+      writer.uint32(8).uint32(message.subscriber_count);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetBlogNewsletterInfoResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetBlogNewsletterInfoResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.subscriber_count = reader.uint32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetBlogNewsletterInfoResponse {
+    return { subscriber_count: isSet(object.subscriber_count) ? globalThis.Number(object.subscriber_count) : 0 };
+  },
+
+  toJSON(message: GetBlogNewsletterInfoResponse): unknown {
+    const obj: any = {};
+    if (message.subscriber_count !== 0) {
+      obj.subscriber_count = Math.round(message.subscriber_count);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetBlogNewsletterInfoResponse>, I>>(base?: I): GetBlogNewsletterInfoResponse {
+    return GetBlogNewsletterInfoResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetBlogNewsletterInfoResponse>, I>>(
+    object: I,
+  ): GetBlogNewsletterInfoResponse {
+    const message = createBaseGetBlogNewsletterInfoResponse();
+    message.subscriber_count = object.subscriber_count ?? 0;
+    return message;
+  },
+};
+
 function createBaseGetBlogSitemapRequest(): GetBlogSitemapRequest {
   return { identifier: "" };
 }
@@ -2393,12 +2517,12 @@ export const GetBlogSitemapResponse = {
   },
 };
 
-function createBaseGetBlogNewsletterInfoRequest(): GetBlogNewsletterInfoRequest {
+function createBaseGetBlogNewsletterRequest(): GetBlogNewsletterRequest {
   return { identifier: "", current_user_id: undefined };
 }
 
-export const GetBlogNewsletterInfoRequest = {
-  encode(message: GetBlogNewsletterInfoRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const GetBlogNewsletterRequest = {
+  encode(message: GetBlogNewsletterRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.identifier !== "") {
       writer.uint32(10).string(message.identifier);
     }
@@ -2408,10 +2532,10 @@ export const GetBlogNewsletterInfoRequest = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): GetBlogNewsletterInfoRequest {
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetBlogNewsletterRequest {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetBlogNewsletterInfoRequest();
+    const message = createBaseGetBlogNewsletterRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -2438,14 +2562,14 @@ export const GetBlogNewsletterInfoRequest = {
     return message;
   },
 
-  fromJSON(object: any): GetBlogNewsletterInfoRequest {
+  fromJSON(object: any): GetBlogNewsletterRequest {
     return {
       identifier: isSet(object.identifier) ? globalThis.String(object.identifier) : "",
       current_user_id: isSet(object.current_user_id) ? globalThis.String(object.current_user_id) : undefined,
     };
   },
 
-  toJSON(message: GetBlogNewsletterInfoRequest): unknown {
+  toJSON(message: GetBlogNewsletterRequest): unknown {
     const obj: any = {};
     if (message.identifier !== "") {
       obj.identifier = message.identifier;
@@ -2456,18 +2580,18 @@ export const GetBlogNewsletterInfoRequest = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetBlogNewsletterInfoRequest>, I>>(base?: I): GetBlogNewsletterInfoRequest {
-    return GetBlogNewsletterInfoRequest.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<GetBlogNewsletterRequest>, I>>(base?: I): GetBlogNewsletterRequest {
+    return GetBlogNewsletterRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<GetBlogNewsletterInfoRequest>, I>>(object: I): GetBlogNewsletterInfoRequest {
-    const message = createBaseGetBlogNewsletterInfoRequest();
+  fromPartial<I extends Exact<DeepPartial<GetBlogNewsletterRequest>, I>>(object: I): GetBlogNewsletterRequest {
+    const message = createBaseGetBlogNewsletterRequest();
     message.identifier = object.identifier ?? "";
     message.current_user_id = object.current_user_id ?? undefined;
     return message;
   },
 };
 
-function createBaseGetBlogNewsletterInfoResponse(): GetBlogNewsletterInfoResponse {
+function createBaseGetBlogNewsletterResponse(): GetBlogNewsletterResponse {
   return {
     id: "",
     name: "",
@@ -2479,8 +2603,8 @@ function createBaseGetBlogNewsletterInfoResponse(): GetBlogNewsletterInfoRespons
   };
 }
 
-export const GetBlogNewsletterInfoResponse = {
-  encode(message: GetBlogNewsletterInfoResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const GetBlogNewsletterResponse = {
+  encode(message: GetBlogNewsletterResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
@@ -2505,10 +2629,10 @@ export const GetBlogNewsletterInfoResponse = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): GetBlogNewsletterInfoResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetBlogNewsletterResponse {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetBlogNewsletterInfoResponse();
+    const message = createBaseGetBlogNewsletterResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -2570,7 +2694,7 @@ export const GetBlogNewsletterInfoResponse = {
     return message;
   },
 
-  fromJSON(object: any): GetBlogNewsletterInfoResponse {
+  fromJSON(object: any): GetBlogNewsletterResponse {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
@@ -2586,7 +2710,7 @@ export const GetBlogNewsletterInfoResponse = {
     };
   },
 
-  toJSON(message: GetBlogNewsletterInfoResponse): unknown {
+  toJSON(message: GetBlogNewsletterResponse): unknown {
     const obj: any = {};
     if (message.id !== "") {
       obj.id = message.id;
@@ -2612,13 +2736,11 @@ export const GetBlogNewsletterInfoResponse = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetBlogNewsletterInfoResponse>, I>>(base?: I): GetBlogNewsletterInfoResponse {
-    return GetBlogNewsletterInfoResponse.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<GetBlogNewsletterResponse>, I>>(base?: I): GetBlogNewsletterResponse {
+    return GetBlogNewsletterResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<GetBlogNewsletterInfoResponse>, I>>(
-    object: I,
-  ): GetBlogNewsletterInfoResponse {
-    const message = createBaseGetBlogNewsletterInfoResponse();
+  fromPartial<I extends Exact<DeepPartial<GetBlogNewsletterResponse>, I>>(object: I): GetBlogNewsletterResponse {
+    const message = createBaseGetBlogNewsletterResponse();
     message.id = object.id ?? "";
     message.name = object.name ?? "";
     message.description = object.description ?? undefined;

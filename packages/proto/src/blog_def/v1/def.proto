@@ -165,6 +165,16 @@ message GetBlogWritersInfoResponse {
   uint32 pending_writer_request_count /**/ = 2;
 }
 
+// Blog newsletter info
+
+message GetBlogNewsletterInfoRequest {
+  string identifier = 1;
+}
+
+message GetBlogNewsletterInfoResponse {
+  uint32 subscriber_count = 1;
+}
+
 // Blog sitemap
 
 message GetBlogSitemapRequest {
@@ -177,12 +187,12 @@ message GetBlogSitemapResponse {
 
 // Blog newsletter
 
-message GetBlogNewsletterInfoRequest {
+message GetBlogNewsletterRequest {
   string identifier /*              */ = 1;
   optional string current_user_id /**/ = 2;
 }
 
-message GetBlogNewsletterInfoResponse {
+message GetBlogNewsletterResponse {
   string id /*                            */ = 1;
   string name /*                          */ = 2;
   optional string description /*          */ = 3;
