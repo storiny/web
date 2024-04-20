@@ -4,6 +4,8 @@ import { clsx } from "clsx";
 import React from "react";
 
 import { use_blog_context } from "~/common/context/blog";
+import Divider from "~/components/divider";
+import Main from "~/components/main";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import { use_media_query } from "~/hooks/use-media-query";
@@ -14,9 +16,13 @@ import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import DashboardTitle from "../../../../common/dashboard-title";
+import DashboardWrapper from "../../../../common/dashboard-wrapper";
+import ExportSubscribers from "./export-subscribers";
+import ImportSubscribers from "./import-subscribers";
 import { BlogNewsletterProps } from "./newsletter.props";
 import BlogContentNewsletterRightSidebar from "./right-sidebar";
 import Subscribers from "./right-sidebar/subscribers";
+import NewsletterSplashSettings from "./splash";
 import styles from "./styles.module.scss";
 
 const SubscribersHeader = ({
@@ -67,17 +73,22 @@ const SubscribersHeader = ({
 const BlogContentNewsletterClient = (
   props: BlogNewsletterProps
 ): React.ReactElement => {
-  const blog = use_blog_context();
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
 
   return (
     <React.Fragment>
-      <main data-root={"true"}>
+      <Main>
         <DashboardTitle>Newsletter</DashboardTitle>
         {is_smaller_than_desktop && <SubscribersHeader {...props} />}
-        -- Content --
+        <DashboardWrapper>
+          <NewsletterSplashSettings />
+          <Divider />
+          <ImportSubscribers />
+          <Divider />
+          <ExportSubscribers />
+        </DashboardWrapper>
         <Spacer orientation={"vertical"} size={10} />
-      </main>
+      </Main>
       <BlogContentNewsletterRightSidebar
         subscriber_count={props.subscriber_count}
       />

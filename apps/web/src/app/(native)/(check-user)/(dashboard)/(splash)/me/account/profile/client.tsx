@@ -5,6 +5,7 @@ import React from "react";
 
 import Divider from "~/components/divider";
 import Link from "~/components/link";
+import Main from "~/components/main";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import TitleBlock from "~/entities/title-block";
@@ -25,7 +26,7 @@ const ProfileSettingsClient = (): React.ReactElement => {
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
   return (
     <React.Fragment>
-      <main data-root={"true"}>
+      <Main>
         <DashboardTitle>Public profile</DashboardTitle>
         <BannerSettings />
         <DashboardWrapper>
@@ -77,7 +78,7 @@ const ProfileSettingsClient = (): React.ReactElement => {
           </DashboardGroup>
         </DashboardWrapper>
         <Spacer orientation={"vertical"} size={10} />
-      </main>
+      </Main>
       <AccountProfileRightSidebar />
     </React.Fragment>
   );

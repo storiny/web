@@ -1,5 +1,6 @@
 import React from "react";
 
+import Main from "~/components/main";
 import BlogRightSidebar from "~/layout/blog-right-sidebar";
 
 import BlogContent from "../../content";
@@ -10,10 +11,10 @@ const BlogEditorsLayout = ({
   children: React.ReactNode;
 }): React.ReactElement => (
   <React.Fragment>
-    <main data-root={"true"}>
+    <Main>
       <BlogContent />
       {children}
-    </main>
+    </Main>
     <BlogRightSidebar hide_editors />
   </React.Fragment>
 );

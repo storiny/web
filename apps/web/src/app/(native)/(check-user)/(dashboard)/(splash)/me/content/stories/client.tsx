@@ -15,6 +15,7 @@ import { use_app_router } from "~/common/utils";
 import Button from "~/components/button";
 import Divider from "~/components/divider";
 import Input from "~/components/input";
+import Main from "~/components/main";
 import Option from "~/components/option";
 import Select from "~/components/select";
 import Spacer from "~/components/spacer";
@@ -326,7 +327,7 @@ const ContentStoriesClient = (props: StoriesProps): React.ReactElement => {
 
   return (
     <React.Fragment>
-      <main data-root={"true"}>
+      <Main>
         <DashboardTitle>Stories</DashboardTitle>
         <PageHeader on_change={handle_change} value={value} />
         <StatusHeader
@@ -374,7 +375,7 @@ const ContentStoriesClient = (props: StoriesProps): React.ReactElement => {
           />
         )}
         <Spacer orientation={"vertical"} size={10} />
-      </main>
+      </Main>
       <ContentStoriesRightSidebar tab={value} />
     </React.Fragment>
   );

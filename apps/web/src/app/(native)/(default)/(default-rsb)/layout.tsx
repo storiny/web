@@ -1,5 +1,6 @@
 import React from "react";
 
+import Main from "~/components/main";
 import LeftSidebar from "~/layout/left-sidebar";
 import RightSidebar from "~/layout/right-sidebar";
 import SplashScreen from "~/layout/splash-screen";
@@ -11,7 +12,7 @@ const DefaultRightSidebarLayout = ({
 }): React.ReactElement => (
   <>
     <LeftSidebar />
-    <main data-root={"true"}>{children}</main>
+    <Main>{children}</Main>
     <RightSidebar />
     <SplashScreen />
   </>

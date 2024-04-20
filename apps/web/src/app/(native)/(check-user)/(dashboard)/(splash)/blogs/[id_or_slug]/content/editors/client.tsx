@@ -8,6 +8,7 @@ import { use_blog_context } from "~/common/context/blog";
 import { dynamic_loader } from "~/common/dynamic";
 import { UserListSkeleton, VirtualizedUserList } from "~/common/user";
 import { use_confirmation } from "~/components/confirmation";
+import Main from "~/components/main";
 import MenuItem from "~/components/menu-item";
 import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
@@ -163,7 +164,7 @@ const BlogContentEditorsClient = (
 
   return (
     <React.Fragment>
-      <main data-root={"true"}>
+      <Main>
         <DashboardTitle>Editors</DashboardTitle>
         <StatusHeader {...props} />
         {is_loading || (is_fetching && page === 1) ? (
@@ -192,7 +193,7 @@ const BlogContentEditorsClient = (
           />
         )}
         <Spacer orientation={"vertical"} size={10} />
-      </main>
+      </Main>
       <BlogContentEditorsRightSidebar
         pending_editor_request_count={props.pending_editor_request_count}
       />

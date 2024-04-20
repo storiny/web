@@ -5,6 +5,7 @@ import React from "react";
 import { use_blog_context } from "~/common/context/blog";
 import Divider from "~/components/divider";
 import Link from "~/components/link";
+import Main from "~/components/main";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import TitleBlock from "~/entities/title-block";
@@ -28,7 +29,7 @@ const GeneralSettingsClient = (): React.ReactElement => {
 
   return (
     <React.Fragment>
-      <main data-root={"true"}>
+      <Main>
         <DashboardTitle>General</DashboardTitle>
         <BannerSettings />
         <DashboardWrapper>
@@ -96,7 +97,7 @@ const GeneralSettingsClient = (): React.ReactElement => {
           )}
         </DashboardWrapper>
         <Spacer orientation={"vertical"} size={10} />
-      </main>
+      </Main>
       <AccountProfileRightSidebar />
     </React.Fragment>
   );

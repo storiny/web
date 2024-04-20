@@ -8,6 +8,7 @@ import { CommentListSkeleton, VirtualizedCommentList } from "~/common/comment";
 import { dynamic_loader } from "~/common/dynamic";
 import Divider from "~/components/divider";
 import Input from "~/components/input";
+import Main from "~/components/main";
 import Option from "~/components/option";
 import Select from "~/components/select";
 import Spacer from "~/components/spacer";
@@ -266,7 +267,7 @@ const ContentStoryResponsesClient = (
 
   return (
     <React.Fragment>
-      <main data-root={"true"}>
+      <Main>
         <DashboardTitle
           back_button_href={"/me/content/stories"}
           hide_back_button={false}
@@ -308,7 +309,7 @@ const ContentStoryResponsesClient = (
           />
         )}
         <Spacer orientation={"vertical"} size={10} />
-      </main>
+      </Main>
       <ContentStoryResponsesRightSidebar story_id={story_id} />
     </React.Fragment>
   );

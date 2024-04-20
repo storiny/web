@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { use_blog_context } from "~/common/context/blog";
+import Main from "~/components/main";
 import BlogLeftSidebar from "~/layout/blog-left-sidebar";
 import BlogNavbar from "~/layout/blog-navbar";
 import Navbar from "~/layout/navbar";
@@ -55,11 +56,11 @@ const EditorLayout = ({
             ) : (
               <EditorLeftSidebar read_only={read_only} status={status} />
             )}
-            <main data-editor={"true"} data-root={"true"}>
+            <Main data-editor={"true"}>
               {status !== "deleted" && !read_only ? <StoryMetadataBar /> : null}
               {children}
               {status !== "deleted" && !read_only ? <EditorToolbar /> : null}
-            </main>
+            </Main>
             <EditorRightSidebar read_only={read_only} status={status} />
           </React.Fragment>
         </EditorComposer>

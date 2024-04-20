@@ -7,6 +7,7 @@ import Accordion from "~/components/accordion";
 import Button from "~/components/button";
 import { use_confirmation } from "~/components/confirmation";
 import Divider from "~/components/divider";
+import Main from "~/components/main";
 import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
@@ -137,7 +138,7 @@ const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
 
   return (
     <React.Fragment>
-      <main data-root={"true"}>
+      <Main>
         <DashboardTitle>Login activity</DashboardTitle>
         <DashboardWrapper>
           {is_smaller_than_desktop && <RecentLoginGroup login={recent} />}
@@ -193,7 +194,7 @@ const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
           </DashboardGroup>
         </DashboardWrapper>
         <Spacer orientation={"vertical"} size={10} />
-      </main>
+      </Main>
       <AccountLoginActivityRightSidebar>
         <Typography color={"minor"} level={"body2"} weight={"medium"}>
           {recent ? "Recent unrecognized login" : "Current device"}

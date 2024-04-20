@@ -2,6 +2,7 @@ import { clsx } from "clsx";
 import React from "react";
 
 import PlusPattern from "~/brand/plus-pattern";
+import Main from "~/components/main";
 import Navbar from "~/layout/navbar";
 import css from "~/theme/main.module.scss";
 
@@ -23,11 +24,11 @@ const AuthLayout = ({
       <PlusPattern />
     </div>
     {/* Need to make the <main /> styles more specific */}
-    <main className={clsx(styles.x, styles.main)} data-root={"true"}>
+    <Main className={clsx(styles.x, styles.main)}>
       <div className={clsx(css["flex-col"], styles.container)}>
         <AuthState>{children}</AuthState>
       </div>
-    </main>
+    </Main>
   </div>
 );
 
