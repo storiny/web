@@ -8,7 +8,7 @@
   border-radius="4px"
   css-class="button"
 />
-<mj-all font-family="Helvetica" />
+<mj-all font-family="Helvetica" padding="0px" />
 
 <mj-class name="t-large" font-size="32px" line-height="48px" />
 <mj-class name="t-body1" font-size="16px" line-height="24px" />

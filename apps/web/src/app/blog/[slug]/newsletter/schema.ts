@@ -17,5 +17,4 @@ export const NEWSLETTER_SUBSCRIBE_SCHEMA = z.object({
       ZOD_MESSAGES.max("e-mail", USER_PROPS.email.max_length)
     )
     .email("Invalid e-mail")
-    .nonempty(ZOD_MESSAGES.non_empty("e-mail"))
 });

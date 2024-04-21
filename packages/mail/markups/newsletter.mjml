@@ -1,0 +1,76 @@
+<mjml lang="en">
+  <mj-head>
+    <mj-attributes>
+      <mj-title>Verify your new e-mail</mj-title>
+      <mj-include path="./partials/attributes.mjml" />
+    </mj-attributes>
+    <mj-include path="./partials/styles.mjml" />
+    <mj-style>
+      .story-title { display: inline; margin: 0; font-size: 24px; line-height:
+      1.4em; font-weight: bold; color: #383838; text-align: center;
+      vertical-align: middle; } .splash-image img { max-height: 236px; }
+    </mj-style>
+  </mj-head>
+  <mj-body>
+    <mj-section css-class="section main">
+      <mj-column>
+        {{#if story.splash_url}}
+        <mj-image
+          align="center"
+          alt=""
+          href="{{{blog.url}}}"
+          title="Read story"
+          width="420px"
+          border-radius="4px"
+          src="{{{story.splash_url}}}"
+          css-class="splash-image"
+        />
+        <mj-spacer height="36px" />
+        {{/if}}
+        <mj-table align="center">
+          <tr>
+            <td align="center">
+              <h1 class="story-title">{{story.title}}</h1>
+            </td>
+          </tr>
+        </mj-table>
+        <mj-spacer height="14px" />
+        <mj-text mj-class="t-body2 t-minor" align="center">
+          {{published_date}} &bull; {{read_time}} min read
+        </mj-text>
+        {{#if story.description}}
+        <mj-spacer height="14px" />
+        <mj-text mj-class="t-body1 t-major" align="center">
+          {{story.description}}
+        </mj-text>
+        {{/if}}
+        <mj-spacer height="36px" />
+        <mj-button target="_blank" href="{{{link}}}">Read more</mj-button>
+        <mj-spacer height="96px" />
+        <mj-image
+          align="center"
+          alt=""
+          width="148px"
+          src="https://cdn.storiny.com/mail-assets/images/delimiter.png"
+        />
+        <mj-spacer height="36px" />
+        <mj-text align="center">Persona</mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section css-class="section footer">
+      <mj-column>
+        <mj-text mj-class="t-body2 t-muted" align="center">
+          The media used in this email is not owned by Storiny. This email was
+          sent to <span class="medium">{{email}}</span> because you have
+          subscribed to this newsletter. You can choose to
+          <a href="{{{unsubscribe_link}}}" class="link" target="_blank"
+            >unsubscribe
+          </a>
+          from this newsletter at any time.
+        </mj-text>
+        <mj-spacer height="64px" />
+        <mj-include path="./partials/copyright.mjml" />
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

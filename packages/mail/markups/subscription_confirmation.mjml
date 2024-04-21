@@ -12,23 +12,38 @@
         <mj-table align="center">
           <tr>
             <td align="center">
-              <h1 class="t-head">Verify your e-mail</h1>
+              <h1 class="t-head">Confirm subscription</h1>
             </td>
           </tr>
         </mj-table>
         <mj-spacer height="36px" />
+        {{#if blog.logo_url}}
+        <mj-image
+          align="center"
+          alt="{{blog.name}} logo"
+          href="{{{blog.url}}}"
+          title="Visit blog"
+          width="96px"
+          height="96px"
+          border-radius="4px"
+          src="{{{blog.logo_url}}}"
+        />
+        <mj-spacer height="24px" />
+        {{/if}}
         <mj-text mj-class="t-body1 t-major" align="center">
-          An e-mail update request has been received to change the e-mail
-          address of a Storiny account to this e-mail. Please click on the
-          button below to verify your e-mail address.
+          You recently attempted to subscribe to the newsletter of
+          <span class="bold">{{blog.name}}</span>. Please confirm your
+          subscription to receive new stories published on
+          <span class="bold">{{blog.name}}</span>
+          directly into your mailbox.
         </mj-text>
         <mj-spacer height="36px" />
         <mj-button target="_blank" href="{{{link}}}">
-          Verify my e-mail
+          Confirm my subscription
         </mj-button>
         <mj-spacer mj-class="body-spacer" />
         <mj-text mj-class="t-body1 t-minor" align="center">
-          This verification request will automatically expire in 24 hours. If
+          This subscription request will automatically expire in 24 hours. If
           the button above does not work, please navigate to this link:
           <a href="{{{link}}}" class="link" target="_blank">{{link}}</a>
         </mj-text>
