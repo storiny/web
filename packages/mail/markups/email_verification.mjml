@@ -17,7 +17,7 @@
                 class="emoji"
                 src="https://cdn.storiny.com/mail-assets/images/emojis/waving-hand.png"
               />
-              <p class="t-head">Hello {{name}}!</p>
+              <h1 class="t-head">Hello {{name}}!</h1>
             </td>
           </tr>
         </mj-table>
@@ -26,15 +26,15 @@
           Welcome to Storiny. Click on the button below to verify your e-mail
           address and finish signing up.
         </mj-text>
-        <mj-spacer height="24px" />
-        <mj-button target="_blank" href="{{link}}">
+        <mj-spacer height="36px" />
+        <mj-button target="_blank" href="{{{link}}}">
           Verify my e-mail
         </mj-button>
         <mj-spacer mj-class="body-spacer" />
         <mj-text mj-class="t-body1 t-minor" align="center">
           This verification request will automatically expire in 24 hours. If
           the button above does not work, please navigate to this link:
-          <a href="{{link}}" class="link" target="_blank">{{link}}</a>
+          <a href="{{{link}}}" class="link" target="_blank">{{link}}</a>
         </mj-text>
       </mj-column>
     </mj-section>

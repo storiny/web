@@ -41,8 +41,7 @@ export const STORY_SCHEMA = {
     .max(
       STORY_PROPS.title.max_length,
       ZOD_MESSAGES.max("title", STORY_PROPS.title.max_length)
-    )
-    .nonempty(ZOD_MESSAGES.non_empty("title")),
+    ),
   description: z
     .string()
     .max(

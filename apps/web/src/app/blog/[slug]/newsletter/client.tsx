@@ -82,6 +82,7 @@ const LoggedOutForm = ({
     >
       <FormInput
         autoComplete={"email"}
+        autoFocus
         data-testid={"email-input"}
         maxLength={USER_PROPS.email.max_length}
         minLength={USER_PROPS.email.min_length}

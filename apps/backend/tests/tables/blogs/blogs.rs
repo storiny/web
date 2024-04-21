@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod tests {
+    use nanoid::nanoid;
     use sqlx::{
         pool::PoolConnection,
         postgres::PgRow,
@@ -8,7 +9,10 @@ mod tests {
         Postgres,
         Row,
     };
-    use storiny::constants::sql_states::SqlState;
+    use storiny::constants::{
+        sql_states::SqlState,
+        token::TOKEN_LENGTH,
+    };
     use time::OffsetDateTime;
     use uuid::Uuid;
 
@@ -2360,6 +2364,104 @@ SELECT EXISTS (
 "#,
         )
         .bind("test_item".to_string())
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_delete_subscribers_on_blog_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let blog_id = (insert_sample_blog(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert a subscriber.
+        let result = sqlx::query(
+            r#"
+INSERT INTO subscribers (blog_id, email)
+VALUES ($1, $2)
+"#,
+        )
+        .bind(blog_id)
+        .bind("example@storiny.com".to_string())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Delete the blog
+        sqlx::query(
+            r#"
+DELETE FROM blogs
+WHERE id = $1
+"#,
+        )
+        .bind(blog_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Subscriber should get deleted
+        let result = sqlx::query(
+            r#"
+SELECT EXISTS (
+    SELECT 1 FROM subscribers
+    WHERE blog_id = $1
+)
+"#,
+        )
+        .bind(blog_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_delete_newsletter_tokens_on_blog_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let blog_id = (insert_sample_blog(&mut conn).await?).get::<i64, _>("id");
+        let token_id = nanoid!(TOKEN_LENGTH);
+
+        // Insert a subscriber.
+        let result = sqlx::query(
+            r#"
+INSERT INTO newsletter_tokens (id, blog_id, email, expires_at)
+VALUES ($1, $2, $3, NOW())
+"#,
+        )
+        .bind(token_id)
+        .bind(blog_id)
+        .bind("example@storiny.com".to_string())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Delete the blog
+        sqlx::query(
+            r#"
+DELETE FROM blogs
+WHERE id = $1
+"#,
+        )
+        .bind(blog_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Token should get deleted
+        let result = sqlx::query(
+            r#"
+SELECT EXISTS (
+    SELECT 1 FROM newsletter_tokens
+    WHERE blog_id = $1
+)
+"#,
+        )
+        .bind(blog_id)
         .fetch_one(&mut *conn)
         .await?;
 
