@@ -1,0 +1,168 @@
+<mjml lang="en">
+  <mj-head>
+    <mj-attributes>
+      <mj-title>{{story.title}}</mj-title>
+      <mj-include path="./partials/attributes.mjml" />
+    </mj-attributes>
+    <mj-include path="./partials/styles.mjml" />
+    <mj-style>
+      .story-title { display: inline; margin: 0; font-size: 24px; line-height:
+      1.4em; font-weight: bold; color: #383838; text-align: center;
+      vertical-align: middle; } .splash-image img { max-height: 236px; }
+      .blog-mask img { position: relative; opacity: 0.999; object-fit: cover }
+      .persona-meta { min-width: 58px !important; }
+    </mj-style>
+  </mj-head>
+  <mj-body>
+    <mj-wrapper css-class="section main">
+      <mj-section>
+        <mj-column>
+          {{#if story.splash_url}}
+          <mj-image
+            align="center"
+            alt=""
+            href="{{{story.url}}}"
+            title="Read story"
+            width="420px"
+            border-radius="4px"
+            src="{{{story.splash_url}}}"
+            css-class="splash-image"
+          />
+          <mj-spacer height="36px" />
+          {{/if}}
+          <mj-table align="center">
+            <tr>
+              <td align="center">
+                <h1 class="story-title">
+                  <a href="{{{story.url}}}" target="_blank">{{story.title}}</a>
+                </h1>
+              </td>
+            </tr>
+          </mj-table>
+          <mj-spacer height="14px" />
+          <mj-text mj-class="t-body2 t-minor" align="center">
+            {{story.published_date}} &bull; {{story.read_time}} min read
+          </mj-text>
+          {{#if story.description}}
+          <mj-spacer height="14px" />
+          <mj-text mj-class="t-body1 t-major" align="center">
+            {{story.description}}
+          </mj-text>
+          {{/if}}
+          <mj-spacer height="36px" />
+          <mj-button target="_blank" href="{{{story.url}}}"
+            >Read more
+          </mj-button>
+          <mj-spacer height="96px" />
+          <mj-image
+            align="center"
+            alt=""
+            width="148px"
+            src="https://cdn.storiny.com/mail-assets/images/delimiter.png"
+          />
+          <mj-spacer height="36px" />
+        </mj-column>
+      </mj-section>
+      <mj-section>
+        <mj-group>
+          <mj-column />
+          <mj-column width="58px" css-class="persona-meta">
+            <mj-raw>
+              <div style="height: 24px; padding-right: 30px">
+                {{#if story.user.avatar_url}}
+                <img
+                  alt="{{story.user.name}}'s avatar"
+                  style="
+                    border-radius: 50%;
+                    width: 48px;
+                    height: 48px;
+                    object-fit: cover;
+                  "
+                  src="{{{story.user.avatar_url}}}"
+                />
+                {{else}}
+                <div
+                  style="
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 50%;
+                    background: #d2d2d2;
+                  "
+                />
+                {{/if}}
+              </div>
+            </mj-raw>
+            {{#if story.blog.logo_url}}
+            <mj-raw>
+              <div
+                style="
+                  height: 0;
+                  padding-left: 22px;
+                  padding-bottom: 4px;
+                  position: relative;
+                  opacity: 0.999;
+                "
+              >
+                <div
+                  style="
+                    height: 32px;
+                    width: 32px;
+                    background: #ffffff;
+                    border-radius: 6px;
+                  "
+                />
+              </div>
+            </mj-raw>
+            <mj-image
+              alt="{{story.blog.name}} logo"
+              height="26px"
+              width="26px"
+              css-class="blog-mask"
+              border-radius="4px"
+              src="{{{story.blog.logo_url}}}"
+            />
+            {{/if}}
+          </mj-column>
+          <mj-column width="50%" padding-left="20px">
+            <mj-text font-size="16px" mj-class="t-minor">
+              Published by
+              <a
+                href="{{{story.user.url}}}"
+                title="View profile"
+                target="_blank"
+                class="medium"
+                style="color: #1a1a1a"
+                >{{story.user.name}}
+              </a>
+              in
+            </mj-text>
+            <mj-spacer height="6px" />
+            <mj-text font-size="22px" font-weight="bold">
+              <a href="{{{story.blog.url}}}" title="Visit blog" target="_blank"
+                >{{story.blog.name}}
+              </a>
+            </mj-text>
+          </mj-column>
+          <mj-column />
+        </mj-group>
+      </mj-section>
+    </mj-wrapper>
+    <mj-section css-class="section footer">
+      <mj-column>
+        <mj-text mj-class="t-body2 t-muted" align="center">
+          The media used in this email is not owned by Storiny. This email was
+          sent to <span class="medium">{{email}}</span> because you have
+          subscribed to this newsletter.
+        </mj-text>
+        <mj-spacer height="24px" />
+        <mj-text mj-class="t-body2 t-muted" align="center">
+          <a href="{{{unsubscribe_link}}}" class="link" target="_blank"
+            >Unsubscribe
+          </a>
+        </mj-text>
+        <mj-spacer height="64px" />
+        <mj-include path="./partials/copyright.mjml" />
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
