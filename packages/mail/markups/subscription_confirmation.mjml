@@ -1,7 +1,7 @@
 <mjml lang="en">
   <mj-head>
     <mj-attributes>
-      <mj-title>Verify your new e-mail</mj-title>
+      <mj-title>Confirm your subscription to {{blog.name}}</mj-title>
       <mj-include path="./partials/attributes.mjml" />
     </mj-attributes>
     <mj-include path="./partials/styles.mjml" />
@@ -35,7 +35,7 @@
           <span class="bold">{{blog.name}}</span>. Please confirm your
           subscription to receive new stories published on
           <span class="bold">{{blog.name}}</span>
-          directly into your mailbox.
+          directly in your mailbox.
         </mj-text>
         <mj-spacer height="36px" />
         <mj-button target="_blank" href="{{{link}}}">

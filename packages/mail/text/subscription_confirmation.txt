@@ -1,4 +1,4 @@
-An e-mail update request has been received to change the e-mail address of a Storiny account to this e-mail. To complete the verification process, please navigate to this link: {{link}}
+You recently attempted to subscribe to the newsletter of {{blog.name}}. Please confirm your subscription to receive new stories published on {{blog.name}} directly in your mailbox by navigating to this link: {{link}}
 
 If you did not initiate this request, you can safely ignore this e-mail.
 

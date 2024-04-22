@@ -15,12 +15,12 @@
       style="border-left: 1px solid #d9d9d9; padding-left: 24px"
     >
       <span class="footer-text">
-        © Storiny 2023
+        © Storiny {{copyright_year}}
         <br />
         Contact us:
         <a href="mailto:support@storiny.com" class="link"
-          >support@storiny.com</a
-        >
+          >support@storiny.com
+        </a>
       </span>
     </td>
   </tr>
