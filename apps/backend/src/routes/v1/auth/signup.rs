@@ -19,6 +19,7 @@ use crate::{
     middlewares::identity::identity::Identity,
     models::email_templates::email_verification::EmailVerificationEmailTemplateData,
     utils::{
+        generate_hashed_token::generate_hashed_token,
         incr_resource_lock_attempts::incr_resource_lock_attempts,
         is_resource_locked::is_resource_locked,
     },
@@ -161,13 +162,7 @@ SELECT EXISTS (
         .hash_password(payload.password.as_bytes(), &salt)
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
-    let token_id = nanoid!(TOKEN_LENGTH);
-    let salt = SaltString::from_b64(&data.config.token_salt)
-        .map_err(|error| AppError::InternalError(error.to_string()))?;
-
-    let hashed_token = Argon2::default()
-        .hash_password(token_id.as_bytes(), &salt)
-        .map_err(|error| AppError::InternalError(error.to_string()))?;
+    let (token_id, hashed_token) = generate_hashed_token(&data.config.token_salt)?;
 
     let pg_pool = &data.db_pool;
     let mut txn = pg_pool.begin().await?;

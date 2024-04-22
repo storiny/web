@@ -16,7 +16,10 @@ use crate::{
     },
     middlewares::identity::identity::Identity,
     models::email_templates::new_email_verification::NewEmailVerificationEmailTemplateData,
-    utils::clear_user_sessions::clear_user_sessions,
+    utils::{
+        clear_user_sessions::clear_user_sessions,
+        generate_hashed_token::generate_hashed_token,
+    },
     AppState,
 };
 use actix_http::StatusCode;
@@ -113,14 +116,7 @@ WHERE id = $1
     }
 
     // Token ID for verification email.
-    let token_id = nanoid!(TOKEN_LENGTH);
-
-    let salt = SaltString::from_b64(&data.config.token_salt)
-        .map_err(|error| AppError::InternalError(error.to_string()))?;
-
-    let hashed_token = Argon2::default()
-        .hash_password(token_id.as_bytes(), &salt)
-        .map_err(|error| AppError::InternalError(error.to_string()))?;
+    let (token_id, hashed_token) = generate_hashed_token(&data.config.token_salt)?;
 
     match sqlx::query(
         r#"

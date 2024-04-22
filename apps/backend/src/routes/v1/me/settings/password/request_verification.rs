@@ -140,6 +140,7 @@ mod tests {
             assert_toast_error_response,
             init_app_for_test,
         },
+        utils::generate_hashed_token::generate_hashed_token,
     };
     use actix_web::test;
     use sqlx::{
@@ -221,12 +222,7 @@ VALUES ($1, $2, $3, $4, $5)
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
         let config = get_app_config().unwrap();
-
-        let token_id = nanoid!(TOKEN_LENGTH);
-        let salt = SaltString::from_b64(&config.token_salt).unwrap();
-        let hashed_token = Argon2::default()
-            .hash_password(token_id.as_bytes(), &salt)
-            .unwrap();
+        let (token_id, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
         // Insert a password-add verification token.
         let result = sqlx::query(

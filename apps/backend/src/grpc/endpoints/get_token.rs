@@ -113,11 +113,7 @@ mod tests {
             TokenType,
         },
         test_utils::test_grpc_service,
-    };
-    use argon2::{
-        password_hash::SaltString,
-        Argon2,
-        PasswordHasher,
+        utils::generate_hashed_token::generate_hashed_token,
     };
     use nanoid::nanoid;
     use sqlx::PgPool;
@@ -134,12 +130,7 @@ mod tests {
             true,
             Box::new(|mut client, pool, _, user_id| async move {
                 let config = get_app_config().unwrap();
-
-                let token_id = nanoid!(TOKEN_LENGTH);
-                let salt = SaltString::from_b64(&config.token_salt).unwrap();
-                let hashed_token = Argon2::default()
-                    .hash_password(token_id.as_bytes(), &salt)
-                    .unwrap();
+                let (token_id, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
                 // Insert the token.
                 let result = sqlx::query(
@@ -181,12 +172,7 @@ VALUES ($1, $2, $3, $4)
             true,
             Box::new(|mut client, pool, _, user_id| async move {
                 let config = get_app_config().unwrap();
-
-                let token_id = nanoid!(TOKEN_LENGTH);
-                let salt = SaltString::from_b64(&config.token_salt).unwrap();
-                let hashed_token = Argon2::default()
-                    .hash_password(token_id.as_bytes(), &salt)
-                    .unwrap();
+                let (token_id, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
                 // Insert an expired token.
                 let result = sqlx::query(
