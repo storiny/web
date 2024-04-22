@@ -9,6 +9,7 @@ pub mod delete_s3_objects_using_prefix;
 pub mod extract_session_key_from_cookie;
 pub mod flag;
 pub mod generate_connection_url;
+pub mod generate_hashed_token;
 pub mod generate_random_username;
 pub mod generate_recovery_codes;
 pub mod generate_story_slug;

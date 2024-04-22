@@ -129,6 +129,7 @@ mod tests {
             VerifyEmailRequest,
         },
         test_utils::test_grpc_service,
+        utils::generate_hashed_token::generate_hashed_token,
     };
     use argon2::{
         password_hash::SaltString,
@@ -156,12 +157,7 @@ mod tests {
             true,
             Box::new(|mut client, pool, _, user_id| async move {
                 let config = get_app_config().unwrap();
-
-                let token_id = nanoid!(TOKEN_LENGTH);
-                let salt = SaltString::from_b64(&config.token_salt).unwrap();
-                let hashed_token = Argon2::default()
-                    .hash_password(token_id.as_bytes(), &salt)
-                    .unwrap();
+                let (token_id, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
                 // Insert token.
                 let result = sqlx::query(
@@ -213,12 +209,7 @@ WHERE id = $1
             true,
             Box::new(|mut client, pool, _, user_id| async move {
                 let config = get_app_config().unwrap();
-
-                let token_id = nanoid!(TOKEN_LENGTH);
-                let salt = SaltString::from_b64(&config.token_salt).unwrap();
-                let hashed_token = Argon2::default()
-                    .hash_password(token_id.as_bytes(), &salt)
-                    .unwrap();
+                let (token_id, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
                 // Insert an expired token.
                 let result = sqlx::query(

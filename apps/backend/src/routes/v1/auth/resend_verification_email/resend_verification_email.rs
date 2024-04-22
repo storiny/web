@@ -19,6 +19,7 @@ use crate::{
         new_email_verification::NewEmailVerificationEmailTemplateData,
     },
     utils::{
+        generate_hashed_token::generate_hashed_token,
         incr_resource_lock_attempts::incr_resource_lock_attempts,
         is_resource_locked::is_resource_locked,
     },
@@ -36,6 +37,10 @@ use argon2::{
     password_hash::SaltString,
     Argon2,
     PasswordHasher,
+};
+use chrono::{
+    Datelike,
+    Local,
 };
 use nanoid::nanoid;
 use serde::{
@@ -158,14 +163,7 @@ WHERE
     }
 
     // Generate a new verification token.
-
-    let token_id = nanoid!(TOKEN_LENGTH);
-    let salt = SaltString::from_b64(&data.config.token_salt)
-        .map_err(|error| AppError::InternalError(error.to_string()))?;
-
-    let hashed_token = Argon2::default()
-        .hash_password(token_id.as_bytes(), &salt)
-        .map_err(|error| AppError::InternalError(error.to_string()))?;
+    let (token_id, hashed_token) = generate_hashed_token(&data.config.token_salt)?;
 
     sqlx::query(
         r#"
@@ -200,6 +198,7 @@ VALUES ($1, $2, $3, $4)
 
             serde_json::to_string(&NewEmailVerificationEmailTemplateData {
                 link: verification_link,
+                copyright_year: Local::now().year().to_string(),
             })
             .map_err(|error| {
                 AppError::InternalError(format!("unable to serialize the template data: {error:?}"))
@@ -217,6 +216,7 @@ VALUES ($1, $2, $3, $4)
                 email: payload.email.to_string(),
                 link: verification_link,
                 name: first_name.to_string(),
+                copyright_year: Local::now().year().to_string(),
             })
             .map_err(|error| {
                 AppError::InternalError(format!("unable to serialize the template data: {error:?}"))
@@ -400,11 +400,7 @@ WHERE id = $1
 
             assert_eq!(result.rows_affected(), 1);
 
-            let token_id = nanoid!(TOKEN_LENGTH);
-            let salt = SaltString::from_b64(&config.token_salt).unwrap();
-            let hashed_token = Argon2::default()
-                .hash_password(token_id.as_bytes(), &salt)
-                .unwrap();
+            let (token_id, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
             // Insert a verification token for the user.
             let result = sqlx::query(
@@ -561,12 +557,7 @@ WHERE id = $1
             let mut conn = pool.acquire().await?;
             let app = init_app_for_test(post, pool, false, false, None).await.0;
             let config = get_app_config().unwrap();
-
-            let token_id = nanoid!(TOKEN_LENGTH);
-            let salt = SaltString::from_b64(&config.token_salt).unwrap();
-            let hashed_token = Argon2::default()
-                .hash_password(token_id.as_bytes(), &salt)
-                .unwrap();
+            let (token_id, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
             // Insert a verification token.
             let result = sqlx::query(

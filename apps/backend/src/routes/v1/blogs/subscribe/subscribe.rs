@@ -1,15 +1,12 @@
 use crate::{
-    constants::report_type::REPORT_TYPE_VEC,
     error::{
         AppError,
         FormErrorResponse,
         ToastErrorResponse,
     },
-    middlewares::identity::identity::Identity,
     utils::{
-        check_report_limit::check_report_limit,
         check_subscription_limit::check_subscription_limit,
-        incr_report_limit::incr_report_limit,
+        incr_subscription_limit::incr_subscription_limit,
     },
     AppState,
 };
@@ -25,6 +22,7 @@ use serde::{
     Deserialize,
     Serialize,
 };
+use sqlx::Row;
 use validator::Validate;
 
 #[derive(Deserialize, Validate)]
@@ -52,7 +50,13 @@ async fn post(
     req: HttpRequest,
     payload: Json<Request>,
     data: web::Data<AppState>,
+    path: web::Path<Fragments>,
 ) -> Result<HttpResponse, AppError> {
+    let blog_id = path
+        .blog_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid blog ID"))?;
+
     let report_limit_identifier = req
         .connection_info()
         .realip_remote_addr()
@@ -70,10 +74,35 @@ async fn post(
         .into());
     }
 
-    let reason = payload.email.clone();
-
     let pg_pool = &data.db_pool;
     let mut txn = pg_pool.begin().await?;
+
+    let subscriber = sqlx::query(
+        r#"
+SELECT EXISTS (
+    SELECT FROM subscribers
+    WHERE
+        email = $1
+        AND blog_id = $2
+)
+"#,
+    )
+    .bind(&payload.email)
+    .bind(&blog_id)
+    .fetch_one(&mut *txn)
+    .await?;
+
+    // Check if the email has already been subscribed.
+    if subscriber.get::<bool, _>("exists") {
+        return Err(FormErrorResponse::new(
+            None,
+            vec![(
+                "email",
+                "This e-mail has already been subscribed to this blog.",
+            )],
+        )
+        .into());
+    }
 
     match sqlx::query(
         r#"
@@ -92,7 +121,7 @@ VALUES ($1, $2, $3)
             "unable to insert the report".to_string(),
         )),
         _ => {
-            incr_report_limit(&data.redis, &report_limit_identifier).await?;
+            incr_subscription_limit(&data.redis, &report_limit_identifier).await?;
 
             txn.commit().await?;
 

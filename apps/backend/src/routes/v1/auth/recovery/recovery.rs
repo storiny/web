@@ -16,6 +16,7 @@ use crate::{
     },
     models::email_templates::reset_password::ResetPasswordEmailTemplateData,
     utils::{
+        generate_hashed_token::generate_hashed_token,
         incr_resource_lock_attempts::incr_resource_lock_attempts,
         is_resource_locked::is_resource_locked,
     },
@@ -105,14 +106,7 @@ WHERE email = $1
     })?;
 
     // Generate a new password reset token.
-
-    let token_id = nanoid!(TOKEN_LENGTH);
-    let salt = SaltString::from_b64(&data.config.token_salt)
-        .map_err(|error| AppError::InternalError(error.to_string()))?;
-
-    let hashed_token = Argon2::default()
-        .hash_password(token_id.as_bytes(), &salt)
-        .map_err(|error| AppError::InternalError(error.to_string()))?;
+    let (token_id, hashed_token) = generate_hashed_token(&data.config.token_salt)?;
 
     sqlx::query(
         r#"
@@ -294,12 +288,7 @@ SELECT EXISTS (
             let mut conn = pool.acquire().await?;
             let app = init_app_for_test(post, pool, false, false, None).await.0;
             let config = get_app_config().unwrap();
-
-            let token_id = nanoid!(TOKEN_LENGTH);
-            let salt = SaltString::from_b64(&config.token_salt).unwrap();
-            let hashed_token = Argon2::default()
-                .hash_password(token_id.as_bytes(), &salt)
-                .unwrap();
+            let (token_id, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
             // Insert a password reset token.
             let result = sqlx::query(
