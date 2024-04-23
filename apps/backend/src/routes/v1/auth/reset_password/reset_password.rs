@@ -259,7 +259,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
         )
-        .bind(hashed_token.to_string())
+        .bind(&hashed_token)
         .bind(TokenType::PasswordReset as i16)
         .bind(1_i64)
         .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
@@ -310,7 +310,7 @@ SELECT EXISTS (
 )
 "#,
         )
-        .bind(hashed_token.to_string())
+        .bind(&hashed_token)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -335,7 +335,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
         )
-        .bind(hashed_token.to_string())
+        .bind(&hashed_token)
         .bind(TokenType::PasswordReset as i16)
         .bind(1_i64)
         .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
@@ -384,7 +384,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
         )
-        .bind(hashed_token.to_string())
+        .bind(&hashed_token)
         .bind(TokenType::PasswordReset as i16)
         .bind(1_i64)
         .bind(OffsetDateTime::now_utc() - Duration::days(1)) // The token expired yesterday
@@ -518,7 +518,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
             )
-            .bind(hashed_token.to_string())
+            .bind(&hashed_token)
             .bind(TokenType::PasswordReset as i16)
             .bind(1_i64)
             .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
@@ -573,7 +573,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
             )
-            .bind(hashed_token.to_string())
+            .bind(&hashed_token)
             .bind(TokenType::PasswordReset as i16)
             .bind(user_id)
             .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours

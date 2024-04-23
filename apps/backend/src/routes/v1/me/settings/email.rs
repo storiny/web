@@ -2,7 +2,6 @@ use crate::{
     constants::{
         account_activity_type::AccountActivityType,
         email_template::EmailTemplate,
-        token::TOKEN_LENGTH,
     },
     error::{
         AppError,
@@ -31,13 +30,14 @@ use actix_web::{
 use actix_web_validator::Json;
 use apalis::prelude::Storage;
 use argon2::{
-    password_hash::SaltString,
     Argon2,
     PasswordHash,
-    PasswordHasher,
     PasswordVerifier,
 };
-use nanoid::nanoid;
+use chrono::{
+    Datelike,
+    Local,
+};
 use serde::{
     Deserialize,
     Serialize,
@@ -138,7 +138,7 @@ VALUES ($3, 'You changed your e-mail address to <m>' || $2 || '</m>', $1)
     .bind(user_id)
     .bind(&payload.new_email)
     .bind(AccountActivityType::Email as i16)
-    .bind(hashed_token.to_string())
+    .bind(&hashed_token)
     .bind(TokenType::EmailVerification as i16)
     .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
     .execute(&mut *txn)
@@ -159,6 +159,7 @@ VALUES ($3, 'You changed your e-mail address to <m>' || $2 || '</m>', $1)
 
             let template_data = serde_json::to_string(&NewEmailVerificationEmailTemplateData {
                 link: verification_link,
+                copyright_year: Local::now().year().to_string(),
             })
             .map_err(|error| {
                 AppError::InternalError(format!("unable to serialize the template data: {error:?}"))

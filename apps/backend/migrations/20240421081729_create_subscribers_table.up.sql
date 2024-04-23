@@ -9,3 +9,5 @@ CREATE TABLE IF NOT EXISTS subscribers
 	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	UNIQUE (blog_id, email)
 );
+
+CREATE INDEX blog_id_on_subscribers ON subscribers (blog_id);
