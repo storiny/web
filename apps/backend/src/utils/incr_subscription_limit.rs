@@ -22,7 +22,7 @@ pub async fn incr_subscription_limit(redis_pool: &RedisPool, ip: &str) -> anyhow
     let cache_key = format!(
         "{}:{}:{ip}",
         RedisNamespace::ResourceLimit,
-        ResourceLimit::Subscribe as i32
+        ResourceLimit::SubscribeUnregistered as i32
     );
 
     increx
@@ -55,7 +55,7 @@ mod tests {
             let cache_key = format!(
                 "{}:{}:{}",
                 RedisNamespace::ResourceLimit,
-                ResourceLimit::Subscribe as i32,
+                ResourceLimit::SubscribeUnregistered as i32,
                 "::1"
             );
 
@@ -85,7 +85,7 @@ mod tests {
             let cache_key = format!(
                 "{}:{}:{}",
                 RedisNamespace::ResourceLimit,
-                ResourceLimit::Subscribe as i32,
+                ResourceLimit::SubscribeUnregistered as i32,
                 "::1"
             );
 

@@ -45,9 +45,11 @@ pub enum ResourceLimit {
     SendBlogWriterRequest,
     /// The daily limit for uploading blog fonts.
     UploadFont,
-    /// The daily limit for subscribing to blog newsletters is only applicable to non-logged-in
-    /// users based on their IP addresses.
-    Subscribe,
+    /// The daily limit for subscribing to blog newsletters for non-logged-in users, based on their
+    /// IP addresses.
+    SubscribeUnregistered,
+    /// The daily limit for subscribing to blog newsletters for logged-in users.
+    SubscribeRegistered,
 }
 
 impl ResourceLimit {
@@ -74,7 +76,8 @@ impl ResourceLimit {
             ResourceLimit::SendBlogEditorRequest => 50,
             ResourceLimit::SendBlogWriterRequest => 100,
             ResourceLimit::UploadFont => 32,
-            ResourceLimit::Subscribe => 5,
+            ResourceLimit::SubscribeUnregistered => 15,
+            ResourceLimit::SubscribeRegistered => 675,
         }
     }
 }
