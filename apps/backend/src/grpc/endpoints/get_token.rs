@@ -139,7 +139,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
                 )
-                .bind(hashed_token.to_string())
+                .bind(&hashed_token)
                 .bind(TokenType::EmailVerification as i16)
                 .bind(user_id.unwrap())
                 .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
@@ -181,7 +181,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
                 )
-                .bind(hashed_token.to_string())
+                .bind(&hashed_token)
                 .bind(TokenType::EmailVerification as i16)
                 .bind(user_id.unwrap())
                 .bind(OffsetDateTime::now_utc() - Duration::days(1)) // Yesterday

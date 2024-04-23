@@ -2,7 +2,6 @@ use crate::{
     constants::{
         email_template::EmailTemplate,
         resource_lock::ResourceLock,
-        token::TOKEN_LENGTH,
     },
     error::{
         AppError,
@@ -33,16 +32,10 @@ use actix_web::{
 };
 use actix_web_validator::Json;
 use apalis::prelude::Storage;
-use argon2::{
-    password_hash::SaltString,
-    Argon2,
-    PasswordHasher,
-};
 use chrono::{
     Datelike,
     Local,
 };
-use nanoid::nanoid;
 use serde::{
     Deserialize,
     Serialize,
@@ -175,7 +168,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
     )
-    .bind(hashed_token.to_string())
+    .bind(&hashed_token)
     .bind(TokenType::EmailVerification as i16)
     .bind(user.get::<i64, _>("id"))
     .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
@@ -400,7 +393,7 @@ WHERE id = $1
 
             assert_eq!(result.rows_affected(), 1);
 
-            let (token_id, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
+            let (_, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
             // Insert a verification token for the user.
             let result = sqlx::query(
@@ -409,7 +402,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
             )
-            .bind(hashed_token.to_string())
+            .bind(&hashed_token)
             .bind(TokenType::EmailVerification as i16)
             .bind(1_i64)
             .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
@@ -437,7 +430,7 @@ SELECT EXISTS (
 )
 "#,
             )
-            .bind(hashed_token.to_string())
+            .bind(&hashed_token)
             .fetch_one(&mut *conn)
             .await?;
 
@@ -557,7 +550,7 @@ WHERE id = $1
             let mut conn = pool.acquire().await?;
             let app = init_app_for_test(post, pool, false, false, None).await.0;
             let config = get_app_config().unwrap();
-            let (token_id, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
+            let (_, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
             // Insert a verification token.
             let result = sqlx::query(
@@ -566,7 +559,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
             )
-            .bind(hashed_token.to_string())
+            .bind(&hashed_token)
             .bind(TokenType::EmailVerification as i16)
             .bind(1_i64)
             .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
@@ -594,7 +587,7 @@ SELECT EXISTS (
 )
 "#,
             )
-            .bind(hashed_token.to_string())
+            .bind(&hashed_token)
             .fetch_one(&mut *conn)
             .await?;
 

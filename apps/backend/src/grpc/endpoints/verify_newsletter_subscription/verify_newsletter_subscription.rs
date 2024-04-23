@@ -5,6 +5,8 @@ use crate::{
             TokenType,
             VerifyEmailRequest,
             VerifyEmailResponse,
+            VerifyNewsletterSubscriptionRequest,
+            VerifyNewsletterSubscriptionResponse,
         },
         service::GrpcService,
     },
@@ -20,14 +22,17 @@ use tonic::{
     Response,
     Status,
 };
-use tracing::error;
+use tracing::{
+    error,
+    warn,
+};
 
-/// Verifies an email for a user.
-#[tracing::instrument(name = "GRPC verify_email", skip_all, err)]
-pub async fn verify_email(
+/// Verifies a newsletter subscription for a user.
+#[tracing::instrument(name = "GRPC verify_newsletter_subscription", skip_all, err)]
+pub async fn verify_newsletter_subscription(
     client: &GrpcService,
-    request: Request<VerifyEmailRequest>,
-) -> Result<Response<VerifyEmailResponse>, Status> {
+    request: Request<VerifyNewsletterSubscriptionRequest>,
+) -> Result<Response<VerifyNewsletterSubscriptionResponse>, Status> {
     let pg_pool = &client.db_pool;
     let mut txn = pg_pool.begin().await.map_err(|error| {
         error!("unable to begin the transaction: {error:?}");
@@ -38,9 +43,10 @@ pub async fn verify_email(
 
     // Validate token length.
     if token_id.chars().count() != TOKEN_LENGTH {
-        return Err(Status::invalid_argument(
-            "invalid token `identifier` length",
-        ));
+        warn!("token length does not match");
+        return Ok(Response::new(VerifyNewsletterSubscriptionResponse {
+            is_valid: false,
+        }));
     }
 
     let salt = SaltString::from_b64(&client.config.token_salt).map_err(|error| {
@@ -57,44 +63,47 @@ pub async fn verify_email(
 
     let token_result = sqlx::query(
         r#"
-SELECT user_id
-FROM tokens
+SELECT blog_id, email
+FROM newsletter_tokens
 WHERE
     id = $1
-    AND type = $2
     AND expires_at > NOW()
 "#,
     )
     .bind(hashed_token.to_string())
-    .bind(TokenType::EmailVerification as i16)
     .fetch_one(&mut *txn)
-    .await
-    .map_err(|error| {
+    .await;
+
+    if let Err(error) = token_result {
         if matches!(error, sqlx::Error::RowNotFound) {
-            Status::not_found("Token not found")
-        } else {
-            error!("database error: {error:?}");
-            Status::internal("Database error")
+            return Ok(Response::new(VerifyNewsletterSubscriptionResponse {
+                is_valid: false,
+            }));
         }
-    })?;
+
+        error!("database error: {error:?}");
+
+        return Err(Status::internal("Database error"));
+    }
+
+    // This can be safely unwrapped here.
+    #[allow(clippy::unwrap_used)]
+    let token_result = token_result.unwrap();
 
     match sqlx::query(
         r#"
-WITH updated_user as (
-    UPDATE users
-    SET email_verified = TRUE
-    WHERE id = $1
+WITH inserted_subscriber as (
+    INSERT INTO subscribers (blog_id, email)
+    VALUES ($1, $2)
 )
 -- Delete the token
-DELETE FROM tokens
-WHERE
-    id = $2
-    AND type = $3
+DELETE FROM newsletter_tokens
+WHERE id = $3
 "#,
     )
-    .bind(token_result.get::<i64, _>("user_id"))
+    .bind(token_result.get::<i64, _>("blog_id"))
+    .bind(token_result.get::<String, _>("email"))
     .bind(hashed_token.to_string())
-    .bind(TokenType::EmailVerification as i16)
     .execute(&mut *txn)
     .await
     .map_err(|_| Status::internal("Database error"))?
@@ -110,7 +119,9 @@ WHERE
                 Status::internal("Database error")
             })?;
 
-            Ok(Response::new(VerifyEmailResponse {}))
+            Ok(Response::new(VerifyNewsletterSubscriptionResponse {
+                is_valid: true,
+            }))
         }
     }
 }
@@ -119,15 +130,10 @@ WHERE
 mod tests {
     use crate::{
         config::get_app_config,
-        constants::token::TOKEN_LENGTH,
-        grpc::defs::token_def::v1::{
-            TokenType,
-            VerifyEmailRequest,
-        },
+        grpc::defs::token_def::v1::VerifyNewsletterSubscriptionRequest,
         test_utils::test_grpc_service,
         utils::generate_hashed_token::generate_hashed_token,
     };
-    use nanoid::nanoid;
     use sqlx::{
         PgPool,
         Row,
@@ -136,30 +142,27 @@ mod tests {
         Duration,
         OffsetDateTime,
     };
-    use tonic::{
-        Code,
-        Request,
-    };
+    use tonic::Request;
 
-    #[sqlx::test]
-    async fn can_verify_email(pool: PgPool) {
+    #[sqlx::test(fixtures("verify_newsletter_subscription"))]
+    async fn can_verify_newsletter_subscription(pool: PgPool) {
         test_grpc_service(
             pool,
-            true,
-            Box::new(|mut client, pool, _, user_id| async move {
+            false,
+            Box::new(|mut client, pool, _, _| async move {
                 let config = get_app_config().unwrap();
                 let (token_id, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
                 // Insert token.
                 let result = sqlx::query(
                     r#"
-INSERT INTO tokens (id, type, user_id, expires_at)
+INSERT INTO newsletter_tokens (id, email, blog_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
                 )
                 .bind(&hashed_token)
-                .bind(TokenType::EmailVerification as i16)
-                .bind(user_id.unwrap())
+                .bind("someone@example.com")
+                .bind(2_i64)
                 .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
                 .execute(&pool)
                 .await
@@ -168,50 +171,70 @@ VALUES ($1, $2, $3, $4)
                 assert_eq!(result.rows_affected(), 1);
 
                 let response = client
-                    .verify_email(Request::new(VerifyEmailRequest {
-                        identifier: token_id.to_string(),
-                    }))
+                    .verify_newsletter_subscription(Request::new(
+                        VerifyNewsletterSubscriptionRequest {
+                            identifier: token_id.to_string(),
+                        },
+                    ))
                     .await;
 
                 assert!(response.is_ok());
 
-                // Should update the user.
+                // Should insert a subscriber.
                 let result = sqlx::query(
                     r#"
-SELECT email_verified FROM users
-WHERE id = $1
+SELECT EXISTS (
+    SELECT FROM subscribers
+    WHERE blog_id = $1
+)
 "#,
                 )
-                .bind(user_id.unwrap())
+                .bind(2_i64)
                 .fetch_one(&pool)
                 .await
                 .unwrap();
 
-                assert!(result.get::<bool, _>("email_verified"))
+                assert!(result.get::<bool, _>("exists"));
+
+                // Should delete the token.
+                let result = sqlx::query(
+                    r#"
+SELECT EXISTS (
+    SELECT FROM newsletter_tokens
+    WHERE blog_id = $1
+)
+"#,
+                )
+                .bind(2_i64)
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+                assert!(!result.get::<bool, _>("exists"));
             }),
         )
         .await;
     }
 
-    #[sqlx::test]
+    #[sqlx::test(fixtures("verify_newsletter_subscription"))]
     async fn can_handle_an_expired_token(pool: PgPool) {
         test_grpc_service(
             pool,
-            true,
-            Box::new(|mut client, pool, _, user_id| async move {
+            false,
+            Box::new(|mut client, pool, _, _| async move {
                 let config = get_app_config().unwrap();
                 let (token_id, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
                 // Insert an expired token.
                 let result = sqlx::query(
                     r#"
-INSERT INTO tokens (id, type, user_id, expires_at)
+INSERT INTO newsletter_tokens (id, email, blog_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
                 )
                 .bind(&hashed_token)
-                .bind(TokenType::EmailVerification as i16)
-                .bind(user_id.unwrap())
+                .bind("someone@example.com")
+                .bind(2_i64)
                 .bind(OffsetDateTime::now_utc() - Duration::days(1)) // Yesterday
                 .execute(&pool)
                 .await
@@ -220,32 +243,16 @@ VALUES ($1, $2, $3, $4)
                 assert_eq!(result.rows_affected(), 1);
 
                 let response = client
-                    .verify_email(Request::new(VerifyEmailRequest {
-                        identifier: token_id.to_string(),
-                    }))
-                    .await;
+                    .verify_newsletter_subscription(Request::new(
+                        VerifyNewsletterSubscriptionRequest {
+                            identifier: token_id.to_string(),
+                        },
+                    ))
+                    .await
+                    .unwrap()
+                    .into_inner();
 
-                assert!(response.is_err());
-                assert_eq!(response.unwrap_err().code(), Code::NotFound);
-            }),
-        )
-        .await;
-    }
-
-    #[sqlx::test]
-    async fn can_handle_a_missing_token(pool: PgPool) {
-        test_grpc_service(
-            pool,
-            false,
-            Box::new(|mut client, _, _, _| async move {
-                let response = client
-                    .verify_email(Request::new(VerifyEmailRequest {
-                        identifier: nanoid!(TOKEN_LENGTH).to_string(),
-                    }))
-                    .await;
-
-                assert!(response.is_err());
-                assert_eq!(response.unwrap_err().code(), Code::NotFound);
+                assert!(!response.is_valid);
             }),
         )
         .await;
