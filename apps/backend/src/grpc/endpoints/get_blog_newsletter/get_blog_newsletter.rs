@@ -1,18 +1,12 @@
-use crate::{
-    grpc::{
-        defs::{
-            blog_def::v1::{
-                GetBlogNewsletterRequest,
-                GetBlogNewsletterResponse,
-                GetBlogResponse,
-                LeftSidebarItem as BlogLeftSidebarItem,
-                RightSidebarItem as BlogRightSidebarItem,
-            },
-            user_def::v1::BareUser,
+use crate::grpc::{
+    defs::{
+        blog_def::v1::{
+            GetBlogNewsletterRequest,
+            GetBlogNewsletterResponse,
         },
-        service::GrpcService,
+        user_def::v1::BareUser,
     },
-    utils::to_iso8601::to_iso8601,
+    service::GrpcService,
 };
 use serde::Deserialize;
 use sqlx::{
@@ -21,7 +15,6 @@ use sqlx::{
     Postgres,
     QueryBuilder,
 };
-use time::OffsetDateTime;
 use tonic::{
     Request,
     Response,
@@ -117,7 +110,9 @@ FROM
 "#,
     );
 
-    if current_user_id.is_some() {
+    if let Some(current_user_id) = current_user_id {
+        tracing::Span::current().record("user_id", current_user_id);
+
         query_builder.push(
             r#"
 -- Boolean subscription flag
@@ -126,10 +121,15 @@ LEFT OUTER JOIN subscribers AS "b->is_subscribed"
     AND "b->is_subscribed".email = (
         SELECT eu.email FROM users eu
         WHERE
-            eu.id = $1
-            AND eu.deleted_at IS NULL
-            AND eu.deactivated_at IS NULL
-    )
+            eu.id =
+"#,
+        );
+        query_builder.push_bind(current_user_id);
+        query_builder.push(
+            r#"
+    AND eu.deleted_at IS NULL
+    AND eu.deactivated_at IS NULL
+)
 "#,
         );
     }
@@ -146,15 +146,8 @@ LEFT OUTER JOIN subscribers AS "b->is_subscribed"
 
     query_builder.push(r#" AND b.deleted_at IS NULL "#);
 
-    let mut query_result = query_builder.build_query_as::<Blog>();
-
-    if let Some(current_user_id) = current_user_id {
-        tracing::Span::current().record("user_id", current_user_id);
-
-        query_result = query_result.bind(current_user_id);
-    }
-
-    let blog = query_result
+    let blog = query_builder
+        .build_query_as::<Blog>()
         .fetch_one(&client.db_pool)
         .await
         .map_err(|error| {
@@ -600,7 +593,7 @@ VALUES ((SELECT email FROM target_user), $2)
                     .into_inner();
 
                 // Should be `true`.
-                assert!(response.is_subcribed);
+                assert!(response.is_subscribed);
             }),
         )
         .await;

@@ -2,9 +2,6 @@ use crate::{
     constants::token::TOKEN_LENGTH,
     grpc::{
         defs::token_def::v1::{
-            TokenType,
-            VerifyEmailRequest,
-            VerifyEmailResponse,
             VerifyNewsletterSubscriptionRequest,
             VerifyNewsletterSubscriptionResponse,
         },

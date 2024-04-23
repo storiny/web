@@ -1,6 +1,5 @@
 use crate::grpc::{
     defs::blog_def::v1::{
-        GetBlogEditorsInfoResponse,
         GetBlogNewsletterInfoRequest,
         GetBlogNewsletterInfoResponse,
     },
@@ -61,12 +60,12 @@ b.slug = $1
         r#"
     AND b.deleted_at IS NULL
 )
-SELECT COUNT(*)
+SELECT COUNT(*) AS "subscriber_count"
 FROM subscribers
 WHERE
     blog_id = (
         SELECT id FROM blog
-    ) AS "subscriber_count"
+    )
 "#,
     );
 
@@ -81,7 +80,7 @@ WHERE
         })?;
 
     Ok(Response::new(GetBlogNewsletterInfoResponse {
-        subscriber_count: result.get::<i32, _>("subscriber_count") as u32,
+        subscriber_count: result.get::<i64, _>("subscriber_count") as u32,
     }))
 }
 
