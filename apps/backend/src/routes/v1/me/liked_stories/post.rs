@@ -28,7 +28,7 @@ struct Fragments {
 
 #[post("/v1/me/liked-stories/{story_id}")]
 #[tracing::instrument(
-    name = "POST /v1/me/liked-replies/{story_id}",
+    name = "POST /v1/me/liked-stories/{story_id}",
     skip_all,
     fields(
         user_id = user.id().ok(),

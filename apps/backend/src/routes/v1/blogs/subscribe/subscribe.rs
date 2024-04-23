@@ -410,7 +410,7 @@ SELECT EXISTS (
                 .get::<_, u32>(&format!(
                     "{}:{}:{}",
                     RedisNamespace::ResourceLimit,
-                    ResourceLimit::Subscribe as i32,
+                    ResourceLimit::SubscribeUnregistered as i32,
                     "8.8.8.8"
                 ))
                 .await

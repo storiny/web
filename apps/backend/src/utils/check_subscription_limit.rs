@@ -22,13 +22,14 @@ pub async fn check_subscription_limit(redis_pool: &RedisPool, ip: &str) -> anyho
         .get::<_, Option<u32>>(&format!(
             "{}:{}:{ip}",
             RedisNamespace::ResourceLimit,
-            ResourceLimit::Subscribe as i32,
+            ResourceLimit::SubscribeUnregistered as i32,
         ))
         .await
         .map_err(|error| anyhow!("unable to fetch the subscription limit from Redis: {error:?}"))?;
 
     // Result might be `None` if the key is not present in the cache.
-    Ok(limit.is_none() || limit.is_some_and(|value| value < ResourceLimit::Subscribe.get_limit()))
+    Ok(limit.is_none()
+        || limit.is_some_and(|value| value < ResourceLimit::SubscribeUnregistered.get_limit()))
 }
 
 #[cfg(test)]
@@ -75,7 +76,7 @@ mod tests {
             // Exceed the subscription limit. Do not use
             // [crate::test_utils::exceed_subscription_limit] as it depends on
             // [check_subscription_limit].
-            for _ in 0..ResourceLimit::Subscribe.get_limit() + 1 {
+            for _ in 0..ResourceLimit::SubscribeUnregistered.get_limit() + 1 {
                 incr_futures.push(incr_subscription_limit(redis_pool, "::1"));
             }
 

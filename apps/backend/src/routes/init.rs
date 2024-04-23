@@ -96,6 +96,10 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     // Me - Blogs - Stories
     v1::me::blogs::stories::remove::init_routes(cfg);
     v1::me::blogs::stories::publish::init_routes(cfg);
+    // Me - Blogs - Subscribers
+    v1::me::blogs::subscribers::get::init_routes(cfg);
+    v1::me::blogs::subscribers::import::init_routes(cfg);
+    v1::me::blogs::subscribers::remove::init_routes(cfg);
     // Me - Blogs - Editor requests
     v1::me::blogs::editor_requests::get::init_routes(cfg);
     v1::me::blogs::editor_requests::cancel::init_routes(cfg);
@@ -206,6 +210,9 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::muted_users::get::init_routes(cfg);
     v1::me::muted_users::post::init_routes(cfg);
     v1::me::muted_users::delete::init_routes(cfg);
+    // Me - Newsletters
+    v1::me::newsletters::post::init_routes(cfg);
+    v1::me::newsletters::delete::init_routes(cfg);
     // Me - Notifications
     v1::me::notifications::get::init_routes(cfg);
     v1::me::notifications::read::init_routes(cfg);
