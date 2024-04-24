@@ -19,6 +19,7 @@ use crate::{
     utils::{
         check_subscription_limit::check_subscription_limit,
         generate_hashed_token::generate_hashed_token,
+        get_blog_url::get_blog_url,
         get_cdn_url::get_cdn_url,
         incr_subscription_limit::incr_subscription_limit,
     },
@@ -180,11 +181,10 @@ VALUES ($1, $2, $3, $4)
     // Increment the subscription attempts for IP.
     incr_subscription_limit(&data.redis, &subscription_limit_identifier).await?;
 
-    let blog_url = if let Some(domain) = blog.get::<Option<String>, _>("domain") {
-        format!("https://{domain}")
-    } else {
-        format!("https://{}.storiny.com", blog.get::<String, _>("slug"))
-    };
+    let blog_url = get_blog_url(
+        blog.get::<String, _>("slug"),
+        blog.get::<Option<String>, _>("domain"),
+    );
 
     let template_data = serde_json::to_string(&SubscriptionConfirmationEmailTemplateData {
         link: format!("{blog_url}/newsletter/{token_id}"),
