@@ -76,6 +76,13 @@ pub struct AddAccountTemplate {
     error: Option<AddAccountError>,
 }
 
+/// Unsubscribe page template
+#[derive(TemplateOnce)]
+#[template(path = "unsubscribe.stpl")]
+pub struct UnsubscribeTemplate {
+    message: String,
+}
+
 /// Application state
 pub struct AppState {
     /// Environment configuration
