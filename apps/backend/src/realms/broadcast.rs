@@ -106,7 +106,7 @@ impl BroadcastGroup {
             changed.extend_from_slice(updated);
             changed.extend_from_slice(removed);
 
-            if let Err(_) = tx.send(changed) {
+            if tx.send(changed).is_err() {
                 warn!("failed to send awareness update");
             }
         });
@@ -120,7 +120,7 @@ impl BroadcastGroup {
 
                     match awareness.update_with_clients(changed_clients) {
                         Ok(update) => {
-                            if let Err(_) = sink.send(Message::Awareness(update).encode_v1()) {
+                            if sink.send(Message::Awareness(update).encode_v1()).is_err() {
                                 warn!("could not broadcast the awareness update");
                             }
                         }
