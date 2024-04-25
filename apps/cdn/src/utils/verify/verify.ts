@@ -23,7 +23,7 @@ export const verify = (
       return true;
     }
   } catch {
-    return false;
+    /* empty */
   }
 
   return false;
