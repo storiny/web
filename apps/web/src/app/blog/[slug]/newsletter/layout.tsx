@@ -21,7 +21,7 @@ import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import auth_styles from "../../../(native)/(auth)/layout.module.scss";
-import { BlogNewsletterInfoContext } from "./context";
+import { BlogNewsletterInfoContextProvider } from "./context";
 import styles from "./styles.module.scss";
 
 const BlogNewsletterLayout = async ({
@@ -44,7 +44,7 @@ const BlogNewsletterLayout = async ({
     const { name, description, user, newsletter_splash_id } = response;
 
     return (
-      <BlogNewsletterInfoContext.Provider value={response}>
+      <BlogNewsletterInfoContextProvider response={response}>
         <div className={clsx(css["grid"], css["grid-container"], css.minimal)}>
           <Navbar variant={"minimal"} />
           <div
@@ -119,7 +119,7 @@ const BlogNewsletterLayout = async ({
           </Main>
           <SplashScreen />
         </div>
-      </BlogNewsletterInfoContext.Provider>
+      </BlogNewsletterInfoContextProvider>
     );
   } catch (e) {
     handle_exception(e);

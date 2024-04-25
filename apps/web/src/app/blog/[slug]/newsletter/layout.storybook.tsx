@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 import React from "react";
 
 import PlusPattern from "~/brand/plus-pattern";
-import { GetBlogNewsletterInfoResponse } from "~/common/grpc";
+import { GetBlogNewsletterResponse } from "~/common/grpc";
 import Link from "~/components/link";
 import Main from "~/components/main";
 import Spacer from "~/components/spacer";
@@ -15,7 +15,7 @@ import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import auth_styles from "../../../(native)/(auth)/layout.module.scss";
-import { BlogNewsletterInfoContext } from "./context";
+import { BlogNewsletterInfoContextProvider } from "./context";
 import styles from "./styles.module.scss";
 
 const StorybookBlogNewsletterLayout = ({
@@ -23,11 +23,11 @@ const StorybookBlogNewsletterLayout = ({
   response
 }: {
   children: React.ReactNode;
-  response: GetBlogNewsletterInfoResponse;
+  response: GetBlogNewsletterResponse;
 }): React.ReactElement => {
   const { name, description, user, newsletter_splash_id } = response;
   return (
-    <BlogNewsletterInfoContext.Provider value={response}>
+    <BlogNewsletterInfoContextProvider response={response}>
       <div className={clsx(css["grid"], css["grid-container"], css.minimal)}>
         <Navbar variant={"minimal"} />
         <div
@@ -102,7 +102,7 @@ const StorybookBlogNewsletterLayout = ({
         </Main>
         <SplashScreen />
       </div>
-    </BlogNewsletterInfoContext.Provider>
+    </BlogNewsletterInfoContextProvider>
   );
 };
 
