@@ -42,9 +42,9 @@ impl From<SplitSink<WebSocket, Message>> for RealmSink {
     }
 }
 
-impl Into<SplitSink<WebSocket, Message>> for RealmSink {
-    fn into(self) -> SplitSink<WebSocket, Message> {
-        self.0
+impl From<RealmSink> for SplitSink<WebSocket, Message> {
+    fn from(val: RealmSink) -> Self {
+        val.0
     }
 }
 
@@ -95,9 +95,9 @@ impl From<SplitStream<WebSocket>> for RealmStream {
     }
 }
 
-impl Into<SplitStream<WebSocket>> for RealmStream {
-    fn into(self) -> SplitStream<WebSocket> {
-        self.0
+impl From<RealmStream> for SplitStream<WebSocket> {
+    fn from(val: RealmStream) -> Self {
+        val.0
     }
 }
 
@@ -131,14 +131,14 @@ pub async fn handle_message(
         ProtocolMessage::Sync(msg) => match msg {
             SyncMessage::SyncStep1(state_vector) => {
                 let awareness = awareness.read().await;
-                RealmProtocol.handle_sync_step1(&*awareness, state_vector)
+                RealmProtocol.handle_sync_step1(&awareness, state_vector)
             }
             SyncMessage::SyncStep2(update) => {
                 if read_only {
                     Ok(None)
                 } else {
                     let mut awareness = awareness.write().await;
-                    RealmProtocol.handle_sync_step2(&mut *awareness, Update::decode_v1(&update)?)
+                    RealmProtocol.handle_sync_step2(&mut awareness, Update::decode_v1(&update)?)
                 }
             }
             SyncMessage::Update(update) => {
@@ -146,25 +146,25 @@ pub async fn handle_message(
                     Ok(None)
                 } else {
                     let mut awareness = awareness.write().await;
-                    RealmProtocol.handle_update(&mut *awareness, Update::decode_v1(&update)?)
+                    RealmProtocol.handle_update(&mut awareness, Update::decode_v1(&update)?)
                 }
             }
         },
         ProtocolMessage::Auth(reason) => {
             let awareness = awareness.read().await;
-            RealmProtocol.handle_auth(&*awareness, reason)
+            RealmProtocol.handle_auth(&awareness, reason)
         }
         ProtocolMessage::AwarenessQuery => {
             let awareness = awareness.read().await;
-            RealmProtocol.handle_awareness_query(&*awareness)
+            RealmProtocol.handle_awareness_query(&awareness)
         }
         ProtocolMessage::Awareness(update) => {
             let mut awareness = awareness.write().await;
-            RealmProtocol.handle_awareness_update(&mut *awareness, update)
+            RealmProtocol.handle_awareness_update(&mut awareness, update)
         }
         ProtocolMessage::Custom(tag, data) => {
             let mut awareness = awareness.write().await;
-            RealmProtocol.missing_handle(&mut *awareness, tag, data)
+            RealmProtocol.missing_handle(&mut awareness, tag, data)
         }
         // Internal messages are never received from the peers (they are only sent by the server).
         ProtocolMessage::Internal(_) => Ok(None),

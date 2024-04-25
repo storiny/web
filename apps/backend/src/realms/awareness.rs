@@ -192,7 +192,7 @@ impl Awareness {
     /// * `callback` - The update callback.
     pub fn on_update<F>(&self, cb: F) -> Subscription
     where
-        F: Fn(&Event) -> () + 'static,
+        F: Fn(&Event) + 'static,
     {
         self.on_update.subscribe(move |_, e| cb(e))
     }
