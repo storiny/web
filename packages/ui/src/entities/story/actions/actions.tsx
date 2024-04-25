@@ -1,4 +1,8 @@
+"use client";
+
 import { SUPPORT_ARTICLE_MAP } from "@storiny/shared/src/constants/support-articles";
+import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
+import { use_blog_context } from "@storiny/web/src/common/context/blog";
 import { clsx } from "clsx";
 import NextLink from "next/link";
 import React from "react";
@@ -60,6 +64,7 @@ const StoryActions = ({
   const toast = use_toast();
   const share = use_web_share(toast);
   const copy = use_clipboard();
+  const blog = use_blog_context();
   const dispatch = use_app_dispatch();
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const logged_in = use_app_selector(select_is_logged_in);
@@ -71,6 +76,13 @@ const StoryActions = ({
     (state) => state.entities.mutes[story.user?.id || ""]
   );
   const is_self = current_user?.id === (story.user_id || story.user?.id);
+  const story_url = blog?.id
+    ? `${get_blog_url(blog)}/${story.slug || story.id}`
+    : `${process.env.NEXT_PUBLIC_WEB_URL}/${
+        is_self && current_user
+          ? current_user.username
+          : story.user?.username || "story"
+      }/${story.slug || story.id}`;
 
   const [delete_draft] = use_delete_draft_mutation();
   const [delete_story] = use_delete_story_mutation();
@@ -302,14 +314,7 @@ const StoryActions = ({
             decorator={<ShareIcon />}
             onClick={(event): void => {
               event.stopPropagation();
-              share(
-                story.title,
-                `${process.env.NEXT_PUBLIC_WEB_URL}/${
-                  is_self && current_user
-                    ? current_user.username
-                    : story.user?.username || "story"
-                }/${story.slug || story.id}`
-              );
+              share(story.title, story_url);
             }}
           >
             Share this story
@@ -318,13 +323,7 @@ const StoryActions = ({
             decorator={<CopyIcon />}
             onClick={(event): void => {
               event.stopPropagation();
-              copy(
-                `${process.env.NEXT_PUBLIC_WEB_URL}/${
-                  is_self && current_user
-                    ? current_user.username
-                    : story.user?.username || "story"
-                }/${story.slug || story.id}`
-              );
+              copy(story_url);
             }}
           >
             Copy link to story

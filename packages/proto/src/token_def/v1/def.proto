@@ -9,13 +9,14 @@ enum TokenType {
   TOKEN_TYPE_PASSWORD_ADD /*      */ = 3;
 }
 
+// Get token
+
 message GetTokenRequest {
   string identifier /**/ = 1;
   TokenType type /*   */ = 2;
 }
 
 message GetTokenResponse {
-  // Base props
   bool is_valid /*  */ = 1;
   bool is_expired /**/ = 2;
 }
@@ -27,3 +28,13 @@ message VerifyEmailRequest {
 }
 
 message VerifyEmailResponse {}
+
+// Newsletter subscription
+
+message VerifyNewsletterSubscriptionRequest {
+  string identifier = 1;
+}
+
+message VerifyNewsletterSubscriptionResponse {
+  bool is_valid = 1;
+}

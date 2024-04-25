@@ -12,7 +12,6 @@ const meta: Meta<typeof AspectRatio> = {
   args: {
     ratio: 16 / 9,
     children: (
-      // eslint-disable-next-line @next/next/no-img-element
       <img
         alt={"A photograph of Tokyo city captured during night"}
         src={"/images/uploads/tokyo.jpg"}

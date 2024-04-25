@@ -143,7 +143,11 @@ const UserHoverCardContent = ({
             level={"body2"}
           >
             <span className={css.ellipsis}>@{user.username} </span>
-            <BadgeArray flags={user.public_flags} size={14} />
+            <BadgeArray
+              flags={user.public_flags}
+              is_plus_member={user.is_plus_member}
+              size={14}
+            />
           </Link>
         </div>
         {Boolean((user.rendered_bio || "").trim()) && (

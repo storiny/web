@@ -31,7 +31,6 @@ pub async fn verify_email(
     let pg_pool = &client.db_pool;
     let mut txn = pg_pool.begin().await.map_err(|error| {
         error!("unable to begin the transaction: {error:?}");
-
         Status::internal("Database error")
     })?;
 
@@ -75,7 +74,6 @@ WHERE
             Status::not_found("Token not found")
         } else {
             error!("database error: {error:?}");
-
             Status::internal("Database error")
         }
     })?;
@@ -104,13 +102,11 @@ WHERE
     {
         0 => {
             error!("token not found");
-
             Err(Status::internal("Internal error"))
         }
         _ => {
             txn.commit().await.map_err(|error| {
                 error!("unable to commit the transaction: {error:?}");
-
                 Status::internal("Database error")
             })?;
 
@@ -129,11 +125,7 @@ mod tests {
             VerifyEmailRequest,
         },
         test_utils::test_grpc_service,
-    };
-    use argon2::{
-        password_hash::SaltString,
-        Argon2,
-        PasswordHasher,
+        utils::generate_hashed_token::generate_hashed_token,
     };
     use nanoid::nanoid;
     use sqlx::{
@@ -156,12 +148,7 @@ mod tests {
             true,
             Box::new(|mut client, pool, _, user_id| async move {
                 let config = get_app_config().unwrap();
-
-                let token_id = nanoid!(TOKEN_LENGTH);
-                let salt = SaltString::from_b64(&config.token_salt).unwrap();
-                let hashed_token = Argon2::default()
-                    .hash_password(token_id.as_bytes(), &salt)
-                    .unwrap();
+                let (token_id, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
                 // Insert token.
                 let result = sqlx::query(
@@ -170,7 +157,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
                 )
-                .bind(hashed_token.to_string())
+                .bind(&hashed_token)
                 .bind(TokenType::EmailVerification as i16)
                 .bind(user_id.unwrap())
                 .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
@@ -213,12 +200,7 @@ WHERE id = $1
             true,
             Box::new(|mut client, pool, _, user_id| async move {
                 let config = get_app_config().unwrap();
-
-                let token_id = nanoid!(TOKEN_LENGTH);
-                let salt = SaltString::from_b64(&config.token_salt).unwrap();
-                let hashed_token = Argon2::default()
-                    .hash_password(token_id.as_bytes(), &salt)
-                    .unwrap();
+                let (token_id, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
                 // Insert an expired token.
                 let result = sqlx::query(
@@ -227,7 +209,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
                 )
-                .bind(hashed_token.to_string())
+                .bind(&hashed_token)
                 .bind(TokenType::EmailVerification as i16)
                 .bind(user_id.unwrap())
                 .bind(OffsetDateTime::now_utc() - Duration::days(1)) // Yesterday

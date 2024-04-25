@@ -77,7 +77,10 @@ const SITE_SETTINGS_GROUP: Group<BlogDashboardSegment> = {
     {
       title: "Newsletter",
       decorator: <NewsletterIcon />,
-      value: "content/newsletter"
+      value: "content/newsletter",
+      metadata: {
+        owner_only: true
+      }
     }
   ]
 };

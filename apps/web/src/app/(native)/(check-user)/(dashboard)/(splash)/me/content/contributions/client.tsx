@@ -8,6 +8,7 @@ import { dynamic_loader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
 import Divider from "~/components/divider";
 import Input from "~/components/input";
+import Main from "~/components/main";
 import Option from "~/components/option";
 import Select from "~/components/select";
 import Spacer from "~/components/spacer";
@@ -214,7 +215,7 @@ const ContentContributionsClient = (
 
   return (
     <React.Fragment>
-      <main data-root={"true"}>
+      <Main>
         <DashboardTitle>Contributions</DashboardTitle>
         <StatusHeader {...props} />
         <ControlBar
@@ -249,7 +250,7 @@ const ContentContributionsClient = (
           />
         )}
         <Spacer orientation={"vertical"} size={10} />
-      </main>
+      </Main>
       <ContentContributionsRightSidebar
         pending_collaboration_request_count={
           pending_collaboration_request_count

@@ -24,6 +24,10 @@ use argon2::{
     Argon2,
     PasswordHasher,
 };
+use chrono::{
+    Datelike,
+    Local,
+};
 use nanoid::nanoid;
 use sqlx::Row;
 use time::{
@@ -104,11 +108,13 @@ VALUES ($1, $2, $3, $4)
     .execute(&mut *txn)
     .await?;
 
-    let template_data =
-        serde_json::to_string(&PasswordAddVerificationEmailTemplateData { verification_code })
-            .map_err(|error| {
-                AppError::InternalError(format!("unable to serialize the template data: {error:?}"))
-            })?;
+    let template_data = serde_json::to_string(&PasswordAddVerificationEmailTemplateData {
+        verification_code,
+        copyright_year: Local::now().year().to_string(),
+    })
+    .map_err(|error| {
+        AppError::InternalError(format!("unable to serialize the template data: {error:?}"))
+    })?;
 
     let mut templated_email_job = (*templated_email_job_storage.into_inner()).clone();
 
@@ -135,11 +141,11 @@ mod tests {
     use super::*;
     use crate::{
         config::get_app_config,
-        constants::token::TOKEN_LENGTH,
         test_utils::{
             assert_toast_error_response,
             init_app_for_test,
         },
+        utils::generate_hashed_token::generate_hashed_token,
     };
     use actix_web::test;
     use sqlx::{
@@ -221,12 +227,7 @@ VALUES ($1, $2, $3, $4, $5)
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
         let config = get_app_config().unwrap();
-
-        let token_id = nanoid!(TOKEN_LENGTH);
-        let salt = SaltString::from_b64(&config.token_salt).unwrap();
-        let hashed_token = Argon2::default()
-            .hash_password(token_id.as_bytes(), &salt)
-            .unwrap();
+        let (_, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
         // Insert a password-add verification token.
         let result = sqlx::query(
@@ -235,7 +236,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
         )
-        .bind(hashed_token.to_string())
+        .bind(&hashed_token)
         .bind(TokenType::PasswordAdd as i16)
         .bind(user_id.unwrap())
         .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
@@ -261,7 +262,7 @@ SELECT EXISTS (
 )
 "#,
         )
-        .bind(hashed_token.to_string())
+        .bind(&hashed_token)
         .fetch_one(&mut *conn)
         .await?;
 

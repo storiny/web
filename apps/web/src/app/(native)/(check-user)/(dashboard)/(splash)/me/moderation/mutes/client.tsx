@@ -6,6 +6,7 @@ import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
 import { UserListSkeleton, VirtualizedUserList } from "~/common/user";
+import Main from "~/components/main";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import ErrorState from "~/entities/error-state";
@@ -90,7 +91,7 @@ const ModerationMutesClient = (props: MutesProps): React.ReactElement => {
 
   return (
     <React.Fragment>
-      <main data-root={"true"}>
+      <Main>
         <DashboardTitle>Muted users</DashboardTitle>
         <StatusHeader {...props} />
         {is_loading || (is_fetching && page === 1) ? (
@@ -117,7 +118,7 @@ const ModerationMutesClient = (props: MutesProps): React.ReactElement => {
           />
         )}
         <Spacer orientation={"vertical"} size={10} />
-      </main>
+      </Main>
       <ModerationMutesRightSidebar />
     </React.Fragment>
   );

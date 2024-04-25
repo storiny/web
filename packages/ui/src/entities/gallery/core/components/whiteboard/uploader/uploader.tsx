@@ -120,7 +120,6 @@ const WhiteboardUploader = (
             Sketch uploaded
           </Typography>
           <Spacer orientation={"vertical"} size={2.25} />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             alt={""}
             className={styles.preview}

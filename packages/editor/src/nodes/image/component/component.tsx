@@ -1,3 +1,5 @@
+"use client";
+
 import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection as use_lexical_node_selection } from "@lexical/react/useLexicalNodeSelection";
 import { mergeRegister as merge_register } from "@lexical/utils";
@@ -20,6 +22,7 @@ import { useHotkeys as use_hot_keys } from "react-hotkeys-hook";
 import { useIntersectionObserver as use_intersection_observer } from "react-intersection-observer-hook";
 import use_resize_observer from "use-resize-observer";
 
+import { use_blog_context } from "~/common/context/blog";
 import AspectRatio from "~/components/aspect-ratio";
 import IconButton from "~/components/icon-button";
 import Image from "~/components/image";
@@ -98,6 +101,7 @@ const ImageComponent = ({
   resizable: boolean;
 }): React.ReactElement | null => {
   const items_container_ref = React.useRef<HTMLDivElement | null>(null);
+  const blog = use_blog_context();
   const [editor] = use_lexical_composer_context();
   const [selected, set_selected, clear_selection] =
     use_lexical_node_selection(node_key);
@@ -262,14 +266,15 @@ const ImageComponent = ({
         data-layout={layout}
         ref={container_ref}
       >
-        {["overflow", "screen-width"].includes(layout) && (
+        {["overflow", "screen-width"].includes(layout) &&
+        !blog?.is_story_minimal_layout ? (
           <span
             aria-hidden
             className={figure_styles["left-banner"]}
             data-layout={layout}
             data-visible={String(visible)}
           />
-        )}
+        ) : null}
         <Popover
           className={clsx(
             css["flex-center"],
@@ -365,14 +370,15 @@ const ImageComponent = ({
             node_key={node_key}
           />
         </Popover>
-        {["overflow", "screen-width"].includes(layout) && (
+        {["overflow", "screen-width"].includes(layout) &&
+        !blog?.is_story_minimal_layout ? (
           <span
             aria-hidden
             className={figure_styles["right-banner"]}
             data-layout={layout}
             data-visible={String(visible)}
           />
-        )}
+        ) : null}
         {editable &&
         images.length === 1 &&
         resizable &&

@@ -2,6 +2,7 @@ import { clsx } from "clsx";
 import React from "react";
 
 import Link from "~/components/link";
+import Main from "~/components/main";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import BioParser from "~/entities/bio-parser";
@@ -36,7 +37,7 @@ const RestrictedStory = (props: RestrictedStoryProps): React.ReactElement => {
       <Navbar />
       <Sidenav />
       <LeftSidebar />
-      <main data-root={"true"}>
+      <Main>
         <CustomState
           auto_size
           description={
@@ -59,7 +60,7 @@ const RestrictedStory = (props: RestrictedStoryProps): React.ReactElement => {
               : "This story has been unpublished"
           }
         />
-      </main>
+      </Main>
       <RightSidebar>
         <div className={css["flex-col"]}>
           <Persona

@@ -4,7 +4,7 @@ INSERT INTO
 	users (id, name, username, email)
 VALUES (2, 'Sample user 1', 'sample_user_1', 'sample_1@example.com'),
 	   (3, 'Sample user 2', 'sample_user_2', 'sample_2@example.com'),
-	   (4, 'Sample user 3', 'sample_user_3', 'sample_3@example.com');;
+	   (4, 'Sample user 3', 'sample_user_3', 'sample_3@example.com');
 
 -- Asset
 

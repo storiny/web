@@ -12,14 +12,12 @@ use crate::{
 };
 use actix_web::{
     get,
-    http::header::{
-        self,
-        ContentType,
-    },
+    http::header::ContentType,
     web,
     HttpResponse,
 };
 use actix_web_validator::QsQuery;
+use http::header;
 use oauth2::{
     AuthorizationCode,
     TokenResponse,
@@ -49,47 +47,38 @@ struct GitHubTokenErrorResponse {
 #[tracing::instrument(skip_all, err)]
 async fn github_async_http_client(
     request: oauth2::HttpRequest,
-) -> Result<oauth2::HttpResponse, oauth2::reqwest::Error<reqwest::Error>> {
+) -> Result<oauth2::HttpResponse, reqwest::Error> {
     let client = reqwest::Client::builder()
         .redirect(reqwest::redirect::Policy::none())
-        .build()
-        .map_err(oauth2::reqwest::Error::Reqwest)?;
+        .build()?;
     let mut request_builder = client
-        .request(request.method, request.url.as_str())
-        .body(request.body);
+        .request(request.method().clone(), request.uri().to_string())
+        .body(request.body().clone());
 
-    for (name, value) in &request.headers {
+    for (name, value) in request.headers() {
         request_builder = request_builder.header(name.as_str(), value.as_bytes());
     }
 
-    let request = request_builder
-        .build()
-        .map_err(oauth2::reqwest::Error::Reqwest)?;
-
-    let response = client
-        .execute(request)
-        .await
-        .map_err(oauth2::reqwest::Error::Reqwest)?;
+    let request = request_builder.build()?;
+    let response = client.execute(request).await?;
 
     let status_code = response.status();
     let headers = response.headers().to_owned();
-    let chunks = response
-        .bytes()
-        .await
-        .map_err(oauth2::reqwest::Error::Reqwest)?;
+    let chunks = response.bytes().await?;
 
-    Ok(oauth2::HttpResponse {
-        // GitHub returns 200 status code for errors, with a JSON body describing the error details.
-        // It needs to be mapped to a 400 error code to remain compliant with the OAuth spec.
-        // https://github.com/ramosbugs/oauth2-rs/issues/218
-        status_code: if serde_json::from_slice::<GitHubTokenErrorResponse>(&chunks).is_ok() {
-            StatusCode::BAD_REQUEST
-        } else {
-            status_code
-        },
-        headers,
-        body: chunks.to_vec(),
-    })
+    let mut res = oauth2::HttpResponse::new(chunks.to_vec());
+
+    res.headers_mut().extend(headers);
+    // GitHub returns 200 status code for errors, with a JSON body describing the error details.
+    // It needs to be mapped to a 400 error code to remain compliant with the OAuth spec.
+    // https://github.com/ramosbugs/oauth2-rs/issues/218
+    *res.status_mut() = if serde_json::from_slice::<GitHubTokenErrorResponse>(&chunks).is_ok() {
+        StatusCode::BAD_REQUEST
+    } else {
+        status_code
+    };
+
+    Ok(res)
 }
 
 #[tracing::instrument(skip_all, fields(user_id), err)]
@@ -116,7 +105,7 @@ async fn handle_github_oauth_request(
         .oauth_client_map
         .github
         .exchange_code(code)
-        .request_async(github_async_http_client)
+        .request_async(&github_async_http_client)
         .await
         .map_err(|error| ConnectionError::Other(error.to_string()))?;
 

@@ -6,6 +6,7 @@ import React from "react";
 import { dynamic_loader } from "~/common/dynamic";
 import ProgressState from "~/common/progress-state";
 import Divider from "~/components/divider";
+import Main from "~/components/main";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import AreaChart from "~/entities/area-chart";
@@ -41,7 +42,7 @@ const AccountStatsClient = (): React.ReactElement => {
 
   return (
     <React.Fragment>
-      <main data-root={"true"}>
+      <Main>
         <DashboardTitle>Account statistics</DashboardTitle>
         <DashboardWrapper>
           {is_error ? (
@@ -122,7 +123,7 @@ const AccountStatsClient = (): React.ReactElement => {
           )}
         </DashboardWrapper>
         <Spacer orientation={"vertical"} size={10} />
-      </main>
+      </Main>
       <AccountStatsRightSidebar />
     </React.Fragment>
   );

@@ -1,5 +1,7 @@
 import React from "react";
 
+import Main from "~/components/main";
+
 import DefaultDashboardRightSidebar from "../../common/right-sidebar";
 
 const DefaultDashboardRightSidebarLayout = ({
@@ -8,7 +10,7 @@ const DefaultDashboardRightSidebarLayout = ({
   children: React.ReactNode;
 }): React.ReactElement => (
   <>
-    <main data-root={"true"}>{children}</main>
+    <Main>{children}</Main>
     <DefaultDashboardRightSidebar />
   </>
 );

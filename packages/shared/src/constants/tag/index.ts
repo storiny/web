@@ -24,6 +24,5 @@ export const TAG_SCHEMA = {
       TAG_PROPS.name.max_length,
       ZOD_MESSAGES.max("tag name", TAG_PROPS.name.max_length)
     )
-    .nonempty(ZOD_MESSAGES.non_empty("tag name"))
     .regex(TAG_NAME_REGEX, "Tag name is invalid")
 } as const;

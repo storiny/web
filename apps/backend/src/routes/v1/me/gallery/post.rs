@@ -4,7 +4,10 @@ use crate::{
         pexels::PEXELS_API_URL,
         resource_limit::ResourceLimit,
     },
-    error::AppError,
+    error::{
+        AppError,
+        ToastErrorResponse,
+    },
     middlewares::identity::identity::Identity,
     models::photo::Photo,
     utils::{
@@ -14,6 +17,7 @@ use crate::{
     AppState,
     S3Client,
 };
+use actix_http::StatusCode;
 use actix_web::{
     post,
     web,
@@ -27,16 +31,13 @@ use image::{
     EncodableLayout,
     GenericImageView,
     ImageError,
-    ImageOutputFormat,
+    ImageFormat,
 };
 use mime::IMAGE_JPEG;
 use serde::{
     Deserialize,
     Serialize,
 };
-
-use crate::error::ToastErrorResponse;
-use actix_web::http::StatusCode;
 use sqlx::Row;
 use std::{
     cmp,
@@ -151,14 +152,14 @@ async fn post(
         .await
         .map_err(|error| {
             // Pexels returns 404 status code for an invalid photo.
-            if error.status() == Some(StatusCode::NOT_FOUND) {
+            if error.status().map(|value| value.as_u16()) == Some(StatusCode::NOT_FOUND.as_u16()) {
                 AppError::ToastError(ToastErrorResponse::new(None, "Photo not found"))
             } else {
                 AppError::InternalError(format!("unable to fetch the Pexels photo: {error:?}"))
             }
         })?;
 
-    if response.status() == StatusCode::NOT_FOUND {
+    if response.status().as_u16() == StatusCode::NOT_FOUND.as_u16() {
         return Err(ToastErrorResponse::new(None, "Photo not found").into());
     } else if !response.status().is_success() {
         return Err(AppError::InternalError(format!(
@@ -317,8 +318,8 @@ async fn post(
 
     let mut bytes: Vec<u8> = Vec::new();
     loaded_image
-        // Write to a JPEG image with 80% quality.
-        .write_to(&mut Cursor::new(&mut bytes), ImageOutputFormat::Jpeg(80))
+        // Write to a JPEG image with the default quality.
+        .write_to(&mut Cursor::new(&mut bytes), ImageFormat::Jpeg)
         .map_err(|error| {
             AppError::InternalError(format!(
                 "unable to write the image into the desired format: {error:?}"

@@ -1,0 +1,14 @@
+{{story.title}}
+
+{{story.published_date}} • {{story.read_time}} min read
+
+{{#if story.description}}
+{{story.description}}
+{{/if}}
+
+Published by {{story.user.name}} in {{story.blog.name}}
+
+This email was sent to {{email}} because you have subscribed to this newsletter. You can choose to unsubscribe from this newsletter at any time using this link: {{unsubscribe_link}}
+
+© Storiny {{copyright_year}}
+Contact us: support@storiny.com

@@ -6,6 +6,7 @@ import React from "react";
 
 import { BlogListSkeleton, VirtualizedBlogList } from "~/common/blog";
 import { dynamic_loader } from "~/common/dynamic";
+import Main from "~/components/main";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import ErrorState from "~/entities/error-state";
@@ -99,7 +100,7 @@ const ContentBlogsClient = (props: BlogsProps): React.ReactElement => {
 
   return (
     <React.Fragment>
-      <main data-root={"true"}>
+      <Main>
         <DashboardTitle>Blogs</DashboardTitle>
         <StatusHeader {...props} />
         {is_loading || (is_fetching && page === 1) ? (
@@ -123,7 +124,7 @@ const ContentBlogsClient = (props: BlogsProps): React.ReactElement => {
           />
         )}
         <Spacer orientation={"vertical"} size={10} />
-      </main>
+      </Main>
       <ContentBlogsRightSidebar {...props} />
     </React.Fragment>
   );

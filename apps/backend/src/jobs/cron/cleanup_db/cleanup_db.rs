@@ -120,6 +120,32 @@ WHERE expires_at < NOW()
     Ok(())
 }
 
+/// Cleans the `newsletter_tokens` table based on the conditions specified in [cleanup_db].
+///
+/// * `db_pool` - The Postgres connection pool.
+#[tracing::instrument(skip_all, err)]
+async fn clean_newsletter_tokens(db_pool: &Pool<Postgres>) -> Result<(), Error> {
+    trace!("attempting to clean the `newsletter_tokens` table...");
+
+    let delete_tokens_result = sqlx::query(
+        r#"
+DELETE FROM newsletter_tokens
+WHERE expires_at < NOW()
+"#,
+    )
+    .execute(db_pool)
+    .await
+    .map_err(|err| Box::from(err.to_string()))
+    .map_err(Error::Failed)?;
+
+    debug!(
+        "deleted {} rows from the `newsletter_tokens` table",
+        delete_tokens_result.rows_affected()
+    );
+
+    Ok(())
+}
+
 /// Cleans the `user_statuses` table based on the conditions specified in [cleanup_db].
 ///
 /// * `db_pool` - The Postgres connection pool.
@@ -188,8 +214,8 @@ WHERE NOT EXISTS (
 ///   permanently deleted. This would also permanently delete the relations that the story holds;
 ///   such as likes, comments, and replies.
 ///
-/// - Expired tokens and user statuses (based on the `expires_at` column) will be permanently
-///   deleted.
+/// - Expired tokens, newsletter tokens, and user statuses (based on the `expires_at` column) will
+///   be permanently deleted.
 ///
 /// - Notifications that do not have any related row in `notification_outs` table will be
 ///   permanently deleted.
@@ -206,9 +232,10 @@ pub async fn cleanup_db(
     clean_users(db_pool).await?;
 
     // These can be run in parallel as they do not depend on each other.
-    future::try_join3(
+    future::try_join4(
         clean_stories(db_pool),
         clean_tokens(db_pool),
+        clean_newsletter_tokens(db_pool),
         clean_user_statuses(db_pool),
     )
     .await?;
@@ -602,6 +629,77 @@ WHERE id = (SELECT id FROM selected_token)
 
         // Exactly one row should be present in the database.
         let result = sqlx::query(r#"SELECT 1 FROM tokens"#)
+            .fetch_all(&mut *conn)
+            .await?;
+
+        assert_eq!(result.len(), 1);
+
+        Ok(())
+    }
+
+    // Newsletter tokens
+
+    #[sqlx::test(fixtures("newsletter_tokens"))]
+    async fn can_clean_newsletter_tokens_table(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Rows should be present initially.
+        let result = sqlx::query(r#"SELECT 1 FROM newsletter_tokens"#)
+            .fetch_all(&mut *conn)
+            .await?;
+
+        assert!(!result.is_empty());
+
+        let state = get_job_state_for_test(pool, None).await;
+        let result = cleanup_db(DatabaseCleanupJob(Utc::now()), state).await;
+
+        assert!(result.is_ok());
+
+        // Rows should get deleted from the database.
+        let result = sqlx::query(r#"SELECT 1 FROM newsletter_tokens"#)
+            .fetch_all(&mut *conn)
+            .await?;
+
+        assert!(result.is_empty());
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("newsletter_tokens"))]
+    async fn should_not_delete_non_expired_newsletter_tokens(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Rows should be present initially.
+        let result = sqlx::query(r#"SELECT 1 FROM newsletter_tokens"#)
+            .fetch_all(&mut *conn)
+            .await?;
+
+        assert!(!result.is_empty());
+
+        // Update `expires_at` for a single token.
+        let result = sqlx::query(
+            r#"
+WITH selected_token AS (
+    SELECT id FROM newsletter_tokens
+    LIMIT 1
+)
+UPDATE newsletter_tokens
+SET expires_at = NOW() + INTERVAL '7 days'
+WHERE id = (SELECT id FROM selected_token)
+"#,
+        )
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        let state = get_job_state_for_test(pool, None).await;
+        let result = cleanup_db(DatabaseCleanupJob(Utc::now()), state).await;
+
+        assert!(result.is_ok());
+
+        // Exactly one row should be present in the database.
+        let result = sqlx::query(r#"SELECT 1 FROM newsletter_tokens"#)
             .fetch_all(&mut *conn)
             .await?;
 

@@ -1,0 +1,64 @@
+<mjml lang="en">
+  <mj-head>
+    <mj-attributes>
+      <mj-title>Confirm your subscription to {{blog.name}}</mj-title>
+      <mj-include path="./partials/attributes.mjml" />
+    </mj-attributes>
+    <mj-include path="./partials/styles.mjml" />
+  </mj-head>
+  <mj-body>
+    <mj-section css-class="section main">
+      <mj-column>
+        <mj-table align="center">
+          <tr>
+            <td align="center">
+              <h1 class="t-head">Confirm subscription</h1>
+            </td>
+          </tr>
+        </mj-table>
+        <mj-spacer height="36px" />
+        {{#if blog.logo_url}}
+        <mj-image
+          align="center"
+          alt="{{blog.name}} logo"
+          href="{{{blog.url}}}"
+          title="Visit blog"
+          width="96px"
+          height="96px"
+          border-radius="4px"
+          src="{{{blog.logo_url}}}"
+        />
+        <mj-spacer height="24px" />
+        {{/if}}
+        <mj-text mj-class="t-body1 t-major" align="center">
+          You recently attempted to subscribe to the newsletter of
+          <span class="bold">{{blog.name}}</span>. Please confirm your
+          subscription to receive new stories published on
+          <span class="bold">{{blog.name}}</span>
+          directly in your mailbox.
+        </mj-text>
+        <mj-spacer height="36px" />
+        <mj-button target="_blank" href="{{{link}}}">
+          Confirm my subscription
+        </mj-button>
+        <mj-spacer mj-class="body-spacer" />
+        <mj-text mj-class="t-body1 t-minor" align="center">
+          This subscription request will automatically expire in 24 hours. If
+          the button above does not work, please navigate to this link:
+          <a href="{{{link}}}" class="link" target="_blank">{{link}}</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section css-class="section footer">
+      <mj-column>
+        <mj-text mj-class="t-body2 t-muted" align="center">
+          If you did not initiate this request, you can safely ignore this
+          e-mail.
+        </mj-text>
+        <mj-include path="./partials/noreply.mjml" />
+        <mj-spacer height="64px" />
+        <mj-include path="./partials/copyright.mjml" />
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

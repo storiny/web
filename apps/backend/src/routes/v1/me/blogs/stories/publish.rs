@@ -5,6 +5,7 @@ use crate::{
     },
     grpc::defs::story_def::v1::StoryVisibility,
     jobs::{
+        email::newsletter::NewsletterJob,
         notify::{
             story_add_by_tag::NotifyStoryAddByTagJob,
             story_add_by_user::NotifyStoryAddByUserJob,
@@ -27,6 +28,7 @@ use actix_web::{
     HttpResponse,
 };
 use apalis::prelude::Storage;
+use chrono::Utc;
 use futures_util::future;
 use lockable::AsyncLimit;
 use serde::{
@@ -63,6 +65,7 @@ struct Request {
     ),
     err
 )]
+#[allow(clippy::too_many_arguments)]
 async fn post(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
@@ -71,6 +74,7 @@ async fn post(
     realm_map: RealmData,
     notify_story_add_by_user_job_storage: web::Data<JobStorage<NotifyStoryAddByUserJob>>,
     notify_story_add_by_tag_job_storage: web::Data<JobStorage<NotifyStoryAddByTagJob>>,
+    newsletter_job_storage: web::Data<JobStorage<NewsletterJob>>,
 ) -> Result<HttpResponse, AppError> {
     let user_id = user.id()?;
 
@@ -170,7 +174,7 @@ SELECT
         .is_some()
     {
         // Accept a published story.
-        match sqlx::query(
+        let _ = match sqlx::query(
             r#"
 UPDATE blog_stories
 SET accepted_at = NOW()
@@ -195,11 +199,9 @@ WHERE
                         .await;
                 }
 
-                txn.commit().await?;
-
-                Ok(HttpResponse::NoContent().finish())
+                Ok(())
             }
-        }
+        };
     } else {
         // Accept a draft and publish it.
         let story = sqlx::query(
@@ -281,12 +283,30 @@ RETURNING visibility
             .map_err(|error| {
                 AppError::InternalError(format!("unable to push the jobs: {error:?}"))
             })?;
-        }
-
-        txn.commit().await?;
-
-        Ok(HttpResponse::NoContent().finish())
+        };
     }
+
+    // Send newsletter.
+    {
+        let mut newsletter_job = (*newsletter_job_storage.into_inner()).clone();
+
+        newsletter_job
+            .schedule(
+                NewsletterJob { story_id },
+                // Wait for 3 minutes before sending the emails to ensure that the story was
+                // not unpublished or removed from the blog if it was published accidentally.
+                // The job definition includes an early return for this case.
+                (Utc::now() + chrono::Duration::minutes(3)).timestamp(),
+            )
+            .await
+            .map_err(|error| {
+                AppError::InternalError(format!("unable to push the newsletter job: {error:?}"))
+            })?;
+    }
+
+    txn.commit().await?;
+
+    Ok(HttpResponse::NoContent().finish())
 }
 
 /// Edit an already accepted story.
@@ -521,14 +541,14 @@ mod tests {
         job: JobData,
     }
 
-    async fn get_notify_jobs_by_name(job_name: &str) -> Vec<JobData> {
+    async fn get_jobs_by_name(job_name: &str) -> Vec<JobData> {
         let redis_pool = get_redis_pool();
         let mut redis_conn = redis_pool.get().await.unwrap();
 
         redis_conn
             .hgetall::<_, HashMap<String, String>>(format!("{}:data", job_name))
             .await
-            .expect("unable to get notify jobs")
+            .expect("unable to get the jobs")
             .into_iter()
             .filter_map(|(_, data)| serde_json::from_str::<CachedJob>(&data).ok())
             .map(|item| item.job)
@@ -1043,6 +1063,7 @@ VALUES ($1, $2, NOW(), NOW())
 
     mod serial {
         use super::*;
+        use crate::jobs::email::newsletter::NEWSLETTER_JOB_NAME;
 
         #[test_context(RedisTestContext)]
         #[sqlx::test]
@@ -1166,12 +1187,15 @@ WHERE id = $1
             );
             assert_eq!(result.get::<i32, _>("word_count"), 25);
 
+            // Should insert a newsletter job.
+
+            let newsletter_jobs = get_jobs_by_name(NEWSLETTER_JOB_NAME).await;
+            assert!(newsletter_jobs.iter().any(|job| job.story_id == 2_i64));
+
             // Should insert push notification jobs.
 
-            let story_add_by_user_jobs =
-                get_notify_jobs_by_name(NOTIFY_STORY_ADD_BY_USER_JOB_NAME).await;
-            let story_add_by_tag_jobs =
-                get_notify_jobs_by_name(NOTIFY_STORY_ADD_BY_TAG_JOB_NAME).await;
+            let story_add_by_user_jobs = get_jobs_by_name(NOTIFY_STORY_ADD_BY_USER_JOB_NAME).await;
+            let story_add_by_tag_jobs = get_jobs_by_name(NOTIFY_STORY_ADD_BY_TAG_JOB_NAME).await;
 
             assert!(
                 story_add_by_user_jobs
@@ -1286,12 +1310,15 @@ WHERE story_id = $1
                     .is_some()
             );
 
+            // Should insert a newsletter job.
+
+            let newsletter_jobs = get_jobs_by_name(NEWSLETTER_JOB_NAME).await;
+            assert!(newsletter_jobs.iter().any(|job| job.story_id == 2_i64));
+
             // Should not insert push notification jobs.
 
-            let story_add_by_user_jobs =
-                get_notify_jobs_by_name(NOTIFY_STORY_ADD_BY_USER_JOB_NAME).await;
-            let story_add_by_tag_jobs =
-                get_notify_jobs_by_name(NOTIFY_STORY_ADD_BY_TAG_JOB_NAME).await;
+            let story_add_by_user_jobs = get_jobs_by_name(NOTIFY_STORY_ADD_BY_USER_JOB_NAME).await;
+            let story_add_by_tag_jobs = get_jobs_by_name(NOTIFY_STORY_ADD_BY_TAG_JOB_NAME).await;
 
             assert!(story_add_by_user_jobs.is_empty());
             assert!(story_add_by_tag_jobs.is_empty());
@@ -1452,12 +1479,15 @@ WHERE id = $1
             );
             assert_eq!(result.get::<i32, _>("word_count"), 25);
 
+            // Should insert a newsletter job.
+
+            let newsletter_jobs = get_jobs_by_name(NEWSLETTER_JOB_NAME).await;
+            assert!(newsletter_jobs.iter().any(|job| job.story_id == 2_i64));
+
             // Should insert push notification jobs.
 
-            let story_add_by_user_jobs =
-                get_notify_jobs_by_name(NOTIFY_STORY_ADD_BY_USER_JOB_NAME).await;
-            let story_add_by_tag_jobs =
-                get_notify_jobs_by_name(NOTIFY_STORY_ADD_BY_TAG_JOB_NAME).await;
+            let story_add_by_user_jobs = get_jobs_by_name(NOTIFY_STORY_ADD_BY_USER_JOB_NAME).await;
+            let story_add_by_tag_jobs = get_jobs_by_name(NOTIFY_STORY_ADD_BY_TAG_JOB_NAME).await;
 
             assert!(
                 story_add_by_user_jobs
@@ -1603,12 +1633,15 @@ WHERE story_id = $1
                     .is_some()
             );
 
+            // Should insert a newsletter job.
+
+            let newsletter_jobs = get_jobs_by_name(NEWSLETTER_JOB_NAME).await;
+            assert!(newsletter_jobs.iter().any(|job| job.story_id == 2_i64));
+
             // Should not insert push notification jobs.
 
-            let story_add_by_user_jobs =
-                get_notify_jobs_by_name(NOTIFY_STORY_ADD_BY_USER_JOB_NAME).await;
-            let story_add_by_tag_jobs =
-                get_notify_jobs_by_name(NOTIFY_STORY_ADD_BY_TAG_JOB_NAME).await;
+            let story_add_by_user_jobs = get_jobs_by_name(NOTIFY_STORY_ADD_BY_USER_JOB_NAME).await;
+            let story_add_by_tag_jobs = get_jobs_by_name(NOTIFY_STORY_ADD_BY_TAG_JOB_NAME).await;
 
             assert!(story_add_by_user_jobs.is_empty());
             assert!(story_add_by_tag_jobs.is_empty());
