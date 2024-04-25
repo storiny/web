@@ -6,7 +6,7 @@
   pointer-events: none;
   top: 0;
   left: 0;
-  z-index: -1;
+  z-index: 0;
 
   &.has-splash {
     background: radial-gradient(50% 50% at 50% 50%, transparent 45%, rgba(0 0 0 / 30%) 100%), linear-gradient(0deg, rgba(0 0 0 / 20%) 0%, rgba(0 0 0 / 20%) 100%), var(--splash-url);
@@ -21,6 +21,7 @@
   text-align: center;
   margin-inline: auto;
   height: 100%;
+  width: 100%;
 
   @include breakpoints.media(">=mobile") {
     max-width: 316px;
