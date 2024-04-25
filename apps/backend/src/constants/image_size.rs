@@ -1,7 +1,7 @@
 use std::fmt;
 
 /// Valid image widths for generating CDN URLs.
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub enum ImageSize {
     W64 = 64,
     W128 = 128,
@@ -16,6 +16,7 @@ pub enum ImageSize {
 
 impl fmt::Display for ImageSize {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        fmt::Debug::fmt(self, f)
+        let value = *self as u32;
+        fmt::Debug::fmt(&value, f)
     }
 }
