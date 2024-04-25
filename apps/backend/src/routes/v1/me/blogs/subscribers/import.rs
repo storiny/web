@@ -66,7 +66,7 @@ async fn post(
 
     // Validate data.
     {
-        if emails.len() < 1 {
+        if emails.is_empty() {
             return Err(AppError::ToastError(ToastErrorResponse::new(
                 Some(StatusCode::UNPROCESSABLE_ENTITY),
                 "Data must contain at least one valid email address",
@@ -82,7 +82,7 @@ async fn post(
 
         if emails.iter().any(|email| {
             let length = email.chars().count();
-            length < 3 || length > 300 || !validate_email(email)
+            !(3..=300).contains(&length) || !validate_email(email)
         }) {
             return Err(AppError::ToastError(ToastErrorResponse::new(
                 Some(StatusCode::UNPROCESSABLE_ENTITY),
