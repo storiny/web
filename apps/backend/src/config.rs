@@ -36,6 +36,8 @@ pub struct Config {
     pub redis_port: String,
     /// GRPC authentication secret token
     pub grpc_secret_token: String,
+    /// Shared secret key used to sign the newsletter unsubscribe links.
+    pub newsletter_secret: String,
     /// Pexels API key
     pub pexels_api_key: String,
     /// Session cookie secret key

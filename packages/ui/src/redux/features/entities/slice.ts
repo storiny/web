@@ -38,6 +38,7 @@ interface EntitiesIntegralState {
   blog_pending_story_counts: Record<string, number>;
   blog_pending_writer_request_counts: Record<string, number>;
   blog_published_story_counts: Record<string, number>;
+  blog_subscriber_counts: Record<string, number>;
   blog_writer_counts: Record<string, number>;
   comment_like_counts: Record<string, number>;
   comment_reply_counts: Record<string, number>;
@@ -81,6 +82,7 @@ export const entities_initial_state: EntitiesState = {
   blog_pending_writer_request_counts: /*      */ {},
   blog_published_story_counts: /*             */ {},
   blog_writer_counts: /*                      */ {},
+  blog_subscriber_counts: /*                  */ {},
   bookmarks: /*                               */ {},
   comment_like_counts: /*                     */ {},
   comment_reply_counts: /*                    */ {},

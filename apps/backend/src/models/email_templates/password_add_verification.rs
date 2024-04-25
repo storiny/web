@@ -5,4 +5,6 @@ use serde::Serialize;
 pub struct PasswordAddVerificationEmailTemplateData {
     /// The verification code for the request.
     pub verification_code: String,
+    /// The year of copyright.
+    pub copyright_year: String,
 }

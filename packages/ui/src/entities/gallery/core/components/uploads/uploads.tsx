@@ -170,7 +170,6 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
         // Upload success area
         <React.Fragment>
           <div className={styles["preview-wrapper"]}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               alt={""}
               className={styles.preview}
@@ -201,7 +200,6 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
         // File preview and actions area
         <React.Fragment>
           <div className={styles["preview-wrapper"]}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img alt={""} className={styles.preview} src={file.preview} />
           </div>
           <Spacer className={css["f-grow"]} orientation={"vertical"} size={3} />

@@ -9,9 +9,15 @@ use crate::{
             cleanup_s3::cleanup_s3,
             sitemap::refresh_sitemap,
         },
-        email::templated_email::{
-            send_templated_email,
-            TemplatedEmailJob,
+        email::{
+            newsletter::{
+                send_newsletter,
+                NewsletterJob,
+            },
+            templated_email::{
+                send_templated_email,
+                TemplatedEmailJob,
+            },
         },
         notify::{
             story_add_by_tag::{
@@ -73,6 +79,7 @@ pub struct JobStorageMap {
     pub story_add_by_user: JobStorage<NotifyStoryAddByUserJob>,
     pub story_add_by_tag: JobStorage<NotifyStoryAddByTagJob>,
     pub templated_email: JobStorage<TemplatedEmailJob>,
+    pub newsletter_job: JobStorage<NewsletterJob>,
 }
 
 /// Starts the background jobs.
@@ -110,12 +117,16 @@ pub async fn start_jobs(
 
         let templated_email_state = state.clone();
         let templated_email_storage: JobStorage<TemplatedEmailJob> =
-            JobStorage::new(connection_manager);
+            JobStorage::new(connection_manager.clone());
+
+        let newsletter_job_state = state.clone();
+        let newsletter_job_storage: JobStorage<NewsletterJob> = JobStorage::new(connection_manager);
 
         let job_storage_map = Arc::new(JobStorageMap {
             story_add_by_user: story_add_by_user_storage.clone(),
             story_add_by_tag: story_add_by_tag_storage.clone(),
             templated_email: templated_email_storage.clone(),
+            newsletter_job: newsletter_job_storage.clone(),
         });
 
         Monitor::<TokioExecutor>::new()
@@ -144,6 +155,14 @@ pub async fn start_jobs(
                     .data(templated_email_state.clone())
                     .with_storage(templated_email_storage)
                     .build(service_fn(send_templated_email)),
+            )
+            .register_with_count(
+                8,
+                WorkerBuilder::new("newsletter-worker")
+                    .layer(TraceLayer::new())
+                    .data(newsletter_job_state.clone())
+                    .with_storage(newsletter_job_storage)
+                    .build(service_fn(send_newsletter)),
             )
             // Cron
             .register(

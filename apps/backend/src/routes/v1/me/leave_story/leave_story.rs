@@ -6,12 +6,12 @@ use crate::{
     middlewares::identity::identity::Identity,
     AppState,
 };
+use actix_http::StatusCode;
 use actix_web::{
     post,
     web,
     HttpResponse,
 };
-use http::StatusCode;
 use serde::Deserialize;
 use validator::Validate;
 

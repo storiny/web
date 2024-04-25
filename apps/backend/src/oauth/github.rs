@@ -1,3 +1,4 @@
+use crate::oauth::OAuthClient;
 use oauth2::{
     basic::BasicClient,
     AuthUrl,
@@ -16,17 +17,19 @@ pub fn get_github_oauth_client(
     api_server_url: &str,
     github_client_id: &str,
     github_client_secret: &str,
-) -> BasicClient {
-    BasicClient::new(
-        ClientId::new(github_client_id.to_string()),
-        Some(ClientSecret::new(github_client_secret.to_string())),
-        #[allow(clippy::unwrap_used)]
-        AuthUrl::new("https://github.com/login/oauth/authorize".to_string()).unwrap(),
-        #[allow(clippy::unwrap_used)]
-        Some(TokenUrl::new("https://github.com/login/oauth/access_token".to_string()).unwrap()),
-    )
-    .set_redirect_uri(
-        #[allow(clippy::unwrap_used)]
-        RedirectUrl::new(format!("{}/{}", api_server_url, "oauth/github/callback")).unwrap(),
-    )
+) -> OAuthClient {
+    BasicClient::new(ClientId::new(github_client_id.to_string()))
+        .set_client_secret(ClientSecret::new(github_client_secret.to_string()))
+        .set_auth_uri(
+            #[allow(clippy::unwrap_used)]
+            AuthUrl::new("https://github.com/login/oauth/authorize".to_string()).unwrap(),
+        )
+        .set_token_uri(
+            #[allow(clippy::unwrap_used)]
+            TokenUrl::new("https://github.com/login/oauth/access_token".to_string()).unwrap(),
+        )
+        .set_redirect_uri(
+            #[allow(clippy::unwrap_used)]
+            RedirectUrl::new(format!("{}/{}", api_server_url, "oauth/github/callback")).unwrap(),
+        )
 }

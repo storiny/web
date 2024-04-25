@@ -55,8 +55,10 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::test_utils::init_app_for_test;
-    use actix_web::test;
-    use http::StatusCode;
+    use actix_web::{
+        http::StatusCode,
+        test,
+    };
     use sqlx::PgPool;
 
     #[sqlx::test]

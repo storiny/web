@@ -2,6 +2,7 @@ import { clsx } from "clsx";
 import React from "react";
 
 import { GetBlogArchiveResponse } from "~/common/grpc";
+import Main from "~/components/main";
 import Typography from "~/components/typography";
 import PageTitle from "~/entities/page-title";
 import css from "~/theme/main.module.scss";
@@ -19,7 +20,7 @@ const StorybookBlogArchiveLayout = ({
   children: React.ReactNode;
 }): React.ReactElement => (
   <React.Fragment>
-    <main data-root={"true"}>
+    <Main>
       <BlogContent />
       <PageTitle back_button_href={"/"} className={styles["page-title"]}>
         Archive
@@ -47,7 +48,7 @@ const StorybookBlogArchiveLayout = ({
         </div>
       )}
       {children}
-    </main>
+    </Main>
     <ArchiveRightSidebar archive={archive} />
   </React.Fragment>
 );

@@ -267,6 +267,43 @@ pub mod api_service_client {
             self.inner.unary(req, path, codec).await
         }
         /** *
+ Verifies a visitor's newsletter subscription request using the provided token identifier
+*/
+        pub async fn verify_newsletter_subscription(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::super::token_def::v1::VerifyNewsletterSubscriptionRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<
+                super::super::super::token_def::v1::VerifyNewsletterSubscriptionResponse,
+            >,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/api_service.v1.ApiService/VerifyNewsletterSubscription",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "api_service.v1.ApiService",
+                        "VerifyNewsletterSubscription",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        /** *
  Returns the user's credentials settings
 */
         pub async fn get_credential_settings(
@@ -1154,6 +1191,74 @@ pub mod api_service_client {
             self.inner.unary(req, path, codec).await
         }
         /** *
+ Returns the blog's newsletter
+*/
+        pub async fn get_blog_newsletter(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::super::blog_def::v1::GetBlogNewsletterRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<
+                super::super::super::blog_def::v1::GetBlogNewsletterResponse,
+            >,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/api_service.v1.ApiService/GetBlogNewsletter",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("api_service.v1.ApiService", "GetBlogNewsletter"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        /** *
+ Returns the blog's newsletter details
+*/
+        pub async fn get_blog_newsletter_info(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::super::blog_def::v1::GetBlogNewsletterInfoRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<
+                super::super::super::blog_def::v1::GetBlogNewsletterInfoResponse,
+            >,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/api_service.v1.ApiService/GetBlogNewsletterInfo",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("api_service.v1.ApiService", "GetBlogNewsletterInfo"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        /** *
  Returns the story's open graph data
 */
         pub async fn get_story_open_graph_data(
@@ -1294,6 +1399,20 @@ pub mod api_service_server {
             >,
         ) -> std::result::Result<
             tonic::Response<super::super::super::token_def::v1::VerifyEmailResponse>,
+            tonic::Status,
+        >;
+        /** *
+ Verifies a visitor's newsletter subscription request using the provided token identifier
+*/
+        async fn verify_newsletter_subscription(
+            &self,
+            request: tonic::Request<
+                super::super::super::token_def::v1::VerifyNewsletterSubscriptionRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<
+                super::super::super::token_def::v1::VerifyNewsletterSubscriptionResponse,
+            >,
             tonic::Status,
         >;
         /** *
@@ -1646,6 +1765,34 @@ pub mod api_service_server {
             >,
         ) -> std::result::Result<
             tonic::Response<super::super::super::blog_def::v1::GetBlogSitemapResponse>,
+            tonic::Status,
+        >;
+        /** *
+ Returns the blog's newsletter
+*/
+        async fn get_blog_newsletter(
+            &self,
+            request: tonic::Request<
+                super::super::super::blog_def::v1::GetBlogNewsletterRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<
+                super::super::super::blog_def::v1::GetBlogNewsletterResponse,
+            >,
+            tonic::Status,
+        >;
+        /** *
+ Returns the blog's newsletter details
+*/
+        async fn get_blog_newsletter_info(
+            &self,
+            request: tonic::Request<
+                super::super::super::blog_def::v1::GetBlogNewsletterInfoRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<
+                super::super::super::blog_def::v1::GetBlogNewsletterInfoResponse,
+            >,
             tonic::Status,
         >;
         /** *
@@ -2029,6 +2176,55 @@ pub mod api_service_server {
                     let fut = async move {
                         let inner = inner.0;
                         let method = VerifyEmailSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/api_service.v1.ApiService/VerifyNewsletterSubscription" => {
+                    #[allow(non_camel_case_types)]
+                    struct VerifyNewsletterSubscriptionSvc<T: ApiService>(pub Arc<T>);
+                    impl<
+                        T: ApiService,
+                    > tonic::server::UnaryService<
+                        super::super::super::token_def::v1::VerifyNewsletterSubscriptionRequest,
+                    > for VerifyNewsletterSubscriptionSvc<T> {
+                        type Response = super::super::super::token_def::v1::VerifyNewsletterSubscriptionResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<
+                                super::super::super::token_def::v1::VerifyNewsletterSubscriptionRequest,
+                            >,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                (*inner).verify_newsletter_subscription(request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = VerifyNewsletterSubscriptionSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -3346,6 +3542,104 @@ pub mod api_service_server {
                     let fut = async move {
                         let inner = inner.0;
                         let method = GetBlogSitemapSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/api_service.v1.ApiService/GetBlogNewsletter" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetBlogNewsletterSvc<T: ApiService>(pub Arc<T>);
+                    impl<
+                        T: ApiService,
+                    > tonic::server::UnaryService<
+                        super::super::super::blog_def::v1::GetBlogNewsletterRequest,
+                    > for GetBlogNewsletterSvc<T> {
+                        type Response = super::super::super::blog_def::v1::GetBlogNewsletterResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<
+                                super::super::super::blog_def::v1::GetBlogNewsletterRequest,
+                            >,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                (*inner).get_blog_newsletter(request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = GetBlogNewsletterSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/api_service.v1.ApiService/GetBlogNewsletterInfo" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetBlogNewsletterInfoSvc<T: ApiService>(pub Arc<T>);
+                    impl<
+                        T: ApiService,
+                    > tonic::server::UnaryService<
+                        super::super::super::blog_def::v1::GetBlogNewsletterInfoRequest,
+                    > for GetBlogNewsletterInfoSvc<T> {
+                        type Response = super::super::super::blog_def::v1::GetBlogNewsletterInfoResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<
+                                super::super::super::blog_def::v1::GetBlogNewsletterInfoRequest,
+                            >,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                (*inner).get_blog_newsletter_info(request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = GetBlogNewsletterInfoSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

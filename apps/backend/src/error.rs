@@ -123,7 +123,7 @@ pub enum AppError {
     /// Internal server error. The string value of this variant is not sent to the client.
     InternalError(String),
     /// The error raised due to bad data sent by the client. The first element of the tuple is the
-    /// HTTP [StatusCode] (defaults to [StatusCode::BAD_REQUEST]) and the second element is the
+    /// HTTP [StatusCode] and the second element is the
     /// string message that is sent to the client.
     ///
     /// # Caution

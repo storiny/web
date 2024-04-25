@@ -8,5 +8,5 @@ You are receiving this email because you (or someone else) attempted to sign up 
 
 This email was sent from a system that we only use for sending emails. Please do not reply to this email, as we will not receive your response. Instead, reach out to us using the support email provided below.
 
-© Storiny 2023
+© Storiny {{copyright_year}}
 Contact us: support@storiny.com

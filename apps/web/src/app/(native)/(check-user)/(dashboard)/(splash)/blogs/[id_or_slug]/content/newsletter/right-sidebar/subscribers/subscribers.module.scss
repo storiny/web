@@ -1,0 +1,18 @@
+@use "breakpoints";
+
+.content {
+  height: 100%;
+
+  @include breakpoints.media(">=mobile") {
+    height: 400px;
+  }
+}
+
+.x {
+  &.scroll-area {
+    overflow: hidden;
+    height: 100%;
+    padding-inline: 16px;
+    padding-top: 12px;
+  }
+}

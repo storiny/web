@@ -31,7 +31,7 @@ use image::{
     EncodableLayout,
     GenericImageView,
     ImageError,
-    ImageOutputFormat,
+    ImageFormat,
 };
 use mime::{
     IMAGE_GIF,
@@ -270,11 +270,11 @@ async fn handle_upload(
 
     // We device the output format based on the file extension.
     let (output_format, output_mime) = match file_name.split('.').last() {
-        None => (ImageOutputFormat::WebP, "image/webp".to_string()),
+        None => (ImageFormat::WebP, "image/webp".to_string()),
         Some(ext) => match ext {
-            "jpeg" | "jpg" => (ImageOutputFormat::Jpeg(80), IMAGE_JPEG.to_string()),
-            "png" => (ImageOutputFormat::Png, IMAGE_PNG.to_string()),
-            _ => (ImageOutputFormat::WebP, "image/webp".to_string()),
+            "jpeg" | "jpg" => (ImageFormat::Jpeg, IMAGE_JPEG.to_string()),
+            "png" => (ImageFormat::Png, IMAGE_PNG.to_string()),
+            _ => (ImageFormat::WebP, "image/webp".to_string()),
         },
     };
 
@@ -494,6 +494,7 @@ mod tests {
             ua_parser,
             s3_client: s3_client.unwrap_or(get_s3_client().await),
             reqwest_client: reqwest::Client::new(),
+            oauth_client: reqwest::Client::new(),
             oauth_client_map: get_oauth_client_map(get_app_config().unwrap()),
         });
 

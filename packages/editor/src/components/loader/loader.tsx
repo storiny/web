@@ -53,7 +53,6 @@ const EditorLoader = ({
           src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/animations/loading/render.webm`}
           type="video/webm"
         />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           alt=""
           className={styles["video-fallback"]}

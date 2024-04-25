@@ -3,7 +3,6 @@ use crate::{
         email_template::EmailTemplate,
         reserved_keywords::RESERVED_KEYWORDS,
         resource_lock::ResourceLock,
-        token::TOKEN_LENGTH,
         username_regex::USERNAME_REGEX,
     },
     error::{
@@ -19,6 +18,7 @@ use crate::{
     middlewares::identity::identity::Identity,
     models::email_templates::email_verification::EmailVerificationEmailTemplateData,
     utils::{
+        generate_hashed_token::generate_hashed_token,
         incr_resource_lock_attempts::incr_resource_lock_attempts,
         is_resource_locked::is_resource_locked,
     },
@@ -41,7 +41,10 @@ use argon2::{
     Argon2,
     PasswordHasher,
 };
-use nanoid::nanoid;
+use chrono::{
+    Datelike,
+    Local,
+};
 use serde::{
     Deserialize,
     Serialize,
@@ -161,13 +164,7 @@ SELECT EXISTS (
         .hash_password(payload.password.as_bytes(), &salt)
         .map_err(|error| AppError::InternalError(error.to_string()))?;
 
-    let token_id = nanoid!(TOKEN_LENGTH);
-    let salt = SaltString::from_b64(&data.config.token_salt)
-        .map_err(|error| AppError::InternalError(error.to_string()))?;
-
-    let hashed_token = Argon2::default()
-        .hash_password(token_id.as_bytes(), &salt)
-        .map_err(|error| AppError::InternalError(error.to_string()))?;
+    let (token_id, hashed_token) = generate_hashed_token(&data.config.token_salt)?;
 
     let pg_pool = &data.db_pool;
     let mut txn = pg_pool.begin().await?;
@@ -189,7 +186,7 @@ SELECT $6, $7, (SELECT id FROM inserted_user), $8
     .bind(&slugged_username)
     .bind(hashed_password.to_string())
     .bind(payload.wpm as i32)
-    .bind(hashed_token.to_string())
+    .bind(&hashed_token)
     .bind(TokenType::EmailVerification as i16)
     .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
     .execute(&mut *txn)
@@ -211,6 +208,7 @@ SELECT $6, $7, (SELECT id FROM inserted_user), $8
         email: payload.email.to_string(),
         link: verification_link,
         name: first_name.to_string(),
+        copyright_year: Local::now().year().to_string(),
     })
     .map_err(|error| {
         AppError::InternalError(format!("unable to serialize the template data: {error:?}"))

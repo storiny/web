@@ -5,4 +5,6 @@ use serde::Serialize;
 pub struct ResetPasswordEmailTemplateData {
     /// The password reset link for the user.
     pub link: String,
+    /// The year of copyright.
+    pub copyright_year: String,
 }

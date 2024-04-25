@@ -13,7 +13,6 @@ const MembershipSplash = (): React.ReactElement => {
   const theme = use_app_selector(select_resolved_theme);
   return (
     <>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         alt={""}
         className={styles["splash-image"]}

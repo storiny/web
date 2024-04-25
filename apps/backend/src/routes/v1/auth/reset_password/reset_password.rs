@@ -225,9 +225,12 @@ mod tests {
             init_app_for_test,
             RedisTestContext,
         },
-        utils::get_user_sessions::{
-            get_user_sessions,
-            UserSession,
+        utils::{
+            generate_hashed_token::generate_hashed_token,
+            get_user_sessions::{
+                get_user_sessions,
+                UserSession,
+            },
         },
     };
     use actix_web::test;
@@ -247,12 +250,7 @@ mod tests {
         let config = get_app_config().unwrap();
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
-
-        let token_id = nanoid!(TOKEN_LENGTH);
-        let salt = SaltString::from_b64(&config.token_salt).unwrap();
-        let hashed_token = Argon2::default()
-            .hash_password(token_id.as_bytes(), &salt)
-            .unwrap();
+        let (token_id, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
         // Insert the reset password token.
         let result = sqlx::query(
@@ -261,7 +259,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
         )
-        .bind(hashed_token.to_string())
+        .bind(&hashed_token)
         .bind(TokenType::PasswordReset as i16)
         .bind(1_i64)
         .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
@@ -312,7 +310,7 @@ SELECT EXISTS (
 )
 "#,
         )
-        .bind(hashed_token.to_string())
+        .bind(&hashed_token)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -328,12 +326,7 @@ SELECT EXISTS (
         let config = get_app_config().unwrap();
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
-
-        let token_id = nanoid!(TOKEN_LENGTH);
-        let salt = SaltString::from_b64(&config.token_salt).unwrap();
-        let hashed_token = Argon2::default()
-            .hash_password(token_id.as_bytes(), &salt)
-            .unwrap();
+        let (token_id, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
         // Insert the reset password token.
         let result = sqlx::query(
@@ -342,7 +335,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
         )
-        .bind(hashed_token.to_string())
+        .bind(&hashed_token)
         .bind(TokenType::PasswordReset as i16)
         .bind(1_i64)
         .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
@@ -382,12 +375,7 @@ VALUES ($1, $2, $3, $4)
         let config = get_app_config().unwrap();
         let mut conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool, false, false, None).await.0;
-
-        let token_id = nanoid!(TOKEN_LENGTH);
-        let salt = SaltString::from_b64(&config.token_salt).unwrap();
-        let hashed_token = Argon2::default()
-            .hash_password(token_id.as_bytes(), &salt)
-            .unwrap();
+        let (token_id, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
         // Insert the reset password token.
         let token_result = sqlx::query(
@@ -396,7 +384,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
         )
-        .bind(hashed_token.to_string())
+        .bind(&hashed_token)
         .bind(TokenType::PasswordReset as i16)
         .bind(1_i64)
         .bind(OffsetDateTime::now_utc() - Duration::days(1)) // The token expired yesterday
@@ -521,11 +509,7 @@ VALUES ($1, $2, $3, $4)
 
             assert_eq!(result, 1);
 
-            let token_id = nanoid!(TOKEN_LENGTH);
-            let salt = SaltString::from_b64(&config.token_salt).unwrap();
-            let hashed_token = Argon2::default()
-                .hash_password(token_id.as_bytes(), &salt)
-                .unwrap();
+            let (token_id, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
             // Insert the reset password token.
             let result = sqlx::query(
@@ -534,7 +518,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
             )
-            .bind(hashed_token.to_string())
+            .bind(&hashed_token)
             .bind(TokenType::PasswordReset as i16)
             .bind(1_i64)
             .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
@@ -579,14 +563,8 @@ VALUES ($1, $2, $3, $4)
             let config = get_app_config().unwrap();
             let mut conn = pool.acquire().await?;
             let (app, _, _) = init_app_for_test(post, pool, false, false, None).await;
-
             let user_id = 1_i64;
-
-            let token_id = nanoid!(TOKEN_LENGTH);
-            let salt = SaltString::from_b64(&config.token_salt).unwrap();
-            let hashed_token = Argon2::default()
-                .hash_password(token_id.as_bytes(), &salt)
-                .unwrap();
+            let (token_id, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
             // Insert the reset password token.
             let result = sqlx::query(
@@ -595,7 +573,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
             )
-            .bind(hashed_token.to_string())
+            .bind(&hashed_token)
             .bind(TokenType::PasswordReset as i16)
             .bind(user_id)
             .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
@@ -610,11 +588,7 @@ VALUES ($1, $2, $3, $4)
             for _ in 0..5 {
                 redis_conn
                     .set::<_, _, ()>(
-                        &format!(
-                            "{}:{user_id}:{}",
-                            RedisNamespace::Session,
-                            Uuid::new_v4()
-                        ),
+                        &format!("{}:{user_id}:{}", RedisNamespace::Session, Uuid::new_v4()),
                         &rmp_serde::to_vec_named(&UserSession {
                             user_id,
                             ..Default::default()

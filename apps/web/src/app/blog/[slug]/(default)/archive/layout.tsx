@@ -7,6 +7,7 @@ import React from "react";
 import { get_blog_archive } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
 import { is_valid_blog_slug } from "~/common/utils/is-valid-blog-slug";
+import Main from "~/components/main";
 import Typography from "~/components/typography";
 import PageTitle from "~/entities/page-title";
 import css from "~/theme/main.module.scss";
@@ -34,7 +35,7 @@ const BlogArchiveLayout = async ({
 
     return (
       <React.Fragment>
-        <main data-root={"true"}>
+        <Main>
           <BlogContent />
           <PageTitle
             back_button_href={"/"}
@@ -65,7 +66,7 @@ const BlogArchiveLayout = async ({
             </div>
           )}
           {children}
-        </main>
+        </Main>
         <ArchiveRightSidebar archive={archive} />
       </React.Fragment>
     );

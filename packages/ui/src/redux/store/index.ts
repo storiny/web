@@ -69,7 +69,7 @@ export const setup_store = (
       get_default_middleware().concat([
         api_slice.middleware,
         listener_middleware.middleware,
-        ...(do_not_sync
+        ...(do_not_sync || typeof window === "undefined"
           ? []
           : [
               create_state_sync_middleware({
@@ -78,6 +78,10 @@ export const setup_store = (
                   "preferences/sync_to_browser",
                   "entities/set_rate_limit"
                 ],
+                // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+                broadcastChannelOption: {
+                  type: "native" // Disable in SSR
+                },
                 predicate: (action) => !/(api|toast)\//.test(action.type),
                 // eslint-disable-next-line prefer-snakecase/prefer-snakecase
                 prepareState: (state: AppState) => ({

@@ -259,6 +259,20 @@ pub struct GetBlogWritersInfoResponse {
     #[prost(uint32, tag="2")]
     pub pending_writer_request_count: u32,
 }
+// Blog newsletter info
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetBlogNewsletterInfoRequest {
+    #[prost(string, tag="1")]
+    pub identifier: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetBlogNewsletterInfoResponse {
+    #[prost(uint32, tag="1")]
+    pub subscriber_count: u32,
+}
 // Blog sitemap
 
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -272,5 +286,33 @@ pub struct GetBlogSitemapRequest {
 pub struct GetBlogSitemapResponse {
     #[prost(string, tag="1")]
     pub content: ::prost::alloc::string::String,
+}
+// Blog newsletter
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetBlogNewsletterRequest {
+    #[prost(string, tag="1")]
+    pub identifier: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="2")]
+    pub current_user_id: ::core::option::Option<::prost::alloc::string::String>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetBlogNewsletterResponse {
+    #[prost(string, tag="1")]
+    pub id: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub name: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="3")]
+    pub description: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="4")]
+    pub newsletter_splash_id: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="5")]
+    pub newsletter_splash_hex: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(message, optional, tag="6")]
+    pub user: ::core::option::Option<super::super::user_def::v1::BareUser>,
+    #[prost(bool, tag="7")]
+    pub is_subscribed: bool,
 }
 // @@protoc_insertion_point(module)
