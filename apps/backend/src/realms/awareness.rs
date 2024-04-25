@@ -1,9 +1,14 @@
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use std::{
     collections::{
         hash_map::Entry,
         HashMap,
     },
     fmt::Formatter,
+    mem::MaybeUninit,
     sync::Arc,
     time::Instant,
 };
@@ -29,16 +34,13 @@ use yrs::{
 
 const NULL_STR: &str = "null";
 
-/// Whenever a new callback is being registered, a [Subscription] is made. Whenever this
-/// subscription is dropped, the registered callback is cancelled and will not be called any more.
-pub type UpdateSubscription = Subscription<Arc<dyn Fn(&Awareness, &Event) + 'static>>;
-
 /// Awareness ref type alias.
 pub type AwarenessRef = Arc<RwLock<Awareness>>;
 
 /// A structure that represents an encodable state of an [Awareness] struct.
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct AwarenessUpdate {
+    /// Client updates.
     pub clients: HashMap<ClientID, AwarenessUpdateEntry>,
 }
 
@@ -72,9 +74,11 @@ impl Decode for AwarenessUpdate {
 
 /// A single client entry of an [AwarenessUpdate]. It consists of logical clock and JSON client
 /// state represented as a string.
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct AwarenessUpdateEntry {
+    /// The timestamp used to recognize the latest update.
     pub clock: u32,
+    /// The string with JSON payload containing user data.
     pub json: String,
 }
 
@@ -162,8 +166,7 @@ pub struct Awareness {
     doc: Doc,
     states: HashMap<ClientID, String>,
     meta: HashMap<ClientID, MetaClientState>,
-    #[allow(clippy::type_complexity)]
-    on_update: Option<Observer<Arc<dyn Fn(&Awareness, &Event) + 'static>>>,
+    on_update: Observer<Event>,
 }
 
 unsafe impl Send for Awareness {}
@@ -178,7 +181,7 @@ impl Awareness {
     pub fn new(doc: Doc) -> Self {
         Awareness {
             doc,
-            on_update: None,
+            on_update: Observer::new(),
             states: HashMap::new(),
             meta: HashMap::new(),
         }
@@ -187,12 +190,11 @@ impl Awareness {
     /// Returns a channel receiver for incoming awareness events. This channel can be cloned.
     ///
     /// * `callback` - The update callback.
-    pub fn on_update<F>(&mut self, cb: F) -> UpdateSubscription
+    pub fn on_update<F>(&self, cb: F) -> Subscription
     where
-        F: Fn(&Awareness, &Event) + 'static,
+        F: Fn(&Event) + 'static,
     {
-        let observer = self.on_update.get_or_insert_with(Observer::default);
-        observer.subscribe(Arc::new(cb))
+        self.on_update.subscribe(move |_, e| cb(e))
     }
 
     /// Returns a read-only reference to the underlying [Doc].
@@ -227,7 +229,10 @@ impl Awareness {
     /// be emitted if current instance was created using [Awareness::with_observer] method.
     ///
     /// * `json` - The JSON string.
-    pub fn set_local_state<S: Into<String>>(&mut self, json: S) {
+    pub fn set_local_state<S>(&mut self, json: S)
+    where
+        S: Into<String>,
+    {
         let client_id = self.doc.client_id();
         self.update_meta(client_id);
         let new: String = json.into();
@@ -236,23 +241,21 @@ impl Awareness {
             Entry::Occupied(mut entry) => {
                 entry.insert(new);
 
-                if let Some(observer) = self.on_update.as_ref() {
+                if let Some(mut callbacks) = self.on_update.callbacks() {
                     let event = Event::new(vec![], vec![client_id], vec![]);
-
-                    for cb in observer.callbacks() {
-                        cb(self, &event);
-                    }
+                    // Artificial transaction for the same of Observer signature, it will never be
+                    // reached.
+                    callbacks.trigger(unsafe { MaybeUninit::uninit().assume_init_ref() }, &event);
                 }
             }
             Entry::Vacant(entry) => {
                 entry.insert(new);
 
-                if let Some(observer) = self.on_update.as_ref() {
+                if let Some(mut callbacks) = self.on_update.callbacks() {
                     let event = Event::new(vec![client_id], vec![], vec![]);
-
-                    for cb in observer.callbacks() {
-                        cb(self, &event);
-                    }
+                    // Artificial transaction for the same of Observer signature, it will never be
+                    // reached.
+                    callbacks.trigger(unsafe { MaybeUninit::uninit().assume_init_ref() }, &event);
                 }
             }
         }
@@ -265,13 +268,12 @@ impl Awareness {
         let prev_state = self.states.remove(&client_id);
         self.update_meta(client_id);
 
-        if let Some(observer) = self.on_update.as_ref() {
+        if let Some(mut callbacks) = self.on_update.callbacks() {
             if prev_state.is_some() {
                 let event = Event::new(Vec::default(), Vec::default(), vec![client_id]);
-
-                for cb in observer.callbacks() {
-                    cb(self, &event);
-                }
+                // Artificial transaction for the same of Observer signature, it will never be
+                // reached.
+                callbacks.trigger(unsafe { MaybeUninit::uninit().assume_init_ref() }, &event);
             }
         }
     }
@@ -311,10 +313,10 @@ impl Awareness {
     /// instance, otherwise a [Error::ClientNotFound] error will be returned.
     ///
     /// * `clients` - The target clients.
-    pub fn update_with_clients<I: IntoIterator<Item = ClientID>>(
-        &self,
-        clients: I,
-    ) -> Result<AwarenessUpdate, Error> {
+    pub fn update_with_clients<I>(&self, clients: I) -> Result<AwarenessUpdate, Error>
+    where
+        I: IntoIterator<Item = ClientID>,
+    {
         let mut res = HashMap::new();
 
         for client_id in clients {
@@ -345,7 +347,6 @@ impl Awareness {
     /// * `update` - The update to apply.
     pub fn apply_update(&mut self, update: AwarenessUpdate) -> Result<(), Error> {
         let now = Instant::now();
-
         let mut added = Vec::new();
         let mut updated = Vec::new();
         let mut removed = Vec::new();
@@ -373,14 +374,14 @@ impl Awareness {
                             } else {
                                 self.states.remove(&client_id);
 
-                                if self.on_update.is_some() {
+                                if self.on_update.has_subscribers() {
                                     removed.push(client_id);
                                 }
                             }
                         } else {
                             match self.states.entry(client_id) {
                                 Entry::Occupied(mut e) => {
-                                    if self.on_update.is_some() {
+                                    if self.on_update.has_subscribers() {
                                         updated.push(client_id);
                                     }
 
@@ -389,7 +390,7 @@ impl Awareness {
                                 Entry::Vacant(e) => {
                                     e.insert(entry.json);
 
-                                    if self.on_update.is_some() {
+                                    if self.on_update.has_subscribers() {
                                         updated.push(client_id);
                                     }
                                 }
@@ -406,7 +407,7 @@ impl Awareness {
                     e.insert(MetaClientState::new(clock, now));
                     self.states.insert(client_id, entry.json);
 
-                    if self.on_update.is_some() {
+                    if self.on_update.has_subscribers() {
                         added.push(client_id);
                     }
 
@@ -415,13 +416,12 @@ impl Awareness {
             };
         }
 
-        if let Some(eh) = self.on_update.as_ref() {
+        if let Some(mut callbacks) = self.on_update.callbacks() {
             if !added.is_empty() || !updated.is_empty() || !removed.is_empty() {
                 let event = Event::new(added, updated, removed);
-
-                for cb in eh.callbacks() {
-                    cb(self, &event);
-                }
+                // Artificial transaction for the same of Observer signature, it will never be
+                // reached.
+                callbacks.trigger(unsafe { MaybeUninit::uninit().assume_init_ref() }, &event);
             }
         }
 
@@ -472,13 +472,13 @@ mod test {
     fn can_update_awareness() -> Result<(), Box<dyn std::error::Error>> {
         let (s1, mut o_local) = channel();
         let mut local = Awareness::new(Doc::with_client_id(1));
-        let _sub_local = local.on_update(move |_, e| {
+        let _sub_local = local.on_update(move |e| {
             s1.send(e.clone()).unwrap();
         });
 
         let (s2, o_remote) = channel();
         let mut remote = Awareness::new(Doc::with_client_id(2));
-        let _sub_remote = local.on_update(move |_, e| {
+        let _sub_remote = local.on_update(move |e| {
             s2.send(e.clone()).unwrap();
         });
 

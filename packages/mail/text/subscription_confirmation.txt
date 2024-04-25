@@ -1,0 +1,8 @@
+You recently attempted to subscribe to the newsletter of {{blog.name}}. Please confirm your subscription to receive new stories published on {{blog.name}} directly in your mailbox by navigating to this link: {{link}}
+
+If you did not initiate this request, you can safely ignore this e-mail.
+
+This email was sent from a system that we only use for sending emails. Please do not reply to this email, as we will not receive your response. Instead, reach out to us using the support email provided below.
+
+© Storiny {{copyright_year}}
+Contact us: support@storiny.com

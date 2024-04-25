@@ -44,6 +44,7 @@ module.exports = {
   ],
   rules: {
     "@next/next/no-html-link-for-pages": "off",
+    "@next/next/no-img-element": "off",
     "no-unused-vars": "off",
     "prefer-arrow-callback": "warn",
     "prefer-arrow-functions/prefer-arrow-functions": [

@@ -11,5 +11,6 @@ export * from "./notification";
 export * from "./reply";
 export * from "./shortcut";
 export * from "./story";
+export * from "./subscriber";
 export * from "./tag";
 export * from "./user";

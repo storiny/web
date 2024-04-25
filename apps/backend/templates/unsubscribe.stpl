@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Unsubscribe from Newsletter</title>
+    <meta content="initial-scale=1,width=device-width,shrink-to-fit=no" name="viewport">
+    <meta content="noindex,nofollow" name="robots">
+    <style>
+        html,
+        body {
+            color-scheme: dark;
+            background: hsl(214deg 8% 10%);
+        }
+
+        body {
+            margin: 0;
+            padding: 3rem 16px;
+            border: none;
+            outline: none;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        main {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 32px;
+        }
+
+        p {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            color: #b3b3b3;
+            vertical-align: baseline;
+            font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
+            font-size: 14px;
+            line-height: 19px;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: 32px;
+        }
+
+        svg {
+            width: 74px;
+            height: 74px;
+        }
+
+        svg path {
+            fill: #fcfcfc;
+        }
+
+        @media (max-width: 600px) {
+            .content {
+                gap: 24px;
+            }
+
+            svg {
+                width: 58px;
+                height: 58px;
+            }
+        }
+    </style>
+</head>
+<body dir="ltr">
+<main>
+    <div aria-hidden="true" class="content">
+        <svg viewBox="0 0 64 64"
+        >
+            <path
+                    d="M41.98 9.64a11.5 11.5 0 1 0-7.05 16.88l8.06 13.96a11.5 11.5 0 1 0 5.27-3.05l-8.05-13.96a11.5 11.5 0 0 0 1.77-13.83ZM12.82 60.12a11.5 11.5 0 1 0 0-23 11.5 11.5 0 0 0 0 23Z"
+            />
+        </svg>
+    </div>
+    <div>
+        <p>
+            <%= message %>
+        </p>
+    </div>
+</main>
+</body>
+</html>

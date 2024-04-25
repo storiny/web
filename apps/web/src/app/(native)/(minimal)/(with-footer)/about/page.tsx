@@ -17,7 +17,6 @@ const Page = (): React.ReactElement => (
   <React.Fragment>
     <div className={styles.splash}>
       <PlusPattern style={{ position: "absolute" }} />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         alt={""}
         className={styles["splash-image"]}

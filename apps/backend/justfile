@@ -11,7 +11,7 @@ build_img:
     docker build --platform linux/arm64 -t storiny_api .
 
 fmt:
-    cargo +nightly fmt
+    cargo fmt
 
 test:
     cargo nextest run --workspace

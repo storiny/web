@@ -1,5 +1,6 @@
 import React from "react";
 
+import Main from "~/components/main";
 import Footer from "~/layout/footer";
 
 const WithFooterLayout = ({
@@ -8,7 +9,7 @@ const WithFooterLayout = ({
   children: React.ReactNode;
 }): React.ReactElement => (
   <>
-    <main data-root={"true"}>{children}</main>
+    <Main>{children}</Main>
     <Footer />
   </>
 );

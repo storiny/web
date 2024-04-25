@@ -15,4 +15,8 @@ pub enum EmailTemplate {
     PasswordReset,
     #[strum(serialize = "PasswordAddVerification")]
     PasswordAddVerification,
+    #[strum(serialize = "SubscriptionConfirmation")]
+    SubscriptionConfirmation,
+    #[strum(serialize = "BlogNewsletter")]
+    BlogNewsletter,
 }

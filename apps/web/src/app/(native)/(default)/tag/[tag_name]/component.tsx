@@ -3,6 +3,7 @@ import React from "react";
 import { Graph } from "schema-dts";
 
 import { GetTagResponse } from "~/common/grpc";
+import Main from "~/components/main";
 import LeftSidebar from "~/layout/left-sidebar";
 import SplashScreen from "~/layout/splash-screen";
 
@@ -50,13 +51,13 @@ const Component = ({ tag }: Props): React.ReactElement => {
   return (
     <>
       <LeftSidebar />
-      <main data-root={"true"}>
+      <Main>
         <script
           dangerouslySetInnerHTML={{ __html: JSON.stringify(json_ld) }}
           type="application/ld+json"
         />
         <Client tag={tag} />
-      </main>
+      </Main>
       <TagRightSidebar tag={tag} />
       <SplashScreen />
     </>

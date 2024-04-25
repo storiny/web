@@ -52,6 +52,7 @@ services:
       REALMS_SERVER_URL: wss://realms.storiny.com
       TOKEN_SALT: "${TOKEN_SALT}"
       GRPC_SECRET_TOKEN: "${GRPC_SECRET_TOKEN}"
+      NEWSLETTER_SECRET: "${NEWSLETTER_SECRET}"
       DATABASE_URL: "${DB_URL}"
       REDIS_HOST: "${REDIS_HOST}"
       REDIS_PORT: "${REDIS_PORT}"

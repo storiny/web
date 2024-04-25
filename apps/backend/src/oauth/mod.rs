@@ -2,6 +2,18 @@ use crate::{
     config::Config,
     OAuthClientMap,
 };
+use oauth2::{
+    basic::{
+        BasicErrorResponse,
+        BasicRevocationErrorResponse,
+        BasicTokenIntrospectionResponse,
+        BasicTokenResponse,
+    },
+    Client,
+    EndpointNotSet,
+    EndpointSet,
+    StandardRevocableToken,
+};
 
 pub mod icons;
 
@@ -13,6 +25,19 @@ mod github;
 mod google;
 mod spotify;
 mod youtube;
+
+pub type OAuthClient = Client<
+    BasicErrorResponse,
+    BasicTokenResponse,
+    BasicTokenIntrospectionResponse,
+    StandardRevocableToken,
+    BasicRevocationErrorResponse,
+    EndpointSet,
+    EndpointNotSet,
+    EndpointNotSet,
+    EndpointNotSet,
+    EndpointSet,
+>;
 
 /// Builds and returns OAuth client map using the provided configuration.
 ///

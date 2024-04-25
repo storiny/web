@@ -2,7 +2,6 @@ use crate::{
     constants::{
         account_activity_type::AccountActivityType,
         email_template::EmailTemplate,
-        token::TOKEN_LENGTH,
     },
     error::{
         AppError,
@@ -16,7 +15,10 @@ use crate::{
     },
     middlewares::identity::identity::Identity,
     models::email_templates::new_email_verification::NewEmailVerificationEmailTemplateData,
-    utils::clear_user_sessions::clear_user_sessions,
+    utils::{
+        clear_user_sessions::clear_user_sessions,
+        generate_hashed_token::generate_hashed_token,
+    },
     AppState,
 };
 use actix_http::StatusCode;
@@ -28,13 +30,14 @@ use actix_web::{
 use actix_web_validator::Json;
 use apalis::prelude::Storage;
 use argon2::{
-    password_hash::SaltString,
     Argon2,
     PasswordHash,
-    PasswordHasher,
     PasswordVerifier,
 };
-use nanoid::nanoid;
+use chrono::{
+    Datelike,
+    Local,
+};
 use serde::{
     Deserialize,
     Serialize,
@@ -113,14 +116,7 @@ WHERE id = $1
     }
 
     // Token ID for verification email.
-    let token_id = nanoid!(TOKEN_LENGTH);
-
-    let salt = SaltString::from_b64(&data.config.token_salt)
-        .map_err(|error| AppError::InternalError(error.to_string()))?;
-
-    let hashed_token = Argon2::default()
-        .hash_password(token_id.as_bytes(), &salt)
-        .map_err(|error| AppError::InternalError(error.to_string()))?;
+    let (token_id, hashed_token) = generate_hashed_token(&data.config.token_salt)?;
 
     match sqlx::query(
         r#"
@@ -142,7 +138,7 @@ VALUES ($3, 'You changed your e-mail address to <m>' || $2 || '</m>', $1)
     .bind(user_id)
     .bind(&payload.new_email)
     .bind(AccountActivityType::Email as i16)
-    .bind(hashed_token.to_string())
+    .bind(&hashed_token)
     .bind(TokenType::EmailVerification as i16)
     .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
     .execute(&mut *txn)
@@ -163,6 +159,7 @@ VALUES ($3, 'You changed your e-mail address to <m>' || $2 || '</m>', $1)
 
             let template_data = serde_json::to_string(&NewEmailVerificationEmailTemplateData {
                 link: verification_link,
+                copyright_year: Local::now().year().to_string(),
             })
             .map_err(|error| {
                 AppError::InternalError(format!("unable to serialize the template data: {error:?}"))

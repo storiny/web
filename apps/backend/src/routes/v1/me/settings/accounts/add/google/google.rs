@@ -7,6 +7,7 @@ use crate::{
     middlewares::identity::identity::Identity,
     AppState,
 };
+use actix_http::StatusCode;
 use actix_web::{
     post,
     web,
@@ -18,7 +19,6 @@ use argon2::{
     PasswordHash,
     PasswordVerifier,
 };
-use http::StatusCode;
 use oauth2::{
     CsrfToken,
     Scope,

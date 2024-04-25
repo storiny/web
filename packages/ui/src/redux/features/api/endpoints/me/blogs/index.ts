@@ -6,5 +6,6 @@ export * from "./post";
 export * from "./settings";
 export * from "./stats";
 export * from "./stories";
+export * from "./subscribers";
 export * from "./writer-requests";
 export * from "./writers";

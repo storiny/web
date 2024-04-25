@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package blog_def.v1;
 
+import "user_def/v1/def.proto";
+
 // Blog
 
 message BareBlog {
@@ -163,6 +165,16 @@ message GetBlogWritersInfoResponse {
   uint32 pending_writer_request_count /**/ = 2;
 }
 
+// Blog newsletter info
+
+message GetBlogNewsletterInfoRequest {
+  string identifier = 1;
+}
+
+message GetBlogNewsletterInfoResponse {
+  uint32 subscriber_count = 1;
+}
+
 // Blog sitemap
 
 message GetBlogSitemapRequest {
@@ -171,4 +183,21 @@ message GetBlogSitemapRequest {
 
 message GetBlogSitemapResponse {
   string content = 1;
+}
+
+// Blog newsletter
+
+message GetBlogNewsletterRequest {
+  string identifier /*              */ = 1;
+  optional string current_user_id /**/ = 2;
+}
+
+message GetBlogNewsletterResponse {
+  string id /*                            */ = 1;
+  string name /*                          */ = 2;
+  optional string description /*          */ = 3;
+  optional string newsletter_splash_id /* */ = 4;
+  optional string newsletter_splash_hex /**/ = 5;
+  user_def.v1.BareUser user /*            */ = 6;
+  bool is_subscribed /*                   */ = 7;
 }

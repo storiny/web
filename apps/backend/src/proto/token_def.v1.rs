@@ -1,4 +1,6 @@
 // @generated
+// Get token
+
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetTokenRequest {
@@ -10,7 +12,6 @@ pub struct GetTokenRequest {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetTokenResponse {
-    /// Base props
     #[prost(bool, tag="1")]
     pub is_valid: bool,
     #[prost(bool, tag="2")]
@@ -27,6 +28,20 @@ pub struct VerifyEmailRequest {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct VerifyEmailResponse {
+}
+// Newsletter subscription
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct VerifyNewsletterSubscriptionRequest {
+    #[prost(string, tag="1")]
+    pub identifier: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct VerifyNewsletterSubscriptionResponse {
+    #[prost(bool, tag="1")]
+    pub is_valid: bool,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]

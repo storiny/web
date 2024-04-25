@@ -14,6 +14,10 @@ import {
   GetBlogArchiveResponse,
   GetBlogEditorsInfoRequest,
   GetBlogEditorsInfoResponse,
+  GetBlogNewsletterInfoRequest,
+  GetBlogNewsletterInfoResponse,
+  GetBlogNewsletterRequest,
+  GetBlogNewsletterResponse,
   GetBlogPendingStoryCountRequest,
   GetBlogPendingStoryCountResponse,
   GetBlogPublishedStoryCountRequest,
@@ -71,7 +75,14 @@ import {
   GetTagRequest,
   GetTagResponse,
 } from "../../tag_def/v1/def";
-import { GetTokenRequest, GetTokenResponse, VerifyEmailRequest, VerifyEmailResponse } from "../../token_def/v1/def";
+import {
+  GetTokenRequest,
+  GetTokenResponse,
+  VerifyEmailRequest,
+  VerifyEmailResponse,
+  VerifyNewsletterSubscriptionRequest,
+  VerifyNewsletterSubscriptionResponse,
+} from "../../token_def/v1/def";
 import {
   GetUserBlockCountRequest,
   GetUserBlockCountResponse,
@@ -196,6 +207,18 @@ export const ApiServiceService = {
     requestDeserialize: (value: Buffer) => VerifyEmailRequest.decode(value),
     responseSerialize: (value: VerifyEmailResponse) => Buffer.from(VerifyEmailResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => VerifyEmailResponse.decode(value),
+  },
+  /** Verifies a visitor's newsletter subscription request using the provided token identifier */
+  verifyNewsletterSubscription: {
+    path: "/api_service.v1.ApiService/VerifyNewsletterSubscription",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: VerifyNewsletterSubscriptionRequest) =>
+      Buffer.from(VerifyNewsletterSubscriptionRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => VerifyNewsletterSubscriptionRequest.decode(value),
+    responseSerialize: (value: VerifyNewsletterSubscriptionResponse) =>
+      Buffer.from(VerifyNewsletterSubscriptionResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => VerifyNewsletterSubscriptionResponse.decode(value),
   },
   /** Returns the user's credentials settings */
   getCredentialSettings: {
@@ -497,6 +520,29 @@ export const ApiServiceService = {
     responseSerialize: (value: GetBlogSitemapResponse) => Buffer.from(GetBlogSitemapResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetBlogSitemapResponse.decode(value),
   },
+  /** Returns the blog's newsletter */
+  getBlogNewsletter: {
+    path: "/api_service.v1.ApiService/GetBlogNewsletter",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetBlogNewsletterRequest) => Buffer.from(GetBlogNewsletterRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetBlogNewsletterRequest.decode(value),
+    responseSerialize: (value: GetBlogNewsletterResponse) =>
+      Buffer.from(GetBlogNewsletterResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetBlogNewsletterResponse.decode(value),
+  },
+  /** Returns the blog's newsletter details */
+  getBlogNewsletterInfo: {
+    path: "/api_service.v1.ApiService/GetBlogNewsletterInfo",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetBlogNewsletterInfoRequest) =>
+      Buffer.from(GetBlogNewsletterInfoRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetBlogNewsletterInfoRequest.decode(value),
+    responseSerialize: (value: GetBlogNewsletterInfoResponse) =>
+      Buffer.from(GetBlogNewsletterInfoResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetBlogNewsletterInfoResponse.decode(value),
+  },
   /** Returns the story's open graph data */
   getStoryOpenGraphData: {
     path: "/api_service.v1.ApiService/GetStoryOpenGraphData",
@@ -536,6 +582,11 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getToken: handleUnaryCall<GetTokenRequest, GetTokenResponse>;
   /** Verifies a user's email using the provided token identifier */
   verifyEmail: handleUnaryCall<VerifyEmailRequest, VerifyEmailResponse>;
+  /** Verifies a visitor's newsletter subscription request using the provided token identifier */
+  verifyNewsletterSubscription: handleUnaryCall<
+    VerifyNewsletterSubscriptionRequest,
+    VerifyNewsletterSubscriptionResponse
+  >;
   /** Returns the user's credentials settings */
   getCredentialSettings: handleUnaryCall<GetCredentialSettingsRequest, GetCredentialSettingsResponse>;
   /** Returns the user's privacy settings */
@@ -590,6 +641,10 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getBlogWritersInfo: handleUnaryCall<GetBlogWritersInfoRequest, GetBlogWritersInfoResponse>;
   /** Returns the blog's sitemap */
   getBlogSitemap: handleUnaryCall<GetBlogSitemapRequest, GetBlogSitemapResponse>;
+  /** Returns the blog's newsletter */
+  getBlogNewsletter: handleUnaryCall<GetBlogNewsletterRequest, GetBlogNewsletterResponse>;
+  /** Returns the blog's newsletter details */
+  getBlogNewsletterInfo: handleUnaryCall<GetBlogNewsletterInfoRequest, GetBlogNewsletterInfoResponse>;
   /** Returns the story's open graph data */
   getStoryOpenGraphData: handleUnaryCall<GetStoryOpenGraphDataRequest, GetStoryOpenGraphDataResponse>;
   /** Returns the tag's open graph data */
@@ -693,6 +748,22 @@ export interface ApiServiceClient extends Client {
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: VerifyEmailResponse) => void,
   ): ClientUnaryCall;
+  /** Verifies a visitor's newsletter subscription request using the provided token identifier */
+  verifyNewsletterSubscription(
+    request: VerifyNewsletterSubscriptionRequest,
+    callback: (error: ServiceError | null, response: VerifyNewsletterSubscriptionResponse) => void,
+  ): ClientUnaryCall;
+  verifyNewsletterSubscription(
+    request: VerifyNewsletterSubscriptionRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: VerifyNewsletterSubscriptionResponse) => void,
+  ): ClientUnaryCall;
+  verifyNewsletterSubscription(
+    request: VerifyNewsletterSubscriptionRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: VerifyNewsletterSubscriptionResponse) => void,
+  ): ClientUnaryCall;
   /** Returns the user's credentials settings */
   getCredentialSettings(
     request: GetCredentialSettingsRequest,
@@ -1124,6 +1195,38 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetBlogSitemapResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the blog's newsletter */
+  getBlogNewsletter(
+    request: GetBlogNewsletterRequest,
+    callback: (error: ServiceError | null, response: GetBlogNewsletterResponse) => void,
+  ): ClientUnaryCall;
+  getBlogNewsletter(
+    request: GetBlogNewsletterRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetBlogNewsletterResponse) => void,
+  ): ClientUnaryCall;
+  getBlogNewsletter(
+    request: GetBlogNewsletterRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetBlogNewsletterResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the blog's newsletter details */
+  getBlogNewsletterInfo(
+    request: GetBlogNewsletterInfoRequest,
+    callback: (error: ServiceError | null, response: GetBlogNewsletterInfoResponse) => void,
+  ): ClientUnaryCall;
+  getBlogNewsletterInfo(
+    request: GetBlogNewsletterInfoRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetBlogNewsletterInfoResponse) => void,
+  ): ClientUnaryCall;
+  getBlogNewsletterInfo(
+    request: GetBlogNewsletterInfoRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetBlogNewsletterInfoResponse) => void,
   ): ClientUnaryCall;
   /** Returns the story's open graph data */
   getStoryOpenGraphData(

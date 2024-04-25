@@ -8,6 +8,11 @@ export interface BadgeArrayProps extends PolymorphicProps<"span"> {
    */
   flags: number;
   /**
+   * The membership status for the user.
+   * @default false
+   */
+  is_plus_member?: boolean;
+  /**
    * The size of the badges (in px).
    * @default 16
    */

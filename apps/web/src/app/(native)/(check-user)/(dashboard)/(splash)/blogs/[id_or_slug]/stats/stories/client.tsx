@@ -10,6 +10,7 @@ import { use_blog_context } from "~/common/context/blog";
 import { dynamic_loader } from "~/common/dynamic";
 import ProgressState from "~/common/progress-state";
 import Divider from "~/components/divider";
+import Main from "~/components/main";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import AreaChart from "~/entities/area-chart";
@@ -54,7 +55,7 @@ const StoriesStatsClient = (): React.ReactElement => {
 
   return (
     <React.Fragment>
-      <main data-root={"true"}>
+      <Main>
         <DashboardTitle>Stories statistics</DashboardTitle>
         <DashboardWrapper>
           {is_error ? (
@@ -226,7 +227,7 @@ const StoriesStatsClient = (): React.ReactElement => {
           )}
         </DashboardWrapper>
         <Spacer orientation={"vertical"} size={10} />
-      </main>
+      </Main>
       <StoriesStatsRightSidebar hook_return={hook_return} />
     </React.Fragment>
   );

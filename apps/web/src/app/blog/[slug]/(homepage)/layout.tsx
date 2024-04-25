@@ -1,6 +1,7 @@
 import { clsx } from "clsx";
 import React from "react";
 
+import Main from "~/components/main";
 import BlogLeftSidebar from "~/layout/blog-left-sidebar";
 import BlogNavbar from "~/layout/blog-navbar";
 import BlogRightSidebar from "~/layout/blog-right-sidebar";
@@ -18,7 +19,7 @@ const BlogHomepageLayout = ({
     >
       <BlogNavbar />
       <BlogLeftSidebar is_homepage />
-      <main data-root={"true"}>{children}</main>
+      <Main>{children}</Main>
       <BlogRightSidebar is_homepage />
       <SplashScreen />
     </div>

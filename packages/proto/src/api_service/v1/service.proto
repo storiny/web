@@ -44,6 +44,10 @@ service ApiService {
    */
   rpc VerifyEmail(token_def.v1.VerifyEmailRequest) returns (token_def.v1.VerifyEmailResponse) {}
   /**
+   * Verifies a visitor's newsletter subscription request using the provided token identifier
+   */
+  rpc VerifyNewsletterSubscription(token_def.v1.VerifyNewsletterSubscriptionRequest) returns (token_def.v1.VerifyNewsletterSubscriptionResponse) {}
+  /**
    * Returns the user's credentials settings
    */
   rpc GetCredentialSettings(credential_settings_def.v1.GetCredentialSettingsRequest) returns (credential_settings_def.v1.GetCredentialSettingsResponse) {}
@@ -151,6 +155,14 @@ service ApiService {
    * Returns the blog's sitemap
    */
   rpc GetBlogSitemap(blog_def.v1.GetBlogSitemapRequest) returns (blog_def.v1.GetBlogSitemapResponse) {}
+  /**
+   * Returns the blog's newsletter
+   */
+  rpc GetBlogNewsletter(blog_def.v1.GetBlogNewsletterRequest) returns (blog_def.v1.GetBlogNewsletterResponse) {}
+  /**
+   * Returns the blog's newsletter details
+   */
+  rpc GetBlogNewsletterInfo(blog_def.v1.GetBlogNewsletterInfoRequest) returns (blog_def.v1.GetBlogNewsletterInfoResponse) {}
   /**
    * Returns the story's open graph data
    */

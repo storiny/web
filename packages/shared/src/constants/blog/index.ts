@@ -81,8 +81,7 @@ export const BLOG_SCHEMA = {
       BLOG_PROPS.public_email.max_length,
       ZOD_MESSAGES.max("e-mail", BLOG_PROPS.public_email.max_length)
     )
-    .email("Invalid e-mail")
-    .nonempty(ZOD_MESSAGES.non_empty("e-mail")),
+    .email("Invalid e-mail"),
   name: z
     .string()
     .min(
@@ -92,8 +91,7 @@ export const BLOG_SCHEMA = {
     .max(
       BLOG_PROPS.name.max_length,
       ZOD_MESSAGES.max("name", BLOG_PROPS.name.max_length)
-    )
-    .nonempty(ZOD_MESSAGES.non_empty("name")),
+    ),
   slug: z
     .string()
     .min(
@@ -107,8 +105,7 @@ export const BLOG_SCHEMA = {
     .regex(
       BLOG_SLUG_REGEX,
       "Slug must only contain underscores, hyphens, and alphanumeric characters"
-    )
-    .nonempty(ZOD_MESSAGES.non_empty("slug")),
+    ),
   logo_id: z.string().nullable(),
   logo_hex: z.string().nullable(),
   banner_id: z.string().nullable(),
@@ -145,8 +142,7 @@ export const LSB_ITEM_SCHEMA = {
     .max(
       LSB_ITEM_PROPS.name.max_length,
       ZOD_MESSAGES.max("name", LSB_ITEM_PROPS.name.max_length)
-    )
-    .nonempty(ZOD_MESSAGES.non_empty("name")),
+    ),
   icon: z.string().nullable(),
   target: z
     .string()
@@ -168,8 +164,7 @@ export const RSB_ITEM_SCHEMA = {
     .max(
       RSB_ITEM_PROPS.primary_text.max_length,
       ZOD_MESSAGES.max("primary text", RSB_ITEM_PROPS.primary_text.max_length)
-    )
-    .nonempty(ZOD_MESSAGES.non_empty("primary text")),
+    ),
   secondary_text: z
     .string()
     .max(

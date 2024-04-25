@@ -64,6 +64,7 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::blogs::editors::init_routes(cfg);
     v1::blogs::writers::init_routes(cfg);
     v1::blogs::feed::init_routes(cfg);
+    v1::blogs::subscribe::init_routes(cfg);
     // Me
     v1::me::get::init_routes(cfg);
     // Me - User activity
@@ -95,6 +96,10 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     // Me - Blogs - Stories
     v1::me::blogs::stories::remove::init_routes(cfg);
     v1::me::blogs::stories::publish::init_routes(cfg);
+    // Me - Blogs - Subscribers
+    v1::me::blogs::subscribers::get::init_routes(cfg);
+    v1::me::blogs::subscribers::import::init_routes(cfg);
+    v1::me::blogs::subscribers::remove::init_routes(cfg);
     // Me - Blogs - Editor requests
     v1::me::blogs::editor_requests::get::init_routes(cfg);
     v1::me::blogs::editor_requests::cancel::init_routes(cfg);
@@ -205,6 +210,9 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::muted_users::get::init_routes(cfg);
     v1::me::muted_users::post::init_routes(cfg);
     v1::me::muted_users::delete::init_routes(cfg);
+    // Me - Newsletters
+    v1::me::newsletters::post::init_routes(cfg);
+    v1::me::newsletters::delete::init_routes(cfg);
     // Me - Notifications
     v1::me::notifications::get::init_routes(cfg);
     v1::me::notifications::read::init_routes(cfg);
@@ -279,6 +287,8 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::subscriptions::delete::init_routes(cfg);
     // Me - Unread notifications
     v1::me::unread_notifications::init_routes(cfg);
+    // Newsletters
+    v1::newsletters::unsubscribe::init_routes(cfg);
     // Public - Blogs
     v1::public::blogs::stories::recommendations::init_routes(cfg);
     // Public - Cards

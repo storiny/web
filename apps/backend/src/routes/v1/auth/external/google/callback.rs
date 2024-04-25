@@ -28,20 +28,19 @@ use crate::{
     AppState,
     ExternalAuthTemplate,
 };
-use actix_http::HttpMessage;
+use actix_http::{
+    header,
+    HttpMessage,
+};
 use actix_web::{
     get,
-    http::header::{
-        self,
-        ContentType,
-    },
+    http::header::ContentType,
     web,
     HttpRequest,
     HttpResponse,
 };
 use actix_web_validator::QsQuery;
 use oauth2::{
-    reqwest::async_http_client,
     AuthorizationCode,
     TokenResponse,
 };
@@ -81,7 +80,7 @@ async fn handle_oauth_request(
         .oauth_client_map
         .google
         .exchange_code(code)
-        .request_async(async_http_client)
+        .request_async(&data.oauth_client)
         .await
         .map_err(|error| ExternalAuthError::Other(error.to_string()))?;
 
@@ -112,7 +111,10 @@ async fn handle_oauth_request(
     let google_data = reqwest_client
         .get("https://www.googleapis.com/oauth2/v2/userinfo?alt=json")
         .header("Content-type", ContentType::json().to_string())
-        .header(header::AUTHORIZATION, format!("Bearer {access_token}"))
+        .header(
+            http::header::AUTHORIZATION,
+            format!("Bearer {access_token}"),
+        )
         .send()
         .await
         .map_err(|err| ExternalAuthError::Other(err.to_string()))?
