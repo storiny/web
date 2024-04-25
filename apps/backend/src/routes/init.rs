@@ -287,6 +287,8 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::subscriptions::delete::init_routes(cfg);
     // Me - Unread notifications
     v1::me::unread_notifications::init_routes(cfg);
+    // Newsletters
+    v1::newsletters::unsubscribe::init_routes(cfg);
     // Public - Blogs
     v1::public::blogs::stories::recommendations::init_routes(cfg);
     // Public - Cards
