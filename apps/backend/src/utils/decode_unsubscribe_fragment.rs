@@ -46,7 +46,7 @@ where
     }
 
     let (blog_id, email) = fragment
-        .split_once(":")
+        .split_once(':')
         .ok_or(anyhow!("missing fragment delimiter"))?;
 
     let blog_id = blog_id

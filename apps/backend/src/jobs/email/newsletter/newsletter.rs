@@ -51,12 +51,14 @@ use tracing::{
 use uuid::Uuid;
 
 lazy_static! {
+    #[allow(clippy::expect_used)]
     static ref UNSUBSCRIBE_HEADER: MessageHeader = MessageHeader::builder()
         .name("List-Unsubscribe-Post")
         .value("List-Unsubscribe=One-Click")
         .build()
         .expect("unable to build the unsubscribe header");
     //
+    #[allow(clippy::expect_used)]
     static ref DATE_FORMAT: Vec<FormatItem<'static>> =
         time::format_description::parse("[day] [month repr:short], [year]")
             .expect("unable to parse the date format");

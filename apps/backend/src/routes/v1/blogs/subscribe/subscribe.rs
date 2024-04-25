@@ -112,7 +112,7 @@ WHERE
     AND deleted_at IS NULL
 "#,
     )
-    .bind(&blog_id)
+    .bind(blog_id)
     .fetch_one(&mut *txn)
     .await
     .map_err(|error| {
@@ -134,7 +134,7 @@ SELECT EXISTS (
 "#,
     )
     .bind(&payload.email)
-    .bind(&blog_id)
+    .bind(blog_id)
     .fetch_one(&mut *txn)
     .await?;
 
@@ -160,7 +160,7 @@ DELETE FROM newsletter_tokens
 WHERE blog_id = $1 AND email = $2
 "#,
     )
-    .bind(&blog_id)
+    .bind(blog_id)
     .bind(&payload.email)
     .execute(&mut *txn)
     .await?;
@@ -172,7 +172,7 @@ VALUES ($1, $2, $3, $4)
 "#,
     )
     .bind(&hashed_token)
-    .bind(&blog_id)
+    .bind(blog_id)
     .bind(&payload.email)
     .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
     .execute(&mut *txn)

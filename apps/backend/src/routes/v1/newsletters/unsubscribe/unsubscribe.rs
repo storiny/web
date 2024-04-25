@@ -46,6 +46,7 @@ async fn handle_request(
         decode_unsubscribe_fragment(&data.config.newsletter_secret, &path.digest, &path.encoded)
             .map_err(|_| UnsubscribeError::InvalidPayload)?;
 
+    #[allow(clippy::blocks_in_conditions)]
     match sqlx::query(
         r#"
 DELETE FROM subscribers
@@ -58,8 +59,8 @@ WHERE
     .bind(email)
     .execute(&data.db_pool)
     .await
-    .map_err(|error| {
-        error!("database error: {error:?}");
+    .map_err(|err| {
+        error!("database error: {err:?}");
         UnsubscribeError::Internal
     })?
     .rows_affected()

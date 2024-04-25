@@ -65,6 +65,7 @@ struct Request {
     ),
     err
 )]
+#[allow(clippy::too_many_arguments)]
 async fn post(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
