@@ -12,16 +12,13 @@ use crate::{
 };
 use actix_web::{
     get,
-    http::header::{
-        self,
-        ContentType,
-    },
+    http::header::ContentType,
     web,
     HttpResponse,
 };
 use actix_web_validator::QsQuery;
+use http::header;
 use oauth2::{
-    reqwest::async_http_client,
     AuthorizationCode,
     TokenResponse,
 };
@@ -62,7 +59,7 @@ async fn handle_dribbble_oauth_request(
         .oauth_client_map
         .dribbble
         .exchange_code(code)
-        .request_async(async_http_client)
+        .request_async(&data.oauth_client)
         .await
         .map_err(|error| ConnectionError::Other(error.to_string()))?;
 

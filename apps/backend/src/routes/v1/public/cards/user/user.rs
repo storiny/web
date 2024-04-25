@@ -3,12 +3,12 @@ use crate::{
     middlewares::identity::identity::Identity,
     AppState,
 };
+use actix_http::StatusCode;
 use actix_web::{
     get,
     web,
     HttpResponse,
 };
-use http::StatusCode;
 use serde::{
     Deserialize,
     Serialize,

@@ -61,7 +61,7 @@ pub const MSG_SYNC_STEP_2: u8 = 1;
 pub const MSG_SYNC_UPDATE: u8 = 2;
 
 /// A message instance.
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Message {
     /// The sync message variant. Contains the [SyncMessage] variant.
     Sync(SyncMessage),
@@ -158,7 +158,7 @@ impl Decode for Message {
 }
 
 /// A sync message instance.
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SyncMessage {
     /// The sync-step-1 message variant. Contains the [StateVector] from the remote peer.
     SyncStep1(StateVector),
@@ -217,8 +217,6 @@ impl Decode for SyncMessage {
     }
 }
 
-/// The realm implementation of y-sync [Protocol].
-///
 /// # Core Yjs defines two message types:
 ///
 /// - `SyncStep1`: Includes the state set of the sending client. When received, the client should
@@ -236,6 +234,7 @@ impl Decode for SyncMessage {
 /// # Construction of a message:
 ///
 /// `[message_type: var_uint, message definition]`
+#[derive(Debug, Copy, Clone, Default)]
 pub struct RealmProtocol;
 
 impl RealmProtocol {
@@ -250,7 +249,6 @@ impl RealmProtocol {
         let (sv, update) = {
             let sv = awareness.doc().transact().state_vector();
             let update = awareness.update()?;
-
             (sv, update)
         };
 

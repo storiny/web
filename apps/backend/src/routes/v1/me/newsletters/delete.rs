@@ -91,7 +91,7 @@ WITH target_user AS (
     FROM users
     WHERE id = $1
 )
-INSERT INTO subscriptions (email, blog_id)
+INSERT INTO subscribers (email, blog_id)
 VALUES ((SELECT email FROM target_user), $2)
 "#,
         )
@@ -114,8 +114,8 @@ VALUES ((SELECT email FROM target_user), $2)
         let result = sqlx::query(
             r#"
 SELECT EXISTS (
-    SELECT 1 FROM subscriptions
-    WHERE blog_id = $2
+    SELECT FROM subscribers
+    WHERE blog_id = $1
 )
 "#,
         )

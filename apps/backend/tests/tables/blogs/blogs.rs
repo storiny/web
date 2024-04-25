@@ -2372,7 +2372,7 @@ SELECT EXISTS (
         Ok(())
     }
 
-    #[sqlx::test]
+    #[sqlx::test(fixtures("user"))]
     async fn can_delete_subscribers_on_blog_hard_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let blog_id = (insert_sample_blog(&mut conn).await?).get::<i64, _>("id");
@@ -2420,7 +2420,7 @@ SELECT EXISTS (
         Ok(())
     }
 
-    #[sqlx::test]
+    #[sqlx::test(fixtures("user"))]
     async fn can_delete_newsletter_tokens_on_blog_hard_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let blog_id = (insert_sample_blog(&mut conn).await?).get::<i64, _>("id");

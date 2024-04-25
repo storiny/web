@@ -15,16 +15,13 @@ use crate::{
 };
 use actix_web::{
     get,
-    http::header::{
-        self,
-        ContentType,
-    },
+    http::header::ContentType,
     web,
     HttpResponse,
 };
 use actix_web_validator::QsQuery;
+use http::header;
 use oauth2::{
-    reqwest::async_http_client,
     AuthorizationCode,
     TokenResponse,
 };
@@ -68,7 +65,7 @@ async fn handle_google_callback(
         .oauth_client_map
         .google_alt
         .exchange_code(code)
-        .request_async(async_http_client)
+        .request_async(&data.oauth_client)
         .await
         .map_err(|error| AddAccountError::Other(error.to_string()))?;
 

@@ -10,13 +10,13 @@ use crate::{
     middlewares::identity::identity::Identity,
     AppState,
 };
+use actix_http::StatusCode;
 use actix_web::{
     patch,
     web,
     HttpResponse,
 };
 use actix_web_validator::Json;
-use http::StatusCode;
 use serde::{
     Deserialize,
     Serialize,

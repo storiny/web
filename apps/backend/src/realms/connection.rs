@@ -1,5 +1,5 @@
 use super::{
-    awareness::AwarenessRef,
+    awareness::Awareness,
     protocol::{
         Error,
         Message as ProtocolMessage,
@@ -14,12 +14,17 @@ use futures_util::stream::{
 };
 use std::{
     pin::Pin,
+    sync::Arc,
     task::{
         Context,
         Poll,
     },
 };
-use warp::ws::WebSocket;
+use tokio::sync::RwLock;
+use warp::ws::{
+    Message,
+    WebSocket,
+};
 use yrs::{
     updates::decoder::Decode,
     Update,
@@ -29,17 +34,17 @@ use yrs::{
 /// compatible with the [super::protocol::RealmProtocol].
 #[repr(transparent)]
 #[derive(Debug)]
-pub struct RealmSink(SplitSink<WebSocket, warp::ws::Message>);
+pub struct RealmSink(SplitSink<WebSocket, Message>);
 
-impl From<SplitSink<WebSocket, warp::ws::Message>> for RealmSink {
-    fn from(sink: SplitSink<WebSocket, warp::ws::Message>) -> Self {
+impl From<SplitSink<WebSocket, Message>> for RealmSink {
+    fn from(sink: SplitSink<WebSocket, Message>) -> Self {
         RealmSink(sink)
     }
 }
 
-impl From<RealmSink> for SplitSink<WebSocket, warp::ws::Message> {
-    fn from(val: RealmSink) -> Self {
-        val.0
+impl Into<SplitSink<WebSocket, Message>> for RealmSink {
+    fn into(self) -> SplitSink<WebSocket, Message> {
+        self.0
     }
 }
 
@@ -55,7 +60,7 @@ impl futures_util::Sink<Vec<u8>> for RealmSink {
     }
 
     fn start_send(mut self: Pin<&mut Self>, item: Vec<u8>) -> Result<(), Self::Error> {
-        if let Err(e) = Pin::new(&mut self.0).start_send(warp::ws::Message::binary(item)) {
+        if let Err(e) = Pin::new(&mut self.0).start_send(Message::binary(item)) {
             Err(Error::Other(e.into()))
         } else {
             Ok(())
@@ -90,9 +95,9 @@ impl From<SplitStream<WebSocket>> for RealmStream {
     }
 }
 
-impl From<RealmStream> for SplitStream<WebSocket> {
-    fn from(val: RealmStream) -> Self {
-        val.0
+impl Into<SplitStream<WebSocket>> for RealmStream {
+    fn into(self) -> SplitStream<WebSocket> {
+        self.0
     }
 }
 
@@ -118,22 +123,22 @@ impl Stream for RealmStream {
 /// * `read_only` - If `true`, ignores the sync-step-2 and update messages for peers having only the
 ///   read-only permission.
 pub async fn handle_message(
-    awareness: &AwarenessRef,
+    awareness: &Arc<RwLock<Awareness>>,
     message: ProtocolMessage,
     read_only: bool,
 ) -> Result<Option<ProtocolMessage>, Error> {
     match message {
         ProtocolMessage::Sync(msg) => match msg {
-            SyncMessage::SyncStep1(sv) => {
+            SyncMessage::SyncStep1(state_vector) => {
                 let awareness = awareness.read().await;
-                RealmProtocol.handle_sync_step1(&awareness, sv)
+                RealmProtocol.handle_sync_step1(&*awareness, state_vector)
             }
             SyncMessage::SyncStep2(update) => {
                 if read_only {
                     Ok(None)
                 } else {
                     let mut awareness = awareness.write().await;
-                    RealmProtocol.handle_sync_step2(&mut awareness, Update::decode_v1(&update)?)
+                    RealmProtocol.handle_sync_step2(&mut *awareness, Update::decode_v1(&update)?)
                 }
             }
             SyncMessage::Update(update) => {
@@ -141,25 +146,25 @@ pub async fn handle_message(
                     Ok(None)
                 } else {
                     let mut awareness = awareness.write().await;
-                    RealmProtocol.handle_update(&mut awareness, Update::decode_v1(&update)?)
+                    RealmProtocol.handle_update(&mut *awareness, Update::decode_v1(&update)?)
                 }
             }
         },
         ProtocolMessage::Auth(reason) => {
             let awareness = awareness.read().await;
-            RealmProtocol.handle_auth(&awareness, reason)
+            RealmProtocol.handle_auth(&*awareness, reason)
         }
         ProtocolMessage::AwarenessQuery => {
             let awareness = awareness.read().await;
-            RealmProtocol.handle_awareness_query(&awareness)
+            RealmProtocol.handle_awareness_query(&*awareness)
         }
         ProtocolMessage::Awareness(update) => {
             let mut awareness = awareness.write().await;
-            RealmProtocol.handle_awareness_update(&mut awareness, update)
+            RealmProtocol.handle_awareness_update(&mut *awareness, update)
         }
         ProtocolMessage::Custom(tag, data) => {
             let mut awareness = awareness.write().await;
-            RealmProtocol.missing_handle(&mut awareness, tag, data)
+            RealmProtocol.missing_handle(&mut *awareness, tag, data)
         }
         // Internal messages are never received from the peers (they are only sent by the server).
         ProtocolMessage::Internal(_) => Ok(None),
@@ -176,6 +181,7 @@ mod test {
         },
         *,
     };
+    use crate::realms::awareness::AwarenessRef;
     use futures_util::{
         ready,
         stream::{
@@ -248,9 +254,9 @@ mod test {
         },
         Doc,
         GetString,
+        Subscription,
         Text,
         Transact,
-        UpdateSubscription,
     };
 
     /// The connection handler over a pair of message streams, which implements an awareness and
@@ -308,7 +314,7 @@ mod test {
         /// * `awareness` - The awareness instance.
         /// * `sink` - The sink part.
         /// * `stream` - The stream part.
-        pub fn new(awareness: AwarenessRef, sink: Sink, mut stream: Stream) -> Self {
+        pub fn new(awareness: Arc<RwLock<Awareness>>, sink: Sink, mut stream: Stream) -> Self {
             let sink = Arc::new(Mutex::new(sink));
             let inbox = sink.clone();
             let loop_sink = Arc::downgrade(&sink);
@@ -379,7 +385,7 @@ mod test {
         /// * `sink` - The sink part.
         /// * `input` - The binary input payload.
         async fn process(
-            awareness: &AwarenessRef,
+            awareness: &Arc<RwLock<Awareness>>,
             sink: &mut Arc<Mutex<Sink>>,
             input: Vec<u8>,
         ) -> Result<(), Error> {
@@ -404,7 +410,7 @@ mod test {
 
         /// Returns the underlying [Awareness] structure, that contains the client state of the
         /// connection.
-        pub fn awareness(&self) -> &AwarenessRef {
+        pub fn awareness(&self) -> &Arc<RwLock<Awareness>> {
             &self.awareness
         }
     }
@@ -573,7 +579,7 @@ mod test {
     /// Creates a notifier for the document.
     ///
     /// * `doc` - The document.
-    fn create_notifier(doc: &Doc) -> (Arc<Notify>, UpdateSubscription) {
+    fn create_notifier(doc: &Doc) -> (Arc<Notify>, Subscription) {
         let notify = Arc::new(Notify::new());
         let sub = {
             let notify = notify.clone();
