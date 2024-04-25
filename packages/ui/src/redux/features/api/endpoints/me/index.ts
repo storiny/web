@@ -19,6 +19,7 @@ export * from "./leave-story";
 export * from "./liked-stories";
 export * from "./lookup";
 export * from "./muted-users";
+export * from "./newsletters";
 export * from "./notifications";
 export * from "./relations";
 export * from "./replies";

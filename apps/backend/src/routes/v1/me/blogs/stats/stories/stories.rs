@@ -3,6 +3,7 @@ use crate::{
     middlewares::identity::identity::Identity,
     AppState,
 };
+use actix_http::header;
 use actix_web::{
     get,
     http::header::{
@@ -12,7 +13,6 @@ use actix_web::{
     web,
     HttpResponse,
 };
-use http::header;
 use serde::{
     Deserialize,
     Serialize,

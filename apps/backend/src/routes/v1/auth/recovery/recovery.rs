@@ -2,7 +2,6 @@ use crate::{
     constants::{
         email_template::EmailTemplate,
         resource_lock::ResourceLock,
-        token::TOKEN_LENGTH,
     },
     error::{
         AppError,
@@ -16,6 +15,7 @@ use crate::{
     },
     models::email_templates::reset_password::ResetPasswordEmailTemplateData,
     utils::{
+        generate_hashed_token::generate_hashed_token,
         incr_resource_lock_attempts::incr_resource_lock_attempts,
         is_resource_locked::is_resource_locked,
     },
@@ -29,12 +29,10 @@ use actix_web::{
 };
 use actix_web_validator::Json;
 use apalis::prelude::Storage;
-use argon2::{
-    password_hash::SaltString,
-    Argon2,
-    PasswordHasher,
+use chrono::{
+    Datelike,
+    Local,
 };
-use nanoid::nanoid;
 use serde::{
     Deserialize,
     Serialize,
@@ -105,14 +103,7 @@ WHERE email = $1
     })?;
 
     // Generate a new password reset token.
-
-    let token_id = nanoid!(TOKEN_LENGTH);
-    let salt = SaltString::from_b64(&data.config.token_salt)
-        .map_err(|error| AppError::InternalError(error.to_string()))?;
-
-    let hashed_token = Argon2::default()
-        .hash_password(token_id.as_bytes(), &salt)
-        .map_err(|error| AppError::InternalError(error.to_string()))?;
+    let (token_id, hashed_token) = generate_hashed_token(&data.config.token_salt)?;
 
     sqlx::query(
         r#"
@@ -124,7 +115,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
     )
-    .bind(hashed_token.to_string())
+    .bind(&hashed_token)
     .bind(TokenType::PasswordReset as i16)
     .bind(user.get::<i64, _>("id"))
     .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
@@ -139,6 +130,7 @@ VALUES ($1, $2, $3, $4)
             "{}/auth/reset-password/{}",
             data.config.web_server_url, token_id
         ),
+        copyright_year: Local::now().year().to_string(),
     })
     .map_err(|error| {
         AppError::InternalError(format!("unable to serialize the template data: {error:?}"))
@@ -294,12 +286,7 @@ SELECT EXISTS (
             let mut conn = pool.acquire().await?;
             let app = init_app_for_test(post, pool, false, false, None).await.0;
             let config = get_app_config().unwrap();
-
-            let token_id = nanoid!(TOKEN_LENGTH);
-            let salt = SaltString::from_b64(&config.token_salt).unwrap();
-            let hashed_token = Argon2::default()
-                .hash_password(token_id.as_bytes(), &salt)
-                .unwrap();
+            let (_, hashed_token) = generate_hashed_token(&config.token_salt).unwrap();
 
             // Insert a password reset token.
             let result = sqlx::query(
@@ -308,7 +295,7 @@ INSERT INTO tokens (id, type, user_id, expires_at)
 VALUES ($1, $2, $3, $4)
 "#,
             )
-            .bind(hashed_token.to_string())
+            .bind(&hashed_token)
             .bind(TokenType::PasswordReset as i16)
             .bind(1_i64)
             .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
@@ -336,7 +323,7 @@ SELECT EXISTS (
 )
 "#,
             )
-            .bind(hashed_token.to_string())
+            .bind(&hashed_token)
             .fetch_one(&mut *conn)
             .await?;
 

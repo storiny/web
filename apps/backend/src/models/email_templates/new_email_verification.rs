@@ -5,4 +5,6 @@ use serde::Serialize;
 pub struct NewEmailVerificationEmailTemplateData {
     /// The e-mail verification link for the user.
     pub link: String,
+    /// The year of copyright.
+    pub copyright_year: String,
 }

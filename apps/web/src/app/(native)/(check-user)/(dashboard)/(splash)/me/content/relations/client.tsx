@@ -13,6 +13,7 @@ import { UserListSkeleton, VirtualizedUserList } from "~/common/user";
 import { use_app_router } from "~/common/utils";
 import Divider from "~/components/divider";
 import Input from "~/components/input";
+import Main from "~/components/main";
 import Option from "~/components/option";
 import Select from "~/components/select";
 import Spacer from "~/components/spacer";
@@ -296,7 +297,7 @@ const ContentRelationsClient = (props: RelationsProps): React.ReactElement => {
 
   return (
     <React.Fragment>
-      <main data-root={"true"}>
+      <Main>
         <DashboardTitle>Relations</DashboardTitle>
         <PageHeader on_change={handle_change} value={value} />
         <StatusHeader {...props} tab={value} />
@@ -329,7 +330,7 @@ const ContentRelationsClient = (props: RelationsProps): React.ReactElement => {
           />
         )}
         <Spacer orientation={"vertical"} size={10} />
-      </main>
+      </Main>
       <ContentRelationsRightSidebar
         pending_friend_request_count={pending_friend_request_count}
         tab={value}

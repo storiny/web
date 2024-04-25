@@ -9,7 +9,6 @@ use aws_config::{
     Region,
 };
 use maxminddb::Reader;
-use oauth2::basic::BasicClient;
 use routes::oauth::ConnectionError;
 use sailfish::TemplateOnce;
 use sqlx::{
@@ -19,7 +18,10 @@ use sqlx::{
 use user_agent_parser::UserAgentParser;
 
 // Aliases
-use crate::error::AddAccountError;
+use crate::{
+    error::AddAccountError,
+    oauth::OAuthClient,
+};
 pub use aws_sdk_s3::Client as S3Client;
 pub use aws_sdk_sesv2::Client as SesClient;
 pub use deadpool_redis::Pool as RedisPool;
@@ -76,6 +78,13 @@ pub struct AddAccountTemplate {
     error: Option<AddAccountError>,
 }
 
+/// Unsubscribe page template
+#[derive(TemplateOnce)]
+#[template(path = "unsubscribe.stpl")]
+pub struct UnsubscribeTemplate {
+    message: String,
+}
+
 /// Application state
 pub struct AppState {
     /// Environment configuration
@@ -92,20 +101,22 @@ pub struct AppState {
     pub s3_client: S3Client,
     /// Reqwest client instance
     pub reqwest_client: reqwest::Client,
+    /// Reqwest client instance configured to not follow redirects due to the risk of SSRF attacks.
+    pub oauth_client: reqwest::Client,
     /// OAuth client map
     pub oauth_client_map: OAuthClientMap,
 }
 
 /// OAuth client instances.
 pub struct OAuthClientMap {
-    youtube: BasicClient,
-    github: BasicClient,
-    spotify: BasicClient,
-    discord: BasicClient,
-    dribbble: BasicClient,
-    google: BasicClient,
+    youtube: OAuthClient,
+    github: OAuthClient,
+    spotify: OAuthClient,
+    discord: OAuthClient,
+    dribbble: OAuthClient,
+    google: OAuthClient,
     /// Google OAuth client for connecting Google accounts to existing Storiny accounts.
-    google_alt: BasicClient,
+    google_alt: OAuthClient,
 }
 
 /// Returns the behavior version for AWS services.

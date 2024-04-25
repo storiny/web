@@ -10,11 +10,11 @@ members = ["session", "macros"]
 storiny_session = { version = "0.1.0", path = "session" }
 actix-cors = "0.6.4"
 actix-extensible-rate-limit = { version = "0.2.1", features = ["redis"] }
-actix-http = "3.4.0"
+actix-http = "3.6.0"
 actix-multipart = "0.6.1"
 actix-service = "2.0.2"
 actix-utils = "3.0.1"
-actix-web = { version = "4.4.0", features = ["cookies", "secure-cookies", "__compress"] }
+actix-web = { version = "4.5.1", features = ["cookies", "secure-cookies", "__compress"] }
 actix-web-validator = "5.0.1"
 anyhow = "1.0.75"
 apalis = { version = "0.5.1", default-features = false, features = ["retry", "cron", "tokio-comp", "tracing", "redis"] }
@@ -22,9 +22,9 @@ argon2 = "0.5.2"
 async-compression = { version = "0.4.5", features = ["gzip", "tokio"] }
 async-recursion = "1.0.5"
 async-trait = "0.1.73"
-aws-config = "1.0.1"
-aws-sdk-s3 = "1.4.0"
-aws-sdk-sesv2 = "1.3.0"
+aws-config = "1.2.1"
+aws-sdk-s3 = "1.24.0"
+aws-sdk-sesv2 = "1.22.0"
 chrono = "0.4.31"
 colors-transform = "0.2.11"
 cookie = { version = "0.18.0", features = ["private", "signed"] }
@@ -37,29 +37,29 @@ futures = "0.3.29"
 futures-core = "0.3.28"
 futures-util = { version = "0.3.29", features = ["sink"] }
 hashbrown = { version = "0.14.0", features = ["serde"] }
-image = { version = "0.24.7", default-features = false, features = ["gif", "png", "jpeg", "jpeg_rayon", "webp", "webp-encoder"] }
+image = { version = "0.25.1", default-features = false, features = ["gif", "png", "jpeg", "rayon", "webp"] }
 itertools = "0.12.0"
 lazy_static = "1.4.0"
-lockable = { version = "0.0.6", default-features = false }
+lockable = { version = "0.0.8", default-features = false }
 lz-str = "0.2.1"
-maxminddb = "0.23.0"
+maxminddb = "0.24.0"
 mime = "0.3.17"
 nanoid = "0.4.0"
-oauth2 = "4.4.2"
+oauth2 = { version = "5.0.0-alpha.4", features = ["reqwest"] }
 pbjson = "0.6.0"
 prost = "0.12.1"
 rand = "0.8.5"
 redis = { version = "0.25.1", default-features = false, features = ["tokio-comp", "aio", "connection-manager", "script"] }
 regex = "1.9.5"
-reqwest = { version = "0.11.22", features = ["json"] }
+reqwest = { version = "0.12.4", features = ["json"] }
 sailfish = "0.8.0"
 serde = { version = "1.0.188", features = ["derive"] }
 serde_json = "1.0.105"
 sitemap-rs = "0.2.0"
 slugify = "0.1.0"
 sqlx = { version = "0.7.2", features = ["postgres", "time", "macros", "json", "migrate", "runtime-tokio", "sqlx-postgres", "uuid", "tls-rustls"] }
-strum = { version = "0.25.0", features = ["derive"] }
-strum_macros = "0.25.3"
+strum = { version = "0.26.2", features = ["derive"] }
+strum_macros = "0.26.2"
 thiserror = "1.0.48"
 time = { version = "0.3.29", features = ["formatting", "macros", "serde"] }
 tokio = { version = "1.32.0", features = ["macros"] }
@@ -73,24 +73,27 @@ user-agent-parser = "0.3.5"
 uuid = { version = "1.4.1", features = ["v4", "serde"] }
 validator = { version = "0.16.1", features = ["derive"] }
 warp = { version = "0.3.6", default-features = false, features = ["async-compression", "websocket", "compression"] }
-yrs = "0.17.1"
+yrs = "0.18.3"
 tracing = { version = "0.1.40", features = ["attributes"] }
 tracing-bunyan-formatter = "0.3.9"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 rmp-serde = "1.1.2"
 tower = "0.4.13"
 sentry = { version = "0.32.0", features = ["tracing"] }
-headers = { version = "0.3.9", features = [] }
-http = { version = "0.2.9", features = [] }
-hyper = { version = "0.14.27", features = [] }
+headers = "0.4.0"
+http = "1.1.0"
+hyper = "1.3.1"
 atomic_refcell = "0.1.13"
 emojis = "0.6.1"
 markdown = "1.0.0-alpha.16"
 woff2 = "0.3.0"
+hex = "0.4.3"
+hmac = "0.12.1"
+sha1 = "0.10.6"
 
 [dev-dependencies]
 storiny_macros = { version = "0.1.0", path = "macros" }
-reqwest = { version = "0.11.22", default-features = false, features = ["cookies", "json", "multipart", "stream"] }
+reqwest = { version = "0.12.4", default-features = false, features = ["cookies", "json", "multipart", "stream"] }
 tempfile = "3.8.1"
 tokio = { version = "1.32.0", features = ["time"] }
 tokio-stream = { version = "0.1.14", features = ["net"] }

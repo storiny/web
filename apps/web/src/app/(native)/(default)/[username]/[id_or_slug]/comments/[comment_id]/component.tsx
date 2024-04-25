@@ -3,6 +3,7 @@ import React from "react";
 import { Graph } from "schema-dts";
 
 import { GetCommentResponse } from "~/common/grpc";
+import Main from "~/components/main";
 import LeftSidebar from "~/layout/left-sidebar";
 import SplashScreen from "~/layout/splash-screen";
 import { get_cdn_url } from "~/utils/get-cdn-url";
@@ -74,10 +75,10 @@ const JsonLD = (props: Props): React.ReactElement => {
 const Component = (props: Props): React.ReactElement => (
   <>
     <LeftSidebar />
-    <main data-root={"true"}>
+    <Main>
       <JsonLD {...props} />
       <Client {...props} />
-    </main>
+    </Main>
     <StoryCommentsRightSidebar story_id={props.story_id} />
     <SplashScreen />
   </>

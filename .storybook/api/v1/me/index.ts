@@ -10,6 +10,7 @@ import "./blog-requests";
 import "./leave-story";
 import "./leave-blog";
 import "./notifications";
+import "./newsletters";
 import "./friend-requests";
 import "./gallery";
 import "./assets";

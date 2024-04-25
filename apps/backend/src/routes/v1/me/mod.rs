@@ -25,6 +25,7 @@ pub mod liked_replies;
 pub mod liked_stories;
 pub mod lookup;
 pub mod muted_users;
+pub mod newsletters;
 pub mod notifications;
 pub mod replies;
 pub mod settings;

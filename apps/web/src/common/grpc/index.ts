@@ -16,6 +16,10 @@ import {
   GetBlogArchiveResponse,
   GetBlogEditorsInfoRequest,
   GetBlogEditorsInfoResponse,
+  GetBlogNewsletterInfoRequest,
+  GetBlogNewsletterInfoResponse,
+  GetBlogNewsletterRequest,
+  GetBlogNewsletterResponse,
   GetBlogPendingStoryCountRequest,
   GetBlogPendingStoryCountResponse,
   GetBlogPublishedStoryCountRequest,
@@ -89,7 +93,9 @@ import {
   GetTokenRequest,
   GetTokenResponse,
   VerifyEmailRequest,
-  VerifyEmailResponse
+  VerifyEmailResponse,
+  VerifyNewsletterSubscriptionRequest,
+  VerifyNewsletterSubscriptionResponse
 } from "@storiny/proto/dist/token_def/v1/def";
 import {
   GetUserBlockCountRequest,
@@ -276,6 +282,12 @@ const grpc_hub = {
       global.grpc_client.verifyEmail
     )
   ),
+  verify_newsletter_subscription: cache(
+    promisify<
+      VerifyNewsletterSubscriptionRequest,
+      VerifyNewsletterSubscriptionResponse
+    >(global.grpc_client.verifyNewsletterSubscription)
+  ),
   get_blog: cache(
     promisify<GetBlogRequest, GetBlogResponse>(global.grpc_client.getBlog)
   ),
@@ -304,6 +316,16 @@ const grpc_hub = {
   get_blog_writers_info: cache(
     promisify<GetBlogWritersInfoRequest, GetBlogWritersInfoResponse>(
       global.grpc_client.getBlogWritersInfo
+    )
+  ),
+  get_blog_newsletter_info: cache(
+    promisify<GetBlogNewsletterInfoRequest, GetBlogNewsletterInfoResponse>(
+      global.grpc_client.getBlogNewsletterInfo
+    )
+  ),
+  get_blog_newsletter: cache(
+    promisify<GetBlogNewsletterRequest, GetBlogNewsletterResponse>(
+      global.grpc_client.getBlogNewsletter
     )
   ),
   get_blog_sitemap: cache(
@@ -338,23 +360,28 @@ export const {
   get_token,
   get_profile,
   get_user_blogs_info,
+  get_blog_newsletter,
   create_draft,
   verify_email,
   get_comment,
   get_username,
   get_blog,
+  verify_newsletter_subscription,
   get_blog_archive,
   get_blog_pending_story_count,
   get_blog_published_story_count,
   get_blog_editors_info,
   get_blog_writers_info,
-  get_blog_sitemap
+  get_blog_sitemap,
+  get_blog_newsletter_info
 } = global.grpc_hub as typeof grpc_hub;
 
 export {
   CreateDraftResponse,
   GetBlogArchiveResponse,
   GetBlogEditorsInfoResponse,
+  GetBlogNewsletterInfoResponse,
+  GetBlogNewsletterResponse,
   GetBlogPendingStoryCountResponse,
   GetBlogPublishedStoryCountResponse,
   GetBlogResponse,
@@ -384,5 +411,6 @@ export {
   GetUsernameResponse,
   GetUserRelationsInfoResponse,
   ValidateStoryResponse,
-  VerifyEmailResponse
+  VerifyEmailResponse,
+  VerifyNewsletterSubscriptionResponse
 };

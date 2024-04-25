@@ -74,7 +74,6 @@ const BlogNavbar = (props: BlogNavbarProps): React.ReactElement => {
           title={"Go to homepage"}
         >
           {blog.mark_dark || blog.mark_light ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <img
               alt={blog.name}
               className={styles["mark-image"]}

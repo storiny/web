@@ -62,8 +62,7 @@ export const USER_SCHEMA = {
       USER_PROPS.email.max_length,
       ZOD_MESSAGES.max("e-mail", USER_PROPS.email.max_length)
     )
-    .email("Invalid e-mail")
-    .nonempty(ZOD_MESSAGES.non_empty("e-mail")),
+    .email("Invalid e-mail"),
   name: z
     .string()
     .min(
@@ -73,8 +72,7 @@ export const USER_SCHEMA = {
     .max(
       USER_PROPS.name.max_length,
       ZOD_MESSAGES.max("name", USER_PROPS.name.max_length)
-    )
-    .nonempty(ZOD_MESSAGES.non_empty("name")),
+    ),
   password: z
     .string()
     .min(
@@ -84,8 +82,7 @@ export const USER_SCHEMA = {
     .max(
       USER_PROPS.password.max_length,
       ZOD_MESSAGES.max("password", USER_PROPS.password.max_length)
-    )
-    .nonempty(ZOD_MESSAGES.non_empty("password")),
+    ),
   username: z
     .string()
     .min(
@@ -99,8 +96,7 @@ export const USER_SCHEMA = {
     .regex(
       USERNAME_REGEX,
       "Username must only contain underscores and alphanumeric characters"
-    )
-    .nonempty(ZOD_MESSAGES.non_empty("username")),
+    ),
   wpm: z
     .number()
     .min(

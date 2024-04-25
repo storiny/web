@@ -19,20 +19,24 @@ const StaffBadge = dynamic(() => import("~/entities/badges/staff"), {
   loading: () => <BadgeSkeleton />
 });
 
+const PlusBadge = dynamic(() => import("~/entities/badges/plus"), {
+  loading: () => <BadgeSkeleton />
+});
+
 const BadgeArray = forward_ref<BadgeArrayProps, "span">((props, ref) => {
   const {
     as: Component = "span",
     flags: user_flags,
+    is_plus_member,
     size = 16,
     style,
     className,
     slot_props,
     ...rest
   } = props;
-
   const flags = React.useMemo(() => new Flag(user_flags), [user_flags]);
 
-  if (flags.none()) {
+  if (flags.none() && !is_plus_member) {
     return null;
   }
 
@@ -52,6 +56,7 @@ const BadgeArray = forward_ref<BadgeArrayProps, "span">((props, ref) => {
       {flags.has_any_of(UserFlag.EARLY_USER) && (
         <EarlyUserBadge {...slot_props?.badge} />
       )}
+      {is_plus_member && <PlusBadge {...slot_props?.badge} />}
     </Component>
   );
 });

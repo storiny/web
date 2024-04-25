@@ -1,5 +1,6 @@
 import React from "react";
 
+import Main from "~/components/main";
 import SplashScreen from "~/layout/splash-screen";
 
 import Dropdown from "./dropdown";
@@ -15,11 +16,11 @@ const LegalLayout = ({
 }): React.ReactElement => (
   <>
     <LeftSidebar />
-    <main data-root={"true"}>
+    <Main>
       <Dropdown />
       <article className={styles.article}>{children}</article>
       <LegalFooter />
-    </main>
+    </Main>
     <RightSidebar />
     <SplashScreen />
   </>

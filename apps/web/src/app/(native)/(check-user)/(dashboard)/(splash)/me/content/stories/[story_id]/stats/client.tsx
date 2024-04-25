@@ -11,6 +11,7 @@ import { CommentListSkeleton, VirtualizedCommentList } from "~/common/comment";
 import { dynamic_loader } from "~/common/dynamic";
 import ProgressState from "~/common/progress-state";
 import Divider from "~/components/divider";
+import Main from "~/components/main";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import AreaChart from "~/entities/area-chart";
@@ -104,7 +105,7 @@ const ContentStoryStatsClient = (
 
   return (
     <React.Fragment>
-      <main data-root={"true"}>
+      <Main>
         <DashboardTitle
           back_button_href={"/me/content/stories"}
           hide_back_button={false}
@@ -474,7 +475,7 @@ const ContentStoryStatsClient = (
           )}
         </DashboardWrapper>
         <Spacer orientation={"vertical"} size={10} />
-      </main>
+      </Main>
       <ContentStoryStatsRightSidebar story_id={story_id} />
     </React.Fragment>
   );

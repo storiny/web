@@ -7,6 +7,10 @@ use crate::{
                 GetBlogArchiveResponse,
                 GetBlogEditorsInfoRequest,
                 GetBlogEditorsInfoResponse,
+                GetBlogNewsletterInfoRequest,
+                GetBlogNewsletterInfoResponse,
+                GetBlogNewsletterRequest,
+                GetBlogNewsletterResponse,
                 GetBlogPendingStoryCountRequest,
                 GetBlogPendingStoryCountResponse,
                 GetBlogPublishedStoryCountRequest,
@@ -88,6 +92,8 @@ use crate::{
                 GetTokenResponse,
                 VerifyEmailRequest,
                 VerifyEmailResponse,
+                VerifyNewsletterSubscriptionRequest,
+                VerifyNewsletterSubscriptionResponse,
             },
             user_def::v1::{
                 GetUserBlockCountRequest,
@@ -373,5 +379,27 @@ impl ApiService for GrpcService {
         request: Request<GetTagOpenGraphDataRequest>,
     ) -> Result<Response<GetTagOpenGraphDataResponse>, Status> {
         endpoints::get_tag_open_graph_data::get_tag_open_graph_data(self, request).await
+    }
+
+    async fn verify_newsletter_subscription(
+        &self,
+        request: Request<VerifyNewsletterSubscriptionRequest>,
+    ) -> Result<Response<VerifyNewsletterSubscriptionResponse>, Status> {
+        endpoints::verify_newsletter_subscription::verify_newsletter_subscription(self, request)
+            .await
+    }
+
+    async fn get_blog_newsletter(
+        &self,
+        request: Request<GetBlogNewsletterRequest>,
+    ) -> Result<Response<GetBlogNewsletterResponse>, Status> {
+        endpoints::get_blog_newsletter::get_blog_newsletter(self, request).await
+    }
+
+    async fn get_blog_newsletter_info(
+        &self,
+        request: Request<GetBlogNewsletterInfoRequest>,
+    ) -> Result<Response<GetBlogNewsletterInfoResponse>, Status> {
+        endpoints::get_blog_newsletter_info::get_blog_newsletter_info(self, request).await
     }
 }
