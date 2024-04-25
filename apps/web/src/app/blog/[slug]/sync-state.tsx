@@ -11,7 +11,8 @@ const SyncBlogState = (): null => {
   const dispatch = use_app_dispatch();
 
   React.useEffect(() => {
-    dispatch(sync_with_blog(blog));
+    const syncable_blog = { ...blog, mutate: undefined };
+    dispatch(sync_with_blog(syncable_blog));
   }, [blog, dispatch]);
 
   return null;

@@ -25,7 +25,8 @@ const Blog = (props: BlogProps): React.ReactElement => {
   const is_self = current_user?.id === blog.user_id;
 
   React.useEffect(() => {
-    dispatch(sync_with_blog(blog));
+    const syncable_blog = { ...blog, mutate: undefined };
+    dispatch(sync_with_blog(syncable_blog));
   }, [dispatch, blog]);
 
   return (
