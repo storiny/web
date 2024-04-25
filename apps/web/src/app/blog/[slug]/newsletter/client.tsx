@@ -1,7 +1,6 @@
 "use client";
 
 import { USER_PROPS } from "@storiny/shared";
-import { clsx } from "clsx";
 import React from "react";
 
 import { use_app_router } from "~/common/utils";
@@ -74,11 +73,11 @@ const LoggedOutForm = ({
     </React.Fragment>
   ) : (
     <Form<NewsletterSubscribeSchema>
-      className={clsx(css["flex-col"], css["full-w"])}
+      className={css["flex-col"]}
       disabled={is_loading}
       on_submit={handle_submit}
       provider_props={form}
-      style={{ textAlign: "left" }}
+      style={{ textAlign: "left", width: "100%" }}
     >
       <FormInput
         autoComplete={"email"}

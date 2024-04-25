@@ -39,7 +39,10 @@ const Client = (props: Props): React.ReactElement => {
       <Spacer orientation={"vertical"} size={3} />
       <Typography level={"body2"}>
         This subscription request is either invalid or has expired.{" "}
-        <Link href={`${blog_url}/newsletter`}>Try subscribing again</Link>.
+        <Link href={`${blog_url}/newsletter`} underline={"always"}>
+          Try subscribing again
+        </Link>
+        .
       </Typography>
     </React.Fragment>
   );
