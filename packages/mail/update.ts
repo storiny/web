@@ -8,7 +8,7 @@ import {
   TemplateDoesNotExistException,
   UpdateTemplateCommand
 } from "@aws-sdk/client-ses";
-import { fromEnv as from_env } from "@aws-sdk/credential-providers"; // ES6 import
+import { fromIni as from_ini } from "@aws-sdk/credential-providers"; // ES6 import
 import { config } from "dotenv";
 import fs from "fs";
 import path from "path";
@@ -18,7 +18,7 @@ config();
 const CLIENT = new SESClient({
   region: process.env.AWS_SES_REGION,
   endpoint: process.env.AWS_SES_ENDPOINT,
-  credentials: from_env()
+  credentials: from_ini()
 });
 
 const TEMPLATE_FILES = fs
