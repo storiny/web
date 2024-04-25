@@ -34,11 +34,13 @@ pub async fn cleanup_cache(
     let story_add_by_user_job = storage_map.story_add_by_user.clone();
     let story_add_by_tag_job = storage_map.story_add_by_tag.clone();
     let templated_email_job = storage_map.templated_email.clone();
+    let newsletter_job = storage_map.newsletter_job.clone();
 
-    future::try_join3(
+    future::try_join4(
         story_add_by_user_job.vacuum(),
         story_add_by_tag_job.vacuum(),
         templated_email_job.vacuum(),
+        newsletter_job.vacuum(),
     )
     .await
     .map_err(Box::new)

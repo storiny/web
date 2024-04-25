@@ -39,7 +39,10 @@ use storiny::{
     error::FormErrorResponse,
     grpc::server::start_grpc_server,
     jobs::{
-        email::templated_email::TemplatedEmailJob,
+        email::{
+            newsletter::NewsletterJob,
+            templated_email::TemplatedEmailJob,
+        },
         init::start_jobs,
         notify::{
             story_add_by_tag::NotifyStoryAddByTagJob,
@@ -256,6 +259,9 @@ fn main() -> io::Result<()> {
                 let templated_email_job_data = web::Data::new(
                     JobStorage::<TemplatedEmailJob>::new(redis_connection_manager.clone()),
                 );
+                let newsletter_job_data = web::Data::new(JobStorage::<NewsletterJob>::new(
+                    redis_connection_manager.clone(),
+                ));
 
                 start_jobs(
                     redis_connection_manager,
@@ -381,6 +387,7 @@ fn main() -> io::Result<()> {
                         .app_data(story_add_by_user_job_data.clone())
                         .app_data(story_add_by_tag_job_data.clone())
                         .app_data(templated_email_job_data.clone())
+                        .app_data(newsletter_job_data.clone())
                         // Validation
                         .app_data(json_config)
                         .app_data(qs_query_config)

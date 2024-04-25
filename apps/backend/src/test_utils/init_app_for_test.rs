@@ -5,7 +5,10 @@ use crate::{
         session_cookie::SESSION_COOKIE_NAME,
     },
     jobs::{
-        email::templated_email::TemplatedEmailJob,
+        email::{
+            newsletter::NewsletterJob,
+            templated_email::TemplatedEmailJob,
+        },
         notify::{
             story_add_by_tag::NotifyStoryAddByTagJob,
             story_add_by_user::NotifyStoryAddByUserJob,
@@ -140,8 +143,10 @@ pub async fn init_app_for_test(
         redis_connection_manager.clone(),
     ));
     let templated_email_job_data = web::Data::new(JobStorage::<TemplatedEmailJob>::new(
-        redis_connection_manager,
+        redis_connection_manager.clone(),
     ));
+    let newsletter_job_data =
+        web::Data::new(JobStorage::<NewsletterJob>::new(redis_connection_manager));
 
     // GeoIP service
     let geo_db = maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();
@@ -190,6 +195,7 @@ pub async fn init_app_for_test(
             .app_data(story_add_by_user_job_data.clone())
             .app_data(story_add_by_tag_job_data.clone())
             .app_data(templated_email_job_data.clone())
+            .app_data(newsletter_job_data.clone())
             // Application state
             .app_data(app_state.clone())
             .service(post)
