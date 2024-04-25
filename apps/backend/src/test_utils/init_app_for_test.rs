@@ -167,10 +167,8 @@ pub async fn init_app_for_test(
         geo_db,
         ua_parser,
         s3_client: get_s3_client().await,
-        reqwest_client: reqwest::Client::builder()
-            .user_agent("Storiny (https://storiny.com)")
-            .build()
-            .unwrap(),
+        reqwest_client: reqwest::Client::new(),
+        oauth_client: reqwest::Client::new(),
         oauth_client_map: get_oauth_client_map(get_app_config().unwrap()),
     });
 

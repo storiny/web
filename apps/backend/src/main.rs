@@ -292,6 +292,11 @@ fn main() -> io::Result<()> {
                         .user_agent("Storiny (https://storiny.com)")
                         .build()
                         .unwrap(),
+                    oauth_client: reqwest::Client::builder()
+                        .user_agent("Storiny OAuth (https://storiny.com)")
+                        .redirect(reqwest::redirect::Policy::none())
+                        .build()
+                        .unwrap(),
                     oauth_client_map: get_oauth_client_map(get_app_config().unwrap()),
                 });
 

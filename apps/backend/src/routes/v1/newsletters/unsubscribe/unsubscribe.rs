@@ -4,6 +4,7 @@ use crate::{
     AppState,
     UnsubscribeTemplate,
 };
+use actix_http::StatusCode;
 use actix_web::{
     get,
     http::header::ContentType,
@@ -11,7 +12,6 @@ use actix_web::{
     web,
     HttpResponse,
 };
-use http::StatusCode;
 use sailfish::TemplateOnce;
 use serde::Deserialize;
 use tracing::error;

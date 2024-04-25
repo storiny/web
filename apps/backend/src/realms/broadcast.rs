@@ -1,5 +1,4 @@
 use super::{
-    awareness,
     awareness::AwarenessRef,
     connection::handle_message,
     protocol::{
@@ -27,7 +26,10 @@ use tokio::{
     },
     task::JoinHandle,
 };
-use tracing::trace;
+use tracing::{
+    trace,
+    warn,
+};
 use yrs::{
     encoding::write::Write,
     updates::{
@@ -38,20 +40,20 @@ use yrs::{
             EncoderV1,
         },
     },
-    UpdateSubscription,
 };
 
 /// A broadcast group can be used to propagate updates produced by yrs [yrs::Doc] and [Awareness]
-/// structures in a binary form that conforms to a y-sync protocol.
+/// structures in a binary form that conforms to a sync protocol.
 ///
 /// New receivers can subscribe to a broadcasting group via [BroadcastGroup::subscribe] method.
 #[allow(dead_code)]
 pub struct BroadcastGroup {
-    awareness_sub: awareness::UpdateSubscription,
-    doc_sub: UpdateSubscription,
+    awareness_sub: yrs::Subscription,
+    doc_sub: yrs::Subscription,
     awareness_ref: AwarenessRef,
     sender: Sender<Vec<u8>>,
     receiver: Receiver<Vec<u8>>,
+    awareness_updater: JoinHandle<()>,
 }
 
 unsafe impl Send for BroadcastGroup {}
@@ -72,12 +74,12 @@ impl BroadcastGroup {
         buffer_capacity: usize,
     ) -> Result<Self, atomic_refcell::BorrowMutError> {
         let (sender, receiver) = channel(buffer_capacity);
+        let awareness_clone = Arc::downgrade(&awareness);
+        let mut lock = awareness.write().await;
+        let sink = sender.clone();
 
-        let (doc_sub, awareness_sub) = {
-            let mut awareness = awareness.write().await;
-            let sink = sender.clone();
-
-            let doc_sub = awareness.doc_mut().observe_update_v1(move |_, event| {
+        let doc_sub = {
+            lock.doc_mut().observe_update_v1(move |_, event| {
                 // We manually construct the message here to avoid update data copying.
                 let mut encoder = EncoderV1::new();
                 encoder.write_var(MSG_SYNC);
@@ -89,32 +91,52 @@ impl BroadcastGroup {
                 if sink.send(msg).is_err() {
                     // Current broadcast group is being closed
                 }
-            })?;
-
-            let sink = sender.clone();
-
-            let awareness_sub = awareness.on_update(move |awareness, event| {
-                let (added, updated, removed) = (event.added(), event.updated(), event.removed());
-                let mut changed = Vec::with_capacity(added.len() + updated.len() + removed.len());
-
-                changed.extend_from_slice(added);
-                changed.extend_from_slice(updated);
-                changed.extend_from_slice(removed);
-
-                if let Ok(update) = awareness.update_with_clients(changed) {
-                    let msg = Message::Awareness(update).encode_v1();
-
-                    if sink.send(msg).is_err() {
-                        // Current broadcast group is being closed
-                    }
-                }
-            });
-
-            (doc_sub, awareness_sub)
+            })?
         };
+
+        let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel();
+        let sink = sender.clone();
+
+        let awareness_sub = lock.on_update(move |event| {
+            let added = event.added();
+            let updated = event.updated();
+            let removed = event.removed();
+            let mut changed = Vec::with_capacity(added.len() + updated.len() + removed.len());
+            changed.extend_from_slice(added);
+            changed.extend_from_slice(updated);
+            changed.extend_from_slice(removed);
+
+            if let Err(_) = tx.send(changed) {
+                warn!("failed to send awareness update");
+            }
+        });
+
+        drop(lock);
+
+        let awareness_updater = tokio::task::spawn(async move {
+            while let Some(changed_clients) = rx.recv().await {
+                if let Some(awareness) = awareness_clone.upgrade() {
+                    let awareness = awareness.read().await;
+
+                    match awareness.update_with_clients(changed_clients) {
+                        Ok(update) => {
+                            if let Err(_) = sink.send(Message::Awareness(update).encode_v1()) {
+                                warn!("could not broadcast the awareness update");
+                            }
+                        }
+                        Err(err) => {
+                            warn!("error while computing awareness update: {err:?}")
+                        }
+                    }
+                } else {
+                    return;
+                }
+            }
+        });
 
         Ok(BroadcastGroup {
             awareness_ref: awareness,
+            awareness_updater,
             sender,
             receiver,
             awareness_sub,
@@ -217,6 +239,12 @@ impl BroadcastGroup {
             sink_task,
             stream_task,
         }
+    }
+}
+
+impl Drop for BroadcastGroup {
+    fn drop(&mut self) {
+        self.awareness_updater.abort();
     }
 }
 

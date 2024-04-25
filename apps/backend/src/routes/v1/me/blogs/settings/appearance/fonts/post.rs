@@ -411,6 +411,7 @@ mod tests {
             ua_parser,
             s3_client: s3_client.unwrap_or(get_s3_client().await),
             reqwest_client: reqwest::Client::new(),
+            oauth_client: reqwest::Client::new(),
             oauth_client_map: get_oauth_client_map(get_app_config().unwrap()),
         });
 
