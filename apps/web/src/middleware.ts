@@ -26,31 +26,53 @@ const CSP_STYLE_SRC = ["ton.twimg.com", "platform.twitter.com"].join(" ");
  * @param request Next request object
  */
 export const middleware: NextMiddleware = (request) => {
+  const pathname = `${
+    request.nextUrl.pathname
+  }?${request.nextUrl.searchParams.toString()}`;
+  const common_init: RequestInit = {
+    headers: {
+      "x-pathname": pathname
+    }
+  };
+
   switch (request.nextUrl.pathname) {
     case "/login":
-      return NextResponse.redirect(new URL("/auth?segment=login", request.url));
     case "/signup":
     case "/sign-up":
+      // eslint-disable-next-line no-case-declarations
+      const search_params = request.nextUrl.searchParams;
+      search_params.set(
+        "segment",
+        request.nextUrl.pathname === "/login" ? "login" : "signup"
+      );
+
       return NextResponse.redirect(
-        new URL("/auth?segment=signup", request.url)
+        new URL(`/auth?${search_params.toString()}`, request.url),
+        common_init
       );
     case "/legal":
     case "/terms":
-      return NextResponse.redirect(new URL("/legal/terms/tos", request.url));
+      return NextResponse.redirect(
+        new URL("/legal/terms/tos", request.url),
+        common_init
+      );
     case "/privacy":
       return NextResponse.redirect(
-        new URL("/legal/policies/privacy", request.url)
+        new URL("/legal/policies/privacy", request.url),
+        common_init
       );
     case "/guidelines":
       return NextResponse.redirect(
-        new URL("/legal/terms/community-guidelines", request.url)
+        new URL("/legal/terms/community-guidelines", request.url),
+        common_init
       );
     case "/cookies":
       return NextResponse.redirect(
         new URL(
           "/legal/policies/privacy#6-cookies-and-tracking-technologies",
           request.url
-        )
+        ),
+        common_init
       );
   }
 
@@ -59,7 +81,10 @@ export const middleware: NextMiddleware = (request) => {
     const slug = request.nextUrl.pathname.split("/")[2];
 
     if (process.env.NODE_ENV !== "development" && is_valid_blog_slug(slug)) {
-      return NextResponse.redirect(new URL(get_blog_url({ slug })));
+      return NextResponse.redirect(
+        new URL(get_blog_url({ slug })),
+        common_init
+      );
     }
   }
 
@@ -85,6 +110,8 @@ export const middleware: NextMiddleware = (request) => {
   // Replace newline characters and spaces
   const csp_header_value = csp_header.replace(/\s{2,}/g, " ").trim();
   const request_headers = new Headers(request.headers);
+
+  request_headers.set("x-pathname", pathname);
 
   if (process.env.NODE_ENV !== "development") {
     request_headers.set("x-nonce", nonce);
@@ -145,7 +172,8 @@ export const middleware: NextMiddleware = (request) => {
       ].includes(url.pathname)
     ) {
       return NextResponse.rewrite(
-        new URL(`/api/blogs/${value}${url.pathname}`, request.url)
+        new URL(`/api/blogs/${value}${url.pathname}`, request.url),
+        common_init
       );
     }
 
