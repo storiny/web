@@ -216,18 +216,14 @@ impl BroadcastGroup {
                 while let Some(res) = stream.next().await {
                     let data = res.map_err(Box::new).map_err(|error| Error::Other(error))?;
                     let message = Message::decode_v1(&data)?;
-                    let reply = handle_message(&awareness, message, read_only).await?;
 
-                    match reply {
-                        None => {}
-                        Some(reply) => {
-                            let mut sink = sink.lock().await;
+                    if let Some(reply) = handle_message(&awareness, message, read_only).await? {
+                        let mut sink = sink.lock().await;
 
-                            sink.send(reply.encode_v1())
-                                .await
-                                .map_err(Box::new)
-                                .map_err(|error| Error::Other(error))?;
-                        }
+                        sink.send(reply.encode_v1())
+                            .await
+                            .map_err(Box::new)
+                            .map_err(|error| Error::Other(error))?;
                     }
                 }
 
