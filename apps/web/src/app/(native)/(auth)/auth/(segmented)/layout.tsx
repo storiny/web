@@ -34,7 +34,7 @@ const SegmentedLayout = (
   const enter_from_top =
     state.visited_segments[state.visited_segments.length - 1] !==
       state.segment || state.segment === "base";
-  const [ref, { height }] = use_measure({ scroll: false });
+  const [ref, { height }] = use_measure({ scroll: false, debounce: 150 });
   const [height_style, api] = use_spring(
     () => ({
       height: "0px",
