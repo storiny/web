@@ -80,7 +80,7 @@ enum Message {
   INTERNAL /*       */ = 4
 }
 
-const MESSAGE_RECONNECT_TIMEOUT = 30000;
+const MESSAGE_RECONNECT_TIMEOUT = 30_000;
 const MESSAGE_HANDLERS: Array<MessageHandler> = [];
 
 /**
