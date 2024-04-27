@@ -16,6 +16,20 @@ services:
     environment:
       PROXY_KEY: "${PROXY_KEY_SECRET}"
 
+  # RabbitMQ
+  rabbitmq:
+    container_name: "storiny-rabbitmq"
+    image: rabbitmq
+    hostname: primary-mq
+    restart: always
+    network_mode: "host"
+    volumes:
+      - "./rabbitmq:/var/lib/rabbitmq"
+    environment:
+      RABBITMQ_NODE_PORT: 5672
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
   # Web Server
   web:
     container_name: "storiny_web"
