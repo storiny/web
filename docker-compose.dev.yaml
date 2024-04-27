@@ -57,6 +57,15 @@ services:
       - ./docker/redis/users.acl:/opt/bitnami/redis/mounted-etc/users.acl
     command: /opt/bitnami/scripts/redis/run.sh --maxmemory 100mb
 
+  rabbitmq:
+    container_name: "storiny-rabbitmq"
+    image: rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_NODE_PORT: 5672
+    ports:
+      - "5672:5672"
+
 #  postgres:
 #    container_name: "storiny-postgres"
 #    image: postgres

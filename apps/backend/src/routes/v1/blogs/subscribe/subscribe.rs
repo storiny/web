@@ -1,4 +1,8 @@
 use crate::{
+    amqp::consumers::templated_email::{
+        TemplatedEmailMessage,
+        TEMPLATED_EMAIL_QUEUE_NAME,
+    },
     constants::{
         email_template::EmailTemplate,
         image_size::ImageSize,
@@ -7,10 +11,6 @@ use crate::{
         AppError,
         FormErrorResponse,
         ToastErrorResponse,
-    },
-    jobs::{
-        email::templated_email::TemplatedEmailJob,
-        storage::JobStorage,
     },
     models::email_templates::subscription_confirmation::{
         Blog,
@@ -33,10 +33,13 @@ use actix_web::{
     HttpResponse,
 };
 use actix_web_validator::Json;
-use apalis::prelude::Storage;
 use chrono::{
     Datelike,
     Local,
+};
+use deadpool_lapin::lapin::{
+    options::BasicPublishOptions,
+    BasicProperties,
 };
 use serde::{
     Deserialize,
@@ -76,7 +79,6 @@ async fn post(
     payload: Json<Request>,
     data: web::Data<AppState>,
     path: web::Path<Fragments>,
-    templated_email_job_storage: web::Data<JobStorage<TemplatedEmailJob>>,
 ) -> Result<HttpResponse, AppError> {
     let blog_id = path
         .blog_id
@@ -205,16 +207,33 @@ VALUES ($1, $2, $3, $4)
         AppError::InternalError(format!("unable to serialize the template data: {error:?}"))
     })?;
 
-    let mut templated_email_job = (*templated_email_job_storage.into_inner()).clone();
+    // Publish a message for the subscription verification email.
+    {
+        let channel = {
+            let lapin = &data.lapin;
+            let connection = lapin.get().await?;
+            connection.create_channel().await?
+        };
 
-    templated_email_job
-        .push(TemplatedEmailJob {
+        let message = serde_json::to_vec(&TemplatedEmailMessage {
             destination: payload.email.to_string(),
-            template: EmailTemplate::SubscriptionConfirmation,
+            template: EmailTemplate::SubscriptionConfirmation.to_string(),
             template_data,
         })
-        .await
-        .map_err(|error| AppError::InternalError(format!("unable to push the job: {error:?}")))?;
+        .map_err(|error| {
+            AppError::InternalError(format!("unable to serialize the message: {error:?}"))
+        })?;
+
+        channel
+            .basic_publish(
+                "",
+                TEMPLATED_EMAIL_QUEUE_NAME,
+                BasicPublishOptions::default(),
+                &message,
+                BasicProperties::default(),
+            )
+            .await?;
+    }
 
     txn.commit().await?;
 
