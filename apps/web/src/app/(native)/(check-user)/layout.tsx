@@ -14,11 +14,11 @@ const CheckUserLayout = async ({
 }: {
   children: React.ReactNode;
 }): Promise<React.ReactElement> => {
-  const next_url = headers().get("next-url") || "/";
+  const pathname = headers().get("x-pathname") || "/";
   const user_id = await get_user();
 
   if (!user_id) {
-    const to = next_url === "/" ? "" : `?to=${encodeURIComponent(next_url)}`;
+    const to = pathname === "/" ? "" : `?to=${encodeURIComponent(pathname)}`;
     redirect(`/login${to}`);
   }
 

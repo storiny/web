@@ -1,7 +1,7 @@
 /// The default reading speed.
 const DEFAULT_WPM: u32 = 250;
 
-/// Computes the reading time based on the reading speed.
+/// Computes the reading time (in minutes) based on the reading speed.
 ///
 /// * `word_count` - The total number of words.
 /// * `wpm` - The optional reading speed in words per minute. Defaults to [DEFAULT_WPM].

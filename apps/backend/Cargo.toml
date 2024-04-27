@@ -17,7 +17,7 @@ actix-utils = "3.0.1"
 actix-web = { version = "4.5.1", features = ["cookies", "secure-cookies", "__compress"] }
 actix-web-validator = "5.0.1"
 anyhow = "1.0.75"
-apalis = { version = "0.5.1", default-features = false, features = ["retry", "cron", "tokio-comp", "tracing", "redis"] }
+apalis = { version = "0.5.1", default-features = false, features = ["cron", "tokio-comp", "tracing"] }
 argon2 = "0.5.2"
 async-compression = { version = "0.4.5", features = ["gzip", "tokio"] }
 async-recursion = "1.0.5"
@@ -90,6 +90,7 @@ woff2 = "0.3.0"
 hex = "0.4.3"
 hmac = "0.12.1"
 sha1 = "0.10.6"
+deadpool-lapin = "0.12.0"
 
 [dev-dependencies]
 storiny_macros = { version = "0.1.0", path = "macros" }

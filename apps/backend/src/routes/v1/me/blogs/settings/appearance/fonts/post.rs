@@ -341,6 +341,7 @@ mod tests {
         test_utils::{
             count_s3_objects,
             exceed_resource_limit,
+            get_lapin_pool,
             get_redis_pool,
             get_resource_limit,
             get_s3_client,
@@ -393,7 +394,6 @@ mod tests {
         let listener = TcpListener::bind("localhost:0").unwrap();
         let port = listener.local_addr().unwrap().port();
         let db_pool_clone = db_pool.clone();
-        let redis_pool = get_redis_pool();
 
         // GeoIP service
         let geo_db = maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();
@@ -405,7 +405,8 @@ mod tests {
         // Application state
         let app_state = web::Data::new(AppState {
             config: get_app_config().unwrap(),
-            redis: redis_pool.clone(),
+            redis: get_redis_pool(),
+            lapin: get_lapin_pool(),
             db_pool: db_pool.clone(),
             geo_db,
             ua_parser,

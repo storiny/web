@@ -1,16 +1,14 @@
 use crate::{
+    amqp::consumers::notify_story_add::{
+        NotifyStoryAddMessage,
+        StoryAddSource,
+        NOTIFY_STORY_ADD_QUEUE_NAME,
+    },
     error::{
         AppError,
         ToastErrorResponse,
     },
     grpc::defs::story_def::v1::StoryVisibility,
-    jobs::{
-        notify::{
-            story_add_by_tag::NotifyStoryAddByTagJob,
-            story_add_by_user::NotifyStoryAddByUserJob,
-        },
-        storage::JobStorage,
-    },
     middlewares::identity::identity::Identity,
     realms::realm::{
         RealmData,
@@ -26,7 +24,10 @@ use actix_web::{
     HttpResponse,
 };
 use actix_web_validator::Json;
-use apalis::prelude::Storage;
+use deadpool_lapin::lapin::{
+    options::BasicPublishOptions,
+    BasicProperties,
+};
 use futures::future;
 use lockable::AsyncLimit;
 use serde::{
@@ -66,8 +67,6 @@ async fn post(
     payload: Json<Request>,
     user: Identity,
     realm_map: RealmData,
-    notify_story_add_by_user_job_storage: web::Data<JobStorage<NotifyStoryAddByUserJob>>,
-    notify_story_add_by_tag_job_storage: web::Data<JobStorage<NotifyStoryAddByTagJob>>,
 ) -> Result<HttpResponse, AppError> {
     let user_id = user.id()?;
     let story_id = path
@@ -152,17 +151,45 @@ RETURNING visibility
 
     if story.get::<i16, _>("visibility") == StoryVisibility::Public as i16 {
         // Queue push notification jobs.
-        let mut notify_story_add_by_user_job =
-            (*notify_story_add_by_user_job_storage.into_inner()).clone();
-        let mut notify_story_add_by_tag_job =
-            (*notify_story_add_by_tag_job_storage.into_inner()).clone();
+        let channel = {
+            let lapin = &data.lapin;
+            let connection = lapin.get().await?;
+            connection.create_channel().await?
+        };
+
+        let user_message = serde_json::to_vec(&NotifyStoryAddMessage {
+            story_id,
+            source: StoryAddSource::User,
+        })
+        .map_err(|error| {
+            AppError::InternalError(format!("unable to serialize the message: {error:?}"))
+        })?;
+
+        let tag_message = serde_json::to_vec(&NotifyStoryAddMessage {
+            story_id,
+            source: StoryAddSource::Tag,
+        })
+        .map_err(|error| {
+            AppError::InternalError(format!("unable to serialize the message: {error:?}"))
+        })?;
 
         future::try_join(
-            notify_story_add_by_user_job.push(NotifyStoryAddByUserJob { story_id }),
-            notify_story_add_by_tag_job.push(NotifyStoryAddByTagJob { story_id }),
+            channel.basic_publish(
+                "",
+                NOTIFY_STORY_ADD_QUEUE_NAME,
+                BasicPublishOptions::default(),
+                &user_message,
+                BasicProperties::default(),
+            ),
+            channel.basic_publish(
+                "",
+                NOTIFY_STORY_ADD_QUEUE_NAME,
+                BasicPublishOptions::default(),
+                &tag_message,
+                BasicProperties::default(),
+            ),
         )
-        .await
-        .map_err(|error| AppError::InternalError(format!("unable to push the jobs: {error:?}")))?;
+        .await?;
     }
 
     txn.commit().await?;
@@ -289,56 +316,24 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        jobs::notify::{
-            story_add_by_tag::NOTIFY_STORY_ADD_BY_TAG_JOB_NAME,
-            story_add_by_user::NOTIFY_STORY_ADD_BY_USER_JOB_NAME,
-        },
-        test_utils::{
-            assert_toast_error_response,
-            get_redis_pool,
-            init_app_for_test,
-            RedisTestContext,
-        },
+    use crate::test_utils::{
+        assert_toast_error_response,
+        init_app_for_test,
+        RedisTestContext,
     };
     use actix_web::{
         services,
         test,
     };
-    use redis::AsyncCommands;
     use sqlx::{
         PgPool,
         Row,
     };
-    use std::collections::HashMap;
+
     use storiny_macros::test_context;
     use time::OffsetDateTime;
 
     // Publish a new story.
-
-    #[derive(Debug, Deserialize)]
-    struct JobData {
-        story_id: i64,
-    }
-
-    #[derive(Debug, Deserialize)]
-    struct CachedJob {
-        job: JobData,
-    }
-
-    async fn get_notify_jobs_by_name(job_name: &str) -> Vec<JobData> {
-        let redis_pool = get_redis_pool();
-        let mut redis_conn = redis_pool.get().await.unwrap();
-
-        redis_conn
-            .hgetall::<_, HashMap<String, String>>(format!("{}:data", job_name))
-            .await
-            .expect("unable to get notify jobs")
-            .into_iter()
-            .filter_map(|(_, data)| serde_json::from_str::<CachedJob>(&data).ok())
-            .map(|item| item.job)
-            .collect::<Vec<_>>()
-    }
 
     #[sqlx::test]
     async fn can_publish_an_unlisted_story(pool: PgPool) -> sqlx::Result<()> {
@@ -392,15 +387,6 @@ WHERE id = $1
                 .is_some()
         );
         assert_eq!(result.get::<i32, _>("word_count"), 25);
-
-        // Should not insert push notification jobs.
-
-        let story_add_by_user_jobs =
-            get_notify_jobs_by_name(NOTIFY_STORY_ADD_BY_USER_JOB_NAME).await;
-        let story_add_by_tag_jobs = get_notify_jobs_by_name(NOTIFY_STORY_ADD_BY_TAG_JOB_NAME).await;
-
-        assert!(story_add_by_user_jobs.is_empty());
-        assert!(story_add_by_tag_jobs.is_empty());
 
         Ok(())
     }
@@ -722,24 +708,6 @@ WHERE id = $1
                     .is_some()
             );
             assert_eq!(result.get::<i32, _>("word_count"), 25);
-
-            // Should insert push notification jobs.
-
-            let story_add_by_user_jobs =
-                get_notify_jobs_by_name(NOTIFY_STORY_ADD_BY_USER_JOB_NAME).await;
-            let story_add_by_tag_jobs =
-                get_notify_jobs_by_name(NOTIFY_STORY_ADD_BY_TAG_JOB_NAME).await;
-
-            assert!(
-                story_add_by_user_jobs
-                    .iter()
-                    .any(|job| job.story_id == 2_i64)
-            );
-            assert!(
-                story_add_by_tag_jobs
-                    .iter()
-                    .any(|job| job.story_id == 2_i64)
-            );
 
             Ok(())
         }

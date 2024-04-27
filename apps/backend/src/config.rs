@@ -16,6 +16,8 @@ pub struct Config {
     pub realms_port: String,
     /// GRPC service endpoint
     pub grpc_endpoint: String,
+    /// RabbitMQ service endpoint
+    pub amqp_server_url: String,
     /// MinIO server endpoint (only used locally and during tests)
     pub minio_endpoint: String,
     /// Public URL of the realms server
