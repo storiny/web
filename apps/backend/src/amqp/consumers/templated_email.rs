@@ -29,7 +29,7 @@ use tracing::{
     error,
 };
 
-pub const TEMPLATED_EMAIL_QUEUE_NAME: &'static str = "templated_email";
+pub const TEMPLATED_EMAIL_QUEUE_NAME: &str = "templated_email";
 
 /// The queue message to send a templated email.
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
@@ -52,7 +52,7 @@ pub struct TemplatedEmailMessage {
 pub async fn templated_email_consumer(
     lapin: LapinPool,
     state: Arc<SharedQueueState>,
-    email_dispatcher: Option<impl Fn(TemplatedEmailMessage) -> () + Send + Sync + Clone + 'static>,
+    email_dispatcher: Option<impl Fn(TemplatedEmailMessage) + Send + Sync + Clone + 'static>,
 ) -> anyhow::Result<()> {
     let conn = lapin.get().await?;
     let channel = conn.create_channel().await?;

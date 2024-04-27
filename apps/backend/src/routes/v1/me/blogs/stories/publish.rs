@@ -548,7 +548,6 @@ mod tests {
     use super::*;
     use crate::test_utils::{
         assert_toast_error_response,
-        get_redis_pool,
         init_app_for_test,
         RedisTestContext,
     };
@@ -556,12 +555,11 @@ mod tests {
         services,
         test,
     };
-    use redis::AsyncCommands;
     use sqlx::{
         PgPool,
         Row,
     };
-    use std::collections::HashMap;
+
     use storiny_macros::test_context;
     use time::OffsetDateTime;
 

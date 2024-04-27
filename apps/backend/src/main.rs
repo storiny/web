@@ -218,10 +218,12 @@ fn main() -> io::Result<()> {
 
                 // Lapin pool
                 let lapin_pool = {
-                    let mut mq_cfg = deadpool_lapin::Config::default();
-                    mq_cfg.url = Some(config.amqp_server_url.to_string());
-
-                    match mq_cfg.create_pool(Some(deadpool_lapin::Runtime::Tokio1)) {
+                    match (deadpool_lapin::Config {
+                        url: Some(config.amqp_server_url.to_string()),
+                        ..Default::default()
+                    })
+                    .create_pool(Some(deadpool_lapin::Runtime::Tokio1))
+                    {
                         Ok(pool) => {
                             println!("Created AMQP pool");
                             pool
