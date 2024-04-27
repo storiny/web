@@ -20,7 +20,7 @@ use serde::{
 use std::sync::Arc;
 use tracing::debug;
 
-pub const NOTIFY_STORY_ADD_QUEUE_NAME: &'static str = "notify_story_add";
+pub const NOTIFY_STORY_ADD_QUEUE_NAME: &str = "notify_story_add";
 
 /// The source of the action. If the source is [StoryAddSource::User], the followers and friends of
 /// the story writer will be notified. If the source is [StoryAddSource::Tag], the followers of all

@@ -74,7 +74,7 @@ lazy_static! {
             .expect("unable to parse the date format");
 }
 
-pub const NEWSLETTER_QUEUE_NAME: &'static str = "newsletter";
+pub const NEWSLETTER_QUEUE_NAME: &str = "newsletter";
 
 /// The queue message to send newsletter emails for a blog.
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -95,7 +95,7 @@ pub async fn newsletter_consumer(
     lapin: LapinPool,
     state: Arc<SharedQueueState>,
     email_dispatcher: Option<
-        impl Fn(&str, &BlogNewsletterEmailTemplateData) -> () + Send + Sync + Clone + 'static,
+        impl Fn(&str, &BlogNewsletterEmailTemplateData) + Send + Sync + Clone + 'static,
     >,
 ) -> anyhow::Result<()> {
     let conn = lapin.get().await?;
