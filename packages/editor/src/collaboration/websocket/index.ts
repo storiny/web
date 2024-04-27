@@ -80,7 +80,7 @@ enum Message {
   INTERNAL /*       */ = 4
 }
 
-const MESSAGE_RECONNECT_TIMEOUT = 30000;
+const MESSAGE_RECONNECT_TIMEOUT = 30_000;
 const MESSAGE_HANDLERS: Array<MessageHandler> = [];
 
 /**
@@ -491,23 +491,6 @@ export class WebsocketProvider {
       broadcast_message(this, encoding.toUint8Array(encoder));
     };
 
-    /**
-     * Unload handler (removes awareness state)
-     */
-    this.unload_handler = (): void => {
-      awareness_protocol.removeAwarenessStates(
-        this.awareness,
-        [doc.clientID],
-        "window unload"
-      );
-    };
-
-    if (typeof window !== "undefined") {
-      window.addEventListener("unload", this.unload_handler);
-    } else if (typeof process !== "undefined") {
-      process.on("exit", this.unload_handler);
-    }
-
     awareness.on("update", this.awareness_update_handler);
 
     this.check_interval = setInterval(() => {
@@ -603,11 +586,6 @@ export class WebsocketProvider {
    * @private
    */
   private readonly update_handler: (update: Uint8Array, origin: any) => void;
-  /**
-   * Unlaod handler (removes the awareness data)
-   * @private
-   */
-  private readonly unload_handler: () => void;
   /**
    * Awareness update handler
    * @private
@@ -725,12 +703,6 @@ export class WebsocketProvider {
     clearInterval(this.check_interval as unknown as number);
     this.disconnect();
 
-    if (typeof window !== "undefined") {
-      window.removeEventListener("unload", this.unload_handler);
-    } else if (typeof process !== "undefined") {
-      process.off("exit", this.unload_handler);
-    }
-
     this.awareness.off("update", this.awareness_update_handler);
     this.doc.off("update", this.update_handler);
     this.observers = new Map();
@@ -830,7 +802,7 @@ export class WebsocketProvider {
   public connect(): void {
     this.should_connect = true;
 
-    if (!this.wsconnected && this.ws === null) {
+    if (!this.wsconnected && !this.wsconnecting && this.ws === null) {
       setup_ws(this);
       this.connect_bc();
     }

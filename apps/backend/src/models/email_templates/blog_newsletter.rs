@@ -1,7 +1,7 @@
 use serde::Serialize;
 
 /// The blog in which this story was published.
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct Blog {
     /// The name of blog.
     pub name: String,
@@ -12,7 +12,7 @@ pub struct Blog {
 }
 
 /// The writer of the story.
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct User {
     /// The name of user.
     pub name: String,
@@ -23,7 +23,7 @@ pub struct User {
 }
 
 /// The story object for the newsletter.
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct Story {
     /// The title of story.
     pub title: String,
@@ -46,7 +46,7 @@ pub struct Story {
 }
 
 /// The data for blog newsletter template.
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct BlogNewsletterEmailTemplateData {
     /// The e-mail address of the user.
     pub email: String,
@@ -57,3 +57,13 @@ pub struct BlogNewsletterEmailTemplateData {
     /// The story object.
     pub story: Story,
 }
+
+impl PartialEq<Self> for BlogNewsletterEmailTemplateData {
+    fn eq(&self, other: &Self) -> bool {
+        // `unsubscribe_link` and `copyright_year` fields are intentionally ignored here for tests
+        // as they are subject to changes are do not hold importance here.
+        self.email == other.email && self.story == other.story
+    }
+}
+
+impl Eq for BlogNewsletterEmailTemplateData {}

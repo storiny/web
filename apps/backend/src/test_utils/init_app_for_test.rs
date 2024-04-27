@@ -1,20 +1,12 @@
 use crate::{
+    amqp::init::init_mq_consumers,
     config::get_app_config,
     constants::{
         redis_namespaces::RedisNamespace,
         session_cookie::SESSION_COOKIE_NAME,
     },
-    jobs::{
-        email::{
-            newsletter::NewsletterJob,
-            templated_email::TemplatedEmailJob,
-        },
-        notify::{
-            story_add_by_tag::NotifyStoryAddByTagJob,
-            story_add_by_user::NotifyStoryAddByUserJob,
-        },
-        storage::JobStorage,
-    },
+    get_aws_behavior_version,
+    get_aws_region,
     middlewares::identity::{
         identity::Identity,
         middleware::IdentityMiddleware,
@@ -25,10 +17,12 @@ use crate::{
         RealmMap,
     },
     test_utils::{
+        get_lapin_pool,
         get_redis_pool,
         get_s3_client,
     },
     AppState,
+    SesClient,
 };
 use actix_http::{
     HttpMessage,
@@ -57,7 +51,6 @@ use actix_web::{
 };
 use lockable::LockableHashMap;
 use rand::Rng;
-use redis::aio::ConnectionManager;
 use serde::Deserialize;
 use sqlx::{
     PgPool,
@@ -68,7 +61,6 @@ use storiny_session::{
     storage::RedisSessionStore,
     SessionMiddleware,
 };
-use tracing::error;
 use user_agent_parser::UserAgentParser;
 
 #[derive(Deserialize)]
@@ -111,6 +103,10 @@ pub async fn init_app_for_test(
 ) {
     let config = get_app_config().expect("unable to load environment configuration");
     let redis_connection_string = format!("redis://{}:{}", config.redis_host, config.redis_port);
+    let shared_aws_config = aws_config::defaults(get_aws_behavior_version())
+        .region(get_aws_region())
+        .load()
+        .await;
 
     // Session
     let secret_key = Key::from(get_app_config().unwrap().session_secret_key.as_bytes());
@@ -120,33 +116,21 @@ pub async fn init_app_for_test(
         .await
         .unwrap();
 
-    // Redis pool
+    let lapin_pool = get_lapin_pool();
     let redis_pool = get_redis_pool();
-    let redis_client =
-        redis::Client::open(redis_connection_string.clone()).expect("Cannot build Redis client");
-    let redis_connection_manager = match ConnectionManager::new(redis_client).await {
-        Ok(manager) => {
-            println!("connected to Redis");
-            manager
-        }
-        Err(error) => {
-            error!("unable to connect to Redis: {error:?}");
-            std::process::exit(1);
-        }
-    };
+    let s3_client = get_s3_client().await;
+    let ses_client = SesClient::new(&shared_aws_config);
 
     // Background jobs
-    let story_add_by_user_job_data = web::Data::new(JobStorage::<NotifyStoryAddByUserJob>::new(
-        redis_connection_manager.clone(),
-    ));
-    let story_add_by_tag_job_data = web::Data::new(JobStorage::<NotifyStoryAddByTagJob>::new(
-        redis_connection_manager.clone(),
-    ));
-    let templated_email_job_data = web::Data::new(JobStorage::<TemplatedEmailJob>::new(
-        redis_connection_manager.clone(),
-    ));
-    let newsletter_job_data =
-        web::Data::new(JobStorage::<NewsletterJob>::new(redis_connection_manager));
+    init_mq_consumers(
+        lapin_pool.clone(),
+        redis_pool.clone(),
+        db_pool.clone(),
+        ses_client,
+        s3_client.clone(),
+    )
+    .await
+    .expect("unable to start the message consumers");
 
     // GeoIP service
     let geo_db = maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();
@@ -162,11 +146,12 @@ pub async fn init_app_for_test(
     // Application state
     let app_state = web::Data::new(AppState {
         config,
-        redis: redis_pool.clone(),
+        redis: redis_pool,
+        lapin: lapin_pool,
         db_pool: db_pool.clone(),
         geo_db,
         ua_parser,
-        s3_client: get_s3_client().await,
+        s3_client,
         reqwest_client: reqwest::Client::new(),
         oauth_client: reqwest::Client::new(),
         oauth_client_map: get_oauth_client_map(get_app_config().unwrap()),
@@ -189,11 +174,6 @@ pub async fn init_app_for_test(
             .wrap(actix_web::middleware::NormalizePath::trim())
             // Realms
             .app_data(realm_data.clone())
-            // Jobs
-            .app_data(story_add_by_user_job_data.clone())
-            .app_data(story_add_by_tag_job_data.clone())
-            .app_data(templated_email_job_data.clone())
-            .app_data(newsletter_job_data.clone())
             // Application state
             .app_data(app_state.clone())
             .service(post)

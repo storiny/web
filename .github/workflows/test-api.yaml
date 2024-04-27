@@ -84,6 +84,7 @@ jobs:
   #      REALMS_HOST: 127.0.0.1
   #      REALMS_PORT: 8081
   #      GRPC_ENDPOINT: 127.0.0.1:50051
+  #      AMQP_SERVER_URL: amqp://127.0.0.1:5672/%2f
   #      MINIO_ENDPOINT: http://localhost:9000
   #      API_SERVER_URL: https://api.storiny.com
   #      WEB_SERVER_URL: https://storiny.com
@@ -128,6 +129,12 @@ jobs:
   #          --health-retries 5
   #        ports:
   #          - 5432:5432
+  #      rabbitmq:
+  #        image: rabbitmq:3.13-alpine
+  #        env:
+  #          RABBITMQ_NODE_PORT: 5672
+  #        ports:
+  #          - 5672:5672
   #      minio:
   #        image: bitnami/minio:latest
   #        env:

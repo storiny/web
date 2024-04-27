@@ -1,14 +1,14 @@
 use crate::{
+    amqp::consumers::templated_email::{
+        TemplatedEmailMessage,
+        TEMPLATED_EMAIL_QUEUE_NAME,
+    },
     constants::email_template::EmailTemplate,
     error::{
         AppError,
         ToastErrorResponse,
     },
     grpc::defs::token_def::v1::TokenType,
-    jobs::{
-        email::templated_email::TemplatedEmailJob,
-        storage::JobStorage,
-    },
     middlewares::identity::identity::Identity,
     models::email_templates::password_add_verification::PasswordAddVerificationEmailTemplateData,
     AppState,
@@ -18,7 +18,6 @@ use actix_web::{
     web,
     HttpResponse,
 };
-use apalis::prelude::Storage;
 use argon2::{
     password_hash::SaltString,
     Argon2,
@@ -27,6 +26,10 @@ use argon2::{
 use chrono::{
     Datelike,
     Local,
+};
+use deadpool_lapin::lapin::{
+    options::BasicPublishOptions,
+    BasicProperties,
 };
 use nanoid::nanoid;
 use sqlx::Row;
@@ -48,11 +51,7 @@ fn generate_verification_code() -> String {
     fields(user = user.id().ok()),
     err
 )]
-async fn post(
-    data: web::Data<AppState>,
-    user: Identity,
-    templated_email_job_storage: web::Data<JobStorage<TemplatedEmailJob>>,
-) -> Result<HttpResponse, AppError> {
+async fn post(data: web::Data<AppState>, user: Identity) -> Result<HttpResponse, AppError> {
     let user_id = user.id()?;
 
     let pg_pool = &data.db_pool;
@@ -116,16 +115,33 @@ VALUES ($1, $2, $3, $4)
         AppError::InternalError(format!("unable to serialize the template data: {error:?}"))
     })?;
 
-    let mut templated_email_job = (*templated_email_job_storage.into_inner()).clone();
+    // Publish a message for the email.
+    {
+        let channel = {
+            let lapin = &data.lapin;
+            let connection = lapin.get().await?;
+            connection.create_channel().await?
+        };
 
-    templated_email_job
-        .push(TemplatedEmailJob {
+        let message = serde_json::to_vec(&TemplatedEmailMessage {
             destination: user.get::<String, _>("email"),
-            template: EmailTemplate::PasswordAddVerification,
+            template: EmailTemplate::PasswordAddVerification.to_string(),
             template_data,
         })
-        .await
-        .map_err(|error| AppError::InternalError(format!("unable to push the job: {error:?}")))?;
+        .map_err(|error| {
+            AppError::InternalError(format!("unable to serialize the message: {error:?}"))
+        })?;
+
+        channel
+            .basic_publish(
+                "",
+                TEMPLATED_EMAIL_QUEUE_NAME,
+                BasicPublishOptions::default(),
+                &message,
+                BasicProperties::default(),
+            )
+            .await?;
+    }
 
     txn.commit().await?;
 
