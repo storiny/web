@@ -194,7 +194,7 @@ impl Awareness {
     where
         F: Fn(&Event) + 'static,
     {
-        self.on_update.subscribe(move |_, e| cb(e))
+        self.on_update.subscribe(move |_txn, e| cb(e))
     }
 
     /// Returns a read-only reference to the underlying [Doc].
@@ -225,8 +225,7 @@ impl Awareness {
     }
 
     /// Sets a current [Awareness] instance state to a corresponding JSON string. This state will be
-    /// replicated to other clients as part of the [AwarenessUpdate] and it will trigger an event to
-    /// be emitted if current instance was created using [Awareness::with_observer] method.
+    /// replicated to other clients as part of the [AwarenessUpdate].
     ///
     /// * `json` - The JSON string.
     pub fn set_local_state<S>(&mut self, json: S)
@@ -341,9 +340,6 @@ impl Awareness {
     /// Applies an update (incoming from remote channel or generated using [Awareness::update] /
     /// [Awareness::update_with_clients] methods) and modifies the state of the current instance.
     ///
-    /// If the current instance has an observer channel (see: [Awareness::with_observer]), applied
-    /// changes will also be emitted as events.
-    ///
     /// * `update` - The update to apply.
     pub fn apply_update(&mut self, update: AwarenessUpdate) -> Result<(), Error> {
         let now = Instant::now();
@@ -373,26 +369,17 @@ impl Awareness {
                                 clock += 1;
                             } else {
                                 self.states.remove(&client_id);
-
-                                if self.on_update.has_subscribers() {
-                                    removed.push(client_id);
-                                }
+                                removed.push(client_id);
                             }
                         } else {
                             match self.states.entry(client_id) {
                                 Entry::Occupied(mut e) => {
-                                    if self.on_update.has_subscribers() {
-                                        updated.push(client_id);
-                                    }
-
+                                    updated.push(client_id);
                                     e.insert(entry.json);
                                 }
                                 Entry::Vacant(e) => {
                                     e.insert(entry.json);
-
-                                    if self.on_update.has_subscribers() {
-                                        updated.push(client_id);
-                                    }
+                                    updated.push(client_id);
                                 }
                             }
                         }
@@ -406,10 +393,7 @@ impl Awareness {
                 Entry::Vacant(e) => {
                     e.insert(MetaClientState::new(clock, now));
                     self.states.insert(client_id, entry.json);
-
-                    if self.on_update.has_subscribers() {
-                        added.push(client_id);
-                    }
+                    added.push(client_id);
 
                     true
                 }

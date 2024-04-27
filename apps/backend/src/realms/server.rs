@@ -520,7 +520,7 @@ WHERE story_id = $1
         }
 
         let awareness = Arc::new(RwLock::new(Awareness::new(doc)));
-        let bc_group = BroadcastGroup::new(awareness, BUFFER_CAP)
+        let bc_group = BroadcastGroup::new(awareness.clone(), BUFFER_CAP)
             .await
             .map_err(|error| {
                 error!("unable to create a broadcast group: {error:?}");

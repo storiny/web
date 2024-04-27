@@ -1,4 +1,8 @@
 use crate::{
+    amqp::consumers::templated_email::{
+        TemplatedEmailMessage,
+        TEMPLATED_EMAIL_QUEUE_NAME,
+    },
     constants::{
         account_activity_type::AccountActivityType,
         email_template::EmailTemplate,
@@ -9,10 +13,6 @@ use crate::{
         ToastErrorResponse,
     },
     grpc::defs::token_def::v1::TokenType,
-    jobs::{
-        email::templated_email::TemplatedEmailJob,
-        storage::JobStorage,
-    },
     middlewares::identity::identity::Identity,
     models::email_templates::new_email_verification::NewEmailVerificationEmailTemplateData,
     utils::{
@@ -28,7 +28,6 @@ use actix_web::{
     HttpResponse,
 };
 use actix_web_validator::Json;
-use apalis::prelude::Storage;
 use argon2::{
     Argon2,
     PasswordHash,
@@ -37,6 +36,10 @@ use argon2::{
 use chrono::{
     Datelike,
     Local,
+};
+use deadpool_lapin::lapin::{
+    options::BasicPublishOptions,
+    BasicProperties,
 };
 use serde::{
     Deserialize,
@@ -72,7 +75,6 @@ async fn patch(
     payload: Json<Request>,
     data: web::Data<AppState>,
     user: Identity,
-    templated_email_job_storage: web::Data<JobStorage<TemplatedEmailJob>>,
 ) -> Result<HttpResponse, AppError> {
     let user_id = user.id()?;
 
@@ -165,18 +167,33 @@ VALUES ($3, 'You changed your e-mail address to <m>' || $2 || '</m>', $1)
                 AppError::InternalError(format!("unable to serialize the template data: {error:?}"))
             })?;
 
-            let mut templated_email_job = (*templated_email_job_storage.into_inner()).clone();
+            // Publish a message for the email verification job.
+            {
+                let channel = {
+                    let lapin = &data.lapin;
+                    let connection = lapin.get().await?;
+                    connection.create_channel().await?
+                };
 
-            templated_email_job
-                .push(TemplatedEmailJob {
+                let message = serde_json::to_vec(&TemplatedEmailMessage {
                     destination: payload.new_email.to_string(),
-                    template: EmailTemplate::NewEmailVerification,
+                    template: EmailTemplate::NewEmailVerification.to_string(),
                     template_data,
                 })
-                .await
                 .map_err(|error| {
-                    AppError::InternalError(format!("unable to push the job: {error:?}"))
+                    AppError::InternalError(format!("unable to serialize the message: {error:?}"))
                 })?;
+
+                channel
+                    .basic_publish(
+                        "",
+                        TEMPLATED_EMAIL_QUEUE_NAME,
+                        BasicPublishOptions::default(),
+                        &message,
+                        BasicProperties::default(),
+                    )
+                    .await?;
+            }
 
             txn.commit().await?;
 
