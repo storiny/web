@@ -31,25 +31,15 @@ use std::{
     time::Duration,
 };
 use storiny::{
+    amqp::init::init_mq_consumers,
     config::get_app_config,
     constants::{
         redis_namespaces::RedisNamespace,
         session_cookie::SESSION_COOKIE_NAME,
     },
+    cron::init::start_cron_jobs,
     error::FormErrorResponse,
     grpc::server::start_grpc_server,
-    jobs::{
-        email::{
-            newsletter::NewsletterJob,
-            templated_email::TemplatedEmailJob,
-        },
-        init::start_jobs,
-        notify::{
-            story_add_by_tag::NotifyStoryAddByTagJob,
-            story_add_by_user::NotifyStoryAddByUserJob,
-        },
-        storage::JobStorage,
-    },
     middlewares::identity::middleware::IdentityMiddleware,
     oauth::get_oauth_client_map,
     realms::{
@@ -221,8 +211,25 @@ fn main() -> io::Result<()> {
                         pool
                     }
                     Err(err) => {
-                        error!("Failed to create a Redis pool: {:?}", err);
+                        error!("failed to create a Redis pool: {:?}", err);
                         std::process::exit(1);
+                    }
+                };
+
+                // Lapin pool
+                let lapin_pool = {
+                    let mut mq_cfg = deadpool_lapin::Config::default();
+                    mq_cfg.url = Some(config.amqp_server_url.to_string());
+
+                    match mq_cfg.create_pool(Some(deadpool_lapin::Runtime::Tokio1)) {
+                        Ok(pool) => {
+                            println!("Created AMQP pool");
+                            pool
+                        }
+                        Err(err) => {
+                            error!("failed to create an AMQP pool: {:?}", err);
+                            std::process::exit(1);
+                        }
                     }
                 };
 
@@ -233,44 +240,39 @@ fn main() -> io::Result<()> {
                     .await;
 
                 // AWS S3
-                let s3_client = S3Client::from_conf(if config.is_dev {
-                    let config_builder = aws_sdk_s3::config::Builder::from(&shared_aws_config);
+                let s3_client = {
+                    S3Client::from_conf(if config.is_dev {
+                        let config_builder = aws_sdk_s3::config::Builder::from(&shared_aws_config);
 
-                    config_builder
-                        .endpoint_url(config.minio_endpoint.to_string())
-                        // Minio requires `force_path_style` set to `true`.
-                        .force_path_style(true)
-                        .build()
-                } else {
-                    aws_sdk_s3::config::Builder::from(&shared_aws_config).build()
-                });
+                        config_builder
+                            .endpoint_url(config.minio_endpoint.to_string())
+                            // Minio requires `force_path_style` set to `true`.
+                            .force_path_style(true)
+                            .build()
+                    } else {
+                        aws_sdk_s3::config::Builder::from(&shared_aws_config).build()
+                    })
+                };
 
                 // AWS SES
                 let ses_client = SesClient::new(&shared_aws_config);
 
-                // Init and start the background jobs
-                let story_add_by_user_job_data =
-                    web::Data::new(JobStorage::<NotifyStoryAddByUserJob>::new(
-                        redis_connection_manager.clone(),
-                    ));
-                let story_add_by_tag_job_data = web::Data::new(
-                    JobStorage::<NotifyStoryAddByTagJob>::new(redis_connection_manager.clone()),
-                );
-                let templated_email_job_data = web::Data::new(
-                    JobStorage::<TemplatedEmailJob>::new(redis_connection_manager.clone()),
-                );
-                let newsletter_job_data = web::Data::new(JobStorage::<NewsletterJob>::new(
-                    redis_connection_manager.clone(),
-                ));
-
-                start_jobs(
-                    redis_connection_manager,
+                // Init the message queues.
+                if let Err(err) = init_mq_consumers(
+                    lapin_pool.clone(),
                     redis_pool.clone(),
                     db_pool.clone(),
                     ses_client,
                     s3_client.clone(),
                 )
-                .await;
+                .await
+                {
+                    error!("failed start the AMQP consumers: {:?}", err);
+                    std::process::exit(1);
+                }
+
+                // Start background cron jobs.
+                start_cron_jobs(db_pool.clone(), s3_client.clone());
 
                 // GeoIP service. This is kept in the memory for the entire lifecycle of the program
                 // to ensure fast loopups.
@@ -284,6 +286,7 @@ fn main() -> io::Result<()> {
                 let app_state = web::Data::new(AppState {
                     config: get_app_config().unwrap(),
                     redis: redis_pool.clone(),
+                    lapin: lapin_pool.clone(),
                     db_pool: db_pool.clone(),
                     geo_db,
                     ua_parser,
@@ -388,11 +391,6 @@ fn main() -> io::Result<()> {
                         .wrap(actix_web::middleware::NormalizePath::trim())
                         // Realms
                         .app_data(realm_data.clone())
-                        // Jobs
-                        .app_data(story_add_by_user_job_data.clone())
-                        .app_data(story_add_by_tag_job_data.clone())
-                        .app_data(templated_email_job_data.clone())
-                        .app_data(newsletter_job_data.clone())
                         // Validation
                         .app_data(json_config)
                         .app_data(qs_query_config)

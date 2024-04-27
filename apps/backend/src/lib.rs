@@ -24,14 +24,16 @@ use crate::{
 };
 pub use aws_sdk_s3::Client as S3Client;
 pub use aws_sdk_sesv2::Client as SesClient;
+pub use deadpool_lapin::Pool as LapinPool;
 pub use deadpool_redis::Pool as RedisPool;
 
+pub mod amqp;
 pub mod config;
 pub mod constants;
+pub mod cron;
 pub mod error;
 pub mod grpc;
 pub mod iso8601;
-pub mod jobs;
 pub mod middlewares;
 pub mod models;
 pub mod oauth;
@@ -91,6 +93,8 @@ pub struct AppState {
     pub config: config::Config,
     /// Redis connection pool
     pub redis: RedisPool,
+    /// Lapin RabbitMQ connection pool
+    pub lapin: LapinPool,
     /// Postgres connection pool
     pub db_pool: Pool<Postgres>,
     /// GeoIP database instance
