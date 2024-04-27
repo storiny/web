@@ -44,6 +44,7 @@ services:
       REALMS_HOST: 127.0.0.1
       REALMS_PORT: 8082
       GRPC_ENDPOINT: 127.0.0.1:50051
+      AMQP_SERVER_URL: 127.0.0.1:5672
       MINIO_ENDPOINT: "-"
       API_SERVER_URL: https://api.storiny.com
       WEB_SERVER_URL: https://storiny.com

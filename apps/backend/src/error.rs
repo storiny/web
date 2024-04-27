@@ -120,6 +120,10 @@ pub enum AppError {
     SqlxError(sqlx::Error),
     /// The error raised by [deadpool_redis] when trying to acquire a connection from the pool.
     RedisPoolError(deadpool_redis::PoolError),
+    /// The error raised by [deadpool_lapin] when trying to acquire a connection from the pool.
+    LapinPoolError(deadpool_lapin::PoolError),
+    /// The error raised by [deadpool_lapin::lapin] crate.
+    LapinError(deadpool_lapin::lapin::Error),
     /// Internal server error. The string value of this variant is not sent to the client.
     InternalError(String),
     /// The error raised due to bad data sent by the client. The first element of the tuple is the
@@ -165,9 +169,11 @@ impl ResponseError for AppError {
     /// Returns the HTTP [StatusCode] for the error.
     fn status_code(&self) -> StatusCode {
         match self {
-            AppError::InternalError(_) | AppError::SqlxError(_) | AppError::RedisPoolError(_) => {
-                StatusCode::INTERNAL_SERVER_ERROR
-            }
+            AppError::InternalError(_)
+            | AppError::SqlxError(_)
+            | AppError::RedisPoolError(_)
+            | AppError::LapinPoolError(_)
+            | AppError::LapinError(_) => StatusCode::INTERNAL_SERVER_ERROR,
             AppError::ClientError(status_code, _) => *status_code,
             AppError::ToastError(error) => error.status_code,
             AppError::FormError(error) => error.status_code,
@@ -179,9 +185,11 @@ impl ResponseError for AppError {
         let mut response_builder = HttpResponse::build(self.status_code());
 
         match self {
-            AppError::InternalError(_) | AppError::SqlxError(_) | AppError::RedisPoolError(_) => {
-                response_builder.body("Internal server error")
-            }
+            AppError::InternalError(_)
+            | AppError::SqlxError(_)
+            | AppError::RedisPoolError(_)
+            | AppError::LapinPoolError(_)
+            | AppError::LapinError(_) => response_builder.body("Internal server error"),
             AppError::ClientError(_, message) => response_builder.body(message.to_string()),
             AppError::ToastError(error) => response_builder.json(error),
             AppError::FormError(error) => response_builder.json(error),
@@ -226,6 +234,18 @@ impl From<sqlx::Error> for AppError {
 impl From<deadpool_redis::PoolError> for AppError {
     fn from(error: deadpool_redis::PoolError) -> Self {
         AppError::RedisPoolError(error)
+    }
+}
+
+impl From<deadpool_lapin::PoolError> for AppError {
+    fn from(error: deadpool_lapin::PoolError) -> Self {
+        AppError::LapinPoolError(error)
+    }
+}
+
+impl From<deadpool_lapin::lapin::Error> for AppError {
+    fn from(error: deadpool_lapin::lapin::Error) -> Self {
+        AppError::LapinError(error)
     }
 }
 
