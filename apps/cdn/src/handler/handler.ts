@@ -144,9 +144,13 @@ export const handler = (r: Request): void | undefined => {
     // Use base bucket
     r.headersOut["X-Robots-Tag"] = "noindex";
 
+    const is_mail_asset = /mail-assets/.test(uri);
+
     return pass_to_proxy(
       r,
-      `internal${resize_option || "/"}plain/${BASE_BUCKET}/${key}`
+      `internal${resize_option || "/"}${
+        is_mail_asset ? "format:png/" : ""
+      }plain/${BASE_BUCKET}/${key}`
     );
   } catch {
     prepare_text_response(r);
