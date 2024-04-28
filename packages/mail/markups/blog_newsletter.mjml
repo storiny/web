@@ -54,12 +54,15 @@
             >Read more
           </mj-button>
           <mj-spacer height="96px" />
-          <mj-image
+          <mj-text
             align="center"
-            alt=""
-            width="148px"
-            src="https://cdn.storiny.com/mail-assets/images/delimiter.png"
-          />
+            font-size="48px"
+            font-weight="light"
+            letter-spacing="14px"
+            mj-class="t-muted"
+            css-class="t-center"
+            >***
+          </mj-text>
           <mj-spacer height="36px" />
         </mj-column>
       </mj-section>
