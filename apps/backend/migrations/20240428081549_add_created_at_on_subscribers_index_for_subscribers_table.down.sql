@@ -1,0 +1,1 @@
+DROP INDEX created_at_on_subscribers;
