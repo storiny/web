@@ -271,8 +271,7 @@ WHERE
 SELECT email
 FROM subscribers
 WHERE blog_id = $1
-ORDER BY
-    created_at DESC
+ORDER BY created_at
 "#,
                 )
                 .bind(result.get::<i64, _>("blog_id"))
