@@ -41,7 +41,7 @@
           </mj-table>
           <mj-spacer height="14px" />
           <mj-text mj-class="t-body2 t-minor" align="center">
-            {{story.published_date}} &bull; {{story.read_time}} min read
+            {{story.published_date}} &bull; {{story.read_time}}
           </mj-text>
           <mj-raw>{{#if story.description}}</mj-raw>
           <mj-spacer height="14px" />
@@ -134,7 +134,7 @@
                 title="View profile"
                 target="_blank"
                 class="medium"
-                style="color: #1a1a1a"
+                style="color: #1a1a1a !important"
                 >{{story.user.name}}
               </a>
               in
