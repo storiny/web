@@ -17,7 +17,7 @@
           </tr>
         </mj-table>
         <mj-spacer height="36px" />
-        {{#if blog.logo_url}}
+        <mj-raw>{{#if blog.logo_url}}</mj-raw>
         <mj-image
           align="center"
           alt="{{blog.name}} logo"
@@ -29,7 +29,7 @@
           src="{{{blog.logo_url}}}"
         />
         <mj-spacer height="24px" />
-        {{/if}}
+        <mj-raw>{{/if}}</mj-raw>
         <mj-text mj-class="t-body1 t-major" align="center">
           You recently attempted to subscribe to the newsletter of
           <span class="bold">{{blog.name}}</span>. Please confirm your
