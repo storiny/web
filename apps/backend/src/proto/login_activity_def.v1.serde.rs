@@ -556,6 +556,9 @@ impl serde::Serialize for Login {
         if self.location.is_some() {
             len += 1;
         }
+        if self.domain.is_some() {
+            len += 1;
+        }
         if self.is_active {
             len += 1;
         }
@@ -571,6 +574,9 @@ impl serde::Serialize for Login {
         }
         if let Some(v) = self.location.as_ref() {
             struct_ser.serialize_field("location", v)?;
+        }
+        if let Some(v) = self.domain.as_ref() {
+            struct_ser.serialize_field("domain", v)?;
         }
         if self.is_active {
             struct_ser.serialize_field("isActive", &self.is_active)?;
@@ -591,6 +597,7 @@ impl<'de> serde::Deserialize<'de> for Login {
             "id",
             "device",
             "location",
+            "domain",
             "is_active",
             "isActive",
             "created_at",
@@ -602,6 +609,7 @@ impl<'de> serde::Deserialize<'de> for Login {
             Id,
             Device,
             Location,
+            Domain,
             IsActive,
             CreatedAt,
         }
@@ -628,6 +636,7 @@ impl<'de> serde::Deserialize<'de> for Login {
                             "id" => Ok(GeneratedField::Id),
                             "device" => Ok(GeneratedField::Device),
                             "location" => Ok(GeneratedField::Location),
+                            "domain" => Ok(GeneratedField::Domain),
                             "isActive" | "is_active" => Ok(GeneratedField::IsActive),
                             "createdAt" | "created_at" => Ok(GeneratedField::CreatedAt),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
@@ -652,6 +661,7 @@ impl<'de> serde::Deserialize<'de> for Login {
                 let mut id__ = None;
                 let mut device__ = None;
                 let mut location__ = None;
+                let mut domain__ = None;
                 let mut is_active__ = None;
                 let mut created_at__ = None;
                 while let Some(k) = map.next_key()? {
@@ -674,6 +684,12 @@ impl<'de> serde::Deserialize<'de> for Login {
                             }
                             location__ = map.next_value()?;
                         }
+                        GeneratedField::Domain => {
+                            if domain__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("domain"));
+                            }
+                            domain__ = map.next_value()?;
+                        }
                         GeneratedField::IsActive => {
                             if is_active__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("isActive"));
@@ -692,6 +708,7 @@ impl<'de> serde::Deserialize<'de> for Login {
                     id: id__.unwrap_or_default(),
                     device: device__,
                     location: location__,
+                    domain: domain__,
                     is_active: is_active__.unwrap_or_default(),
                     created_at: created_at__.unwrap_or_default(),
                 })

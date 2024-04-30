@@ -64,6 +64,7 @@ export interface Login {
   id: string;
   device: Device | undefined;
   location: Location | undefined;
+  domain?: string | undefined;
   is_active: boolean;
   created_at: string;
 }
@@ -244,7 +245,7 @@ export const Location = {
 };
 
 function createBaseLogin(): Login {
-  return { id: "", device: undefined, location: undefined, is_active: false, created_at: "" };
+  return { id: "", device: undefined, location: undefined, domain: undefined, is_active: false, created_at: "" };
 }
 
 export const Login = {
@@ -258,11 +259,14 @@ export const Login = {
     if (message.location !== undefined) {
       Location.encode(message.location, writer.uint32(26).fork()).ldelim();
     }
+    if (message.domain !== undefined) {
+      writer.uint32(34).string(message.domain);
+    }
     if (message.is_active === true) {
-      writer.uint32(32).bool(message.is_active);
+      writer.uint32(40).bool(message.is_active);
     }
     if (message.created_at !== "") {
-      writer.uint32(42).string(message.created_at);
+      writer.uint32(50).string(message.created_at);
     }
     return writer;
   },
@@ -296,14 +300,21 @@ export const Login = {
           message.location = Location.decode(reader, reader.uint32());
           continue;
         case 4:
-          if (tag !== 32) {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.domain = reader.string();
+          continue;
+        case 5:
+          if (tag !== 40) {
             break;
           }
 
           message.is_active = reader.bool();
           continue;
-        case 5:
-          if (tag !== 42) {
+        case 6:
+          if (tag !== 50) {
             break;
           }
 
@@ -323,6 +334,7 @@ export const Login = {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       device: isSet(object.device) ? Device.fromJSON(object.device) : undefined,
       location: isSet(object.location) ? Location.fromJSON(object.location) : undefined,
+      domain: isSet(object.domain) ? globalThis.String(object.domain) : undefined,
       is_active: isSet(object.is_active) ? globalThis.Boolean(object.is_active) : false,
       created_at: isSet(object.created_at) ? globalThis.String(object.created_at) : "",
     };
@@ -338,6 +350,9 @@ export const Login = {
     }
     if (message.location !== undefined) {
       obj.location = Location.toJSON(message.location);
+    }
+    if (message.domain !== undefined) {
+      obj.domain = message.domain;
     }
     if (message.is_active === true) {
       obj.is_active = message.is_active;
@@ -360,6 +375,7 @@ export const Login = {
     message.location = (object.location !== undefined && object.location !== null)
       ? Location.fromPartial(object.location)
       : undefined;
+    message.domain = object.domain ?? undefined;
     message.is_active = object.is_active ?? false;
     message.created_at = object.created_at ?? "";
     return message;

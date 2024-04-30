@@ -22,11 +22,12 @@ message Location {
 }
 
 message Login {
-  string id /*        */ = 1;
-  Device device /*    */ = 2;
-  Location location /**/ = 3;
-  bool is_active /*   */ = 4;
-  string created_at /**/ = 5;
+  string id /*             */ = 1;
+  Device device /*         */ = 2;
+  Location location /*     */ = 3;
+  optional string domain /**/ = 4;
+  bool is_active /*        */ = 5;
+  string created_at /*     */ = 6;
 }
 
 message GetLoginActivityRequest {
