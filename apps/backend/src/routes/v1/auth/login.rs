@@ -60,6 +60,7 @@ use tracing::{
     error,
     trace,
 };
+use url::Url;
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
@@ -394,6 +395,24 @@ WHERE id = $1
 
                     if let Ok(client_location) = serde_json::to_value(client_location_result) {
                         session.insert("location", client_location);
+                    }
+                }
+            }
+        }
+
+        if let Some(origin) = req.headers().get(actix_http::header::ORIGIN) {
+            if let Ok(url) = Url::parse(origin.to_str().unwrap_or_default()) {
+                if let Some(domain) = url.domain() {
+                    match domain {
+                        "storiny.com" => {}
+                        "www.storiny.com" => {}
+                        _ => {
+                            if domain.chars().count() < 256 {
+                                if let Ok(domain) = serde_json::to_value(domain) {
+                                    session.insert("domain", domain);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -1934,6 +1953,7 @@ VALUES ($1, $2, $3, $4, TRUE)
                     8080,
                 )))
                 .append_header(("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:40.0) Gecko/20100101 Firefox/40.0"))
+                .append_header(("origin", "https://test.storiny.com"))
                 .uri("/v1/auth/login")
                 .set_json(Request {
                     email: email.to_string(),
@@ -1962,12 +1982,14 @@ VALUES ($1, $2, $3, $4, TRUE)
             struct ClientSession {
                 device: Option<ClientDevice>,
                 location: Option<ClientLocation>,
+                domain: Option<String>,
             }
 
             let client_session = test::read_body_json::<ClientSession, _>(res).await;
 
             assert!(client_session.device.is_some());
             assert!(client_session.location.is_some());
+            assert_eq!(client_session.domain, Some("test.storiny.com".to_string()));
 
             Ok(())
         }
