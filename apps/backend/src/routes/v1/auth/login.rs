@@ -572,13 +572,16 @@ mod tests {
     use uuid::Uuid;
 
     /// Returns the device and session data present in the session for testing.
-    #[get("/get-device-and-location")]
+    #[get("/get-login-details")]
     async fn get(session: Session) -> impl Responder {
         let location = session.get::<ClientLocation>("location").unwrap();
         let device = session.get::<ClientDevice>("device").unwrap();
+        let domain = session.get::<String>("domain").unwrap();
+
         HttpResponse::Ok().json(json!({
             "location": location,
-            "device": device
+            "device": device,
+            "domain": domain
         }))
     }
 
@@ -1974,7 +1977,7 @@ VALUES ($1, $2, $3, $4, TRUE)
 
             let req = test::TestRequest::get()
                 .cookie(cookie_value.unwrap())
-                .uri("/get-device-and-location")
+                .uri("/get-login-details")
                 .to_request();
             let res = test::call_service(&app, req).await;
 

@@ -28,6 +28,7 @@ use uuid::Uuid;
 pub const CLEANUP_BLOGS_JOB_NAME: &str = "j:cleanup:blogs";
 const CHUNK_SIZE: u32 = 300;
 
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct BlogsCleanupJob(DateTime<Utc>);
 

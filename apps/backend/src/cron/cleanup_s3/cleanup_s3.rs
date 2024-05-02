@@ -32,6 +32,7 @@ use uuid::Uuid;
 pub const CLEANUP_S3_JOB_NAME: &str = "j:cleanup:s3";
 const CHUNK_SIZE: u32 = 999;
 
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct S3CleanupJob(DateTime<Utc>);
 
