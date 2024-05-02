@@ -26,9 +26,11 @@ pub struct Login {
     pub device: ::core::option::Option<Device>,
     #[prost(message, optional, tag="3")]
     pub location: ::core::option::Option<Location>,
-    #[prost(bool, tag="4")]
+    #[prost(string, optional, tag="4")]
+    pub domain: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(bool, tag="5")]
     pub is_active: bool,
-    #[prost(string, tag="5")]
+    #[prost(string, tag="6")]
     pub created_at: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]

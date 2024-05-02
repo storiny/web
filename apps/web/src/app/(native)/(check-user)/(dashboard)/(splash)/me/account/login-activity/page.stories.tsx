@@ -41,6 +41,7 @@ const meta: Meta<typeof AccountLoginActivityPage> = {
           lng: -122.181,
           lat: 37.4529
         },
+        domain: "test.storiny.com",
         is_active: true,
         created_at: "2023-05-18T01:07:02.000Z"
       },
@@ -55,6 +56,7 @@ const meta: Meta<typeof AccountLoginActivityPage> = {
           lng: 139.839,
           lat: 35.6528
         },
+        domain: "example.storiny.com",
         is_active: false,
         created_at: "2022-11-18T01:07:02.000Z"
       },

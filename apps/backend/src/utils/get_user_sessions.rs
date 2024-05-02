@@ -24,6 +24,7 @@ pub struct UserSession {
     pub device: Option<ClientDevice>,
     pub location: Option<ClientLocation>,
     pub ack: bool,
+    pub domain: Option<String>,
 }
 
 /// Returns all the active sessions for a user using its ID.
@@ -39,10 +40,7 @@ pub async fn get_user_sessions(
     })?;
 
     let iter: AsyncIter<String> = conn
-        .scan_match(format!(
-            "{}:{user_id}:*",
-            RedisNamespace::Session
-        ))
+        .scan_match(format!("{}:{user_id}:*", RedisNamespace::Session))
         .await
         .map_err(|error| anyhow!("unable to scan for session keys: {error:?}"))?;
 
@@ -99,11 +97,7 @@ mod tests {
             for _ in 0..5 {
                 redis_conn
                     .set::<_, _, ()>(
-                        &format!(
-                            "{}:{user_id}:{}",
-                            RedisNamespace::Session,
-                            Uuid::new_v4()
-                        ),
+                        &format!("{}:{user_id}:{}", RedisNamespace::Session, Uuid::new_v4()),
                         &rmp_serde::to_vec_named(&UserSession {
                             user_id,
                             created_at: OffsetDateTime::now_utc().unix_timestamp(),
@@ -117,6 +111,7 @@ mod tests {
                                 lat: Some(0.0),
                                 lng: Some(0.0),
                             }),
+                            domain: Some("example.com".to_string()),
                         })
                         .unwrap(),
                     )

@@ -107,7 +107,12 @@ const LoginAccordion = (props: LoginAccordionProps): React.ReactElement => {
               <Typography as={"span"} ellipsis weight={"medium"}>
                 {login.device?.display_name || "Unknown device"}
               </Typography>
-              <Typography as={"span"} color={"minor"} ellipsis level={"body2"}>
+              <Typography
+                as={"span"}
+                className={css.ellipsis}
+                color={"minor"}
+                level={"body2"}
+              >
                 {login.is_active ? (
                   <React.Fragment>
                     <span
@@ -120,6 +125,14 @@ const LoginAccordion = (props: LoginAccordionProps): React.ReactElement => {
                   </React.Fragment>
                 ) : (
                   <React.Fragment>
+                    {login.domain ? (
+                      <React.Fragment>
+                        {login.domain}{" "}
+                        <span className={css["t-muted"]}>&bull;</span>{" "}
+                      </React.Fragment>
+                    ) : (
+                      ""
+                    )}
                     {login.location?.display_name || "Unknown location"}{" "}
                     <span className={css["t-muted"]}>&bull;</span>{" "}
                     <DateTime date={login.created_at} />

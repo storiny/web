@@ -33,6 +33,7 @@ use tracing::{
 
 pub const SITEMAP_JOB_NAME: &str = "j:sitemap";
 
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct SitemapJob(DateTime<Utc>);
 

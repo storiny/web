@@ -18,6 +18,7 @@ use tracing::{
 
 pub const CLEANUP_DB_JOB_NAME: &str = "j:cleanup:db";
 
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct DatabaseCleanupJob(DateTime<Utc>);
 

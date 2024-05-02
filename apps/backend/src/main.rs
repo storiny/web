@@ -256,15 +256,12 @@ fn main() -> io::Result<()> {
                     })
                 };
 
-                // AWS SES
-                let ses_client = SesClient::new(&shared_aws_config);
-
                 // Init the message queues.
                 if let Err(err) = init_mq_consumers(
                     lapin_pool.clone(),
                     redis_pool.clone(),
                     db_pool.clone(),
-                    ses_client,
+                    SesClient::new(&shared_aws_config),
                     s3_client.clone(),
                 )
                 .await
