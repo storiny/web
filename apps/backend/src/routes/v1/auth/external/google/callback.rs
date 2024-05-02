@@ -53,6 +53,7 @@ use tracing::{
     debug,
     error,
 };
+use url::Url;
 use validator::Validate;
 
 #[tracing::instrument(skip_all, err)]
@@ -261,6 +262,24 @@ RETURNING
 
                     if let Ok(client_location) = serde_json::to_value(client_location_result) {
                         session.insert("location", client_location);
+                    }
+                }
+            }
+        }
+
+        if let Some(origin) = req.headers().get(actix_http::header::ORIGIN) {
+            if let Ok(url) = Url::parse(origin.to_str().unwrap_or_default()) {
+                if let Some(domain) = url.domain() {
+                    match domain {
+                        "storiny.com" => {}
+                        "www.storiny.com" => {}
+                        _ => {
+                            if domain.chars().count() < 256 {
+                                if let Ok(domain) = serde_json::to_value(domain) {
+                                    session.insert("domain", domain);
+                                }
+                            }
+                        }
                     }
                 }
             }
