@@ -16,6 +16,20 @@ services:
     environment:
       PROXY_KEY: "${PROXY_KEY_SECRET}"
 
+  # RabbitMQ
+  rabbitmq:
+    container_name: "storiny-rabbitmq"
+    image: rabbitmq
+    hostname: primary-mq
+    restart: always
+    network_mode: "host"
+    volumes:
+      - "./rabbitmq:/var/lib/rabbitmq"
+    environment:
+      RABBITMQ_NODE_PORT: 5672
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
   # Web Server
   web:
     container_name: "storiny_web"
@@ -44,7 +58,7 @@ services:
       REALMS_HOST: 127.0.0.1
       REALMS_PORT: 8082
       GRPC_ENDPOINT: 127.0.0.1:50051
-      AMQP_SERVER_URL: 127.0.0.1:5672
+      AMQP_SERVER_URL: amqp://127.0.0.1:5672/%2f
       MINIO_ENDPOINT: "-"
       API_SERVER_URL: https://api.storiny.com
       WEB_SERVER_URL: https://storiny.com

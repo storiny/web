@@ -73,6 +73,7 @@ fn convert_user_session_to_login(
             lat: value.lat,
             lng: value.lng,
         }),
+        domain: user_session.domain.clone(),
         is_active: is_active_login(session_secret_key, key, token),
         created_at: to_iso8601(
             &OffsetDateTime::from_unix_timestamp(user_session.created_at)
@@ -201,6 +202,7 @@ mod tests {
                                     lat: Some(0.0),
                                     lng: Some(0.0),
                                 }),
+                                domain: Some("example.com".to_string()),
                                 ack: false,
                             })
                             .unwrap(),

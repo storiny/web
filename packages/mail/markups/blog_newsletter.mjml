@@ -17,7 +17,7 @@
     <mj-wrapper css-class="section main">
       <mj-section>
         <mj-column>
-          {{#if story.splash_url}}
+          <mj-raw>{{#if story.splash_url}}</mj-raw>
           <mj-image
             align="center"
             alt=""
@@ -29,7 +29,7 @@
             css-class="splash-image"
           />
           <mj-spacer height="36px" />
-          {{/if}}
+          <mj-raw>{{/if}}</mj-raw>
           <mj-table align="center">
             <tr>
               <td align="center">
@@ -41,25 +41,28 @@
           </mj-table>
           <mj-spacer height="14px" />
           <mj-text mj-class="t-body2 t-minor" align="center">
-            {{story.published_date}} &bull; {{story.read_time}} min read
+            {{story.published_date}} &bull; {{story.read_time}}
           </mj-text>
-          {{#if story.description}}
+          <mj-raw>{{#if story.description}}</mj-raw>
           <mj-spacer height="14px" />
           <mj-text mj-class="t-body1 t-major" align="center">
             {{story.description}}
           </mj-text>
-          {{/if}}
+          <mj-raw>{{/if}}</mj-raw>
           <mj-spacer height="36px" />
           <mj-button target="_blank" href="{{{story.url}}}"
             >Read more
           </mj-button>
           <mj-spacer height="96px" />
-          <mj-image
+          <mj-text
             align="center"
-            alt=""
-            width="148px"
-            src="https://cdn.storiny.com/mail-assets/images/delimiter.png"
-          />
+            font-size="48px"
+            font-weight="light"
+            letter-spacing="14px"
+            mj-class="t-muted"
+            css-class="t-center"
+            >***
+          </mj-text>
           <mj-spacer height="36px" />
         </mj-column>
       </mj-section>
@@ -92,7 +95,7 @@
                 {{/if}}
               </div>
             </mj-raw>
-            {{#if story.blog.logo_url}}
+            <mj-raw>{{#if story.blog.logo_url}}</mj-raw>
             <mj-raw>
               <div
                 style="
@@ -121,7 +124,7 @@
               border-radius="4px"
               src="{{{story.blog.logo_url}}}"
             />
-            {{/if}}
+            <mj-raw>{{/if}}</mj-raw>
           </mj-column>
           <mj-column width="50%" padding-left="20px">
             <mj-text font-size="16px" mj-class="t-minor">
@@ -131,7 +134,7 @@
                 title="View profile"
                 target="_blank"
                 class="medium"
-                style="color: #1a1a1a"
+                style="color: #1a1a1a !important"
                 >{{story.user.name}}
               </a>
               in

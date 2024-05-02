@@ -1,6 +1,7 @@
-<mj-body background-color="#f1f1f1" />
+<mj-body background-color="#f1f1f1" css-class="body" />
 <mj-button
   background-color="#383838"
+  color="#fff"
   font-size="16px"
   font-weight="bold"
   inner-padding="12px 18px"

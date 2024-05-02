@@ -271,8 +271,7 @@ WHERE
 SELECT email
 FROM subscribers
 WHERE blog_id = $1
-ORDER BY
-    created_at DESC
+ORDER BY created_at
 "#,
                 )
                 .bind(result.get::<i64, _>("blog_id"))
@@ -449,7 +448,7 @@ mod tests {
 
             vec![
                 BlogNewsletterEmailTemplateData {
-                    email: "subscriber-1@example.com".to_string(),
+                    email: "subscriber-3@example.com".to_string(),
                     unsubscribe_link: "".to_string(),
                     copyright_year: "".to_string(),
                     story: story.clone(),
@@ -461,7 +460,7 @@ mod tests {
                     story: story.clone(),
                 },
                 BlogNewsletterEmailTemplateData {
-                    email: "subscriber-3@example.com".to_string(),
+                    email: "subscriber-1@example.com".to_string(),
                     unsubscribe_link: "".to_string(),
                     copyright_year: "".to_string(),
                     story,
