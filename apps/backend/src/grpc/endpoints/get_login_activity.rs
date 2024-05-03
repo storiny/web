@@ -109,7 +109,6 @@ pub async fn get_login_activity(
         .await
         .map_err(|error| {
             error!("unable to fetch the user's sessions: {error:?}");
-
             Status::internal("Unable to get the sessions for the user")
         })?;
 
