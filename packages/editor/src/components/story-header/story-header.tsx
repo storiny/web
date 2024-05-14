@@ -63,8 +63,9 @@ const StoryActions = (): React.ReactElement => {
     (state) => state.entities.mutes[story.user?.id || ""]
   );
   const is_self = story.user_id === user?.id;
-  const blog = use_blog_context();
-  const story_url = blog
+  const blog_context = use_blog_context();
+  const blog = story.blog || blog_context;
+  const story_url = blog?.id
     ? `${get_blog_url(blog)}/${story.slug}`
     : `${process.env.NEXT_PUBLIC_WEB_URL}/${story.user?.username || "story"}/${
         story.slug
