@@ -8,4 +8,4 @@ const MAX_LENGTH = 24;
  * @param slug Blog slug
  */
 export const is_valid_blog_slug = (slug = ""): boolean =>
-  slug.length > MIN_LENGTH && slug.length < MAX_LENGTH;
+  slug.length >= MIN_LENGTH && slug.length <= MAX_LENGTH;
