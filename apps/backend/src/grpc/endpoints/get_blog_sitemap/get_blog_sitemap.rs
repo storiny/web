@@ -229,17 +229,17 @@ mod tests {
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-2</loc>
+        <loc>https://test.com/sample-story-2</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-3</loc>
+        <loc>https://test.com/sample-story-3</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-4</loc>
+        <loc>https://test.com/sample-story-4</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -271,17 +271,17 @@ mod tests {
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-2</loc>
+        <loc>https://test.com/sample-story-2</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-3</loc>
+        <loc>https://test.com/sample-story-3</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-4</loc>
+        <loc>https://test.com/sample-story-4</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -313,17 +313,17 @@ mod tests {
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-2</loc>
+        <loc>https://test.com/sample-story-2</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-3</loc>
+        <loc>https://test.com/sample-story-3</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-4</loc>
+        <loc>https://test.com/sample-story-4</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -356,17 +356,17 @@ mod tests {
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-2</loc>
+        <loc>https://test.com/sample-story-2</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-3</loc>
+        <loc>https://test.com/sample-story-3</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-4</loc>
+        <loc>https://test.com/sample-story-4</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -404,12 +404,12 @@ WHERE story_id = $1
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-3</loc>
+        <loc>https://test.com/sample-story-3</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-4</loc>
+        <loc>https://test.com/sample-story-4</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>

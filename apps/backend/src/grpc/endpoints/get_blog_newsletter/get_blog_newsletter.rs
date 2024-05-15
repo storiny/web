@@ -139,8 +139,8 @@ LEFT OUTER JOIN subscribers AS "b->is_subscribed"
     if let Some(blog_id) = maybe_blog_id {
         query_builder.push(r#" (b.id = "#);
         query_builder.push_bind(blog_id);
-        query_builder.push(r#"::BIGINT OR b.slug = "#);
-        query_builder.push_bind(blog_id);
+        query_builder.push(r#" OR b.slug = "#);
+        query_builder.push_bind(blog_id.to_string());
         query_builder.push(r#") "#);
     } else {
         query_builder.push(r#" (b.domain = "#);
