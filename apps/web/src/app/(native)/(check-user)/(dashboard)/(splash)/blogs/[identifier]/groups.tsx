@@ -121,7 +121,10 @@ const MODERATION_GROUP: Group<BlogDashboardSegment> = {
     {
       title: "Domain",
       value: "advanced/domain",
-      decorator: <WorldIcon />
+      decorator: <WorldIcon />,
+      metadata: {
+        owner_only: true
+      }
     }
   ]
 };
