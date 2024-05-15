@@ -2,6 +2,7 @@ pub mod appearance;
 pub mod banner;
 pub mod connections;
 pub mod delete_blog;
+pub mod domain;
 pub mod general;
 pub mod logo;
 pub mod newsletter_splash;

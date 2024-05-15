@@ -1,4 +1,5 @@
 pub mod account_activity_type;
+pub mod blog_domain_regex;
 pub mod blog_slug_regex;
 pub mod buckets;
 pub mod connection_provider;
