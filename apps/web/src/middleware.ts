@@ -1,7 +1,7 @@
 import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { NextMiddleware, NextResponse } from "next/server";
 
-import { is_valid_blog_slug } from "~/common/utils/is-valid-blog-slug";
+import { is_valid_blog_identifier } from "~/common/utils/is-valid-blog-identifier";
 
 // Third-party frame sources.
 const CSP_FRAME_SRC = [
@@ -19,6 +19,19 @@ const CSP_SCRIPT_SRC = [
 
 // Third-party style sources.
 const CSP_STYLE_SRC = ["ton.twimg.com", "platform.twitter.com"].join(" ");
+
+const NATIVE_DOMAINS = [
+  "storiny.com",
+  "www.storiny.com",
+  "api.storiny.com",
+  "cdn.storiny.com",
+  "realms.storiny.com",
+  "sitemaps.storiny.com",
+  "discovery.storiny.com",
+  "status.storiny.com",
+  "admin.storiny.com",
+  "staff.storiny.com"
+];
 
 /**
  * Next.js middleware function
@@ -78,11 +91,18 @@ export const middleware: NextMiddleware = (request) => {
 
   // Redirect to blog on the correct domain
   if (request.nextUrl.pathname.startsWith("/blog/")) {
-    const slug = request.nextUrl.pathname.split("/")[2];
+    const identifier = request.nextUrl.pathname.split("/")[2];
 
-    if (process.env.NODE_ENV !== "development" && is_valid_blog_slug(slug)) {
+    if (
+      process.env.NODE_ENV !== "development" &&
+      is_valid_blog_identifier(identifier)
+    ) {
       return NextResponse.redirect(
-        new URL(get_blog_url({ slug })),
+        new URL(
+          get_blog_url({
+            [identifier.includes(".") ? "domain" : "slug"]: identifier
+          })
+        ),
         common_init
       );
     }
@@ -124,30 +144,18 @@ export const middleware: NextMiddleware = (request) => {
     }
   });
 
-  // Blog on custom slug
+  // Blog on custom domain
 
   const hostname =
     request?.headers?.get("x-forwarded-host") || request?.headers?.get("host");
-  const native_domains = [
-    "storiny.com",
-    "www.storiny.com",
-    "api.storiny.com",
-    "cdn.storiny.com",
-    "realms.storiny.com",
-    "sitemaps.storiny.com",
-    "discovery.storiny.com",
-    "status.storiny.com",
-    "admin.storiny.com",
-    "staff.storiny.com"
-  ];
 
   if (process.env.NODE_ENV === "development") {
-    native_domains.push("storiny.local");
+    NATIVE_DOMAINS.push("storiny.local");
   }
 
   if (
     hostname &&
-    !native_domains.includes(hostname) &&
+    !NATIVE_DOMAINS.includes(hostname) &&
     hostname.includes(".") // Period is present on all valid hosts
   ) {
     const url = request.nextUrl.clone();

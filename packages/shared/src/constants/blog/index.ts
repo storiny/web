@@ -30,6 +30,10 @@ export const BLOG_PROPS = {
     max_length: 24,
     min_length: 3
   },
+  domain: {
+    min_length: 3,
+    max_length: 512
+  },
   seo_title: {
     max_length: 54
   },

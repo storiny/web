@@ -10,8 +10,8 @@ WITH inserted_users   AS (
 					(6, 1, 'Sample story 4', 'sample-story-4', NOW())
 						 ),
 	 inserted_blog    AS (
-		 INSERT INTO blogs (id, name, slug, user_id)
-			 VALUES (2, 'Sample blog', 'test-blog', 1)
+		 INSERT INTO blogs (id, name, slug, domain, user_id)
+			 VALUES (2, 'Sample blog', 'test-blog', 'test.com', 1)
 			 RETURNING id
 						 )
 INSERT

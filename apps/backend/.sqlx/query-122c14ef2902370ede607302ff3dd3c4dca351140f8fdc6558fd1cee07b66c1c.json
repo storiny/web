@@ -1,0 +1,297 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT b.id,\n\t   b.name,\n\t   b.slug,\n\t   b.description,\n\t   -- Logo\n\t   b.logo_id,\n\t   b.logo_hex,\n\t   -- Banner\n\t   b.banner_id,\n\t   b.banner_hex,\n\t   -- Newsletter\n\t   b.newsletter_splash_id,\n\t   b.newsletter_splash_hex,\n\t   -- Marks\n\t   b.mark_light,\n\t   b.mark_dark,\n\t   -- Fonts\n\t   b.font_primary,\n\t   b.font_secondary,\n\t   b.font_code,\n\t   --\n\t   b.domain,\n\t   b.category::TEXT                                  AS \"category!\",\n\t   b.user_id                                         AS \"user_id!\",\n\t   b.rsb_items_label,\n\t   b.has_plus_features,\n\t   b.is_external,\n\t   -- Theme\n\t   b.default_theme,\n\t   b.force_theme,\n\t   b.favicon,\n\t   b.hide_storiny_branding,\n\t   b.is_homepage_large_layout,\n\t   b.is_story_minimal_layout,\n\t   -- SEO\n\t   b.seo_description,\n\t   b.seo_title,\n\t   b.preview_image,\n\t   -- Connections\n\t   b.website_url,\n\t   b.public_email,\n\t   b.github_url,\n\t   b.instagram_url,\n\t   b.linkedin_url,\n\t   b.youtube_url,\n\t   b.twitter_url,\n\t   b.twitch_url,\n\t   -- Timestamps\n\t   b.created_at,\n\t   -- Boolean flags\n\t   \"b->is_following\".blog_id IS NOT NULL             AS \"is_following!\",\n\t   CASE WHEN b.user_id = $2 THEN TRUE ELSE FALSE END AS \"is_owner!\",\n\t   \"b->is_editor\".blog_id IS NOT NULL                AS \"is_editor!\",\n\t   \"b->is_writer\".blog_id IS NOT NULL                AS \"is_writer!\",\n\t   -- LSB items\n\t   COALESCE(\n\t\t\t\t\t   JSONB_AGG(\n\t\t\t\t\t   DISTINCT JSONB_BUILD_OBJECT(\n\t\t\t\t\t\t\t   'id', \"b->lsb_items\".id,\n\t\t\t\t\t\t\t   'name', \"b->lsb_items\".name,\n\t\t\t\t\t\t\t   'target', \"b->lsb_items\".target,\n\t\t\t\t\t\t\t   'icon', \"b->lsb_items\".icon,\n\t\t\t\t\t\t\t   'priority', \"b->lsb_items\".priority\n\t\t\t\t\t\t\t\t)\n\t\t\t\t\t\t\t\t) FILTER ( WHERE \"b->lsb_items\".id IS NOT NULL )\n\t\t   , '[]')                                       AS \"lsb_items!: Json<Vec<LeftSidebarItem>>\",\n\t   -- RSB items\n\t   COALESCE(\n\t\t\t\t\t   JSONB_AGG(\n\t\t\t\t\t   DISTINCT JSONB_BUILD_OBJECT(\n\t\t\t\t\t\t\t   'id', \"b->rsb_items\".id,\n\t\t\t\t\t\t\t   'primary_text', \"b->rsb_items\".primary_text,\n\t\t\t\t\t\t\t   'secondary_text', \"b->rsb_items\".secondary_text,\n\t\t\t\t\t\t\t   'target', \"b->rsb_items\".target,\n\t\t\t\t\t\t\t   'icon', \"b->rsb_items\".icon,\n\t\t\t\t\t\t\t   'priority', \"b->rsb_items\".priority\n\t\t\t\t\t\t\t\t)\n\t\t\t\t\t\t\t\t) FILTER ( WHERE \"b->rsb_items\".id IS NOT NULL )\n\t\t   , '[]')                                       AS \"rsb_items!: Json<Vec<RightSidebarItem>>\"\nFROM\n\tblogs b\n\t\t-- Join left sidebar items\n\t\tLEFT OUTER JOIN blog_lsb_items AS \"b->lsb_items\"\n\t\t\t\t\t\tON \"b->lsb_items\".blog_id = b.id\n\t\t-- Join right sidebar items\n\t\tLEFT OUTER JOIN blog_rsb_items AS \"b->rsb_items\"\n\t\t\t\t\t\tON \"b->rsb_items\".blog_id = b.id\n\t\t-- Boolean following flag\n\t\tLEFT OUTER JOIN blog_followers AS \"b->is_following\"\n\t\t\t\t\t\tON \"b->is_following\".blog_id = b.id\n\t\t\t\t\t\t\tAND \"b->is_following\".user_id = $2\n\t\t\t\t\t\t\tAND \"b->is_following\".deleted_at IS NULL\n\t\t-- Boolean editor flag\n\t\tLEFT OUTER JOIN blog_editors AS \"b->is_editor\"\n\t\t\t\t\t\tON \"b->is_editor\".blog_id = b.id\n\t\t\t\t\t\t\tAND \"b->is_editor\".user_id = $2\n\t\t\t\t\t\t\tAND \"b->is_editor\".accepted_at IS NOT NULL\n\t\t\t\t\t\t\tAND \"b->is_editor\".deleted_at IS NULL\n\t\t-- Boolean writer flag\n\t\tLEFT OUTER JOIN blog_writers AS \"b->is_writer\"\n\t\t\t\t\t\tON \"b->is_writer\".blog_id = b.id\n\t\t\t\t\t\t\tAND \"b->is_writer\".receiver_id = $2\n\t\t\t\t\t\t\tAND \"b->is_writer\".accepted_at IS NOT NULL\n\t\t\t\t\t\t\tAND \"b->is_writer\".deleted_at IS NULL\nWHERE\n\t  (b.domain = $1 OR b.slug = $1)\n  AND b.deleted_at IS NULL\nGROUP BY\n\tb.id,\n\t\"b->is_following\".blog_id,\n\t\"b->is_editor\".blog_id,\n\t\"b->is_writer\".blog_id",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "slug",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "logo_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 5,
+        "name": "logo_hex",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "banner_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 7,
+        "name": "banner_hex",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "newsletter_splash_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 9,
+        "name": "newsletter_splash_hex",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "mark_light",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 11,
+        "name": "mark_dark",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 12,
+        "name": "font_primary",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 13,
+        "name": "font_secondary",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 14,
+        "name": "font_code",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 15,
+        "name": "domain",
+        "type_info": {
+          "Custom": {
+            "name": "citext",
+            "kind": "Simple"
+          }
+        }
+      },
+      {
+        "ordinal": 16,
+        "name": "category!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 17,
+        "name": "user_id!",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 18,
+        "name": "rsb_items_label",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 19,
+        "name": "has_plus_features",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 20,
+        "name": "is_external",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 21,
+        "name": "default_theme",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 22,
+        "name": "force_theme",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 23,
+        "name": "favicon",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 24,
+        "name": "hide_storiny_branding",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 25,
+        "name": "is_homepage_large_layout",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 26,
+        "name": "is_story_minimal_layout",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 27,
+        "name": "seo_description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 28,
+        "name": "seo_title",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 29,
+        "name": "preview_image",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 30,
+        "name": "website_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 31,
+        "name": "public_email",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 32,
+        "name": "github_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 33,
+        "name": "instagram_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 34,
+        "name": "linkedin_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 35,
+        "name": "youtube_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 36,
+        "name": "twitter_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 37,
+        "name": "twitch_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 38,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 39,
+        "name": "is_following!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 40,
+        "name": "is_owner!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 41,
+        "name": "is_editor!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 42,
+        "name": "is_writer!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 43,
+        "name": "lsb_items!: Json<Vec<LeftSidebarItem>>",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 44,
+        "name": "rsb_items!: Json<Vec<RightSidebarItem>>",
+        "type_info": "Jsonb"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        {
+          "Custom": {
+            "name": "citext",
+            "kind": "Simple"
+          }
+        },
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      null,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "122c14ef2902370ede607302ff3dd3c4dca351140f8fdc6558fd1cee07b66c1c"
+}
