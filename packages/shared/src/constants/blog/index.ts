@@ -14,6 +14,11 @@ export const BLOG_GLOBAL_THEME_VARIABLE = "__STORINY_DEFAULT_BLOG_THEME__";
  */
 export const BLOG_SLUG_REGEX = /^[\w_-]+$/;
 
+/**
+ * Regex for matching valid root-level domains and sub-domains
+ */
+export const BLOG_DOMAIN_REGEX = /[a-z0-9]+([-.][a-z0-9]+)*\.[a-z]{2,24}$/;
+
 export const BLOG_PROPS = {
   description: {
     max_length: 256
@@ -110,6 +115,17 @@ export const BLOG_SCHEMA = {
       BLOG_SLUG_REGEX,
       "Slug must only contain underscores, hyphens, and alphanumeric characters"
     ),
+  domain: z
+    .string()
+    .min(
+      BLOG_PROPS.domain.min_length,
+      ZOD_MESSAGES.min("domain", BLOG_PROPS.domain.min_length)
+    )
+    .max(
+      BLOG_PROPS.domain.max_length,
+      ZOD_MESSAGES.max("domain", BLOG_PROPS.domain.max_length)
+    )
+    .regex(BLOG_DOMAIN_REGEX, "Invalid domain name"),
   logo_id: z.string().nullable(),
   logo_hex: z.string().nullable(),
   banner_id: z.string().nullable(),

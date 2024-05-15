@@ -18,7 +18,6 @@ import Grow from "~/components/grow";
 import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
-import CustomState from "~/entities/custom-state";
 import TitleBlock from "~/entities/title-block";
 import { use_blog_slug_settings_mutation } from "~/redux/features";
 import css from "~/theme/main.module.scss";
@@ -27,6 +26,7 @@ import { handle_api_error } from "~/utils/handle-api-error";
 import DashboardGroup from "../../../../../common/dashboard-group";
 import DashboardTitle from "../../../../../common/dashboard-title";
 import DashboardWrapper from "../../../../../common/dashboard-wrapper";
+import ConnectDomain from "./connect-domain";
 import {
   BLOG_SLUG_SETTINGS_SCHEMA,
   BlogSlugSettingsSchema
@@ -65,11 +65,7 @@ const CustomDomainGroup = (): React.ReactElement => (
       Map a custom domain name that you own to your blog.
     </TitleBlock>
     <Spacer orientation={"vertical"} size={3} />
-    <CustomState
-      description={"This feature is currently being worked on."}
-      size={"sm"}
-      title={"Available soon"}
-    />
+    <ConnectDomain />
   </DashboardGroup>
 );
 

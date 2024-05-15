@@ -2,6 +2,7 @@ export * from "./appearance";
 export * from "./banner";
 export * from "./connections";
 export * from "./delete-blog";
+export * from "./domain";
 export * from "./general";
 export * from "./logo";
 export * from "./newsletter-splash";

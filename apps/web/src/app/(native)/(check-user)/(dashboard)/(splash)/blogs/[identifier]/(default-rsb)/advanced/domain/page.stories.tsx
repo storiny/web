@@ -19,7 +19,7 @@ const meta: Meta<typeof DomainSettingsPage> = {
       render_with_state(
         <DashboardLayout>
           <DashboardSplashLayout>
-            <StorybookBlogDashboardLayout>
+            <StorybookBlogDashboardLayout role={"owner"}>
               <DefaultBlogDashboardRightSidebarLayout>
                 <Story />
               </DefaultBlogDashboardRightSidebarLayout>
