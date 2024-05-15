@@ -171,7 +171,7 @@ pub struct ArchiveTimeline {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetBlogArchiveRequest {
     #[prost(string, tag="1")]
-    pub slug: ::prost::alloc::string::String,
+    pub identifier: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
