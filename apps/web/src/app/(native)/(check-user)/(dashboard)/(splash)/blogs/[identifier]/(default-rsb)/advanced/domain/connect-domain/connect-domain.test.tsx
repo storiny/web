@@ -6,18 +6,13 @@ import { render_test_with_provider } from "~/redux/test-utils";
 
 import ConnectDomain from "./connect-domain";
 
-const noop = (): void => undefined;
-
 describe("<ConnectDomain />", () => {
   it("renders validation messages", async () => {
     const mock_submit = jest.fn();
     const user = user_event.setup();
-    render_test_with_provider(
-      <ConnectDomain on_connect={noop} on_submit={mock_submit} />,
-      {
-        logged_in: true
-      }
-    );
+    render_test_with_provider(<ConnectDomain on_submit={mock_submit} />, {
+      logged_in: true
+    });
 
     await user.click(
       screen.getByRole("button", { name: /connect/i }) // Open modal
@@ -33,12 +28,9 @@ describe("<ConnectDomain />", () => {
   it("submits correct form data", async () => {
     const mock_submit = jest.fn();
     const user = user_event.setup();
-    render_test_with_provider(
-      <ConnectDomain on_connect={noop} on_submit={mock_submit} />,
-      {
-        logged_in: true
-      }
-    );
+    render_test_with_provider(<ConnectDomain on_submit={mock_submit} />, {
+      logged_in: true
+    });
 
     await user.click(
       screen.getByRole("button", { name: /connect/i }) // Open modal

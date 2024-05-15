@@ -169,8 +169,7 @@ const ConnectDomainModal = (): React.ReactElement => {
 };
 
 const ConnectDomain = ({
-  on_submit,
-  on_connect
+  on_submit
 }: ConnectDomainProps): React.ReactElement => {
   const toast = use_toast();
   const blog = use_blog_context();
@@ -188,10 +187,12 @@ const ConnectDomain = ({
     if (on_submit) {
       on_submit(values);
     } else {
-      verify_blog_domain({ domain: values.domain, blog_id: blog.id })
+      const { domain } = values;
+
+      verify_blog_domain({ domain, blog_id: blog.id })
         .unwrap()
         .then(() => {
-          on_connect?.();
+          blog.mutate({ domain });
           toast("Domain verified successfully", "success");
         })
         .catch((error) =>
