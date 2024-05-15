@@ -1,5 +1,6 @@
 import "server-only";
 
+import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { Story } from "@storiny/types";
 import { notFound as not_found, redirect } from "next/navigation";
 import React from "react";
@@ -52,6 +53,11 @@ const Page = async ({
     // Redirect if the username is incorrect
     if (story_response.user.username !== username) {
       redirect(`/${story_response.user.username}/${story_response.slug}`);
+    }
+
+    // Redirect to the blog
+    if (story_response.blog) {
+      redirect(`${get_blog_url(story_response.blog)}/${story_response.slug}`);
     }
 
     if (!story_response.user.is_self) {
