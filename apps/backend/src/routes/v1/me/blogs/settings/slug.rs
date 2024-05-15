@@ -85,13 +85,8 @@ UPDATE blogs
 SET slug = $3
 WHERE
     id = $2
-    AND EXISTS (
-        SELECT 1 FROM blogs
-        WHERE
-            id = $2
-            AND user_id = $1
-            AND deleted_at IS NULL
-    )
+    AND user_id = $1
+    AND deleted_at IS NULL
 "#,
     )
     .bind(user_id)
