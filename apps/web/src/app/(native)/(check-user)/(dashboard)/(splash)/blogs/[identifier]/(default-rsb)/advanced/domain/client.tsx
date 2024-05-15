@@ -31,6 +31,7 @@ import {
   BLOG_SLUG_SETTINGS_SCHEMA,
   BlogSlugSettingsSchema
 } from "./domain.schema";
+import RemoveDomain from "./remove-domain";
 import styles from "./styles.module.scss";
 
 // Save button
@@ -59,15 +60,18 @@ const SaveButton = ({
 
 // Custom domain group
 
-const CustomDomainGroup = (): React.ReactElement => (
-  <DashboardGroup>
-    <TitleBlock title={"Custom domain"}>
-      Map a custom domain name that you own to your blog.
-    </TitleBlock>
-    <Spacer orientation={"vertical"} size={3} />
-    <ConnectDomain />
-  </DashboardGroup>
-);
+const CustomDomainGroup = (): React.ReactElement => {
+  const blog = use_blog_context();
+  return (
+    <DashboardGroup>
+      <TitleBlock title={"Custom domain"}>
+        Map a custom domain name that you own to your blog.
+      </TitleBlock>
+      <Spacer orientation={"vertical"} size={3} />
+      {blog.domain ? <RemoveDomain /> : <ConnectDomain />}
+    </DashboardGroup>
+  );
+};
 
 const DomainSettingsClient = (): React.ReactElement => {
   const toast = use_toast();

@@ -1,5 +1,7 @@
 "use client";
 
+import * as process from "node:process";
+
 import {
   combineReducers as combine_reducers,
   configureStore as configure_store,
@@ -69,7 +71,9 @@ export const setup_store = (
       get_default_middleware().concat([
         api_slice.middleware,
         listener_middleware.middleware,
-        ...(do_not_sync || typeof window === "undefined"
+        ...(do_not_sync ||
+        typeof window === "undefined" ||
+        process.env.NODE_ENV === "test"
           ? []
           : [
               create_state_sync_middleware({

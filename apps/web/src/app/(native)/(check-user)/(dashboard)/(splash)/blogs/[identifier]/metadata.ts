@@ -5,7 +5,6 @@ import { notFound as not_found } from "next/dist/client/components/not-found";
 
 import { get_blog } from "~/common/grpc";
 import { get_user } from "~/common/utils/get-user";
-import { is_snowflake } from "~/common/utils/is-snowflake";
 import { is_valid_blog_identifier } from "~/common/utils/is-valid-blog-identifier";
 
 export const generateMetadata = async ({
