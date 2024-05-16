@@ -19,7 +19,7 @@ describe("<ConnectDomain />", () => {
     );
 
     await user.type(screen.getByTestId("domain-input"), " "); // The button is disabled until the form is dirty
-    await user.click(screen.getByRole("button", { name: /verify/i }));
+    await user.click(screen.getByRole("button", { name: /continue/i }));
 
     expect((await screen.findAllByRole("alert")).length).not.toEqual(0);
     expect(mock_submit).not.toHaveBeenCalled();
@@ -37,7 +37,7 @@ describe("<ConnectDomain />", () => {
     );
 
     await user.type(screen.getByTestId("domain-input"), "blog.test.com");
-    await user.click(screen.getByRole("button", { name: /verify/i }));
+    await user.click(screen.getByRole("button", { name: /continue/i }));
 
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(mock_submit).toHaveBeenCalledWith({
