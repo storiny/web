@@ -1,5 +1,8 @@
 use crate::{
-    constants::blog_domain_regex::BLOG_DOMAIN_REGEX,
+    constants::{
+        blog_domain_regex::BLOG_DOMAIN_REGEX,
+        domain_verification_key::DOMAIN_VERIFICATION_TXT_RECORD_KEY,
+    },
     error::{
         AppError,
         FormErrorResponse,
@@ -23,8 +26,6 @@ use serde::{
 };
 use sqlx::Row;
 use validator::Validate;
-
-const TXT_RECORD_KEY: &'static str = "storiny-blog-verify";
 
 #[derive(Deserialize, Validate)]
 struct Fragments {
@@ -61,7 +62,10 @@ async fn post(
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
     let user_id = user.id()?;
-    let blog_id = &path.blog_id;
+    let blog_id = path
+        .blog_id
+        .parse::<i64>()
+        .map_err(|_| AppError::from("Invalid blog ID"))?;
 
     // Check blog and permissions.
     let result = sqlx::query(
@@ -82,7 +86,8 @@ WITH domain_check AS (
     ) AS "redundant"
 )
 SELECT
-	(SELECT "found" FROM domain_check)
+	(SELECT "found" FROM domain_check),
+	(SELECT "redundant" FROM redundant_check)
 FROM blogs
 WHERE
     id = $2
@@ -120,7 +125,7 @@ WHERE
     }
 
     let secret = &data.config.domain_verification_secret;
-    let mut mac = HmacSha1::new_from_slice(secret.into().as_bytes())
+    let mut mac = HmacSha1::new_from_slice(secret.as_bytes())
         .map_err(|error| AppError::InternalError(error.to_string()))?;
     let fragment = format!("{}:{blog_id}", payload.domain);
 
@@ -129,7 +134,10 @@ WHERE
     let result = mac.finalize();
 
     Ok(HttpResponse::Ok().json(Response {
-        code: format!("{TXT_RECORD_KEY}={}", encode_hex(result.into_bytes())),
+        code: format!(
+            "{DOMAIN_VERIFICATION_TXT_RECORD_KEY}={}",
+            encode_hex(result.into_bytes())
+        ),
     }))
 }
 
@@ -140,14 +148,11 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        routes::init::v1::me::blogs::settings::slug::patch,
-        test_utils::{
-            assert_form_error_response,
-            assert_toast_error_response,
-            init_app_for_test,
-            res_to_string,
-        },
+    use crate::test_utils::{
+        assert_form_error_response,
+        assert_toast_error_response,
+        init_app_for_test,
+        res_to_string,
     };
     use actix_web::test;
     use sqlx::PgPool;
@@ -155,7 +160,7 @@ mod tests {
     #[sqlx::test]
     async fn can_request_domain_verification_code(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         // Insert a blog.
         let result = sqlx::query(
@@ -173,7 +178,7 @@ RETURNING id
 
         let blog_id = result.get::<i64, _>("id");
 
-        let req = test::TestRequest::patch()
+        let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .uri(&format!(
                 "/v1/me/blogs/{blog_id}/settings/domain/code-request"
@@ -188,7 +193,7 @@ RETURNING id
 
         let json = serde_json::from_str::<Response>(&res_to_string(res).await).unwrap();
 
-        assert!(json.code.starts_with(TXT_RECORD_KEY));
+        assert!(json.code.starts_with(DOMAIN_VERIFICATION_TXT_RECORD_KEY));
 
         Ok(())
     }
@@ -196,7 +201,7 @@ RETURNING id
     #[sqlx::test]
     async fn can_reject_code_request_for_a_deleted_blog(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         // Insert a blog.
         let result = sqlx::query(
@@ -228,7 +233,7 @@ WHERE id = $1
 
         assert_eq!(result.rows_affected(), 1);
 
-        let req = test::TestRequest::patch()
+        let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .uri(&format!(
                 "/v1/me/blogs/{blog_id}/settings/domain/code-request"
@@ -248,7 +253,7 @@ WHERE id = $1
     #[sqlx::test]
     async fn can_reject_code_request_for_a_duplicate_domain(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         // Insert blogs.
         let result = sqlx::query(
@@ -272,7 +277,7 @@ RETURNING id
 
         let blog_id = result.get::<i64, _>("id");
 
-        let req = test::TestRequest::patch()
+        let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .uri(&format!(
                 "/v1/me/blogs/{blog_id}/settings/domain/code-request"
@@ -296,7 +301,7 @@ RETURNING id
     #[sqlx::test]
     async fn can_reject_code_request_for_a_redundant_domain(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false, None).await;
 
         // Insert a blog with domain.
         let result = sqlx::query(
@@ -315,7 +320,7 @@ RETURNING id
 
         let blog_id = result.get::<i64, _>("id");
 
-        let req = test::TestRequest::patch()
+        let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
             .uri(&format!(
                 "/v1/me/blogs/{blog_id}/settings/domain/code-request"
@@ -332,11 +337,49 @@ RETURNING id
         Ok(())
     }
 
-    #[sqlx::test]
-    async fn can_reject_code_request_for_invalid_domains(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(patch, pool, true, false, None).await;
+    #[sqlx::test(fixtures("user"))]
+    async fn can_reject_code_request_for_an_unknown_user(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
 
-        let req = test::TestRequest::patch()
+        // Insert a blog.
+        let result = sqlx::query(
+            r#"
+INSERT INTO blogs (name, slug, user_id)
+VALUES ($1, $2, $3)
+RETURNING id
+"#,
+        )
+        .bind("Sample blog".to_string())
+        .bind("sample-slug".to_string())
+        .bind(1_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        let blog_id = result.get::<i64, _>("id");
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!(
+                "/v1/me/blogs/{blog_id}/settings/domain/code-request"
+            ))
+            .set_json(Request {
+                domain: "test.com".to_string(),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Unknown blog").await;
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_code_request_for_an_invalid_domain(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false, None).await;
+
+        let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
             .uri(&format!(
                 "/v1/me/blogs/{}/settings/domain/code-request",
