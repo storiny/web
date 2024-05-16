@@ -151,7 +151,8 @@ WHERE
     };
 
     let resolver = resolver.unwrap_or(RESOLVER.deref());
-    let txt_records = resolver.txt_lookup(domain).await.map_err(|_| {
+    let query = format!("_storiny.{domain}");
+    let txt_records = resolver.txt_lookup(query.as_str()).await.map_err(|_| {
         AppError::ToastError(ToastErrorResponse::new(
             None,
             "The domain's host could not be resolved",
@@ -378,7 +379,7 @@ mod tests {
         }
     }
 
-    /// Starts the DNS mock server for tests. Adds a default `test.com` host.
+    /// Starts the DNS mock server for tests. Adds a default `_storiny.test.com` host.
     ///
     /// * `txt_record` - The domain verification TXT record value.
     async fn start_dns_mock_server(txt_record: String) -> SocketAddr {
@@ -386,7 +387,7 @@ mod tests {
 
         server
             .add_records(
-                "test.com",
+                "_storiny.test.com",
                 vec![
                     DNSRecord::Ip(IpAddr::V4(Ipv4Addr::LOCALHOST)),
                     DNSRecord::Txt(vec![txt_record]),

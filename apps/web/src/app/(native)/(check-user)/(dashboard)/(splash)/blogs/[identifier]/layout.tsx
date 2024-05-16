@@ -2,6 +2,7 @@ import "server-only";
 
 import { StoryCategory } from "@storiny/shared";
 import { notFound as not_found } from "next/dist/client/components/not-found";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import React from "react";
 
@@ -23,6 +24,7 @@ const BlogDashboardLayout = async ({
   params: { identifier: string };
 }): Promise<React.ReactElement | undefined> => {
   try {
+    const pathname = headers().get("x-pathname") || "/";
     const { identifier } = params;
 
     if (!is_valid_blog_identifier(identifier)) {
@@ -39,12 +41,13 @@ const BlogDashboardLayout = async ({
       identifier,
       current_user_id: user_id
     });
+    const fragment = pathname.split("/").slice(3).join("/");
 
     // Redirect to the preferred pathname.
     if (blog.domain && blog.domain !== identifier) {
-      redirect(`/blogs/${blog.domain}`);
+      redirect(`/blogs/${blog.domain}/${fragment}`);
     } else if (is_snowflake(identifier) && blog.slug !== identifier) {
-      redirect(`/blogs/${blog.slug}`);
+      redirect(`/blogs/${blog.slug}/${fragment}`);
     }
 
     // Only allow owner and editors
