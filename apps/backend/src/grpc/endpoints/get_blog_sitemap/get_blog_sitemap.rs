@@ -51,7 +51,7 @@ pub async fn get_blog_sitemap(
     request: Request<GetBlogSitemapRequest>,
 ) -> Result<Response<GetBlogSitemapResponse>, Status> {
     let identifier = request.into_inner().identifier;
-    // Identifier can be slug or the ID
+    // Identifier can be slug, domain or the ID
     let is_identifier_number = identifier.parse::<i64>().is_ok();
 
     tracing::Span::current().record("identifier", &identifier);
@@ -75,7 +75,9 @@ WHERE
 "#
     } else {
         // The identifier is definitely not an ID
-        r#" b.slug = $1 "#
+        r#"
+(b.domain = $1 OR b.slug = $1)
+"#
     });
 
     query_builder.push(r#" AND b.deleted_at IS NULL "#);
@@ -227,17 +229,59 @@ mod tests {
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-2</loc>
+        <loc>https://test.com/sample-story-2</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-3</loc>
+        <loc>https://test.com/sample-story-3</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-4</loc>
+        <loc>https://test.com/sample-story-4</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+</urlset>
+"#,
+                );
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_blog_sitemap"))]
+    async fn can_return_blog_sitemap_by_domain(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            false,
+            Box::new(|mut client, _, _, _| async move {
+                let response = client
+                    .get_blog_sitemap(Request::new(GetBlogSitemapRequest {
+                        identifier: "test.com".to_string(),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                assert_xml(
+                    &response.content,
+                    r#"
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://test.com/sample-story-2</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://test.com/sample-story-3</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://test.com/sample-story-4</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -269,17 +313,17 @@ mod tests {
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-2</loc>
+        <loc>https://test.com/sample-story-2</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-3</loc>
+        <loc>https://test.com/sample-story-3</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-4</loc>
+        <loc>https://test.com/sample-story-4</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -312,17 +356,17 @@ mod tests {
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-2</loc>
+        <loc>https://test.com/sample-story-2</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-3</loc>
+        <loc>https://test.com/sample-story-3</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-4</loc>
+        <loc>https://test.com/sample-story-4</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -360,12 +404,12 @@ WHERE story_id = $1
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-3</loc>
+        <loc>https://test.com/sample-story-3</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://test-blog.storiny.com/sample-story-4</loc>
+        <loc>https://test.com/sample-story-4</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>

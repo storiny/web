@@ -10,7 +10,7 @@ import Typography from "~/components/typography";
 import css from "~/theme/main.module.scss";
 import { capitalize } from "~/utils/capitalize";
 
-import { BlogDashboardSegment } from "../../blogs/[id_or_slug]/types";
+import { BlogDashboardSegment } from "../../blogs/[identifier]/types";
 import { DashboardSegment } from "../../me/types";
 import styles from "./left-sidebar.module.scss";
 

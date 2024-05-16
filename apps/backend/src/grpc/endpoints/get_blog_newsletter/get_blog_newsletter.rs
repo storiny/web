@@ -137,11 +137,17 @@ LEFT OUTER JOIN subscribers AS "b->is_subscribed"
     query_builder.push(r#" WHERE "#);
 
     if let Some(blog_id) = maybe_blog_id {
-        query_builder.push(r#" b.id = "#);
+        query_builder.push(r#" (b.id = "#);
         query_builder.push_bind(blog_id);
+        query_builder.push(r#" OR b.slug = "#);
+        query_builder.push_bind(blog_id.to_string());
+        query_builder.push(r#") "#);
     } else {
-        query_builder.push(r#" b.slug = "#);
+        query_builder.push(r#" (b.domain = "#);
+        query_builder.push_bind(maybe_blog_slug.clone());
+        query_builder.push(r#" OR b.slug = "#);
         query_builder.push_bind(maybe_blog_slug);
+        query_builder.push(r#") "#);
     }
 
     query_builder.push(r#" AND b.deleted_at IS NULL "#);
@@ -357,6 +363,66 @@ WHERE id = $1
                 let response = client
                     .get_blog_newsletter(Request::new(GetBlogNewsletterRequest {
                         identifier: "test-blog".to_string(),
+                        current_user_id: None,
+                    }))
+                    .await;
+
+                assert_eq!(response.unwrap_err().code(), Code::NotFound);
+            }),
+        )
+        .await;
+    }
+
+    //
+
+    #[sqlx::test(fixtures("get_blog_newsletter"))]
+    async fn can_return_a_blog_newsletter_by_domain(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            false,
+            Box::new(|mut client, _, _, _| async move {
+                let response = client
+                    .get_blog_newsletter(Request::new(GetBlogNewsletterRequest {
+                        identifier: "test.com".to_string(),
+                        current_user_id: None,
+                    }))
+                    .await;
+
+                assert!(response.is_ok());
+
+                let response = response.unwrap().into_inner();
+
+                // Flags should be neutral.
+                assert!(!response.is_subscribed);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_blog_newsletter"))]
+    async fn should_not_return_a_soft_deleted_blog_newsletter_by_domain(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            false,
+            Box::new(|mut client, pool, _, _| async move {
+                // Soft-delete the blog.
+                let result = sqlx::query(
+                    r#"
+UPDATE blogs
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+                )
+                .bind(3_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_blog_newsletter(Request::new(GetBlogNewsletterRequest {
+                        identifier: "test.com".to_string(),
                         current_user_id: None,
                     }))
                     .await;
@@ -586,6 +652,125 @@ VALUES ((SELECT email FROM target_user), $2)
                 let response = client
                     .get_blog_newsletter(Request::new(GetBlogNewsletterRequest {
                         identifier: "test-blog".to_string(),
+                        current_user_id: user_id.map(|value| value.to_string()),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be `true`.
+                assert!(response.is_subscribed);
+            }),
+        )
+        .await;
+    }
+
+    //
+
+    #[sqlx::test(fixtures("get_blog_newsletter"))]
+    async fn can_return_a_blog_newsletter_by_domain_when_logged_in(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, _, _, user_id| async move {
+                let response = client
+                    .get_blog_newsletter(Request::new(GetBlogNewsletterRequest {
+                        identifier: "test.com".to_string(),
+                        current_user_id: user_id.map(|value| value.to_string()),
+                    }))
+                    .await;
+
+                assert!(response.is_ok());
+
+                let response = response.unwrap().into_inner();
+
+                // Flags should be neutral.
+                assert!(!response.is_subscribed);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_blog_newsletter"))]
+    async fn should_not_return_a_soft_deleted_blog_newsletter_by_domain_when_logged_in(
+        pool: PgPool,
+    ) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                // Soft-delete the blog.
+                let result = sqlx::query(
+                    r#"
+UPDATE blogs
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+                )
+                .bind(3_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_blog_newsletter(Request::new(GetBlogNewsletterRequest {
+                        identifier: "test.com".to_string(),
+                        current_user_id: user_id.map(|value| value.to_string()),
+                    }))
+                    .await;
+
+                assert_eq!(response.unwrap_err().code(), Code::NotFound);
+            }),
+        )
+        .await;
+    }
+
+    //
+
+    #[sqlx::test(fixtures("get_blog_newsletter"))]
+    async fn can_return_is_subscribed_flag_for_blog_newsletter_by_domain_when_logged_in(
+        pool: PgPool,
+    ) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                let response = client
+                    .get_blog_newsletter(Request::new(GetBlogNewsletterRequest {
+                        identifier: "test.com".to_string(),
+                        current_user_id: user_id.map(|value| value.to_string()),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be `false` initially.
+                assert!(!response.is_subscribed);
+
+                // Follow the blog.
+                let result = sqlx::query(
+                    r#"
+WITH target_user AS (
+    SELECT email FROM users
+    WHERE id = $1
+)
+INSERT INTO subscribers (email, blog_id)
+VALUES ((SELECT email FROM target_user), $2)
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(3_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_blog_newsletter(Request::new(GetBlogNewsletterRequest {
+                        identifier: "test.com".to_string(),
                         current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await

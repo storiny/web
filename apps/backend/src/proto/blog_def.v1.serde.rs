@@ -299,12 +299,12 @@ impl serde::Serialize for GetBlogArchiveRequest {
     {
         use serde::ser::SerializeStruct;
         let mut len = 0;
-        if !self.slug.is_empty() {
+        if !self.identifier.is_empty() {
             len += 1;
         }
         let mut struct_ser = serializer.serialize_struct("blog_def.v1.GetBlogArchiveRequest", len)?;
-        if !self.slug.is_empty() {
-            struct_ser.serialize_field("slug", &self.slug)?;
+        if !self.identifier.is_empty() {
+            struct_ser.serialize_field("identifier", &self.identifier)?;
         }
         struct_ser.end()
     }
@@ -316,12 +316,12 @@ impl<'de> serde::Deserialize<'de> for GetBlogArchiveRequest {
         D: serde::Deserializer<'de>,
     {
         const FIELDS: &[&str] = &[
-            "slug",
+            "identifier",
         ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
-            Slug,
+            Identifier,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
@@ -343,7 +343,7 @@ impl<'de> serde::Deserialize<'de> for GetBlogArchiveRequest {
                         E: serde::de::Error,
                     {
                         match value {
-                            "slug" => Ok(GeneratedField::Slug),
+                            "identifier" => Ok(GeneratedField::Identifier),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -363,19 +363,19 @@ impl<'de> serde::Deserialize<'de> for GetBlogArchiveRequest {
                 where
                     V: serde::de::MapAccess<'de>,
             {
-                let mut slug__ = None;
+                let mut identifier__ = None;
                 while let Some(k) = map.next_key()? {
                     match k {
-                        GeneratedField::Slug => {
-                            if slug__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("slug"));
+                        GeneratedField::Identifier => {
+                            if identifier__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("identifier"));
                             }
-                            slug__ = Some(map.next_value()?);
+                            identifier__ = Some(map.next_value()?);
                         }
                     }
                 }
                 Ok(GetBlogArchiveRequest {
-                    slug: slug__.unwrap_or_default(),
+                    identifier: identifier__.unwrap_or_default(),
                 })
             }
         }
