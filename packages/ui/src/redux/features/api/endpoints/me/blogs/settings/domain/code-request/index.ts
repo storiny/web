@@ -1,3 +1,5 @@
+import { ContentType } from "@storiny/shared";
+
 import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = (blog_id: string): string =>
@@ -5,6 +7,7 @@ const SEGMENT = (blog_id: string): string =>
 
 export interface RequestBlogDomainVerificationRequest {
   blog_id: string;
+  domain: string;
 }
 
 export interface RequestBlogDomainVerificationResponse {
@@ -21,9 +24,13 @@ export const {
       RequestBlogDomainVerificationResponse,
       RequestBlogDomainVerificationRequest
     >({
-      query: ({ blog_id }) => ({
+      query: ({ blog_id, domain }) => ({
         url: `/${SEGMENT(blog_id)}`,
-        method: "POST"
+        method: "POST",
+        body: { domain },
+        headers: {
+          "Content-type": ContentType.JSON
+        }
       })
     })
   })

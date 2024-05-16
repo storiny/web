@@ -1,7 +1,5 @@
 "use client";
 
-import * as process from "node:process";
-
 import {
   combineReducers as combine_reducers,
   configureStore as configure_store,
