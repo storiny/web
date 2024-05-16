@@ -40,7 +40,6 @@ use futures_util::{
 };
 use lockable::AsyncLimit;
 use redis::AsyncCommands;
-use serde::Serialize;
 use sqlx::{
     Pool,
     Postgres,
@@ -126,12 +125,6 @@ pub enum EnterRealmError {
     DocCorrupted = 3005,
     #[strum(serialize = "Internal error raised while trying to enter the realm")]
     Internal = 4000,
-}
-
-/// The error response with a reason.
-#[derive(Debug, Serialize)]
-struct ErrorResponse {
-    reason: String,
 }
 
 /// Rejection handler that maps rejections into responses.
