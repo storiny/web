@@ -8,14 +8,19 @@ use aws_config::{
     BehaviorVersion,
     Region,
 };
+use hmac::Hmac;
 use maxminddb::Reader;
 use routes::oauth::ConnectionError;
 use sailfish::TemplateOnce;
+use sha1::Sha1;
 use sqlx::{
     Pool,
     Postgres,
 };
 use user_agent_parser::UserAgentParser;
+
+// Types
+pub type HmacSha1 = Hmac<Sha1>;
 
 // Aliases
 use crate::{

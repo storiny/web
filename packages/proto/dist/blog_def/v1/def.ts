@@ -113,7 +113,7 @@ export interface ArchiveTimeline {
 }
 
 export interface GetBlogArchiveRequest {
-  slug: string;
+  identifier: string;
 }
 
 export interface GetBlogArchiveResponse {
@@ -1495,13 +1495,13 @@ export const ArchiveTimeline = {
 };
 
 function createBaseGetBlogArchiveRequest(): GetBlogArchiveRequest {
-  return { slug: "" };
+  return { identifier: "" };
 }
 
 export const GetBlogArchiveRequest = {
   encode(message: GetBlogArchiveRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.slug !== "") {
-      writer.uint32(10).string(message.slug);
+    if (message.identifier !== "") {
+      writer.uint32(10).string(message.identifier);
     }
     return writer;
   },
@@ -1518,7 +1518,7 @@ export const GetBlogArchiveRequest = {
             break;
           }
 
-          message.slug = reader.string();
+          message.identifier = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -1530,13 +1530,13 @@ export const GetBlogArchiveRequest = {
   },
 
   fromJSON(object: any): GetBlogArchiveRequest {
-    return { slug: isSet(object.slug) ? globalThis.String(object.slug) : "" };
+    return { identifier: isSet(object.identifier) ? globalThis.String(object.identifier) : "" };
   },
 
   toJSON(message: GetBlogArchiveRequest): unknown {
     const obj: any = {};
-    if (message.slug !== "") {
-      obj.slug = message.slug;
+    if (message.identifier !== "") {
+      obj.identifier = message.identifier;
     }
     return obj;
   },
@@ -1546,7 +1546,7 @@ export const GetBlogArchiveRequest = {
   },
   fromPartial<I extends Exact<DeepPartial<GetBlogArchiveRequest>, I>>(object: I): GetBlogArchiveRequest {
     const message = createBaseGetBlogArchiveRequest();
-    message.slug = object.slug ?? "";
+    message.identifier = object.identifier ?? "";
     return message;
   },
 };

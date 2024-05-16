@@ -134,6 +134,10 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     // Me - Blogs - Settings - Appearance - Fonts
     v1::me::blogs::settings::appearance::fonts::post::init_routes(cfg);
     v1::me::blogs::settings::appearance::fonts::delete::init_routes(cfg);
+    // Me - Blogs - Settings - Domain
+    v1::me::blogs::settings::domain::code_request::init_routes(cfg);
+    v1::me::blogs::settings::domain::verify::init_routes(cfg);
+    v1::me::blogs::settings::domain::remove::init_routes(cfg);
     // Me - Bookmarks
     v1::me::bookmarks::get::init_routes(cfg);
     v1::me::bookmarks::post::init_routes(cfg);
