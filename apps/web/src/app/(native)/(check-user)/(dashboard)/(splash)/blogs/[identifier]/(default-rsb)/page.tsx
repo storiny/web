@@ -19,7 +19,7 @@ const Page = ({
 
   // Redirect if sidebars are visible.
   if (should_redirect && !disable_redirect) {
-    redirect(`/blogs/${blog.slug}/settings/general`);
+    redirect(`/blogs/${blog.domain || blog.slug}/settings/general`);
   }
 
   return <DashboardNavigationScreen />;
