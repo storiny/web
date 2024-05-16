@@ -297,8 +297,8 @@ ORDER BY created_at
                         &state.config.api_server_url
                     );
 
-                    template_data.email = target.clone();
-                    template_data.unsubscribe_link = unsubscribe_link.clone();
+                    template_data.email.clone_from(&target);
+                    template_data.unsubscribe_link.clone_from(&unsubscribe_link);
 
                     if let Some(dispatch) = email_dispatcher.clone() {
                         dispatch(&from, &template_data);
