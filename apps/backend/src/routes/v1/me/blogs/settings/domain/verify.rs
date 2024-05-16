@@ -293,9 +293,9 @@ mod tests {
     #[derive(Debug, Clone)]
     pub enum DNSRecord {
         /// An IPv4 or IPv6 address record.
-        IP(IpAddr),
+        Ip(IpAddr),
         /// A plain TXT record.
-        TXT(Vec<String>),
+        Txt(Vec<String>),
     }
 
     /// A simple mock server for DNS requests.
@@ -359,11 +359,11 @@ mod tests {
                 let records: Vec<_> = entries
                     .iter()
                     .map(|entry| match entry {
-                        DNSRecord::IP(ip) => match ip {
+                        DNSRecord::Ip(ip) => match ip {
                             IpAddr::V4(ipv4) => RData::A(A::from(*ipv4)),
                             IpAddr::V6(ipv6) => RData::AAAA(AAAA::from(*ipv6)),
                         },
-                        DNSRecord::TXT(content) => RData::TXT(TXT::new(content.clone())),
+                        DNSRecord::Txt(content) => RData::TXT(TXT::new(content.clone())),
                     })
                     .map(|rdata| Record::from_rdata(name.into(), 60, rdata))
                     .collect();
@@ -388,8 +388,8 @@ mod tests {
             .add_records(
                 "test.com",
                 vec![
-                    DNSRecord::IP(IpAddr::V4(Ipv4Addr::LOCALHOST)),
-                    DNSRecord::TXT(vec![txt_record]),
+                    DNSRecord::Ip(IpAddr::V4(Ipv4Addr::LOCALHOST)),
+                    DNSRecord::Txt(vec![txt_record]),
                 ],
             )
             .expect("unable to add mapping");
