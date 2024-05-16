@@ -3,6 +3,7 @@
 import React from "react";
 
 import { use_blog_context } from "~/common/context/blog";
+import { use_app_router } from "~/common/utils";
 import Button from "~/components/button";
 import { use_confirmation } from "~/components/confirmation";
 import { use_toast } from "~/components/toast";
@@ -12,6 +13,7 @@ import css from "~/theme/main.module.scss";
 import { handle_api_error } from "~/utils/handle-api-error";
 
 const RemoveDomain = (): React.ReactElement => {
+  const router = use_app_router();
   const toast = use_toast();
   const blog = use_blog_context();
   const [remove_blog_domain, { isLoading: is_loading }] =
@@ -23,6 +25,12 @@ const RemoveDomain = (): React.ReactElement => {
       .then(() => {
         blog.mutate({ domain: null });
         toast("Successfully removed your domain", "success");
+
+        // Wait 2 seconds for the toast message.
+        setTimeout(
+          () => router.replace(`/blogs/${blog.slug}/advanced/domain`),
+          2000
+        );
       })
       .catch((error) =>
         handle_api_error(error, toast, null, "Could not remove your domain")
