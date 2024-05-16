@@ -1,16 +1,11 @@
+use crate::HmacSha1;
 use anyhow::anyhow;
 use hex::{
     decode as decode_hex,
     encode as encode_hex,
 };
-use hmac::{
-    Hmac,
-    Mac,
-};
-use sha1::Sha1;
+use hmac::Mac;
 use validator::validate_email;
-
-type HmacSha1 = Hmac<Sha1>;
 
 /// Decodes an unsubscribe fragment for a newsletter email generated using the
 /// [encode_unsubscribe_fragment] function. Returns `(blog_id, email)`.

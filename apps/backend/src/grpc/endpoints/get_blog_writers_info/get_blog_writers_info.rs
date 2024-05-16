@@ -31,7 +31,7 @@ pub async fn get_blog_writers_info(
     request: Request<GetBlogWritersInfoRequest>,
 ) -> Result<Response<GetBlogWritersInfoResponse>, Status> {
     let identifier = request.into_inner().identifier;
-    // Identifier can be slug or the ID
+    // Identifier can be slug, domain or the ID
     let is_identifier_number = identifier.parse::<i64>().is_ok();
 
     tracing::Span::current().record("identifier", &identifier);
@@ -52,7 +52,7 @@ WITH blog AS (
     } else {
         // The identifier is definitely not an ID
         r#"
-b.slug = $1
+(b.domain = $1 OR b.slug = $1)
 "#
     });
 
@@ -115,6 +115,27 @@ mod tests {
                 let response = client
                     .get_blog_writers_info(Request::new(GetBlogWritersInfoRequest {
                         identifier: "test-blog".to_string(),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                assert_eq!(response.writer_count, 3_u32);
+                assert_eq!(response.pending_writer_request_count, 2_u32);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_blog_writers_info"))]
+    async fn can_return_blog_writers_info_by_domain(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            false,
+            Box::new(|mut client, _, _, _| async move {
+                let response = client
+                    .get_blog_writers_info(Request::new(GetBlogWritersInfoRequest {
+                        identifier: "test.com".to_string(),
                     }))
                     .await
                     .unwrap()

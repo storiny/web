@@ -94,6 +94,7 @@ jobs:
   #      TOKEN_SALT: 1234567890abcdef
   #      GRPC_SECRET_TOKEN: 1234567890abcdef
   #      NEWSLETTER_SECRET: 1234567890abcdef
+  #      DOMAIN_VERIFICATION_SECRET: 1234567890abcdef
   #      DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
   #      REDIS_HOST: localhost
   #      REDIS_PORT: 6379
@@ -196,6 +197,7 @@ jobs:
       TOKEN_SALT: 1234567890abcdef
       GRPC_SECRET_TOKEN: 1234567890abcdef
       NEWSLETTER_SECRET: 1234567890abcdef
+      DOMAIN_VERIFICATION_SECRET: 1234567890abcdef
       DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
       REDIS_HOST: localhost
       REDIS_PORT: 6379

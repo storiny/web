@@ -9,3 +9,4 @@ import "./sidebars";
 import "./seo";
 import "./slug";
 import "./newsletter-splash";
+import "./domain";

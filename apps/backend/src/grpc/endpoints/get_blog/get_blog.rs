@@ -151,7 +151,7 @@ pub async fn get_blog(
             } else {
                 sqlx::query_file_as!(
                     Blog,
-                    "queries/grpc/get_blog/logged_in_by_slug.sql",
+                    "queries/grpc/get_blog/logged_in_by_domain_or_slug.sql",
                     maybe_blog_slug,
                     current_user_id
                 )
@@ -165,7 +165,7 @@ pub async fn get_blog(
         } else {
             sqlx::query_file_as!(
                 Blog,
-                "queries/grpc/get_blog/default_by_slug.sql",
+                "queries/grpc/get_blog/default_by_domain_or_slug.sql",
                 maybe_blog_slug,
             )
             .fetch_one(&client.db_pool)
@@ -489,6 +489,73 @@ WHERE id = $1
                 let response = client
                     .get_blog(Request::new(GetBlogRequest {
                         identifier: "test-blog".to_string(),
+                        current_user_id: None,
+                    }))
+                    .await;
+
+                assert_eq!(response.unwrap_err().code(), Code::NotFound);
+            }),
+        )
+        .await;
+    }
+
+    //
+
+    #[sqlx::test(fixtures("get_blog"))]
+    async fn can_return_a_blog_by_domain(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            false,
+            Box::new(|mut client, _, _, _| async move {
+                let response = client
+                    .get_blog(Request::new(GetBlogRequest {
+                        identifier: "test.com".to_string(),
+                        current_user_id: None,
+                    }))
+                    .await;
+
+                assert!(response.is_ok());
+
+                let response = response.unwrap().into_inner();
+
+                // Flags should be neutral.
+                assert!(!response.is_owner);
+                assert!(!response.is_editor);
+                assert!(!response.is_writer);
+                assert!(!response.is_following);
+
+                // Sidebar items
+                assert_eq!(response.lsb_items.len(), 2);
+                assert_eq!(response.rsb_items.len(), 2);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_blog"))]
+    async fn should_not_return_a_soft_deleted_blog_by_domain(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            false,
+            Box::new(|mut client, pool, _, _| async move {
+                // Soft-delete the blog.
+                let result = sqlx::query(
+                    r#"
+UPDATE blogs
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+                )
+                .bind(5_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_blog(Request::new(GetBlogRequest {
+                        identifier: "test.com".to_string(),
                         current_user_id: None,
                     }))
                     .await;
@@ -1128,6 +1195,327 @@ VALUES ($1, $2)
                 let response = client
                     .get_blog(Request::new(GetBlogRequest {
                         identifier: "test-blog".to_string(),
+                        current_user_id: user_id.map(|value| value.to_string()),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be `true`.
+                assert!(response.is_following);
+            }),
+        )
+        .await;
+    }
+
+    //
+
+    #[sqlx::test(fixtures("get_blog"))]
+    async fn can_return_a_blog_by_domain_when_logged_in(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, _, _, user_id| async move {
+                let response = client
+                    .get_blog(Request::new(GetBlogRequest {
+                        identifier: "test.com".to_string(),
+                        current_user_id: user_id.map(|value| value.to_string()),
+                    }))
+                    .await;
+
+                assert!(response.is_ok());
+
+                let response = response.unwrap().into_inner();
+
+                // Flags should be neutral.
+                assert!(!response.is_owner);
+                assert!(!response.is_editor);
+                assert!(!response.is_writer);
+                assert!(!response.is_following);
+
+                // Sidebar items
+                assert_eq!(response.lsb_items.len(), 2);
+                assert_eq!(response.rsb_items.len(), 2);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_blog"))]
+    async fn should_not_return_a_soft_deleted_blog_by_domain_when_logged_in(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                // Soft-delete the blog.
+                let result = sqlx::query(
+                    r#"
+UPDATE blogs
+SET deleted_at = NOW()
+WHERE id = $1
+"#,
+                )
+                .bind(5_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_blog(Request::new(GetBlogRequest {
+                        identifier: "test.com".to_string(),
+                        current_user_id: user_id.map(|value| value.to_string()),
+                    }))
+                    .await;
+
+                assert_eq!(response.unwrap_err().code(), Code::NotFound);
+            }),
+        )
+        .await;
+    }
+
+    //
+
+    #[sqlx::test(fixtures("get_blog"))]
+    async fn can_return_is_owner_flag_for_blog_by_domain_when_logged_in(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                let response = client
+                    .get_blog(Request::new(GetBlogRequest {
+                        identifier: "test.com".to_string(),
+                        current_user_id: user_id.map(|value| value.to_string()),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be `false` initially.
+                assert!(!response.is_owner);
+
+                // Change the owner of the blog.
+                let result = sqlx::query(
+                    r#"
+UPDATE blogs
+SET user_id = $1
+WHERE id = $2
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(5_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_blog(Request::new(GetBlogRequest {
+                        identifier: "test.com".to_string(),
+                        current_user_id: user_id.map(|value| value.to_string()),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be `true`.
+                assert!(response.is_owner);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_blog"))]
+    async fn can_return_is_editor_flag_for_blog_by_domain_when_logged_in(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                let response = client
+                    .get_blog(Request::new(GetBlogRequest {
+                        identifier: "test.com".to_string(),
+                        current_user_id: user_id.map(|value| value.to_string()),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be `false` initially.
+                assert!(!response.is_editor);
+
+                // Receive an editor invite.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO blog_editors (user_id, blog_id)
+VALUES ($1, $2)
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(5_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_blog(Request::new(GetBlogRequest {
+                        identifier: "test.com".to_string(),
+                        current_user_id: user_id.map(|value| value.to_string()),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should still be false as the editor invite has not been not accepted yet.
+                assert!(!response.is_editor);
+
+                // Accept the editor invite.
+                let result = sqlx::query(
+                    r#"
+UPDATE blog_editors
+SET accepted_at = NOW()
+WHERE user_id = $1
+"#,
+                )
+                .bind(user_id.unwrap())
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_blog(Request::new(GetBlogRequest {
+                        identifier: "test.com".to_string(),
+                        current_user_id: user_id.map(|value| value.to_string()),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be `true`.
+                assert!(response.is_editor);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_blog"))]
+    async fn can_return_is_writer_flag_for_blog_by_domain_when_logged_in(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                let response = client
+                    .get_blog(Request::new(GetBlogRequest {
+                        identifier: "test.com".to_string(),
+                        current_user_id: user_id.map(|value| value.to_string()),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be `false` initially.
+                assert!(!response.is_writer);
+
+                // Receive a writer invite.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO blog_writers (transmitter_id, receiver_id, blog_id)
+VALUES ($1, $2, $3)
+"#,
+                )
+                .bind(2_i64)
+                .bind(user_id.unwrap())
+                .bind(5_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_blog(Request::new(GetBlogRequest {
+                        identifier: "test.com".to_string(),
+                        current_user_id: user_id.map(|value| value.to_string()),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should still be false as the writer invite has not been not accepted yet.
+                assert!(!response.is_writer);
+
+                // Accept the writer invite.
+                let result = sqlx::query(
+                    r#"
+UPDATE blog_writers
+SET accepted_at = NOW()
+WHERE receiver_id = $1
+"#,
+                )
+                .bind(user_id.unwrap())
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_blog(Request::new(GetBlogRequest {
+                        identifier: "test.com".to_string(),
+                        current_user_id: user_id.map(|value| value.to_string()),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be `true`.
+                assert!(response.is_writer);
+            }),
+        )
+        .await;
+    }
+
+    #[sqlx::test(fixtures("get_blog"))]
+    async fn can_return_is_following_flag_for_blog_by_domain_when_logged_in(pool: PgPool) {
+        test_grpc_service(
+            pool,
+            true,
+            Box::new(|mut client, pool, _, user_id| async move {
+                let response = client
+                    .get_blog(Request::new(GetBlogRequest {
+                        identifier: "test.com".to_string(),
+                        current_user_id: user_id.map(|value| value.to_string()),
+                    }))
+                    .await
+                    .unwrap()
+                    .into_inner();
+
+                // Should be `false` initially.
+                assert!(!response.is_following);
+
+                // Follow the blog.
+                let result = sqlx::query(
+                    r#"
+INSERT INTO blog_followers (user_id, blog_id)
+VALUES ($1, $2)
+"#,
+                )
+                .bind(user_id.unwrap())
+                .bind(5_i64)
+                .execute(&pool)
+                .await
+                .unwrap();
+
+                assert_eq!(result.rows_affected(), 1);
+
+                let response = client
+                    .get_blog(Request::new(GetBlogRequest {
+                        identifier: "test.com".to_string(),
                         current_user_id: user_id.map(|value| value.to_string()),
                     }))
                     .await
