@@ -41,7 +41,7 @@ const GroupComponent = ({
               <NavigationItem
                 as={NextLink}
                 decorator={item.decorator}
-                href={`/blogs/${blog.slug}/${item.value}`}
+                href={`/blogs/${blog.domain || blog.slug}/${item.value}`}
               >
                 {item.title}
               </NavigationItem>

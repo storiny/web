@@ -139,7 +139,7 @@ const SuspendedBlogDashboardLeftSidebarContent = (): React.ReactElement => {
             {BLOG_DASHBOARD_GROUPS.map((group) => (
               <GroupComponent<BlogDashboardSegment>
                 group={group}
-                href_prefix={`blogs/${blog.slug}`}
+                href_prefix={`blogs/${blog.domain || blog.slug}`}
                 key={group.title}
                 should_render={(item): boolean =>
                   !(item.metadata?.owner_only && blog.role !== "owner")
