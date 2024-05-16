@@ -1,7 +1,9 @@
 pub mod account_activity_type;
+pub mod blog_domain_regex;
 pub mod blog_slug_regex;
 pub mod buckets;
 pub mod connection_provider;
+pub mod domain_verification_key;
 pub mod email_source;
 pub mod email_template;
 pub mod image_size;

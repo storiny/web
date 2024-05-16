@@ -81,33 +81,12 @@ async fn patch(
 
     match sqlx::query(
         r#"
-WITH blog_as_owner AS (
-    SELECT 1 FROM blogs
-    WHERE
-        id = $2
-        AND user_id = $1
-        AND deleted_at IS NULL
-), blog_as_editor AS (
-    SELECT 1 FROM blog_editors
-    WHERE
-        blog_id = $2
-        AND user_id = $1
-        AND accepted_at IS NOT NULL
-        AND deleted_at IS NULL
-        AND NOT EXISTS (
-            SELECT FROM blog_as_owner
-        )
-), sanity_check AS (
-    SELECT COALESCE(
-        (SELECT TRUE FROM blog_as_owner),
-        (SELECT TRUE FROM blog_as_editor)
-    ) AS "found"
-)
 UPDATE blogs
 SET slug = $3
 WHERE
     id = $2
-    AND (SELECT found FROM sanity_check) IS TRUE
+    AND user_id = $1
+    AND deleted_at IS NULL
 "#,
     )
     .bind(user_id)
@@ -117,9 +96,7 @@ WHERE
     .await
     {
         Ok(result) => match result.rows_affected() {
-            0 => Err(AppError::from(
-                "Missing permission or the blog does not exist",
-            )),
+            0 => Err(AppError::from("The blog does not exist")),
             _ => Ok(HttpResponse::NoContent().finish()),
         },
         Err(error) => {
@@ -159,7 +136,7 @@ mod tests {
     };
 
     #[sqlx::test]
-    async fn can_update_slug_as_blog_owner(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_update_slug(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
 
@@ -181,103 +158,6 @@ RETURNING id, slug
 
         // Should be `initial-slug` initially.
         assert_eq!(result.get::<String, _>("slug"), "initial-slug".to_string());
-
-        let req = test::TestRequest::patch()
-            .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/blogs/{blog_id}/settings/slug"))
-            .set_json(Request {
-                slug: "final-slug".to_string(),
-            })
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        assert!(res.status().is_success());
-
-        // Blog should get updated in the database.
-        let result = sqlx::query(
-            r#"
-SELECT slug
-FROM blogs
-WHERE id = $1
-"#,
-        )
-        .bind(blog_id)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert_eq!(result.get::<String, _>("slug"), "final-slug".to_string());
-
-        Ok(())
-    }
-
-    #[sqlx::test]
-    async fn can_update_slug_as_blog_editor(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let (app, cookie, user_id) = init_app_for_test(patch, pool, true, false, None).await;
-
-        // Insert a blog.
-        let result = sqlx::query(
-            r#"
-WITH inserted_user AS (
-    INSERT INTO users (name, username, email)
-    VALUES ('Sample user 1', 'sample_user_1', 'sample_1@storiny.com')
-    RETURNING id
-)
-INSERT INTO blogs (name, slug, user_id)
-VALUES ($1, $2, (SELECT id FROM inserted_user))
-RETURNING id, slug
-"#,
-        )
-        .bind("Sample blog".to_string())
-        .bind("initial-slug".to_string())
-        .fetch_one(&mut *conn)
-        .await?;
-
-        // Should be `initial-slug` initially.
-        assert_eq!(result.get::<String, _>("slug"), "initial-slug".to_string());
-
-        let blog_id = result.get::<i64, _>("id");
-
-        // Add the current user as an editor.
-        let result = sqlx::query(
-            r#"
-INSERT INTO blog_editors (user_id, blog_id)
-VALUES ($1, $2)
-"#,
-        )
-        .bind(user_id.unwrap())
-        .bind(blog_id)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        let req = test::TestRequest::patch()
-            .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/me/blogs/{blog_id}/settings/slug"))
-            .set_json(Request {
-                slug: "final-slug".to_string(),
-            })
-            .to_request();
-        let res = test::call_service(&app, req).await;
-
-        // Should reject the request as the editor has not been accepted yet.
-        assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Missing permission or the blog does not exist").await;
-
-        // Accept the editor.
-        let result = sqlx::query(
-            r#"
-UPDATE blog_editors
-SET accepted_at = NOW()
-WHERE user_id = $1
-"#,
-        )
-        .bind(user_id.unwrap())
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
 
         let req = test::TestRequest::patch()
             .cookie(cookie.unwrap())
@@ -352,7 +232,7 @@ WHERE id = $1
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "Missing permission or the blog does not exist").await;
+        assert_response_body_text(res, "The blog does not exist").await;
 
         Ok(())
     }

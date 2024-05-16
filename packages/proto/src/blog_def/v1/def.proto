@@ -103,7 +103,7 @@ message ArchiveTimeline {
 }
 
 message GetBlogArchiveRequest {
-  string slug = 1;
+  string identifier = 1;
 }
 
 message GetBlogArchiveResponse {

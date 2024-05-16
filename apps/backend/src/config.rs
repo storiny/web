@@ -40,6 +40,8 @@ pub struct Config {
     pub grpc_secret_token: String,
     /// Shared secret key used to sign the newsletter unsubscribe links.
     pub newsletter_secret: String,
+    /// Shared secret key used to sign the domain verification TXT record values.
+    pub domain_verification_secret: String,
     /// Pexels API key
     pub pexels_api_key: String,
     /// Session cookie secret key

@@ -1,12 +1,9 @@
+use crate::HmacSha1;
 use hex::encode as encode_hex;
 use hmac::{
     digest::InvalidLength,
-    Hmac,
     Mac,
 };
-use sha1::Sha1;
-
-type HmacSha1 = Hmac<Sha1>;
 
 /// Generates a personalized unsubscribe fragment for a newsletter email.
 ///
