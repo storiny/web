@@ -96,7 +96,7 @@ const BlogActions = (props: BlogActionsProps): React.ReactElement | null => {
         <MenuItem
           as={"a"}
           decorator={<SettingsIcon />}
-          href={`/blogs/${blog.id}`}
+          href={`/blogs/${blog.slug}`}
           rel={"noreferrer"}
           target={"_blank"}
         >
