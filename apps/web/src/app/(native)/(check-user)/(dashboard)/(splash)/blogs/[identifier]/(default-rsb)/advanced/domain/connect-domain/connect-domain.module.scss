@@ -30,16 +30,6 @@
       &[data-cname="true"] {
         word-break: break-all;
       }
-
-      &[data-loading="true"] {
-        color: var(--fg-muted);
-        cursor: wait;
-      }
-
-      &[data-error="true"] {
-        color: var(--ruby-500);
-        user-select: auto;
-      }
     }
 
     & tr:first-of-type td {

@@ -1,7 +1,6 @@
 "use client";
 
 import { BLOG_PROPS } from "@storiny/shared";
-import { is_test_env } from "@storiny/shared/src/utils/is-test-env";
 import React from "react";
 
 import { use_blog_context } from "~/common/context/blog";
@@ -35,33 +34,10 @@ import {
   ConnectDomainSchema
 } from "./connect-domain.schema";
 
-const TESTING_ENV = is_test_env();
-
-const ConnectDomainModal = (): React.ReactElement => {
-  const blog = use_blog_context();
+const ConnectDomainModal = ({ code }: { code: string }): React.ReactElement => {
   const form = use_form_context<ConnectDomainSchema>();
-  const [code, set_code] = React.useState<string>("");
   const [cname, set_cname] = React.useState<string>("@");
-  const [error, set_error] = React.useState<string>(
-    "Could not get the verification code."
-  );
   const domain_value = form.watch("domain");
-  const [
-    request_verification_code,
-    { isLoading: is_loading, isError: is_error }
-  ] = use_request_blog_domain_verification_code_mutation();
-
-  React.useEffect(() => {
-    request_verification_code({ blog_id: blog.id })
-      .unwrap()
-      .then(({ code }) => set_code(code))
-      .catch((e) => {
-        if (e?.data?.error) {
-          set_error(e.data.error);
-        }
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blog]);
 
   React.useEffect(() => {
     if (domain_value) {
@@ -85,84 +61,94 @@ const ConnectDomainModal = (): React.ReactElement => {
 
   return (
     <React.Fragment>
-      <Description asChild>
-        <Typography color={"minor"} level={"body2"}>
-          To connect your custom domain to this blog, you need to set up the
-          following records with your DNS provider:
-        </Typography>
-      </Description>
-      <Spacer orientation={"vertical"} size={3} />
-      <div className={styles["table-container"]}>
-        <table>
-          <thead>
-            <tr>
-              <th>Type</th>
-              <th>Name</th>
-              <th>Content</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>CNAME</td>
-              <td data-cname={"true"}>{cname}</td>
-              <td>storiny.com</td>
-            </tr>
-            <tr>
-              <td>TXT</td>
-              <td>_storiny</td>
-              <td
-                data-code={"true"}
-                data-error={String(Boolean(is_error && !TESTING_ENV))}
-                data-loading={String(Boolean(is_loading && !TESTING_ENV))}
-              >
-                {is_loading && !TESTING_ENV
-                  ? "Loading…"
-                  : is_error && !TESTING_ENV
-                    ? error
-                    : code}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <Spacer orientation={"vertical"} size={3} />
-      <Typography color={"minor"} level={"body2"}>
-        Only CNAME records are currently supported. We plan to add support for
-        A/AAAA records for root domains in the future. If your DNS provider
-        doesn&apos;t support CNAME at the root level, consider using a subdomain
-        or switching to a provider that supports CNAME flattening, like{" "}
-        <Link
-          href={"https://cloudflare.com"}
-          target={"_blank"}
-          underline={"always"}
-        >
-          Cloudflare
-        </Link>
-        .
-        <br />
-        <br />
-        Changes at your DNS provider can take up to 48 hours to propagate.
-      </Typography>
-      <Spacer orientation={"vertical"} size={5} />
-      <FormInput
-        autoFocus
-        auto_size
-        data-testid={"domain-input"}
-        form_slot_props={{
-          form_item: {
-            className: css["f-grow"]
-          }
-        }}
-        helper_text={
-          "This can be a root-level domain, such as example.com, or a subdomain, like blog.example.com."
-        }
-        label={"Domain name"}
-        maxLength={BLOG_PROPS.domain.max_length}
-        minLength={BLOG_PROPS.domain.min_length}
-        name={"domain"}
-        placeholder={"example.com"}
-        required
-      />
+      {code ? (
+        <>
+          <Description asChild>
+            <Typography color={"minor"} level={"body2"}>
+              To connect your custom domain (
+              <span className={css["t-medium"]}>{domain_value}</span>) to this
+              blog, you need to set up the following records with your DNS
+              provider:
+            </Typography>
+          </Description>
+          <Spacer orientation={"vertical"} size={3} />
+          <div className={styles["table-container"]}>
+            <table>
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Name</th>
+                  <th>Content</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>CNAME</td>
+                  <td data-cname={"true"}>{cname}</td>
+                  <td>storiny.com</td>
+                </tr>
+                <tr>
+                  <td>TXT</td>
+                  <td>_storiny</td>
+                  <td data-code={"true"}>{code}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <Spacer orientation={"vertical"} size={3} />
+          <Typography color={"minor"} level={"body2"}>
+            Only CNAME records are currently supported. We plan to add support
+            for A/AAAA records for root domains in the future. If your DNS
+            provider doesn&apos;t support CNAME at the root level, consider
+            using a subdomain or switching to a provider that supports CNAME
+            flattening, like{" "}
+            <Link
+              href={"https://cloudflare.com"}
+              target={"_blank"}
+              underline={"always"}
+            >
+              Cloudflare
+            </Link>
+            .
+            <br />
+            <br />
+            Changes at your DNS provider can take up to 48 hours to propagate.
+          </Typography>
+        </>
+      ) : (
+        <>
+          <Description asChild>
+            <Typography color={"minor"} level={"body2"}>
+              Provide the custom domain that you wish to connect to this blog.
+              This can be a root-level domain, such as example.com, or a
+              subdomain, like blog.example.com.
+            </Typography>
+          </Description>
+          <Spacer orientation={"vertical"} size={3} />
+          <FormInput
+            autoFocus
+            auto_size
+            data-testid={"domain-input"}
+            form_slot_props={{
+              form_item: {
+                className: css["f-grow"]
+              }
+            }}
+            helper_text={
+              <>
+                Do not include &quot;http://&quot; or &quot;https://&quot; in
+                front of your domain name.
+              </>
+            }
+            label={"Domain name"}
+            maxLength={BLOG_PROPS.domain.max_length}
+            minLength={BLOG_PROPS.domain.min_length}
+            name={"domain"}
+            placeholder={"example.com"}
+            required
+          />
+        </>
+      )}
       <Spacer orientation={"vertical"} size={2} />
     </React.Fragment>
   );
@@ -174,32 +160,58 @@ const ConnectDomain = ({
   const toast = use_toast();
   const blog = use_blog_context();
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const [code, set_code] = React.useState<string>("");
   const form = use_form<ConnectDomainSchema>({
     resolver: zod_resolver(CONNECT_DOMAIN_SCHEMA),
     defaultValues: {
       domain: ""
     }
   });
-  const [verify_blog_domain, { isLoading: is_loading }] =
+  const [verify_blog_domain, { isLoading: is_verification_loading }] =
     use_verify_blog_domain_mutation();
+  const [request_verification_code, { isLoading: is_code_request_loading }] =
+    use_request_blog_domain_verification_code_mutation();
+  const is_loading = is_code_request_loading || is_verification_loading;
 
-  const handle_submit: SubmitHandler<ConnectDomainSchema> = (values) => {
+  /**
+   * Requests the verification code for a particular domain.
+   */
+  const get_verification_code: SubmitHandler<ConnectDomainSchema> = (
+    values
+  ) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      const { domain } = values;
-
-      verify_blog_domain({ domain, blog_id: blog.id })
+      request_verification_code({ domain: values.domain, blog_id: blog.id })
         .unwrap()
-        .then(() => {
-          blog.mutate({ domain });
-          toast("Domain verified successfully", "success");
-        })
+        .then((res) => set_code(res.code))
         .catch((error) =>
-          handle_api_error(error, toast, form, "Could not verify this domain")
+          handle_api_error(
+            error,
+            toast,
+            form,
+            "Could not generate the verification code"
+          )
         );
     }
   };
+
+  /**
+   * Handles the verification for a particular domain.
+   */
+  const handle_verification: SubmitHandler<ConnectDomainSchema> = (values) => {
+    verify_blog_domain({ domain: values.domain, blog_id: blog.id })
+      .unwrap()
+      .then(() => {
+        blog.mutate({ domain: values.domain });
+        toast("Domain verified successfully", "success");
+      })
+      .catch((error) =>
+        handle_api_error(error, toast, null, "Could not verify this domain")
+      );
+  };
+
+  const handle_submit = code ? handle_verification : get_verification_code;
 
   const [element] = use_modal(
     ({ open_modal }) => (
@@ -218,7 +230,7 @@ const ConnectDomain = ({
       on_submit={handle_submit}
       provider_props={form}
     >
-      <ConnectDomainModal />
+      <ConnectDomainModal code={code} />
     </Form>,
     {
       fullscreen: is_smaller_than_mobile,
@@ -236,7 +248,7 @@ const ConnectDomain = ({
               form.handleSubmit(handle_submit)(); // Submit manually
             }}
           >
-            Verify
+            {code ? "Verify" : "Continue"}
           </ModalFooterButton>
         </>
       ),
@@ -246,7 +258,7 @@ const ConnectDomain = ({
         },
         content: {
           style: {
-            width: is_smaller_than_mobile ? "100%" : "480px"
+            width: is_smaller_than_mobile ? "100%" : code ? "480px" : "350px"
           }
         },
         header: {
