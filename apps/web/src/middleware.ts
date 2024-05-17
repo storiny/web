@@ -153,6 +153,8 @@ export const middleware: NextMiddleware = (request) => {
     NATIVE_DOMAINS.push("storiny.local");
   }
 
+  console.log(hostname);
+
   if (
     hostname &&
     !NATIVE_DOMAINS.includes(hostname) &&
