@@ -153,8 +153,6 @@ export const middleware: NextMiddleware = (request) => {
     NATIVE_DOMAINS.push("storiny.local");
   }
 
-  console.log(hostname);
-
   if (
     hostname &&
     !NATIVE_DOMAINS.includes(hostname) &&
@@ -190,6 +188,9 @@ export const middleware: NextMiddleware = (request) => {
     request.nextUrl.pathname = `/blog/${value}${url.pathname}`;
 
     response = NextResponse.rewrite(request.nextUrl, {
+      headers: {
+        "x-pathname": pathname
+      },
       request: {
         headers: request_headers
       }
