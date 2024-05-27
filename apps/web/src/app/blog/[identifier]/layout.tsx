@@ -54,17 +54,19 @@ const BlogLayout = async ({
       not_found();
     }
 
+    const pathname = headers().get("x-pathname") || "/";
     const user_id = await get_user();
     const blog = await get_blog({
       identifier,
       current_user_id: user_id || undefined
     });
+    const fragment = pathname.split("/").slice(3).join("/");
 
     // Redirect to the preferred pathname.
     if (blog.domain && blog.domain !== identifier) {
-      redirect(`/blog/${blog.domain}`);
+      redirect(`/blog/${blog.domain}/${fragment}`);
     } else if (is_snowflake(identifier) && blog.slug !== identifier) {
-      redirect(`/blog/${blog.slug}`);
+      redirect(`/blog/${blog.slug}/${fragment}`);
     }
 
     const nonce = headers().get("x-nonce") ?? undefined;
