@@ -138,7 +138,7 @@ export const middleware: NextMiddleware = (request) => {
     request_headers.set("Content-Security-Policy", csp_header_value);
   }
 
-  let response = NextResponse.next({
+  const response = NextResponse.next({
     request: {
       headers: request_headers
     }
@@ -185,14 +185,26 @@ export const middleware: NextMiddleware = (request) => {
       );
     }
 
-    request.nextUrl.pathname = `/blog/${value}${url.pathname}`;
-
-    response = NextResponse.rewrite(request.nextUrl, {
-      request: {
-        headers: request_headers
+    const res = NextResponse.rewrite(
+      new URL(`/blog/${value}${url.pathname}`, request.url),
+      {
+        headers: {
+          "x-pathname": pathname
+        },
+        request: {
+          headers: request_headers
+        }
       }
-    });
-  } else if (/\.ico/.test(request.nextUrl.pathname || "")) {
+    );
+
+    if (process.env.NODE_ENV !== "development") {
+      res.headers.set("Content-Security-Policy", csp_header_value);
+    }
+
+    return res;
+  }
+
+  if (/\.ico/.test(request.nextUrl.pathname || "")) {
     // Ignore favicon requests.
     return response;
   }
@@ -211,17 +223,12 @@ export const middleware: NextMiddleware = (request) => {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
+     * Match all paths except for:
+     * 1. /api routes
+     * 2. /_next (Next.js internals)
+     * 3. /_static (inside /public)
+     * 4. all root files inside /public (e.g. /favicon.ico)
      */
-    {
-      source: "/((?!api|_next/static|_next/image).*)",
-      missing: [
-        { type: "header", key: "next-router-prefetch" },
-        { type: "header", key: "purpose", value: "prefetch" }
-      ]
-    }
+    "/((?!api/|_next/|_static/|_vercel|[\\w-]+\\.\\w+).*)"
   ]
 };

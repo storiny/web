@@ -37,6 +37,7 @@ import {
 const ConnectDomainModal = ({ code }: { code: string }): React.ReactElement => {
   const form = use_form_context<ConnectDomainSchema>();
   const [cname, set_cname] = React.useState<string>("@");
+  const [txt_name, set_txt_name] = React.useState<string>("_storiny");
   const domain_value = form.watch("domain");
 
   React.useEffect(() => {
@@ -49,13 +50,13 @@ const ConnectDomainModal = ({ code }: { code: string }): React.ReactElement => {
         domain_without_tld.pop(); // Remove apex domain
       }
 
-      set_cname(
-        is_subdomain && domain_without_tld.length
-          ? domain_without_tld.join(".")
-          : "@"
-      );
+      const value = domain_without_tld.join(".");
+
+      set_cname(is_subdomain && domain_without_tld.length ? value : "@");
+      set_txt_name(`_storiny.${value}`);
     } else {
       set_cname("@");
+      set_txt_name("_storiny");
     }
   }, [domain_value]);
 
@@ -89,7 +90,7 @@ const ConnectDomainModal = ({ code }: { code: string }): React.ReactElement => {
                 </tr>
                 <tr>
                   <td>TXT</td>
-                  <td>_storiny</td>
+                  <td>{txt_name}</td>
                   <td data-code={"true"}>{code}</td>
                 </tr>
               </tbody>
