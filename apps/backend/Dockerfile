@@ -1,5 +1,5 @@
 # Start with a rust alpine image
-FROM rust:alpine3.18
+FROM rust:alpine3.20
 # This is important, see https://github.com/rust-lang/docker-rust/issues/85
 ENV RUSTFLAGS="-C target-feature=-crt-static"
 ENV SQLX_OFFLINE=true
@@ -13,7 +13,7 @@ RUN cargo build --release
 RUN strip target/release/storiny
 
 # use a plain alpine image, the alpine version needs to match the builder
-FROM alpine:3.18
+FROM alpine:3.20
 # if needed, install additional dependencies here
 RUN apk add --no-cache libgcc
 # copy the binary into the final image
