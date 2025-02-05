@@ -224,11 +224,12 @@ export const config = {
   matcher: [
     /*
      * Match all paths except for:
-     * 1. /api routes
-     * 2. /_next (Next.js internals)
-     * 3. /_static (inside /public)
-     * 4. all root files inside /public (e.g. /favicon.ico)
+     * - /api routes
+     * - /_next (Next.js internals)
+     * - /_static (inside /public)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
      */
-    "/((?!api/|_next/|_static/|_vercel|[\\w-]+\\.\\w+).*)"
+    "/((?!api/|_next/|_static/|_next/static/|_next/image/).*)"
   ]
 };

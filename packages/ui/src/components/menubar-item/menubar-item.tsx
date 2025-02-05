@@ -1,7 +1,7 @@
 "use client";
 
-import { Item } from "@radix-ui/react-menubar";
 import clsx from "clsx";
+import { Menubar } from "radix-ui";
 import React from "react";
 
 import { forward_ref } from "~/utils/forward-ref";
@@ -20,8 +20,9 @@ const MenubarItem = forward_ref<MenubarItemProps, "div">((props, ref) => {
     children,
     ...rest
   } = props;
+
   return (
-    <Item
+    <Menubar.Item
       {...rest}
       asChild
       className={clsx(menu_item_styles.item, className)}
@@ -52,11 +53,11 @@ const MenubarItem = forward_ref<MenubarItemProps, "div">((props, ref) => {
           </span>
         )}
       </Component>
-    </Item>
+    </Menubar.Item>
   );
 });
 
 MenubarItem.displayName = "MenubarItem";
 
-export { Item as MenubarItemUnstyled };
+export const MenubarItemUnstyled = Menubar.Item;
 export default MenubarItem;

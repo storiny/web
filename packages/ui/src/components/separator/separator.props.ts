@@ -1,8 +1,9 @@
-import { DropdownMenuSeparatorProps } from "@radix-ui/react-dropdown-menu";
+import { DropdownMenu } from "radix-ui";
 
 import { PolymorphicProps } from "~/types/index";
 
-type SeparatorPrimitive = DropdownMenuSeparatorProps & PolymorphicProps<"div">;
+type SeparatorPrimitive = DropdownMenu.DropdownMenuSeparatorProps &
+  PolymorphicProps<"div">;
 
 export interface SeparatorProps extends SeparatorPrimitive {
   /**

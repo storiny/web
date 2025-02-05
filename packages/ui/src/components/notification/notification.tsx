@@ -1,7 +1,7 @@
 "use client";
 
-import { Action, Close, Description, Root } from "@radix-ui/react-toast";
 import clsx from "clsx";
+import { Toast } from "radix-ui";
 import React from "react";
 
 import css from "~/theme/main.module.scss";
@@ -23,8 +23,9 @@ const Notification = forward_ref<NotificationProps, "li">((props, ref) => {
     secondary_button_text = "Dismiss",
     ...rest
   } = props;
+
   return (
-    <Root
+    <Toast.Root
       {...rest}
       asChild
       className={clsx(
@@ -37,7 +38,9 @@ const Notification = forward_ref<NotificationProps, "li">((props, ref) => {
       ref={ref}
     >
       <Component>
-        <Description className={clsx(css["flex-center"], styles.description)}>
+        <Toast.Description
+          className={clsx(css["flex-center"], styles.description)}
+        >
           {icon && (
             <span
               {...slot_props?.decorator}
@@ -51,7 +54,7 @@ const Notification = forward_ref<NotificationProps, "li">((props, ref) => {
             </span>
           )}
           {children}
-        </Description>
+        </Toast.Description>
         <Divider
           aria-hidden
           className={css["not-mobile"]}
@@ -62,7 +65,7 @@ const Notification = forward_ref<NotificationProps, "li">((props, ref) => {
           {...slot_props?.actions}
           className={clsx(styles.actions, slot_props?.actions?.className)}
         >
-          <Action
+          <Toast.Action
             altText={slot_props?.primary_button?.altText || primary_button_text}
             asChild
           >
@@ -78,14 +81,14 @@ const Notification = forward_ref<NotificationProps, "li">((props, ref) => {
             >
               {primary_button_text}
             </button>
-          </Action>
+          </Toast.Action>
           <Divider aria-hidden className={css["not-mobile"]} />
           <Divider
             aria-hidden
             className={css["only-mobile"]}
             orientation={"vertical"}
           />
-          <Close
+          <Toast.Close
             {...slot_props?.secondary_button}
             aria-label={secondary_button_text}
             className={clsx(
@@ -96,10 +99,10 @@ const Notification = forward_ref<NotificationProps, "li">((props, ref) => {
             )}
           >
             {secondary_button_text}
-          </Close>
+          </Toast.Close>
         </div>
       </Component>
-    </Root>
+    </Toast.Root>
   );
 });
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { Content } from "@radix-ui/react-tabs";
 import clsx from "clsx";
+import { Tabs } from "radix-ui";
 import React from "react";
 
 import { forward_ref } from "~/utils/forward-ref";
@@ -12,14 +12,14 @@ import { TabPanelProps } from "./tab-panel.props";
 const TabPanel = forward_ref<TabPanelProps, "div">((props, ref) => {
   const { as: Component = "div", className, children, ...rest } = props;
   return (
-    <Content
+    <Tabs.Content
       {...rest}
       asChild
       className={clsx(styles["tab-panel"], className)}
       ref={ref}
     >
       <Component>{children}</Component>
-    </Content>
+    </Tabs.Content>
   );
 });
 

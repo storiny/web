@@ -21,11 +21,14 @@ const BlogDashboardLayout = async ({
   params
 }: {
   children: React.ReactNode;
-  params: { identifier: string };
+  params: Promise<{ identifier: string }>;
 }): Promise<React.ReactElement | undefined> => {
   try {
-    const pathname = headers().get("x-pathname") || "/";
-    const { identifier } = params;
+    const [headers_value, { identifier }] = await Promise.all([
+      headers(),
+      params
+    ]);
+    const pathname = headers_value.get("x-pathname") || "/";
 
     if (!is_valid_blog_identifier(identifier)) {
       not_found();

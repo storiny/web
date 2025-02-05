@@ -1,5 +1,5 @@
-import { AvatarFallbackProps, AvatarImageProps } from "@radix-ui/react-avatar";
 import { AssetRating, ImageSize } from "@storiny/shared";
+import { Avatar } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
@@ -38,8 +38,8 @@ export interface ImageProps extends PolymorphicProps<"div"> {
    * The props passed to the individual component elements.
    */
   slot_props?: {
-    fallback?: AvatarFallbackProps;
-    image?: AvatarImageProps;
+    fallback?: Avatar.AvatarFallbackProps;
+    image?: Avatar.AvatarImageProps;
     overlay?: React.ComponentPropsWithoutRef<"div">;
   };
   /**

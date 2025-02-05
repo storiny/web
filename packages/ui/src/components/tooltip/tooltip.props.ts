@@ -1,15 +1,9 @@
-import {
-  TooltipArrowProps,
-  TooltipContentProps,
-  TooltipPortalProps,
-  TooltipProps as TooltipPrimitiveProps,
-  TooltipTriggerProps
-} from "@radix-ui/react-tooltip";
+import { Tooltip } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
 
-type TooltipPrimitive = TooltipPrimitiveProps &
+type TooltipPrimitive = Tooltip.TooltipProps &
   Omit<PolymorphicProps<"div">, "content">;
 
 export interface TooltipProps extends TooltipPrimitive {
@@ -25,10 +19,10 @@ export interface TooltipProps extends TooltipPrimitive {
    * The props passed to the individual component elements.
    */
   slot_props?: {
-    arrow?: TooltipArrowProps;
-    content?: TooltipContentProps;
-    portal?: TooltipPortalProps;
+    arrow?: Tooltip.TooltipArrowProps;
+    content?: Tooltip.TooltipContentProps;
+    portal?: Tooltip.TooltipPortalProps;
     right_slot?: React.ComponentPropsWithoutRef<"span">;
-    trigger?: TooltipTriggerProps;
+    trigger?: Tooltip.TooltipTriggerProps;
   };
 }

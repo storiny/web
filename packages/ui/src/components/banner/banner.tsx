@@ -1,7 +1,7 @@
 "use client";
 
-import { Close, Description, Root } from "@radix-ui/react-toast";
 import clsx from "clsx";
+import { Toast } from "radix-ui";
 import React from "react";
 
 import XIcon from "~/icons/x";
@@ -21,8 +21,9 @@ const Banner = forward_ref<BannerProps, "li">((props, ref) => {
     slot_props,
     ...rest
   } = props;
+
   return (
-    <Root
+    <Toast.Root
       {...rest}
       asChild
       className={clsx(
@@ -42,7 +43,7 @@ const Banner = forward_ref<BannerProps, "li">((props, ref) => {
       ref={ref}
     >
       <Component>
-        <Description
+        <Toast.Description
           className={clsx(css["flex"], css["t-center"], styles.description)}
         >
           {icon && (
@@ -58,8 +59,8 @@ const Banner = forward_ref<BannerProps, "li">((props, ref) => {
             </span>
           )}
           {children}
-        </Description>
-        <Close
+        </Toast.Description>
+        <Toast.Close
           aria-label="Dismiss"
           title={"Dismiss"}
           {...slot_props?.close}
@@ -70,9 +71,9 @@ const Banner = forward_ref<BannerProps, "li">((props, ref) => {
           )}
         >
           <XIcon />
-        </Close>
+        </Toast.Close>
       </Component>
-    </Root>
+    </Toast.Root>
   );
 });
 

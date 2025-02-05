@@ -46,12 +46,13 @@ export const metadata: Metadata = {
   /* eslint-enable prefer-snakecase/prefer-snakecase */
 };
 
-const NativeLayout = ({
+const NativeLayout = async ({
   children
 }: {
   children: React.ReactNode;
-}): React.ReactElement => {
-  const nonce = headers().get("x-nonce") ?? undefined;
+}): Promise<React.ReactElement> => {
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+
   return (
     <React.Fragment>
       {/* Apply theme from localStorage as soon as possible */}

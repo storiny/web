@@ -1,7 +1,7 @@
 "use client";
 
-import { Root, Thumb } from "@radix-ui/react-switch";
 import clsx from "clsx";
+import { Switch as SwitchPrimitive } from "radix-ui";
 import React from "react";
 
 import css from "~/theme/main.module.scss";
@@ -47,8 +47,9 @@ const Switch = forward_ref<SwitchProps, "button">((props, ref) => {
     slot_props,
     ...rest
   } = props;
+
   return (
-    <Root
+    <SwitchPrimitive.Root
       {...rest}
       asChild
       className={clsx(
@@ -61,7 +62,7 @@ const Switch = forward_ref<SwitchProps, "button">((props, ref) => {
       ref={ref}
     >
       <Component>
-        <Thumb
+        <SwitchPrimitive.Thumb
           {...slot_props?.thumb}
           className={clsx(
             css["flex-center"],
@@ -72,9 +73,9 @@ const Switch = forward_ref<SwitchProps, "button">((props, ref) => {
           <BarIndicator {...slot_props?.bar_indicator} />
           <span />
           <RingIndicator {...slot_props?.ring_indicator} />
-        </Thumb>
+        </SwitchPrimitive.Thumb>
       </Component>
-    </Root>
+    </SwitchPrimitive.Root>
   );
 });
 

@@ -1,7 +1,7 @@
-import { TabsContentProps } from "@radix-ui/react-tabs";
+import { Tabs } from "radix-ui";
 
 import { PolymorphicProps } from "~/types/index";
 
-type TabPanelPrimitive = TabsContentProps & PolymorphicProps<"div">;
+type TabPanelPrimitive = Tabs.TabsContentProps & PolymorphicProps<"div">;
 
 export type TabPanelProps = TabPanelPrimitive;

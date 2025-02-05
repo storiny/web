@@ -7,6 +7,7 @@ export * from "./collaboration-request";
 export * from "./comment";
 export * from "./connection";
 export * from "./friend-request";
+export * from "./image";
 export * from "./notification";
 export * from "./reply";
 export * from "./shortcut";

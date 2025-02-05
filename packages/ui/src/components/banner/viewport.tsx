@@ -1,18 +1,18 @@
 "use client";
 
-import { ToastViewportProps, Viewport } from "@radix-ui/react-toast";
 import clsx from "clsx";
+import { Toast } from "radix-ui";
 import React from "react";
 
 import styles from "./banner.module.scss";
 
-export type BannerViewportProps = ToastViewportProps &
+export type BannerViewportProps = Toast.ToastViewportProps &
   React.ComponentPropsWithoutRef<"div">;
 
 const BannerViewport = (props: BannerViewportProps): React.ReactElement => {
   const { className, ...rest } = props;
   return (
-    <Viewport
+    <Toast.Viewport
       hotkey={["F10"]}
       label={"Background notifications ({hotkey})"}
       {...rest}

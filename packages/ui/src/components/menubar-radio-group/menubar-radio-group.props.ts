@@ -1,8 +1,8 @@
-import { MenubarRadioGroupProps as MenubarRadioGroupPrimitiveProps } from "@radix-ui/react-menubar";
+import { Menubar } from "radix-ui";
 
 import { PolymorphicProps } from "~/types/index";
 
-type MenubarRadioGroupPrimitive = MenubarRadioGroupPrimitiveProps &
+type MenubarRadioGroupPrimitive = Menubar.MenubarRadioGroupProps &
   PolymorphicProps<"div">;
 
 export type MenubarRadioGroupProps = MenubarRadioGroupPrimitive;

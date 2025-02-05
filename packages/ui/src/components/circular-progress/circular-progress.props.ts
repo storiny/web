@@ -1,7 +1,4 @@
-import {
-  ProgressIndicatorProps,
-  ProgressProps
-} from "@radix-ui/react-progress";
+import { Progress } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
@@ -9,7 +6,8 @@ import { PolymorphicProps } from "~/types/index";
 export type CircularProgressSize = "lg" | "md" | "sm" | "xs";
 export type CircularProgressColor = "inverted" | "ruby";
 
-type CircularProgressPrimitive = ProgressProps & PolymorphicProps<"div">;
+type CircularProgressPrimitive = Progress.ProgressProps &
+  PolymorphicProps<"div">;
 
 export interface CircularProgressProps extends CircularProgressPrimitive {
   /**
@@ -26,7 +24,7 @@ export interface CircularProgressProps extends CircularProgressPrimitive {
    * The props passed to the individual component elements.
    */
   slot_props?: {
-    indicator?: ProgressIndicatorProps;
+    indicator?: Progress.ProgressIndicatorProps;
     progress?: React.ComponentPropsWithoutRef<"circle">;
     svg?: React.ComponentPropsWithoutRef<"svg">;
     track?: React.ComponentPropsWithoutRef<"circle">;

@@ -1,13 +1,7 @@
 "use client";
 
-import {
-  Corner as CornerPrimitive,
-  Root as RootPrimitive,
-  Scrollbar as ScrollbarPrimitive,
-  Thumb as ThumbPrimitive,
-  Viewport as ViewportPrimitive
-} from "@radix-ui/react-scroll-area";
 import clsx from "clsx";
+import { ScrollArea as ScrollAreaPrimitive } from "radix-ui";
 import React from "react";
 
 import { forward_ref } from "~/utils/forward-ref";
@@ -21,13 +15,13 @@ const Root = React.forwardRef<
   HTMLDivElement,
   Omit<ScrollAreaProps, "as" | "enable_horizontal" | "slot_props">
 >(({ children, className, size = "md", ...rest }, ref) => (
-  <RootPrimitive
+  <ScrollAreaPrimitive.Root
     {...rest}
     className={clsx(styles["scroll-area"], styles[size], className)}
     ref={ref}
   >
     {children}
-  </RootPrimitive>
+  </ScrollAreaPrimitive.Root>
 ));
 
 Root.displayName = "Root";
@@ -38,13 +32,13 @@ const Viewport = React.forwardRef<
   HTMLDivElement,
   NonNullable<NonNullable<ScrollAreaProps["slot_props"]>["viewport"]>
 >(({ className, children, ...rest }, ref) => (
-  <ViewportPrimitive
+  <ScrollAreaPrimitive.Viewport
     {...rest}
     className={clsx(styles.viewport, className)}
     ref={ref}
   >
     {children}
-  </ViewportPrimitive>
+  </ScrollAreaPrimitive.Viewport>
 ));
 
 Viewport.displayName = "Viewport";
@@ -57,7 +51,10 @@ const Thumb = ({
 }: NonNullable<
   NonNullable<ScrollAreaProps["slot_props"]>["thumb"]
 >): React.ReactElement => (
-  <ThumbPrimitive {...rest} className={clsx(styles.thumb, className)} />
+  <ScrollAreaPrimitive.Thumb
+    {...rest}
+    className={clsx(styles.thumb, className)}
+  />
 );
 
 // Corner
@@ -68,7 +65,10 @@ const Corner = ({
 }: NonNullable<
   NonNullable<ScrollAreaProps["slot_props"]>["corner"]
 >): React.ReactElement => (
-  <CornerPrimitive {...rest} className={clsx(styles.corner, className)} />
+  <ScrollAreaPrimitive.Corner
+    {...rest}
+    className={clsx(styles.corner, className)}
+  />
 );
 
 // Scrollbar
@@ -80,9 +80,12 @@ const Scrollbar = ({
 }: NonNullable<
   NonNullable<ScrollAreaProps["slot_props"]>["scrollbar"]
 >): React.ReactElement => (
-  <ScrollbarPrimitive {...rest} className={clsx(styles.scrollbar, className)}>
+  <ScrollAreaPrimitive.Scrollbar
+    {...rest}
+    className={clsx(styles.scrollbar, className)}
+  >
     {children}
-  </ScrollbarPrimitive>
+  </ScrollAreaPrimitive.Scrollbar>
 );
 
 const ScrollArea = forward_ref<ScrollAreaProps, "div">((props, ref) => {
@@ -94,6 +97,7 @@ const ScrollArea = forward_ref<ScrollAreaProps, "div">((props, ref) => {
     slot_props,
     ...rest
   } = props;
+
   return (
     <Root {...rest} asChild className={className} ref={ref}>
       <Component>

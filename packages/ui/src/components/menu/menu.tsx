@@ -1,13 +1,7 @@
 "use client";
 
-import {
-  Arrow,
-  Content,
-  Portal,
-  Root,
-  Trigger
-} from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
+import { DropdownMenu } from "radix-ui";
 import React from "react";
 
 import { forward_ref } from "~/utils/forward-ref";
@@ -25,13 +19,14 @@ const Menu = forward_ref<MenuProps, "div">((props, ref) => {
     slot_props,
     ...rest
   } = props;
+
   return (
-    <Root modal={false} {...rest}>
-      <Trigger {...slot_props?.trigger} asChild>
+    <DropdownMenu.Root modal={false} {...rest}>
+      <DropdownMenu.Trigger {...slot_props?.trigger} asChild>
         {trigger}
-      </Trigger>
-      <Portal {...slot_props?.portal}>
-        <Content
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Portal {...slot_props?.portal}>
+        <DropdownMenu.Content
           collisionPadding={12}
           sideOffset={5}
           {...slot_props?.content}
@@ -41,14 +36,14 @@ const Menu = forward_ref<MenuProps, "div">((props, ref) => {
         >
           <Component>
             {children}
-            <Arrow
+            <DropdownMenu.Arrow
               {...slot_props?.arrow}
               className={clsx(menu_styles.arrow, slot_props?.arrow?.className)}
             />
           </Component>
-        </Content>
-      </Portal>
-    </Root>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 });
 

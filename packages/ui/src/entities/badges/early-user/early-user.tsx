@@ -1,7 +1,7 @@
 "use client";
 
-import { Root } from "@radix-ui/react-accessible-icon";
 import clsx from "clsx";
+import { AccessibleIcon } from "radix-ui";
 import React from "react";
 
 import Tooltip from "~/components/tooltip";
@@ -12,7 +12,7 @@ const EarlyUserBadge = React.forwardRef<
   SVGSVGElement,
   React.ComponentPropsWithoutRef<"svg">
 >(({ className, ...rest }, ref) => (
-  <Root label={"Early user"}>
+  <AccessibleIcon.Root label={"Early user"}>
     <Tooltip content={"Early user"}>
       <svg
         {...rest}
@@ -126,7 +126,7 @@ const EarlyUserBadge = React.forwardRef<
         </defs>
       </svg>
     </Tooltip>
-  </Root>
+  </AccessibleIcon.Root>
 ));
 
 EarlyUserBadge.displayName = "EarlyUserBadge";

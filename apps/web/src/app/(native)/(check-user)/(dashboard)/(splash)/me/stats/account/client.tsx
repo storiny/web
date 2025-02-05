@@ -67,7 +67,7 @@ const AccountStatsClient = (): React.ReactElement => {
                 />
                 <StatBlock
                   caption={`${Math.round(
-                    (data.total_subscribers / data.total_followers) * 100
+                    (data.total_subscribers / data.total_followers || 1) * 100
                   )}% of your followers`}
                   className={styles.stat}
                   label={"Subscribers"}

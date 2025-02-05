@@ -1,17 +1,7 @@
 "use client";
 
-import {
-  Content,
-  Icon,
-  Portal,
-  Root,
-  ScrollDownButton,
-  ScrollUpButton,
-  Trigger,
-  Value,
-  Viewport
-} from "@radix-ui/react-select";
 import clsx from "clsx";
+import { Select as SelectPrimitive } from "radix-ui";
 import React from "react";
 
 import { use_media_query } from "~/hooks/use-media-query";
@@ -37,6 +27,7 @@ const Select = forward_ref<SelectProps, "div">((props, ref) => {
     slot_props,
     ...rest
   } = props;
+
   const {
     color: input_color,
     size: input_size,
@@ -50,9 +41,9 @@ const Select = forward_ref<SelectProps, "div">((props, ref) => {
     : size_prop;
 
   return (
-    <Root {...rest} disabled={input_disabled || disabled}>
+    <SelectPrimitive.Root {...rest} disabled={input_disabled || disabled}>
       {render_trigger(
-        <Trigger
+        <SelectPrimitive.Trigger
           {...slot_props?.trigger}
           className={clsx(
             css["focusable"],
@@ -67,19 +58,19 @@ const Select = forward_ref<SelectProps, "div">((props, ref) => {
           data-select-trigger={"true"}
           disabled={disabled}
         >
-          <Value {...slot_props?.value} data-value>
+          <SelectPrimitive.Value {...slot_props?.value} data-value>
             {value_children}
-          </Value>
-          <Icon
+          </SelectPrimitive.Value>
+          <SelectPrimitive.Icon
             {...slot_props?.icon}
             className={clsx(styles.icon, slot_props?.icon?.className)}
           >
             <ChevronIcon style={{ transform: "rotate(180deg)" }} />
-          </Icon>
-        </Trigger>
+          </SelectPrimitive.Icon>
+        </SelectPrimitive.Trigger>
       )}
-      <Portal {...slot_props?.portal}>
-        <Content
+      <SelectPrimitive.Portal {...slot_props?.portal}>
+        <SelectPrimitive.Content
           {...slot_props?.content}
           asChild
           className={clsx(
@@ -90,7 +81,7 @@ const Select = forward_ref<SelectProps, "div">((props, ref) => {
           ref={ref}
         >
           <Component>
-            <ScrollUpButton
+            <SelectPrimitive.ScrollUpButton
               {...slot_props?.scroll_up_button}
               className={clsx(
                 css["flex-center"],
@@ -99,14 +90,14 @@ const Select = forward_ref<SelectProps, "div">((props, ref) => {
               )}
             >
               <ChevronIcon />
-            </ScrollUpButton>
-            <Viewport
+            </SelectPrimitive.ScrollUpButton>
+            <SelectPrimitive.Viewport
               {...slot_props?.viewport}
               className={clsx(styles.viewport, slot_props?.viewport?.className)}
             >
               {children}
-            </Viewport>
-            <ScrollDownButton
+            </SelectPrimitive.Viewport>
+            <SelectPrimitive.ScrollDownButton
               {...slot_props?.scroll_down_button}
               className={clsx(
                 css["flex-center"],
@@ -115,11 +106,11 @@ const Select = forward_ref<SelectProps, "div">((props, ref) => {
               )}
             >
               <ChevronIcon style={{ transform: "rotate(180deg)" }} />
-            </ScrollDownButton>
+            </SelectPrimitive.ScrollDownButton>
           </Component>
-        </Content>
-      </Portal>
-    </Root>
+        </SelectPrimitive.Content>
+      </SelectPrimitive.Portal>
+    </SelectPrimitive.Root>
   );
 });
 

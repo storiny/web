@@ -1,25 +1,19 @@
-import {
-  MenubarArrowProps,
-  MenubarContentProps,
-  MenubarMenuProps as MenubarMenuPrimitiveProps,
-  MenubarPortalProps,
-  MenubarTriggerProps
-} from "@radix-ui/react-menubar";
+import { Menubar } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
 
-type MenubarPrimitive = MenubarMenuPrimitiveProps & PolymorphicProps<"div">;
+type MenubarMenuPrimitive = Menubar.MenubarMenuProps & PolymorphicProps<"div">;
 
-export interface MenubarMenuProps extends MenubarPrimitive {
+export interface MenubarMenuProps extends MenubarMenuPrimitive {
   /**
    * The props passed to the individual component elements.
    */
   slot_props?: {
-    arrow?: MenubarArrowProps;
-    content?: MenubarContentProps;
-    portal?: MenubarPortalProps;
-    trigger?: MenubarTriggerProps;
+    arrow?: Menubar.MenubarArrowProps;
+    content?: Menubar.MenubarContentProps;
+    portal?: Menubar.MenubarPortalProps;
+    trigger?: Menubar.MenubarTriggerProps;
   };
   /**
    * The trigger component.

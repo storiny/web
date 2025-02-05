@@ -1,7 +1,7 @@
 "use client";
 
-import { CheckboxItem, ItemIndicator } from "@radix-ui/react-menubar";
 import clsx from "clsx";
+import { Menubar } from "radix-ui";
 import React from "react";
 
 import CheckIcon from "~/icons/check";
@@ -24,15 +24,16 @@ const MenubarCheckboxItem = forward_ref<MenubarCheckboxItemProps, "div">(
       children,
       ...rest
     } = props;
+
     return (
-      <CheckboxItem
+      <Menubar.CheckboxItem
         {...rest}
         asChild
         className={clsx(menu_item_styles.item, styles.item, className)}
         ref={ref}
       >
         <Component>
-          <ItemIndicator
+          <Menubar.ItemIndicator
             {...slot_props?.indicator}
             className={clsx(
               css["flex-center"],
@@ -41,7 +42,7 @@ const MenubarCheckboxItem = forward_ref<MenubarCheckboxItemProps, "div">(
             )}
           >
             <CheckIcon />
-          </ItemIndicator>
+          </Menubar.ItemIndicator>
           {decorator && (
             <span
               {...slot_props?.decorator}
@@ -66,12 +67,12 @@ const MenubarCheckboxItem = forward_ref<MenubarCheckboxItemProps, "div">(
             </span>
           )}
         </Component>
-      </CheckboxItem>
+      </Menubar.CheckboxItem>
     );
   }
 );
 
 MenubarCheckboxItem.displayName = "MenubarCheckboxItem";
 
-export { CheckboxItem as MenubarCheckboxItemUnstyled };
+export const MenubarCheckboxItemUnstyled = Menubar.CheckboxItem;
 export default MenubarCheckboxItem;

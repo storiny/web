@@ -1,5 +1,5 @@
-import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { axe, wait_for_position } from "@storiny/test-utils";
+import { Tooltip as TooltipPrimitive } from "radix-ui";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
@@ -23,11 +23,11 @@ describe("<Tooltip />", () => {
 
   it("does not have any accessibility violations", async () => {
     const { baseElement } = render_test_with_provider(
-      <TooltipProvider delayDuration={0}>
+      <TooltipPrimitive.TooltipProvider delayDuration={0}>
         <Tooltip content={"Tooltip content"} open>
           Test
         </Tooltip>
-      </TooltipProvider>
+      </TooltipPrimitive.TooltipProvider>
     );
 
     expect(
@@ -76,7 +76,7 @@ describe("<Tooltip />", () => {
 
   it("passes props to the element slots", async () => {
     const { getByTestId, getAllByTestId } = render_test_with_provider(
-      <TooltipProvider delayDuration={0}>
+      <TooltipPrimitive.TooltipProvider delayDuration={0}>
         <Tooltip
           content={"Tooltip content"}
           open
@@ -91,7 +91,7 @@ describe("<Tooltip />", () => {
         >
           Test
         </Tooltip>
-      </TooltipProvider>
+      </TooltipPrimitive.TooltipProvider>
     );
 
     await wait_for_position();

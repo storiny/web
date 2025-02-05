@@ -1,12 +1,9 @@
-import {
-  DropdownMenuCheckboxItemProps,
-  DropdownMenuItemIndicatorProps
-} from "@radix-ui/react-dropdown-menu";
+import { DropdownMenu } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
 
-type MenuCheckboxItemPrimitive = DropdownMenuCheckboxItemProps &
+type MenuCheckboxItemPrimitive = DropdownMenu.DropdownMenuCheckboxItemProps &
   PolymorphicProps<"div">;
 
 export interface MenuCheckboxItemProps extends MenuCheckboxItemPrimitive {
@@ -23,7 +20,7 @@ export interface MenuCheckboxItemProps extends MenuCheckboxItemPrimitive {
    */
   slot_props?: {
     decorator?: React.ComponentPropsWithoutRef<"span">;
-    indicator?: DropdownMenuItemIndicatorProps;
+    indicator?: DropdownMenu.DropdownMenuItemIndicatorProps;
     right_slot?: React.ComponentPropsWithoutRef<"span">;
   };
 }

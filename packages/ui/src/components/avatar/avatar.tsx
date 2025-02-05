@@ -1,13 +1,9 @@
 "use client";
 
-import {
-  Fallback,
-  Image,
-  ImageLoadingStatus,
-  Root
-} from "@radix-ui/react-avatar";
 import { ImageSize } from "@storiny/shared";
+import { ImageLoadingStatus } from "@storiny/types";
 import clsx from "clsx";
+import { Avatar as AvatarPrimitive } from "radix-ui";
 import React from "react";
 
 import { AvatarGroupContext } from "~/components/avatar-group/avatar-group-context";
@@ -87,7 +83,7 @@ const Avatar = forward_ref<AvatarProps, "span">((props, ref) => {
   }, [status, final_src]);
 
   return (
-    <Root
+    <AvatarPrimitive.Root
       {...rest}
       asChild
       className={clsx(
@@ -108,7 +104,7 @@ const Avatar = forward_ref<AvatarProps, "span">((props, ref) => {
     >
       <Component>
         {!children && (
-          <Image
+          <AvatarPrimitive.Image
             {...slot_props?.image}
             alt={alt}
             className={clsx(styles.image, slot_props?.image?.className)}
@@ -119,7 +115,7 @@ const Avatar = forward_ref<AvatarProps, "span">((props, ref) => {
           />
         )}
         {children || status === "error" ? (
-          <Fallback
+          <AvatarPrimitive.Fallback
             {...slot_props?.fallback}
             className={clsx(
               css["flex-center"],
@@ -137,10 +133,10 @@ const Avatar = forward_ref<AvatarProps, "span">((props, ref) => {
             }
           >
             {children || get_name_initials(label || alt || "")}
-          </Fallback>
+          </AvatarPrimitive.Fallback>
         ) : null}
       </Component>
-    </Root>
+    </AvatarPrimitive.Root>
   );
 });
 

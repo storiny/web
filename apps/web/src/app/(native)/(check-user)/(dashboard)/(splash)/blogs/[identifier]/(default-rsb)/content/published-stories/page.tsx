@@ -8,10 +8,12 @@ import { handle_exception } from "~/common/grpc/utils";
 import ContentPublishedStoriesClient from "./client";
 
 const Page = async ({
-  params: { identifier }
+  params
 }: {
-  params: { identifier: string };
+  params: Promise<{ identifier: string }>;
 }): Promise<React.ReactElement | undefined> => {
+  const { identifier } = await params;
+
   try {
     const blog_published_story_count_response =
       await get_blog_published_story_count({

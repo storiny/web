@@ -1,7 +1,7 @@
 "use client";
 
-import { Trigger } from "@radix-ui/react-tabs";
 import clsx from "clsx";
+import { Tabs } from "radix-ui";
 import React from "react";
 
 import css from "~/theme/main.module.scss";
@@ -25,7 +25,7 @@ const Tab = forward_ref<TabProps, "button">((props, ref) => {
   const has_children = Boolean(React.Children.count(children));
 
   return (
-    <Trigger
+    <Tabs.Trigger
       {...rest}
       asChild
       className={clsx(
@@ -54,7 +54,7 @@ const Tab = forward_ref<TabProps, "button">((props, ref) => {
         ) : null}
         {has_children ? children : decorator}
       </Component>
-    </Trigger>
+    </Tabs.Trigger>
   );
 });
 

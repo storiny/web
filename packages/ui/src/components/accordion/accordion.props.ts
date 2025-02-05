@@ -1,26 +1,22 @@
-import {
-  AccordionContentProps as AccordionContentPrimitiveProps,
-  AccordionHeaderProps as AccordionHeaderPrimitiveProps,
-  AccordionItemProps as AccordionItemPrimitiveProps,
-  AccordionMultipleProps,
-  AccordionSingleProps,
-  AccordionTriggerProps as AccordionTriggerPrimitiveProps
-} from "@radix-ui/react-accordion";
+import { Accordion } from "radix-ui";
 import React from "react";
 
 import { SvgIconProps } from "~/components/svg-icon";
 import { PolymorphicProps } from "~/types/index";
 
-export type AccordionProps = (AccordionSingleProps | AccordionMultipleProps) &
+export type AccordionProps = (
+  | Accordion.AccordionSingleProps
+  | Accordion.AccordionMultipleProps
+) &
   PolymorphicProps<"div">;
 
-export type AccordionItemProps = AccordionItemPrimitiveProps &
+export type AccordionItemProps = Accordion.AccordionItemProps &
   PolymorphicProps<"div">;
 
-export type AccordionHeaderProps = AccordionHeaderPrimitiveProps &
+export type AccordionHeaderProps = Accordion.AccordionHeaderProps &
   PolymorphicProps<"h3">;
 
-export type AccordionTriggerProps = AccordionTriggerPrimitiveProps &
+export type AccordionTriggerProps = Accordion.AccordionTriggerProps &
   PolymorphicProps<"button"> & {
     /**
      * The props passed to the individual component elements.
@@ -31,7 +27,7 @@ export type AccordionTriggerProps = AccordionTriggerPrimitiveProps &
     };
   };
 
-export type AccordionContentProps = AccordionContentPrimitiveProps &
+export type AccordionContentProps = Accordion.AccordionContentProps &
   PolymorphicProps<"div"> & {
     /**
      * The props passed to the individual component elements.

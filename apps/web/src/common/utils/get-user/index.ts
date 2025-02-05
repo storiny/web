@@ -16,7 +16,7 @@ import { handle_exception } from "~/common/grpc/utils";
  * data. Returns the user's ID if the user is logged in, `null` otherwise
  */
 export const get_user = async (): Promise<string | null> => {
-  const cookie_store = cookies();
+  const cookie_store = await cookies();
   const session_cookie = cookie_store.get(SESSION_COOKIE_ID);
 
   if (session_cookie) {

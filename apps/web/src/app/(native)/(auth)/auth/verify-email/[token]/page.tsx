@@ -10,10 +10,12 @@ import VerifyEmailInvalidToken from "../invalid-token";
 import VerifyEmailSuccess from "../success";
 
 const Page = async ({
-  params: { token }
+  params
 }: {
-  params: { token: string };
+  params: Promise<{ token: string }>;
 }): Promise<React.ReactElement | undefined> => {
+  const { token } = await params;
+
   try {
     const token_response = await get_token({
       identifier: token,

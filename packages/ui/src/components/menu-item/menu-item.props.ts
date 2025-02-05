@@ -1,9 +1,10 @@
-import { DropdownMenuItemProps } from "@radix-ui/react-dropdown-menu";
+import { DropdownMenu } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
 
-type MenuItemPrimitive = DropdownMenuItemProps & PolymorphicProps<"div">;
+type MenuItemPrimitive = DropdownMenu.DropdownMenuItemProps &
+  PolymorphicProps<"div">;
 
 export interface MenuItemProps extends MenuItemPrimitive {
   /**

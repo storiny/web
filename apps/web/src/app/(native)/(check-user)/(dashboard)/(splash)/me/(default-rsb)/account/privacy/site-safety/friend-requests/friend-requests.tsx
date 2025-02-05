@@ -24,7 +24,7 @@ const FriendRequests = ({
   incoming_friend_requests
 }: FriendRequestsProps): React.ReactElement => {
   const toast = use_toast();
-  const prev_values_ref = React.useRef<FriendRequestsSchema>();
+  const prev_values_ref = React.useRef<FriendRequestsSchema>(undefined);
   const form = use_form<FriendRequestsSchema>({
     resolver: zod_resolver(FRIEND_REQUESTS_SCHEMA),
     defaultValues: {

@@ -5,11 +5,12 @@ import ArchivePage from "../../page";
 import { get_valid_month } from "./get-valid-month";
 import { get_valid_year } from "./get-valid-year";
 
-const Page = ({
-  params
+const Page = async ({
+  params: params_loadable
 }: {
-  params: { month: string; year: string };
-}): React.ReactElement | void => {
+  params: Promise<{ month: string; year: string }>;
+}): Promise<React.ReactElement | void> => {
+  const params = await params_loadable;
   const year = get_valid_year(params.year);
   const month = get_valid_month(params.month);
 

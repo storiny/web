@@ -1,7 +1,7 @@
 "use client";
 
-import { Arrow, Content, Portal, Root, Trigger } from "@radix-ui/react-tooltip";
 import clsx from "clsx";
+import { Tooltip as TooltipPrimitive } from "radix-ui";
 import React from "react";
 
 import Spacer from "~/components/spacer";
@@ -10,8 +10,6 @@ import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./tooltip.module.scss";
 import { TooltipProps } from "./tooltip.props";
-
-export { TooltipProvider } from "@radix-ui/react-tooltip";
 
 const Tooltip = forward_ref<TooltipProps, "div">((props, ref) => {
   const {
@@ -23,13 +21,14 @@ const Tooltip = forward_ref<TooltipProps, "div">((props, ref) => {
     slot_props,
     ...rest
   } = props;
+
   return (
-    <Root {...rest}>
-      <Trigger {...slot_props?.trigger} asChild>
+    <TooltipPrimitive.Root {...rest}>
+      <TooltipPrimitive.Trigger {...slot_props?.trigger} asChild>
         {children}
-      </Trigger>
-      <Portal {...slot_props?.portal}>
-        <Content
+      </TooltipPrimitive.Trigger>
+      <TooltipPrimitive.Portal {...slot_props?.portal}>
+        <TooltipPrimitive.Content
           collisionPadding={12}
           sideOffset={5}
           {...slot_props?.content}
@@ -54,17 +53,18 @@ const Tooltip = forward_ref<TooltipProps, "div">((props, ref) => {
                 </span>
               </React.Fragment>
             )}
-            <Arrow
+            <TooltipPrimitive.Arrow
               {...slot_props?.arrow}
               className={clsx(styles.arrow, slot_props?.arrow?.className)}
             />
           </Component>
-        </Content>
-      </Portal>
-    </Root>
+        </TooltipPrimitive.Content>
+      </TooltipPrimitive.Portal>
+    </TooltipPrimitive.Root>
   );
 });
 
 Tooltip.displayName = "Tooltip";
 
+export const TooltipProvider = TooltipPrimitive.TooltipProvider;
 export default Tooltip;

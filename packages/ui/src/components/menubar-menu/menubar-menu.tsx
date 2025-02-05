@@ -1,7 +1,7 @@
 "use client";
 
-import { Arrow, Content, Menu, Portal, Trigger } from "@radix-ui/react-menubar";
 import clsx from "clsx";
+import { Menubar } from "radix-ui";
 import React from "react";
 
 import { forward_ref } from "~/utils/forward-ref";
@@ -18,13 +18,14 @@ const MenubarMenu = forward_ref<MenubarMenuProps, "div">((props, ref) => {
     slot_props,
     ...rest
   } = props;
+
   return (
-    <Menu {...rest}>
-      <Trigger {...slot_props?.trigger} asChild>
+    <Menubar.Menu {...rest}>
+      <Menubar.Trigger {...slot_props?.trigger} asChild>
         {trigger}
-      </Trigger>
-      <Portal {...slot_props?.portal}>
-        <Content
+      </Menubar.Trigger>
+      <Menubar.Portal {...slot_props?.portal}>
+        <Menubar.Content
           collisionPadding={12}
           sideOffset={5}
           {...slot_props?.content}
@@ -34,14 +35,14 @@ const MenubarMenu = forward_ref<MenubarMenuProps, "div">((props, ref) => {
         >
           <Component>
             {children}
-            <Arrow
+            <Menubar.Arrow
               {...slot_props?.arrow}
               className={clsx(menu_styles.arrow, slot_props?.arrow?.className)}
             />
           </Component>
-        </Content>
-      </Portal>
-    </Menu>
+        </Menubar.Content>
+      </Menubar.Portal>
+    </Menubar.Menu>
   );
 });
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { Item, ItemIndicator, ItemText } from "@radix-ui/react-select";
 import clsx from "clsx";
+import { Select } from "radix-ui";
 import React from "react";
 
 import CheckIcon from "~/icons/check";
@@ -21,8 +21,9 @@ const Option = forward_ref<OptionProps, "div">((props, ref) => {
     slot_props,
     ...rest
   } = props;
+
   return (
-    <Item
+    <Select.Item
       {...rest}
       asChild
       className={clsx(styles.option, className)}
@@ -37,7 +38,7 @@ const Option = forward_ref<OptionProps, "div">((props, ref) => {
             {decorator}
           </span>
         )}
-        <ItemText {...slot_props?.text}>{children}</ItemText>
+        <Select.ItemText {...slot_props?.text}>{children}</Select.ItemText>
         {right_slot && (
           <span
             {...slot_props?.right_slot}
@@ -49,14 +50,14 @@ const Option = forward_ref<OptionProps, "div">((props, ref) => {
             {right_slot}
           </span>
         )}
-        <ItemIndicator
+        <Select.ItemIndicator
           {...slot_props?.indicator}
           className={clsx(styles.indicator, slot_props?.indicator?.className)}
         >
           <CheckIcon />
-        </ItemIndicator>
+        </Select.ItemIndicator>
       </Component>
-    </Item>
+    </Select.Item>
   );
 });
 

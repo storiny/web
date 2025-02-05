@@ -3,6 +3,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
+
 import Spacer from "./spacer";
 
 const meta: Meta<typeof Spacer> = {

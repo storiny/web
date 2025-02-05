@@ -1,7 +1,7 @@
 "use client";
 
-import { ItemIndicator, RadioItem } from "@radix-ui/react-menubar";
 import clsx from "clsx";
+import { Menubar } from "radix-ui";
 import React from "react";
 
 import PointIcon from "~/icons/point";
@@ -24,15 +24,16 @@ const MenubarRadioItem = forward_ref<MenubarRadioItemProps, "div">(
       children,
       ...rest
     } = props;
+
     return (
-      <RadioItem
+      <Menubar.RadioItem
         {...rest}
         asChild
         className={clsx(menu_item_styles.item, styles.item, className)}
         ref={ref}
       >
         <Component>
-          <ItemIndicator
+          <Menubar.ItemIndicator
             {...slot_props?.indicator}
             className={clsx(
               css["flex-center"],
@@ -41,7 +42,7 @@ const MenubarRadioItem = forward_ref<MenubarRadioItemProps, "div">(
             )}
           >
             <PointIcon />
-          </ItemIndicator>
+          </Menubar.ItemIndicator>
           {decorator && (
             <span
               {...slot_props?.decorator}
@@ -66,12 +67,12 @@ const MenubarRadioItem = forward_ref<MenubarRadioItemProps, "div">(
             </span>
           )}
         </Component>
-      </RadioItem>
+      </Menubar.RadioItem>
     );
   }
 );
 
 MenubarRadioItem.displayName = "MenubarRadioItem";
 
-export { RadioItem as MenubarRadioItemUnstyled };
+export const MenubarRadioItemUnstyled = Menubar.RadioItem;
 export default MenubarRadioItem;
