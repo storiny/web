@@ -8,7 +8,7 @@
   "globalEnv": [
     "NODE_ENV"
   ],
-  "pipeline": {
+  "tasks": {
     "dev": {
       "cache": false
     },
