@@ -10,9 +10,9 @@ import { is_valid_blog_identifier } from "~/common/utils/is-valid-blog-identifie
 export const generateMetadata = async ({
   params
 }: {
-  params: { identifier: string };
+  params: Promise<{ identifier: string }>;
 }): Promise<Metadata> => {
-  const { identifier } = params;
+  const { identifier } = await params;
 
   try {
     if (!is_valid_blog_identifier(identifier)) {

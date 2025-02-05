@@ -1,7 +1,7 @@
 "use client";
 
-import { Title } from "@radix-ui/react-dialog";
 import clsx from "clsx";
+import { Dialog } from "radix-ui";
 import React from "react";
 
 import css from "~/theme/main.module.scss";
@@ -35,7 +35,7 @@ const ModalHeader = React.forwardRef<HTMLDivElement, ModalHeaderProps>(
             <Spacer size={0.5} />
           </>
         )}
-        <Title
+        <Dialog.Title
           {...slot_props?.title}
           className={clsx(
             css["t-body-2"],
@@ -45,7 +45,7 @@ const ModalHeader = React.forwardRef<HTMLDivElement, ModalHeaderProps>(
           )}
         >
           {children}
-        </Title>
+        </Dialog.Title>
       </div>
     );
   }

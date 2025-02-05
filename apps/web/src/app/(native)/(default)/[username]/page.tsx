@@ -11,10 +11,12 @@ import { is_valid_username } from "~/common/utils/is-valid-username";
 import Component from "./component";
 
 const Page = async ({
-  params: { username }
+  params
 }: {
-  params: { username: string };
+  params: Promise<{ username: string }>;
 }): Promise<React.ReactElement | undefined> => {
+  const { username } = await params;
+
   try {
     if (!is_valid_username(username)) {
       not_found();

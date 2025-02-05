@@ -1,7 +1,7 @@
 "use client";
 
-import { Group, SelectGroupProps } from "@radix-ui/react-select";
 import clsx from "clsx";
+import { Select } from "radix-ui";
 import React from "react";
 
 import styles from "./select-group.module.scss";
@@ -10,11 +10,11 @@ const SelectGroup = ({
   children,
   className,
   ...rest
-}: SelectGroupProps): React.ReactElement => (
-  <Group {...rest} className={clsx(styles["select-group"], className)}>
+}: Select.SelectGroupProps): React.ReactElement => (
+  <Select.Group {...rest} className={clsx(styles["select-group"], className)}>
     {children}
-  </Group>
+  </Select.Group>
 );
 
-export type { SelectGroupProps };
+export type SelectGroupProps = Select.SelectGroupProps;
 export default SelectGroup;

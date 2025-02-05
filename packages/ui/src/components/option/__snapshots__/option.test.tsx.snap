@@ -2,6 +2,7 @@
 
 exports[`<Option /> matches snapshot 1`] = `
 <body
+  data-scroll-locked="1"
   style="pointer-events: none;"
 >
   <span
@@ -67,7 +68,7 @@ exports[`<Option /> matches snapshot 1`] = `
         class="viewport"
         data-radix-select-viewport=""
         role="presentation"
-        style="position: relative; flex: 1; overflow: auto;"
+        style="position: relative; flex: 1; overflow: hidden auto;"
       >
         <div
           aria-labelledby="radix-:r1:"

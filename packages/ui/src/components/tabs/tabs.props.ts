@@ -1,10 +1,10 @@
-import { TabsProps as TabsPrimitiveProps } from "@radix-ui/react-tabs";
+import { Tabs } from "radix-ui";
 
 import { PolymorphicProps } from "~/types/index";
 
 export type TabsOrientation = "horizontal" | "vertical";
 
-type TabsPrimitive = TabsPrimitiveProps & PolymorphicProps<"div">;
+type TabsPrimitive = Tabs.TabsProps & PolymorphicProps<"div">;
 
 export interface TabsProps extends TabsPrimitive {
   /**

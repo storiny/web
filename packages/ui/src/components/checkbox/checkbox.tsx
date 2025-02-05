@@ -1,8 +1,8 @@
 "use client";
 
-import { Indicator, Root } from "@radix-ui/react-checkbox";
-import { Root as Label } from "@radix-ui/react-label";
 import clsx from "clsx";
+import { Label } from "radix-ui";
+import { Checkbox as CheckboxPrimitive } from "radix-ui";
 import React from "react";
 
 import { use_form_field } from "~/components/form";
@@ -45,7 +45,7 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
           slot_props?.container?.className
         )}
       >
-        <Root
+        <CheckboxPrimitive.Root
           {...rest}
           aria-labelledby={label_id}
           className={clsx(
@@ -60,7 +60,7 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
           id={item_id || checkbox_id}
           ref={ref}
         >
-          <Indicator
+          <CheckboxPrimitive.Indicator
             {...slot_props?.indicator}
             className={clsx(
               css["flex-center"],
@@ -69,10 +69,10 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
             )}
           >
             <CheckIcon />
-          </Indicator>
-        </Root>
+          </CheckboxPrimitive.Indicator>
+        </CheckboxPrimitive.Root>
         {label && (
-          <Label
+          <Label.Root
             {...slot_props?.label}
             className={clsx(
               css[size === "lg" ? "t-body-1" : "t-body-2"],
@@ -84,7 +84,7 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
             id={label_id}
           >
             {label}
-          </Label>
+          </Label.Root>
         )}
       </div>
     );

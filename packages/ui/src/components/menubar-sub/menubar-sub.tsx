@@ -1,7 +1,7 @@
 "use client";
 
-import { Portal, Sub, SubContent, SubTrigger } from "@radix-ui/react-menubar";
 import clsx from "clsx";
+import { Menubar } from "radix-ui";
 import React from "react";
 
 import ChevronIcon from "~/icons/chevron";
@@ -22,9 +22,10 @@ const MenubarSub = forward_ref<MenubarSubProps, "div">((props, ref) => {
     slot_props,
     ...rest
   } = props;
+
   return (
-    <Sub {...rest}>
-      <SubTrigger
+    <Menubar.Sub {...rest}>
+      <Menubar.SubTrigger
         {...slot_props?.trigger}
         className={clsx(menu_item_styles.item, slot_props?.trigger?.className)}
       >
@@ -37,9 +38,9 @@ const MenubarSub = forward_ref<MenubarSubProps, "div">((props, ref) => {
         >
           <ChevronIcon rotation={90} />
         </span>
-      </SubTrigger>
-      <Portal {...slot_props?.portal}>
-        <SubContent
+      </Menubar.SubTrigger>
+      <Menubar.Portal {...slot_props?.portal}>
+        <Menubar.SubContent
           alignOffset={-5}
           collisionPadding={12}
           sideOffset={5}
@@ -54,9 +55,9 @@ const MenubarSub = forward_ref<MenubarSubProps, "div">((props, ref) => {
           ref={ref}
         >
           <Component>{children}</Component>
-        </SubContent>
-      </Portal>
-    </Sub>
+        </Menubar.SubContent>
+      </Menubar.Portal>
+    </Menubar.Sub>
   );
 });
 

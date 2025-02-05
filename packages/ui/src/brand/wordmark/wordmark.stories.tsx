@@ -16,12 +16,6 @@ type Story = StoryObj<typeof Wordmark>;
 
 export const Default: Story = {};
 
-export const WithBetaLabel: Story = {
-  args: {
-    show_beta: true
-  }
-};
-
 export const SizeLG: Story = {
   args: {
     size: "lg"

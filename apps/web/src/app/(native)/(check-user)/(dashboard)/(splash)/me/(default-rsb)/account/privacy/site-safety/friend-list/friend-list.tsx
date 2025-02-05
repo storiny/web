@@ -26,7 +26,7 @@ const FriendList = ({
 }: FriendListProps): React.ReactElement => {
   const toast = use_toast();
   const is_private = use_app_selector(select_is_private_account);
-  const prev_values_ref = React.useRef<FriendListSchema>();
+  const prev_values_ref = React.useRef<FriendListSchema>(undefined);
   const form = use_form<FriendListSchema>({
     resolver: zod_resolver(FRIEND_LIST_SCHEMA),
     defaultValues: {

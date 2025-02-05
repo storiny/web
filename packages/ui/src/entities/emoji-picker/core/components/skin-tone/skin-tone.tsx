@@ -1,8 +1,8 @@
 "use client";
 
-import { Item as Option } from "@radix-ui/react-select";
 import clsx from "clsx";
 import { useAtom as use_atom } from "jotai";
+import { Select as SelectPrimitive } from "radix-ui";
 import React from "react";
 
 import Select from "~/components/select";
@@ -13,6 +13,7 @@ import { skin_tone_atom } from "../../atoms";
 import { SkinTone as SkinToneEnum } from "../../constants";
 import styles from "./skin-tone.module.scss";
 
+const Option = SelectPrimitive.Item;
 const SKIN_TONE_COLOR_MAP: Record<SkinToneEnum, string> = {
   [SkinToneEnum.DARK /*        */]: "#60463A",
   [SkinToneEnum.LIGHT /*       */]: "#FFDFBD",

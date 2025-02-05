@@ -19,17 +19,18 @@ import SelfXSSWarning from "./selfxss-warning";
 import StateProvider from "./state-provider";
 
 const Progress = dynamic(() => import("./progress"));
-const PostHogPageView = dynamic(() => import("./page-view"), {
-  ssr: false
-});
+const PostHogPageView = dynamic(() => import("./page-view"));
 
-const RootLayout = ({
+const RootLayout = async ({
   children
 }: {
   children: React.ReactNode;
-}): React.ReactElement => {
-  const nonce = headers().get("x-nonce") ?? undefined;
-  const session_token = get_session_token();
+}): Promise<React.ReactElement> => {
+  const [headers_value, session_token] = await Promise.all([
+    headers(),
+    get_session_token()
+  ]);
+  const nonce = headers_value.get("x-nonce") ?? undefined;
   const logged_in = Boolean(session_token);
 
   return (

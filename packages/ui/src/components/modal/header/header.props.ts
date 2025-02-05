@@ -1,4 +1,4 @@
-import { DialogTitleProps } from "@radix-ui/react-dialog";
+import { Dialog } from "radix-ui";
 import React from "react";
 
 export interface ModalHeaderProps extends React.ComponentPropsWithRef<"div"> {
@@ -11,6 +11,6 @@ export interface ModalHeaderProps extends React.ComponentPropsWithRef<"div"> {
    */
   slot_props?: {
     decorator?: React.ComponentPropsWithoutRef<"span">;
-    title?: DialogTitleProps;
+    title?: Dialog.DialogTitleProps;
   };
 }

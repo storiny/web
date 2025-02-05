@@ -55,11 +55,9 @@ const Navbar = (props: NavbarProps): React.ReactElement => {
         >
           <Wordmark
             component_props={{
-              label: { className: styles["wordmark-label"] },
-              beta_label: { className: styles["wordmark-label"] }
+              label: { className: styles["wordmark-label"] }
             }}
             role={"presentation"}
-            show_beta
             size={"sm"}
           />
         </NextLink>

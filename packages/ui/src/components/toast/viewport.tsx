@@ -1,12 +1,12 @@
 "use client";
 
-import { Viewport } from "@radix-ui/react-toast";
+import { Toast } from "radix-ui";
 import React from "react";
 
 import styles from "./toast.module.scss";
 
 const ToastViewport = (): React.ReactElement => (
-  <Viewport
+  <Toast.Viewport
     className={styles.viewport}
     hotkey={["F9"]}
     label={"Toast notifications ({hotkey})"}

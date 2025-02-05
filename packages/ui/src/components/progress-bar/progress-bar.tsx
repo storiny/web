@@ -1,7 +1,7 @@
 "use client";
 
-import { Indicator, Root } from "@radix-ui/react-progress";
 import clsx from "clsx";
+import { Progress } from "radix-ui";
 import React from "react";
 
 import { forward_ref } from "~/utils/forward-ref";
@@ -18,8 +18,9 @@ const ProgressBar = forward_ref<ProgressBarProps, "div">((props, ref) => {
     slot_props,
     ...rest
   } = props;
+
   return (
-    <Root
+    <Progress.Root
       {...rest}
       asChild
       className={clsx(styles["progress-bar"], styles[size], className)}
@@ -27,7 +28,7 @@ const ProgressBar = forward_ref<ProgressBarProps, "div">((props, ref) => {
       value={value}
     >
       <Component>
-        <Indicator
+        <Progress.Indicator
           {...slot_props?.indicator}
           className={clsx(styles.indicator, slot_props?.indicator?.className)}
           style={{
@@ -36,7 +37,7 @@ const ProgressBar = forward_ref<ProgressBarProps, "div">((props, ref) => {
           }}
         />
       </Component>
-    </Root>
+    </Progress.Root>
   );
 });
 

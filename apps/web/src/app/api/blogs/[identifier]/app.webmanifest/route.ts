@@ -8,12 +8,15 @@ import { get_blog } from "~/common/grpc";
 import { is_valid_blog_identifier } from "~/common/utils/is-valid-blog-identifier";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
+export const dynamic = "force-static";
+export const revalidate = 86_400; // 24 hours
+
 export const GET = async (
   _: Request,
-  { params }: { params: { identifier: string } }
+  { params }: { params: Promise<{ identifier: string }> }
 ): Promise<Response> => {
   try {
-    const { identifier } = params;
+    const { identifier } = await params;
 
     if (!is_valid_blog_identifier(identifier)) {
       return new Response("Invalid blog identifier", { status: 400 });

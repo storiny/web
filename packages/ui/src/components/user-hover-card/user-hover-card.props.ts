@@ -1,14 +1,9 @@
-import {
-  HoverCardArrowProps,
-  HoverCardContentProps,
-  HoverCardPortalProps,
-  HoverCardProps,
-  HoverCardTriggerProps
-} from "@radix-ui/react-hover-card";
+import { HoverCard } from "radix-ui";
 
 import { PolymorphicProps } from "~/types/index";
 
-type UserHoverCardPrimitive = HoverCardProps & PolymorphicProps<"div">;
+type UserHoverCardPrimitive = HoverCard.HoverCardProps &
+  PolymorphicProps<"div">;
 
 export interface UserHoverCardProps extends UserHoverCardPrimitive {
   /**
@@ -19,9 +14,9 @@ export interface UserHoverCardProps extends UserHoverCardPrimitive {
    * The props passed to the individual component elements.
    */
   slot_props?: {
-    arrow?: HoverCardArrowProps;
-    content?: HoverCardContentProps;
-    portal?: HoverCardPortalProps;
-    trigger?: HoverCardTriggerProps;
+    arrow?: HoverCard.HoverCardArrowProps;
+    content?: HoverCard.HoverCardContentProps;
+    portal?: HoverCard.HoverCardPortalProps;
+    trigger?: HoverCard.HoverCardTriggerProps;
   };
 }

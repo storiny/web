@@ -9,7 +9,7 @@ export interface UseColorBoardProps {
   /**
    * Board ref
    */
-  ref: RefObject<HTMLElement>;
+  ref: RefObject<HTMLElement | null>;
   /**
    * Color state
    */

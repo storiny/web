@@ -1,14 +1,11 @@
-import {
-  ToastCloseProps,
-  ToastProps as ToastPrimitiveProps
-} from "@radix-ui/react-toast";
+import { Toast } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
 
 export type ToastSeverity = "blank" | "warning" | "success" | "error" | "info";
 
-type ToastPrimitive = ToastPrimitiveProps & PolymorphicProps<"li">;
+type ToastPrimitive = Toast.ToastProps & PolymorphicProps<"li">;
 
 export interface ToastProps extends ToastPrimitive {
   /**
@@ -20,7 +17,7 @@ export interface ToastProps extends ToastPrimitive {
    * The props passed to the individual component elements.
    */
   slot_props?: {
-    close?: ToastCloseProps;
+    close?: Toast.ToastCloseProps;
     decorator?: React.ComponentPropsWithoutRef<"span">;
   };
 }

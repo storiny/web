@@ -11,11 +11,10 @@ import { truncate } from "~/utils/truncate";
 export const generateMetadata = async ({
   params
 }: {
-  params: { comment_id: string };
+  params: Promise<{ comment_id: string }>;
 }): Promise<Metadata> => {
   try {
-    const { comment_id } = params;
-    const user_id = await get_user();
+    const [{ comment_id }, user_id] = await Promise.all([params, get_user()]);
     const comment_response = await get_comment({
       id: comment_id,
       current_user_id: user_id || undefined

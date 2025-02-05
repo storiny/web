@@ -1,3 +1,3 @@
-import { SlotProps } from "@radix-ui/react-slot";
+import { Slot } from "radix-ui";
 
-export type FormControlProps = SlotProps;
+export type FormControlProps = Slot.SlotProps;

@@ -1,7 +1,7 @@
 "use client";
 
-import { Trigger } from "@radix-ui/react-tabs";
 import clsx from "clsx";
+import { Tabs } from "radix-ui";
 import React from "react";
 
 import { ModalSidebarItemProps } from "~/components/modal";
@@ -15,7 +15,7 @@ const ModalSidebarItem = React.forwardRef<
 >((props, ref) => {
   const { decorator, slot_props, className, children, ...rest } = props;
   return (
-    <Trigger
+    <Tabs.Trigger
       {...rest}
       className={clsx(
         styles.reset,
@@ -38,7 +38,7 @@ const ModalSidebarItem = React.forwardRef<
         </span>
       )}
       {children}
-    </Trigger>
+    </Tabs.Trigger>
   );
 });
 

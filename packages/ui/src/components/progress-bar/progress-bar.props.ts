@@ -1,13 +1,10 @@
-import {
-  ProgressIndicatorProps,
-  ProgressProps
-} from "@radix-ui/react-progress";
+import { Progress } from "radix-ui";
 
 import { PolymorphicProps } from "~/types/index";
 
 export type ProgressBarSize = "lg" | "md";
 
-type ProgressBarPrimitive = ProgressProps & PolymorphicProps<"div">;
+type ProgressBarPrimitive = Progress.ProgressProps & PolymorphicProps<"div">;
 
 export interface ProgressBarProps extends ProgressBarPrimitive {
   /**
@@ -19,7 +16,7 @@ export interface ProgressBarProps extends ProgressBarPrimitive {
    * The props passed to the individual component elements.
    */
   slot_props?: {
-    indicator?: ProgressIndicatorProps;
+    indicator?: Progress.ProgressIndicatorProps;
   };
   /**
    * The value of the progress indicator.

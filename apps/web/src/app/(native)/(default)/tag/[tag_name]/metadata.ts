@@ -8,12 +8,10 @@ import { get_user } from "~/common/utils/get-user";
 export const generateMetadata = async ({
   params
 }: {
-  params: { tag_name: string };
+  params: Promise<{ tag_name: string }>;
 }): Promise<Metadata> => {
-  const { tag_name } = params;
-
   try {
-    const user_id = await get_user();
+    const [{ tag_name }, user_id] = await Promise.all([params, get_user()]);
     const tag = await get_tag({
       name: tag_name,
       current_user_id: user_id || undefined

@@ -12,7 +12,7 @@ import LoginActivityClient from "./client";
 
 const Page = async (): Promise<React.ReactElement | undefined> => {
   try {
-    const session_token = get_session_token();
+    const session_token = await get_session_token();
 
     if (!session_token) {
       redirect(`/login?to=${encodeURIComponent("/me/account/login-activity")}`);

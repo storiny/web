@@ -1,7 +1,7 @@
-import { MenubarProps as MenubarPrimitiveProps } from "@radix-ui/react-menubar";
+import { Menubar } from "radix-ui";
 
 import { PolymorphicProps } from "~/types/index";
 
-type MenubarPrimitive = MenubarPrimitiveProps & PolymorphicProps<"div">;
+type MenubarPrimitive = Menubar.MenubarProps & PolymorphicProps<"div">;
 
 export type MenubarProps = MenubarPrimitive;

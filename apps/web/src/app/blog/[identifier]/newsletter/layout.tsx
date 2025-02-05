@@ -29,16 +29,18 @@ const BlogNewsletterLayout = async ({
   params
 }: {
   children: React.ReactNode;
-  params: { identifier: string };
+  params: Promise<{ identifier: string }>;
 }): Promise<React.ReactElement | undefined> => {
+  const { identifier } = await params;
+
   try {
-    if (!is_valid_blog_identifier(params.identifier)) {
+    if (!is_valid_blog_identifier(identifier)) {
       not_found();
     }
 
     const user_id = await get_user();
     const response = await get_blog_newsletter({
-      identifier: params.identifier,
+      identifier,
       current_user_id: user_id || undefined
     });
     const { name, description, user, newsletter_splash_id } = response;

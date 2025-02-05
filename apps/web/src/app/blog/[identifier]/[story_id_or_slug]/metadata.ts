@@ -13,9 +13,9 @@ import { get_cdn_url } from "~/utils/get-cdn-url";
 export const generateMetadata = async ({
   params
 }: {
-  params: { identifier: string; story_id_or_slug: string };
+  params: Promise<{ identifier: string; story_id_or_slug: string }>;
 }): Promise<Metadata> => {
-  const { story_id_or_slug, identifier } = params;
+  const { story_id_or_slug, identifier } = await params;
 
   if (!is_valid_blog_identifier(identifier)) {
     not_found();

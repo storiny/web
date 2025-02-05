@@ -1,15 +1,10 @@
-import {
-  SliderProps as SliderPrimitiveProps,
-  SliderRangeProps,
-  SliderThumbProps,
-  SliderTrackProps
-} from "@radix-ui/react-slider";
+import { Slider } from "radix-ui";
 
 import { PolymorphicProps } from "~/types/index";
 
 export type SliderOrientation = "horizontal" | "vertical";
 
-type SliderPrimitive = SliderPrimitiveProps &
+type SliderPrimitive = Slider.SliderProps &
   Omit<PolymorphicProps<"span">, "defaultValue">;
 
 export interface SliderProps extends SliderPrimitive {
@@ -22,8 +17,8 @@ export interface SliderProps extends SliderPrimitive {
    * The props passed to the individual component elements.
    */
   slot_props?: {
-    range?: SliderRangeProps;
-    thumb?: SliderThumbProps;
-    track?: SliderTrackProps;
+    range?: Slider.SliderRangeProps;
+    thumb?: Slider.SliderThumbProps;
+    track?: Slider.SliderTrackProps;
   };
 }

@@ -12,10 +12,12 @@ import { is_valid_username } from "~/common/utils/is-valid-username";
 import Component from "./component";
 
 const Page = async ({
-  params: { id_or_slug, username, comment_id }
+  params
 }: {
-  params: { comment_id: string; id_or_slug: string; username: string };
+  params: Promise<{ comment_id: string; id_or_slug: string; username: string }>;
 }): Promise<React.ReactElement | undefined> => {
+  const { id_or_slug, username, comment_id } = await params;
+
   try {
     if (!is_snowflake(comment_id)) {
       not_found();

@@ -12,11 +12,10 @@ import ContentNewsletterClient from "./client";
 const Page = async ({
   params
 }: {
-  params: { identifier: string };
+  params: Promise<{ identifier: string }>;
 }): Promise<React.ReactElement | undefined> => {
   try {
-    const { identifier } = params;
-    const user_id = await get_user();
+    const [{ identifier }, user_id] = await Promise.all([params, get_user()]);
 
     if (!user_id) {
       redirect(

@@ -21,7 +21,6 @@ const Wordmark = forward_ref<WordmarkProps, "span">((props, ref) => {
   const {
     as: Component = "span",
     size = "md",
-    show_beta,
     component_props,
     className,
     ...rest
@@ -46,18 +45,6 @@ const Wordmark = forward_ref<WordmarkProps, "span">((props, ref) => {
         level={"h4"}
       >
         Storiny
-        {show_beta && (
-          <Typography
-            {...component_props?.beta_label}
-            className={clsx(
-              styles.x,
-              styles.beta,
-              component_props?.beta_label?.className
-            )}
-          >
-            Beta
-          </Typography>
-        )}
       </Typography>
     </Component>
   );

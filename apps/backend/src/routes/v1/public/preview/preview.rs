@@ -12,6 +12,7 @@ use serde::{
     Serialize,
 };
 
+use crate::middlewares::identity::identity::Identity;
 use sqlx::{
     types::Json,
     FromRow,
@@ -52,20 +53,72 @@ struct Story {
 #[tracing::instrument(
     name = "GET /v1/public/preview/{story_id}",
     skip_all,
-    fields(story_id = %path.story_id),
+    fields(
+        user_id = tracing::field::Empty,
+        story_id = %path.story_id
+    ),
     err
 )]
 async fn get(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
+    maybe_user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
+    let user_id = maybe_user.map(|user| user.id()).transpose()?;
+
+    tracing::Span::current().record("user_id", user_id);
+
     let story_id = path
         .story_id
         .parse::<i64>()
         .map_err(|_| AppError::from("Invalid story ID"))?;
 
-    let story = sqlx::query_as::<_, Story>(
-        r#"
+    let story = if let Some(user_id) = user_id {
+        sqlx::query_as::<_, Story>(
+            r#"
+SELECT
+    s.id,
+    s.title,
+    s.slug,
+    s.splash_id,
+    s.splash_hex,
+    s.description,
+    s.read_count,
+    s.like_count,
+    s.comment_count,
+    -- User
+    JSON_BUILD_OBJECT('id', u.id, 'username', u.username) AS "user"
+FROM
+    stories s
+        -- Join user
+        INNER JOIN users u
+            ON u.id = s.user_id
+            AND u.deleted_at IS NULL
+            AND u.deactivated_at IS NULL
+            -- Skip stories from private users
+            AND (u.is_private IS FALSE OR u.id = $2)
+WHERE
+      s.id = $1
+      -- Public
+  AND (s.visibility = 2 OR s.user_id = $2)
+  AND s.published_at IS NOT NULL
+  AND s.deleted_at IS NULL
+"#,
+        )
+        .bind(story_id)
+        .bind(user_id)
+        .fetch_one(&data.db_pool)
+        .await
+        .map_err(|error| {
+            if matches!(error, sqlx::Error::RowNotFound) {
+                AppError::from("Story not found")
+            } else {
+                AppError::SqlxError(error)
+            }
+        })?
+    } else {
+        sqlx::query_as::<_, Story>(
+            r#"
 SELECT
     s.id,
     s.title,
@@ -94,17 +147,18 @@ WHERE
   AND s.published_at IS NOT NULL
   AND s.deleted_at IS NULL
 "#,
-    )
-    .bind(story_id)
-    .fetch_one(&data.db_pool)
-    .await
-    .map_err(|error| {
-        if matches!(error, sqlx::Error::RowNotFound) {
-            AppError::from("Story not found")
-        } else {
-            AppError::SqlxError(error)
-        }
-    })?;
+        )
+        .bind(story_id)
+        .fetch_one(&data.db_pool)
+        .await
+        .map_err(|error| {
+            if matches!(error, sqlx::Error::RowNotFound) {
+                AppError::from("Story not found")
+            } else {
+                AppError::SqlxError(error)
+            }
+        })?
+    };
 
     Ok(HttpResponse::Ok().json(story))
 }

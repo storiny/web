@@ -1,4 +1,4 @@
-import { ToggleGroupItemProps as ToggleGroupItemPrimitiveProps } from "@radix-ui/react-toggle-group";
+import { ToggleGroup } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
@@ -7,7 +7,7 @@ import { TooltipProps } from "../tooltip";
 
 export type ToggleGroupItemSize = "xs" | "sm" | "md" | "lg";
 
-type ToggleGroupItemPrimitive = ToggleGroupItemPrimitiveProps &
+type ToggleGroupItemPrimitive = ToggleGroup.ToggleGroupItemProps &
   PolymorphicProps<"button">;
 
 export interface ToggleGroupItemProps extends ToggleGroupItemPrimitive {

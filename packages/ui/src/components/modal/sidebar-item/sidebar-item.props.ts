@@ -1,7 +1,7 @@
-import { TabsTriggerProps } from "@radix-ui/react-tabs";
+import { Tabs } from "radix-ui";
 import React from "react";
 
-type ModalSidebarItemPrimitive = TabsTriggerProps &
+type ModalSidebarItemPrimitive = Tabs.TabsTriggerProps &
   React.ComponentPropsWithRef<"button">;
 
 export interface ModalSidebarItemProps extends ModalSidebarItemPrimitive {

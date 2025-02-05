@@ -14,10 +14,10 @@ export const generateMetadata = async ({
   params,
   parent: resolving
 }: {
-  params: { identifier: string };
+  params: Promise<{ identifier: string }>;
   parent: ResolvingMetadata;
 }): Promise<Metadata> => {
-  const { identifier } = params;
+  const { identifier } = await params;
 
   try {
     if (!is_valid_blog_identifier(identifier)) {

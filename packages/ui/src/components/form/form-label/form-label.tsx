@@ -1,6 +1,6 @@
 "use client";
 
-import { Root } from "@radix-ui/react-label";
+import { Label as LabelPrimitive } from "radix-ui";
 import React from "react";
 
 import Label from "~/components/label";
@@ -13,11 +13,11 @@ const FormLabel = React.forwardRef<HTMLLabelElement, FormLabelProps>(
     const { children, ...rest } = props;
     const { item_id, disabled, required } = use_form_field();
     return (
-      <Root {...rest} asChild htmlFor={item_id} ref={ref}>
+      <LabelPrimitive.Root {...rest} asChild htmlFor={item_id} ref={ref}>
         <Label disabled={disabled} required={required}>
           {children}
         </Label>
-      </Root>
+      </LabelPrimitive.Root>
     );
   }
 );

@@ -22,7 +22,7 @@ exports[`<Menu /> matches snapshot 1`] = `
   <div
     data-radix-popper-content-wrapper=""
     dir="ltr"
-    style="position: fixed; left: 0px; top: 0px; transform: translate(0, -200%); min-width: max-content;"
+    style="position: fixed; left: 0px; top: 0px; transform: translate(0, -200%); min-width: max-content; --radix-popper-transform-origin:  ;"
   >
     <div
       aria-labelledby="radix-:r0:"
