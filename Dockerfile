@@ -1,7 +1,6 @@
 FROM node:20-alpine AS base
 
 ENV NODE_OPTIONS="--max-old-space-size=5120"
-ENV SKIP_YARN_COREPACK_CHECK="0"
 
 # Builder
 
@@ -10,6 +9,7 @@ RUN apk add --no-cache libc6-compat
 RUN apk update
 # Set working directory
 WORKDIR /app
+RUN corepack enable yarn && yarn -v
 RUN yarn global add turbo
 COPY . .
 RUN turbo prune @storiny/web --docker
