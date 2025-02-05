@@ -1,7 +1,4 @@
-import {
-  SwitchProps as SwitchPrimitiveProps,
-  SwitchThumbProps
-} from "@radix-ui/react-switch";
+import { Switch } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
@@ -9,7 +6,7 @@ import { PolymorphicProps } from "~/types/index";
 export type SwitchColor = "inverted" | "ruby";
 export type SwitchSize = "md" | "sm";
 
-type SwitchPrimitive = SwitchPrimitiveProps & PolymorphicProps<"button">;
+type SwitchPrimitive = Switch.SwitchProps & PolymorphicProps<"button">;
 
 export interface SwitchProps extends SwitchPrimitive {
   /**
@@ -28,6 +25,6 @@ export interface SwitchProps extends SwitchPrimitive {
   slot_props?: {
     bar_indicator?: React.ComponentPropsWithoutRef<"svg">;
     ring_indicator?: React.ComponentPropsWithoutRef<"svg">;
-    thumb?: SwitchThumbProps;
+    thumb?: Switch.SwitchThumbProps;
   };
 }

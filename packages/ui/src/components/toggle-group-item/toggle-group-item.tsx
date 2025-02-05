@@ -1,7 +1,7 @@
 "use client";
 
-import { Item } from "@radix-ui/react-toggle-group";
 import clsx from "clsx";
+import { ToggleGroup } from "radix-ui";
 import React from "react";
 
 import css from "~/theme/main.module.scss";
@@ -47,7 +47,7 @@ const ToggleGroupItem = forward_ref<ToggleGroupItemProps, "button">(
             slot_props?.container?.className
           )}
         >
-          <Item
+          <ToggleGroup.Item
             {...rest}
             asChild
             className={clsx(
@@ -60,7 +60,7 @@ const ToggleGroupItem = forward_ref<ToggleGroupItemProps, "button">(
             ref={ref}
           >
             <Component>{children}</Component>
-          </Item>
+          </ToggleGroup.Item>
         </span>
       </Container>
     );

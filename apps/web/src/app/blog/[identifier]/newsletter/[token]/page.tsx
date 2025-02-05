@@ -8,10 +8,12 @@ import { handle_exception } from "~/common/grpc/utils";
 import Client from "./client";
 
 const Page = async ({
-  params: { token }
+  params
 }: {
-  params: { token: string };
+  params: Promise<{ token: string }>;
 }): Promise<React.ReactElement | undefined> => {
+  const { token } = await params;
+
   try {
     const token_response = await verify_newsletter_subscription({
       identifier: token

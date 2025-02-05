@@ -24,7 +24,7 @@ const BlogRequests = ({
   incoming_blog_requests
 }: BlogRequestsProps): React.ReactElement => {
   const toast = use_toast();
-  const prev_values_ref = React.useRef<BlogRequestsSchema>();
+  const prev_values_ref = React.useRef<BlogRequestsSchema>(undefined);
   const form = use_form<BlogRequestsSchema>({
     resolver: zod_resolver(BLOG_REQUESTS_SCHEMA),
     defaultValues: {

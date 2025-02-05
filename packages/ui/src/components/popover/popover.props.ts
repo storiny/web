@@ -1,25 +1,19 @@
-import {
-  PopoverArrowProps,
-  PopoverContentProps,
-  PopoverPortalProps,
-  PopoverProps as PopoverPrimitiveProps,
-  PopoverTriggerProps
-} from "@radix-ui/react-popover";
+import { Popover } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
 
-type PopoverPrimitive = PopoverPrimitiveProps & PolymorphicProps<"div">;
+type PopoverPrimitive = Popover.PopoverProps & PolymorphicProps<"div">;
 
 export interface PopoverProps extends PopoverPrimitive {
   /**
    * The props passed to the individual component elements.
    */
   slot_props?: {
-    arrow?: PopoverArrowProps;
-    content?: PopoverContentProps;
-    portal?: PopoverPortalProps;
-    trigger?: PopoverTriggerProps;
+    arrow?: Popover.PopoverArrowProps;
+    content?: Popover.PopoverContentProps;
+    portal?: Popover.PopoverPortalProps;
+    trigger?: Popover.PopoverTriggerProps;
   };
   /**
    * The trigger component.

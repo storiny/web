@@ -1,7 +1,7 @@
 "use client";
 
-import { Root as VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import clsx from "clsx";
+import { VisuallyHidden } from "radix-ui";
 import React from "react";
 
 import { use_color_board } from "../../hooks";
@@ -31,7 +31,7 @@ const ColorBoard = (props: ColorBoardProps): React.ReactElement => {
       style={{ ...style, background: state.get_solid_color() }}
       tabIndex={0}
     >
-      <VisuallyHidden {...description_props} />
+      <VisuallyHidden.Root {...description_props} />
       <span
         className={common_styles.thumb}
         data-testid={"color-board-thumb"}

@@ -11,10 +11,12 @@ import ResetInvalidToken from "../invalid-token";
 import ResetTokenExpired from "../token-expired";
 
 const Page = async ({
-  params: { token }
+  params
 }: {
-  params: { token: string };
+  params: Promise<{ token: string }>;
 }): Promise<React.ReactElement | undefined> => {
+  const { token } = await params;
+
   try {
     const token_response = await get_token({
       identifier: token,

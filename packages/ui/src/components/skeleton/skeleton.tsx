@@ -19,6 +19,7 @@ const Skeleton = forward_ref<SkeletonProps, "span">((props, ref) => {
     style,
     ...rest
   } = props;
+
   return (
     <Component
       {...rest}

@@ -1,7 +1,4 @@
-import {
-  ToastCloseProps,
-  ToastProps as ToastPrimitiveProps
-} from "@radix-ui/react-toast";
+import { Toast } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
@@ -9,8 +6,7 @@ import { PolymorphicProps } from "~/types/index";
 export type BannerColor = "inverted" | "lemon" | "ruby";
 export type BannerIcon = "info" | "warning" | "error";
 
-type BannerPrimitive = ToastPrimitiveProps &
-  Omit<PolymorphicProps<"li">, "color">;
+type BannerPrimitive = Toast.ToastProps & Omit<PolymorphicProps<"li">, "color">;
 
 export interface BannerProps extends BannerPrimitive {
   /**
@@ -26,7 +22,7 @@ export interface BannerProps extends BannerPrimitive {
    * The props passed to the individual component elements.
    */
   slot_props?: {
-    close?: ToastCloseProps;
+    close?: Toast.ToastCloseProps;
     decorator?: React.ComponentPropsWithoutRef<"span">;
   };
 }

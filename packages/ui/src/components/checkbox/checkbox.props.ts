@@ -1,7 +1,4 @@
-import {
-  CheckboxIndicatorProps,
-  CheckboxProps as CheckboxPrimitiveProps
-} from "@radix-ui/react-checkbox";
+import { Checkbox } from "radix-ui";
 import React from "react";
 
 export type CheckboxColor = "inverted" | "ruby";
@@ -9,7 +6,7 @@ export type CheckboxSize = "md" | "lg";
 
 // Not polymorphic
 type CheckboxPrimitive = Omit<
-  CheckboxPrimitiveProps & React.ComponentPropsWithRef<"input" | "button">,
+  Checkbox.CheckboxProps & React.ComponentPropsWithRef<"input" | "button">,
   "color" | "size"
 >;
 
@@ -39,7 +36,7 @@ export interface CheckboxProps extends CheckboxPrimitive {
    */
   slot_props?: {
     container?: React.ComponentPropsWithoutRef<"div">;
-    indicator?: CheckboxIndicatorProps;
+    indicator?: Checkbox.CheckboxIndicatorProps;
     label?: React.ComponentPropsWithoutRef<"label">;
   };
 }

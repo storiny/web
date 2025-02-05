@@ -1,7 +1,7 @@
 "use client";
 
-import { Close, Description, Root } from "@radix-ui/react-toast";
 import clsx from "clsx";
+import { Toast as ToastPrimitive } from "radix-ui";
 import React from "react";
 
 import CheckIcon from "~/icons/check";
@@ -33,7 +33,7 @@ const Toast = forward_ref<ToastProps, "li">((props, ref) => {
     ...rest
   } = props;
   return (
-    <Root
+    <ToastPrimitive.Root
       {...rest}
       asChild
       className={clsx(
@@ -46,7 +46,7 @@ const Toast = forward_ref<ToastProps, "li">((props, ref) => {
       ref={ref}
     >
       <Component>
-        <Description className={styles.description}>
+        <ToastPrimitive.Description className={styles.description}>
           {severity !== "blank" && (
             <span
               {...slot_props?.decorator}
@@ -60,8 +60,8 @@ const Toast = forward_ref<ToastProps, "li">((props, ref) => {
             </span>
           )}
           <div className={clsx(css["ellipsis"], styles.child)}>{children}</div>
-        </Description>
-        <Close
+        </ToastPrimitive.Description>
+        <ToastPrimitive.Close
           aria-label="Dismiss"
           title={"Dismiss"}
           {...slot_props?.close}
@@ -73,9 +73,9 @@ const Toast = forward_ref<ToastProps, "li">((props, ref) => {
           >
             <XIcon />
           </span>
-        </Close>
+        </ToastPrimitive.Close>
       </Component>
-    </Root>
+    </ToastPrimitive.Root>
   );
 });
 

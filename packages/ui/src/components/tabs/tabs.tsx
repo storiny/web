@@ -1,7 +1,7 @@
 "use client";
 
-import { Root } from "@radix-ui/react-tabs";
 import clsx from "clsx";
+import { Tabs as TabsPrimitive } from "radix-ui";
 import React from "react";
 
 import { forward_ref } from "~/utils/forward-ref";
@@ -18,7 +18,7 @@ const Tabs = forward_ref<TabsProps, "div">((props, ref) => {
     ...rest
   } = props;
   return (
-    <Root
+    <TabsPrimitive.Root
       {...rest}
       asChild
       className={clsx(styles.tabs, styles[orientation], className)}
@@ -26,7 +26,7 @@ const Tabs = forward_ref<TabsProps, "div">((props, ref) => {
       ref={ref}
     >
       <Component>{children}</Component>
-    </Root>
+    </TabsPrimitive.Root>
   );
 });
 

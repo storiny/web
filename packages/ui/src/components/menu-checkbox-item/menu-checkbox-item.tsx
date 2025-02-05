@@ -1,7 +1,7 @@
 "use client";
 
-import { CheckboxItem, ItemIndicator } from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
+import { DropdownMenu } from "radix-ui";
 import React from "react";
 
 import CheckIcon from "~/icons/check";
@@ -24,15 +24,16 @@ const MenuCheckboxItem = forward_ref<MenuCheckboxItemProps, "div">(
       children,
       ...rest
     } = props;
+
     return (
-      <CheckboxItem
+      <DropdownMenu.CheckboxItem
         {...rest}
         asChild
         className={clsx(menu_item_styles.item, styles.item, className)}
         ref={ref}
       >
         <Component>
-          <ItemIndicator
+          <DropdownMenu.ItemIndicator
             {...slot_props?.indicator}
             className={clsx(
               css["flex-center"],
@@ -41,7 +42,7 @@ const MenuCheckboxItem = forward_ref<MenuCheckboxItemProps, "div">(
             )}
           >
             <CheckIcon />
-          </ItemIndicator>
+          </DropdownMenu.ItemIndicator>
           {decorator && (
             <span
               {...slot_props?.decorator}
@@ -66,12 +67,12 @@ const MenuCheckboxItem = forward_ref<MenuCheckboxItemProps, "div">(
             </span>
           )}
         </Component>
-      </CheckboxItem>
+      </DropdownMenu.CheckboxItem>
     );
   }
 );
 
 MenuCheckboxItem.displayName = "MenuCheckboxItem";
 
-export { CheckboxItem as MenuCheckboxItemUnstyled };
+export const MenuCheckboxItemUnstyled = DropdownMenu.CheckboxItem;
 export default MenuCheckboxItem;

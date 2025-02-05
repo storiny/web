@@ -1,14 +1,7 @@
 "use client";
 
-import {
-  Close,
-  Content,
-  Overlay,
-  Portal,
-  Root,
-  Trigger
-} from "@radix-ui/react-dialog";
 import clsx from "clsx";
+import { Dialog } from "radix-ui";
 import React from "react";
 
 import XIcon from "~/icons/x";
@@ -23,8 +16,6 @@ import ModalHeader from "./header";
 import styles from "./modal.module.scss";
 import { ModalProps } from "./modal.props";
 import ModalSidebar from "./sidebar";
-
-export { Description } from "@radix-ui/react-dialog";
 
 const Modal = forward_ref<ModalProps, "div">((props, ref) => {
   const {
@@ -44,12 +35,12 @@ const Modal = forward_ref<ModalProps, "div">((props, ref) => {
   const Container = is_tabbed_mode ? Tabs : "div";
 
   return (
-    <Root {...rest}>
-      <Trigger asChild {...slot_props?.trigger}>
+    <Dialog.Root {...rest}>
+      <Dialog.Trigger asChild {...slot_props?.trigger}>
         {trigger}
-      </Trigger>
-      <Portal {...slot_props?.portal}>
-        <Overlay
+      </Dialog.Trigger>
+      <Dialog.Portal {...slot_props?.portal}>
+        <Dialog.Overlay
           {...slot_props?.overlay}
           className={clsx(
             overlay_styles.overlay,
@@ -57,7 +48,7 @@ const Modal = forward_ref<ModalProps, "div">((props, ref) => {
             slot_props?.overlay
           )}
         />
-        <Content
+        <Dialog.Content
           {...slot_props?.content}
           asChild
           className={clsx(
@@ -111,7 +102,7 @@ const Modal = forward_ref<ModalProps, "div">((props, ref) => {
                   last element to get focused in the focus trap cycle
                  */}
                 {!hide_close_button && (
-                  <Close asChild>
+                  <Dialog.Close asChild>
                     <IconButton
                       aria-label={"Close"}
                       title={"Close"}
@@ -124,17 +115,18 @@ const Modal = forward_ref<ModalProps, "div">((props, ref) => {
                     >
                       <XIcon />
                     </IconButton>
-                  </Close>
+                  </Dialog.Close>
                 )}
               </div>
             </Container>
           </Component>
-        </Content>
-      </Portal>
-    </Root>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 });
 
 Modal.displayName = "Modal";
 
+export const Description = Dialog.Description;
 export default Modal;

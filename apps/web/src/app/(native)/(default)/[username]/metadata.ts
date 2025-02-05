@@ -10,12 +10,10 @@ import { get_cdn_url } from "~/utils/get-cdn-url";
 export const generateMetadata = async ({
   params
 }: {
-  params: { username: string };
+  params: Promise<{ username: string }>;
 }): Promise<Metadata> => {
-  const { username } = params;
-
   try {
-    const user_id = await get_user();
+    const [{ username }, user_id] = await Promise.all([params, get_user()]);
     const profile = await get_profile({
       username,
       current_user_id: user_id || undefined

@@ -8,10 +8,10 @@ import { is_valid_blog_identifier } from "~/common/utils/is-valid-blog-identifie
 
 export const GET = async (
   _: Request,
-  { params }: { params: { identifier: string } }
+  { params }: { params: Promise<{ identifier: string }> }
 ): Promise<Response> => {
   try {
-    const { identifier } = params;
+    const { identifier } = await params;
 
     if (!is_valid_blog_identifier(identifier)) {
       return new Response("Invalid blog identifier", { status: 400 });

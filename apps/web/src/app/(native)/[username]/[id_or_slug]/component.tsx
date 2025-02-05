@@ -1,3 +1,5 @@
+"use client";
+
 import { ImageSize, StoryAgeRestriction, StoryLicense } from "@storiny/shared";
 import { CATEGORY_LABEL_MAP } from "@storiny/shared/src/constants/category-icon-map";
 import { LICENSE_LABEL_MAP } from "@storiny/shared/src/constants/license-icon-map";

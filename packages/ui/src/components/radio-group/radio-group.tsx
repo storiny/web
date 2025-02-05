@@ -1,7 +1,7 @@
 "use client";
 
-import { Root } from "@radix-ui/react-radio-group";
 import clsx from "clsx";
+import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
 import React from "react";
 
 import { forward_ref } from "~/utils/forward-ref";
@@ -20,16 +20,17 @@ const RadioGroup = forward_ref<RadioGroupProps, "div">((props, ref) => {
     className,
     ...rest
   } = props;
+
   return (
     <RadioGroupContext.Provider value={{ size, color, auto_size }}>
-      <Root
+      <RadioGroupPrimitive.Root
         {...rest}
         asChild
         className={clsx(styles["radio-group"], className)}
         ref={ref}
       >
         <Component>{children}</Component>
-      </Root>
+      </RadioGroupPrimitive.Root>
     </RadioGroupContext.Provider>
   );
 });

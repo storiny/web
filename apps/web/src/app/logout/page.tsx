@@ -8,16 +8,17 @@ import { SESSION_COOKIE_ID } from "~/common/constants";
 import Client from "./client";
 
 const Page = async ({
-  searchParams: search_params
+  searchParams: search_params_loadable
 }: {
   // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }): Promise<React.ReactElement> => {
+  const search_params = await search_params_loadable;
   const logout = async (): Promise<void> => {
     "use server";
 
     // Delete the cookie.
-    cookies().set({
+    (await cookies()).set({
       name: SESSION_COOKIE_ID,
       value: "",
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase

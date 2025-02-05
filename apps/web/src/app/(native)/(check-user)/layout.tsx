@@ -14,8 +14,8 @@ const CheckUserLayout = async ({
 }: {
   children: React.ReactNode;
 }): Promise<React.ReactElement> => {
-  const pathname = headers().get("x-pathname") || "/";
-  const user_id = await get_user();
+  const [headers_value, user_id] = await Promise.all([headers(), get_user()]);
+  const pathname = headers_value.get("x-pathname") || "/";
 
   if (!user_id) {
     const to = pathname === "/" ? "" : `?to=${encodeURIComponent(pathname)}`;

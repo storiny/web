@@ -1,15 +1,11 @@
-import {
-  AvatarFallbackProps,
-  AvatarImageProps,
-  AvatarProps as AvatarPrimitiveProps
-} from "@radix-ui/react-avatar";
+import { Avatar } from "radix-ui";
 
 import { PolymorphicProps } from "~/types/index";
 
 export type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl" | "xl2";
 
 type AvatarPrimitive = Omit<
-  AvatarPrimitiveProps & PolymorphicProps<"span">,
+  Avatar.AvatarProps & PolymorphicProps<"span">,
   "color"
 >;
 
@@ -46,8 +42,8 @@ export interface AvatarProps extends AvatarPrimitive {
    * The props passed to the individual component elements.
    */
   slot_props?: {
-    fallback?: AvatarFallbackProps;
-    image?: AvatarImageProps;
+    fallback?: Avatar.AvatarFallbackProps;
+    image?: Avatar.AvatarImageProps;
   };
   /**
    * The source of the image element.

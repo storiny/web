@@ -18,13 +18,15 @@ import ArchiveRightSidebar from "./right-sidebar";
 import styles from "./styles.module.scss";
 
 const BlogArchiveLayout = async ({
-  params: { identifier },
+  params,
   children
 }: {
   children: React.ReactNode;
-  params: { identifier: string };
+  params: Promise<{ identifier: string }>;
 }): Promise<React.ReactElement | undefined> => {
   try {
+    const { identifier } = await params;
+
     if (!is_valid_blog_identifier(identifier)) {
       not_found();
     }

@@ -1,7 +1,7 @@
 "use client";
 
-import { Root } from "@radix-ui/react-toggle";
 import clsx from "clsx";
+import { Toggle as TogglePrimitive } from "radix-ui";
 import React from "react";
 
 import css from "~/theme/main.module.scss";
@@ -47,7 +47,7 @@ const Toggle = forward_ref<ToggleProps, "button">((props, ref) => {
           slot_props?.container?.className
         )}
       >
-        <Root
+        <TogglePrimitive.Root
           {...rest}
           asChild
           className={clsx(
@@ -61,7 +61,7 @@ const Toggle = forward_ref<ToggleProps, "button">((props, ref) => {
           ref={ref}
         >
           <Component>{children}</Component>
-        </Root>
+        </TogglePrimitive.Root>
       </span>
     </Container>
   );

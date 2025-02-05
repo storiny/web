@@ -1,7 +1,4 @@
-import {
-  ToggleGroupMultipleProps,
-  ToggleGroupSingleProps
-} from "@radix-ui/react-toggle-group";
+import { ToggleGroup } from "radix-ui";
 
 import { PolymorphicProps } from "~/types/index";
 
@@ -9,7 +6,9 @@ export type ToggleGroupSize = "lg" | "md" | "sm" | "xs";
 export type ToggleGroupType = "single" | "multiple";
 export type ToggleGroupOrientation = "horizontal" | "vertical";
 
-type ToggleGroupPrimitive = ToggleGroupMultipleProps | ToggleGroupSingleProps;
+type ToggleGroupPrimitive =
+  | ToggleGroup.ToggleGroupMultipleProps
+  | ToggleGroup.ToggleGroupSingleProps;
 
 export type ToggleGroupProps = Omit<
   ToggleGroupPrimitive,

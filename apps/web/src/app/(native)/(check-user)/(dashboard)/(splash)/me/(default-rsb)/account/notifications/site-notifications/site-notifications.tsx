@@ -32,7 +32,7 @@ const SiteNotifications = ({
   story_likes
 }: SiteNotificationsProps): React.ReactElement => {
   const toast = use_toast();
-  const prev_values_ref = React.useRef<SiteNotificationsSchema>();
+  const prev_values_ref = React.useRef<SiteNotificationsSchema>(undefined);
   const form = use_form<SiteNotificationsSchema>({
     resolver: zod_resolver(SITE_NOTIFICATIONS_SCHEMA),
     defaultValues: {

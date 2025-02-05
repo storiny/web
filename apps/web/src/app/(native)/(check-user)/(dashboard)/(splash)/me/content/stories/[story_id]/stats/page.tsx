@@ -11,10 +11,12 @@ import { is_snowflake } from "~/common/utils/is-snowflake";
 import ContentStoryStatsClient from "./client";
 
 const Page = async ({
-  params: { story_id }
+  params
 }: {
-  params: { story_id: string };
+  params: Promise<{ story_id: string }>;
 }): Promise<React.ReactElement | undefined> => {
+  const { story_id } = await params;
+
   try {
     if (!is_snowflake(story_id)) {
       not_found();

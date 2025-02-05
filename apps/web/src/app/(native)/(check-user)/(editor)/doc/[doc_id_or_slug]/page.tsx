@@ -12,12 +12,15 @@ import { get_doc_by_key } from "~/common/utils/get-doc-by-key";
 import { get_user } from "~/common/utils/get-user";
 
 const Page = async ({
-  params: { doc_id_or_slug }
+  params
 }: {
-  params: { doc_id_or_slug: string };
+  params: Promise<{ doc_id_or_slug: string }>;
 }): Promise<React.ReactElement | undefined> => {
   try {
-    const user_id = await get_user();
+    const [{ doc_id_or_slug }, user_id] = await Promise.all([
+      params,
+      get_user()
+    ]);
 
     if (!user_id) {
       redirect(`/login?to=${encodeURIComponent(`/doc/${doc_id_or_slug}`)}`);

@@ -26,22 +26,12 @@ describe("<Wordmark />", () => {
     expect(getByTestId("wordmark").nodeName.toLowerCase()).toEqual("aside");
   });
 
-  it("renders size `md` and skips rendering beta label by default", () => {
+  it("renders size `md` by default", () => {
     const { getByTestId, queryByTestId } = render_test_with_provider(
-      <Wordmark
-        component_props={
-          {
-            beta_label: {
-              "data-testid": "beta-label"
-            }
-          } as WordmarkProps["component_props"]
-        }
-        data-testid={"wordmark"}
-      />
+      <Wordmark data-testid={"wordmark"} />
     );
 
     expect(getByTestId("wordmark")).toHaveClass(styles.md);
-    expect(queryByTestId("beta-label")).not.toBeInTheDocument();
   });
 
   (["lg", "md", "sm"] as WordmarkSize[]).forEach((size) => {
@@ -54,38 +44,19 @@ describe("<Wordmark />", () => {
     });
   });
 
-  it("renders beta label", () => {
-    const { getByTestId } = render_test_with_provider(
-      <Wordmark
-        component_props={
-          {
-            beta_label: {
-              "data-testid": "beta-label"
-            }
-          } as WordmarkProps["component_props"]
-        }
-        show_beta
-      />
-    );
-
-    expect(getByTestId("beta-label")).toBeInTheDocument();
-  });
-
   it("passes props to the component slots", () => {
     const { getByTestId } = render_test_with_provider(
       <Wordmark
         component_props={
           {
-            beta_label: { "data-testid": "beta-label" },
             label: { "data-testid": "label" },
             logo: { "data-testid": "logo" }
           } as WordmarkProps["component_props"]
         }
-        show_beta
       />
     );
 
-    ["beta-label", "label", "logo"].forEach((element) => {
+    ["label", "logo"].forEach((element) => {
       expect(getByTestId(element)).toBeInTheDocument();
     });
   });

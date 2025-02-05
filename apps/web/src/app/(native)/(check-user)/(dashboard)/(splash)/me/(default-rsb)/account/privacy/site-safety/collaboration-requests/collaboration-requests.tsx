@@ -24,7 +24,7 @@ const CollaborationRequests = ({
   incoming_collaboration_requests
 }: CollaborationRequestsProps): React.ReactElement => {
   const toast = use_toast();
-  const prev_values_ref = React.useRef<CollaborationRequestsSchema>();
+  const prev_values_ref = React.useRef<CollaborationRequestsSchema>(undefined);
   const form = use_form<CollaborationRequestsSchema>({
     resolver: zod_resolver(COLLABORATION_REQUESTS_SCHEMA),
     defaultValues: {

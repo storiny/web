@@ -3,6 +3,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
+
 import Masonry from "./masonry";
 import { MasonryProps } from "./masonry.props";
 

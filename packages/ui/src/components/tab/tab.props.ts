@@ -1,11 +1,11 @@
-import { TabsTriggerProps } from "@radix-ui/react-tabs";
+import { Tabs } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
 
 export type TabSize = "lg" | "md";
 
-type TabPrimitive = TabsTriggerProps & PolymorphicProps<"button">;
+type TabPrimitive = Tabs.TabsTriggerProps & PolymorphicProps<"button">;
 
 export interface TabProps extends TabPrimitive {
   /**

@@ -1,11 +1,11 @@
 "use client";
 
-import { Item } from "@radix-ui/react-dropdown-menu";
 import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { is_test_env } from "@storiny/shared/src/utils/is-test-env";
 import { use_blog_context } from "@storiny/web/src/common/context/blog";
 import clsx from "clsx";
 import { usePathname as use_pathname } from "next/navigation";
+import { DropdownMenu } from "radix-ui";
 import React from "react";
 
 import { select_is_logged_in } from "~/redux/features";
@@ -72,7 +72,7 @@ const MenuItem = forward_ref<MenuItemProps, "div">((props, ref) => {
   };
 
   return (
-    <Item
+    <DropdownMenu.Item
       {...rest}
       asChild
       className={clsx(menu_item_styles.item, className)}
@@ -112,11 +112,11 @@ const MenuItem = forward_ref<MenuItemProps, "div">((props, ref) => {
           </span>
         )}
       </Component>
-    </Item>
+    </DropdownMenu.Item>
   );
 });
 
 MenuItem.displayName = "MenuItem";
 
-export { Item as MenuItemUnstyled };
+export const MenuItemUnstyled = DropdownMenu.Item;
 export default MenuItem;

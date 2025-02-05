@@ -1,7 +1,7 @@
 "use client";
 
-import { Separator as SeparatorPrimitive } from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
+import { DropdownMenu } from "radix-ui";
 import React from "react";
 
 import { forward_ref } from "~/utils/forward-ref";
@@ -12,7 +12,7 @@ import { SeparatorProps } from "./separator.props";
 const Separator = forward_ref<SeparatorProps, "div">((props, ref) => {
   const { as: Component = "div", className, invert_margin, ...rest } = props;
   return (
-    <SeparatorPrimitive
+    <DropdownMenu.Separator
       {...rest}
       asChild
       className={clsx(
@@ -23,7 +23,7 @@ const Separator = forward_ref<SeparatorProps, "div">((props, ref) => {
       ref={ref}
     >
       <Component />
-    </SeparatorPrimitive>
+    </DropdownMenu.Separator>
   );
 });
 

@@ -1,8 +1,7 @@
 "use client";
 
-import { Root as Label } from "@radix-ui/react-label";
-import { Item } from "@radix-ui/react-radio-group";
 import clsx from "clsx";
+import { Label, RadioGroup } from "radix-ui";
 import React from "react";
 
 import { use_form_field } from "~/components/form";
@@ -49,7 +48,7 @@ const Radio = React.forwardRef<HTMLButtonElement, RadioProps>((props, ref) => {
         slot_props?.container?.className
       )}
     >
-      <Item
+      <RadioGroup.Item
         {...rest}
         aria-labelledby={label_id}
         className={clsx(
@@ -73,7 +72,7 @@ const Radio = React.forwardRef<HTMLButtonElement, RadioProps>((props, ref) => {
         )}
       >
         {label && (
-          <Label
+          <Label.Root
             {...slot_props?.label}
             className={clsx(
               css[size === "lg" ? "t-body-1" : "t-body-2"],
@@ -85,7 +84,7 @@ const Radio = React.forwardRef<HTMLButtonElement, RadioProps>((props, ref) => {
             id={label_id}
           >
             {label}
-          </Label>
+          </Label.Root>
         )}
         {children}
       </div>

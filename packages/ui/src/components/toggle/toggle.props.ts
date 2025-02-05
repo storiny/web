@@ -1,4 +1,4 @@
-import { ToggleProps as TogglePrimitiveProps } from "@radix-ui/react-toggle";
+import { Toggle } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
@@ -7,7 +7,7 @@ import { TooltipProps } from "../tooltip";
 
 export type ToggleSize = "xs" | "sm" | "md" | "lg";
 
-type TogglePrimitive = TogglePrimitiveProps & PolymorphicProps<"button">;
+type TogglePrimitive = Toggle.ToggleProps & PolymorphicProps<"button">;
 
 export interface ToggleProps extends TogglePrimitive {
   /**

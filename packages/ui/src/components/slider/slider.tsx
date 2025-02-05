@@ -1,7 +1,7 @@
 "use client";
 
-import { Range, Root, Thumb, Track } from "@radix-ui/react-slider";
 import clsx from "clsx";
+import { Slider as SliderPrimitive } from "radix-ui";
 import React from "react";
 
 import { forward_ref } from "~/utils/forward-ref";
@@ -17,8 +17,9 @@ const Slider = forward_ref<SliderProps, "span">((props, ref) => {
     slot_props,
     ...rest
   } = props;
+
   return (
-    <Root
+    <SliderPrimitive.Root
       {...rest}
       asChild
       className={clsx(styles.slider, className)}
@@ -26,21 +27,21 @@ const Slider = forward_ref<SliderProps, "span">((props, ref) => {
       ref={ref}
     >
       <Component>
-        <Track
+        <SliderPrimitive.Track
           {...slot_props?.track}
           className={clsx(styles.track, slot_props?.track?.className)}
         >
-          <Range
+          <SliderPrimitive.Range
             {...slot_props?.range}
             className={clsx(styles.range, slot_props?.range?.className)}
           />
-        </Track>
-        <Thumb
+        </SliderPrimitive.Track>
+        <SliderPrimitive.Thumb
           {...slot_props?.thumb}
           className={clsx(styles.thumb, slot_props?.thumb?.className)}
         />
       </Component>
-    </Root>
+    </SliderPrimitive.Root>
   );
 });
 

@@ -1,10 +1,10 @@
-import { TabsListProps as TabsListPrimitiveProps } from "@radix-ui/react-tabs";
+import { Tabs } from "radix-ui";
 
 import { PolymorphicProps } from "~/types/index";
 
 export type TabsListSize = "lg" | "md";
 
-type TabsListPrimitive = TabsListPrimitiveProps & PolymorphicProps<"div">;
+type TabsListPrimitive = Tabs.TabsListProps & PolymorphicProps<"div">;
 
 export interface TabsListProps extends TabsListPrimitive {
   /**

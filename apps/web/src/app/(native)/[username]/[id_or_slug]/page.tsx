@@ -15,11 +15,13 @@ import Component from "./component";
 import RestrictedStory from "./restricted";
 
 const Page = async ({
-  params: { id_or_slug, username }
+  params
 }: {
-  params: { id_or_slug: string; username: string };
+  params: Promise<{ id_or_slug: string; username: string }>;
 }): Promise<React.ReactElement | undefined> => {
   try {
+    const { id_or_slug, username } = await params;
+
     // Links to the story can be in the form of `/story/story_id`
     if (!is_valid_username(username) && username !== "story") {
       not_found();

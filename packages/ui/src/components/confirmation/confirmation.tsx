@@ -1,17 +1,7 @@
 "use client";
 
-import {
-  Action,
-  Cancel,
-  Content,
-  Description,
-  Overlay,
-  Portal,
-  Root,
-  Title,
-  Trigger
-} from "@radix-ui/react-alert-dialog";
 import clsx from "clsx";
+import { AlertDialog } from "radix-ui";
 import React from "react";
 
 import css from "~/theme/main.module.scss";
@@ -40,16 +30,16 @@ const Confirmation = forward_ref<ConfirmationProps, "div">((props, ref) => {
     ...rest
   } = props;
   return (
-    <Root {...rest}>
-      <Trigger asChild {...slot_props?.trigger}>
+    <AlertDialog.Root {...rest}>
+      <AlertDialog.Trigger asChild {...slot_props?.trigger}>
         {trigger}
-      </Trigger>
-      <Portal {...slot_props?.portal}>
-        <Overlay
+      </AlertDialog.Trigger>
+      <AlertDialog.Portal {...slot_props?.portal}>
+        <AlertDialog.Overlay
           {...slot_props?.overlay}
           className={clsx(overlay_styles.overlay, slot_props?.overlay)}
         />
-        <Content
+        <AlertDialog.Content
           {...slot_props?.content}
           asChild
           className={clsx(css["flex-center"], styles.content, className)}
@@ -76,7 +66,7 @@ const Confirmation = forward_ref<ConfirmationProps, "div">((props, ref) => {
                   {decorator}
                 </span>
               )}
-              <Title
+              <AlertDialog.Title
                 {...slot_props?.title}
                 className={clsx(
                   css["t-body-1"],
@@ -87,8 +77,8 @@ const Confirmation = forward_ref<ConfirmationProps, "div">((props, ref) => {
                 )}
               >
                 {title}
-              </Title>
-              <Description
+              </AlertDialog.Title>
+              <AlertDialog.Description
                 {...slot_props?.description}
                 className={clsx(
                   css["t-body-2"],
@@ -98,7 +88,7 @@ const Confirmation = forward_ref<ConfirmationProps, "div">((props, ref) => {
                 )}
               >
                 {description}
-              </Description>
+              </AlertDialog.Description>
             </div>
             <Divider
               {...slot_props?.divider}
@@ -115,7 +105,7 @@ const Confirmation = forward_ref<ConfirmationProps, "div">((props, ref) => {
                 slot_props?.footer?.className
               )}
             >
-              <Cancel asChild>
+              <AlertDialog.Cancel asChild>
                 <Button
                   variant={"ghost"}
                   {...slot_props?.cancel_button}
@@ -130,8 +120,8 @@ const Confirmation = forward_ref<ConfirmationProps, "div">((props, ref) => {
                 >
                   {cancel_label}
                 </Button>
-              </Cancel>
-              <Action asChild>
+              </AlertDialog.Cancel>
+              <AlertDialog.Action asChild>
                 <Button
                   color={color}
                   {...slot_props?.confirm_button}
@@ -146,12 +136,12 @@ const Confirmation = forward_ref<ConfirmationProps, "div">((props, ref) => {
                 >
                   {confirm_label}
                 </Button>
-              </Action>
+              </AlertDialog.Action>
             </div>
           </Component>
-        </Content>
-      </Portal>
-    </Root>
+        </AlertDialog.Content>
+      </AlertDialog.Portal>
+    </AlertDialog.Root>
   );
 });
 

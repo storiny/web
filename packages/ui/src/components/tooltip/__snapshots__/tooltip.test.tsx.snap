@@ -5,7 +5,7 @@ exports[`<Tooltip /> matches snapshot 1`] = `
   <div />
   <div
     data-radix-popper-content-wrapper=""
-    style="position: fixed; left: 0px; top: 0px; transform: translate(0, -200%); min-width: max-content;"
+    style="position: fixed; left: 0px; top: 0px; transform: translate(0, -200%); min-width: max-content; --radix-popper-transform-origin:  ;"
   >
     <div
       class="flex-center content"
