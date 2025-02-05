@@ -8,12 +8,13 @@ import { get_user } from "~/common/utils/get-user";
 export const generateMetadata = async ({
   params
 }: {
-  params: { doc_id_or_slug: string };
+  params: Promise<{ doc_id_or_slug: string }>;
 }): Promise<Metadata> => {
-  const { doc_id_or_slug } = params;
-
   try {
-    const user_id = await get_user();
+    const [{ doc_id_or_slug }, user_id] = await Promise.all([
+      params,
+      get_user()
+    ]);
     const story_metadata_response = await get_story_metadata({
       id_or_slug: doc_id_or_slug,
       user_id: user_id || ""

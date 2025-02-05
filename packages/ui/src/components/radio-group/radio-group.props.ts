@@ -1,9 +1,9 @@
-import { RadioGroupProps as RadioGroupPrimitiveProps } from "@radix-ui/react-radio-group";
+import { RadioGroup } from "radix-ui";
 
 import { RadioProps } from "~/components/radio";
 import { PolymorphicProps } from "~/types/index";
 
-type RadioGroupPrimitive = RadioGroupPrimitiveProps & PolymorphicProps<"div">;
+type RadioGroupPrimitive = RadioGroup.RadioGroupProps & PolymorphicProps<"div">;
 
 export interface RadioGroupProps extends RadioGroupPrimitive {
   /**

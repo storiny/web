@@ -16,10 +16,12 @@ import Component from "./component";
 import RestrictedStory from "./restricted";
 
 const Page = async ({
-  params: { story_id_or_slug, identifier }
+  params
 }: {
-  params: { identifier: string; story_id_or_slug: string };
+  params: Promise<{ identifier: string; story_id_or_slug: string }>;
 }): Promise<React.ReactElement | undefined> => {
+  const { story_id_or_slug, identifier } = await params;
+
   try {
     if (!is_valid_blog_identifier(identifier)) {
       not_found();

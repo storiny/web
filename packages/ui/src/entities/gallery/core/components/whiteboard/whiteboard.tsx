@@ -1,3 +1,5 @@
+"use client";
+
 import { dynamic_loader } from "@storiny/web/src/common/dynamic";
 import dynamic from "next/dynamic";
 import React from "react";

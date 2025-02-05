@@ -3,11 +3,11 @@
 import clsx from "clsx";
 import React from "react";
 
-import { FormHelperTextProps } from "~/components/form";
 import Typography from "~/components/typography";
 import css from "~/theme/main.module.scss";
 
 import { use_form_field } from "../use-form-field";
+import { FormHelperTextProps } from "./form-helper-text.props";
 
 const FormHelperText = React.forwardRef<
   HTMLParagraphElement,

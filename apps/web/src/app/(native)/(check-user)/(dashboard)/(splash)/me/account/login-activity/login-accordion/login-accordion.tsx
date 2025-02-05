@@ -1,3 +1,5 @@
+"use client";
+
 import { DeviceType } from "@storiny/shared";
 import { clsx } from "clsx";
 import dynamic from "next/dynamic";

@@ -1,14 +1,8 @@
 "use client";
 
-import {
-  Arrow,
-  Content,
-  Portal,
-  Root,
-  Trigger
-} from "@radix-ui/react-hover-card";
 import { ImageSize } from "@storiny/shared";
 import clsx from "clsx";
+import { HoverCard as HoverCardPrimitive } from "radix-ui";
 import React from "react";
 
 import AspectRatio from "~/components/aspect-ratio";
@@ -199,12 +193,12 @@ const UserHoverCard = forward_ref<UserHoverCardProps, "div">((props, ref) => {
   } = props;
 
   return (
-    <Root {...rest}>
-      <Trigger {...slot_props?.trigger} asChild>
+    <HoverCardPrimitive.Root {...rest}>
+      <HoverCardPrimitive.Trigger {...slot_props?.trigger} asChild>
         {children}
-      </Trigger>
-      <Portal {...slot_props?.portal}>
-        <Content
+      </HoverCardPrimitive.Trigger>
+      <HoverCardPrimitive.Portal {...slot_props?.portal}>
+        <HoverCardPrimitive.Content
           collisionPadding={12}
           side={"top"}
           sideOffset={5}
@@ -215,14 +209,14 @@ const UserHoverCard = forward_ref<UserHoverCardProps, "div">((props, ref) => {
         >
           <Component>
             <UserHoverCardContent identifier={identifier} />
-            <Arrow
+            <HoverCardPrimitive.Arrow
               {...slot_props?.arrow}
               className={clsx(styles.arrow, slot_props?.arrow?.className)}
             />
           </Component>
-        </Content>
-      </Portal>
-    </Root>
+        </HoverCardPrimitive.Content>
+      </HoverCardPrimitive.Portal>
+    </HoverCardPrimitive.Root>
   );
 });
 

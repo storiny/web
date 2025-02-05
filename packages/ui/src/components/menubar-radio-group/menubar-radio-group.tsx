@@ -1,6 +1,6 @@
 "use client";
 
-import { RadioGroup } from "@radix-ui/react-menubar";
+import { Menubar } from "radix-ui";
 import React from "react";
 
 import { forward_ref } from "~/utils/forward-ref";
@@ -11,9 +11,9 @@ const MenubarRadioGroup = forward_ref<MenubarRadioGroupProps, "div">(
   (props, ref) => {
     const { as: Component = "div", children, ...rest } = props;
     return (
-      <RadioGroup {...rest} asChild ref={ref}>
+      <Menubar.RadioGroup {...rest} asChild ref={ref}>
         <Component>{children}</Component>
-      </RadioGroup>
+      </Menubar.RadioGroup>
     );
   }
 );

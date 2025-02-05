@@ -1,7 +1,7 @@
 "use client";
 
-import { Close } from "@radix-ui/react-dialog";
 import clsx from "clsx";
+import { Dialog } from "radix-ui";
 import React from "react";
 
 import { ModalFooterButtonProps } from "~/components/modal";
@@ -13,7 +13,7 @@ const ModalFooterButton = React.forwardRef<
   HTMLButtonElement,
   ModalFooterButtonProps
 >(({ compact, className, size, style, ...rest }, ref) => (
-  <Close asChild>
+  <Dialog.Close asChild>
     <Button
       {...rest}
       className={clsx(compact && css["focus-invert"], className)}
@@ -24,7 +24,7 @@ const ModalFooterButton = React.forwardRef<
           { style: { ...style, borderRadius: 0, flex: 1 } }
         : { style })}
     />
-  </Close>
+  </Dialog.Close>
 ));
 
 ModalFooterButton.displayName = "ModalFooterButton";

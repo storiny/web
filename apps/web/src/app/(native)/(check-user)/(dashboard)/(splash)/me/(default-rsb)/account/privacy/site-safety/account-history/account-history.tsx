@@ -22,7 +22,7 @@ const AccountHistory = ({
   record_read_history
 }: AccountHistory_props): React.ReactElement => {
   const toast = use_toast();
-  const prev_values_ref = React.useRef<AccountHistorySchema>();
+  const prev_values_ref = React.useRef<AccountHistorySchema>(undefined);
   const form = use_form<AccountHistorySchema>({
     resolver: zod_resolver(ACCOUNT_HISTORY_SCHEMA),
     defaultValues: {

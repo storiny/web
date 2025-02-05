@@ -6,9 +6,9 @@ import { CATEGORIES } from "../categories";
 export const generateMetadata = async ({
   params
 }: {
-  params: { category: string[] };
+  params: Promise<{ category: string[] }>;
 }): Promise<Metadata> => {
-  const category_segment = (params.category || [])[0];
+  const category_segment = ((await params).category || [])[0];
   const category =
     CATEGORIES.find((item) => item === category_segment) || "all";
   const label = CATEGORY_LABEL_MAP[category];

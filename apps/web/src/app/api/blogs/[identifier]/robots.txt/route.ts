@@ -2,11 +2,11 @@
 
 import { is_valid_blog_identifier } from "~/common/utils/is-valid-blog-identifier";
 
-export const GET = (
+export const GET = async (
   _: Request,
-  { params }: { params: { identifier: string } }
-): Response => {
-  const { identifier } = params;
+  { params }: { params: Promise<{ identifier: string }> }
+): Promise<Response> => {
+  const { identifier } = await params;
 
   if (!is_valid_blog_identifier(identifier)) {
     return new Response("Invalid blog identifier", { status: 400 });

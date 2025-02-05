@@ -1,14 +1,4 @@
-import {
-  SelectContentProps,
-  SelectIconProps,
-  SelectPortalProps,
-  SelectProps as SelectPrimitiveProps,
-  SelectScrollDownButtonProps,
-  SelectScrollUpButtonProps,
-  SelectTriggerProps,
-  SelectValueProps,
-  SelectViewportProps
-} from "@radix-ui/react-select";
+import { Select } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
@@ -16,7 +6,7 @@ import { PolymorphicProps } from "~/types/index";
 export type SelectSize = "lg" | "md" | "sm";
 export type SelectColor = "inverted" | "ruby";
 
-type SelectPrimitive = SelectPrimitiveProps & PolymorphicProps<"div">;
+type SelectPrimitive = Select.SelectProps & PolymorphicProps<"div">;
 
 export interface SelectProps extends SelectPrimitive {
   /**
@@ -44,14 +34,14 @@ export interface SelectProps extends SelectPrimitive {
    * The props passed to the individual component elements.
    */
   slot_props?: {
-    content?: SelectContentProps;
-    icon?: SelectIconProps;
-    portal?: SelectPortalProps;
-    scroll_down_button?: SelectScrollDownButtonProps;
-    scroll_up_button?: SelectScrollUpButtonProps;
-    trigger?: SelectTriggerProps;
-    value?: SelectValueProps;
-    viewport?: SelectViewportProps;
+    content?: Select.SelectContentProps;
+    icon?: Select.SelectIconProps;
+    portal?: Select.SelectPortalProps;
+    scroll_down_button?: Select.SelectScrollDownButtonProps;
+    scroll_up_button?: Select.SelectScrollUpButtonProps;
+    trigger?: Select.SelectTriggerProps;
+    value?: Select.SelectValueProps;
+    viewport?: Select.SelectViewportProps;
   };
   /**
    * The content rendered inside value element.

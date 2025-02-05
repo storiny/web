@@ -1,6 +1,6 @@
-import { LabelProps as LabelPrimitiveProps } from "@radix-ui/react-label";
+import { Label } from "radix-ui";
 
-export interface LabelProps extends LabelPrimitiveProps {
+export interface LabelProps extends Label.LabelProps {
   /**
    * If `true`, renders with a muted color
    * @default false

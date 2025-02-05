@@ -12,14 +12,14 @@ const ToggleTheme = () => {
 
   React.useEffect(() => {
     const iframe = document.getElementById(
-      "storybook-preview-iframe"
+      "storybook-preview-iframe",
     ) as HTMLIFrameElement;
     const iframeDocument =
       iframe.contentDocument || iframe.contentWindow?.document;
 
     iframeDocument?.documentElement.setAttribute(
       "data-theme",
-      is_dark ? "dark" : "light"
+      is_dark ? "dark" : "light",
     );
   }, [is_dark]);
 
@@ -29,6 +29,9 @@ const ToggleTheme = () => {
       active={false}
       title={is_dark ? "Light theme" : "Dark theme"}
       onClick={updateMode}
+      placeholder={undefined}
+      onPointerEnterCapture={undefined}
+      onPointerLeaveCapture={undefined}
     >
       {is_dark ? <Sun /> : <Moon />}
     </IconButton>

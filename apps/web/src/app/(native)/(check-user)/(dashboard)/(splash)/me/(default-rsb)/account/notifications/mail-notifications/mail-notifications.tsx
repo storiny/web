@@ -26,7 +26,7 @@ const MailNotifications = ({
   mail_digest
 }: MailNotificationsProps): React.ReactElement => {
   const toast = use_toast();
-  const prev_values_ref = React.useRef<MailNotificationsSchema>();
+  const prev_values_ref = React.useRef<MailNotificationsSchema>(undefined);
   const form = use_form<MailNotificationsSchema>({
     resolver: zod_resolver(MAIL_NOTIFICATIONS_SCHEMA),
     defaultValues: {

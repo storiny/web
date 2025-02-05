@@ -1,12 +1,4 @@
-import {
-  AlertDialogContentProps,
-  AlertDialogDescriptionProps,
-  AlertDialogOverlayProps,
-  AlertDialogPortalProps,
-  AlertDialogProps,
-  AlertDialogTitleProps,
-  AlertDialogTriggerProps
-} from "@radix-ui/react-alert-dialog";
+import { AlertDialog } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
@@ -16,7 +8,7 @@ import { DividerProps } from "../divider";
 
 export type ConfirmationColor = "inverted" | "ruby";
 
-type ConfirmationPrimitive = AlertDialogProps &
+type ConfirmationPrimitive = AlertDialog.AlertDialogProps &
   Omit<PolymorphicProps<"div">, "title">;
 
 export interface ConfirmationProps extends ConfirmationPrimitive {
@@ -58,15 +50,15 @@ export interface ConfirmationProps extends ConfirmationPrimitive {
     cancel_button?: ButtonProps;
     confirm_button?: ButtonProps;
     container?: React.ComponentPropsWithoutRef<"div">;
-    content?: AlertDialogContentProps;
+    content?: AlertDialog.AlertDialogContentProps;
     decorator?: React.ComponentPropsWithoutRef<"span">;
-    description?: AlertDialogDescriptionProps;
+    description?: AlertDialog.AlertDialogDescriptionProps;
     divider?: DividerProps;
     footer?: React.ComponentPropsWithoutRef<"div">;
-    overlay?: AlertDialogOverlayProps;
-    portal?: AlertDialogPortalProps;
-    title?: AlertDialogTitleProps;
-    trigger?: AlertDialogTriggerProps;
+    overlay?: AlertDialog.AlertDialogOverlayProps;
+    portal?: AlertDialog.AlertDialogPortalProps;
+    title?: AlertDialog.AlertDialogTitleProps;
+    trigger?: AlertDialog.AlertDialogTriggerProps;
   };
   /**
    * The confirmation title.

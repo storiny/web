@@ -1,7 +1,7 @@
 "use client";
 
-import { Indicator, Root } from "@radix-ui/react-progress";
 import clsx from "clsx";
+import { Progress } from "radix-ui";
 import React from "react";
 
 import { forward_ref } from "~/utils/forward-ref";
@@ -24,7 +24,7 @@ const CircularProgress = forward_ref<CircularProgressProps, "div">(
     } = props;
 
     return (
-      <Root
+      <Progress.Root
         {...rest}
         asChild
         className={clsx(
@@ -38,7 +38,7 @@ const CircularProgress = forward_ref<CircularProgressProps, "div">(
         value={value}
       >
         <Component>
-          <Indicator
+          <Progress.Indicator
             {...slot_props?.indicator}
             className={clsx(styles.indicator, slot_props?.indicator?.className)}
           >
@@ -63,10 +63,10 @@ const CircularProgress = forward_ref<CircularProgressProps, "div">(
                 cy={"50%"}
               />
             </svg>
-          </Indicator>
+          </Progress.Indicator>
           {children}
         </Component>
-      </Root>
+      </Progress.Root>
     );
   }
 );

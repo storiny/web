@@ -1,7 +1,7 @@
-import { SeparatorProps } from "@radix-ui/react-separator";
+import { Separator } from "radix-ui";
 
 import { PolymorphicProps } from "~/types/index";
 
-type DividerPrimitive = SeparatorProps & PolymorphicProps<"div">;
+type DividerPrimitive = Separator.SeparatorProps & PolymorphicProps<"div">;
 
-export type DividerProps = DividerPrimitive
+export type DividerProps = DividerPrimitive;

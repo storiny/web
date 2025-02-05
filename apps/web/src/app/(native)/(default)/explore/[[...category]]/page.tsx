@@ -7,12 +7,12 @@ import React from "react";
 import { CATEGORIES } from "../categories";
 import Client from "./client";
 
-const Page = ({
+const Page = async ({
   params
 }: {
-  params: { category: string[] };
-}): React.ReactElement => {
-  const category = (params.category || [""])[0] as StoryCategory | "";
+  params: Promise<{ category: string[] }>;
+}): Promise<React.ReactElement> => {
+  const category = ((await params).category || [""])[0] as StoryCategory | "";
 
   if (!CATEGORIES.find((item) => item === category) && category !== "") {
     not_found();

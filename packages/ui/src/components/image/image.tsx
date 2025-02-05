@@ -1,13 +1,9 @@
 "use client";
 
-import {
-  Fallback,
-  Image as ImagePrimitive,
-  ImageLoadingStatus,
-  Root
-} from "@radix-ui/react-avatar";
 import { AssetRating } from "@storiny/shared";
+import { ImageLoadingStatus } from "@storiny/types";
 import clsx from "clsx";
+import { Avatar } from "radix-ui";
 import React from "react";
 
 import Button from "~/components/button";
@@ -81,7 +77,7 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
   }, [status, final_src]);
 
   return (
-    <Root
+    <Avatar.Root
       {...rest}
       asChild
       className={clsx(
@@ -102,7 +98,7 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
     >
       <Component>
         {!children && (
-          <ImagePrimitive
+          <Avatar.Image
             {...slot_props?.image}
             alt={alt}
             className={clsx(
@@ -117,7 +113,7 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
           />
         )}
         {status === "error" && (
-          <Fallback
+          <Avatar.Fallback
             {...slot_props?.fallback}
             className={clsx(
               css["flex-center"],
@@ -128,7 +124,7 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
             <Typography color={"minor"} level={"body2"}>
               Image not available
             </Typography>
-          </Fallback>
+          </Avatar.Fallback>
         )}
         {show_overlay && (
           <div
@@ -161,7 +157,7 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
           </div>
         )}
       </Component>
-    </Root>
+    </Avatar.Root>
   );
 });
 

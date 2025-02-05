@@ -1,7 +1,7 @@
 "use client";
 
-import { TabsList as TabsListPrimitive } from "@radix-ui/react-tabs";
 import clsx from "clsx";
+import { Tabs } from "radix-ui";
 import React from "react";
 
 import { forward_ref } from "~/utils/forward-ref";
@@ -18,16 +18,17 @@ const TabsList = forward_ref<TabsListProps, "div">((props, ref) => {
     children,
     ...rest
   } = props;
+
   return (
     <TabsListContext.Provider value={{ size }}>
-      <TabsListPrimitive
+      <Tabs.TabsList
         {...rest}
         asChild
         className={clsx(styles["tabs-list"], className)}
         ref={ref}
       >
         <Component>{children}</Component>
-      </TabsListPrimitive>
+      </Tabs.TabsList>
     </TabsListContext.Provider>
   );
 });

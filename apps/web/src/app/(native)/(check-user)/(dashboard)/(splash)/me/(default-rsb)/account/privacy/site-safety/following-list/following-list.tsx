@@ -29,7 +29,7 @@ const FollowingList = ({
 }: FollowingListProps): React.ReactElement => {
   const toast = use_toast();
   const is_private = use_app_selector(select_is_private_account);
-  const prev_values_ref = React.useRef<FollowingListSchema>();
+  const prev_values_ref = React.useRef<FollowingListSchema>(undefined);
   const form = use_form<FollowingListSchema>({
     resolver: zod_resolver(FOLLOWING_LIST_SCHEMA),
     defaultValues: {

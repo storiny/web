@@ -1,15 +1,7 @@
 "use client";
 
-import {
-  Accordion as AccordionPrimitive,
-  AccordionContent as AccordionContentPrimitive,
-  AccordionHeader as AccordionHeaderPrimitive,
-  AccordionItem as AccordionItemPrimitive,
-  AccordionMultipleProps,
-  AccordionSingleProps,
-  AccordionTrigger as AccordionTriggerPrimitive
-} from "@radix-ui/react-accordion";
 import clsx from "clsx";
+import { Accordion as AccordionPrimitive } from "radix-ui";
 import React from "react";
 
 import ChevronIcon from "~/icons/chevron";
@@ -29,16 +21,16 @@ import {
 const Accordion = forward_ref<AccordionProps, "div">((props, ref) => {
   const { as: Component = "div", children, type, ...rest_props } = props;
   const single_props = rest_props as Omit<
-    AccordionSingleProps,
+    AccordionPrimitive.AccordionSingleProps,
     "type" | "className" | "children"
   >;
   const multiple_props = rest_props as Omit<
-    AccordionMultipleProps,
+    AccordionPrimitive.AccordionMultipleProps,
     "type" | "className" | "children"
   >;
 
   return (
-    <AccordionPrimitive
+    <AccordionPrimitive.Root
       {...(type === "multiple"
         ? {
             type: "multiple",
@@ -52,7 +44,7 @@ const Accordion = forward_ref<AccordionProps, "div">((props, ref) => {
       ref={ref}
     >
       <Component>{children}</Component>
-    </AccordionPrimitive>
+    </AccordionPrimitive.Root>
   );
 });
 
@@ -62,7 +54,7 @@ Accordion.displayName = "Accordion";
 
 const AccordionItem = forward_ref<AccordionItemProps, "div">(
   ({ as: Component = "div", children, className, ...rest }, ref) => (
-    <AccordionItemPrimitive
+    <AccordionPrimitive.Item
       {...rest}
       asChild
       className={clsx(styles.item, className)}
@@ -70,7 +62,7 @@ const AccordionItem = forward_ref<AccordionItemProps, "div">(
       ref={ref}
     >
       <Component>{children}</Component>
-    </AccordionItemPrimitive>
+    </AccordionPrimitive.Item>
   )
 );
 
@@ -80,14 +72,14 @@ AccordionItem.displayName = "AccordionItem";
 
 const AccordionHeader = forward_ref<AccordionHeaderProps, "h3">(
   ({ as: Component = "h3", className, children, ...rest }, ref) => (
-    <AccordionHeaderPrimitive
+    <AccordionPrimitive.Header
       {...rest}
       asChild
       className={clsx(css["flex"], className)}
       ref={ref}
     >
       <Component>{children}</Component>
-    </AccordionHeaderPrimitive>
+    </AccordionPrimitive.Header>
   )
 );
 
@@ -101,7 +93,7 @@ const AccordionTrigger = forward_ref<AccordionTriggerProps, "div">(
     ref
   ) => (
     <AccordionHeader {...slot_props?.header}>
-      <AccordionTriggerPrimitive
+      <AccordionPrimitive.Trigger
         {...rest}
         asChild
         className={clsx(
@@ -123,7 +115,7 @@ const AccordionTrigger = forward_ref<AccordionTriggerProps, "div">(
             className={clsx(styles.icon, slot_props?.icon?.className)}
           />
         </Component>
-      </AccordionTriggerPrimitive>
+      </AccordionPrimitive.Trigger>
     </AccordionHeader>
   )
 );
@@ -137,7 +129,7 @@ const AccordionContent = forward_ref<AccordionContentProps, "div">(
     { as: Component = "div", className, children, slot_props, ...rest },
     ref
   ) => (
-    <AccordionContentPrimitive
+    <AccordionPrimitive.Content
       {...rest}
       asChild
       className={clsx(styles.content, className)}
@@ -154,7 +146,7 @@ const AccordionContent = forward_ref<AccordionContentProps, "div">(
           {children}
         </div>
       </Component>
-    </AccordionContentPrimitive>
+    </AccordionPrimitive.Content>
   )
 );
 

@@ -1,13 +1,9 @@
-import {
-  ToastActionProps,
-  ToastCloseProps,
-  ToastProps as ToastPrimitiveProps
-} from "@radix-ui/react-toast";
+import { Toast } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
 
-type NotificationPrimitive = ToastPrimitiveProps & PolymorphicProps<"li">;
+type NotificationPrimitive = Toast.ToastProps & PolymorphicProps<"li">;
 
 export interface NotificationProps extends NotificationPrimitive {
   /**
@@ -30,10 +26,10 @@ export interface NotificationProps extends NotificationPrimitive {
   slot_props?: {
     actions?: React.ComponentPropsWithoutRef<"div">;
     decorator?: React.ComponentPropsWithoutRef<"span">;
-    primary_button?: Omit<ToastActionProps, "altText"> & {
+    primary_button?: Omit<Toast.ToastActionProps, "altText"> & {
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-      altText?: ToastActionProps["altText"];
+      altText?: Toast.ToastActionProps["altText"];
     };
-    secondary_button?: ToastCloseProps;
+    secondary_button?: Toast.ToastCloseProps;
   };
 }

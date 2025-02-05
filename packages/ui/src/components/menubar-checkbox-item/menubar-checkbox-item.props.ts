@@ -1,12 +1,9 @@
-import {
-  MenubarCheckboxItemProps as MenubarCheckboxItemPrimitiveProps,
-  MenubarItemIndicatorProps
-} from "@radix-ui/react-menubar";
+import { Menubar } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
 
-type MenubarCheckboxItemPrimitive = MenubarCheckboxItemPrimitiveProps &
+type MenubarCheckboxItemPrimitive = Menubar.MenubarCheckboxItemProps &
   PolymorphicProps<"div">;
 
 export interface MenubarCheckboxItemProps extends MenubarCheckboxItemPrimitive {
@@ -23,7 +20,7 @@ export interface MenubarCheckboxItemProps extends MenubarCheckboxItemPrimitive {
    */
   slot_props?: {
     decorator?: React.ComponentPropsWithoutRef<"span">;
-    indicator?: MenubarItemIndicatorProps;
+    indicator?: Menubar.MenubarItemIndicatorProps;
     right_slot?: React.ComponentPropsWithoutRef<"span">;
   };
 }

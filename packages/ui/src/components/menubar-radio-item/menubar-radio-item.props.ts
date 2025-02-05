@@ -1,12 +1,9 @@
-import {
-  MenubarItemIndicatorProps,
-  MenubarRadioItemProps as MenubarRadioItemPrimitiveProps
-} from "@radix-ui/react-menubar";
+import { Menubar } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
 
-type MenubarRadioItemPrimitive = MenubarRadioItemPrimitiveProps &
+type MenubarRadioItemPrimitive = Menubar.MenubarRadioItemProps &
   PolymorphicProps<"div">;
 
 export interface MenubarRadioItemProps extends MenubarRadioItemPrimitive {
@@ -23,7 +20,7 @@ export interface MenubarRadioItemProps extends MenubarRadioItemPrimitive {
    */
   slot_props?: {
     decorator?: React.ComponentPropsWithoutRef<"span">;
-    indicator?: MenubarItemIndicatorProps;
+    indicator?: Menubar.MenubarItemIndicatorProps;
     right_slot?: React.ComponentPropsWithoutRef<"span">;
   };
 }

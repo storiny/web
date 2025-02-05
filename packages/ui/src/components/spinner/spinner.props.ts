@@ -1,7 +1,4 @@
-import {
-  ProgressIndicatorProps,
-  ProgressProps
-} from "@radix-ui/react-progress";
+import { Progress } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
@@ -9,7 +6,7 @@ import { PolymorphicProps } from "~/types/index";
 export type SpinnerSize = "lg" | "md" | "sm" | "xs";
 export type SpinnerColor = "inverted" | "ruby";
 
-type SpinnerPrimitive = Omit<ProgressProps, "value"> &
+type SpinnerPrimitive = Omit<Progress.ProgressProps, "value"> &
   Omit<PolymorphicProps<"div">, "children">;
 
 export interface SpinnerProps extends SpinnerPrimitive {
@@ -28,6 +25,6 @@ export interface SpinnerProps extends SpinnerPrimitive {
    */
   slot_props?: {
     bar?: React.ComponentPropsWithoutRef<"span">;
-    indicator?: ProgressIndicatorProps;
+    indicator?: Progress.ProgressIndicatorProps;
   };
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { ToastProvider as ToastPrimitiveProvider } from "@radix-ui/react-toast";
+import { Toast } from "radix-ui";
 import React from "react";
 
 import ToastViewport from "./viewport";
@@ -10,10 +10,10 @@ const ToastProvider = ({
 }: {
   children: React.ReactNode;
 }): React.ReactElement => (
-  <ToastPrimitiveProvider duration={5000} label={"Toast notification"}>
+  <Toast.ToastProvider duration={5000} label={"Toast notification"}>
     {children}
     <ToastViewport />
-  </ToastPrimitiveProvider>
+  </Toast.ToastProvider>
 );
 
 export default ToastProvider;

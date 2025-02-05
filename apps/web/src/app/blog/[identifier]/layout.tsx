@@ -44,18 +44,20 @@ const generate_json_ld = (
 
 const BlogLayout = async ({
   children,
-  params: { identifier }
+  params
 }: {
   children: React.ReactNode;
-  params: { identifier: string };
+  params: Promise<{ identifier: string }>;
 }): Promise<React.ReactElement | undefined> => {
+  const { identifier } = await params;
+
   try {
     if (!is_valid_blog_identifier(identifier)) {
       not_found();
     }
 
-    const pathname = headers().get("x-pathname") || "/";
-    const user_id = await get_user();
+    const [headers_value, user_id] = await Promise.all([headers(), get_user()]);
+    const pathname = headers_value.get("x-pathname") || "/";
     const blog = await get_blog({
       identifier,
       current_user_id: user_id || undefined
@@ -69,7 +71,7 @@ const BlogLayout = async ({
       redirect(`/blog/${blog.slug}/${fragment}`);
     }
 
-    const nonce = headers().get("x-nonce") ?? undefined;
+    const nonce = headers_value.get("x-nonce") ?? undefined;
     const json_ld = generate_json_ld(blog);
 
     return (

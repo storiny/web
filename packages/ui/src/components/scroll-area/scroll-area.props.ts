@@ -1,17 +1,11 @@
-import {
-  ScrollAreaCornerProps,
-  ScrollAreaProps as ScrollAreaPrimitiveProps,
-  ScrollAreaScrollbarProps,
-  ScrollAreaThumbProps,
-  ScrollAreaViewportProps
-} from "@radix-ui/react-scroll-area";
+import { ScrollArea } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
 
 export type ScrollAreaSize = "lg" | "md";
 
-type ScrollAreaPrimitive = ScrollAreaPrimitiveProps & PolymorphicProps<"div">;
+type ScrollAreaPrimitive = ScrollArea.ScrollAreaProps & PolymorphicProps<"div">;
 
 export interface ScrollAreaProps extends ScrollAreaPrimitive {
   /**
@@ -28,9 +22,10 @@ export interface ScrollAreaProps extends ScrollAreaPrimitive {
    * The props passed to the individual component elements.
    */
   slot_props?: {
-    corner?: ScrollAreaCornerProps;
-    scrollbar?: ScrollAreaScrollbarProps;
-    thumb?: ScrollAreaThumbProps;
-    viewport?: ScrollAreaViewportProps & React.ComponentPropsWithRef<"div">;
+    corner?: ScrollArea.ScrollAreaCornerProps;
+    scrollbar?: ScrollArea.ScrollAreaScrollbarProps;
+    thumb?: ScrollArea.ScrollAreaThumbProps;
+    viewport?: ScrollArea.ScrollAreaViewportProps &
+      React.ComponentPropsWithRef<"div">;
   };
 }

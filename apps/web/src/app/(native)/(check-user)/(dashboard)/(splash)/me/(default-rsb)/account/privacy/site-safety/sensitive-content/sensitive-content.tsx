@@ -22,7 +22,7 @@ const SensitiveContent = ({
   allow_sensitive_media
 }: SensitiveContentProps): React.ReactElement => {
   const toast = use_toast();
-  const prev_values_ref = React.useRef<SensitiveContentSchema>();
+  const prev_values_ref = React.useRef<SensitiveContentSchema>(undefined);
   const form = use_form<SensitiveContentSchema>({
     resolver: zod_resolver(SENSITIVE_CONTENT_SCHEMA),
     defaultValues: {

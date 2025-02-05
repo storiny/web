@@ -34,39 +34,7 @@ exports[`<MenubarSub /> matches snapshot 1`] = `
   <div
     data-radix-popper-content-wrapper=""
     dir="ltr"
-    style="position: fixed; left: 0px; top: 0px; transform: translate(0, -200%); min-width: max-content;"
-  >
-    <div
-      aria-labelledby="radix-:r5:"
-      aria-orientation="vertical"
-      class="content sub-content md"
-      data-align="start"
-      data-orientation="vertical"
-      data-radix-menu-content=""
-      data-radix-menubar-content=""
-      data-side="right"
-      data-state="open"
-      dir="ltr"
-      id="radix-:r4:"
-      role="menu"
-      style="outline: none; --radix-menubar-content-transform-origin: var(--radix-popper-transform-origin); --radix-menubar-content-available-width: var(--radix-popper-available-width); --radix-menubar-content-available-height: var(--radix-popper-available-height); --radix-menubar-trigger-width: var(--radix-popper-anchor-width); --radix-menubar-trigger-height: var(--radix-popper-anchor-height); animation: none;"
-      tabindex="-1"
-    >
-      <div
-        class="item"
-        data-orientation="vertical"
-        data-radix-collection-item=""
-        role="menuitem"
-        tabindex="-1"
-      >
-        Submenu item
-      </div>
-    </div>
-  </div>
-  <div
-    data-radix-popper-content-wrapper=""
-    dir="ltr"
-    style="position: fixed; left: 0px; top: 0px; transform: translate(0, -200%); min-width: max-content;"
+    style="position: fixed; left: 0px; top: 0px; transform: translate(0, -200%); min-width: max-content; --radix-popper-transform-origin:  ;"
   >
     <div
       aria-labelledby="radix-:r1:"
@@ -131,6 +99,38 @@ exports[`<MenubarSub /> matches snapshot 1`] = `
           />
         </svg>
       </span>
+    </div>
+  </div>
+  <div
+    data-radix-popper-content-wrapper=""
+    dir="ltr"
+    style="position: fixed; left: 0px; top: 0px; transform: translate(0, -200%); min-width: max-content; --radix-popper-transform-origin:  ;"
+  >
+    <div
+      aria-labelledby="radix-:r5:"
+      aria-orientation="vertical"
+      class="content sub-content md"
+      data-align="start"
+      data-orientation="vertical"
+      data-radix-menu-content=""
+      data-radix-menubar-content=""
+      data-side="right"
+      data-state="open"
+      dir="ltr"
+      id="radix-:r4:"
+      role="menu"
+      style="outline: none; --radix-menubar-content-transform-origin: var(--radix-popper-transform-origin); --radix-menubar-content-available-width: var(--radix-popper-available-width); --radix-menubar-content-available-height: var(--radix-popper-available-height); --radix-menubar-trigger-width: var(--radix-popper-anchor-width); --radix-menubar-trigger-height: var(--radix-popper-anchor-height); animation: none;"
+      tabindex="-1"
+    >
+      <div
+        class="item"
+        data-orientation="vertical"
+        data-radix-collection-item=""
+        role="menuitem"
+        tabindex="-1"
+      >
+        Submenu item
+      </div>
     </div>
   </div>
   <span

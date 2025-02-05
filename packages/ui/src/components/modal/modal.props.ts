@@ -1,10 +1,4 @@
-import {
-  DialogContentProps,
-  DialogOverlayProps,
-  DialogPortalProps,
-  DialogProps,
-  DialogTriggerProps
-} from "@radix-ui/react-dialog";
+import { Dialog } from "radix-ui";
 import React from "react";
 
 import { ModalFooterProps } from "~/components/modal/footer";
@@ -17,7 +11,7 @@ import { ModalSidebarProps } from "./sidebar";
 
 export type ModalMode = "default" | "tabbed";
 
-type ModalPrimitive = DialogProps & PolymorphicProps<"div">;
+type ModalPrimitive = Dialog.DialogProps & PolymorphicProps<"div">;
 
 export interface ModalProps extends ModalPrimitive {
   /**
@@ -57,15 +51,15 @@ export interface ModalProps extends ModalPrimitive {
       "defaultValue" | "dir"
     > &
       TabsProps;
-    content?: DialogContentProps;
+    content?: Dialog.DialogContentProps;
     footer?: ModalFooterProps;
     header?: ModalHeaderProps;
     main?: React.ComponentPropsWithoutRef<"div">;
-    overlay?: DialogOverlayProps;
-    portal?: DialogPortalProps;
+    overlay?: Dialog.DialogOverlayProps;
+    portal?: Dialog.DialogPortalProps;
     sidebar?: ModalSidebarProps;
     tabs?: TabsProps;
-    trigger?: DialogTriggerProps;
+    trigger?: Dialog.DialogTriggerProps;
   };
   /**
    * The trigger component.

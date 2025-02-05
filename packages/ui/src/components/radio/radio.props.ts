@@ -1,4 +1,4 @@
-import { RadioGroupItemProps } from "@radix-ui/react-radio-group";
+import { RadioGroup } from "radix-ui";
 import React from "react";
 
 export type RadioColor = "inverted" | "ruby";
@@ -6,7 +6,8 @@ export type RadioSize = "md" | "lg";
 
 // Not polymorphic
 type RadioGroupPrimitive = Omit<
-  RadioGroupItemProps & React.ComponentPropsWithRef<"input" | "button">,
+  RadioGroup.RadioGroupItemProps &
+    React.ComponentPropsWithRef<"input" | "button">,
   "color" | "size"
 >;
 

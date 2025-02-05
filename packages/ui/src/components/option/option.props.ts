@@ -1,13 +1,9 @@
-import {
-  SelectItemIndicatorProps,
-  SelectItemProps,
-  SelectItemTextProps
-} from "@radix-ui/react-select";
+import { Select } from "radix-ui";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
 
-type OptionPrimitive = SelectItemProps & PolymorphicProps<"div">;
+type OptionPrimitive = Select.SelectItemProps & PolymorphicProps<"div">;
 
 export interface OptionProps extends OptionPrimitive {
   /**
@@ -23,8 +19,8 @@ export interface OptionProps extends OptionPrimitive {
    */
   slot_props?: {
     decorator?: React.ComponentPropsWithoutRef<"span">;
-    indicator?: SelectItemIndicatorProps;
+    indicator?: Select.SelectItemIndicatorProps;
     right_slot?: React.ComponentPropsWithoutRef<"span">;
-    text?: SelectItemTextProps;
+    text?: Select.SelectItemTextProps;
   };
 }

@@ -11,12 +11,10 @@ import { get_cdn_url } from "~/utils/get-cdn-url";
 export const generateMetadata = async ({
   params
 }: {
-  params: { id_or_slug: string };
+  params: Promise<{ id_or_slug: string }>;
 }): Promise<Metadata> => {
-  const { id_or_slug } = params;
-
   try {
-    const user_id = await get_user();
+    const [{ id_or_slug }, user_id] = await Promise.all([params, get_user()]);
     const story_response = await get_story({
       id_or_slug: id_or_slug,
       current_user_id: user_id || undefined

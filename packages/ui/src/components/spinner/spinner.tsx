@@ -1,7 +1,7 @@
 "use client";
 
-import { Indicator, Root } from "@radix-ui/react-progress";
 import clsx from "clsx";
+import { Progress } from "radix-ui";
 import React from "react";
 
 import { forward_ref } from "~/utils/forward-ref";
@@ -20,7 +20,7 @@ const Spinner = forward_ref<SpinnerProps, "div">((props, ref) => {
   } = props;
 
   return (
-    <Root
+    <Progress.Root
       {...rest}
       asChild
       className={clsx(styles.spinner, styles[size], styles[color], className)}
@@ -28,7 +28,7 @@ const Spinner = forward_ref<SpinnerProps, "div">((props, ref) => {
       value={null}
     >
       <Component>
-        <Indicator
+        <Progress.Indicator
           {...slot_props?.indicator}
           className={clsx(styles.indicator, slot_props?.indicator?.className)}
         >
@@ -39,9 +39,9 @@ const Spinner = forward_ref<SpinnerProps, "div">((props, ref) => {
               key={index}
             />
           ))}
-        </Indicator>
+        </Progress.Indicator>
       </Component>
-    </Root>
+    </Progress.Root>
   );
 });
 

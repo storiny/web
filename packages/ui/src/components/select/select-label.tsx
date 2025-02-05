@@ -1,7 +1,7 @@
 "use client";
 
-import { Label, SelectLabelProps } from "@radix-ui/react-select";
 import clsx from "clsx";
+import { Select } from "radix-ui";
 import React from "react";
 
 import css from "~/theme/main.module.scss";
@@ -12,8 +12,8 @@ const SelectLabel = ({
   children,
   className,
   ...rest
-}: SelectLabelProps): React.ReactElement => (
-  <Label
+}: Select.SelectLabelProps): React.ReactElement => (
+  <Select.Label
     {...rest}
     className={clsx(
       css["t-medium"],
@@ -23,8 +23,8 @@ const SelectLabel = ({
     )}
   >
     {children}
-  </Label>
+  </Select.Label>
 );
 
-export type { SelectLabelProps };
+export type SelectLabelProps = Select.SelectLabelProps;
 export default SelectLabel;
