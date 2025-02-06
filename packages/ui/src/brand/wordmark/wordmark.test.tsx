@@ -27,7 +27,7 @@ describe("<Wordmark />", () => {
   });
 
   it("renders size `md` by default", () => {
-    const { getByTestId, queryByTestId } = render_test_with_provider(
+    const { getByTestId } = render_test_with_provider(
       <Wordmark data-testid={"wordmark"} />
     );
 

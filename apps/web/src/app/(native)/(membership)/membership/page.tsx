@@ -1,4 +1,5 @@
 import { clsx } from "clsx";
+import { VisuallyHidden } from "radix-ui";
 import React from "react";
 
 import Button from "~/components/button";
@@ -7,7 +8,7 @@ import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import { PlusBadge } from "~/entities/badges";
 import css from "~/theme/main.module.scss";
-import { VisuallyHidden } from "radix-ui";
+
 import BasicFeatures from "./sections/basic-features";
 import CollaborationSection from "./sections/collaboration";
 import CustomBrandingSection from "./sections/custom-branding";
