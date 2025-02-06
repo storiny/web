@@ -104,7 +104,7 @@ impl Encode for Message {
             }
             Message::Awareness(update) => {
                 encoder.write_var(MSG_AWARENESS);
-                encoder.write_buf(&update.encode_v1())
+                encoder.write_buf(update.encode_v1())
             }
             Message::Internal(message) => {
                 encoder.write_var(MSG_INTERNAL);
