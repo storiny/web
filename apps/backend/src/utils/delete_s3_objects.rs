@@ -1,9 +1,43 @@
 use crate::S3Client;
 use anyhow::anyhow;
-use aws_sdk_s3::types::{
-    Delete,
-    ObjectIdentifier,
+use aws_sdk_s3::{
+    config::http::HttpRequest,
+    types::{
+        Delete,
+        ObjectIdentifier,
+    },
 };
+use base64::{
+    Engine as _,
+    engine::general_purpose,
+};
+
+/// Mutates the request to insert a Content-MD5 header and remove any existing flexible checksum
+/// headers. TODO: Remove once fixed https://github.com/awslabs/aws-sdk-rust/issues/1240#issuecomment-2635024286
+pub fn calculate_md5_checksum_and_remove_other_checksums(http_request: &mut HttpRequest) {
+    // Remove the flexibile checksum headers
+    let remove_headers = http_request.headers().clone();
+    let remove_headers: Vec<(&str, &str)> = remove_headers
+        .iter()
+        .filter(|(name, _)| {
+            name.starts_with("x-amz-checksum") || name.starts_with("x-amz-sdk-checksum")
+        })
+        .collect();
+
+    for (name, _) in remove_headers {
+        http_request.headers_mut().remove(name);
+    }
+
+    // Check if the body is present if it isn't (streaming request) we skip adding the header
+    if let Some(bytes) = http_request.body().bytes() {
+        let md5 = md5::compute(bytes);
+        let checksum_value = general_purpose::STANDARD.encode(md5.as_slice());
+
+        http_request
+            .headers_mut()
+            .append("Content-MD5", checksum_value);
+    }
+}
 
 /// Deletes the S3 objects in the specified bucket using the provided keys. Returns the number of
 /// objects that were successfully deleted.
@@ -35,6 +69,9 @@ pub async fn delete_s3_objects(
         .delete_objects()
         .bucket(bucket_name)
         .delete(delete)
+        // TODO: Remove once fixed https://github.com/awslabs/aws-sdk-rust/issues/1240#issuecomment-2635024286
+        .customize()
+        .mutate_request(calculate_md5_checksum_and_remove_other_checksums)
         .send()
         .await
         .map_err(|error| error.into_service_error())
