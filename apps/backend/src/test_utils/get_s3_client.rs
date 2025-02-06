@@ -1,8 +1,8 @@
 use crate::{
+    S3Client,
     config::get_app_config,
     get_aws_behavior_version,
     get_aws_region,
-    S3Client,
 };
 
 /// Initializes and returns an S3 client instance for tests

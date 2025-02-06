@@ -18,12 +18,7 @@ pub async fn delete_s3_objects(
 ) -> anyhow::Result<u32> {
     let objects_to_delete = keys
         .iter()
-        .filter_map(|key| {
-            ObjectIdentifier::builder()
-                .set_key(Some(key.clone()))
-                .build()
-                .ok()
-        })
+        .filter_map(|key| ObjectIdentifier::builder().key(key.clone()).build().ok())
         .collect::<Vec<_>>();
 
     if objects_to_delete.is_empty() {
@@ -54,8 +49,8 @@ mod tests {
     use crate::{
         constants::buckets::S3_BASE_BUCKET,
         test_utils::{
-            get_s3_client,
             TestContext,
+            get_s3_client,
         },
         utils::delete_s3_objects_using_prefix::delete_s3_objects_using_prefix,
     };

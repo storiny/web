@@ -17,7 +17,7 @@ import GetInTouchSection from "./sections/get-in-touch";
 import LogoSection from "./sections/logo";
 import TypographySection from "./sections/typography";
 import styles from "./styles.module.scss";
-import { VisuallyHidden } from "./visually-hidden";
+import { VisuallyHidden } from "radix-ui";
 
 const Page = (): React.ReactElement => (
   <>
@@ -41,9 +41,9 @@ const Page = (): React.ReactElement => (
       </div>
     </div>
     <article className={clsx(css["flex-col"], styles.article)}>
-      <VisuallyHidden asChild>
+      <VisuallyHidden.Root asChild>
         <h1>Media kit</h1>
-      </VisuallyHidden>
+      </VisuallyHidden.Root>
       <section className={styles.section}>
         <Typography
           as={"h2"}

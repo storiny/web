@@ -1,7 +1,7 @@
 use crate::{
+    RedisPool,
     async_transaction,
     constants::resource_lock::ResourceLock,
-    RedisPool,
 };
 use redis::AsyncCommands;
 use std::cmp::min;
