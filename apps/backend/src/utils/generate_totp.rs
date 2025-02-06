@@ -1,7 +1,7 @@
 use totp_rs::{
     Algorithm,
-    TotpUrlError,
     TOTP,
+    TotpUrlError,
 };
 
 /// Generates a new TOTP instance using the provided secret and username.
@@ -10,7 +10,7 @@ use totp_rs::{
 /// * `username` - The username of the target user.
 pub fn generate_totp(secret: Vec<u8>, username: &str) -> Result<TOTP, TotpUrlError> {
     TOTP::new(
-        Algorithm::SHA256,
+        Algorithm::SHA1,
         6,
         1,
         30,
