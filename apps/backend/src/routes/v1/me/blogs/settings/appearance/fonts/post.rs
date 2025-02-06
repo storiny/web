@@ -1,4 +1,5 @@
 use crate::{
+    AppState,
     constants::{
         buckets::S3_FONTS_BUCKET,
         resource_limit::ResourceLimit,
@@ -13,19 +14,19 @@ use crate::{
         delete_s3_objects::delete_s3_objects,
         incr_resource_limit::incr_resource_limit,
     },
-    AppState,
 };
 use actix_multipart::form::{
+    MultipartForm,
     tempfile::TempFile,
     text::Text,
-    MultipartForm,
 };
 use actix_web::{
+    HttpResponse,
     http::StatusCode,
     post,
     web,
-    HttpResponse,
 };
+use four_cc::FourCC;
 use mime::{
     APPLICATION_OCTET_STREAM,
     FONT_WOFF2,
@@ -46,7 +47,8 @@ use tracing::{
 };
 use uuid::Uuid;
 use validator::Validate;
-use woff2::decode::is_woff2;
+
+const WOFF2_SIGNATURE: FourCC = FourCC(*b"wOF2");
 
 static MAX_FILE_SIZE: usize = 1024 * 1024 * 2; // 2 MB
 
@@ -64,6 +66,13 @@ struct UploadFont {
 #[derive(Debug, Serialize, Deserialize)]
 struct Response {
     id: String,
+}
+
+/// Returns whether the buffer starts with the WOFF2 magic number.
+///
+/// * `input_buffer` - The file buffer.
+fn is_woff2(input_buffer: &[u8]) -> bool {
+    input_buffer.starts_with(&WOFF2_SIGNATURE.0)
 }
 
 #[post("/v1/me/blogs/{blog_id}/settings/appearance/fonts/upload")]
@@ -336,21 +345,21 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 mod tests {
     use super::*;
     use crate::{
+        RedisPool,
+        S3Client,
         config::get_app_config,
         oauth::get_oauth_client_map,
         test_utils::{
+            RedisTestContext,
+            TestContext,
             count_s3_objects,
             exceed_resource_limit,
             get_lapin_pool,
             get_redis_pool,
             get_resource_limit,
             get_s3_client,
-            RedisTestContext,
-            TestContext,
         },
         utils::delete_s3_objects_using_prefix::delete_s3_objects_using_prefix,
-        RedisPool,
-        S3Client,
     };
     use actix_web::{
         App,
@@ -358,12 +367,12 @@ mod tests {
     };
     use futures::future;
     use reqwest::{
+        Body,
+        StatusCode,
         multipart::{
             Form,
             Part,
         },
-        Body,
-        StatusCode,
     };
     use sqlx::PgPool;
     use std::{

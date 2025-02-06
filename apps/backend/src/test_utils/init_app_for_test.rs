@@ -1,4 +1,6 @@
 use crate::{
+    AppState,
+    SesClient,
     amqp::init::init_mq_consumers,
     config::get_app_config,
     constants::{
@@ -21,14 +23,17 @@ use crate::{
         get_redis_pool,
         get_s3_client,
     },
-    AppState,
-    SesClient,
 };
 use actix_http::{
     HttpMessage,
     Request,
 };
 use actix_web::{
+    App,
+    Error,
+    HttpRequest,
+    HttpResponse,
+    Responder,
     cookie::{
         Cookie,
         Key,
@@ -43,11 +48,6 @@ use actix_web::{
     post,
     test,
     web,
-    App,
-    Error,
-    HttpRequest,
-    HttpResponse,
-    Responder,
 };
 use lockable::LockableHashMap;
 use rand::Rng;
@@ -58,8 +58,8 @@ use sqlx::{
 };
 use std::sync::Arc;
 use storiny_session::{
-    storage::RedisSessionStore,
     SessionMiddleware,
+    storage::RedisSessionStore,
 };
 use user_agent_parser::UserAgentParser;
 
