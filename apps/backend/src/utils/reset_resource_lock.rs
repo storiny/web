@@ -19,7 +19,7 @@ pub async fn reset_resource_lock(
         anyhow!("unable to acquire a connection from the Redis pool: {error:?}")
     })?;
 
-    conn.del(&format!("{}:{identifier}", resource_lock))
+    conn.del(format!("{}:{identifier}", resource_lock))
         .await
         .map_err(|error| anyhow!("unable to delete the record from Redis: {error:?}"))?;
 
