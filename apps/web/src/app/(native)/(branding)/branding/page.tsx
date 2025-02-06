@@ -1,5 +1,6 @@
 import { clsx } from "clsx";
 import Image from "next/image";
+import { VisuallyHidden } from "radix-ui";
 import React from "react";
 
 import PlusPattern from "~/brand/plus-pattern";
@@ -17,7 +18,6 @@ import GetInTouchSection from "./sections/get-in-touch";
 import LogoSection from "./sections/logo";
 import TypographySection from "./sections/typography";
 import styles from "./styles.module.scss";
-import { VisuallyHidden } from "radix-ui";
 
 const Page = (): React.ReactElement => (
   <>
