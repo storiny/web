@@ -1,7 +1,8 @@
 use crate::{
+    S3Client,
     constants::buckets::S3_FONTS_BUCKET,
     cron::init::SharedCronJobState,
-    S3Client,
+    utils::delete_s3_objects::calculate_md5_checksum_and_remove_other_checksums,
 };
 use apalis::prelude::*;
 use async_recursion::async_recursion;
@@ -148,6 +149,9 @@ RETURNING
                 .delete_objects()
                 .bucket(S3_FONTS_BUCKET)
                 .delete(delete)
+                // TODO: Remove once fixed https://github.com/awslabs/aws-sdk-rust/issues/1240#issuecomment-2635024286
+                .customize()
+                .mutate_request(calculate_md5_checksum_and_remove_other_checksums)
                 .send()
                 .await
                 .map_err(|error| Box::new(error.into_service_error()))
@@ -190,10 +194,10 @@ mod tests {
     use crate::{
         constants::buckets::S3_FONTS_BUCKET,
         test_utils::{
+            TestContext,
             count_s3_objects,
             get_cron_job_state_for_test,
             get_s3_client,
-            TestContext,
         },
         utils::delete_s3_objects_using_prefix::delete_s3_objects_using_prefix,
     };
