@@ -1,6 +1,6 @@
 use crate::{
-    utils::delete_s3_objects::delete_s3_objects,
     S3Client,
+    utils::delete_s3_objects::delete_s3_objects,
 };
 use anyhow::anyhow;
 use async_recursion::async_recursion;
@@ -62,8 +62,8 @@ mod tests {
     use crate::{
         constants::buckets::S3_BASE_BUCKET,
         test_utils::{
-            get_s3_client,
             TestContext,
+            get_s3_client,
         },
     };
     use aws_sdk_s3::operation::get_object::GetObjectError;

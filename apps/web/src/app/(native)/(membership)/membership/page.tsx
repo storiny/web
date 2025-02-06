@@ -7,8 +7,7 @@ import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import { PlusBadge } from "~/entities/badges";
 import css from "~/theme/main.module.scss";
-
-import { VisuallyHidden } from "../../(branding)/branding/visually-hidden";
+import { VisuallyHidden } from "radix-ui";
 import BasicFeatures from "./sections/basic-features";
 import CollaborationSection from "./sections/collaboration";
 import CustomBrandingSection from "./sections/custom-branding";
@@ -44,9 +43,9 @@ const Page = (): React.ReactElement => (
       )}
     >
       <MembershipWordmark />
-      <VisuallyHidden asChild>
+      <VisuallyHidden.Root asChild>
         <h1>Storiny+</h1>
-      </VisuallyHidden>
+      </VisuallyHidden.Root>
       <Spacer orientation={"vertical"} size={3} />
       <Typography className={styles.tagline}>
         Take full control of your blogs by becoming a{" "}

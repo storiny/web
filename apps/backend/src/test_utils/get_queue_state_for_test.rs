@@ -1,4 +1,6 @@
 use crate::{
+    S3Client,
+    SesClient,
     amqp::init::SharedQueueState,
     config::get_app_config,
     get_aws_behavior_version,
@@ -7,8 +9,6 @@ use crate::{
         get_redis_pool,
         get_s3_client,
     },
-    S3Client,
-    SesClient,
 };
 use sqlx::PgPool;
 use std::sync::Arc;
