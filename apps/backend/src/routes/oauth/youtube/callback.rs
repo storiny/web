@@ -1,4 +1,6 @@
 use crate::{
+    AppState,
+    ConnectionTemplate,
     constants::connection_provider::ConnectionProvider,
     error::AppError,
     middlewares::identity::identity::Identity,
@@ -7,14 +9,12 @@ use crate::{
         AuthRequest,
         ConnectionError,
     },
-    AppState,
-    ConnectionTemplate,
 };
 use actix_web::{
+    HttpResponse,
     get,
     http::header::ContentType,
     web,
-    HttpResponse,
 };
 use actix_web_validator::QsQuery;
 use http::header;
@@ -92,7 +92,7 @@ async fn handle_youtube_oauth_request(
 
     // Fetch the channel details.
     let channel_res = reqwest_client
-        .get(&format!(
+        .get(format!(
             "https://youtube.googleapis.com/youtube/v3/channels?{}&{}&{}&key={}",
             "part=snippet", "maxResults=1", "mine=true", &data.config.youtube_data_api_key
         ))
@@ -209,8 +209,8 @@ mod tests {
         init_app_for_test,
     };
     use actix_web::{
-        test,
         Responder,
+        test,
     };
     use sqlx::{
         PgPool,

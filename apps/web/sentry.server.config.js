@@ -11,6 +11,11 @@ Sentry.init({
       return null;
     }
 
+    // Next.js notFound() errors
+    if (event.exception?.values?.[0].value === "NEXT_HTTP_ERROR_FALLBACK;404") {
+      return null;
+    }
+
     return event;
   },
   ignoreErrors: [/5 not_found/i]

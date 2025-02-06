@@ -130,7 +130,7 @@ pub struct OAuthClientMap {
 
 /// Returns the behavior version for AWS services.
 pub fn get_aws_behavior_version() -> BehaviorVersion {
-    BehaviorVersion::v2023_11_09()
+    BehaviorVersion::v2024_03_28()
 }
 
 /// Returns the region for AWS services.

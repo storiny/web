@@ -1,19 +1,19 @@
 use actix_cors::Cors;
 use actix_extensible_rate_limit::{
-    backend::SimpleInputFunctionBuilder,
     RateLimiter,
+    backend::SimpleInputFunctionBuilder,
 };
 use actix_web::{
+    App,
+    HttpResponse,
+    HttpServer,
+    Responder,
     cookie::{
         Key,
         SameSite,
     },
     http::header::ContentType,
     web,
-    App,
-    HttpResponse,
-    HttpServer,
-    Responder,
 };
 use actix_web_validator::{
     JsonConfig,
@@ -56,8 +56,8 @@ use storiny::{
     *,
 };
 use storiny_session::{
-    storage::RedisSessionStore,
     SessionMiddleware,
+    storage::RedisSessionStore,
 };
 use tracing::error;
 use tracing_actix_web::TracingLogger;

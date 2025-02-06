@@ -1,6 +1,6 @@
 use crate::{
-    constants::resource_lock::ResourceLock,
     RedisPool,
+    constants::resource_lock::ResourceLock,
 };
 use anyhow::anyhow;
 use redis::AsyncCommands;
