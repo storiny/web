@@ -7,7 +7,8 @@ import { is_valid_blog_identifier } from "~/common/utils/is-valid-blog-identifie
 const CSP_FRAME_SRC = [
   "twitter.com",
   "platform.twitter.com",
-  "syndication.twitter.com"
+  "syndication.twitter.com",
+  "embed.reddit.com"
 ].join(" ");
 
 // Third-party script sources.
