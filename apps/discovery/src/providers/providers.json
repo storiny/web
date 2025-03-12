@@ -156,15 +156,6 @@
     ]
   },
   {
-    "name": "ObservableHQ",
-    "endpoint": "https://api.observablehq.com/oembed",
-    "schemas": [
-      "observablehq.com/@*/*",
-      "observablehq.com/d/*",
-      "observablehq.com/embed/*"
-    ]
-  },
-  {
     "name": "Pinterest",
     "endpoint": "https://pinterest.com/oembed.json",
     "schemas": [
