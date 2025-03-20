@@ -4,7 +4,10 @@
   position: relative;
   width: 680px;
   height: 100%;
-  min-height: calc(100vh - var(--header-height) + 1px); // 1px for auxiliary content resize observer
+  min-height: calc(
+    100vh - var(--header-height) + 1px
+  ); // 1px for auxiliary content resize observer
+
   max-width: 100%;
   margin-inline: auto;
 

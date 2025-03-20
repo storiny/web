@@ -4,14 +4,16 @@
   font-family: prata;
   font-weight: normal;
   font-style: normal;
-  src: url("https://cdn.storiny.com/web-assets/fonts/prata.woff2") format("woff2");
+  src: url("https://cdn.storiny.com/web-assets/fonts/prata.woff2")
+    format("woff2");
 }
 
 @font-face {
   font-family: trykker;
   font-weight: normal;
   font-style: normal;
-  src: url("https://cdn.storiny.com/web-assets/fonts/trykker.woff2") format("woff2");
+  src: url("https://cdn.storiny.com/web-assets/fonts/trykker.woff2")
+    format("woff2");
 }
 
 .preview {
@@ -24,11 +26,14 @@
   }
 }
 
-.lsb, .body, .rsb {
+.lsb,
+.body,
+.rsb {
   background-color: var(--bg-elevation-xs);
 }
 
-.lsb, .rsb {
+.lsb,
+.rsb {
   border-color: var(--divider);
   border-style: solid;
   min-width: 142px;

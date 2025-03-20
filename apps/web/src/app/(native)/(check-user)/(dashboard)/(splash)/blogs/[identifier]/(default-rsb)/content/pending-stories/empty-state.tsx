@@ -2,7 +2,7 @@ import React from "react";
 
 import CustomState from "~/entities/custom-state";
 import StoryIcon from "~/icons/story";
- 
+
 interface PendingStoriesEmptyStateProps {
   query: string;
 }

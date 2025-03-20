@@ -13,10 +13,10 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.37.1",
-    "@storiny/eslint-config": "*",
-    "@storiny/prettier-config": "*",
+    "@storiny/eslint-config": "^1.1.0",
+    "@storiny/prettier-config": "^1.1.0",
     "@storiny/stylelint-config": "*",
-    "@storiny/tsconfig": "*",
+    "@storiny/tsconfig": "^1.0.0",
     "@storiny/types": "*",
     "@types/color-name": "^1.1.3",
     "@types/react": "^19.0.8",

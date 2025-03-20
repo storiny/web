@@ -1,3 +1,6 @@
+// `ImageSize` is also used by @storiny/cdn. Changes made in this file must be
+// mirrored to the @storiny/cdn repository manually.
+
 // Valid image widths for generating CDN url
 export enum ImageSize {
   W_64 /*  */ = 64,

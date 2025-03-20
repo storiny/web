@@ -20,4 +20,5 @@ export {
   useFieldArray as use_field_array,
   useForm as use_form,
   useFormContext as use_form_context,
-  useWatch as use_watch} from "react-hook-form";
+  useWatch as use_watch
+} from "react-hook-form";

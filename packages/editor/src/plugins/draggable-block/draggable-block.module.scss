@@ -25,7 +25,8 @@
     cursor: grabbing;
   }
 
-  &:hover, &:active {
+  &:hover,
+  &:active {
     & .icon {
       opacity: 1;
     }

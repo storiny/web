@@ -15,13 +15,17 @@
   min-height: 192px;
 
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(180deg, rgba(0 0 0 / 0%) 0%, rgba(0 0 0 / 25%) 100%);
+    background: linear-gradient(
+      180deg,
+      rgba(0 0 0 / 0%) 0%,
+      rgba(0 0 0 / 25%) 100%
+    );
   }
 }
 
@@ -60,11 +64,14 @@
   z-index: 1;
 }
 
-.lsb, .body, .rsb {
+.lsb,
+.body,
+.rsb {
   background-color: var(--bg-elevation-xs);
 }
 
-.lsb, .rsb {
+.lsb,
+.rsb {
   border-color: var(--divider);
   border-style: solid;
   min-width: 142px;

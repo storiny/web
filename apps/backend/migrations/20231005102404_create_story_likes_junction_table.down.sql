@@ -1,2 +1,0 @@
-DROP TABLE IF EXISTS story_likes CASCADE;
-
