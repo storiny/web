@@ -1,1 +1,0 @@
-DROP TABLE IF EXISTS blog_lsb_items CASCADE;

@@ -31,8 +31,7 @@ test.describe("events", () => {
       const single_range_fn =
         /* eslint-disable prefer-snakecase/prefer-snakecase */
 
-
-          (
+        (
             startContainer: Node,
             startOffset: number,
             endContainer: Node,

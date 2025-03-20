@@ -37,7 +37,8 @@
 
 // Dark mode filter
 @at-root html[data-theme="dark"] {
-  .video, .video-fallback {
+  .video,
+  .video-fallback {
     filter: brightness(1.1);
   }
 }

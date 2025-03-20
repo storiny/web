@@ -3,7 +3,8 @@
     --avatar-size: 34px;
   }
 
-  &.logo, &.fallback {
+  &.logo,
+  &.fallback {
     border-radius: var(--radius-md) !important;
   }
 

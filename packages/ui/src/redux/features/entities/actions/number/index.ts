@@ -42,8 +42,8 @@ export const number_action =
         value_or_callback === "increment"
           ? curr_value + 1
           : value_or_callback === "decrement"
-          ? curr_value - 1
-          : value_or_callback(curr_value),
+            ? curr_value - 1
+            : value_or_callback(curr_value),
         Infinity
       );
 

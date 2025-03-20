@@ -152,10 +152,10 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
             hex_to_rgba_string(fill.hex, fill.a) === SWATCH.dark
               ? "dark"
               : hex_to_rgba_string(fill.hex, fill.a) === SWATCH.light
-              ? "light"
-              : fill.a === 0
-              ? "transparent"
-              : undefined
+                ? "light"
+                : fill.a === 0
+                  ? "transparent"
+                  : undefined
           }
         >
           <ToggleGroupItem

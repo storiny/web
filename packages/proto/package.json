@@ -10,8 +10,8 @@
   },
   "devDependencies": {
     "@bufbuild/buf": "^1.21.0-1",
-    "@storiny/eslint-config": "*",
-    "@storiny/tsconfig": "*",
+    "@storiny/eslint-config": "^1.1.0",
+    "@storiny/tsconfig": "^1.0.0",
     "eslint": "^8.51.0",
     "ts-proto": "^1.148.2",
     "typescript": "^5.2.2"

@@ -91,8 +91,8 @@ const MultiSelect = React.forwardRef<
     options.length
       ? options.filter((option) => value_prop.includes(option.value))
       : value_prop.length
-      ? value_prop.map((item) => ({ value: item, label: item }))
-      : []
+        ? value_prop.map((item) => ({ value: item, label: item }))
+        : []
   );
   const is_option_disabled = typeof max === "number" && value.length >= max;
   const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
@@ -173,7 +173,7 @@ const MultiSelect = React.forwardRef<
       styles={{
         ...select_styles,
         container: (base): React.CSSProperties =>
-          ({ ...base, ...style } as React.CSSProperties),
+          ({ ...base, ...style }) as React.CSSProperties,
         // eslint-disable-next-line prefer-snakecase/prefer-snakecase
         dropdownIndicator: (): React.CSSProperties => ({
           display: "none"

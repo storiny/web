@@ -44,8 +44,8 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
         scale
           ? TYPOGRAPHY_SCALE_TO_CLASSNAME_MAP[scale]
           : level !== "inherit"
-          ? TYPOGRAPHY_LEVEL_TO_CLASSNAME_MAP[level]
-          : styles.inherit,
+            ? TYPOGRAPHY_LEVEL_TO_CLASSNAME_MAP[level]
+            : styles.inherit,
         disabled && styles.disabled,
         className
       )}

@@ -22,7 +22,9 @@
   &.has-logo {
     --inline-padding: 20px;
 
-    max-width: calc(100% - calc(64px + var(--inline-padding))); // 100% - (width of logo + inline padding)
+    max-width: calc(
+      100% - calc(64px + var(--inline-padding))
+    ); // 100% - (width of logo + inline padding)
 
     @include breakpoints.media("<mobile") {
       --inline-padding: 16px;

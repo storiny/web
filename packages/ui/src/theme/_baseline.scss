@@ -152,7 +152,8 @@ body {
   }
 
   &.sidenav {
-    & [data-global-header="true"], [data-global-footer="true"] {
+    & [data-global-header="true"],
+    [data-global-footer="true"] {
       &::before {
         // Remove sidenav width
         width: calc(100vw - 72px);
@@ -168,7 +169,9 @@ body {
   // Programming ligatures
   &.ligatures {
     font-variant-ligatures: contextual;
-    font-feature-settings: "liga" 0, "calt" 0;
+    font-feature-settings:
+      "liga" 0,
+      "calt" 0;
   }
 
   // Reduced motion settings
