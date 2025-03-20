@@ -19,16 +19,16 @@ const GalleryEmptyState = ({
         query
           ? "Your search criteria did not match anything, make sure you've spelled it correctly or try again by being more specific."
           : tab === "library"
-          ? "Media you upload will show up here."
-          : "Looks like we'll just have to use our imaginations for now."
+            ? "Media you upload will show up here."
+            : "Looks like we'll just have to use our imaginations for now."
       }
       size={"sm"}
       title={
         query
           ? `Could not find any media for "${query}"`
           : tab === "library"
-          ? "No uploads"
-          : "No content is available here yet"
+            ? "No uploads"
+            : "No content is available here yet"
       }
     />
   );

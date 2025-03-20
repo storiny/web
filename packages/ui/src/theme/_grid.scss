@@ -3,10 +3,9 @@
 /* Sidenav */
 @mixin sidenav {
   grid-column-gap: 0;
-  grid-template-columns: 72px minmax(49px, 1fr) 24px repeat(6, minmax(0, 100px)) 24px minmax(
-      49px,
-      1fr
-    );
+  grid-template-columns:
+    72px minmax(49px, 1fr) 24px repeat(6, minmax(0, 100px))
+    24px minmax(49px, 1fr);
   grid-template-areas:
     "sn . hd hd hd hd hd hd hd hd ."
     "sn . . main main main main main main . ."
@@ -84,10 +83,9 @@
       --grid-area: ". hd hd hd hd hd hd ." ". main main main main main main ."
         ". ft ft ft ft ft ft .";
 
-      grid-template-columns: minmax(65px, 1fr) repeat(6, minmax(0, 100px)) minmax(
-          65px,
-          1fr
-        );
+      grid-template-columns:
+        minmax(65px, 1fr) repeat(6, minmax(0, 100px))
+        minmax(65px, 1fr);
     }
   }
 
