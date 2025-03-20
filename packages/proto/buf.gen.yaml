@@ -1,3 +1,6 @@
+# Protobuf output for the backend will be saved in `proto-backend`.
+# It needs to be manually mirrored to the backend repository.
+
 version: v1
 managed:
   enabled: true
@@ -16,19 +19,19 @@ plugins:
       - enumsAsLiterals=true
 
   - plugin: buf.build/community/neoeinstein-prost:v0.2.3
-    out: ../../apps/backend/src/proto
+    out: ../../proto-backend
     opt:
       - compile_well_known_types
       - extern_path=.google.protobuf=::pbjson_types
 
   - plugin: buf.build/community/neoeinstein-prost-serde:v0.2.3
-    out: ../../apps/backend/src/proto
+    out: ../../proto-backend
     opt:
       - no_include
       - use_integers_for_enums
 
   - plugin: buf.build/community/neoeinstein-tonic:v0.3.0
-    out: ../../apps/backend/src/proto
+    out: ../../proto-backend
     opt:
       - compile_well_known_types
       - extern_path=.google.protobuf=::pbjson_types
