@@ -195,8 +195,8 @@ const ReportModal = (props: ReportModalProps): React.ReactElement => {
             width: is_smaller_than_mobile
               ? "100%"
               : is_success
-              ? "340px"
-              : "420px"
+                ? "340px"
+                : "420px"
           }
         },
         body: {

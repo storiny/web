@@ -61,7 +61,7 @@
     border: none !important;
     align-self: stretch;
     outline-offset: calc(
-            -1 * var(--focus-thickness)
+      -1 * var(--focus-thickness)
     ) !important; // Invert focus
   }
 

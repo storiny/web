@@ -103,7 +103,7 @@ const AreaChart = (props: AreaChartProps): React.ReactElement => {
   const gradient_id = React.useId();
   const theme = use_app_selector(select_resolved_theme);
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const num_ticks = num_ticks_prop ?? is_mobile ? 6 : 8;
+  const num_ticks = (num_ticks_prop ?? is_mobile) ? 6 : 8;
 
   return (
     <AspectRatio

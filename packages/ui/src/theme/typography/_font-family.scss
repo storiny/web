@@ -1,9 +1,10 @@
 @mixin main {
   --font-system: -apple-system, "BlinkMacSystemFont", avenir next, avenir,
-  segoe ui, helvetica neue, helvetica, "Cantarell", "Ubuntu", roboto, noto,
-  arial, sans-serif;
+    segoe ui, helvetica neue, helvetica, "Cantarell", "Ubuntu", roboto, noto,
+    arial, sans-serif;
   --font-monospace: blog-code, "Menlo", "Consolas", "Monaco", "Liberation Mono",
-  "Lucida Console", monospace;
-  --font-primary: blog-primary, var(--font-cabinet-grotesk), var(--font-secondary);
+    "Lucida Console", monospace;
+  --font-primary: blog-primary, var(--font-cabinet-grotesk),
+    var(--font-secondary);
   --font-secondary: blog-secondary, var(--font-satoshi), var(--font-system);
 }
