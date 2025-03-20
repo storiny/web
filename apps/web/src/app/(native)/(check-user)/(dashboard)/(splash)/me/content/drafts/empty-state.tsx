@@ -21,8 +21,8 @@ const DraftsEmptyState = ({
       query
         ? "Your search criteria did not match anything, make sure you've spelled it correctly or try again by being more specific."
         : value === "deleted"
-        ? "You have not deleted any drafts recently."
-        : "When you create a draft, unpublish a story, or restore a story, it will show up here."
+          ? "You have not deleted any drafts recently."
+          : "When you create a draft, unpublish a story, or restore a story, it will show up here."
     }
     icon={
       query ? undefined : value === "pending" ? <StoryIcon /> : <TrashIcon />

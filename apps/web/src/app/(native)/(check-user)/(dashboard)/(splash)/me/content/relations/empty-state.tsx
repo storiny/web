@@ -32,8 +32,8 @@ const RelationsEmptyState = ({
       query
         ? `Could not find any user for "${query}"`
         : value === "following"
-        ? "You are not following anyone"
-        : `No ${value} yet`
+          ? "You are not following anyone"
+          : `No ${value} yet`
     }
   />
 );

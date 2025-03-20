@@ -9,7 +9,13 @@
   z-index: 0;
 
   &.has-splash {
-    background: radial-gradient(50% 50% at 50% 50%, transparent 45%, rgba(0 0 0 / 30%) 100%), linear-gradient(0deg, rgba(0 0 0 / 20%) 0%, rgba(0 0 0 / 20%) 100%), var(--splash-url);
+    background: radial-gradient(
+        50% 50% at 50% 50%,
+        transparent 45%,
+        rgba(0 0 0 / 30%) 100%
+      ),
+      linear-gradient(0deg, rgba(0 0 0 / 20%) 0%, rgba(0 0 0 / 20%) 100%),
+      var(--splash-url);
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;

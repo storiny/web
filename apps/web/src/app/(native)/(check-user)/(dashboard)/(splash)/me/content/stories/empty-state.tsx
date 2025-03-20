@@ -21,8 +21,8 @@ const StoriesEmptyState = ({
       query
         ? "Your search criteria did not match anything, make sure you've spelled it correctly or try again by being more specific."
         : value === "deleted"
-        ? "You have not deleted any stories recently."
-        : "When you publish a story, it will show up here."
+          ? "You have not deleted any stories recently."
+          : "When you publish a story, it will show up here."
     }
     icon={
       query ? undefined : value === "published" ? <StoryIcon /> : <TrashIcon />
