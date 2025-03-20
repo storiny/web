@@ -1,1 +1,0 @@
-DROP FUNCTION IF EXISTS "public"."render_notification_content";

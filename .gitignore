@@ -14,12 +14,10 @@ docker/tmp/elasticsearch/*
 docker/tmp/minio/*
 docker/tmp/postgres/*
 docker/tmp/redis/*
-apps/cdn/docker/tmp/nginx/*
 !docker/tmp/elasticsearch/.gitkeep
 !docker/tmp/minio/.gitkeep
 !docker/tmp/postgres/.gitkeep
 !docker/tmp/redis/.gitkeep
-!apps/cdn/docker/tmp/nginx/.gitkeep
 
 # test certificates
 packages/proto/certs/*

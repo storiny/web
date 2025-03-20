@@ -1,1 +1,0 @@
-DROP TABLE IF EXISTS newsletter_tokens CASCADE;

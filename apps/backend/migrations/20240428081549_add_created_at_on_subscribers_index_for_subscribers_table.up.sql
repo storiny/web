@@ -1,1 +1,0 @@
-CREATE INDEX IF NOT EXISTS created_at_on_subscribers ON subscribers (created_at);

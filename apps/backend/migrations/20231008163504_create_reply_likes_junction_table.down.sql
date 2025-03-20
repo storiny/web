@@ -1,2 +1,0 @@
-DROP TABLE IF EXISTS reply_likes CASCADE;
-
