@@ -1,1 +1,0 @@
-DROP FUNCTION IF EXISTS "public"."notify_tag_followers";
