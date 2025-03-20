@@ -20,7 +20,8 @@
     }
   }
 
-  &.logo, &.fallback {
+  &.logo,
+  &.fallback {
     border-radius: var(--radius-md) !important;
   }
 }

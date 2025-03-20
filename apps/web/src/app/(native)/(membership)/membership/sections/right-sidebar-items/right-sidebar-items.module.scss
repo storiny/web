@@ -26,11 +26,14 @@
   line-height: 100%;
 }
 
-.lsb, .body, .rsb {
+.lsb,
+.body,
+.rsb {
   background-color: var(--bg-elevation-xs);
 }
 
-.lsb, .rsb {
+.lsb,
+.rsb {
   border-color: var(--divider);
   border-style: solid;
 }

@@ -18,10 +18,10 @@ const NotificationsEmptyState = ({
       tab === "following"
         ? "Stay up-to-date with the latest ideas from writers you follow here."
         : tab === "friends"
-        ? "This is where you can stay up-to-date with the latest ideas from your friends."
-        : tab === "all"
-        ? "This is where you will find all your notifications."
-        : "Stay up-to-date with the latest ideas from your favorite writers here."
+          ? "This is where you can stay up-to-date with the latest ideas from your friends."
+          : tab === "all"
+            ? "This is where you will find all your notifications."
+            : "Stay up-to-date with the latest ideas from your favorite writers here."
     }
     icon={<NotificationIcon />}
     title={tab === "unread" ? "No unread notifications" : "No notifications"}

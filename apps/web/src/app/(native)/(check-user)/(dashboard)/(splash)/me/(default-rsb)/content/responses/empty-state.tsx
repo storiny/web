@@ -21,8 +21,8 @@ const ResponsesEmptyState = ({
       query
         ? "Your search criteria did not match anything, make sure you've spelled it correctly or try again by being more specific."
         : value === "comments"
-        ? "When you leave comments on stories, they will show up here."
-        : "When you reply to comments, they will show up here."
+          ? "When you leave comments on stories, they will show up here."
+          : "When you reply to comments, they will show up here."
     }
     icon={
       query ? undefined : value === "comments" ? <CommentIcon /> : <ReplyIcon />

@@ -122,8 +122,8 @@ export class Flag {
       typeof mask === "number"
         ? mask
         : Array.isArray(mask)
-        ? this.get_mask(mask)
-        : mask;
+          ? this.get_mask(mask)
+          : mask;
 
     let result: boolean;
 
