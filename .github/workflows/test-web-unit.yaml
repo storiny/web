@@ -4,36 +4,28 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - '.github/workflows/test-web-unit.yaml'
-      - 'apps/web/**'
-      - 'packages/**'
   push:
     branches:
       - main
-    paths:
-      - '.github/workflows/test-web-unit.yaml'
-      - 'apps/backend/**'
-      - 'packages/**'
 
 jobs:
   test-unit:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Enable corepack
-      run: corepack enable
+      - name: Enable corepack
+        run: corepack enable
 
-    - name: Setup node
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'yarn'
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
 
-    - name: Run yarn install
-      run: yarn install --immutable
+      - name: Run yarn install
+        run: yarn install --immutable
 
-    - name: Run tests
-      run: yarn test
+      - name: Run tests
+        run: yarn test
