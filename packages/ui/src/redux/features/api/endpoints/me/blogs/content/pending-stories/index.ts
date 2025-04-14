@@ -37,7 +37,8 @@ export const get_blog_pending_stories_api = api_slice.injectEndpoints({
         );
 
         current_cache.items.push(...new_items);
-        current_cache.has_more = new_items.length === ITEMS_PER_PAGE;
+        current_cache.has_more =
+          current_cache.has_more && new_items.length === ITEMS_PER_PAGE;
       },
       providesTags: (result) =>
         result

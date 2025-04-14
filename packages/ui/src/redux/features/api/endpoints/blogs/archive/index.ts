@@ -34,7 +34,8 @@ export const { useGetBlogArchiveQuery: use_get_blog_archive_query } =
           );
 
           current_cache.items.push(...new_items);
-          current_cache.has_more = new_items.length === ITEMS_PER_PAGE;
+          current_cache.has_more =
+            current_cache.has_more && new_items.length === ITEMS_PER_PAGE;
         },
         forceRefetch: ({ currentArg, previousArg }) =>
           currentArg?.blog_id !== previousArg?.blog_id ||
