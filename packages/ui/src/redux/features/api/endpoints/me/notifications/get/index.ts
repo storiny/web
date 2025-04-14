@@ -33,7 +33,8 @@ export const { useGetNotificationsQuery: use_get_notifications_query } =
           );
 
           current_cache.items.push(...new_items);
-          current_cache.has_more = new_items.length === ITEMS_PER_PAGE;
+          current_cache.has_more =
+            current_cache.has_more && new_items.length === ITEMS_PER_PAGE;
         },
         providesTags: (result) =>
           result
