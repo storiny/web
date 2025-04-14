@@ -39,7 +39,8 @@ export const { useGetRelationsQuery: use_get_relations_query } =
           );
 
           current_cache.items.push(...new_items);
-          current_cache.has_more = new_items.length === ITEMS_PER_PAGE;
+          current_cache.has_more =
+            current_cache.has_more && new_items.length === ITEMS_PER_PAGE;
         },
         forceRefetch: ({ currentArg, previousArg }) =>
           currentArg?.relation_type !== previousArg?.relation_type ||
