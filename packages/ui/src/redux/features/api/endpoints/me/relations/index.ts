@@ -32,13 +32,14 @@ export const { useGetRelationsQuery: use_get_relations_query } =
           items: response,
           has_more: response.length === ITEMS_PER_PAGE
         }),
-        merge: (current_cache, new_items) => {
-          current_cache.items = current_cache.items.filter(
-            (current_item) =>
-              !new_items.items.some((item) => current_item.id === item.id)
+        merge: (current_cache, data) => {
+          const new_items = data.items.filter(
+            (data_item) =>
+              !current_cache.items.some((item) => data_item.id === item.id)
           );
-          current_cache.items.push(...new_items.items);
-          current_cache.has_more = new_items.has_more;
+
+          current_cache.items.push(...new_items);
+          current_cache.has_more = new_items.length === ITEMS_PER_PAGE;
         },
         forceRefetch: ({ currentArg, previousArg }) =>
           currentArg?.relation_type !== previousArg?.relation_type ||

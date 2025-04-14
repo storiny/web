@@ -15,24 +15,24 @@
 
   &:not(.no-animation) {
     animation-timing-function: ease-out;
-    animation-duration: 200ms;
-    animation-delay: 500ms; // Delay for image animation
+    animation-duration: 250ms;
+    animation-delay: 2500ms;
     animation-fill-mode: forwards;
+  }
 
-    & .native-image {
-      animation-timing-function: ease-in;
-      animation-duration: 220ms;
-      animation-fill-mode: backwards;
-    }
+  &:not(.no-animation) .native-image {
+    animation-timing-function: ease-in;
+    animation-duration: 250ms;
+    animation-delay: 0s;
+    animation-fill-mode: backwards;
   }
 
   &.loaded {
     animation-name: fade-background-out; // Hide background as images can be transparent
+  }
 
-    & .native-image {
-      animation-delay: 0s;
-      animation-name: fade-image-in;
-    }
+  &.loaded .native-image {
+    animation-name: fade-image-in;
   }
 }
 
