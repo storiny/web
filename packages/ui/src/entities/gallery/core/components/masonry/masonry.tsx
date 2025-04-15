@@ -14,10 +14,12 @@ import Spinner from "~/components/spinner";
 import ErrorState from "~/entities/error-state";
 import { use_debounce } from "~/hooks/use-debounce";
 import { use_media_query } from "~/hooks/use-media-query";
+import { use_pagination } from "~/hooks/use-pagination";
 import {
   get_query_error_type,
   GetGalleryPhotosResponse,
   GetUserAssetsResponse,
+  select_gallery_photos,
   use_get_assets_query,
   use_get_gallery_photos_query
 } from "~/redux/features";
@@ -46,30 +48,50 @@ const Pexels = ({
   container_ref: React.RefObject<HTMLDivElement>;
   min_cols: number;
 }): React.ReactElement => {
-  const [page, set_page] = React.useState<number>(1);
   const query = use_atom_value(query_atom);
   const debounced_query = use_debounce(query);
-  const {
-    data,
-    isFetching: is_fetching,
-    isLoading: is_loading,
-    isError: is_error,
-    error,
-    refetch
-  } = use_get_gallery_photos_query({
-    page,
-    query: debounced_query
-  });
-  const { items = [], has_more } = data || {};
+  const page = use_pagination(
+    select_gallery_photos({ page: 1, query: debounced_query })
+  );
+  const [
+    trigger,
+    {
+      data: { items = [], has_more } = {},
+      isFetching: is_fetching,
+      isLoading: is_loading,
+      isError: is_error,
+      error
+    }
+  ] = use_get_gallery_photos_query();
   const is_typing = debounced_query !== query;
 
+  const default_fetch = React.useCallback(() => {
+    trigger({
+      page,
+      query: debounced_query
+    });
+  }, [page, debounced_query, trigger]);
+
   const increment_page = React.useCallback(() => {
-    set_page((prev_state) => prev_state + 1);
-  }, []);
+    trigger({
+      page: page + 1,
+      query: debounced_query
+    });
+  }, [page, debounced_query, trigger]);
 
   React.useEffect(() => {
-    set_page(1);
-  }, [query]);
+    if (debounced_query.length) {
+      trigger({
+        page: 1,
+        query: debounced_query
+      });
+    }
+  }, [debounced_query, trigger]);
+
+  React.useEffect(() => {
+    default_fetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <React.Fragment>
@@ -87,7 +109,7 @@ const Pexels = ({
           component_props={{
             button: { loading: is_fetching }
           }}
-          retry={refetch}
+          retry={default_fetch}
           type={get_query_error_type(error)}
         />
       ) : !is_fetching && !items.length ? (

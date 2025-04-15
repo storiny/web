@@ -1,5 +1,5 @@
 import { ContentType } from "@storiny/shared";
-import { NewsletterSubscribeSchema } from "@storiny/web/src/app/blog/[slug]/newsletter/schema";
+import { NewsletterSubscribeSchema } from "@storiny/web/src/app/blog/[identifier]/newsletter/schema";
 
 import { api_slice } from "~/redux/features/api/slice";
 

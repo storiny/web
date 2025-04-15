@@ -1,5 +1,5 @@
 import { ContentType } from "@storiny/shared";
-import { BlogConnectionsSchema } from "@storiny/web/src/app/(native)/(check-user)/(dashboard)/(splash)/blogs/[id_or_slug]/(default-rsb)/settings/connections/connections.schema";
+import { BlogConnectionsSchema } from "@storiny/web/src/app/(native)/(check-user)/(dashboard)/(splash)/blogs/[identifier]/(default-rsb)/settings/connections/connections.schema";
 
 import { api_slice } from "~/redux/features/api/slice";
 

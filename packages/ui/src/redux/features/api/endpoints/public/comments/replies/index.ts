@@ -1,5 +1,6 @@
 import { Reply } from "@storiny/types";
 
+import { merge_fn } from "~/redux/features";
 import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = (comment_id: string): string =>
@@ -13,29 +14,18 @@ export const { useGetCommentRepliesQuery: use_get_comment_replies_query } =
     endpoints: (builder) => ({
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       getCommentReplies: builder.query<
-        { has_more: boolean; items: Reply[] },
-        {
-          comment_id: string;
-          page: number;
-        }
+        { has_more: boolean; items: Reply[]; page: number },
+        { comment_id: string; page: number }
       >({
         query: ({ comment_id, page }) => `/${SEGMENT(comment_id)}?page=${page}`,
         serializeQueryArgs: ({ endpointName, queryArgs }) =>
           `${endpointName}:${queryArgs.comment_id}`,
-        transformResponse: (response: Reply[]) => ({
+        transformResponse: (response: Reply[], _, { page }) => ({
+          page,
           items: response,
           has_more: response.length === ITEMS_PER_PAGE
         }),
-        merge: (current_cache, data) => {
-          const new_items = data.items.filter(
-            (data_item) =>
-              !current_cache.items.some((item) => data_item.id === item.id)
-          );
-
-          current_cache.items.push(...new_items);
-          current_cache.has_more =
-            current_cache.has_more && new_items.length === ITEMS_PER_PAGE;
-        },
+        merge: (cache, data) => merge_fn(cache, data),
         providesTags: (result) =>
           result
             ? [

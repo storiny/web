@@ -32,9 +32,9 @@
 }
 
 .grid-container {
-  @include grid.row-template;
-
   min-height: 100%;
+
+  @include grid.row-template;
 
   &.dashboard {
     & main[data-root="true"] {

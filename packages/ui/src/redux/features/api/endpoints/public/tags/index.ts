@@ -12,8 +12,8 @@ export const { useLazyGetTagsQuery: use_lazy_get_tags_query } =
         query: ({ query }) => `/${SEGMENT}?query=${encodeURIComponent(query)}`,
         serializeQueryArgs: ({ endpointName, queryArgs }) =>
           `${endpointName}:${queryArgs.query}`,
-        merge: (current_cache, data) => {
-          current_cache.push(...data);
+        merge: (cache, data) => {
+          cache.push(...data);
         },
         forceRefetch: ({ currentArg, previousArg }) =>
           currentArg?.query !== previousArg?.query
