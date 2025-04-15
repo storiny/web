@@ -1,5 +1,6 @@
 import { Story } from "@storiny/types";
 
+import { merge_fn } from "~/redux/features";
 import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = (user_id: string): string => `users/${user_id}/stories`;
@@ -12,7 +13,7 @@ export const { useGetUserStoriesQuery: use_get_user_stories_query } =
     endpoints: (builder) => ({
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       getUserStories: builder.query<
-        { has_more: boolean; items: Story[] },
+        { has_more: boolean; items: Story[]; page: number },
         {
           page: number;
           query?: string;
@@ -26,20 +27,12 @@ export const { useGetUserStoriesQuery: use_get_user_stories_query } =
           }`,
         serializeQueryArgs: ({ endpointName, queryArgs }) =>
           `${endpointName}:${queryArgs.user_id}:${queryArgs.sort}:${queryArgs.query}`,
-        transformResponse: (response: Story[]) => ({
+        transformResponse: (response: Story[], _, { page }) => ({
+          page,
           items: response,
           has_more: response.length === ITEMS_PER_PAGE
         }),
-        merge: (current_cache, data) => {
-          const new_items = data.items.filter(
-            (data_item) =>
-              !current_cache.items.some((item) => data_item.id === item.id)
-          );
-
-          current_cache.items.push(...new_items);
-          current_cache.has_more =
-            current_cache.has_more && new_items.length === ITEMS_PER_PAGE;
-        },
+        merge: (cache, data) => merge_fn(cache, data),
         forceRefetch: ({ currentArg, previousArg }) =>
           currentArg?.user_id !== previousArg?.user_id ||
           currentArg?.page !== previousArg?.page ||

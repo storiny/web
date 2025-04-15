@@ -6,7 +6,8 @@ import React from "react";
 
 if (
   typeof window !== "undefined" &&
-  window.origin === process.env.NEXT_PUBLIC_WEB_URL
+  window.origin === process.env.NEXT_PUBLIC_WEB_URL &&
+  process.env.NODE_ENV === "production"
 ) {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,

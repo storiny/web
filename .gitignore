@@ -14,6 +14,7 @@ docker/tmp/elasticsearch/*
 docker/tmp/minio/*
 docker/tmp/postgres/*
 docker/tmp/redis/*
+
 !docker/tmp/elasticsearch/.gitkeep
 !docker/tmp/minio/.gitkeep
 !docker/tmp/postgres/.gitkeep

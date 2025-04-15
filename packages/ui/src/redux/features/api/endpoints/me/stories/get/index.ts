@@ -1,6 +1,7 @@
 import { Story } from "@storiny/types";
 import { StoriesSortValue } from "@storiny/web/src/app/(native)/(check-user)/(dashboard)/(splash)/me/content/stories/client";
 
+import { merge_fn } from "~/redux/features";
 import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = "me/stories";
@@ -12,7 +13,7 @@ export const get_stories_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
     // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getStories: builder.query<
-      { has_more: boolean; items: Story[] },
+      { has_more: boolean; items: Story[]; page: number },
       {
         page: number;
         query?: string;
@@ -26,20 +27,12 @@ export const get_stories_api = api_slice.injectEndpoints({
         }`,
       serializeQueryArgs: ({ endpointName, queryArgs }) =>
         `${endpointName}:${queryArgs.type}:${queryArgs.sort}:${queryArgs.query}`,
-      transformResponse: (response: Story[]) => ({
+      transformResponse: (response: Story[], _, { page }) => ({
+        page,
         items: response,
         has_more: response.length === ITEMS_PER_PAGE
       }),
-      merge: (current_cache, data) => {
-        const new_items = data.items.filter(
-          (data_item) =>
-            !current_cache.items.some((item) => data_item.id === item.id)
-        );
-
-        current_cache.items.push(...new_items);
-        current_cache.has_more =
-          current_cache.has_more && new_items.length === ITEMS_PER_PAGE;
-      },
+      merge: (cache, data) => merge_fn(cache, data),
       providesTags: (result) =>
         result
           ? [

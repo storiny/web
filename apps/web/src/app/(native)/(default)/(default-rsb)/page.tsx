@@ -94,7 +94,7 @@ const Page = (): React.ReactElement => {
     page,
     type: value
   });
-  const { items = [], has_more } = data || {};
+  const { page: cached_page = 1, items = [], has_more } = data || {};
 
   const load_more = React.useCallback(
     () => set_page((prev_state) => prev_state + 1),
@@ -104,6 +104,11 @@ const Page = (): React.ReactElement => {
   const handle_change = React.useCallback((next_value: IndexTabValue) => {
     set_page(1);
     set_value(next_value);
+  }, []);
+
+  React.useEffect(() => {
+    set_page(cached_page);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
