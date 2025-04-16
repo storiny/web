@@ -6,7 +6,6 @@ import { dynamic_loader } from "~/common/dynamic";
 import { TagListSkeleton, VirtualizedTagList } from "~/common/tag";
 import ErrorState from "~/entities/error-state";
 import { use_default_fetch } from "~/hooks/use-default-fetch";
-import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import { use_pagination } from "~/hooks/use-pagination";
 import {
   get_query_error_type,
