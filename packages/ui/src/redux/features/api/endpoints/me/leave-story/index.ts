@@ -15,7 +15,9 @@ export const { useLeaveStoryMutation: use_leave_story_mutation } =
           url: `/${SEGMENT(body.id)}`,
           method: "POST"
         }),
-        invalidatesTags: (result, error, arg) => [{ type: "Story", id: arg.id }]
+        invalidatesTags: (_result, _error, arg) => [
+          { type: "Story", id: arg.id }
+        ]
       })
     })
   });

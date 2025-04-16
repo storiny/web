@@ -13,11 +13,7 @@ export const get_contributions_api = api_slice.injectEndpoints({
     // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getContributions: builder.query<
       { has_more: boolean; items: Story[]; page: number },
-      {
-        page: number;
-        query?: string;
-        sort: "recent" | "old";
-      }
+      { page: number; query?: string; sort: "recent" | "old" }
     >({
       query: ({ page, sort, query }) =>
         `/${SEGMENT}?page=${page}&sort=${sort}${
@@ -49,5 +45,10 @@ export const get_contributions_api = api_slice.injectEndpoints({
   })
 });
 
-export const { useGetContributionsQuery: use_get_contributions_query } =
-  get_contributions_api;
+export const {
+  useLazyGetContributionsQuery: use_get_contributions_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getContributions: { select: select_contributions }
+  }
+} = get_contributions_api;

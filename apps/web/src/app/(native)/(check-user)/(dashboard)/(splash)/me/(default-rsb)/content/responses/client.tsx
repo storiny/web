@@ -23,10 +23,14 @@ import TabsList from "~/components/tabs-list";
 import Typography from "~/components/typography";
 import ErrorState from "~/entities/error-state";
 import { use_debounce } from "~/hooks/use-debounce";
+import { use_default_fetch } from "~/hooks/use-default-fetch";
 import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
+import { use_pagination } from "~/hooks/use-pagination";
 import SearchIcon from "~/icons/search";
 import {
   get_query_error_type,
+  select_comments,
+  select_replies,
   self_action,
   use_get_comments_query,
   use_get_replies_query
@@ -211,34 +215,45 @@ const ControlBar = ({
 const CommentList = (props: {
   handle_query_change: (next_value: string) => void;
   handle_sort_change: (next_value: ResponsesSortValue) => void;
-  load_more: () => void;
-  page: number;
   query: string;
   sort: ResponsesSortValue;
 }): React.ReactElement => {
-  const {
-    page,
-    sort,
-    query,
-    handle_query_change,
-    handle_sort_change,
-    load_more
-  } = props;
+  const { sort, query, handle_query_change, handle_sort_change } = props;
   const debounced_query = use_debounce(query);
-  const {
-    data,
-    isLoading: is_loading,
-    isFetching: is_fetching,
-    isError: is_error,
-    error,
-    refetch
-  } = use_get_comments_query({
-    page,
-    sort,
-    query: debounced_query
-  });
-  const { items = [], has_more } = data || {};
+  const page = use_pagination(
+    select_comments({ page: 1, sort, query: debounced_query })
+  );
+  const [
+    trigger,
+    {
+      data: { items = [], has_more } = {},
+      isLoading: is_loading,
+      isFetching: is_fetching,
+      isError: is_error,
+      error
+    }
+  ] = use_get_comments_query();
+  const refetch = use_default_fetch(
+    trigger,
+    {
+      page,
+      sort,
+      query: debounced_query
+    },
+    [debounced_query, sort]
+  );
   const is_typing = query !== debounced_query;
+
+  const load_more = React.useCallback(() => {
+    trigger(
+      {
+        page: page + 1,
+        sort,
+        query: debounced_query
+      },
+      true
+    );
+  }, [debounced_query, page, sort, trigger]);
 
   return (
     <React.Fragment>
@@ -285,38 +300,61 @@ const CommentList = (props: {
 const ReplyList = (props: {
   handle_query_change: (next_value: string) => void;
   handle_sort_change: (next_value: ResponsesSortValue) => void;
-  load_more: () => void;
-  page: number;
   query: string;
   sort: ResponsesSortValue;
 }): React.ReactElement => {
-  const {
-    page,
-    sort,
-    query,
-    handle_sort_change,
-    handle_query_change,
-    load_more
-  } = props;
+  const { sort, query, handle_sort_change, handle_query_change } = props;
   const debounced_query = use_debounce(query);
-  const {
-    data,
-    isLoading: is_loading,
-    isFetching: is_fetching,
-    isError: is_error,
-    error,
-    refetch
-  } = use_get_replies_query({
-    page,
-    sort,
-    query: debounced_query
-  } as {
-    page: number;
-    query: string;
-    sort: "recent" | "old" | `${"least" | "most"}-liked`;
-  });
-  const { items = [], has_more } = data || {};
+  const page = use_pagination(
+    select_replies({
+      page: 1,
+      sort,
+      query: debounced_query
+    } as {
+      page: number;
+      query: string;
+      sort: "recent" | "old" | `${"least" | "most"}-liked`;
+    })
+  );
+  const [
+    trigger,
+    {
+      data: { items = [], has_more } = {},
+      isLoading: is_loading,
+      isFetching: is_fetching,
+      isError: is_error,
+      error
+    }
+  ] = use_get_replies_query();
+  const refetch = use_default_fetch(
+    trigger,
+    {
+      page: 1,
+      sort,
+      query: debounced_query
+    } as {
+      page: number;
+      query: string;
+      sort: "recent" | "old" | `${"least" | "most"}-liked`;
+    },
+    [debounced_query, sort]
+  );
   const is_typing = query !== debounced_query;
+
+  const load_more = React.useCallback(() => {
+    trigger(
+      {
+        page: page + 1,
+        sort,
+        query: debounced_query
+      } as {
+        page: number;
+        query: string;
+        sort: "recent" | "old" | `${"least" | "most"}-liked`;
+      },
+      true
+    );
+  }, [debounced_query, page, sort, trigger]);
 
   return (
     <React.Fragment>
@@ -372,18 +410,10 @@ const ContentResponsesClient = (props: ResponsesProps): React.ReactElement => {
       ? (tab as ResponsesTabValue)
       : "comments"
   );
-  const [page, set_page] = React.useState<number>(1);
   use_handle_dynamic_state<typeof sort>("recent", set_sort);
   use_handle_dynamic_state<typeof query>("", set_query);
-  use_handle_dynamic_state<typeof page>(1, set_page);
-
-  const load_more = React.useCallback(
-    () => set_page((prev_state) => prev_state + 1),
-    []
-  );
 
   const handle_change = React.useCallback((next_value: ResponsesTabValue) => {
-    set_page(1);
     set_sort("recent");
     set_query("");
     set_value(next_value);
@@ -391,14 +421,12 @@ const ContentResponsesClient = (props: ResponsesProps): React.ReactElement => {
 
   const handle_sort_change = React.useCallback(
     (next_sort: ResponsesSortValue) => {
-      set_page(1);
       set_sort(next_sort);
     },
     []
   );
 
   const handle_query_change = React.useCallback((next_query: string) => {
-    set_page(1);
     set_query(next_query);
   }, []);
 
@@ -419,8 +447,6 @@ const ContentResponsesClient = (props: ResponsesProps): React.ReactElement => {
         <CommentList
           handle_query_change={handle_query_change}
           handle_sort_change={handle_sort_change}
-          load_more={load_more}
-          page={page}
           query={query}
           sort={sort}
         />
@@ -428,8 +454,6 @@ const ContentResponsesClient = (props: ResponsesProps): React.ReactElement => {
         <ReplyList
           handle_query_change={handle_query_change}
           handle_sort_change={handle_sort_change}
-          load_more={load_more}
-          page={page}
           query={query}
           sort={sort}
         />

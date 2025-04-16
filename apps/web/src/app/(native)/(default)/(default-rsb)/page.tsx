@@ -12,9 +12,11 @@ import Tab from "~/components/tab";
 import Tabs from "~/components/tabs";
 import TabsList from "~/components/tabs-list";
 import ErrorState from "~/entities/error-state";
-import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
+import { use_default_fetch } from "~/hooks/use-default-fetch";
+import { use_pagination } from "~/hooks/use-pagination";
 import {
   get_query_error_type,
+  select_home_feed,
   select_is_logged_in,
   use_get_home_feed_query
 } from "~/redux/features";
@@ -81,34 +83,43 @@ const OnboardingItem = (): React.ReactElement | null => {
 const Page = (): React.ReactElement => {
   const is_logged_in = use_app_selector(select_is_logged_in);
   const [value, set_value] = React.useState<IndexTabValue>("suggested");
-  const [page, set_page] = React.useState<number>(1);
-  use_handle_dynamic_state<typeof page>(1, set_page);
-  const {
-    data,
-    isLoading: is_loading,
-    isFetching: is_fetching,
-    isError: is_error,
-    error,
-    refetch
-  } = use_get_home_feed_query({
-    page,
-    type: value
-  });
-  const { page: cached_page = 1, items = [], has_more } = data || {};
-
-  const load_more = React.useCallback(
-    () => set_page((prev_state) => prev_state + 1),
-    []
+  const page = use_pagination(
+    select_home_feed({
+      page: 1,
+      type: value
+    })
+  );
+  const [
+    trigger,
+    {
+      data: { items = [], has_more } = {},
+      isLoading: is_loading,
+      isFetching: is_fetching,
+      isError: is_error,
+      error
+    }
+  ] = use_get_home_feed_query();
+  const refetch = use_default_fetch(
+    trigger,
+    {
+      page,
+      type: value
+    },
+    [value]
   );
 
-  const handle_change = React.useCallback((next_value: IndexTabValue) => {
-    set_page(1);
-    set_value(next_value);
-  }, []);
+  const load_more = React.useCallback(() => {
+    trigger(
+      {
+        page: page + 1,
+        type: value
+      },
+      true
+    );
+  }, [page, trigger, value]);
 
-  React.useEffect(() => {
-    set_page(cached_page);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handle_change = React.useCallback((next_value: IndexTabValue) => {
+    set_value(next_value);
   }, []);
 
   return (

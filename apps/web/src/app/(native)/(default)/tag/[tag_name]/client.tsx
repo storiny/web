@@ -13,11 +13,14 @@ import Option from "~/components/option";
 import Select from "~/components/select";
 import ErrorState from "~/entities/error-state";
 import { use_debounce } from "~/hooks/use-debounce";
+import { use_default_fetch } from "~/hooks/use-default-fetch";
 import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import { use_media_query } from "~/hooks/use-media-query";
+import { use_pagination } from "~/hooks/use-pagination";
 import SearchIcon from "~/icons/search";
 import {
   get_query_error_type,
+  select_tag_stories,
   use_get_tag_stories_query
 } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
@@ -96,39 +99,59 @@ const Page = ({ tag }: Props): React.ReactElement => {
   const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
   const [sort, set_sort] = React.useState<TagTabValue>("popular");
   const [query, set_query] = React.useState<string>("");
-  const [page, set_page] = React.useState<number>(1);
-  use_handle_dynamic_state<typeof page>(1, set_page);
   use_handle_dynamic_state<typeof query>("", set_query);
   use_handle_dynamic_state<typeof sort>("popular", set_sort);
   const debounced_query = use_debounce(query);
-  const {
-    data,
-    isLoading: is_loading,
-    isFetching: is_fetching,
-    isError: is_error,
-    error,
-    refetch
-  } = use_get_tag_stories_query({
-    page,
-    sort,
-    tag_name: tag.name,
-    query: debounced_query
-  });
-  const { items = [], has_more } = data || {};
-  const is_typing = query !== debounced_query;
-
-  const load_more = React.useCallback(
-    () => set_page((prev_state) => prev_state + 1),
-    []
+  const page = use_pagination(
+    select_tag_stories({
+      page: 1,
+      sort,
+      tag_name: tag.name,
+      query: debounced_query
+    })
   );
 
+  const [
+    trigger,
+    {
+      data: { items = [], has_more } = {},
+      isLoading: is_loading,
+      isFetching: is_fetching,
+      isError: is_error,
+      error
+    }
+  ] = use_get_tag_stories_query();
+
+  const refetch = use_default_fetch(
+    trigger,
+    {
+      page,
+      sort,
+      tag_name: tag.name,
+      query: debounced_query
+    },
+    [sort, tag.name, debounced_query]
+  );
+
+  const is_typing = query !== debounced_query;
+
+  const load_more = React.useCallback(() => {
+    trigger(
+      {
+        page: page + 1,
+        sort,
+        tag_name: tag.name,
+        query: debounced_query
+      },
+      true
+    );
+  }, [debounced_query, page, sort, tag.name, trigger]);
+
   const handle_query_change = React.useCallback((next_query: string) => {
-    set_page(1);
     set_query(next_query);
   }, []);
 
   const handle_change = React.useCallback((next_value: TagTabValue) => {
-    set_page(1);
     set_sort(next_value);
   }, []);
 

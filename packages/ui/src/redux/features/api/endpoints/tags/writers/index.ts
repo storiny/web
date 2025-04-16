@@ -11,9 +11,7 @@ export const { useGetTagWritersQuery: use_get_tag_writers_query } =
     endpoints: (builder) => ({
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       getTagWriters: builder.query<GetTagWritersResponse, { tag_name: string }>(
-        {
-          query: ({ tag_name }) => `/${SEGMENT(tag_name)}`
-        }
+        { query: ({ tag_name }) => `/${SEGMENT(tag_name)}` }
       )
     })
   });

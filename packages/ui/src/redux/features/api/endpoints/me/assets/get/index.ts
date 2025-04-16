@@ -4,7 +4,7 @@ import { merge_fn } from "~/redux/features";
 import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = "me/assets";
-const ITEMS_PER_PAGE = 15;
+const ITEMS_PER_PAGE = 30;
 
 export type GetUserAssetsResponse = Asset[];
 
@@ -39,4 +39,10 @@ export const get_assets_api = api_slice.injectEndpoints({
   })
 });
 
-export const { useGetAssetsQuery: use_get_assets_query } = get_assets_api;
+export const {
+  useLazyGetAssetsQuery: use_get_assets_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getAssets: { select: select_assets }
+  }
+} = get_assets_api;

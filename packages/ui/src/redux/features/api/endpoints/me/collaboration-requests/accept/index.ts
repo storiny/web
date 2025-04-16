@@ -21,10 +21,10 @@ export const {
         url: `/${SEGMENT(body.id)}`,
         method: "POST"
       }),
-      invalidatesTags: (result, error, arg) => [
+      invalidatesTags: (_result, _error, arg) => [
         { type: "CollaborationRequest", id: arg.id }
       ],
-      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
         queryFulfilled.then(() => {
           [
             self_action("self_contributable_story_count", "increment"),

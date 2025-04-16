@@ -27,7 +27,12 @@ const hash_only_ident = (context: any, _: any, export_name: string): void =>
     .replace(/[^a-zA-Z0-9-_]/g, "_")
     .replace(/^(-?\d|--)/, "_$1");
 
-export const webpack_config: NextJsWebpackConfig = (config, { dev }) => {
+export const webpack_config: NextJsWebpackConfig = (
+  config,
+  { dev, buildId: original_build_id }
+) => {
+  const build_id = original_build_id.slice(-6);
+
   /**
    * Loaders
    */
@@ -40,16 +45,22 @@ export const webpack_config: NextJsWebpackConfig = (config, { dev }) => {
     ]
   );
 
-  /**
-   * Sentry
-   */
   config.plugins.push(
     new webpack.DefinePlugin({
+      /**
+       * Sentry
+       */
       __SENTRY_DEBUG__: false,
       __SENTRY_TRACING__: false,
       __RRWEB_EXCLUDE_IFRAME__: true,
       __RRWEB_EXCLUDE_SHADOW_DOM__: true,
-      __SENTRY_EXCLUDE_REPLAY_WORKER__: true
+      __SENTRY_EXCLUDE_REPLAY_WORKER__: true,
+      /**
+       * Build hash
+       */
+      "process.env.NEXT_PUBLIC_BUILD_HASH": JSON.stringify(
+        dev ? "dev" : build_id
+      )
     })
   );
 

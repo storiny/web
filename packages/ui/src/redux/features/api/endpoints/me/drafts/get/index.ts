@@ -51,4 +51,10 @@ export const get_drafts_api = api_slice.injectEndpoints({
   })
 });
 
-export const { useGetDraftsQuery: use_get_drafts_query } = get_drafts_api;
+export const {
+  useLazyGetDraftsQuery: use_get_drafts_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getDrafts: { select: select_drafts }
+  }
+} = get_drafts_api;

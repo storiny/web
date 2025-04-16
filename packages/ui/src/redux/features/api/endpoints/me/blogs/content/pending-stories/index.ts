@@ -52,5 +52,9 @@ export const get_blog_pending_stories_api = api_slice.injectEndpoints({
 });
 
 export const {
-  useGetBlogPendingStoriesQuery: use_get_blog_pending_stories_query
+  useLazyGetBlogPendingStoriesQuery: use_get_blog_pending_stories_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getBlogPendingStories: { select: select_blog_pending_stories }
+  }
 } = get_blog_pending_stories_api;

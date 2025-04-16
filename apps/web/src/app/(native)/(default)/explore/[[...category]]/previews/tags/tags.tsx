@@ -8,6 +8,7 @@ import Link from "~/components/link";
 import Skeleton from "~/components/skeleton";
 import Typography from "~/components/typography";
 import TagChip from "~/entities/tag-chip";
+import { use_default_fetch } from "~/hooks/use-default-fetch";
 import { use_media_query } from "~/hooks/use-media-query";
 import ChevronIcon from "~/icons/chevron";
 import { use_get_explore_tags_query } from "~/redux/features";
@@ -31,17 +32,24 @@ const TagsPreview = ({
   normalized_category
 }: Props): React.ReactElement | null => {
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const {
-    data,
-    isLoading: is_loading,
-    isFetching: is_fetching,
-    isError: is_error
-  } = use_get_explore_tags_query({
-    page: 1,
-    category,
-    query: debounced_query
-  });
-  const { items = [] } = data || {};
+  const [
+    trigger,
+    {
+      data: { items = [] } = {},
+      isLoading: is_loading,
+      isFetching: is_fetching,
+      isError: is_error
+    }
+  ] = use_get_explore_tags_query();
+  use_default_fetch(
+    trigger,
+    {
+      page: 1,
+      category,
+      query: debounced_query
+    },
+    [category, debounced_query]
+  );
   const loading = is_loading || loading_prop;
 
   if (is_error || (!items.length && !is_fetching)) {

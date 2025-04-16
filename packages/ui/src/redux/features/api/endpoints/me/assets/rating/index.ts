@@ -24,7 +24,9 @@ export const { useAssetRatingMutation: use_asset_rating_mutation } =
             "Content-type": ContentType.JSON
           }
         }),
-        invalidatesTags: (result, error, arg) => [{ type: "Asset", id: arg.id }]
+        invalidatesTags: (_result, _error, arg) => [
+          { type: "Asset", id: arg.id }
+        ]
       })
     })
   });

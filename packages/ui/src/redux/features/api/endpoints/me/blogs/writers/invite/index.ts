@@ -18,9 +18,7 @@ export const { useInviteBlogWriterMutation: use_invite_blog_writer_mutation } =
           url: `/${SEGMENT(blog_id)}`,
           method: "POST",
           body: { username },
-          headers: {
-            "Content-type": ContentType.JSON
-          }
+          headers: { "Content-type": ContentType.JSON }
         }),
         invalidatesTags: ["BlogWriterRequest"]
       })

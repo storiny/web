@@ -52,5 +52,9 @@ export const get_blog_published_stories_api = api_slice.injectEndpoints({
 });
 
 export const {
-  useGetBlogPublishedStoriesQuery: use_get_blog_published_stories_query
+  useLazyGetBlogPublishedStoriesQuery: use_get_blog_published_stories_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getBlogPublishedStories: { select: select_blog_published_stories }
+  }
 } = get_blog_published_stories_api;

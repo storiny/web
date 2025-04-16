@@ -14,11 +14,7 @@ export const get_comments_api = api_slice.injectEndpoints({
     // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getComments: builder.query<
       { has_more: boolean; items: Comment[]; page: number },
-      {
-        page: number;
-        query?: string;
-        sort: ResponsesSortValue;
-      }
+      { page: number; query?: string; sort: ResponsesSortValue }
     >({
       query: ({ page, sort, query }) =>
         `/${SEGMENT}?page=${page}&sort=${sort}${
@@ -50,4 +46,10 @@ export const get_comments_api = api_slice.injectEndpoints({
   })
 });
 
-export const { useGetCommentsQuery: use_get_comments_query } = get_comments_api;
+export const {
+  useLazyGetCommentsQuery: use_get_comments_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getComments: { select: select_comments }
+  }
+} = get_comments_api;

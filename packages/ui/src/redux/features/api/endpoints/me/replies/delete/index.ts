@@ -17,7 +17,7 @@ export const { useDeleteReplyMutation: use_delete_reply_mutation } =
           url: `/${SEGMENT(body.id)}`,
           method: "DELETE"
         }),
-        invalidatesTags: (result, error, arg) => [
+        invalidatesTags: (_result, _error, arg) => [
           { type: "Reply", id: arg.id }
         ],
         onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {

@@ -10,6 +10,7 @@ import React from "react";
 import Link from "~/components/link";
 import Separator from "~/components/separator";
 import Typography from "~/components/typography";
+import { use_default_fetch } from "~/hooks/use-default-fetch";
 import ChevronIcon from "~/icons/chevron";
 import UsersIcon from "~/icons/users";
 import DefaultBlogRightSidebarContent from "~/layout/blog-right-sidebar/content";
@@ -28,12 +29,11 @@ import { BlogRightSidebarProps } from "./blog-right-sidebar.props";
 
 const Editors = (): React.ReactElement | null => {
   const blog = use_blog_context();
-  const {
-    data,
-    isLoading: is_loading,
-    isError: is_error
-  } = use_get_blog_editors_query({ blog_id: blog.id, page: 1 });
-  const { items = [] } = data || {};
+  const [
+    trigger,
+    { data: { items = [] } = {}, isLoading: is_loading, isError: is_error }
+  ] = use_get_blog_editors_query();
+  use_default_fetch(trigger, { blog_id: blog.id, page: 1 }, [blog.id]);
 
   if (is_error || (!is_loading && !items.length)) {
     return null;

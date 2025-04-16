@@ -16,12 +16,15 @@ import { ModalFooterButton, use_modal } from "~/components/modal";
 import { Root, Scrollbar, Thumb, Viewport } from "~/components/scroll-area";
 import ErrorState from "~/entities/error-state";
 import { use_debounce } from "~/hooks/use-debounce";
+import { use_default_fetch } from "~/hooks/use-default-fetch";
 import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import { use_media_query } from "~/hooks/use-media-query";
+import { use_pagination } from "~/hooks/use-pagination";
 import BlogIcon from "~/icons/blog";
 import SearchIcon from "~/icons/search";
 import {
   get_query_error_type,
+  select_blog_requests,
   use_get_blog_requests_query
 } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
@@ -61,33 +64,35 @@ Scroller.displayName = "Scroller";
 
 const BlogRequestsModal = (): React.ReactElement => {
   const [query, set_query] = React.useState<string>("");
-  const [page, set_page] = React.useState<number>(1);
-  use_handle_dynamic_state<typeof page>(1, set_page);
   use_handle_dynamic_state<typeof query>("", set_query);
   const set_render_key = use_set_atom(render_key_atom);
   const debounced_query = use_debounce(query);
-  const {
-    data,
-    isLoading: is_loading,
-    isFetching: is_fetching,
-    isError: is_error,
-    error,
-    refetch
-  } = use_get_blog_requests_query({
-    page,
-    query: debounced_query
-  });
-  const { items = [], has_more } = data || {};
+  const page = use_pagination(
+    select_blog_requests({ page: 1, query: debounced_query })
+  );
+  const [
+    trigger,
+    {
+      data: { items = [], has_more } = {},
+      isLoading: is_loading,
+      isFetching: is_fetching,
+      isError: is_error,
+      error
+    }
+  ] = use_get_blog_requests_query();
+  const refetch = use_default_fetch(
+    trigger,
+    {
+      page,
+      query: debounced_query
+    },
+    [debounced_query]
+  );
   const is_typing = query !== debounced_query;
 
-  const load_more = React.useCallback(
-    () => set_page((prev_state) => prev_state + 1),
-    []
-  );
-
-  React.useEffect(() => {
-    set_page(1);
-  }, [query]);
+  const load_more = React.useCallback(() => {
+    trigger({ page: page + 1, query: debounced_query }, true);
+  }, [debounced_query, page, trigger]);
 
   React.useEffect(() => {
     set_render_key(`${page}:${query}`);

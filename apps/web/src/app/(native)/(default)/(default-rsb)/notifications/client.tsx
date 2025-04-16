@@ -20,13 +20,15 @@ import TabsList from "~/components/tabs-list";
 import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import ErrorState from "~/entities/error-state";
-import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
+import { use_default_fetch } from "~/hooks/use-default-fetch";
 import { use_media_query } from "~/hooks/use-media-query";
+import { use_pagination } from "~/hooks/use-pagination";
 import ChecksIcon from "~/icons/checks";
 import SettingsIcon from "~/icons/settings";
 import {
   get_query_error_type,
   mark_all_as_read,
+  select_notifications,
   select_notifications_status,
   select_unread_notification_count,
   use_get_notifications_query,
@@ -182,29 +184,32 @@ const StatusHeader = ({
 
 const Client = (): React.ReactElement => {
   const [value, set_value] = React.useState<NotificationsTabValue>("unread");
-  const [page, set_page] = React.useState<number>(1);
-  use_handle_dynamic_state<typeof page>(1, set_page);
-  const {
-    data,
-    isLoading: is_loading,
-    isFetching: is_fetching,
-    isError: is_error,
-    error,
-    refetch
-  } = use_get_notifications_query({
-    page,
-    type: value
-  });
-  const { items = [], has_more } = data || {};
-
-  const load_more = React.useCallback(
-    () => set_page((prev_state) => prev_state + 1),
-    []
+  const page = use_pagination(select_notifications({ page: 1, type: value }));
+  const [
+    trigger,
+    {
+      data: { items = [], has_more } = {},
+      isLoading: is_loading,
+      isFetching: is_fetching,
+      isError: is_error,
+      error
+    }
+  ] = use_get_notifications_query();
+  const refetch = use_default_fetch(
+    trigger,
+    {
+      page,
+      type: value
+    },
+    [value]
   );
+
+  const load_more = React.useCallback(() => {
+    trigger({ page: page + 1, type: value }, true);
+  }, [page, trigger, value]);
 
   const handle_change = React.useCallback(
     (next_value: NotificationsTabValue) => {
-      set_page(1);
       set_value(next_value);
     },
     []

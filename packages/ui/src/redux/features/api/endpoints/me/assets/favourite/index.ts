@@ -16,7 +16,9 @@ export const { useFavouriteAssetMutation: use_favourite_asset_mutation } =
           url: `/${SEGMENT(body.id)}`,
           method: body.value ? "POST" : "DELETE"
         }),
-        invalidatesTags: (result, error, arg) => [{ type: "Asset", id: arg.id }]
+        invalidatesTags: (_result, _error, arg) => [
+          { type: "Asset", id: arg.id }
+        ]
       })
     })
   });

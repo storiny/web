@@ -24,7 +24,9 @@ export const { useAssetAltMutation: use_asset_alt_mutation } =
             "Content-type": ContentType.JSON
           }
         }),
-        invalidatesTags: (result, error, arg) => [{ type: "Asset", id: arg.id }]
+        invalidatesTags: (_result, _error, arg) => [
+          { type: "Asset", id: arg.id }
+        ]
       })
     })
   });

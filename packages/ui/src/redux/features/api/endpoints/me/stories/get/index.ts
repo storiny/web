@@ -52,4 +52,10 @@ export const get_stories_api = api_slice.injectEndpoints({
   })
 });
 
-export const { useGetStoriesQuery: use_get_stories_query } = get_stories_api;
+export const {
+  useLazyGetStoriesQuery: use_get_stories_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getStories: { select: select_stories }
+  }
+} = get_stories_api;

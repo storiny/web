@@ -17,11 +17,13 @@ import Tab from "~/components/tab";
 import Tabs from "~/components/tabs";
 import TabsList from "~/components/tabs-list";
 import ErrorState from "~/entities/error-state";
-import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
+import { use_default_fetch } from "~/hooks/use-default-fetch";
 import { use_media_query } from "~/hooks/use-media-query";
+import { use_pagination } from "~/hooks/use-pagination";
 import ContributionIcon from "~/icons/contribution";
 import {
   get_query_error_type,
+  select_collaboration_requests,
   use_get_collaboration_requests_query
 } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
@@ -65,29 +67,43 @@ const CollaborationRequestsModal = (): React.ReactElement => {
   const [value, set_value] =
     React.useState<CollaborationRequestsTabValue>("received");
   const set_render_key = use_set_atom(render_key_atom);
-  const [page, set_page] = React.useState<number>(1);
-  use_handle_dynamic_state<typeof page>(1, set_page);
-  const {
-    data,
-    isLoading: is_loading,
-    isFetching: is_fetching,
-    isError: is_error,
-    error,
-    refetch
-  } = use_get_collaboration_requests_query({
-    page,
-    type: value
-  });
-  const { items = [], has_more } = data || {};
-
-  const load_more = React.useCallback(
-    () => set_page((prev_state) => prev_state + 1),
-    []
+  const page = use_pagination(
+    select_collaboration_requests({
+      page: 1,
+      type: value
+    })
   );
+  const [
+    trigger,
+    {
+      data: { items = [], has_more } = {},
+      isLoading: is_loading,
+      isFetching: is_fetching,
+      isError: is_error,
+      error
+    }
+  ] = use_get_collaboration_requests_query();
+  const refetch = use_default_fetch(
+    trigger,
+    {
+      page,
+      type: value
+    },
+    [value]
+  );
+
+  const load_more = React.useCallback(() => {
+    trigger(
+      {
+        page: page + 1,
+        type: value
+      },
+      true
+    );
+  }, [page, trigger, value]);
 
   const handle_change = React.useCallback(
     (next_value: CollaborationRequestsTabValue) => {
-      set_page(1);
       set_value(next_value);
     },
     []

@@ -19,6 +19,7 @@ import ErrorState from "~/entities/error-state";
 import Mercator from "~/entities/mercator";
 import StatBars from "~/entities/stat-bars";
 import StatBlock from "~/entities/stat-block";
+import { use_default_fetch } from "~/hooks/use-default-fetch";
 import HomeIcon from "~/icons/home";
 import {
   get_query_error_type,
@@ -49,20 +50,26 @@ const CommentList = ({
 }: {
   story_id: string;
 }): React.ReactElement => {
-  const {
-    data,
-    isLoading: is_loading,
-    isFetching: is_fetching,
-    isError: is_error,
-    error,
-    refetch
-  } = use_get_story_comments_query({
-    story_id,
-    page: 1,
-    sort: "most-liked",
-    type: "all"
-  });
-  const { items = [] } = data || {};
+  const [
+    trigger,
+    {
+      data: { items = [] } = {},
+      isLoading: is_loading,
+      isFetching: is_fetching,
+      isError: is_error,
+      error
+    }
+  ] = use_get_story_comments_query();
+  const refetch = use_default_fetch(
+    trigger,
+    {
+      story_id,
+      page: 1,
+      sort: "most-liked",
+      type: "all"
+    },
+    [story_id]
+  );
 
   return is_loading || is_fetching ? (
     <CommentListSkeleton virtual />

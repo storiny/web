@@ -34,5 +34,10 @@ export const get_blog_writers_api = api_slice.injectEndpoints({
   })
 });
 
-export const { useGetBlogWritersQuery: use_get_blog_writers_query } =
-  get_blog_writers_api;
+export const {
+  useLazyGetBlogWritersQuery: use_get_blog_writers_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getBlogWriters: { select: select_blog_writers }
+  }
+} = get_blog_writers_api;

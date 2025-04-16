@@ -4,7 +4,7 @@ import { merge_fn } from "~/redux/features";
 import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = "me/gallery";
-const ITEMS_PER_PAGE = 15;
+const ITEMS_PER_PAGE = 30;
 
 export type GetGalleryPhotosResponse = Photos["photos"];
 
