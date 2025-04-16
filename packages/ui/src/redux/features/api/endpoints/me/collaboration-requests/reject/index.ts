@@ -21,10 +21,10 @@ export const {
         url: `/${SEGMENT(body.id)}`,
         method: "DELETE"
       }),
-      invalidatesTags: (result, error, arg) => [
+      invalidatesTags: (_result, _error, arg) => [
         { type: "CollaborationRequest", id: arg.id }
       ],
-      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
         queryFulfilled.then(() => {
           dispatch(
             self_action("self_pending_collaboration_request_count", "decrement")

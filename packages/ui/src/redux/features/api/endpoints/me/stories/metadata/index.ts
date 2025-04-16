@@ -23,7 +23,9 @@ export const { useStoryMetadataMutation: use_story_metadata_mutation } =
           method: "PATCH",
           body: rest
         }),
-        invalidatesTags: (result, error, arg) => [{ type: "Story", id: arg.id }]
+        invalidatesTags: (_result, _error, arg) => [
+          { type: "Story", id: arg.id }
+        ]
       })
     })
   });

@@ -5,9 +5,12 @@ import React from "react";
 import { dynamic_loader } from "~/common/dynamic";
 import { TagListSkeleton, VirtualizedTagList } from "~/common/tag";
 import ErrorState from "~/entities/error-state";
+import { use_default_fetch } from "~/hooks/use-default-fetch";
 import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
+import { use_pagination } from "~/hooks/use-pagination";
 import {
   get_query_error_type,
+  select_explore_tags,
   use_get_explore_tags_query
 } from "~/redux/features";
 
@@ -24,27 +27,44 @@ const TagList = ({
   debounced_query: string;
   loading: boolean;
 }): React.ReactElement => {
-  const [page, set_page] = React.useState<number>(1);
-  use_handle_dynamic_state<typeof page>(1, set_page);
-  const {
-    data,
-    isLoading: is_loading,
-    isFetching: is_fetching,
-    isError: is_error,
-    error,
-    refetch
-  } = use_get_explore_tags_query({
-    page,
-    category,
-    query: debounced_query
-  });
-  const { items = [], has_more } = data || {};
+  const page = use_pagination(
+    select_explore_tags({
+      page: 1,
+      category,
+      query: debounced_query
+    })
+  );
+  const [
+    trigger,
+    {
+      data: { items = [], has_more } = {},
+      isLoading: is_loading,
+      isFetching: is_fetching,
+      isError: is_error,
+      error
+    }
+  ] = use_get_explore_tags_query();
+  const refetch = use_default_fetch(
+    trigger,
+    {
+      page,
+      category,
+      query: debounced_query
+    },
+    [category, debounced_query]
+  );
   const loading = is_loading || loading_prop;
 
-  const load_more = React.useCallback(
-    () => set_page((prev_state) => prev_state + 1),
-    []
-  );
+  const load_more = React.useCallback(() => {
+    trigger(
+      {
+        page: page + 1,
+        category,
+        query: debounced_query
+      },
+      true
+    );
+  }, [category, debounced_query, page, trigger]);
 
   return (
     <>

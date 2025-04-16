@@ -10,9 +10,11 @@ import {
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import ErrorState from "~/entities/error-state";
-import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
+import { use_default_fetch } from "~/hooks/use-default-fetch";
+import { use_pagination } from "~/hooks/use-pagination";
 import {
   get_query_error_type,
+  select_account_activity,
   use_get_account_activity_query
 } from "~/redux/features";
 import css from "~/theme/main.module.scss";
@@ -38,24 +40,22 @@ const StatusHeader = (): React.ReactElement => (
 );
 
 const MiscellaneousActivityClient = (): React.ReactElement => {
-  const [page, set_page] = React.useState<number>(1);
-  use_handle_dynamic_state<typeof page>(1, set_page);
-  const {
-    data,
-    isLoading: is_loading,
-    isFetching: is_fetching,
-    isError: is_error,
-    error,
-    refetch
-  } = use_get_account_activity_query({
-    page
-  });
-  const { items = [], has_more } = data || {};
+  const page = use_pagination(select_account_activity({ page: 1 }));
+  const [
+    trigger,
+    {
+      data: { items = [], has_more } = {},
+      isLoading: is_loading,
+      isFetching: is_fetching,
+      isError: is_error,
+      error
+    }
+  ] = use_get_account_activity_query();
+  const refetch = use_default_fetch(trigger, { page });
 
-  const load_more = React.useCallback(
-    () => set_page((prev_state) => prev_state + 1),
-    []
-  );
+  const load_more = React.useCallback(() => {
+    trigger({ page: page + 1 }, true);
+  }, [page, trigger]);
 
   return (
     <React.Fragment>

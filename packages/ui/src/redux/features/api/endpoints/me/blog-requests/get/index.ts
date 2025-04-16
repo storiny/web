@@ -44,5 +44,10 @@ export const get_blog_requests_api = api_slice.injectEndpoints({
   })
 });
 
-export const { useGetBlogRequestsQuery: use_get_blog_requests_query } =
-  get_blog_requests_api;
+export const {
+  useLazyGetBlogRequestsQuery: use_get_blog_requests_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getBlogRequests: { select: select_blog_requests }
+  }
+} = get_blog_requests_api;

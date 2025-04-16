@@ -13,12 +13,14 @@ import Spacer from "~/components/spacer";
 import Spinner from "~/components/spinner";
 import ErrorState from "~/entities/error-state";
 import { use_debounce } from "~/hooks/use-debounce";
+import { use_default_fetch } from "~/hooks/use-default-fetch";
 import { use_media_query } from "~/hooks/use-media-query";
 import { use_pagination } from "~/hooks/use-pagination";
 import {
   get_query_error_type,
   GetGalleryPhotosResponse,
   GetUserAssetsResponse,
+  select_assets,
   select_gallery_photos,
   use_get_assets_query,
   use_get_gallery_photos_query
@@ -45,7 +47,7 @@ const Pexels = ({
   container_ref,
   min_cols
 }: {
-  container_ref: React.RefObject<HTMLDivElement>;
+  container_ref: React.RefObject<HTMLDivElement | null>;
   min_cols: number;
 }): React.ReactElement => {
   const query = use_atom_value(query_atom);
@@ -63,35 +65,25 @@ const Pexels = ({
       error
     }
   ] = use_get_gallery_photos_query();
-  const is_typing = debounced_query !== query;
-
-  const default_fetch = React.useCallback(() => {
-    trigger({
+  const refetch = use_default_fetch(
+    trigger,
+    {
       page,
       query: debounced_query
-    });
-  }, [page, debounced_query, trigger]);
+    },
+    [debounced_query]
+  );
+  const is_typing = debounced_query !== query;
 
   const increment_page = React.useCallback(() => {
-    trigger({
-      page: page + 1,
-      query: debounced_query
-    });
-  }, [page, debounced_query, trigger]);
-
-  React.useEffect(() => {
-    if (debounced_query.length) {
-      trigger({
-        page: 1,
+    trigger(
+      {
+        page: page + 1,
         query: debounced_query
-      });
-    }
-  }, [debounced_query, trigger]);
-
-  React.useEffect(() => {
-    default_fetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      },
+      true
+    );
+  }, [page, debounced_query, trigger]);
 
   return (
     <React.Fragment>
@@ -109,7 +101,7 @@ const Pexels = ({
           component_props={{
             button: { loading: is_fetching }
           }}
-          retry={default_fetch}
+          retry={refetch}
           type={get_query_error_type(error)}
         />
       ) : !is_fetching && !items.length ? (
@@ -145,25 +137,25 @@ const Library = ({
   container_ref,
   min_cols
 }: {
-  container_ref: React.RefObject<HTMLDivElement>;
+  container_ref: React.RefObject<HTMLDivElement | null>;
   min_cols: number;
 }): React.ReactElement => {
-  const [page, set_page] = React.useState<number>(1);
-  const {
-    data,
-    isFetching: is_fetching,
-    isLoading: is_loading,
-    isError: is_error,
-    error,
-    refetch
-  } = use_get_assets_query({
-    page
-  });
-  const { items = [], has_more } = data || {};
+  const page = use_pagination(select_assets({ page: 1 }));
+  const [
+    trigger,
+    {
+      data: { items = [], has_more } = {},
+      isFetching: is_fetching,
+      isLoading: is_loading,
+      isError: is_error,
+      error
+    }
+  ] = use_get_assets_query();
+  const refetch = use_default_fetch(trigger, { page });
 
   const increment_page = React.useCallback(() => {
-    set_page((prev_state) => prev_state + 1);
-  }, []);
+    trigger({ page: page + 1 }, true);
+  }, [page, trigger]);
 
   return (
     <React.Fragment>
@@ -218,7 +210,7 @@ const Library = ({
 // Footer
 
 const GalleryMasonryFooter = React.memo<{
-  container_ref: React.RefObject<HTMLElement>;
+  container_ref: React.RefObject<HTMLElement | null>;
   has_more: boolean;
   increment_page: () => void;
   is_fetching: boolean;
@@ -226,7 +218,7 @@ const GalleryMasonryFooter = React.memo<{
   const { ref, inView: in_view } = use_in_view({
     threshold: 0.1,
     root: container_ref.current,
-    rootMargin: "0px 0px 500px 0px"
+    rootMargin: "0px 0px 200px 0px"
   });
 
   React.useEffect(() => {

@@ -17,14 +17,12 @@ export const { useReplyVisibilityMutation: use_reply_visibility_mutation } =
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,
           method: "POST",
-          body: {
-            hidden: body.hidden
-          },
-          headers: {
-            "Content-type": ContentType.JSON
-          }
+          body: { hidden: body.hidden },
+          headers: { "Content-type": ContentType.JSON }
         }),
-        invalidatesTags: (result, error, arg) => [{ type: "Reply", id: arg.id }]
+        invalidatesTags: (_result, _error, arg) => [
+          { type: "Reply", id: arg.id }
+        ]
       })
     })
   });

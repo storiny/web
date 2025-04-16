@@ -13,10 +13,7 @@ export const get_blog_subscribers_api = api_slice.injectEndpoints({
     // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getBlogSubscribers: builder.query<
       { has_more: boolean; items: Subscriber[]; page: number },
-      {
-        blog_id: string;
-        page: number;
-      }
+      { blog_id: string; page: number }
     >({
       query: ({ page, blog_id }) => `/${SEGMENT(blog_id)}?page=${page}`,
       serializeQueryArgs: ({ endpointName, queryArgs }) =>
@@ -34,5 +31,10 @@ export const get_blog_subscribers_api = api_slice.injectEndpoints({
   })
 });
 
-export const { useGetBlogSubscribersQuery: use_get_blog_subscribers_query } =
-  get_blog_subscribers_api;
+export const {
+  useLazyGetBlogSubscribersQuery: use_get_blog_subscribers_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getBlogSubscribers: { select: select_blog_subscribers }
+  }
+} = get_blog_subscribers_api;

@@ -10,7 +10,11 @@ const ITEMS_PER_PAGE = 10;
 export type GetStoryRecommendationsResponse = Story[];
 
 export const {
-  useGetStoryRecommendationsQuery: use_get_story_recommendations_query
+  useLazyGetStoryRecommendationsQuery: use_get_story_recommendations_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getStoryRecommendations: { select: select_story_recommendations }
+  }
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
     // eslint-disable-next-line prefer-snakecase/prefer-snakecase

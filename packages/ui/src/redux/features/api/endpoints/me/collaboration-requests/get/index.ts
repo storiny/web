@@ -42,5 +42,9 @@ export const get_collaboration_requests_api = api_slice.injectEndpoints({
 });
 
 export const {
-  useGetCollaborationRequestsQuery: use_get_collaboration_requests_query
+  useLazyGetCollaborationRequestsQuery: use_get_collaboration_requests_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getCollaborationRequests: { select: select_collaboration_requests }
+  }
 } = get_collaboration_requests_api;

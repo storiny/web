@@ -22,7 +22,7 @@ export const {
         url: `/${SEGMENT(blog_id, id)}`,
         method: "POST"
       }),
-      invalidatesTags: (result, error, arg) => [
+      invalidatesTags: (_result, _error, arg) => [
         { type: "BlogEditorRequest", id: arg.id }
       ],
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {

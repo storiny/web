@@ -19,7 +19,7 @@ export const { useRemoveBlogStoryMutation: use_remove_blog_story_mutation } =
           url: `/${SEGMENT(blog_id, story_id)}`,
           method: "DELETE"
         }),
-        invalidatesTags: (result, error, arg) => [
+        invalidatesTags: (_result, _error, arg) => [
           { type: "Story", id: arg.story_id }
         ],
         onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {

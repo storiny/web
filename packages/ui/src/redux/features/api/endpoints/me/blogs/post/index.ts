@@ -24,7 +24,7 @@ export const { useCreateBlogMutation: use_create_blog_mutation } =
           }
         }),
         invalidatesTags: ["Blog"],
-        onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+        onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
           queryFulfilled.then(() => {
             dispatch(self_action("self_blog_count", "increment"));
           });

@@ -9,36 +9,41 @@ const ITEMS_PER_PAGE = 10;
 
 export type GetCommentReliesResponse = Reply[];
 
-export const { useGetCommentRepliesQuery: use_get_comment_replies_query } =
-  api_slice.injectEndpoints({
-    endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-      getCommentReplies: builder.query<
-        { has_more: boolean; items: Reply[]; page: number },
-        { comment_id: string; page: number }
-      >({
-        query: ({ comment_id, page }) => `/${SEGMENT(comment_id)}?page=${page}`,
-        serializeQueryArgs: ({ endpointName, queryArgs }) =>
-          `${endpointName}:${queryArgs.comment_id}`,
-        transformResponse: (response: Reply[], _, { page }) => ({
-          page,
-          items: response,
-          has_more: response.length === ITEMS_PER_PAGE
-        }),
-        merge: (cache, data) => merge_fn(cache, data),
-        providesTags: (result) =>
-          result
-            ? [
-                ...result.items.map(({ id }) => ({
-                  type: "Reply" as const,
-                  id
-                })),
-                "Reply"
-              ]
-            : ["Reply"],
-        forceRefetch: ({ currentArg, previousArg }) =>
-          currentArg?.comment_id !== previousArg?.comment_id ||
-          currentArg?.page !== previousArg?.page
-      })
+export const {
+  useLazyGetCommentRepliesQuery: use_get_comment_replies_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getCommentReplies: { select: select_comment_replies }
+  }
+} = api_slice.injectEndpoints({
+  endpoints: (builder) => ({
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getCommentReplies: builder.query<
+      { has_more: boolean; items: Reply[]; page: number },
+      { comment_id: string; page: number }
+    >({
+      query: ({ comment_id, page }) => `/${SEGMENT(comment_id)}?page=${page}`,
+      serializeQueryArgs: ({ endpointName, queryArgs }) =>
+        `${endpointName}:${queryArgs.comment_id}`,
+      transformResponse: (response: Reply[], _, { page }) => ({
+        page,
+        items: response,
+        has_more: response.length === ITEMS_PER_PAGE
+      }),
+      merge: (cache, data) => merge_fn(cache, data),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.items.map(({ id }) => ({
+                type: "Reply" as const,
+                id
+              })),
+              "Reply"
+            ]
+          : ["Reply"],
+      forceRefetch: ({ currentArg, previousArg }) =>
+        currentArg?.comment_id !== previousArg?.comment_id ||
+        currentArg?.page !== previousArg?.page
     })
-  });
+  })
+});

@@ -49,4 +49,10 @@ export const get_replies_api = api_slice.injectEndpoints({
   })
 });
 
-export const { useGetRepliesQuery: use_get_replies_query } = get_replies_api;
+export const {
+  useLazyGetRepliesQuery: use_get_replies_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getReplies: { select: select_replies }
+  }
+} = get_replies_api;

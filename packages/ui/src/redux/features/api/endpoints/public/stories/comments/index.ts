@@ -55,5 +55,10 @@ export const get_story_comments_api = api_slice.injectEndpoints({
   })
 });
 
-export const { useGetStoryCommentsQuery: use_get_story_comments_query } =
-  get_story_comments_api;
+export const {
+  useLazyGetStoryCommentsQuery: use_get_story_comments_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getStoryComments: { select: select_story_comments }
+  }
+} = get_story_comments_api;

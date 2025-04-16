@@ -8,24 +8,29 @@ const SEGMENT = "me/blocked-users";
 
 export type GetBlockedUsersResponse = User[];
 
-export const { useGetBlockedUsersQuery: use_get_blocked_users_query } =
-  api_slice.injectEndpoints({
-    endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-      getBlockedUsers: builder.query<
-        { has_more: boolean; items: User[]; page: number },
-        { page: number }
-      >({
-        query: ({ page }) => `/${SEGMENT}?page=${page}`,
-        serializeQueryArgs: ({ endpointName }) => endpointName,
-        transformResponse: (response: User[], _, { page }) => ({
-          page,
-          items: response,
-          has_more: response.length === ITEMS_PER_PAGE
-        }),
-        merge: (cache, data) => merge_fn(cache, data),
-        forceRefetch: ({ currentArg, previousArg }) =>
-          currentArg?.page !== previousArg?.page
-      })
+export const {
+  useLazyGetBlockedUsersQuery: use_get_blocked_users_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getBlockedUsers: { select: select_blocked_users }
+  }
+} = api_slice.injectEndpoints({
+  endpoints: (builder) => ({
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getBlockedUsers: builder.query<
+      { has_more: boolean; items: User[]; page: number },
+      { page: number }
+    >({
+      query: ({ page }) => `/${SEGMENT}?page=${page}`,
+      serializeQueryArgs: ({ endpointName }) => endpointName,
+      transformResponse: (response: User[], _, { page }) => ({
+        page,
+        items: response,
+        has_more: response.length === ITEMS_PER_PAGE
+      }),
+      merge: (cache, data) => merge_fn(cache, data),
+      forceRefetch: ({ currentArg, previousArg }) =>
+        currentArg?.page !== previousArg?.page
     })
-  });
+  })
+});

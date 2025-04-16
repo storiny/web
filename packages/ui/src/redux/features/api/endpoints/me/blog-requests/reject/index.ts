@@ -17,7 +17,7 @@ export const {
         url: `/${SEGMENT(body.id)}`,
         method: "DELETE"
       }),
-      invalidatesTags: (result, error, arg) => [
+      invalidatesTags: (_result, _error, arg) => [
         { type: "BlogRequest", id: arg.id }
       ],
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {

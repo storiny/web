@@ -5,10 +5,12 @@ import { dynamic_loader } from "~/common/dynamic";
 import { UserListSkeleton, VirtualizedUserList } from "~/common/user";
 import ErrorState from "~/entities/error-state";
 import { use_debounce } from "~/hooks/use-debounce";
-import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
+import { use_default_fetch } from "~/hooks/use-default-fetch";
+import { use_pagination } from "~/hooks/use-pagination";
 import {
   get_query_error_type,
   GetUserEntityType,
+  select_user_entities,
   use_get_user_entities_query
 } from "~/redux/features";
 
@@ -28,30 +30,54 @@ interface Props {
 
 const EntitiesTab = (props: Props): React.ReactElement => {
   const { query, sort, user_id, username, entity_type } = props;
-  const [page, set_page] = React.useState<number>(1);
-  use_handle_dynamic_state<typeof page>(1, set_page);
   const debounced_query = use_debounce(query);
-  const {
-    data,
-    isLoading: is_loading,
-    isFetching: is_fetching,
-    isError: is_error,
-    error,
-    refetch
-  } = use_get_user_entities_query({
-    page,
-    sort,
-    user_id,
-    entity_type,
-    query: debounced_query
-  });
-  const { items = [], has_more } = data || {};
+  const page = use_pagination(
+    select_user_entities({
+      page: 1,
+      sort,
+      user_id,
+      entity_type,
+      query: debounced_query
+    })
+  );
+
+  const [
+    trigger,
+    {
+      data: { items = [], has_more } = {},
+      isLoading: is_loading,
+      isFetching: is_fetching,
+      isError: is_error,
+      error
+    }
+  ] = use_get_user_entities_query();
+
+  const refetch = use_default_fetch(
+    trigger,
+    {
+      page,
+      sort,
+      user_id,
+      entity_type,
+      query: debounced_query
+    },
+    [sort, user_id, entity_type, debounced_query]
+  );
+
   const is_typing = query !== debounced_query;
 
-  const load_more = React.useCallback(
-    () => set_page((prev_state) => prev_state + 1),
-    []
-  );
+  const load_more = React.useCallback(() => {
+    trigger(
+      {
+        page: page + 1,
+        sort,
+        user_id,
+        entity_type,
+        query: debounced_query
+      },
+      true
+    );
+  }, [debounced_query, entity_type, page, sort, trigger, user_id]);
 
   return (
     <>

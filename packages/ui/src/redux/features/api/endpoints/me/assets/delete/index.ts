@@ -15,7 +15,9 @@ export const { useDeleteAssetMutation: use_delete_asset_mutation } =
           url: `/${SEGMENT(body.id)}`,
           method: "DELETE"
         }),
-        invalidatesTags: (result, error, arg) => [{ type: "Asset", id: arg.id }]
+        invalidatesTags: (_result, _error, arg) => [
+          { type: "Asset", id: arg.id }
+        ]
       })
     })
   });

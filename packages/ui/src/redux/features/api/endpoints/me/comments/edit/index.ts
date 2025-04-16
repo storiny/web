@@ -22,7 +22,7 @@ export const { useEditCommentMutation: use_edit_comment_mutation } =
             "Content-type": ContentType.JSON
           }
         }),
-        invalidatesTags: (result, error, arg) => [
+        invalidatesTags: (_result, _error, arg) => [
           { type: "Comment", id: arg.id }
         ]
       })

@@ -8,24 +8,29 @@ const SEGMENT = "me/muted-users";
 
 export type GetMutedUsersResponse = User[];
 
-export const { useGetMutedUsersQuery: use_get_muted_users_query } =
-  api_slice.injectEndpoints({
-    endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-      getMutedUsers: builder.query<
-        { has_more: boolean; items: User[]; page: number },
-        { page: number }
-      >({
-        query: ({ page }) => `/${SEGMENT}?page=${page}`,
-        serializeQueryArgs: ({ endpointName }) => endpointName,
-        transformResponse: (response: User[], _, { page }) => ({
-          page,
-          items: response,
-          has_more: response.length === ITEMS_PER_PAGE
-        }),
-        merge: (cache, data) => merge_fn(cache, data),
-        forceRefetch: ({ currentArg, previousArg }) =>
-          currentArg?.page !== previousArg?.page
-      })
+export const {
+  useLazyGetMutedUsersQuery: use_get_muted_users_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getMutedUsers: { select: select_muted_users }
+  }
+} = api_slice.injectEndpoints({
+  endpoints: (builder) => ({
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getMutedUsers: builder.query<
+      { has_more: boolean; items: User[]; page: number },
+      { page: number }
+    >({
+      query: ({ page }) => `/${SEGMENT}?page=${page}`,
+      serializeQueryArgs: ({ endpointName }) => endpointName,
+      transformResponse: (response: User[], _, { page }) => ({
+        page,
+        items: response,
+        has_more: response.length === ITEMS_PER_PAGE
+      }),
+      merge: (cache, data) => merge_fn(cache, data),
+      forceRefetch: ({ currentArg, previousArg }) =>
+        currentArg?.page !== previousArg?.page
     })
-  });
+  })
+});
