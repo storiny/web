@@ -1,4 +1,9 @@
 {
+  "msw": {
+    "workerDirectory": ".storybook\\public"
+  },
+  "name": "@storiny/monorepo",
+  "packageManager": "yarn@1.22.19",
   "private": true,
   "scripts": {
     "build": "turbo run build",
@@ -63,10 +68,5 @@
     "typescript": "^5.2.2",
     "webpack": "^5.88.0",
     "y-websocket-server": "^1.0.2"
-  },
-  "name": "@storiny/monorepo",
-  "msw": {
-    "workerDirectory": ".storybook\\public"
-  },
-  "packageManager": "yarn@1.22.19"
+  }
 }

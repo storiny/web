@@ -35,7 +35,7 @@ const config: Config = {
         "<rootDir>/packages/editor/**/*.test.ts",
         "<rootDir>/packages/editor/**/*.test.tsx",
       ],
-      transformIgnorePatterns: ["/node_modules/(?!color-name)"], 
+      transformIgnorePatterns: ["/node_modules/(?!color-name)"],
       modulePathIgnorePatterns: ["<rootDir>/.vercel/"],
       moduleNameMapper: {
         // Typescript absolute paths

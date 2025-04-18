@@ -15,7 +15,7 @@
     "@storiny/eslint-config": "^1.1.0",
     "@storiny/prettier-config": "^1.1.0",
     "@storiny/stylelint-config": "*",
-    "@storiny/test-utils": "^1.1.0",
+    "@storiny/test-utils": "*",
     "@storiny/tsconfig": "^1.0.0",
     "@storiny/types": "*",
     "@swc/core": "^1.3.62",
