@@ -23,7 +23,7 @@ const ImageResizer = ({
   scale_factor
 }: {
   editor: LexicalEditor;
-  items_container_ref: React.RefObject<HTMLDivElement>;
+  items_container_ref: React.RefObject<HTMLDivElement | null>;
   on_resize_end: (scale: number) => void;
   on_resize_start: () => void;
   scale_factor: number;

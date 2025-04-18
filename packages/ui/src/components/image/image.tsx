@@ -47,6 +47,7 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
     slot_props,
     style,
     children,
+    render_image = (img): React.ReactElement => img,
     ...rest
   } = props;
   const user = use_app_selector(select_user);
@@ -97,21 +98,22 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
       }
     >
       <Component>
-        {!children && (
-          <Avatar.Image
-            {...slot_props?.image}
-            alt={alt}
-            className={clsx(
-              styles["native-image"],
-              slot_props?.image?.className
-            )}
-            onLoadingStatusChange={(next_status): void =>
-              status === "loaded" ? undefined : set_status(next_status)
-            }
-            ref={img_ref}
-            src={final_src}
-          />
-        )}
+        {!children &&
+          render_image(
+            <Avatar.Image
+              {...slot_props?.image}
+              alt={alt}
+              className={clsx(
+                styles["native-image"],
+                slot_props?.image?.className
+              )}
+              onLoadingStatusChange={(next_status): void =>
+                status === "loaded" ? undefined : set_status(next_status)
+              }
+              ref={img_ref}
+              src={final_src}
+            />
+          )}
         {status === "error" && (
           <Avatar.Fallback
             {...slot_props?.fallback}
