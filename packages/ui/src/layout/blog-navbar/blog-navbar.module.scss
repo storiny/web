@@ -36,8 +36,9 @@
   top: var(--banner-height, 0);
   display: flex;
   align-items: center;
-  transition-delay: 500ms;
-  transition: opacity 250ms; // For <Zoom> component
+  transition-property: transform; // For `data-hidden="true"` property
+  transition-delay: 250ms;
+  transition-duration: 250ms;
 
   &::before {
     content: "";
@@ -49,6 +50,11 @@
     z-index: -1;
     speak: none;
     transform: translateX(-50%);
+  }
+
+  &[data-hidden="true"] {
+    transition-delay: 0s;
+    transform: translateY(-100%);
   }
 
   &:not(.transparent) {

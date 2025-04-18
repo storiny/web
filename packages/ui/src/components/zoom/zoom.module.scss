@@ -2,7 +2,8 @@
   width: 100%;
   height: 100%;
   background-color: transparent;
-  transition: background-color 0s;
+  transition-property: background-color;
+  transition-duration: 0s;
   transition-delay: 250ms;
 
   &.active {
@@ -18,17 +19,9 @@
 
 .zoom-btn,
 .unzoom-btn {
-  background-color: rgba(0, 0, 0, 0.7);
-  border-radius: 50%;
-  border: none;
-  box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
-  color: #fff;
-  height: 40px;
+  box-shadow: var(--shadow-sm);
   margin: 0;
-  outline-offset: 2px;
-  padding: 9px;
   touch-action: manipulation;
-  width: 40px;
   appearance: none;
 }
 
@@ -95,11 +88,11 @@
   transition: background-color 250ms;
 
   &[data-state="hidden"] {
-    background-color: hsla(var(--bg-elevation-sm-hsl), 0%);
+    background-color: transparent;
   }
 
   &[data-state="visible"] {
-    background-color: hsla(var(--bg-elevation-sm-hsl), 100%);
+    background-color: var(--bg-backdrop);
   }
 }
 
@@ -112,12 +105,9 @@
 .modal-img {
   position: absolute;
   cursor: zoom-out;
+  image-rendering: high-quality;
   transform-origin: top left;
   transition: transform 250ms;
-
-  & img {
-    image-rendering: high-quality;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

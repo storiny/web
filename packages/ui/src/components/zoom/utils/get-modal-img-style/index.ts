@@ -370,10 +370,8 @@ export const get_modal_img_style = ({
     container_width: img_rect.width,
     has_scalable_src,
     offset,
-    // target_height: loaded_img_element?.naturalHeight || img_rect.height,
-    // target_width: loaded_img_element?.naturalWidth || img_rect.width
-    target_height: img_rect.height,
-    target_width: img_rect.width
+    target_height: loaded_img_element?.naturalHeight || img_rect.height,
+    target_width: loaded_img_element?.naturalWidth || img_rect.width
   });
 
   const img_object_fit_style = is_img_object_fit
@@ -386,10 +384,8 @@ export const get_modal_img_style = ({
         object_fit: target_element_computed_style.objectFit,
         object_position: target_element_computed_style.objectPosition,
         offset,
-        // target_height: loaded_img_element?.naturalHeight || img_rect.height,
-        // target_width: loaded_img_element?.naturalWidth || img_rect.width
-        target_height: img_rect.height,
-        target_width: img_rect.width
+        target_height: loaded_img_element?.naturalHeight || img_rect.height,
+        target_width: loaded_img_element?.naturalWidth || img_rect.width
       })
     : undefined;
 
@@ -403,10 +399,8 @@ export const get_modal_img_style = ({
         container_width: img_rect.width,
         has_scalable_src,
         offset,
-        // target_height: loaded_img_element?.naturalHeight || img_rect.height,
-        // target_width: loaded_img_element?.naturalWidth || img_rect.width
-        target_height: img_rect.height,
-        target_width: img_rect.width
+        target_height: loaded_img_element?.naturalHeight || img_rect.height,
+        target_width: loaded_img_element?.naturalWidth || img_rect.width
       })
     : undefined;
 
