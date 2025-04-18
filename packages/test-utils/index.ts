@@ -23,7 +23,6 @@ global.ResizeObserver = require("resize-observer-polyfill");
 window.HTMLElement.prototype.scrollIntoView = (): void => undefined;
 
 // Mock `matchMedia`
-
 /* eslint-disable prefer-snakecase/prefer-snakecase */
 Object.defineProperty(window, "matchMedia", {
   writable: true,
