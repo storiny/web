@@ -330,6 +330,7 @@ const ImageComponent = ({
                     rating={editable ? undefined : image.rating}
                     render_image={(img): React.ReactElement =>
                       editable ||
+                      (images.length === 1 && layout === "fit") ||
                       (images.length === 1 && layout === "screen-width") ? (
                         img
                       ) : (
@@ -349,10 +350,7 @@ const ImageComponent = ({
                           `${get_cdn_url(image.key, ImageSize.W_960)} 960w`,
                           `${get_cdn_url(image.key, ImageSize.W_640)} 640w`,
                           `${get_cdn_url(image.key, ImageSize.W_320)} 320w`
-                        ].join(","),
-                        // @ts-expect-error Data width attribute
-                        "data-width": image.width,
-                        "data-height": image.height
+                        ].join(",")
                       }
                     }}
                   />

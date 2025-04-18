@@ -7,14 +7,14 @@ import { nanoid } from "nanoid";
 import React from "react";
 import ReactDOM from "react-dom";
 
-import AspectRatio from "~/components/aspect-ratio";
+import IconButton from "~/components/icon-button";
 import { SupportedZoomImage } from "~/components/zoom/types";
+import MaximizeIcon from "~/icons/maximize";
+import MinimizeIcon from "~/icons/minimize";
 
-import { UnzoomIcon, ZoomIcon } from "./icons";
 import {
   get_ghost_style,
   get_img_alt,
-  get_img_ratio,
   get_img_src,
   get_modal_img_style,
   test_div,
@@ -71,13 +71,13 @@ type ZoomPropsWithDefaults = ZoomDefaultProps &
   };
 
 interface ZoomState {
+  ghost_style: React.CSSProperties;
   id: string;
   is_zoom_img_loaded: boolean;
   loaded_img_element: HTMLImageElement | undefined;
   modal_state: ModalState;
   navbar_element: HTMLElement | null;
   should_refresh: boolean;
-  style_ghost: React.CSSProperties;
 }
 
 class ZoomBase extends React.Component<ZoomPropsWithDefaults, ZoomState> {
@@ -93,11 +93,10 @@ class ZoomBase extends React.Component<ZoomPropsWithDefaults, ZoomState> {
     loaded_img_element: undefined,
     modal_state: ModalState.UNLOADED,
     should_refresh: false,
-    style_ghost: {},
+    ghost_style: {},
     navbar_element: null
   };
 
-  private aspect_ratio_ref = React.createRef<HTMLDivElement>();
   private content_ref = React.createRef<HTMLDivElement>();
   private dialog_ref = React.createRef<HTMLDialogElement>();
   private modal_content_ref = React.createRef<HTMLDivElement>();
@@ -183,11 +182,11 @@ class ZoomBase extends React.Component<ZoomPropsWithDefaults, ZoomState> {
    * Finds or creates a container for the dialog.
    */
   get_dialog_container = (): HTMLDivElement => {
-    let element = document.querySelector("[data-img-zoom-portal]");
+    let element = document.querySelector("[data-zoom-portal]");
 
     if (element == null) {
       element = document.createElement("div");
-      element.setAttribute("data-img-zoom-portal", "");
+      element.setAttribute("data-zoom-portal", "");
       document.body.appendChild(element);
     }
 
@@ -219,10 +218,7 @@ class ZoomBase extends React.Component<ZoomPropsWithDefaults, ZoomState> {
     if (this.img_element) {
       this.content_not_found_change_observer?.disconnect?.();
       this.img_element.addEventListener("load", this.handle_img_load);
-
-      if (this.aspect_ratio_ref.current) {
-        this.aspect_ratio_ref.addEventListener("click", this.handle_zoom);
-      }
+      this.img_element.addEventListener("click", this.handle_zoom);
 
       if (!this.state.loaded_img_element) {
         this.handle_img_load();
@@ -237,7 +233,7 @@ class ZoomBase extends React.Component<ZoomPropsWithDefaults, ZoomState> {
           // Update ghost and force a re-render.
           // Note: Always force a re-render here, even if we remove all state
           // changes. Pass `{}` in that case.
-          this.setState({ style_ghost: get_ghost_style(this.img_element) });
+          this.setState({ ghost_style: get_ghost_style(this.img_element) });
         }
       });
 
@@ -246,7 +242,7 @@ class ZoomBase extends React.Component<ZoomPropsWithDefaults, ZoomState> {
       // Watch for any reasonable DOM changes and update ghost.
       if (!this.content_change_observer) {
         this.content_change_observer = new MutationObserver(() => {
-          this.setState({ style_ghost: get_ghost_style(this.img_element) });
+          this.setState({ ghost_style: get_ghost_style(this.img_element) });
         });
 
         this.content_change_observer.observe(content_element, {
@@ -305,7 +301,7 @@ class ZoomBase extends React.Component<ZoomPropsWithDefaults, ZoomState> {
     const set_loaded = (): void => {
       this.setState({
         loaded_img_element: img,
-        style_ghost: get_ghost_style(this.img_element)
+        ghost_style: get_ghost_style(this.img_element)
       });
     };
 
@@ -499,11 +495,7 @@ class ZoomBase extends React.Component<ZoomPropsWithDefaults, ZoomState> {
       "transitionend",
       this.handle_img_transition_end
     ); // Must be added after showModal
-
-    if (this.navbar_element) {
-      this.navbar_element.style.opacity = "0";
-    }
-
+    this.set_navbar_visibility(true);
     this.setState({ modal_state: ModalState.LOADING });
   };
 
@@ -511,10 +503,7 @@ class ZoomBase extends React.Component<ZoomPropsWithDefaults, ZoomState> {
    * Performs the unzooming actions.
    */
   unzoom = (): void => {
-    if (this.navbar_element) {
-      this.navbar_element.style.opacity = "1";
-    }
-
+    this.set_navbar_visibility(false);
     this.setState({ modal_state: ModalState.UNLOADING });
   };
 
@@ -616,6 +605,14 @@ class ZoomBase extends React.Component<ZoomPropsWithDefaults, ZoomState> {
     }
   };
 
+  /**
+   * Changes the `data-hidden` attribute of the navbar.
+   * @param hidden The hidden flag for navbar.
+   */
+  set_navbar_visibility(hidden: boolean): void {
+    this.navbar_element?.setAttribute?.("data-hidden", String(hidden));
+  }
+
   render(): React.ReactElement {
     const {
       handle_unzoom_button_click,
@@ -637,14 +634,13 @@ class ZoomBase extends React.Component<ZoomPropsWithDefaults, ZoomState> {
       modal_content_ref,
       modal_img_ref,
       wrap_ref,
-      aspect_ratio_ref,
       state: {
         id,
         is_zoom_img_loaded,
         loaded_img_element,
         modal_state,
         should_refresh,
-        style_ghost
+        ghost_style
       }
     } = this;
 
@@ -656,7 +652,6 @@ class ZoomBase extends React.Component<ZoomPropsWithDefaults, ZoomState> {
 
     const img_alt = get_img_alt(img_element);
     const img_src = get_img_src(img_element);
-    const img_ratio = get_img_ratio(img_element);
     const img_sizes = is_img ? img_element.sizes : undefined;
     const img_src_set = is_img ? img_element.srcset : undefined;
     const img_cross_origin = is_img ? img_element.crossOrigin : undefined;
@@ -690,8 +685,7 @@ class ZoomBase extends React.Component<ZoomPropsWithDefaults, ZoomState> {
           loaded_img_element,
           offset: zoom_margin,
           should_refresh,
-          target_element: img_element?.parentElement
-            ?.offsetParent as SupportedZoomImage
+          target_element: img_element as SupportedZoomImage
         })
       : {};
 
@@ -700,37 +694,34 @@ class ZoomBase extends React.Component<ZoomPropsWithDefaults, ZoomState> {
     if (has_image) {
       const modal_img =
         is_img || is_div ? (
-          <AspectRatio
+          <img
+            alt={img_alt}
+            // @ts-expect-error Override
+            crossOrigin={img_cross_origin}
+            sizes={img_sizes}
+            src={img_src}
+            srcSet={img_src_set}
+            {...(is_zoom_img_loaded && modal_state === ModalState.LOADED
+              ? zoom_img
+              : {})}
             className={styles["modal-img"]}
-            ratio={img_ratio}
-            ref={aspect_ratio_ref}
+            height={this.modal_img_style.height || undefined}
+            id={modal_img_id}
+            ref={modal_img_ref}
             style={this.modal_img_style}
-          >
-            <img
-              alt={img_alt}
-              // @ts-expect-error Override
-              crossOrigin={img_cross_origin}
-              sizes={img_sizes}
-              src={img_src}
-              srcSet={img_src_set}
-              {...(is_zoom_img_loaded && modal_state === ModalState.LOADED
-                ? zoom_img
-                : {})}
-              id={modal_img_id}
-              ref={modal_img_ref}
-            />
-          </AspectRatio>
+            width={this.modal_img_style.width || undefined}
+          />
         ) : null;
 
       const modal_unzoom_button = (
-        <button
+        <IconButton
           aria-label={"Minimize image"}
           className={styles["unzoom-btn"]}
           onClick={handle_unzoom_button_click}
-          type="button"
+          variant={"ghost"}
         >
-          <UnzoomIcon />
-        </button>
+          <MinimizeIcon />
+        </IconButton>
       );
 
       modal_content = (
@@ -759,15 +750,15 @@ class ZoomBase extends React.Component<ZoomPropsWithDefaults, ZoomState> {
           {children}
         </WrapElement>
         {has_image && (
-          <WrapElement className={styles.ghost} style={style_ghost}>
-            <button
+          <WrapElement className={styles.ghost} style={ghost_style}>
+            <IconButton
               aria-label={zoom_button_label}
               className={styles["zoom-btn"]}
               onClick={handle_zoom}
-              type="button"
+              variant={"ghost"}
             >
-              <ZoomIcon />
-            </button>
+              <MaximizeIcon />
+            </IconButton>
           </WrapElement>
         )}
         {has_image &&
@@ -824,9 +815,7 @@ class ZoomBase extends React.Component<ZoomPropsWithDefaults, ZoomState> {
     window.removeEventListener("resize", this.handle_resize);
     document.removeEventListener("keydown", this.handle_key_down, true);
 
-    if (this.navbar_element) {
-      this.navbar_element.style.opacity = "1";
-    }
+    this.set_navbar_visibility(false);
   }
 
   componentDidUpdate(

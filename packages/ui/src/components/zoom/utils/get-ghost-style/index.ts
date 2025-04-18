@@ -3,7 +3,7 @@ import React from "react";
 import { SupportedZoomImage } from "~/components/zoom/types";
 
 /**
- * Returns the dimensions and position of an image element as a CSS style object.
+ * Returns the dimensions and position of the ghost element as a CSS style object.
  * @param img_element The image element to extract style from.
  */
 export const get_ghost_style = (

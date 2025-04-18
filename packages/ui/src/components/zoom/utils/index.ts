@@ -1,6 +1,5 @@
 export * from "./get-ghost-style";
 export * from "./get-img-alt";
-export * from "./get-img-ratio";
 export * from "./get-img-src";
 export * from "./get-modal-img-style";
 export * from "./get-scale";
