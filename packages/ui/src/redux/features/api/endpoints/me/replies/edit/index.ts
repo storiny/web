@@ -22,7 +22,9 @@ export const { useEditReplyMutation: use_edit_reply_mutation } =
             "Content-type": ContentType.JSON
           }
         }),
-        invalidatesTags: (result, error, arg) => [{ type: "Reply", id: arg.id }]
+        invalidatesTags: (_result, _error, arg) => [
+          { type: "Reply", id: arg.id }
+        ]
       })
     })
   });

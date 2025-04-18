@@ -23,11 +23,14 @@ import TabsList from "~/components/tabs-list";
 import Typography from "~/components/typography";
 import ErrorState from "~/entities/error-state";
 import { use_debounce } from "~/hooks/use-debounce";
+import { use_default_fetch } from "~/hooks/use-default-fetch";
 import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
 import { use_media_query } from "~/hooks/use-media-query";
+import { use_pagination } from "~/hooks/use-pagination";
 import SearchIcon from "~/icons/search";
 import {
   get_query_error_type,
+  select_relations,
   select_user,
   set_self_follower_count,
   set_self_following_count,
@@ -241,34 +244,52 @@ const ContentRelationsClient = (props: RelationsProps): React.ReactElement => {
       ? (tab as RelationsTabValue)
       : "followers"
   );
-  const [page, set_page] = React.useState<number>(1);
-  use_handle_dynamic_state<typeof page>(1, set_page);
   use_handle_dynamic_state<typeof sort>("popular", set_sort);
   use_handle_dynamic_state<typeof query>("", set_query);
   const debounced_query = use_debounce(query);
-  const {
-    data,
-    isLoading: is_loading,
-    isFetching: is_fetching,
-    isError: is_error,
-    error,
-    refetch
-  } = use_get_relations_query({
-    page,
-    sort,
-    query: debounced_query,
-    relation_type: value
-  });
-  const { items = [], has_more } = data || {};
+  const page = use_pagination(
+    select_relations({
+      page: 1,
+      sort,
+      query: debounced_query,
+      relation_type: value
+    })
+  );
+  const [
+    trigger,
+    {
+      data: { items = [], has_more } = {},
+      isLoading: is_loading,
+      isFetching: is_fetching,
+      isError: is_error,
+      error
+    }
+  ] = use_get_relations_query();
+  const refetch = use_default_fetch(
+    trigger,
+    {
+      page,
+      sort,
+      query: debounced_query,
+      relation_type: value
+    },
+    [debounced_query, sort, value]
+  );
   const is_typing = query !== debounced_query;
 
-  const load_more = React.useCallback(
-    () => set_page((prev_state) => prev_state + 1),
-    []
-  );
+  const load_more = React.useCallback(() => {
+    trigger(
+      {
+        page: page + 1,
+        sort,
+        query: debounced_query,
+        relation_type: value
+      },
+      true
+    );
+  }, [debounced_query, page, sort, trigger, value]);
 
   const handle_change = React.useCallback((next_value: RelationsTabValue) => {
-    set_page(1);
     set_sort("popular");
     set_query("");
     set_value(next_value);
@@ -276,14 +297,12 @@ const ContentRelationsClient = (props: RelationsProps): React.ReactElement => {
 
   const handle_sort_change = React.useCallback(
     (next_sort: RelationsSortValue) => {
-      set_page(1);
       set_sort(next_sort);
     },
     []
   );
 
   const handle_query_change = React.useCallback((next_query: string) => {
-    set_page(1);
     set_query(next_query);
   }, []);
 

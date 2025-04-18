@@ -6,6 +6,7 @@ import Skeleton from "~/components/skeleton";
 import Typography from "~/components/typography";
 import ErrorState from "~/entities/error-state";
 import Persona from "~/entities/persona";
+import { use_default_fetch } from "~/hooks/use-default-fetch";
 import {
   get_query_error_type,
   use_get_relations_query
@@ -26,14 +27,17 @@ const UserSkeleton = (): React.ReactElement => (
 );
 
 const AccountStatsRightSidebarContent = (): React.ReactElement => {
-  const {
-    data,
-    isLoading: is_loading,
-    isFetching: is_fetching,
-    isError: is_error,
-    error,
-    refetch
-  } = use_get_relations_query({
+  const [
+    trigger,
+    {
+      data,
+      isLoading: is_loading,
+      isFetching: is_fetching,
+      isError: is_error,
+      error
+    }
+  ] = use_get_relations_query();
+  const refetch = use_default_fetch(trigger, {
     page: 1,
     sort: "recent",
     relation_type: "followers"

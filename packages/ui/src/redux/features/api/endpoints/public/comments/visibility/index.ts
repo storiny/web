@@ -20,11 +20,9 @@ export const { useCommentVisibilityMutation: use_comment_visibility_mutation } =
           url: `/${SEGMENT(body.id)}`,
           body: { hidden: body.hidden },
           method: "POST",
-          headers: {
-            "Content-type": ContentType.JSON
-          }
+          headers: { "Content-type": ContentType.JSON }
         }),
-        invalidatesTags: (result, error, arg) => [
+        invalidatesTags: (_result, _error, arg) => [
           { type: "Comment", id: arg.id }
         ],
         onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {

@@ -10,6 +10,9 @@
   top: var(--banner-height, 0);
   display: flex;
   align-items: center;
+  transition-property: transform; // For `data-hidden="true"` property
+  transition-delay: 250ms;
+  transition-duration: 250ms;
 
   &::before {
     content: "";
@@ -24,6 +27,11 @@
     box-shadow: var(--shadow-sm);
     background-color: var(--bg-elevation-sm);
     border-bottom: 1px solid var(--divider);
+  }
+
+  &[data-hidden="true"] {
+    transition-delay: 0s;
+    transform: translateY(-100%);
   }
 
   &.dashboard {

@@ -104,6 +104,7 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
     >
       <FormInput
         autoComplete={"off"}
+        autoFocus
         data-testid={"mfa-code-input"}
         label={"Authentication code"}
         maxLength={AUTHENTICATION_CODE_MAX_LENGTH}

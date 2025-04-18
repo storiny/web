@@ -21,7 +21,7 @@ export const {
         url: `/${SEGMENT(body.id)}`,
         method: "POST"
       }),
-      invalidatesTags: (result, error, arg) => [
+      invalidatesTags: (_result, _error, arg) => [
         { type: "CollaborationRequest", id: arg.id }
       ]
     })

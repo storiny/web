@@ -1,6 +1,7 @@
 import { Comment } from "@storiny/types";
 import { StoryResponsesSortValue } from "@storiny/web/src/app/(native)/(check-user)/(dashboard)/(splash)/me/content/stories/[story_id]/responses/client";
 
+import { merge_fn } from "~/redux/features";
 import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = (story_id: string): string =>
@@ -13,7 +14,7 @@ export const get_story_comments_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
     // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getStoryComments: builder.query<
-      { has_more: boolean; items: Comment[] },
+      { has_more: boolean; items: Comment[]; page: number },
       {
         page: number;
         query?: string;
@@ -28,20 +29,12 @@ export const get_story_comments_api = api_slice.injectEndpoints({
         }`,
       serializeQueryArgs: ({ endpointName, queryArgs }) =>
         `${endpointName}:${queryArgs.story_id}:${queryArgs.type}:${queryArgs.sort}:${queryArgs.query}`,
-      transformResponse: (response: Comment[]) => ({
+      transformResponse: (response: Comment[], _, { page }) => ({
+        page,
         items: response,
         has_more: response.length === ITEMS_PER_PAGE
       }),
-      merge: (current_cache, data) => {
-        const new_items = data.items.filter(
-          (data_item) =>
-            !current_cache.items.some((item) => data_item.id === item.id)
-        );
-
-        current_cache.items.push(...new_items);
-        current_cache.has_more =
-          current_cache.has_more && new_items.length === ITEMS_PER_PAGE;
-      },
+      merge: (cache, data) => merge_fn(cache, data),
       providesTags: (result) =>
         result
           ? [
@@ -62,5 +55,10 @@ export const get_story_comments_api = api_slice.injectEndpoints({
   })
 });
 
-export const { useGetStoryCommentsQuery: use_get_story_comments_query } =
-  get_story_comments_api;
+export const {
+  useLazyGetStoryCommentsQuery: use_get_story_comments_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getStoryComments: { select: select_story_comments }
+  }
+} = get_story_comments_api;

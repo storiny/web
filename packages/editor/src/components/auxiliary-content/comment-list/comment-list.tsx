@@ -5,9 +5,11 @@ import React from "react";
 import { CommentListSkeleton, VirtualizedCommentList } from "~/common/comment";
 import Divider from "~/components/divider";
 import ErrorState from "~/entities/error-state";
-import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
+import { use_default_fetch } from "~/hooks/use-default-fetch";
+import { use_pagination } from "~/hooks/use-pagination";
 import {
   get_query_error_type,
+  select_story_comments,
   use_get_story_comments_query
 } from "~/redux/features";
 
@@ -22,26 +24,46 @@ const EditorAuxiliaryContentCommentList = (
 ): React.ReactElement => {
   const { sort, set_sort } = props;
   const story = use_atom_value(story_metadata_atom);
-  const [page, set_page] = React.useState<number>(1);
-  use_handle_dynamic_state<typeof page>(1, set_page);
-  const {
-    data,
-    isLoading: is_loading,
-    isFetching: is_fetching,
-    isError: is_error,
-    error,
-    refetch
-  } = use_get_story_comments_query({
-    story_id: story.id,
-    page,
-    sort,
-    type: "all"
-  });
-  const { items = [], has_more } = data || {};
-  const load_more = React.useCallback(
-    () => set_page((prev_state) => prev_state + 1),
-    []
+  const page = use_pagination(
+    select_story_comments({
+      story_id: story.id,
+      page: 1,
+      sort,
+      type: "all"
+    })
   );
+  const [
+    trigger,
+    {
+      data: { items = [], has_more } = {},
+      isLoading: is_loading,
+      isFetching: is_fetching,
+      isError: is_error,
+      error
+    }
+  ] = use_get_story_comments_query();
+  const refetch = use_default_fetch(
+    trigger,
+    {
+      story_id: story.id,
+      page,
+      sort,
+      type: "all"
+    },
+    [story.id, sort]
+  );
+
+  const load_more = React.useCallback(() => {
+    trigger(
+      {
+        story_id: story.id,
+        page: page + 1,
+        sort,
+        type: "all"
+      },
+      true
+    );
+  }, [page, sort, story.id, trigger]);
 
   return (
     <React.Fragment>

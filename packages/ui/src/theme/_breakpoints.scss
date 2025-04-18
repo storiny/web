@@ -2,6 +2,7 @@
 @use "sass:string" as string;
 @use "sass:map" as map;
 @use "sass:math" as math;
+@use "sass:meta" as meta;
 
 /**
 * Breakpoints mixin
@@ -87,7 +88,7 @@ $unit-intervals: (
 *
 */
 @mixin media($conditions...) {
-  @for $i from 1 through length($conditions) {
+  @for $i from 1 through list.length($conditions) {
     $conditions: list.set-nth(
       $conditions,
       $i,
@@ -99,7 +100,7 @@ $unit-intervals: (
   $query: "";
 
   @each $branch in $branches {
-    @if str-length($query) != 0 {
+    @if string.length($query) != 0 {
       $query: $query + ", ";
     }
 
@@ -126,13 +127,13 @@ $unit-intervals: (
 
   // Getting initial snapshot and looking for groups
   @each $expression in $expressions {
-    @if str-length($result) != 0 {
+    @if string.length($result) != 0 {
       $result: $result + " and ";
     }
 
-    @if type-of($expression) == "string" {
+    @if meta.type-of($expression) == "string" {
       $result: $result + $expression;
-    } @else if type-of($expression) == "list" {
+    } @else if meta.type-of($expression) == "list" {
       $result: $result + list.nth($expression, 1);
       $has-groups: true;
     } @else {
@@ -143,7 +144,7 @@ $unit-intervals: (
   // If we have groups, we have to create all possible combinations
   @if $has-groups {
     @each $expression in $expressions {
-      @if type-of($expression) == "list" {
+      @if meta.type-of($expression) == "list" {
         $first: list.nth($expression, 1);
 
         @each $member in $expression {
@@ -168,7 +169,7 @@ $unit-intervals: (
 *
 * @param {String} $expression - expression (in string)
 *
-* @throws Expression with type `type-of($expression)` detected, string expected
+* @throws Expression with type `meta.type-of($expression)` detected, string expected
 * @throws `$expression` is missing an operator
 * @throws Unknown unit: `$unit`
 *
@@ -181,8 +182,8 @@ $unit-intervals: (
   $result: "";
   $is-width: true;
 
-  @if type-of($expression) != "string" {
-    @warn 'Expression with type `#{type-of($expression)}` detected, string expected.';
+  @if meta.type-of($expression) != "string" {
+    @warn 'Expression with type `#{meta.type-of($expression)}` detected, string expected.';
   }
 
   // Separating the operator from the rest of the expression
@@ -195,9 +196,9 @@ $unit-intervals: (
   }
 
   // Checking what type of expression we're dealing with
-  @if map-has-key($breakpoints, $value) {
+  @if map.has-key($breakpoints, $value) {
     $result: map.get($breakpoints, $value);
-  } @else if map-has-key($media-expressions, $expression) {
+  } @else if map.has-key($media-expressions, $expression) {
     $result: map.get($media-expressions, $expression);
     $is-width: false;
   } @else {
@@ -208,7 +209,7 @@ $unit-intervals: (
     $unit: math.unit($result);
     $interval: 0;
 
-    @if map-has-key($unit-intervals, $unit) {
+    @if map.has-key($unit-intervals, $unit) {
       $interval: map.get($unit-intervals, $unit);
     } @else {
       @warn 'Unknown unit: #{$unit}';
@@ -274,7 +275,7 @@ $unit-intervals: (
   $minus: false;
 
   // Looping through all characters
-  @for $i from 1 through str-length($string) {
+  @for $i from 1 through string.length($string) {
     $character: string.slice($string, $i, $i);
     $index: list.index($strings, $character);
 
@@ -283,9 +284,9 @@ $unit-intervals: (
     } @else if $character == "." {
       $divider: 1;
     } @else {
-      @if type-of($index) != "number" {
+      @if meta.type-of($index) != "number" {
         $result: if($minus, $result * -1, $result);
-        @return _length($result, str-slice($string, $i));
+        @return _length($result, string.slice($string, $i));
       }
 
       $number: list.nth($numbers, $index);
@@ -313,10 +314,10 @@ $unit-intervals: (
   $units: 1px 1cm 1mm 1% 1ch 1pica 1in 1em 1rem 1pt 1pc 1ex 1vw 1vh 1vmin 1vmax;
   $index: list.index($strings, $unit);
 
-  @if type-of($index) != "number" {
+  @if meta.type-of($index) != "number" {
     @warn 'Unknown unit `#{$unit}`.';
     @return false;
   }
 
-  @return $number * nth($units, $index);
+  @return $number * list.nth($units, $index);
 }

@@ -1,5 +1,6 @@
 import { BlogMemberRequest } from "@storiny/types";
 
+import { merge_fn } from "~/redux/features";
 import { api_slice } from "~/redux/features/api/slice";
 
 const ITEMS_PER_PAGE = 10;
@@ -12,12 +13,8 @@ export const get_blog_writer_requests_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
     // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getBlogWriterRequests: builder.query<
-      { has_more: boolean; items: BlogMemberRequest[] },
-      {
-        blog_id: string;
-        page: number;
-        query?: string;
-      }
+      { has_more: boolean; items: BlogMemberRequest[]; page: number },
+      { blog_id: string; page: number; query?: string }
     >({
       query: ({ page, query, blog_id }) =>
         `/${SEGMENT(blog_id)}?page=${page}${
@@ -25,20 +22,12 @@ export const get_blog_writer_requests_api = api_slice.injectEndpoints({
         }`,
       serializeQueryArgs: ({ endpointName, queryArgs }) =>
         `${endpointName}:${queryArgs.blog_id}:${queryArgs.query}`,
-      transformResponse: (response: BlogMemberRequest[]) => ({
+      transformResponse: (response: BlogMemberRequest[], _, { page }) => ({
+        page,
         items: response,
         has_more: response.length === ITEMS_PER_PAGE
       }),
-      merge: (current_cache, data) => {
-        const new_items = data.items.filter(
-          (data_item) =>
-            !current_cache.items.some((item) => data_item.id === item.id)
-        );
-
-        current_cache.items.push(...new_items);
-        current_cache.has_more =
-          current_cache.has_more && new_items.length === ITEMS_PER_PAGE;
-      },
+      merge: (cache, data) => merge_fn(cache, data),
       providesTags: (result) =>
         result
           ? [
@@ -58,5 +47,9 @@ export const get_blog_writer_requests_api = api_slice.injectEndpoints({
 });
 
 export const {
-  useGetBlogWriterRequestsQuery: use_get_blog_writer_requests_query
+  useLazyGetBlogWriterRequestsQuery: use_get_blog_writer_requests_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getBlogWriterRequests: { select: select_blog_writer_requests }
+  }
 } = get_blog_writer_requests_api;

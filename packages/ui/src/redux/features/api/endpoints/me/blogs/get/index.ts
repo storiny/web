@@ -1,5 +1,6 @@
 import { Blog } from "@storiny/types";
 
+import { merge_fn } from "~/redux/features";
 import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = "me/blogs";
@@ -11,25 +12,17 @@ export const get_blogs_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
     // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getBlogs: builder.query<
-      { has_more: boolean; items: Blog[] },
+      { has_more: boolean; items: Blog[]; page: number },
       { page: number }
     >({
       query: ({ page }) => `/${SEGMENT}?page=${page}`,
       serializeQueryArgs: ({ endpointName }) => endpointName,
-      transformResponse: (response: Blog[]) => ({
+      transformResponse: (response: Blog[], _, { page }) => ({
+        page,
         items: response,
         has_more: response.length === ITEMS_PER_PAGE
       }),
-      merge: (current_cache, data) => {
-        const new_items = data.items.filter(
-          (data_item) =>
-            !current_cache.items.some((item) => data_item.id === item.id)
-        );
-
-        current_cache.items.push(...new_items);
-        current_cache.has_more =
-          current_cache.has_more && new_items.length === ITEMS_PER_PAGE;
-      },
+      merge: (cache, data) => merge_fn(cache, data),
       providesTags: (result) =>
         result
           ? [
@@ -46,4 +39,10 @@ export const get_blogs_api = api_slice.injectEndpoints({
   })
 });
 
-export const { useGetBlogsQuery: use_get_blogs_query } = get_blogs_api;
+export const {
+  useLazyGetBlogsQuery: use_get_blogs_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getBlogs: { select: select_blogs }
+  }
+} = get_blogs_api;

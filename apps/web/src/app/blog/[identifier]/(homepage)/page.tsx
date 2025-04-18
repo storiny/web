@@ -16,10 +16,13 @@ import Option from "~/components/option";
 import Select from "~/components/select";
 import ErrorState from "~/entities/error-state";
 import { use_debounce } from "~/hooks/use-debounce";
+import { use_default_fetch } from "~/hooks/use-default-fetch";
 import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
+import { use_pagination } from "~/hooks/use-pagination";
 import SearchIcon from "~/icons/search";
 import {
   get_query_error_type,
+  select_blog_feed,
   use_get_blog_feed_query
 } from "~/redux/features";
 import css from "~/theme/main.module.scss";
@@ -102,43 +105,55 @@ const Page = (): React.ReactElement => {
   const blog = use_blog_context();
   const [sort, set_sort] = React.useState<BlogFeedSortValue>("recent");
   const [query, set_query] = React.useState<string>("");
-  const [page, set_page] = React.useState<number>(1);
-  use_handle_dynamic_state<typeof page>(1, set_page);
   use_handle_dynamic_state<typeof query>("", set_query);
   use_handle_dynamic_state<typeof sort>("recent", set_sort);
   const debounced_query = use_debounce(query);
-  const {
-    data,
-    isLoading: is_loading,
-    isFetching: is_fetching,
-    isError: is_error,
-    error,
-    refetch
-  } = use_get_blog_feed_query({
-    page,
-    sort,
-    query: debounced_query,
-    blog_id: blog.id
-  });
-  const { items = [], has_more } = data || {};
+  const page = use_pagination(
+    select_blog_feed({
+      page: 1,
+      sort,
+      query: debounced_query,
+      blog_id: blog.id
+    })
+  );
+  const [
+    trigger,
+    {
+      data: { items = [], has_more } = {},
+      isLoading: is_loading,
+      isFetching: is_fetching,
+      isError: is_error,
+      error
+    }
+  ] = use_get_blog_feed_query();
+  const refetch = use_default_fetch(
+    trigger,
+    {
+      page,
+      sort,
+      query: debounced_query,
+      blog_id: blog.id
+    },
+    [blog.id, debounced_query, sort]
+  );
   const is_typing = query !== debounced_query;
   const container_ref = React.useRef<HTMLDivElement | null>(null);
 
-  const load_more = React.useCallback(
-    () => set_page((prev_state) => prev_state + 1),
-    []
-  );
+  const load_more = React.useCallback(() => {
+    trigger(
+      { page: page + 1, sort, query: debounced_query, blog_id: blog.id },
+      true
+    );
+  }, [blog.id, debounced_query, page, sort, trigger]);
 
   const handle_sort_change = React.useCallback(
     (next_sort: BlogFeedSortValue) => {
-      set_page(1);
       set_sort(next_sort);
     },
     []
   );
 
   const handle_query_change = React.useCallback((next_query: string) => {
-    set_page(1);
     set_query(next_query);
   }, []);
 

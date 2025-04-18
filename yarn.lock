@@ -4486,7 +4486,7 @@
   resolved "https://registry.yarnpkg.com/@react-spring/types/-/types-9.7.5.tgz#e5dd180f3ed985b44fd2cd2f32aa9203752ef3e8"
   integrity sha512-HVj7LrZ4ReHWBimBvu2SKND3cDVUPWKLqRTmWe/fNY6o1owGOX0cAHbdPDTMelgBlVbrTKrre6lFkhqGZErK/g==
 
-"@react-spring/web@^9.7.3":
+"@react-spring/web@9.7.5":
   version "9.7.5"
   resolved "https://registry.yarnpkg.com/@react-spring/web/-/web-9.7.5.tgz#7d7782560b3a6fb9066b52824690da738605de80"
   integrity sha512-lmvqGwpe+CSttsWNZVr+Dg62adtKhauGwLyGE/RRyZ8AAMLgb9x3NDMA5RMElXo+IMyTkPp7nxTB8ZQlmhb6JQ==
@@ -5279,30 +5279,6 @@
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@storiny/prettier-config/-/prettier-config-1.1.0.tgz#e7970e64a51ec83351f340353cebb860dbe7df0f"
   integrity sha512-J/bvqTnL747pVwH7if9SbEPoMZ/MrIOMXDWCj8cYaPQ1zgJgMg/VIycjmmZ4sti7qwUZNnzV2jptZ4SlDCI6JQ==
-
-"@storiny/test-utils@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@storiny/test-utils/-/test-utils-1.1.0.tgz#c8888d848fc79039e59f108878f6e54b261b07cf"
-  integrity sha512-2seZdHUJiQsn5BBuliEyKSnvGgbYZXXU/GtrUOigtiKXmav8C3BufjgIVW1Xu6wJA1BiKvEAkWQEN+AvVjFB0A==
-  dependencies:
-    "@storiny/eslint-config" "^1.1.0"
-    "@storiny/prettier-config" "^1.1.0"
-    "@storiny/tsconfig" "^1.0.0"
-    "@testing-library/dom" "^10.4.0"
-    "@testing-library/jest-dom" "^5.16.5"
-    "@testing-library/react" "^16.2.0"
-    "@testing-library/user-event" "^14.4.3"
-    "@types/jest-axe" "^3.5.5"
-    eslint "^8.51.0"
-    expect-more-jest "^5.5.0"
-    jest "^29.5.0"
-    jest-axe "^7.0.1"
-    prettier "^3.5.3"
-    react "^19.0.0"
-    react-dom "^19.0.0"
-    resize-observer-polyfill "^1.5.1"
-    typescript "^5.2.2"
-    whatwg-fetch "^3.6.2"
 
 "@storiny/tsconfig@^1.0.0":
   version "1.0.0"
@@ -15074,11 +15050,6 @@ prettier@^3.0.3, prettier@^3.1.1:
   version "3.4.2"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.4.2.tgz#a5ce1fb522a588bf2b78ca44c6e6fe5aa5a2b13f"
   integrity sha512-e9MewbtFo+Fevyuxn/4rrcDAaq0IYxPGLvObpQjiZBMAzB9IGmzlnG9RZy3FFas+eBMu2vA0CszMeduow5dIuQ==
-
-prettier@^3.5.3:
-  version "3.5.3"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.5.3.tgz#4fc2ce0d657e7a02e602549f053b239cb7dfe1b5"
-  integrity sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==
 
 pretty-error@^4.0.0:
   version "4.0.0"

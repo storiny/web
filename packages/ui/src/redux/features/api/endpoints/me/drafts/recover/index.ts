@@ -16,10 +16,10 @@ export const { useRecoverDraftMutation: use_recover_draft_mutation } =
           url: `/${SEGMENT(body.id)}`,
           method: "POST"
         }),
-        invalidatesTags: (result, error, arg) => [
+        invalidatesTags: (_result, _error, arg) => [
           { type: "Story", id: arg.id }
         ],
-        onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+        onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
           queryFulfilled.then(() => {
             [
               self_action("self_pending_draft_count", "increment"),

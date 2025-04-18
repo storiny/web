@@ -31,6 +31,11 @@ export interface ImageProps extends PolymorphicProps<"div"> {
    */
   rating?: AssetRating;
   /**
+   * Custom render function for the image element.
+   * @param img_element The inner image element.
+   */
+  render_image?: (img_element: React.ReactElement) => React.ReactElement;
+  /**
    * The size of the component for generating the CDN URL.
    */
   size?: ImageSize;

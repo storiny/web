@@ -1,5 +1,5 @@
 import { ContentType } from "@storiny/shared";
-import { BlogGeneralSchema } from "@storiny/web/src/app/(native)/(check-user)/(dashboard)/(splash)/blogs/[id_or_slug]/settings/general/general-form";
+import { BlogGeneralSchema } from "@storiny/web/src/app/(native)/(check-user)/(dashboard)/(splash)/blogs/[identifier]/settings/general/general-form";
 
 import { api_slice } from "~/redux/features/api/slice";
 

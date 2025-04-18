@@ -28,6 +28,7 @@ import IconButton from "~/components/icon-button";
 import Image from "~/components/image";
 import Popover from "~/components/popover";
 import Spinner from "~/components/spinner";
+import Zoom from "~/components/zoom";
 import TrashIcon from "~/icons/trash";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import css from "~/theme/main.module.scss";
@@ -327,6 +328,15 @@ const ImageComponent = ({
                     hex={image.hex}
                     img_key={image.key}
                     rating={editable ? undefined : image.rating}
+                    render_image={(img): React.ReactElement =>
+                      editable ||
+                      (images.length === 1 && layout === "fit") ||
+                      (images.length === 1 && layout === "screen-width") ? (
+                        img
+                      ) : (
+                        <Zoom zoom_margin={32}>{img}</Zoom>
+                      )
+                    }
                     slot_props={{
                       image: {
                         loading: "lazy",

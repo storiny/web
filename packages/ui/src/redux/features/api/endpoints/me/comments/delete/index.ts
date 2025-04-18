@@ -18,7 +18,7 @@ export const { useDeleteCommentMutation: use_delete_comment_mutation } =
           url: `/${SEGMENT(body.id)}`,
           method: "DELETE"
         }),
-        invalidatesTags: (result, error, arg) => [
+        invalidatesTags: (_result, _error, arg) => [
           { type: "Comment", id: arg.id }
         ],
         onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {

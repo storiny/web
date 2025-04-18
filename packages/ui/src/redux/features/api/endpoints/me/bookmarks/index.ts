@@ -7,10 +7,15 @@ const SEGMENT = "me/bookmarks";
 
 export type GetBookmarksResponse = Story[];
 
-export const { useGetBookmarksQuery: use_get_bookmarks_query } =
-  api_slice.injectEndpoints({
-    endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-      getBookmarks: get_stories_with_query_and_sort(builder, SEGMENT)
-    })
-  });
+export const {
+  useLazyGetBookmarksQuery: use_get_bookmarks_query,
+  endpoints: {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getBookmarks: { select: select_bookmarks }
+  }
+} = api_slice.injectEndpoints({
+  endpoints: (builder) => ({
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    getBookmarks: get_stories_with_query_and_sort(builder, SEGMENT)
+  })
+});

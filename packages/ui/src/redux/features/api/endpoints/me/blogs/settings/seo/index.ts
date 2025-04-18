@@ -1,4 +1,4 @@
-import { BlogSEOSettingsSchema } from "@storiny/web/src/app/(native)/(check-user)/(dashboard)/(splash)/blogs/[id_or_slug]/(default-rsb)/advanced/seo/seo.schema";
+import { BlogSEOSettingsSchema } from "@storiny/web/src/app/(native)/(check-user)/(dashboard)/(splash)/blogs/[identifier]/(default-rsb)/advanced/seo/seo.schema";
 
 import { api_slice } from "~/redux/features/api/slice";
 

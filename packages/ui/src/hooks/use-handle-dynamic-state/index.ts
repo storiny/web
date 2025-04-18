@@ -16,5 +16,6 @@ export const use_handle_dynamic_state = <T>(
 
   React.useEffect(() => {
     dispatch(initial_value);
-  }, [dispatch, initial_value, pathname]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, pathname]);
 };

@@ -29,7 +29,7 @@ export const {
           "Content-type": ContentType.JSON
         }
       }),
-      invalidatesTags: (result, error, arg) => [
+      invalidatesTags: (_result, _error, arg) => [
         arg.id ? { type: "Notification", id: arg.id } : "Notification"
       ]
     })

@@ -16,10 +16,10 @@ export const { useRecoverStoryMutation: use_recover_story_mutation } =
           url: `/${SEGMENT(body.id)}`,
           method: "POST"
         }),
-        invalidatesTags: (result, error, arg) => [
+        invalidatesTags: (_result, _error, arg) => [
           { type: "Story", id: arg.id }
         ],
-        onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
           queryFulfilled.then(() => {
             // Recovered story is moved into drafts
             [

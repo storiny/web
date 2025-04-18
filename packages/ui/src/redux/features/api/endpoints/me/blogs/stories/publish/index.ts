@@ -20,15 +20,11 @@ export const { usePublishBlogStoryMutation: use_publish_blog_story_mutation } =
       publishBlogStory: builder.mutation<void, BlogStoryPublishPayload>({
         query: ({ blog_id, story_id, word_count, status }) => ({
           url: `/${SEGMENT(blog_id, story_id)}`,
-          body: {
-            word_count
-          },
-          headers: {
-            "Content-type": ContentType.JSON
-          },
+          body: { word_count },
+          headers: { "Content-type": ContentType.JSON },
           method: status === "draft" ? "POST" : "PUT"
         }),
-        invalidatesTags: (result, error, arg) => [
+        invalidatesTags: (_result, _error, arg) => [
           { type: "Story", id: arg.story_id }
         ],
         onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {

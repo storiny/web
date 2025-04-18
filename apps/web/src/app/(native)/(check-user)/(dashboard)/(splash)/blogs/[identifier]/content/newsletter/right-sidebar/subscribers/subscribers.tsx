@@ -15,11 +15,13 @@ import Button from "~/components/button";
 import { ModalFooterButton, use_modal } from "~/components/modal";
 import { Root, Scrollbar, Thumb, Viewport } from "~/components/scroll-area";
 import ErrorState from "~/entities/error-state";
-import { use_handle_dynamic_state } from "~/hooks/use-handle-dynamic-state";
+import { use_default_fetch } from "~/hooks/use-default-fetch";
 import { use_media_query } from "~/hooks/use-media-query";
+import { use_pagination } from "~/hooks/use-pagination";
 import UsersIcon from "~/icons/users";
 import {
   get_query_error_type,
+  select_blog_subscribers,
   use_get_blog_subscribers_query
 } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
@@ -58,27 +60,42 @@ Scroller.displayName = "Scroller";
 // Modal
 
 const SubscribersModal = (): React.ReactElement => {
-  const [page, set_page] = React.useState<number>(1);
-  use_handle_dynamic_state<typeof page>(1, set_page);
   const set_render_key = use_set_atom(render_key_atom);
   const blog = use_blog_context();
-  const {
-    data,
-    isLoading: is_loading,
-    isFetching: is_fetching,
-    isError: is_error,
-    error,
-    refetch
-  } = use_get_blog_subscribers_query({
-    blog_id: blog.id,
-    page
-  });
-  const { items = [], has_more } = data || {};
-
-  const load_more = React.useCallback(
-    () => set_page((prev_state) => prev_state + 1),
-    []
+  const page = use_pagination(
+    select_blog_subscribers({
+      blog_id: blog.id,
+      page: 1
+    })
   );
+  const [
+    trigger,
+    {
+      data: { items = [], has_more } = {},
+      isLoading: is_loading,
+      isFetching: is_fetching,
+      isError: is_error,
+      error
+    }
+  ] = use_get_blog_subscribers_query();
+  const refetch = use_default_fetch(
+    trigger,
+    {
+      blog_id: blog.id,
+      page
+    },
+    [blog.id]
+  );
+
+  const load_more = React.useCallback(() => {
+    trigger(
+      {
+        blog_id: blog.id,
+        page: page + 1
+      },
+      true
+    );
+  }, [blog.id, page, trigger]);
 
   React.useEffect(() => {
     set_render_key(`${page}`);
