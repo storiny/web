@@ -2,6 +2,9 @@
 
 import { AssetRating } from "@storiny/shared";
 import type { Meta, StoryObj } from "@storybook/react";
+import React from "react";
+
+import Zoom from "~/components/zoom";
 
 import Image from "./image";
 
@@ -38,5 +41,11 @@ export const Rated: Story = {
 export const Fallback: Story = {
   args: {
     img_key: "/broken_src"
+  }
+};
+
+export const Zoomable: Story = {
+  args: {
+    render_image: (img): React.ReactElement => <Zoom>{img}</Zoom>
   }
 };

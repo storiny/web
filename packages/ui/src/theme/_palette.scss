@@ -12,6 +12,8 @@
   --snow: hsl(0deg 0% 98%);
 
   /* Background */
+  --bg-elevation-sm-hsl: 0deg, 0%, 94%;
+
   --bg-body: hsl(0deg 0% 98%);
   --bg-elevation-xs: hsl(0deg 0% 96%);
   --bg-elevation-sm: hsl(0deg 0% 94%);
@@ -47,6 +49,8 @@
 
 @mixin dark {
   /* Background */
+  --bg-elevation-sm-hsl: 223deg, 12%, 14%;
+
   --bg-body: hsl(214deg 8% 10%);
   --bg-elevation-xs: hsl(223deg 12% 12%);
   --bg-elevation-sm: hsl(223deg 12% 14%);
