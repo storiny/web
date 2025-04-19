@@ -113,8 +113,8 @@ export const middleware: NextMiddleware = (request) => {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const csp_header = `
     default-src 'self' storiny.com *.storiny.com;
-    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${CSP_SCRIPT_SRC};
-    style-src 'self' 'unsafe-inline' ${CSP_STYLE_SRC};
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' storiny.com ${CSP_SCRIPT_SRC};
+    style-src 'self' 'unsafe-inline' storiny.com ${CSP_STYLE_SRC};
     frame-src 'self' ${process.env.NEXT_PUBLIC_DISCOVERY_URL} ${CSP_FRAME_SRC};
     img-src 'self' blob: data: *;
     media-src 'self' ${process.env.NEXT_PUBLIC_CDN_URL};
