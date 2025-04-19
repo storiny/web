@@ -4,9 +4,10 @@
   &.banner {
     position: fixed;
     top: var(--banner-height, 0);
-    left: 0;
-    width: 100%;
+    left: 50%;
+    width: 100vw;
     height: var(--header-height);
+    transform: translateX(-50%);
     pointer-events: none;
     overflow: hidden;
   }

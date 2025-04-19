@@ -330,11 +330,21 @@ const ImageComponent = ({
                     rating={editable ? undefined : image.rating}
                     render_image={(img): React.ReactElement =>
                       editable ||
-                      (images.length === 1 && layout === "fit") ||
                       (images.length === 1 && layout === "screen-width") ? (
                         img
                       ) : (
-                        <Zoom zoom_margin={32}>{img}</Zoom>
+                        <Zoom
+                          slot_props={{
+                            zoom_img: {
+                              src: get_cdn_url(image.key, ImageSize.W_2440),
+                              width: image.width,
+                              height: image.height
+                            }
+                          }}
+                          zoom_margin={32}
+                        >
+                          {img}
+                        </Zoom>
                       )
                     }
                     slot_props={{

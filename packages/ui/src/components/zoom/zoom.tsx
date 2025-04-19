@@ -652,7 +652,6 @@ class ZoomBase extends React.Component<ZoomPropsWithDefaults, ZoomState> {
 
     const img_alt = get_img_alt(img_element);
     const img_src = get_img_src(img_element);
-    const img_sizes = is_img ? img_element.sizes : undefined;
     const img_src_set = is_img ? img_element.srcset : undefined;
     const img_cross_origin = is_img ? img_element.crossOrigin : undefined;
 
@@ -698,7 +697,6 @@ class ZoomBase extends React.Component<ZoomPropsWithDefaults, ZoomState> {
             alt={img_alt}
             // @ts-expect-error Override
             crossOrigin={img_cross_origin}
-            sizes={img_sizes}
             src={img_src}
             srcSet={img_src_set}
             {...(is_zoom_img_loaded && modal_state === ModalState.LOADED

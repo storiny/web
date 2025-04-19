@@ -433,5 +433,11 @@ export const get_modal_img_style = ({
     style.transform = `translate(${translate_x}px,${translate_y}px) scale(1)`;
   }
 
+  // Round float values
+  style.height =
+    typeof style.height === "number" ? Math.round(style.height) : style.height;
+  style.width =
+    typeof style.width === "number" ? Math.round(style.width) : style.width;
+
   return style;
 };
