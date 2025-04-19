@@ -115,15 +115,15 @@ export const middleware: NextMiddleware = (request) => {
     default-src 'self' storiny.com *.storiny.com;
     script-src 'self' 'nonce-${nonce}' 'strict-dynamic' storiny.com ${CSP_SCRIPT_SRC};
     style-src 'self' 'unsafe-inline' storiny.com ${CSP_STYLE_SRC};
-    frame-src 'self' ${process.env.NEXT_PUBLIC_DISCOVERY_URL} ${CSP_FRAME_SRC};
+    frame-src 'self' storiny.com ${process.env.NEXT_PUBLIC_DISCOVERY_URL} ${CSP_FRAME_SRC};
     img-src 'self' blob: data: *;
     media-src 'self' ${process.env.NEXT_PUBLIC_CDN_URL};
-    font-src 'self' ${process.env.NEXT_PUBLIC_CDN_URL} fonts.storiny.com;
+    font-src 'self' ${process.env.NEXT_PUBLIC_CDN_URL} storiny.com fonts.storiny.com;
     connect-src 'self' wss://realms.storiny.com storiny.com *.storiny.com *.sentry.io *.tile.openstreetmap.fr;
     manifest-src 'self' storiny.com *.storiny.com;
     object-src 'none';
     base-uri 'self';
-    form-action 'self';
+    form-action 'self' storiny.com api.storiny.com;
     frame-ancestors 'none';
     upgrade-insecure-requests;
 `;
