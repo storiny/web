@@ -27,6 +27,8 @@ const with_bundle_analyzer = bundle_analyzer({
 const next_config: NextConfig = {
   trailingSlash: false,
   productionBrowserSourceMaps: false,
+  assetPrefix:
+    process.env.NODE_ENV === "production" ? "https://storiny.com" : undefined,
   headers: async () => [
     {
       source: "/(.*)",
