@@ -36,6 +36,7 @@ type RecursivePartial<T> = {
 };
 
 type AuthState = {
+  blog_domain: string | null;
   login_data: LoginSchema | null;
   mfa_code: string | null;
   next_url: string | null;
@@ -98,6 +99,7 @@ const AuthState = ({
 
     return "base";
   })();
+
   const [state, set_state] = React.useState<AuthState>({
     segment,
     visited_segments: [segment],
@@ -107,7 +109,35 @@ const AuthState = ({
       }
 
       const path = decodeURIComponent(search_params.get("to") || "");
-      return path !== "/" ? path : null;
+      const blog = decodeURIComponent(search_params.get("blog") || "");
+      const is_blog_custom_domain = blog.includes(".");
+
+      if (path.length && path !== "/") {
+        return path;
+      }
+
+      if (blog.length) {
+        if (is_blog_custom_domain) {
+          return blog;
+        }
+
+        return `${blog}.storiny.com`; // Slug
+      }
+
+      return null;
+    })(),
+    blog_domain: ((): string | null => {
+      if (!search_params) {
+        return null;
+      }
+
+      const blog = decodeURIComponent(search_params.get("blog") || "");
+
+      if (blog.includes(".")) {
+        return blog;
+      }
+
+      return null;
     })(),
     reset_password: { token: null },
     login_data: null,

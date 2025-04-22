@@ -1,11 +1,12 @@
 import { ContentType } from "@storiny/shared";
-import { LoginSchema } from "@storiny/web/src/app/(auth)/auth/(segmented)/@login/schema";
+import { LoginSchema } from "@storiny/web/src/app/(native)/(auth)/auth/(segmented)/@login/schema";
 
 import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = "auth/login";
 
 export interface LoginResponse {
+  blog_token: string | null;
   is_first_login: boolean;
   result:
     | "success" // Login success
@@ -15,7 +16,11 @@ export interface LoginResponse {
     | "verification_pending"; // Pending email verification
 }
 
-export type LoginPayload = LoginSchema & { bypass?: boolean; code?: string };
+export type LoginPayload = LoginSchema & {
+  blog_domain: string | null;
+  bypass?: boolean;
+  code?: string;
+};
 
 export const { useLoginMutation: use_login_mutation } =
   api_slice.injectEndpoints({

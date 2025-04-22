@@ -1,7 +1,7 @@
 import "little-state-machine";
 
-import { LoginSchema } from "../src/app/(auth)/auth/(segmented)/@login/schema";
-import { AuthSegment } from "../src/app/(auth)/state";
+import { LoginSchema } from "../src/app/(native)/(auth)/auth/(segmented)/@login/schema";
+import { AuthSegment } from "../src/app/(native)/(auth)/state";
 
 declare module "little-state-machine" {
   interface GlobalState {

@@ -1,5 +1,5 @@
 import { ContentType } from "@storiny/shared";
-import { LoginSchema } from "@storiny/web/src/app/(auth)/auth/(segmented)/@login/schema";
+import { LoginSchema } from "@storiny/web/src/app/(native)/(auth)/auth/(segmented)/@login/schema";
 
 import { api_slice } from "~/redux/features/api/slice";
 
