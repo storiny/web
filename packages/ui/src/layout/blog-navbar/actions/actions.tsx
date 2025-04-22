@@ -148,11 +148,7 @@ const LoggedInMenu = ({
     >
       Help
     </MenuItemWithLink>
-    <MenuItemWithLink
-      check_auth
-      decorator={<LogoutIcon />}
-      href={`${process.env.NEXT_PUBLIC_WEB_URL}/logout`}
-    >
+    <MenuItemWithLink check_auth decorator={<LogoutIcon />} href={"/logout"}>
       Logout
     </MenuItemWithLink>
   </Menu>
@@ -165,30 +161,21 @@ const LoggedOutMenu = ({
   force_theme
 }: Pick<MenuProps, "trigger"> & {
   force_theme?: boolean;
-}): React.ReactElement => {
-  const blog = use_blog_context();
-
-  return (
-    <Menu trigger={trigger}>
-      <MenuItemWithLink
-        decorator={<LoginIcon />}
-        href={`${process.env.NEXT_PUBLIC_WEB_URL}/login?to=${encodeURIComponent(
-          get_blog_url(blog)
-        )}`}
-      >
-        Login
-      </MenuItemWithLink>
-      <Separator />
-      {!force_theme && <ThemeToggleItem />}
-      <MenuItemWithLink
-        decorator={<QuestionMarkIcon />}
-        href={"mailto:support@storiny.com"}
-      >
-        Help
-      </MenuItemWithLink>
-    </Menu>
-  );
-};
+}): React.ReactElement => (
+  <Menu trigger={trigger}>
+    <MenuItemWithLink decorator={<LoginIcon />} href={"/login"}>
+      Login
+    </MenuItemWithLink>
+    <Separator />
+    {!force_theme && <ThemeToggleItem />}
+    <MenuItemWithLink
+      decorator={<QuestionMarkIcon />}
+      href={"mailto:support@storiny.com"}
+    >
+      Help
+    </MenuItemWithLink>
+  </Menu>
+);
 
 const SearchAction = (): React.ReactElement => {
   const blog = use_blog_context();

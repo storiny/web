@@ -53,14 +53,30 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
           email: login_data.email,
           password: login_data.password,
           remember_me: login_data.remember_me,
-          code: sanitize_authentication_code(values.code)
+          code: sanitize_authentication_code(values.code),
+          blog_domain: state.blog_domain
         })
           .unwrap()
           .then((res) => {
             if (res.result === "success") {
               set_done(true);
 
-              router.replace(state.next_url || "/"); // Home page
+              if (state.blog_domain && res.blog_token) {
+                const params = new URLSearchParams();
+
+                params.set("token", res.blog_token);
+
+                if (state.next_url) {
+                  params.set("next-url", state.next_url);
+                }
+
+                router.replace(
+                  `https://${state.blog_domain}/verify-login?${params.toString()}`
+                );
+              } else {
+                router.replace(state.next_url || "/"); // Home page
+              }
+
               router.refresh(); // Refresh the state
             } else {
               const next_segment =
@@ -91,6 +107,7 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
       set_state,
       state.login_data,
       state.next_url,
+      state.blog_domain,
       toast
     ]
   );

@@ -105,13 +105,7 @@ const Button = forward_ref<ButtonProps, "button">((props, ref) => {
       onClick={handle_click}
       ref={button_ref}
       tabIndex={disabled ? -1 : 0}
-      {...(should_login
-        ? {
-            href: `${
-              blog?.id ? process.env.NEXT_PUBLIC_WEB_URL : ""
-            }/login${to}`
-          }
-        : {})}
+      {...(should_login ? { href: `/login${to}` } : {})}
       {...(Component === "button"
         ? { type, disabled }
         : {
