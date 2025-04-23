@@ -90,4 +90,10 @@ const next_config: NextConfig = {
   }
 };
 
-export default with_sentry_config(with_bundle_analyzer(with_mdx(next_config)));
+export default with_sentry_config(with_bundle_analyzer(with_mdx(next_config)), {
+  org: "storiny",
+  project: "website",
+  tunnelRoute: "/api/monitor",
+  telemetry: false,
+  disableLogger: true
+});
