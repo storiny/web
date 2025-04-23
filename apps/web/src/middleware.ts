@@ -43,51 +43,57 @@ export const middleware: NextMiddleware = (request) => {
   const pathname = `${
     request.nextUrl.pathname
   }?${request.nextUrl.searchParams.toString()}`;
+  const hostname =
+    request?.headers?.get("x-forwarded-host") || request?.headers?.get("host");
+
   const common_init: RequestInit = {
     headers: {
       "x-pathname": pathname
     }
   };
 
-  switch (request.nextUrl.pathname) {
-    case "/login":
-    case "/signup":
-    case "/sign-up":
-      // eslint-disable-next-line no-case-declarations
-      const search_params = request.nextUrl.searchParams;
-      search_params.set(
-        "segment",
-        request.nextUrl.pathname === "/login" ? "login" : "signup"
-      );
+  // Avoid short redirects on custom domains.
+  if (process.env.NODE_ENV === "development" || hostname === "storiny.com") {
+    switch (request.nextUrl.pathname) {
+      case "/login":
+      case "/signup":
+      case "/sign-up":
+        // eslint-disable-next-line no-case-declarations
+        const search_params = request.nextUrl.searchParams;
+        search_params.set(
+          "segment",
+          request.nextUrl.pathname === "/login" ? "login" : "signup"
+        );
 
-      return NextResponse.redirect(
-        new URL(`/auth?${search_params.toString()}`, request.url),
-        common_init
-      );
-    case "/legal":
-    case "/terms":
-      return NextResponse.redirect(
-        new URL("/legal/terms/tos", request.url),
-        common_init
-      );
-    case "/privacy":
-      return NextResponse.redirect(
-        new URL("/legal/policies/privacy", request.url),
-        common_init
-      );
-    case "/guidelines":
-      return NextResponse.redirect(
-        new URL("/legal/terms/community-guidelines", request.url),
-        common_init
-      );
-    case "/cookies":
-      return NextResponse.redirect(
-        new URL(
-          "/legal/policies/privacy#6-cookies-and-tracking-technologies",
-          request.url
-        ),
-        common_init
-      );
+        return NextResponse.redirect(
+          new URL(`/auth?${search_params.toString()}`, request.url),
+          common_init
+        );
+      case "/legal":
+      case "/terms":
+        return NextResponse.redirect(
+          new URL("/legal/terms/tos", request.url),
+          common_init
+        );
+      case "/privacy":
+        return NextResponse.redirect(
+          new URL("/legal/policies/privacy", request.url),
+          common_init
+        );
+      case "/guidelines":
+        return NextResponse.redirect(
+          new URL("/legal/terms/community-guidelines", request.url),
+          common_init
+        );
+      case "/cookies":
+        return NextResponse.redirect(
+          new URL(
+            "/legal/policies/privacy#6-cookies-and-tracking-technologies",
+            request.url
+          ),
+          common_init
+        );
+    }
   }
 
   // Redirect to blog on the correct domain
@@ -146,9 +152,6 @@ export const middleware: NextMiddleware = (request) => {
   });
 
   // Blog on custom domain
-
-  const hostname =
-    request?.headers?.get("x-forwarded-host") || request?.headers?.get("host");
 
   if (process.env.NODE_ENV === "development") {
     NATIVE_DOMAINS.push("storiny.local");

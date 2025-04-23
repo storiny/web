@@ -44,10 +44,13 @@ const generate_json_ld = (
 
 const BlogLayout = async ({
   children,
-  params
+  params,
+  searchParams: search_params
 }: {
   children: React.ReactNode;
   params: Promise<{ identifier: string }>;
+  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }): Promise<React.ReactElement | undefined> => {
   const { identifier } = await params;
 
@@ -63,12 +66,25 @@ const BlogLayout = async ({
       current_user_id: user_id || undefined
     });
     const fragment = pathname.split("/").slice(3).join("/");
+    const out_params = new URLSearchParams(
+      Object.entries(search_params).flatMap(([key, value]) => {
+        if (typeof value === "string") {
+          return [[key, decodeURIComponent(value)]];
+        }
+
+        if (Array.isArray(value) && value.length) {
+          return [[key, decodeURIComponent(value[value.length - 1])]];
+        }
+
+        return [];
+      })
+    );
 
     // Redirect to the preferred pathname.
     if (blog.domain && blog.domain !== identifier) {
-      redirect(`/blog/${blog.domain}/${fragment}`);
+      redirect(`/blog/${blog.domain}/${fragment}?${out_params.toString()}`);
     } else if (is_snowflake(identifier) && blog.slug !== identifier) {
-      redirect(`/blog/${blog.slug}/${fragment}`);
+      redirect(`/blog/${blog.slug}/${fragment}?${out_params.toString()}`);
     }
 
     const nonce = headers_value.get("x-nonce") ?? undefined;
