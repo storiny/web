@@ -28,7 +28,10 @@ const Page = async ({
     })
   );
 
-  out_params.set("blog", identifier);
+  // Only add `blog` param for external domains
+  if (identifier.includes(".")) {
+    out_params.set("blog", identifier);
+  }
 
   redirect(`${WEB_URL}/login?${out_params.toString()}`, RedirectType.replace);
 };

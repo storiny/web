@@ -22,7 +22,7 @@ const VerifyLogin = (): React.ReactElement => {
   const router = use_app_router();
   const params = use_search_params();
   const [state, set_state] = React.useState<
-    "loading" | "done" | "missing-token" | "invalid-token" | "error"
+    "loading" | "missing-token" | "invalid-token" | "error"
   >("loading");
   const [mutate_verification] = use_verify_blog_login_mutation();
 
@@ -34,6 +34,11 @@ const VerifyLogin = (): React.ReactElement => {
       return set_state("missing-token");
     }
 
+    if (!blog.domain) {
+      router.replace("/");
+      return router.refresh();
+    }
+
     mutate_verification({
       token,
       blog_id: blog.id
@@ -41,7 +46,6 @@ const VerifyLogin = (): React.ReactElement => {
       .unwrap()
       .then((res) => {
         if (res.result === "success") {
-          set_state("done");
           router.replace(next_url || "/"); // Home page
           router.refresh(); // Refresh the state
         } else if (res.result === "invalid_token") {
@@ -55,7 +59,14 @@ const VerifyLogin = (): React.ReactElement => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blog.id, mutate_verification, router, params]);
 
-  return (
+  return state === "loading" ? (
+    <div
+      className={clsx(css["flex-col"], css["flex-center"])}
+      style={{ margin: "auto" }}
+    >
+      <Spinner size={"lg"} />
+    </div>
+  ) : (
     <>
       <Typography as={"h1"} level={"h2"} style={{ textAlign: "center" }}>
         {state === "error"
@@ -68,20 +79,9 @@ const VerifyLogin = (): React.ReactElement => {
       </Typography>
       <Spacer className={css["f-grow"]} orientation={"vertical"} size={2} />
       <div className={clsx(css["flex-col"], css["flex-center"])}>
-        {state === "error" ||
-        state === "missing-token" ||
-        state === "invalid-token" ? (
-          <Button
-            as={NextLink}
-            className={css["full-w"]}
-            href={"/"}
-            size={"lg"}
-          >
-            Home
-          </Button>
-        ) : (
-          <Spinner />
-        )}
+        <Button as={NextLink} className={css["full-w"]} href={"/"} size={"lg"}>
+          Home
+        </Button>
       </div>
     </>
   );
