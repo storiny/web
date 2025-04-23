@@ -31,7 +31,7 @@ const Page = async ({
       maxAge: 0,
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       sameSite: "none",
-      domain: identifier, // Identifier is the domain name.
+      domain: identifier.includes(".") ? identifier : ".storiny.com", // Identifier is the domain name.
       secure: true,
       path: "/"
     });
