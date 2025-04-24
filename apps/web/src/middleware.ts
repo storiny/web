@@ -120,6 +120,7 @@ export const middleware: NextMiddleware = (request) => {
   const csp_header = `
     default-src 'self' storiny.com *.storiny.com;
     script-src 'self' 'nonce-${nonce}' storiny.com ${CSP_SCRIPT_SRC};
+    worker-src 'self' blob:;
     style-src 'self' 'unsafe-inline' storiny.com ${CSP_STYLE_SRC};
     frame-src 'self' storiny.com ${process.env.NEXT_PUBLIC_DISCOVERY_URL} ${CSP_FRAME_SRC};
     img-src 'self' blob: data: *;

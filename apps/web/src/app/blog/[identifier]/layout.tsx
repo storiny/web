@@ -53,7 +53,7 @@ const get_query_string = async (
 ): Promise<URLSearchParams> => {
   const search_params = await search_params_loadable;
   return new URLSearchParams(
-    Object.entries(search_params).flatMap(([key, value]) => {
+    Object.entries(search_params || {}).flatMap(([key, value]) => {
       if (typeof value === "string") {
         return [[key, decodeURIComponent(value)]];
       }
