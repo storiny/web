@@ -15,7 +15,7 @@ const Page = async ({
   const { identifier } = await params;
   const search_params = await search_params_loadable;
   const out_params = new URLSearchParams(
-    Object.entries(search_params).flatMap(([key, value]) => {
+    Object.entries(search_params || {}).flatMap(([key, value]) => {
       if (typeof value === "string") {
         return [[key, decodeURIComponent(value)]];
       }
