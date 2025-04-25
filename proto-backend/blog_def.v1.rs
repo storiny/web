@@ -315,4 +315,22 @@ pub struct GetBlogNewsletterResponse {
     #[prost(bool, tag="7")]
     pub is_subscribed: bool,
 }
+// Blog login verification
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct VerifyBlogLoginRequest {
+    #[prost(string, tag="1")]
+    pub blog_identifier: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub token: ::prost::alloc::string::String,
+    #[prost(string, tag="3")]
+    pub host: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct VerifyBlogLoginResponse {
+    #[prost(string, tag="1")]
+    pub cookie_value: ::prost::alloc::string::String,
+}
 // @@protoc_insertion_point(module)
