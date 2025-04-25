@@ -48,6 +48,10 @@ service ApiService {
    */
   rpc VerifyNewsletterSubscription(token_def.v1.VerifyNewsletterSubscriptionRequest) returns (token_def.v1.VerifyNewsletterSubscriptionResponse) {}
   /**
+   * Verifies a user's blog login request using the provided token identifier
+   */
+  rpc VerifyBlogLogin(blog_def.v1.VerifyBlogLoginRequest) returns (blog_def.v1.VerifyBlogLoginResponse) {}
+  /**
    * Returns the user's credentials settings
    */
   rpc GetCredentialSettings(credential_settings_def.v1.GetCredentialSettingsRequest) returns (credential_settings_def.v1.GetCredentialSettingsResponse) {}

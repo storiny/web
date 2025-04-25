@@ -31,7 +31,9 @@ import {
   GetBlogWritersInfoRequest,
   GetBlogWritersInfoResponse,
   GetUserBlogsInfoRequest,
-  GetUserBlogsInfoResponse
+  GetUserBlogsInfoResponse,
+  VerifyBlogLoginRequest,
+  VerifyBlogLoginResponse
 } from "@storiny/proto/dist/blog_def/v1/def";
 import {
   GetCommentRequest,
@@ -282,6 +284,11 @@ const grpc_hub = {
       global.grpc_client.verifyEmail
     )
   ),
+  verify_blog_login: cache(
+    promisify<VerifyBlogLoginRequest, VerifyBlogLoginResponse>(
+      global.grpc_client.verifyBlogLogin
+    )
+  ),
   verify_newsletter_subscription: cache(
     promisify<
       VerifyNewsletterSubscriptionRequest,
@@ -366,6 +373,7 @@ export const {
   get_comment,
   get_username,
   get_blog,
+  verify_blog_login,
   verify_newsletter_subscription,
   get_blog_archive,
   get_blog_pending_story_count,
@@ -411,6 +419,7 @@ export {
   GetUsernameResponse,
   GetUserRelationsInfoResponse,
   ValidateStoryResponse,
+  VerifyBlogLoginResponse,
   VerifyEmailResponse,
   VerifyNewsletterSubscriptionResponse
 };
