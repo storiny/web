@@ -1,6 +1,7 @@
 import { ListenerEffectAPI } from "@reduxjs/toolkit";
 import { API_VERSION } from "@storiny/shared";
 
+import { get_api_server_url } from "~/redux/features/api/slice";
 import { AppDispatch, AppState } from "~/redux/store";
 
 /**
@@ -14,7 +15,7 @@ export const fetch_api = async (
   listener_api: ListenerEffectAPI<AppState, AppDispatch>,
   init?: Parameters<typeof fetch>[1]
 ): Promise<Response | undefined> =>
-  await fetch(`${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}/${path}`, {
+  await fetch(`${get_api_server_url()}/v${API_VERSION}/${path}`, {
     ...init,
     credentials: "include",
     signal: listener_api.signal

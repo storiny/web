@@ -101,7 +101,7 @@ export const middleware: NextMiddleware = (request) => {
     }
   }
 
-  // Redirect to blog on the correct domain
+  // Redirect to blog on the correct domain.
   if (request.nextUrl.pathname.startsWith("/blog/")) {
     const identifier = request.nextUrl.pathname.split("/")[2];
 
@@ -111,9 +111,9 @@ export const middleware: NextMiddleware = (request) => {
     ) {
       return NextResponse.redirect(
         new URL(
-          get_blog_url({
+          `${get_blog_url({
             [identifier.includes(".") ? "domain" : "slug"]: identifier
-          })
+          })}?${request.nextUrl.searchParams.toString()}`
         ),
         common_init
       );
@@ -192,13 +192,19 @@ export const middleware: NextMiddleware = (request) => {
       ].includes(url.pathname)
     ) {
       return NextResponse.rewrite(
-        new URL(`/api/blogs/${value}${url.pathname}`, request.url),
+        new URL(
+          `/api/blogs/${value}${url.pathname}?${url.searchParams.toString()}`,
+          request.url
+        ),
         common_init
       );
     }
 
     const res = NextResponse.rewrite(
-      new URL(`/blog/${value}${url.pathname}`, request.url),
+      new URL(
+        `/blog/${value}${url.pathname}?${url.searchParams.toString()}`,
+        request.url
+      ),
       {
         headers: common_headers,
         request: {

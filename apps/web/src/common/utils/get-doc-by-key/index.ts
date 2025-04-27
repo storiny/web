@@ -3,6 +3,8 @@ import { captureException as capture_exception } from "@sentry/nextjs";
 
 import { get_s3_client } from "~/common/client/s3";
 
+const DOCS_BUCKET = "docs-84b42278";
+
 /**
  * Returns the binary data of a document stored in S3
  * @param key Key of the document
@@ -11,7 +13,7 @@ export const get_doc_by_key = async (key: string): Promise<Uint8Array> => {
   const response = await get_s3_client().send(
     new GetObjectCommand({
       Key: key,
-      Bucket: "docs-84b42278"
+      Bucket: DOCS_BUCKET
     })
   );
 

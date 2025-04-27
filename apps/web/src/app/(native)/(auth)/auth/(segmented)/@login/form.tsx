@@ -4,7 +4,7 @@ import { USER_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import { use_app_router } from "~/common/utils";
+import { get_url_or_path, use_app_router } from "~/common/utils";
 import Button from "~/components/button";
 import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
 import FormCheckbox from "~/components/form-checkbox";
@@ -85,7 +85,7 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
                       );
                     } else {
                       router.replace(
-                        state.next_url ||
+                        get_url_or_path(state.next_url) ||
                           (res.is_first_login ? `/?onboarding=true` : "/")
                       ); // Home page
                     }

@@ -5,6 +5,7 @@ import { usePathname as use_pathname } from "next/navigation";
 import React from "react";
 
 import { use_read_story_mutation } from "~/redux/features";
+import { get_api_server_url } from "~/redux/features/api/slice";
 
 import { DOC_STATUS, doc_status_atom } from "../../atoms";
 import { ExcludedProperties } from "../../collaboration/bindings";
@@ -65,9 +66,7 @@ const ReadOnlyPlugin = ({
         has_read_ref.current = true;
 
         navigator.sendBeacon(
-          `${
-            process.env.NEXT_PUBLIC_API_URL
-          }/v1/public/stories/${story_id}/read?token=${reading_session_token}&referrer=${encodeURIComponent(
+          `${get_api_server_url()}/v1/public/stories/${story_id}/read?token=${reading_session_token}&referrer=${encodeURIComponent(
             document.referrer || ""
           )}`
         );

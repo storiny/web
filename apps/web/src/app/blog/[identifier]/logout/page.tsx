@@ -28,10 +28,10 @@ const Page = async ({
       /* eslint-disable prefer-snakecase/prefer-snakecase */
       name: SESSION_COOKIE_ID,
       value: "",
-      httpOnly: true,
+      httpOnly: !is_custom_domain,
       maxAge: 0,
-      sameSite: is_custom_domain ? "none" : "strict",
-      domain: SESSION_COOKIE_DOMAIN,
+      sameSite: "strict",
+      domain: is_custom_domain ? identifier : SESSION_COOKIE_DOMAIN,
       secure: true,
       path: "/"
       /* eslint-enable prefer-snakecase/prefer-snakecase */

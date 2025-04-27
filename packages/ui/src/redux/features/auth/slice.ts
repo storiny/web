@@ -6,6 +6,7 @@ import {
 import { API_VERSION } from "@storiny/shared";
 import { User } from "@storiny/types";
 
+import { get_api_server_url } from "~/redux/features/api/slice";
 import { AppState } from "~/redux/store";
 import { clamp } from "~/utils/clamp";
 
@@ -31,10 +32,9 @@ export const auth_initial_state: AuthState = {
 export const fetch_user = create_async_thunk<User | null>(
   "auth/fetch_user",
   async () => {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}/me`,
-      { credentials: "include" }
-    );
+    const res = await fetch(`${get_api_server_url()}/v${API_VERSION}/me`, {
+      credentials: "include"
+    });
 
     // User is not logged in.
     if (res.status === 401) {

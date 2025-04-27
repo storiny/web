@@ -4,7 +4,9 @@ import { usePostHog as use_posthog } from "posthog-js/react";
 import React from "react";
 
 import Notification from "~/components/notification";
+import { use_media_query } from "~/hooks/use-media-query";
 import CookieIcon from "~/icons/cookie";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 const LOCAL_STORAGE_KEY = "cookie_consent";
 
@@ -36,6 +38,7 @@ const CookieConsent = (): React.ReactElement | null => {
   const [consent_value, set_consent_value] =
     React.useState<CookieConsentValue | null>(null);
   const posthog = use_posthog();
+  const render_icon = use_media_query(BREAKPOINTS.up("mobile"));
 
   React.useEffect(() => {
     set_consent_value(get_cookie_consent_value());
@@ -63,7 +66,7 @@ const CookieConsent = (): React.ReactElement | null => {
 
   return (
     <Notification
-      icon={<CookieIcon />}
+      icon={render_icon && <CookieIcon />}
       open={consent_value === "pending"}
       primary_button_text={"Accept"}
       secondary_button_text={"Decline"}
