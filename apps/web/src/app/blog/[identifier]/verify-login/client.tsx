@@ -13,7 +13,7 @@ import css from "~/theme/main.module.scss";
 const Client = ({
   verify_login
 }: {
-  verify_login: () => Promise<boolean>;
+  verify_login: () => Promise<{ message?: string; success: boolean }>;
 }): React.ReactElement => {
   const [state, set_state] = React.useState<"loading" | "invalid_token">(
     "loading"
@@ -21,7 +21,7 @@ const Client = ({
 
   React.useEffect(() => {
     verify_login().then((res) => {
-      if (!res) {
+      if (!res.success) {
         set_state("invalid_token");
       }
     });

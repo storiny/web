@@ -4,6 +4,7 @@ import deepmerge from "deepmerge";
 import { useSearchParams as use_search_params } from "next/navigation";
 import React from "react";
 
+import { get_url_or_path } from "~/common/utils";
 import { FormError } from "~/utils/is-form-error";
 
 import { LoginSchema } from "./auth/(segmented)/@login/schema";
@@ -113,15 +114,13 @@ const AuthState = ({
       const is_blog_custom_domain = blog.includes(".");
 
       if (path.length && path !== "/") {
-        return path;
+        return path.startsWith("/") ? path : `/${path}`;
       }
 
       if (blog.length) {
-        if (is_blog_custom_domain) {
-          return blog;
-        }
-
-        return `${blog}.storiny.com`; // Slug
+        return get_url_or_path(
+          is_blog_custom_domain ? blog : `${blog}.storiny.com`
+        );
       }
 
       return null;

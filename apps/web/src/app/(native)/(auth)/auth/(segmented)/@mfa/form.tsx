@@ -3,7 +3,7 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import { use_app_router } from "~/common/utils";
+import { get_url_or_path, use_app_router } from "~/common/utils";
 import { sanitize_authentication_code } from "~/common/utils/sanitize-authentication-code";
 import Button from "~/components/button";
 import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
@@ -74,7 +74,7 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
                   `https://${state.blog_domain}/verify-login?${params.toString()}`
                 );
               } else {
-                router.replace(state.next_url || "/"); // Home page
+                router.replace(get_url_or_path(state.next_url) || "/"); // Home page
               }
 
               router.refresh(); // Refresh the state

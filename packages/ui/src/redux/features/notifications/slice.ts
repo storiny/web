@@ -6,6 +6,7 @@ import {
 import { API_VERSION } from "@storiny/shared";
 import { Notification } from "@storiny/types";
 
+import { get_api_server_url } from "~/redux/features/api/slice";
 import { fetch_api } from "~/redux/features/entities/listener/utils";
 import { AppStartListening } from "~/redux/listener-middleware";
 import { AppState } from "~/redux/store";
@@ -32,7 +33,7 @@ export const fetch_unread_notifications_count = create_async_thunk(
   "notifications/fetch_unread_notifications_count",
   async () => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}/me/unread-notifications`,
+      `${get_api_server_url()}/v${API_VERSION}/me/unread-notifications`,
       { credentials: "include" }
     );
     return res.json();
