@@ -4,6 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
 import Notification from "./notification";
+import NotificationProvider from "./provider";
 
 const meta: Meta<typeof Notification> = {
   title: "components/notification",
@@ -30,5 +31,9 @@ export default meta;
 type Story = StoryObj<typeof Notification>;
 
 export const Default: Story = {
-  render: (args) => <Notification open {...args} />
+  render: (args) => (
+    <NotificationProvider>
+      <Notification open {...args} />
+    </NotificationProvider>
+  )
 };

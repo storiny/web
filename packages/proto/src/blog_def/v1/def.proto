@@ -211,5 +211,7 @@ message VerifyBlogLoginRequest {
 }
 
 message VerifyBlogLoginResponse {
-  string cookie_value = 1;
+  bool is_token_valid /*               */ = 1;
+  optional string cookie_value /*      */ = 2;
+  optional bool is_persistent_cookie /**/ = 3;
 }

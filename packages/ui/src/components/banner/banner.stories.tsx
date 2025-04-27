@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
 import Banner from "./banner";
+import BannerProvider from "./provider";
 
 const meta: Meta<typeof Banner> = {
   title: "components/banner",
@@ -28,7 +29,11 @@ export default meta;
 type Story = StoryObj<typeof Banner>;
 
 export const Default: Story = {
-  render: (args) => <Banner open {...args} />
+  render: (args) => (
+    <BannerProvider>
+      <Banner open {...args} />
+    </BannerProvider>
+  )
 };
 
 export const ColorInverted: Story = {

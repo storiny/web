@@ -3592,12 +3592,24 @@ impl serde::Serialize for VerifyBlogLoginResponse {
     {
         use serde::ser::SerializeStruct;
         let mut len = 0;
-        if !self.cookie_value.is_empty() {
+        if self.is_token_valid {
+            len += 1;
+        }
+        if self.cookie_value.is_some() {
+            len += 1;
+        }
+        if self.is_persistent_cookie.is_some() {
             len += 1;
         }
         let mut struct_ser = serializer.serialize_struct("blog_def.v1.VerifyBlogLoginResponse", len)?;
-        if !self.cookie_value.is_empty() {
-            struct_ser.serialize_field("cookieValue", &self.cookie_value)?;
+        if self.is_token_valid {
+            struct_ser.serialize_field("isTokenValid", &self.is_token_valid)?;
+        }
+        if let Some(v) = self.cookie_value.as_ref() {
+            struct_ser.serialize_field("cookieValue", v)?;
+        }
+        if let Some(v) = self.is_persistent_cookie.as_ref() {
+            struct_ser.serialize_field("isPersistentCookie", v)?;
         }
         struct_ser.end()
     }
@@ -3609,13 +3621,19 @@ impl<'de> serde::Deserialize<'de> for VerifyBlogLoginResponse {
         D: serde::Deserializer<'de>,
     {
         const FIELDS: &[&str] = &[
+            "is_token_valid",
+            "isTokenValid",
             "cookie_value",
             "cookieValue",
+            "is_persistent_cookie",
+            "isPersistentCookie",
         ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
+            IsTokenValid,
             CookieValue,
+            IsPersistentCookie,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
@@ -3637,7 +3655,9 @@ impl<'de> serde::Deserialize<'de> for VerifyBlogLoginResponse {
                         E: serde::de::Error,
                     {
                         match value {
+                            "isTokenValid" | "is_token_valid" => Ok(GeneratedField::IsTokenValid),
                             "cookieValue" | "cookie_value" => Ok(GeneratedField::CookieValue),
+                            "isPersistentCookie" | "is_persistent_cookie" => Ok(GeneratedField::IsPersistentCookie),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -3657,19 +3677,35 @@ impl<'de> serde::Deserialize<'de> for VerifyBlogLoginResponse {
                 where
                     V: serde::de::MapAccess<'de>,
             {
+                let mut is_token_valid__ = None;
                 let mut cookie_value__ = None;
+                let mut is_persistent_cookie__ = None;
                 while let Some(k) = map.next_key()? {
                     match k {
+                        GeneratedField::IsTokenValid => {
+                            if is_token_valid__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("isTokenValid"));
+                            }
+                            is_token_valid__ = Some(map.next_value()?);
+                        }
                         GeneratedField::CookieValue => {
                             if cookie_value__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("cookieValue"));
                             }
-                            cookie_value__ = Some(map.next_value()?);
+                            cookie_value__ = map.next_value()?;
+                        }
+                        GeneratedField::IsPersistentCookie => {
+                            if is_persistent_cookie__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("isPersistentCookie"));
+                            }
+                            is_persistent_cookie__ = map.next_value()?;
                         }
                     }
                 }
                 Ok(VerifyBlogLoginResponse {
-                    cookie_value: cookie_value__.unwrap_or_default(),
+                    is_token_valid: is_token_valid__.unwrap_or_default(),
+                    cookie_value: cookie_value__,
+                    is_persistent_cookie: is_persistent_cookie__,
                 })
             }
         }

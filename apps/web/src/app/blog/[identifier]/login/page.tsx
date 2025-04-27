@@ -10,7 +10,7 @@ const Page = async ({
 }: {
   params: Promise<{ identifier: string }>;
   // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams: Promise<{ [_key: string]: string | string[] | undefined }>;
 }): Promise<never> => {
   const { identifier } = await params;
   const search_params = await search_params_loadable;

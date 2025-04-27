@@ -46,7 +46,7 @@
   margin-right: 4px;
   gap: var(--spacing);
   flex-grow: 1;
-  max-width: 250px;
+  max-width: var(--notification-max-width, 250px);
   overflow-wrap: anywhere;
   color: var(--fg-major);
   font-size: var(--font-size-xs);

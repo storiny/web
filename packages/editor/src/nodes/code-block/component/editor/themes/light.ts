@@ -10,84 +10,43 @@ export const CODE_BLOCK_LIGHT_THEME = (read_only: boolean): Extension =>
     styles: [
       /* eslint-disable prefer-snakecase/prefer-snakecase */
       {
-        tag: [
-          t.keyword,
-          t.operatorKeyword,
-          t.modifier,
-          t.color,
-          t.constant(t.name),
-          t.standard(t.name),
-          t.standard(t.tagName),
-          t.special(t.brace),
-          t.atom,
-          t.bool,
-          t.special(t.variableName)
-        ],
-        color: "#0000ff"
+        tag: [t.keyword, t.controlKeyword, t.operatorKeyword, t.moduleKeyword],
+        color: "#d20f39"
       },
       {
-        tag: [t.controlKeyword, t.moduleKeyword],
-        color: "#AF00DB"
+        tag: [t.operator, t.punctuation, t.separator, t.escape],
+        color: "#4c4f69"
       },
+      { tag: [t.variableName], color: "#4c4f69" },
+      { tag: [t.propertyName], color: "#dd7878" },
       {
-        tag: [
-          t.name,
-          t.deleted,
-          t.character,
-          t.macroName,
-          t.propertyName,
-          t.variableName,
-          t.labelName,
-          t.definition(t.name)
-        ],
-        color: "#001080"
+        tag: [t.constant(t.name), t.bool, t.atom, t.special(t.variableName)],
+        color: "#fe640b"
       },
-      { tag: t.heading, fontWeight: "bold", color: "#001080" },
+      { tag: [t.string, t.special(t.string), t.inserted], color: "#40a02b" },
+      { tag: [t.number], color: "#df8e1d" },
       {
-        tag: [
-          t.typeName,
-          t.className,
-          t.tagName,
-          t.number,
-          t.changed,
-          t.annotation,
-          t.self,
-          t.namespace
-        ],
-        color: "#267f99"
+        tag: [t.typeName, t.className, t.namespace, t.tagName],
+        color: "#1e66f5"
       },
       {
         tag: [t.function(t.variableName), t.function(t.propertyName)],
-        color: "#795E26"
+        color: "#8839ef"
       },
-      { tag: [t.number], color: "#098658" },
-      {
-        tag: [
-          t.operator,
-          t.punctuation,
-          t.separator,
-          t.url,
-          t.escape,
-          t.regexp
-        ],
-        color: "#d16969"
-      },
-      {
-        tag: [
-          t.special(t.string),
-          t.processingInstruction,
-          t.string,
-          t.inserted
-        ],
-        color: "#0451a5"
-      },
-      { tag: [t.angleBracket], color: "#800000" },
-      { tag: t.strong, fontWeight: "bold" },
-      { tag: t.emphasis, fontStyle: "italic" },
-      { tag: t.strikethrough, textDecoration: "line-through" },
-      { tag: [t.meta, t.comment], color: "#008000" },
-      { tag: t.link, color: "#008000", textDecoration: "underline" },
-      { tag: t.invalid, color: "#cd3131" }
+      { tag: [t.labelName, t.macroName], color: "#ea76cb" },
+      { tag: [t.heading], color: "#7287fd", fontWeight: "bold" },
+      { tag: [t.comment, t.meta], color: "#9ca0b0", fontStyle: "italic" },
+      { tag: [t.link], color: "#04a5e5", textDecoration: "underline" },
+      { tag: [t.regexp], color: "#179299" },
+      { tag: [t.annotation], color: "#df8e1d" },
+      { tag: [t.changed], color: "#df8e1d" },
+      { tag: [t.deleted], color: "#e64553" },
+      { tag: [t.invalid], color: "#d20f39" },
+      { tag: [t.angleBracket], color: "#1e66f5" },
+      // Bold, italic, strikethrough formatting
+      { tag: [t.strong], fontWeight: "bold" },
+      { tag: [t.emphasis], fontStyle: "italic" },
+      { tag: [t.strikethrough], textDecoration: "line-through" }
       /* eslint-enable prefer-snakecase/prefer-snakecase */
     ]
   });

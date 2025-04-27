@@ -32,5 +32,15 @@ export const Default: Story = {
         </StorybookBlogLayout>,
         { ignore_primitive_providers: true }
       )
-  ]
+  ],
+  args: {
+    verify_login: async () => true
+  }
+};
+
+export const InvalidToken: Story = {
+  ...Default,
+  args: {
+    verify_login: async () => false
+  }
 };
