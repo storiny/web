@@ -3,6 +3,8 @@
 import React from "react";
 import { Provider as ReduxProvider } from "react-redux";
 
+import { BannerProvider } from "~/components/banner";
+import { NotificationProvider } from "~/components/notification";
 import { TooltipProvider } from "~/components/tooltip";
 import { AppStore } from "~/redux/store";
 
@@ -41,7 +43,9 @@ const AppStateProvider = ({
   <ReduxProvider store={store}>
     {!ignore_initializer && <Initializer />}
     <TooltipProvider delayDuration={is_test ? 0 : 800} skipDelayDuration={500}>
-      {children}
+      <BannerProvider>
+        <NotificationProvider>{children}</NotificationProvider>
+      </BannerProvider>
     </TooltipProvider>
     {!ignore_primitive_providers && <ToastWithState />}
   </ReduxProvider>

@@ -330,7 +330,11 @@ pub struct VerifyBlogLoginRequest {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct VerifyBlogLoginResponse {
-    #[prost(string, tag="1")]
-    pub cookie_value: ::prost::alloc::string::String,
+    #[prost(bool, tag="1")]
+    pub is_token_valid: bool,
+    #[prost(string, optional, tag="2")]
+    pub cookie_value: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(bool, optional, tag="3")]
+    pub is_persistent_cookie: ::core::option::Option<bool>,
 }
 // @@protoc_insertion_point(module)

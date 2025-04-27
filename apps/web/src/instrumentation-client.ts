@@ -18,6 +18,15 @@ Sentry.init({
       return null;
     }
 
+    // https://github.com/vercel/next.js/issues/60549
+    if (
+      String(event.extra?.arguments?.[0]).startsWith(
+        "Failed to fetch RSC payload"
+      )
+    ) {
+      return null;
+    }
+
     return event;
   },
   tracesSampleRate: 0.2

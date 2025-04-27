@@ -11,6 +11,7 @@ import React from "react";
 import { get_session_token } from "~/common/utils/get-session-token";
 import CriticalStyles from "~/theme/critical";
 
+import CookieConsent from "./cookie-banner";
 import CriticalFonts from "./fonts/critical";
 import ObserverErrorHandler from "./observer";
 import PostHogProvider from "./ph-provider";
@@ -51,7 +52,10 @@ const RootLayout = async ({
         <body dir={"ltr"}>
           <PostHogPageView />
           <Progress />
-          <StateProvider logged_in={logged_in}>{children}</StateProvider>
+          <StateProvider logged_in={logged_in}>
+            {children}
+            <CookieConsent />
+          </StateProvider>
         </body>
       </PostHogProvider>
       <ObserverErrorHandler />

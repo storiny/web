@@ -203,7 +203,9 @@ export interface VerifyBlogLoginRequest {
 }
 
 export interface VerifyBlogLoginResponse {
-  cookie_value: string;
+  is_token_valid: boolean;
+  cookie_value?: string | undefined;
+  is_persistent_cookie?: boolean | undefined;
 }
 
 function createBaseBareBlog(): BareBlog {
@@ -2852,13 +2854,19 @@ export const VerifyBlogLoginRequest = {
 };
 
 function createBaseVerifyBlogLoginResponse(): VerifyBlogLoginResponse {
-  return { cookie_value: "" };
+  return { is_token_valid: false, cookie_value: undefined, is_persistent_cookie: undefined };
 }
 
 export const VerifyBlogLoginResponse = {
   encode(message: VerifyBlogLoginResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.cookie_value !== "") {
-      writer.uint32(10).string(message.cookie_value);
+    if (message.is_token_valid === true) {
+      writer.uint32(8).bool(message.is_token_valid);
+    }
+    if (message.cookie_value !== undefined) {
+      writer.uint32(18).string(message.cookie_value);
+    }
+    if (message.is_persistent_cookie !== undefined) {
+      writer.uint32(24).bool(message.is_persistent_cookie);
     }
     return writer;
   },
@@ -2871,11 +2879,25 @@ export const VerifyBlogLoginResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          if (tag !== 10) {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.is_token_valid = reader.bool();
+          continue;
+        case 2:
+          if (tag !== 18) {
             break;
           }
 
           message.cookie_value = reader.string();
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.is_persistent_cookie = reader.bool();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -2887,13 +2909,25 @@ export const VerifyBlogLoginResponse = {
   },
 
   fromJSON(object: any): VerifyBlogLoginResponse {
-    return { cookie_value: isSet(object.cookie_value) ? globalThis.String(object.cookie_value) : "" };
+    return {
+      is_token_valid: isSet(object.is_token_valid) ? globalThis.Boolean(object.is_token_valid) : false,
+      cookie_value: isSet(object.cookie_value) ? globalThis.String(object.cookie_value) : undefined,
+      is_persistent_cookie: isSet(object.is_persistent_cookie)
+        ? globalThis.Boolean(object.is_persistent_cookie)
+        : undefined,
+    };
   },
 
   toJSON(message: VerifyBlogLoginResponse): unknown {
     const obj: any = {};
-    if (message.cookie_value !== "") {
+    if (message.is_token_valid === true) {
+      obj.is_token_valid = message.is_token_valid;
+    }
+    if (message.cookie_value !== undefined) {
       obj.cookie_value = message.cookie_value;
+    }
+    if (message.is_persistent_cookie !== undefined) {
+      obj.is_persistent_cookie = message.is_persistent_cookie;
     }
     return obj;
   },
@@ -2903,7 +2937,9 @@ export const VerifyBlogLoginResponse = {
   },
   fromPartial<I extends Exact<DeepPartial<VerifyBlogLoginResponse>, I>>(object: I): VerifyBlogLoginResponse {
     const message = createBaseVerifyBlogLoginResponse();
-    message.cookie_value = object.cookie_value ?? "";
+    message.is_token_valid = object.is_token_valid ?? false;
+    message.cookie_value = object.cookie_value ?? undefined;
+    message.is_persistent_cookie = object.is_persistent_cookie ?? undefined;
     return message;
   },
 };
