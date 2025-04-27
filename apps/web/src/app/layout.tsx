@@ -8,7 +8,6 @@ import dynamic from "next/dynamic";
 import { headers } from "next/headers";
 import React from "react";
 
-import { get_session_token } from "~/common/utils/get-session-token";
 import CriticalStyles from "~/theme/critical";
 
 import CookieConsent from "./cookie-banner";
@@ -27,12 +26,9 @@ const RootLayout = async ({
 }: {
   children: React.ReactNode;
 }): Promise<React.ReactElement> => {
-  const [headers_value, session_token] = await Promise.all([
-    headers(),
-    get_session_token()
-  ]);
+  const headers_value = await headers();
   const nonce = headers_value.get("x-nonce") ?? undefined;
-  const logged_in = Boolean(session_token);
+  const logged_in = headers_value.get("x-logged-in") === "true";
 
   return (
     <html lang="en" suppressHydrationWarning>

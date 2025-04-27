@@ -1,6 +1,7 @@
 import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { NextMiddleware, NextResponse } from "next/server";
 
+import { SESSION_COOKIE_ID } from "~/common/constants";
 import { is_valid_blog_identifier } from "~/common/utils/is-valid-blog-identifier";
 
 // Third-party frame sources.
@@ -45,11 +46,15 @@ export const middleware: NextMiddleware = (request) => {
   }?${request.nextUrl.searchParams.toString()}`;
   const hostname =
     request?.headers?.get("x-forwarded-host") || request?.headers?.get("host");
+  const session_cookie = request.cookies.get(SESSION_COOKIE_ID);
+
+  const common_headers: HeadersInit = {
+    "x-pathname": pathname,
+    "x-logged-in": String(!!session_cookie?.value)
+  };
 
   const common_init: RequestInit = {
-    headers: {
-      "x-pathname": pathname
-    }
+    headers: common_headers
   };
 
   // Avoid short redirects on custom domains.
@@ -139,7 +144,9 @@ export const middleware: NextMiddleware = (request) => {
   const csp_header_value = csp_header.replace(/\s{2,}/g, " ").trim();
   const request_headers = new Headers(request.headers);
 
-  request_headers.set("x-pathname", pathname);
+  Object.entries(common_headers).forEach(([name, value]) => {
+    request_headers.set(name, value);
+  });
 
   if (process.env.NODE_ENV !== "development") {
     request_headers.set("x-nonce", nonce);
@@ -193,9 +200,7 @@ export const middleware: NextMiddleware = (request) => {
     const res = NextResponse.rewrite(
       new URL(`/blog/${value}${url.pathname}`, request.url),
       {
-        headers: {
-          "x-pathname": pathname
-        },
+        headers: common_headers,
         request: {
           headers: request_headers
         }
