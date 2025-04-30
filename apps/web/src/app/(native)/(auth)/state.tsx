@@ -4,6 +4,7 @@ import deepmerge from "deepmerge";
 import { useSearchParams as use_search_params } from "next/navigation";
 import React from "react";
 
+import { get_url_or_path } from "~/common/utils";
 import { FormError } from "~/utils/is-form-error";
 
 import { LoginSchema } from "./auth/(segmented)/@login/schema";
@@ -36,6 +37,7 @@ type RecursivePartial<T> = {
 };
 
 type AuthState = {
+  blog_domain: string | null;
   login_data: LoginSchema | null;
   mfa_code: string | null;
   next_url: string | null;
@@ -98,6 +100,7 @@ const AuthState = ({
 
     return "base";
   })();
+
   const [state, set_state] = React.useState<AuthState>({
     segment,
     visited_segments: [segment],
@@ -107,7 +110,33 @@ const AuthState = ({
       }
 
       const path = decodeURIComponent(search_params.get("to") || "");
-      return path !== "/" ? path : null;
+      const blog = decodeURIComponent(search_params.get("blog") || "");
+      const is_blog_custom_domain = blog.includes(".");
+
+      if (path.length && path !== "/") {
+        return path.startsWith("/") ? path : `/${path}`;
+      }
+
+      if (blog.length) {
+        return get_url_or_path(
+          is_blog_custom_domain ? blog : `${blog}.storiny.com`
+        );
+      }
+
+      return null;
+    })(),
+    blog_domain: ((): string | null => {
+      if (!search_params) {
+        return null;
+      }
+
+      const blog = decodeURIComponent(search_params.get("blog") || "");
+
+      if (blog.includes(".")) {
+        return blog;
+      }
+
+      return null;
     })(),
     reset_password: { token: null },
     login_data: null,

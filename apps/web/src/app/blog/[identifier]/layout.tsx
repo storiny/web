@@ -22,6 +22,8 @@ import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import SyncBlogState from "./sync-state";
 
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
 const generate_json_ld = (
   blog: GetBlogResponse
 ): WithContext<Organization> => ({
@@ -42,12 +44,38 @@ const generate_json_ld = (
   /* eslint-enable prefer-snakecase/prefer-snakecase */
 });
 
+/**
+ * Copies query params from the incoming request.
+ * @param search_params_loadable The search params loader.
+ */
+const get_query_string = async (
+  search_params_loadable: SearchParams
+): Promise<URLSearchParams> => {
+  const search_params = await search_params_loadable;
+  return new URLSearchParams(
+    Object.entries(search_params || {}).flatMap(([key, value]) => {
+      if (typeof value === "string") {
+        return [[key, decodeURIComponent(value)]];
+      }
+
+      if (Array.isArray(value) && value.length) {
+        return [[key, decodeURIComponent(value[value.length - 1])]];
+      }
+
+      return [];
+    })
+  );
+};
+
 const BlogLayout = async ({
   children,
-  params
+  params,
+  searchParams: search_params_loadable
 }: {
   children: React.ReactNode;
   params: Promise<{ identifier: string }>;
+  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+  searchParams: SearchParams;
 }): Promise<React.ReactElement | undefined> => {
   const { identifier } = await params;
 
@@ -66,9 +94,11 @@ const BlogLayout = async ({
 
     // Redirect to the preferred pathname.
     if (blog.domain && blog.domain !== identifier) {
-      redirect(`/blog/${blog.domain}/${fragment}`);
+      const out_params = await get_query_string(search_params_loadable);
+      redirect(`/blog/${blog.domain}/${fragment}?${out_params.toString()}`);
     } else if (is_snowflake(identifier) && blog.slug !== identifier) {
-      redirect(`/blog/${blog.slug}/${fragment}`);
+      const out_params = await get_query_string(search_params_loadable);
+      redirect(`/blog/${blog.slug}/${fragment}?${out_params.toString()}`);
     }
 
     const nonce = headers_value.get("x-nonce") ?? undefined;

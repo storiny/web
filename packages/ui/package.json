@@ -48,6 +48,7 @@
     "@reduxjs/toolkit": "^1.9.5",
     "@storiny/shared": "*",
     "@tanem/react-nprogress": "^5.0.46",
+    "@types/js-cookie": "^3.0.6",
     "@visx/event": "^3.3.0",
     "@visx/geo": "^3.5.0",
     "@visx/gradient": "^3.3.0",

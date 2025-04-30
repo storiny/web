@@ -201,3 +201,17 @@ message GetBlogNewsletterResponse {
   user_def.v1.BareUser user /*            */ = 6;
   bool is_subscribed /*                   */ = 7;
 }
+
+// Blog login verification
+
+message VerifyBlogLoginRequest {
+  string blog_identifier /**/ = 1;
+  string token /*          */ = 2;
+  string host /*           */ = 3;
+}
+
+message VerifyBlogLoginResponse {
+  bool is_token_valid /*               */ = 1;
+  optional string cookie_value /*      */ = 2;
+  optional bool is_persistent_cookie /**/ = 3;
+}

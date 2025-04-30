@@ -30,6 +30,8 @@ import {
   GetBlogWritersInfoResponse,
   GetUserBlogsInfoRequest,
   GetUserBlogsInfoResponse,
+  VerifyBlogLoginRequest,
+  VerifyBlogLoginResponse,
 } from "../../blog_def/v1/def";
 import { GetCommentRequest, GetCommentResponse } from "../../comment_def/v1/def";
 import { GetConnectionSettingsRequest, GetConnectionSettingsResponse } from "../../connection_settings_def/v1/def";
@@ -219,6 +221,16 @@ export const ApiServiceService = {
     responseSerialize: (value: VerifyNewsletterSubscriptionResponse) =>
       Buffer.from(VerifyNewsletterSubscriptionResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => VerifyNewsletterSubscriptionResponse.decode(value),
+  },
+  /** Verifies a user's blog login request using the provided token identifier */
+  verifyBlogLogin: {
+    path: "/api_service.v1.ApiService/VerifyBlogLogin",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: VerifyBlogLoginRequest) => Buffer.from(VerifyBlogLoginRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => VerifyBlogLoginRequest.decode(value),
+    responseSerialize: (value: VerifyBlogLoginResponse) => Buffer.from(VerifyBlogLoginResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => VerifyBlogLoginResponse.decode(value),
   },
   /** Returns the user's credentials settings */
   getCredentialSettings: {
@@ -587,6 +599,8 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
     VerifyNewsletterSubscriptionRequest,
     VerifyNewsletterSubscriptionResponse
   >;
+  /** Verifies a user's blog login request using the provided token identifier */
+  verifyBlogLogin: handleUnaryCall<VerifyBlogLoginRequest, VerifyBlogLoginResponse>;
   /** Returns the user's credentials settings */
   getCredentialSettings: handleUnaryCall<GetCredentialSettingsRequest, GetCredentialSettingsResponse>;
   /** Returns the user's privacy settings */
@@ -763,6 +777,22 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: VerifyNewsletterSubscriptionResponse) => void,
+  ): ClientUnaryCall;
+  /** Verifies a user's blog login request using the provided token identifier */
+  verifyBlogLogin(
+    request: VerifyBlogLoginRequest,
+    callback: (error: ServiceError | null, response: VerifyBlogLoginResponse) => void,
+  ): ClientUnaryCall;
+  verifyBlogLogin(
+    request: VerifyBlogLoginRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: VerifyBlogLoginResponse) => void,
+  ): ClientUnaryCall;
+  verifyBlogLogin(
+    request: VerifyBlogLoginRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: VerifyBlogLoginResponse) => void,
   ): ClientUnaryCall;
   /** Returns the user's credentials settings */
   getCredentialSettings(

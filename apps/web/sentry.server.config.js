@@ -7,12 +7,22 @@ Sentry.init({
   tracesSampleRate: 0.8,
   beforeSend: (event) => {
     // Ignore "GRPC not found" errors (status code: 5)
-    if (/5 not_found/i.test(event.message || "")) {
+    if (/5 not_found/i.test(String(event.message))) {
       return null;
     }
 
     // Next.js notFound() errors
     if (event.exception?.values?.[0].value === "NEXT_HTTP_ERROR_FALLBACK;404") {
+      return null;
+    }
+
+    // GRPC invalid argument errors (raised due to invalid item identifiers
+    // from users)
+    if (
+      String(event.exception?.values?.[0].value).startsWith(
+        "3 INVALID_ARGUMENT"
+      )
+    ) {
       return null;
     }
 

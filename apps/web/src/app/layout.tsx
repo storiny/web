@@ -8,9 +8,9 @@ import dynamic from "next/dynamic";
 import { headers } from "next/headers";
 import React from "react";
 
-import { get_session_token } from "~/common/utils/get-session-token";
 import CriticalStyles from "~/theme/critical";
 
+import CookieConsent from "./cookie-banner";
 import CriticalFonts from "./fonts/critical";
 import ObserverErrorHandler from "./observer";
 import PostHogProvider from "./ph-provider";
@@ -26,12 +26,9 @@ const RootLayout = async ({
 }: {
   children: React.ReactNode;
 }): Promise<React.ReactElement> => {
-  const [headers_value, session_token] = await Promise.all([
-    headers(),
-    get_session_token()
-  ]);
+  const headers_value = await headers();
   const nonce = headers_value.get("x-nonce") ?? undefined;
-  const logged_in = Boolean(session_token);
+  const logged_in = headers_value.get("x-logged-in") === "true";
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -51,7 +48,10 @@ const RootLayout = async ({
         <body dir={"ltr"}>
           <PostHogPageView />
           <Progress />
-          <StateProvider logged_in={logged_in}>{children}</StateProvider>
+          <StateProvider logged_in={logged_in}>
+            {children}
+            <CookieConsent />
+          </StateProvider>
         </body>
       </PostHogProvider>
       <ObserverErrorHandler />

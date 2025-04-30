@@ -1,6 +1,7 @@
 import { get_blog_url } from "@storiny/shared/src/utils/get-blog-url";
 import { NextMiddleware, NextResponse } from "next/server";
 
+import { SESSION_COOKIE_ID } from "~/common/constants";
 import { is_valid_blog_identifier } from "~/common/utils/is-valid-blog-identifier";
 
 // Third-party frame sources.
@@ -43,54 +44,64 @@ export const middleware: NextMiddleware = (request) => {
   const pathname = `${
     request.nextUrl.pathname
   }?${request.nextUrl.searchParams.toString()}`;
-  const common_init: RequestInit = {
-    headers: {
-      "x-pathname": pathname
-    }
+  const hostname =
+    request?.headers?.get("x-forwarded-host") || request?.headers?.get("host");
+  const session_cookie = request.cookies.get(SESSION_COOKIE_ID);
+
+  const common_headers: HeadersInit = {
+    "x-pathname": pathname,
+    "x-logged-in": String(!!session_cookie?.value)
   };
 
-  switch (request.nextUrl.pathname) {
-    case "/login":
-    case "/signup":
-    case "/sign-up":
-      // eslint-disable-next-line no-case-declarations
-      const search_params = request.nextUrl.searchParams;
-      search_params.set(
-        "segment",
-        request.nextUrl.pathname === "/login" ? "login" : "signup"
-      );
+  const common_init: RequestInit = {
+    headers: common_headers
+  };
 
-      return NextResponse.redirect(
-        new URL(`/auth?${search_params.toString()}`, request.url),
-        common_init
-      );
-    case "/legal":
-    case "/terms":
-      return NextResponse.redirect(
-        new URL("/legal/terms/tos", request.url),
-        common_init
-      );
-    case "/privacy":
-      return NextResponse.redirect(
-        new URL("/legal/policies/privacy", request.url),
-        common_init
-      );
-    case "/guidelines":
-      return NextResponse.redirect(
-        new URL("/legal/terms/community-guidelines", request.url),
-        common_init
-      );
-    case "/cookies":
-      return NextResponse.redirect(
-        new URL(
-          "/legal/policies/privacy#6-cookies-and-tracking-technologies",
-          request.url
-        ),
-        common_init
-      );
+  // Avoid short redirects on custom domains.
+  if (process.env.NODE_ENV === "development" || hostname === "storiny.com") {
+    switch (request.nextUrl.pathname) {
+      case "/login":
+      case "/signup":
+      case "/sign-up":
+        // eslint-disable-next-line no-case-declarations
+        const search_params = request.nextUrl.searchParams;
+        search_params.set(
+          "segment",
+          request.nextUrl.pathname === "/login" ? "login" : "signup"
+        );
+
+        return NextResponse.redirect(
+          new URL(`/auth?${search_params.toString()}`, request.url),
+          common_init
+        );
+      case "/legal":
+      case "/terms":
+        return NextResponse.redirect(
+          new URL("/legal/terms/tos", request.url),
+          common_init
+        );
+      case "/privacy":
+        return NextResponse.redirect(
+          new URL("/legal/policies/privacy", request.url),
+          common_init
+        );
+      case "/guidelines":
+        return NextResponse.redirect(
+          new URL("/legal/terms/community-guidelines", request.url),
+          common_init
+        );
+      case "/cookies":
+        return NextResponse.redirect(
+          new URL(
+            "/legal/policies/privacy#6-cookies-and-tracking-technologies",
+            request.url
+          ),
+          common_init
+        );
+    }
   }
 
-  // Redirect to blog on the correct domain
+  // Redirect to blog on the correct domain.
   if (request.nextUrl.pathname.startsWith("/blog/")) {
     const identifier = request.nextUrl.pathname.split("/")[2];
 
@@ -100,9 +111,9 @@ export const middleware: NextMiddleware = (request) => {
     ) {
       return NextResponse.redirect(
         new URL(
-          get_blog_url({
+          `${get_blog_url({
             [identifier.includes(".") ? "domain" : "slug"]: identifier
-          })
+          })}?${request.nextUrl.searchParams.toString()}`
         ),
         common_init
       );
@@ -113,17 +124,18 @@ export const middleware: NextMiddleware = (request) => {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const csp_header = `
     default-src 'self' storiny.com *.storiny.com;
-    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${CSP_SCRIPT_SRC};
-    style-src 'self' 'unsafe-inline' ${CSP_STYLE_SRC};
-    frame-src 'self' ${process.env.NEXT_PUBLIC_DISCOVERY_URL} ${CSP_FRAME_SRC};
+    script-src 'self' 'nonce-${nonce}' storiny.com ${CSP_SCRIPT_SRC};
+    worker-src 'self' blob:;
+    style-src 'self' 'unsafe-inline' storiny.com ${CSP_STYLE_SRC};
+    frame-src 'self' storiny.com ${process.env.NEXT_PUBLIC_DISCOVERY_URL} ${CSP_FRAME_SRC};
     img-src 'self' blob: data: *;
     media-src 'self' ${process.env.NEXT_PUBLIC_CDN_URL};
-    font-src 'self' ${process.env.NEXT_PUBLIC_CDN_URL} fonts.storiny.com;
+    font-src 'self' ${process.env.NEXT_PUBLIC_CDN_URL} storiny.com fonts.storiny.com;
     connect-src 'self' wss://realms.storiny.com storiny.com *.storiny.com *.sentry.io *.tile.openstreetmap.fr;
     manifest-src 'self' storiny.com *.storiny.com;
     object-src 'none';
     base-uri 'self';
-    form-action 'self';
+    form-action 'self' storiny.com api.storiny.com;
     frame-ancestors 'none';
     upgrade-insecure-requests;
 `;
@@ -132,7 +144,9 @@ export const middleware: NextMiddleware = (request) => {
   const csp_header_value = csp_header.replace(/\s{2,}/g, " ").trim();
   const request_headers = new Headers(request.headers);
 
-  request_headers.set("x-pathname", pathname);
+  Object.entries(common_headers).forEach(([name, value]) => {
+    request_headers.set(name, value);
+  });
 
   if (process.env.NODE_ENV !== "development") {
     request_headers.set("x-nonce", nonce);
@@ -146,9 +160,6 @@ export const middleware: NextMiddleware = (request) => {
   });
 
   // Blog on custom domain
-
-  const hostname =
-    request?.headers?.get("x-forwarded-host") || request?.headers?.get("host");
 
   if (process.env.NODE_ENV === "development") {
     NATIVE_DOMAINS.push("storiny.local");
@@ -181,17 +192,21 @@ export const middleware: NextMiddleware = (request) => {
       ].includes(url.pathname)
     ) {
       return NextResponse.rewrite(
-        new URL(`/api/blogs/${value}${url.pathname}`, request.url),
+        new URL(
+          `/api/blogs/${value}${url.pathname}?${url.searchParams.toString()}`,
+          request.url
+        ),
         common_init
       );
     }
 
     const res = NextResponse.rewrite(
-      new URL(`/blog/${value}${url.pathname}`, request.url),
+      new URL(
+        `/blog/${value}${url.pathname}?${url.searchParams.toString()}`,
+        request.url
+      ),
       {
-        headers: {
-          "x-pathname": pathname
-        },
+        headers: common_headers,
         request: {
           headers: request_headers
         }

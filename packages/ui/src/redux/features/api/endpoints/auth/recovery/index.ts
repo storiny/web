@@ -1,5 +1,5 @@
 import { ContentType } from "@storiny/shared";
-import { RecoverySchema } from "@storiny/web/src/app/(auth)/auth/(segmented)/@recovery_base/schema";
+import { RecoverySchema } from "@storiny/web/src/app/(native)/(auth)/auth/(segmented)/@recovery_base/schema";
 
 import { api_slice } from "~/redux/features/api/slice";
 

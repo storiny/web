@@ -3,7 +3,7 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import { use_app_router } from "~/common/utils";
+import { get_url_or_path, use_app_router } from "~/common/utils";
 import { sanitize_authentication_code } from "~/common/utils/sanitize-authentication-code";
 import Button from "~/components/button";
 import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
@@ -53,14 +53,30 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
           email: login_data.email,
           password: login_data.password,
           remember_me: login_data.remember_me,
-          code: sanitize_authentication_code(values.code)
+          code: sanitize_authentication_code(values.code),
+          blog_domain: state.blog_domain
         })
           .unwrap()
           .then((res) => {
             if (res.result === "success") {
               set_done(true);
 
-              router.replace(state.next_url || "/"); // Home page
+              if (state.blog_domain && res.blog_token) {
+                const params = new URLSearchParams();
+
+                params.set("token", res.blog_token);
+
+                if (state.next_url) {
+                  params.set("next-url", state.next_url);
+                }
+
+                router.replace(
+                  `https://${state.blog_domain}/verify-login?${params.toString()}`
+                );
+              } else {
+                router.replace(get_url_or_path(state.next_url) || "/"); // Home page
+              }
+
               router.refresh(); // Refresh the state
             } else {
               const next_segment =
@@ -91,6 +107,7 @@ const MFAForm = ({ on_submit }: Props): React.ReactElement => {
       set_state,
       state.login_data,
       state.next_url,
+      state.blog_domain,
       toast
     ]
   );

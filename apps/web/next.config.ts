@@ -27,6 +27,8 @@ const with_bundle_analyzer = bundle_analyzer({
 const next_config: NextConfig = {
   trailingSlash: false,
   productionBrowserSourceMaps: false,
+  assetPrefix:
+    process.env.NODE_ENV === "production" ? "https://storiny.com" : undefined,
   headers: async () => [
     {
       source: "/(.*)",
@@ -88,4 +90,10 @@ const next_config: NextConfig = {
   }
 };
 
-export default with_sentry_config(with_bundle_analyzer(with_mdx(next_config)));
+export default with_sentry_config(with_bundle_analyzer(with_mdx(next_config)), {
+  org: "storiny",
+  project: "website",
+  tunnelRoute: "/api/monitor",
+  telemetry: false,
+  disableLogger: true
+});

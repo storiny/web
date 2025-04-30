@@ -45,7 +45,7 @@ const Initializer = (): null => {
       dispatch(fetch_unread_notifications_count());
     };
 
-    // Keep polling the user and the undread notifications endpoint with fixed
+    // Keep polling the user and the unread notifications endpoint with fixed
     // interval.
     const poll_data = setInterval(fetch_data, POLL_DURATION);
 

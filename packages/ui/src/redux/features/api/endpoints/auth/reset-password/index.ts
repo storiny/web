@@ -1,5 +1,5 @@
 import { ContentType } from "@storiny/shared";
-import { ResetSchema } from "@storiny/web/src/app/(auth)/auth/(segmented)/@reset_base/schema";
+import { ResetSchema } from "@storiny/web/src/app/(native)/(auth)/auth/(segmented)/@reset_base/schema";
 
 import { api_slice } from "~/redux/features/api/slice";
 
