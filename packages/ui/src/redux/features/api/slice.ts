@@ -3,22 +3,6 @@ import {
   fetchBaseQuery as fetch_base_query
 } from "@reduxjs/toolkit/query/react";
 import { API_VERSION } from "@storiny/shared";
-import { SESSION_COOKIE_ID } from "@storiny/web/src/common/constants";
-import cookie from "js-cookie";
-
-/**
- * Reads and returns the authentication token from the session cookie. Used for
- * inserting the `Authorization` header in requests to the API server
- * originating from external blogs.
- */
-export const get_auth_token_from_cookie = (): string | null => {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  const value = cookie.get(SESSION_COOKIE_ID);
-  return value ? decodeURIComponent(value) : null;
-};
 
 /**
  * Determines the appropriate API server URL based on the current environment
@@ -49,16 +33,7 @@ export const api_slice = create_api({
   reducerPath: "api",
   baseQuery: fetch_base_query({
     baseUrl: `${get_api_server_url()}/v${API_VERSION}`,
-    credentials: "include",
-    prepareHeaders: (headers) => {
-      const token = get_auth_token_from_cookie();
-
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-
-      return headers;
-    }
+    credentials: "include"
   }),
   tagTypes: [
     "Notification",

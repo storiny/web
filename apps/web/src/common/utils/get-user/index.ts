@@ -14,8 +14,12 @@ import { handle_exception } from "~/common/grpc/utils";
  * Checks whether the user maintains a valid session by sending a
  * validation request to the backend server with the session cookie
  * data. Returns the user's ID if the user is logged in, `null` otherwise
+ *
+ * @param ignore_redirect Whether to ignore redirecting to `/logout` page.
  */
-export const get_user = async (): Promise<string | null> => {
+export const get_user = async (
+  ignore_redirect?: boolean
+): Promise<string | null> => {
   const cookie_store = await cookies();
   const session_cookie = cookie_store.get(SESSION_COOKIE_ID);
 
@@ -34,10 +38,12 @@ export const get_user = async (): Promise<string | null> => {
 
       // Session not found
       if (err_code === Status.NOT_FOUND) {
-        redirect("/logout");
+        if (!ignore_redirect) {
+          redirect("/logout");
+        }
+      } else {
+        handle_exception(e);
       }
-
-      handle_exception(e);
     }
   }
 

@@ -79,11 +79,11 @@ const BlogLayout = async ({
 }): Promise<React.ReactElement | undefined> => {
   const { identifier } = await params;
 
-  try {
-    if (!is_valid_blog_identifier(identifier)) {
-      not_found();
-    }
+  if (!is_valid_blog_identifier(identifier)) {
+    not_found();
+  }
 
+  try {
     const [headers_value, user_id] = await Promise.all([headers(), get_user()]);
     const pathname = headers_value.get("x-pathname") || "/";
     const blog = await get_blog({

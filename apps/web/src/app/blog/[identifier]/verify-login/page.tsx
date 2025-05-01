@@ -78,7 +78,7 @@ const Page = async ({
         /* eslint-disable prefer-snakecase/prefer-snakecase */
         name: SESSION_COOKIE_ID,
         value: res.cookie_value,
-        httpOnly: false, // Needed to read cookie value using JS.
+        httpOnly: true,
         maxAge: res.is_persistent_cookie ? SESSION_COOKIE_MAX_AGE : undefined,
         domain: identifier,
         sameSite: "strict",

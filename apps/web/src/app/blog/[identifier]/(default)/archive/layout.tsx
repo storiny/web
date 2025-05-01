@@ -24,13 +24,13 @@ const BlogArchiveLayout = async ({
   children: React.ReactNode;
   params: Promise<{ identifier: string }>;
 }): Promise<React.ReactElement | undefined> => {
+  const { identifier } = await params;
+
+  if (!is_valid_blog_identifier(identifier)) {
+    not_found();
+  }
+
   try {
-    const { identifier } = await params;
-
-    if (!is_valid_blog_identifier(identifier)) {
-      not_found();
-    }
-
     const archive = await get_blog_archive({
       identifier
     });

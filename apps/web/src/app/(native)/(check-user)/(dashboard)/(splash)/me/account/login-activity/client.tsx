@@ -3,6 +3,7 @@
 import { clsx } from "clsx";
 import React from "react";
 
+import { use_app_router } from "~/common/utils";
 import Accordion from "~/components/accordion";
 import Button from "~/components/button";
 import { use_confirmation } from "~/components/confirmation";
@@ -123,6 +124,7 @@ const DestroySessions = ({
 
 const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
   const { logins: logins_prop, recent: recent_prop } = props;
+  const router = use_app_router();
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
   const [recent, set_recent] = React.useState<typeof recent_prop>(recent_prop);
   const [logins, set_logins] = React.useState<typeof logins_prop>(
@@ -189,6 +191,8 @@ const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
                 set_logins((prev_state) =>
                   prev_state.filter((item) => item.is_active)
                 );
+
+                router.push("/logout");
               }}
             />
           </DashboardGroup>

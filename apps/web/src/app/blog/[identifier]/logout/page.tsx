@@ -28,7 +28,7 @@ const Page = async ({
       /* eslint-disable prefer-snakecase/prefer-snakecase */
       name: SESSION_COOKIE_ID,
       value: "",
-      httpOnly: !is_custom_domain,
+      httpOnly: true,
       maxAge: 0,
       sameSite: "strict",
       domain: is_custom_domain ? identifier : SESSION_COOKIE_DOMAIN,

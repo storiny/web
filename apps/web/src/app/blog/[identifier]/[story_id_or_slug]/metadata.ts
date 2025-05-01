@@ -22,7 +22,7 @@ export const generateMetadata = async ({
   }
 
   try {
-    const user_id = await get_user();
+    const user_id = await get_user(true);
     const story_response = await get_story({
       id_or_slug: story_id_or_slug,
       current_user_id: user_id || undefined

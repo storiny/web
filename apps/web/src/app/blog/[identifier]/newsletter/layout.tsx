@@ -33,11 +33,11 @@ const BlogNewsletterLayout = async ({
 }): Promise<React.ReactElement | undefined> => {
   const { identifier } = await params;
 
-  try {
-    if (!is_valid_blog_identifier(identifier)) {
-      not_found();
-    }
+  if (!is_valid_blog_identifier(identifier)) {
+    not_found();
+  }
 
+  try {
     const user_id = await get_user();
     const response = await get_blog_newsletter({
       identifier,

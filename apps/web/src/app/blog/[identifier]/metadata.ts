@@ -19,12 +19,12 @@ export const generateMetadata = async ({
 }): Promise<Metadata> => {
   const { identifier } = await params;
 
-  try {
-    if (!is_valid_blog_identifier(identifier)) {
-      return not_found();
-    }
+  if (!is_valid_blog_identifier(identifier)) {
+    return not_found();
+  }
 
-    const user_id = await get_user();
+  try {
+    const user_id = await get_user(true);
     const blog = await get_blog({
       identifier,
       current_user_id: user_id || undefined

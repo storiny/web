@@ -19,7 +19,7 @@ export const generateMetadata = async ({
       return not_found();
     }
 
-    const user_id = await get_user();
+    const user_id = await get_user(true);
     const blog = await get_blog({
       identifier,
       current_user_id: user_id || undefined
