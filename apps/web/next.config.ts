@@ -82,10 +82,6 @@ const next_config: NextConfig = {
       "~/components",
       "~/entities"
     ]
-  },
-  sentry: {
-    hideSourceMaps: true,
-    autoInstrumentServerFunctions: false
   }
 };
 
@@ -96,5 +92,13 @@ export default with_sentry_config(with_bundle_analyzer(with_mdx(next_config)), {
   tunnelRoute: "/api/monitor",
   telemetry: false,
   disableLogger: true,
-  sourcemaps: { disable: false, deleteSourcemapsAfterUpload: true }
+  autoInstrumentServerFunctions: false,
+  // TODO: Source maps are currently disabled due to
+  // `deleteSourcemapsAfterUpload` not working properly.
+  sourcemaps: { disable: true, deleteSourcemapsAfterUpload: true },
+  bundleSizeOptimizations: {
+    excludeDebugStatements: true,
+    excludeReplayIframe: true,
+    excludeReplayShadowDom: true
+  }
 });
