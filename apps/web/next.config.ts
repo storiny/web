@@ -84,8 +84,7 @@ const next_config: NextConfig = {
     ]
   },
   sentry: {
-    disableServerWebpackPlugin: true,
-    disableClientWebpackPlugin: true,
+    hideSourceMaps: true,
     autoInstrumentServerFunctions: false
   }
 };
@@ -93,7 +92,9 @@ const next_config: NextConfig = {
 export default with_sentry_config(with_bundle_analyzer(with_mdx(next_config)), {
   org: "storiny",
   project: "website",
+  authToken: process.env.SENTRY_AUTH_TOKEN,
   tunnelRoute: "/api/monitor",
   telemetry: false,
-  disableLogger: true
+  disableLogger: true,
+  sourcemaps: { disable: false, deleteSourcemapsAfterUpload: true }
 });
