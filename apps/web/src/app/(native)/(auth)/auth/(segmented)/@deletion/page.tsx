@@ -26,7 +26,8 @@ const Page = (): React.ReactElement => {
       recover_account({
         ...state.login_data,
         code: state.mfa_code || undefined,
-        bypass: true
+        bypass: true,
+        blog_domain: null
       })
         .unwrap()
         .then((res) => {

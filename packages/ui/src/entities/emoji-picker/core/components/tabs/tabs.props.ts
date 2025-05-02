@@ -7,5 +7,5 @@ export interface EmojiPickerTabsProps extends TabsProps {
   /**
    * Ref holding the virtualized list
    */
-  list_ref: React.RefObject<GroupedVirtuosoHandle>;
+  list_ref: React.RefObject<GroupedVirtuosoHandle | null>;
 }

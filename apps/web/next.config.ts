@@ -5,6 +5,7 @@ import * as path from "node:path";
 import bundle_analyzer from "@next/bundle-analyzer";
 import mdx from "@next/mdx";
 import { withSentryConfig as with_sentry_config } from "@sentry/nextjs";
+import crypto from "crypto";
 import { polyfill } from "interweave-ssr";
 import type { NextConfig } from "next";
 import { fileURLToPath as file_url_to_path } from "url";
@@ -36,7 +37,13 @@ const next_config: NextConfig = {
         {
           key: "X-Frame-Options",
           value: "SAMEORIGIN"
-        },
+        }
+      ]
+    },
+    {
+      // Static content is served to blogs hosted on external domain.
+      source: "/_next/static/:path*",
+      headers: [
         {
           key: "Access-Control-Allow-Origin",
           value: "*"
@@ -45,10 +52,76 @@ const next_config: NextConfig = {
     }
   ],
   rewrites: async () => [
-    // Analytics
+    // Posthog analytics
     {
       source: "/ingest/:path*",
       destination: "https://app.posthog.com/:path*"
+    }
+  ],
+  redirects: async () => [
+    // storiny.com
+    {
+      source: "/legal",
+      destination: "/legal/terms/tos",
+      permanent: true,
+      has: [{ type: "host", value: "storiny.com" }]
+    },
+    {
+      source: "/terms",
+      destination: "/legal/terms/tos",
+      permanent: true,
+      has: [{ type: "host", value: "storiny.com" }]
+    },
+    {
+      source: "/privacy",
+      destination: "/legal/policies/privacy",
+      permanent: true,
+      has: [{ type: "host", value: "storiny.com" }]
+    },
+    {
+      source: "/guidelines",
+      destination: "/legal/terms/community-guidelines",
+      permanent: true,
+      has: [{ type: "host", value: "storiny.com" }]
+    },
+    {
+      source: "/cookies",
+      destination:
+        "/legal/policies/privacy#6-cookies-and-tracking-technologies",
+      permanent: true,
+      has: [{ type: "host", value: "storiny.com" }]
+    },
+    // localhost
+    {
+      source: "/legal",
+      destination: "/legal/terms/tos",
+      permanent: true,
+      has: [{ type: "host", value: "localhost" }]
+    },
+    {
+      source: "/terms",
+      destination: "/legal/terms/tos",
+      permanent: true,
+      has: [{ type: "host", value: "localhost" }]
+    },
+    {
+      source: "/privacy",
+      destination: "/legal/policies/privacy",
+      permanent: true,
+      has: [{ type: "host", value: "localhost" }]
+    },
+    {
+      source: "/guidelines",
+      destination: "/legal/terms/community-guidelines",
+      permanent: true,
+      has: [{ type: "host", value: "localhost" }]
+    },
+    {
+      source: "/cookies",
+      destination:
+        "/legal/policies/privacy#6-cookies-and-tracking-technologies",
+      permanent: true,
+      has: [{ type: "host", value: "localhost" }]
     }
   ],
   images: {
@@ -62,6 +135,7 @@ const next_config: NextConfig = {
       }
     ]
   },
+  generateBuildId: async () => crypto.randomUUID(),
   typescript: {
     ignoreBuildErrors: true
   },
@@ -75,6 +149,7 @@ const next_config: NextConfig = {
   output: "standalone",
   experimental: {
     optimizePackageImports: [
+      "@visx/visx",
       "@storiny/ui",
       "@storiny/editor",
       "@storiny/shared",

@@ -82,6 +82,7 @@ const SegmentedLayout = (
   }, []);
 
   return (
+    // @ts-expect-error https://github.com/pmndrs/react-spring/issues/2341
     <animated.div
       ref={container_ref}
       style={{
@@ -95,6 +96,7 @@ const SegmentedLayout = (
       }}
     >
       {transitions((style, segment) => (
+        // @ts-expect-error https://github.com/pmndrs/react-spring/issues/2341
         <animated.div
           className={css["flex-col"]}
           ref={ref}

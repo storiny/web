@@ -133,7 +133,7 @@ const EmbedComponent = ({
               }
             });
           } else {
-            // Embed with script sourcse
+            // Embed with script sources
             if (data.sources) {
               for (const source of data.sources) {
                 const nonce = document

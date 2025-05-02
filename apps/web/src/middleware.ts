@@ -74,30 +74,6 @@ export const middleware: NextMiddleware = (request) => {
           new URL(`/auth?${search_params.toString()}`, request.url),
           common_init
         );
-      case "/legal":
-      case "/terms":
-        return NextResponse.redirect(
-          new URL("/legal/terms/tos", request.url),
-          common_init
-        );
-      case "/privacy":
-        return NextResponse.redirect(
-          new URL("/legal/policies/privacy", request.url),
-          common_init
-        );
-      case "/guidelines":
-        return NextResponse.redirect(
-          new URL("/legal/terms/community-guidelines", request.url),
-          common_init
-        );
-      case "/cookies":
-        return NextResponse.redirect(
-          new URL(
-            "/legal/policies/privacy#6-cookies-and-tracking-technologies",
-            request.url
-          ),
-          common_init
-        );
     }
   }
 
