@@ -1,6 +1,7 @@
 import { captureException as capture_exception } from "@sentry/nextjs";
 import { dev_console } from "@storiny/shared/src/utils/dev-log";
 import { cookies } from "next/headers";
+import { NextRequest } from "next/server";
 
 import { SESSION_COOKIE_ID } from "~/common/constants";
 
@@ -9,7 +10,7 @@ import { get_client_ip } from "./get-ip";
 export const dynamic = "force-dynamic";
 
 const handler = async (
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ slug: string[] }> }
 ): Promise<Response> => {
   const host = req.headers.get("host");
@@ -25,9 +26,12 @@ const handler = async (
 
   const method = req.method;
   const session_cookie = (await cookies()).get(SESSION_COOKIE_ID);
+  const search_params = req.nextUrl.searchParams;
   const pathname = (await params).slug.join("/");
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/${pathname}`;
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/${pathname}?${search_params.toString()}`;
   const headers = new Headers(req.headers);
+
+  console.log(url);
 
   if (session_cookie) {
     headers.set("Cookie", `${SESSION_COOKIE_ID}=${session_cookie.value}`);

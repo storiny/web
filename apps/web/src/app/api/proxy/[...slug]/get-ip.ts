@@ -1,3 +1,4 @@
+import { NextRequest } from "next/server";
 import { z } from "zod";
 
 const IP_SCHEMA = z.string().ip();
@@ -52,7 +53,7 @@ const get_ip_from_x_forwarded_for = (value: unknown): string | null => {
  * Determines client IP address.
  * @param req Incoming request
  */
-export const get_client_ip = (req: Request): string | null => {
+export const get_client_ip = (req: NextRequest): string | null => {
   if (is_ip(req.headers.get("x-client-ip"))) {
     return req.headers.get("x-client-ip");
   }

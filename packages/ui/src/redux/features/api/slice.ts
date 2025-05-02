@@ -19,6 +19,7 @@ import { API_VERSION } from "@storiny/shared";
 export const get_api_server_url = (): string => {
   if (
     typeof window !== "undefined" &&
+    window.location.host !== "storiny.com" &&
     !window.location.host.includes(".storiny.com") &&
     process.env.NODE_ENV === "production"
   ) {
