@@ -29,10 +29,10 @@ font-size: 12px;
     ];
 
     const warning_message = [
-      `%cWarning: Pasting anything here might let attackers read your browser cookies, \
-granting them access to your Storiny account. If some shady character told you \
-copy-paste something here for a so called "hidden feature" or to "hack" someone's \
-account, you're simply being scammed.`,
+      `%cWarning: Pasting anything here can be dangerous. While your session is \
+secure, attackers may trick you into running harmful code. If some shady \
+character told you to copy-paste something here for a so-called "hidden feature" \
+or to "hack" someone's account, you're simply being scammed.`,
       `
 background: #fbfbfb;
 color: #000;
