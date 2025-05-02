@@ -15,7 +15,7 @@ const handler = async (
 ): Promise<Response> => {
   const host = req.headers.get("host");
 
-  if (host && host.includes(".storiny.com")) {
+  if (host && (host === "storiny.com" || host.includes(".storiny.com"))) {
     return new Response(
       "API proxy can only be used by blogs hosted on external domains.",
       {
@@ -30,8 +30,6 @@ const handler = async (
   const pathname = (await params).slug.join("/");
   const url = `${process.env.NEXT_PUBLIC_API_URL}/${pathname}?${search_params.toString()}`;
   const headers = new Headers(req.headers);
-
-  console.log(url);
 
   if (session_cookie) {
     headers.set("Cookie", `${SESSION_COOKIE_ID}=${session_cookie.value}`);

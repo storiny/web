@@ -18,17 +18,6 @@
         "!.next/cache/**",
         "dist/**"
       ],
-      "dependsOn": [
-        "^build"
-      ],
-      "passThroughEnv": ["SENTRY_AUTH_TOKEN"]
-    },
-    "build:prod": {
-      "outputs": [
-        ".next/**",
-        "!.next/cache/**",
-        "dist/**"
-      ],
       "passThroughEnv": ["SENTRY_AUTH_TOKEN"]
     },
     "test": {},

@@ -29,7 +29,7 @@ RUN yarn install --network-timeout 100000
 
 # Build the project
 COPY --from=builder /app/out/full/ .
-RUN yarn turbo run build:prod --filter=@storiny/web
+RUN yarn turbo run build --filter=@storiny/web
 
 # Runner
 
