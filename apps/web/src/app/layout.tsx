@@ -10,7 +10,6 @@ import React from "react";
 
 import CriticalStyles from "~/theme/critical";
 
-import CookieConsent from "./cookie-banner";
 import CriticalFonts from "./fonts/critical";
 import ObserverErrorHandler from "./observer";
 import PostHogProvider from "./ph-provider";
@@ -19,6 +18,7 @@ import SelfXSSWarning from "./selfxss-warning";
 import StateProvider from "./state-provider";
 
 const Progress = dynamic(() => import("./progress"));
+const CookieConsent = dynamic(() => import("./cookie-banner"));
 const PostHogPageView = dynamic(() => import("./page-view"));
 
 const RootLayout = async ({
