@@ -182,7 +182,7 @@ export const use_yjs_collaboration = ({
        *
        * We currently do not use this method to authenticate the peer.
        * The user authentication logic is handled during the handshake
-       * request and the rejection is catched by examining the event code
+       * request and the rejection is caught by examining the event code
        * of the websocket `connection-close` event.
        */
       const handle_auth: ProviderEventHandler<"auth"> = () => {
@@ -269,7 +269,7 @@ export const use_yjs_collaboration = ({
 
       /**
        * Handles an event fired when the current peer has been
-       * disconnceted for being inactive for too long.
+       * disconnected for being inactive for too long.
        */
       const handle_stale: ProviderEventHandler<"stale"> = () => {
         set_doc_status(DOC_STATUS.stale_peer);

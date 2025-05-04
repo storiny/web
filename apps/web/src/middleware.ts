@@ -6,6 +6,7 @@ import { is_valid_blog_identifier } from "~/common/utils/is-valid-blog-identifie
 
 // Third-party frame sources.
 const CSP_FRAME_SRC = [
+  "x.com",
   "twitter.com",
   "platform.twitter.com",
   "syndication.twitter.com",
@@ -20,7 +21,11 @@ const CSP_SCRIPT_SRC = [
 ].join(" ");
 
 // Third-party style sources.
-const CSP_STYLE_SRC = ["ton.twimg.com", "platform.twitter.com"].join(" ");
+const CSP_STYLE_SRC = [
+  "ton.twimg.com",
+  "platform.twitter.com",
+  "discovery.storiny.com"
+].join(" ");
 
 const NATIVE_DOMAINS = [
   "storiny.com",

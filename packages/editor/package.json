@@ -8,7 +8,7 @@
     "dev": "dotenv -e ./.env next dev",
     "build": "dotenv -e ./.env -v NEXT_PUBLIC_ENV=test -- next build",
     "start": "dotenv -e ./.env next start",
-    "realms:server": "dotenv -v HOST=localhost -v PORT=1234 -- npx y-websocket-server",
+    "realms:server": "dotenv -v HOST=localhost -v PORT=1234 -- npx y-websocket",
     "realms:test": "concurrently --raw \"yarn realms:server\" \"yarn start\""
   },
   "devDependencies": {

@@ -133,23 +133,47 @@ const EmbedComponent = ({
               }
             });
           } else {
-            // Embed with script sources
-            if (data.sources) {
-              for (const source of data.sources) {
-                const nonce = document
-                  .querySelector('meta[name="csp-nonce"]')
-                  ?.getAttribute?.("content");
-                const script = document.createElement("script");
+            const reset = new CSSStyleSheet(); // Reset shadow DOM styles.
+            await reset.replace(`
+div[data-embed-container="true"] {
+    all: initial;
+    width: 100%;
+}
+`);
 
+            const shadow = content_ref.current.attachShadow({ mode: "open" });
+            shadow.adoptedStyleSheets = [reset];
+
+            // Insert <script> tags.
+            if (data.sources) {
+              const nonce = document
+                .querySelector('meta[name="csp-nonce"]')
+                ?.getAttribute?.("content");
+
+              for (const source of data.sources) {
+                const script = document.createElement("script");
                 script.src = source;
-                script.async = true;
                 script.nonce = nonce ?? undefined;
-                document.body.appendChild(script);
+                shadow.appendChild(script);
+              }
+            }
+
+            // Insert stylesheets
+            if (data.stylesheets) {
+              for (const stylesheet of data.stylesheets) {
+                const link = document.createElement("link");
+                link.type = "text/css";
+                link.rel = "stylesheet";
+                link.href = stylesheet;
+                shadow.appendChild(link);
               }
             }
 
             if (data.html) {
-              content_ref.current.innerHTML = data.html;
+              const container = document.createElement("div");
+              container.setAttribute("data-embed-container", "true");
+              container.innerHTML = data.html;
+              shadow.appendChild(container);
             }
 
             if (typeof data.supports_binary_theme !== "undefined") {
@@ -370,6 +394,7 @@ const EmbedComponent = ({
                   )}
                   data-layout={layout}
                   data-loading={String(loading)}
+                  data-theme={theme}
                   ref={content_ref}
                   role={"button"}
                 />

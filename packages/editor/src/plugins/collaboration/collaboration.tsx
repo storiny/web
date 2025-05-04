@@ -74,7 +74,7 @@ const CollaborationPlugin = ({
     provider,
     doc_map: yjs_doc_map,
     should_bootstrap:
-      // Skip bootstraping the right iframe during tests
+      // Skip bootstrapping the right iframe during tests
       window.parent != null && (window.parent.frames as any).right === window
         ? false
         : should_bootstrap,

@@ -15,8 +15,9 @@ const next_config: NextConfig = {
     includePaths: [path.join(__dirname, "../ui/src/theme")]
   },
   poweredByHeader: false,
-  reactStrictMode: true,
-  transpilePackages: ["@storiny/ui"]
+  reactStrictMode: false,
+  transpilePackages: ["@storiny/ui"],
+  serverExternalPackages: ["yjs"]
 };
 
 export default next_config;
