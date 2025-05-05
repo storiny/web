@@ -120,6 +120,7 @@ const EmbedComponent = ({
 
         try {
           const data = await response.clone().json();
+          const { supports_shadow_dom = false } = data || {};
 
           // Webpage metadata
           if (data.embed_type === "metadata") {
@@ -133,16 +134,20 @@ const EmbedComponent = ({
               }
             });
           } else {
-            const reset = new CSSStyleSheet(); // Reset shadow DOM styles.
-            await reset.replace(`
+            let shadow: ShadowRoot | null = null;
+
+            if (supports_shadow_dom) {
+              const reset = new CSSStyleSheet(); // Reset shadow DOM styles.
+              await reset.replace(`
 div[data-embed-container="true"] {
     all: initial;
     width: 100%;
 }
 `);
 
-            const shadow = content_ref.current.attachShadow({ mode: "open" });
-            shadow.adoptedStyleSheets = [reset];
+              shadow = content_ref.current.attachShadow({ mode: "open" });
+              shadow.adoptedStyleSheets = [reset];
+            }
 
             // Insert <script> tags.
             if (data.sources) {
@@ -151,29 +156,57 @@ div[data-embed-container="true"] {
                 ?.getAttribute?.("content");
 
               for (const source of data.sources) {
+                if (
+                  !supports_shadow_dom &&
+                  document.querySelector(`script[src="${source}"]`) !== null
+                ) {
+                  continue;
+                }
+
                 const script = document.createElement("script");
                 script.src = source;
                 script.nonce = nonce ?? undefined;
-                shadow.appendChild(script);
+
+                if (supports_shadow_dom) {
+                  shadow!.appendChild(script);
+                } else {
+                  document.body.appendChild(script);
+                }
               }
             }
 
             // Insert stylesheets
             if (data.stylesheets) {
               for (const stylesheet of data.stylesheets) {
+                if (
+                  !supports_shadow_dom &&
+                  document.querySelector(`link[href="${stylesheet}"]`) !== null
+                ) {
+                  continue;
+                }
+
                 const link = document.createElement("link");
                 link.type = "text/css";
                 link.rel = "stylesheet";
                 link.href = stylesheet;
-                shadow.appendChild(link);
+
+                if (supports_shadow_dom) {
+                  shadow!.appendChild(link);
+                } else {
+                  document.head.appendChild(link);
+                }
               }
             }
 
             if (data.html) {
-              const container = document.createElement("div");
-              container.setAttribute("data-embed-container", "true");
-              container.innerHTML = data.html;
-              shadow.appendChild(container);
+              if (supports_shadow_dom) {
+                const container = document.createElement("div");
+                container.setAttribute("data-embed-container", "true");
+                container.innerHTML = data.html;
+                shadow!.appendChild(container);
+              } else {
+                content_ref.current.innerHTML = data.html;
+              }
             }
 
             if (typeof data.supports_binary_theme !== "undefined") {
@@ -181,6 +214,9 @@ div[data-embed-container="true"] {
                 data.supports_binary_theme
               );
             }
+
+            // Load all Twitter embeds
+            (window as any)?.twttr?.widgets?.load?.();
           }
         } catch {
           // Embeds with iframe
