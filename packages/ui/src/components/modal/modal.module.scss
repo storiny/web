@@ -33,7 +33,7 @@
 }
 
 .container {
-  align-items: stretch;
+  align-items: stretch !important;
   align-self: stretch;
   flex-direction: row;
   width: 100%;

@@ -79,11 +79,13 @@ const EmbedComponent = ({
   const [intersection_observer_ref, { entry }] = use_intersection_observer({
     rootMargin: "-52px 0px 0px 0px"
   });
+  const editable = editor.isEditable();
+  const visible = Boolean(entry && entry.isIntersecting);
 
   use_hot_keys(
     "backspace,delete",
     (event) => {
-      if (selected && $is_node_selection(selection)) {
+      if (editable && selected && $is_node_selection(selection)) {
         event.preventDefault();
         set_selected(false);
 
@@ -97,9 +99,6 @@ const EmbedComponent = ({
     },
     { enableOnContentEditable: true }
   );
-
-  const editable = editor.isEditable();
-  const visible = Boolean(entry && entry.isIntersecting);
 
   /**
    * Generates the embed

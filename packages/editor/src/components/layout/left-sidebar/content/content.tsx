@@ -62,6 +62,7 @@ const SuspendedEditorLeftSidebarContent = (
 
   return transitions((style, item) =>
     item ? (
+      // @ts-expect-error https://github.com/pmndrs/react-spring/issues/2341
       <animated.div
         aria-busy={document_loading}
         className={clsx(
