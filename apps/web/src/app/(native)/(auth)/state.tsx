@@ -154,39 +154,41 @@ const AuthState = ({
     signup_errors: {}
   });
 
+  const set_state_impl = React.useCallback((payload): void => {
+    set_state((prev_state) => {
+      const next_state =
+        typeof payload === "object" ? payload : payload(prev_state);
+
+      if (next_state.segment) {
+        if (next_state.segment === "base") {
+          next_state.visited_segments = ["base"];
+        } else if (prev_state.segment !== next_state.segment) {
+          next_state.visited_segments = Array.from(
+            new Set([...prev_state.visited_segments, next_state.segment])
+          );
+        } else {
+          const visited_segments = prev_state.visited_segments;
+
+          if (visited_segments.length) {
+            next_state.visited_segments = visited_segments.filter(
+              (item) => item !== next_state.segment
+            );
+          }
+        }
+      }
+
+      return deepmerge(prev_state, next_state, {
+        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+        arrayMerge: (_, source_array) => source_array
+      }) as AuthState;
+    });
+  }, []);
+
   return (
     <AuthStateContext.Provider
       value={{
         state,
-        set_state: (payload): void => {
-          set_state((prev_state) => {
-            const next_state =
-              typeof payload === "object" ? payload : payload(prev_state);
-
-            if (next_state.segment) {
-              if (next_state.segment === "base") {
-                next_state.visited_segments = ["base"];
-              } else if (prev_state.segment !== next_state.segment) {
-                next_state.visited_segments = Array.from(
-                  new Set([...prev_state.visited_segments, next_state.segment])
-                );
-              } else {
-                const visited_segments = prev_state.visited_segments;
-
-                if (visited_segments.length) {
-                  next_state.visited_segments = visited_segments.filter(
-                    (item) => item !== next_state.segment
-                  );
-                }
-              }
-            }
-
-            return deepmerge(prev_state, next_state, {
-              // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-              arrayMerge: (_, source_array) => source_array
-            }) as AuthState;
-          });
-        }
+        set_state: set_state_impl
       }}
     >
       {children}
