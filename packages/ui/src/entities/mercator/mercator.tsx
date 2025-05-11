@@ -8,7 +8,6 @@ import {
 import clsx from "clsx";
 import { isEmojiSupported as is_emoji_supported } from "is-emoji-supported";
 import React from "react";
-import * as topojson from "topojson-client";
 
 import AspectRatio from "~/components/aspect-ratio";
 import css from "~/theme/main.module.scss";
@@ -16,19 +15,15 @@ import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import styles from "./mercator.module.scss";
 import { MercatorProps } from "./mercator.props";
-import topology from "./topo-110m.json";
+// Source: https://github.com/amcharts/amcharts4/blob/master/src/geodata/worldIndiaLow.ts
+import world from "./topo-110m.json";
 
 interface FeatureShape {
   geometry: { coordinates: [number, number][][]; type: "Polygon" };
   id: string;
-  properties: { code: string; name: string };
+  properties: { id: string; name: string };
   type: "Feature";
 }
-
-const world = topojson.feature(
-  topology as any,
-  topology.objects.countries as any
-);
 
 const is_flag_emoji_supported =
   typeof window !== "undefined" && is_emoji_supported("🇦🇶");
@@ -126,7 +121,7 @@ const Mercator = (props: MercatorProps): React.ReactElement => {
                             /* eslint-disable prefer-snakecase/prefer-snakecase */
                             tooltipData: {
                               name: feature.properties.name,
-                              code: feature.properties.code
+                              code: feature.properties.id
                             },
                             tooltipTop: coords?.y,
                             tooltipLeft: coords?.x
@@ -141,9 +136,9 @@ const Mercator = (props: MercatorProps): React.ReactElement => {
                           );
                         }}
                         style={((): React.CSSProperties => {
-                          if (feature.properties.code in strength_map) {
+                          if (feature.properties.id in strength_map) {
                             const strength = linear_interpolate(
-                              strength_map[feature.properties.code],
+                              strength_map[feature.properties.id],
                               [0, 100],
                               [30, 90] // 12% is the global strength
                             );
