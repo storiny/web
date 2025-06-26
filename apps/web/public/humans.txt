@@ -1,0 +1,5 @@
+User-agent: Homo sapiens
+
+_______________________________________________________________________________
+
+At Storiny, we deeply appreciate the efforts of security researchers and ethical hackers who help us keep our platform safe. A huge thank-you to the following individuals for their responsible disclosures and valuable contributions to improving our security.
