@@ -33,7 +33,6 @@ export const generateMetadata = async ({
     }
 
     return {
-      /* eslint-disable prefer-snakecase/prefer-snakecase */
       title: story_response.seo_title || story_response.title,
       description: story_response.seo_description || story_response.description,
       openGraph: {
@@ -65,7 +64,6 @@ export const generateMetadata = async ({
       alternates: {
         canonical: story_response.canonical_url
       }
-      /* eslint-enable prefer-snakecase/prefer-snakecase */
     };
   } catch (err) {
     const err_code = err?.code;

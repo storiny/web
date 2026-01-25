@@ -263,21 +263,17 @@ class ObjectControls {
    */
   private register_clone_controls(): void {
     this.object.controls.cl = new Control({
-      /* eslint-disable prefer-snakecase/prefer-snakecase */
       actionName: "clone",
       sizeX: CLONE_CONTROL_SIZE,
       sizeY: CLONE_CONTROL_SIZE,
       mouseUpHandler: (_, transform): void => clone_object("left", transform)
-      /* eslint-enable prefer-snakecase/prefer-snakecase */
     });
 
     this.object.controls.cr = new Control({
-      /* eslint-disable prefer-snakecase/prefer-snakecase */
       actionName: "clone",
       sizeX: CLONE_CONTROL_SIZE,
       sizeY: CLONE_CONTROL_SIZE,
       mouseUpHandler: (_, transform): void => clone_object("right", transform)
-      /* eslint-enable prefer-snakecase/prefer-snakecase */
     });
   }
 
@@ -287,12 +283,10 @@ class ObjectControls {
    */
   private register_linear_controls(): void {
     this.object.controls.linear_1 = new Control({
-      /* eslint-disable prefer-snakecase/prefer-snakecase */
       actionName: "linear-move",
       sizeX: MOVE_CONTROL_SIZE,
       sizeY: MOVE_CONTROL_SIZE,
       actionHandler: (
-        /* eslint-enable prefer-snakecase/prefer-snakecase */
         _: Event,
         transform_data: Transform,
         x: number,
@@ -317,12 +311,10 @@ class ObjectControls {
     });
 
     this.object.controls.linear_2 = new Control({
-      /* eslint-disable prefer-snakecase/prefer-snakecase */
       actionName: "linear-move",
       sizeX: MOVE_CONTROL_SIZE,
       sizeY: MOVE_CONTROL_SIZE,
       actionHandler: (
-        /* eslint-enable prefer-snakecase/prefer-snakecase */
         _: Event,
         transform_data: Transform,
         x: number,
@@ -354,7 +346,6 @@ class ObjectControls {
   private register_rotate_controls(): void {
     // Upper left
     this.object.controls.r_ul = new Control({
-      /* eslint-disable prefer-snakecase/prefer-snakecase */
       x: -0.5,
       y: -0.5,
       offsetY: -10,
@@ -363,12 +354,10 @@ class ObjectControls {
       actionName: "rotate",
       actionHandler: control_utils.rotationWithSnapping,
       render: () => ""
-      /* eslint-enable prefer-snakecase/prefer-snakecase */
     });
 
     // Upper right
     this.object.controls.r_ur = new Control({
-      /* eslint-disable prefer-snakecase/prefer-snakecase */
       x: 0.5,
       y: -0.5,
       offsetY: -10,
@@ -377,12 +366,10 @@ class ObjectControls {
       actionName: "rotate",
       actionHandler: control_utils.rotationWithSnapping,
       render: () => ""
-      /* eslint-enable prefer-snakecase/prefer-snakecase */
     });
 
     // Lower right
     this.object.controls.r_lr = new Control({
-      /* eslint-disable prefer-snakecase/prefer-snakecase */
       x: 0.5,
       y: 0.5,
       offsetY: 10,
@@ -391,12 +378,10 @@ class ObjectControls {
       actionName: "rotate",
       actionHandler: control_utils.rotationWithSnapping,
       render: () => ""
-      /* eslint-enable prefer-snakecase/prefer-snakecase */
     });
 
     // Lower left
     this.object.controls.r_ll = new Control({
-      /* eslint-disable prefer-snakecase/prefer-snakecase */
       x: -0.5,
       y: 0.5,
       offsetY: 10,
@@ -405,7 +390,6 @@ class ObjectControls {
       actionName: "rotate",
       actionHandler: control_utils.rotationWithSnapping,
       render: () => ""
-      /* eslint-enable prefer-snakecase/prefer-snakecase */
     });
 
     if (this.canvas) {

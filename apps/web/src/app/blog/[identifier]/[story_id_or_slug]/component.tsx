@@ -32,7 +32,6 @@ const generate_json_ld = ({
 }: Pick<Props, "story" | "blog">): WithContext<BlogPosting> => {
   const blog_url = get_blog_url(blog);
   return {
-    /* eslint-disable prefer-snakecase/prefer-snakecase */
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: `${story.seo_title || story.title} — ${blog.name}`,
@@ -132,7 +131,6 @@ const generate_json_ld = ({
           copyrightYear: new Date(story.created_at).getFullYear()
         }
       : {})
-    /* eslint-enable prefer-snakecase/prefer-snakecase */
   };
 };
 

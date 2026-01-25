@@ -9,14 +9,12 @@ import NProgress from "nprogress";
 import React from "react";
 
 NProgress.configure({
-  /* eslint-disable prefer-snakecase/prefer-snakecase */
   showSpinner: false,
   trickle: false,
   minimum: 0.1,
   easing: "ease",
   speed: 380,
   template: '<div class="bar" role="bar"><div class="peg"></div></div>'
-  /* eslint-enable prefer-snakecase/prefer-snakecase */
 });
 
 const Progress = (): null => {

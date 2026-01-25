@@ -72,7 +72,7 @@ const Modal = forward_ref<ModalProps, "div">((props, ref) => {
               {...(is_tabbed_mode && {
                 ...slot_props?.tabs,
                 orientation: "vertical",
-                // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
                 activationMode: "manual"
               })}
             >

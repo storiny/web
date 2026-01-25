@@ -190,7 +190,6 @@ const Component = ({ on_submit }: AddPasswordProps): React.ReactElement => {
       <AddPasswordModal />
     </Form>,
     {
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       onOpenChange: screen === "finish" ? (): void => undefined : undefined,
       fullscreen: is_smaller_than_mobile,
       footer: (

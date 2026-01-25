@@ -10,9 +10,7 @@ export interface CommentDeletePayload {
 
 export const { useDeleteCommentMutation: use_delete_comment_mutation } =
   api_slice.injectEndpoints({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       deleteComment: builder.mutation<void, CommentDeletePayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,

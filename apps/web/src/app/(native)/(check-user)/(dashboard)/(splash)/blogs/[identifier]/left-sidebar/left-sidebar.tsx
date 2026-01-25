@@ -16,9 +16,8 @@ const BlogDashboardLeftSidebar = (): React.ReactElement => (
     component_props={{
       wrapper: {
         style: {
-          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
           paddingInline: 0,
-          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
           paddingBottom: 0
         }
       }

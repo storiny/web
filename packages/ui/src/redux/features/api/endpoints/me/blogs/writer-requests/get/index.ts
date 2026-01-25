@@ -11,7 +11,6 @@ export type GetBlogWriterRequestsResponse = BlogMemberRequest[];
 
 export const get_blog_writer_requests_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getBlogWriterRequests: builder.query<
       { has_more: boolean; items: BlogMemberRequest[]; page: number },
       { blog_id: string; page: number; query?: string }
@@ -49,7 +48,6 @@ export const get_blog_writer_requests_api = api_slice.injectEndpoints({
 export const {
   useLazyGetBlogWriterRequestsQuery: use_get_blog_writer_requests_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getBlogWriterRequests: { select: select_blog_writer_requests }
   }
 } = get_blog_writer_requests_api;

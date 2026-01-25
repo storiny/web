@@ -14,7 +14,6 @@ export const copy_to_clipboard = async (
 
     Object.defineProperty(copy_event, "clipboardData", {
       value: {
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
         setData: (type: string, value: string) => {
           clipboard_data[type] = value;
         }

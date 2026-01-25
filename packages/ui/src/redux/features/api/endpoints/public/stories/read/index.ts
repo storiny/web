@@ -7,7 +7,6 @@ export type ReadStoryPayload = { id: string; referrer: string; token: string };
 export const { useReadStoryMutation: use_read_story_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       readStory: builder.mutation<void, ReadStoryPayload>({
         query: ({ id, referrer, token }) => ({
           url: `/${SEGMENT(id)}?token=${token}&referrer=${encodeURIComponent(

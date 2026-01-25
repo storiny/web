@@ -12,7 +12,6 @@ export const {
     use_accept_collaboration_request_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     acceptCollaborationRequest: builder.mutation<
       void,
       AcceptCollaborationRequestPayload

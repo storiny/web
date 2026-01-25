@@ -182,7 +182,6 @@ const AuthState = ({
             }
 
             return deepmerge(prev_state, next_state, {
-              // eslint-disable-next-line prefer-snakecase/prefer-snakecase
               arrayMerge: (_, source_array) => source_array
             }) as AuthState;
           });

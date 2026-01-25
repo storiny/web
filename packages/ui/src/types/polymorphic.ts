@@ -21,7 +21,6 @@ export type OmitCommonProps<
   Target,
   "transition" | "as" | "color" | "translate" | OmitAdditionalProps
 > & {
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
   htmlTranslate?: "yes" | "no" | undefined;
 };
 
@@ -42,7 +41,6 @@ export type MergeWithAs<
   as?: AsComponent;
 };
 
-/* eslint-disable prefer-snakecase/prefer-snakecase */
 export type ComponentWithAs<
   Component extends As,
   Props extends object = object
@@ -61,7 +59,6 @@ export type ComponentWithAs<
   id?: string;
   propTypes?: React.WeakValidationMap<any>;
 };
-/* eslint-enable prefer-snakecase/prefer-snakecase */
 
 export type PolymorphicComponent<
   T extends As,

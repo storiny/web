@@ -14,7 +14,6 @@ const meta: Meta<typeof Stepper> = {
     active_steps: 1,
     "aria-label": "Sample stepper",
     style: {
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       maxWidth: "512px"
     }
   }

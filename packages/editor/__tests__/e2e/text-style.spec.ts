@@ -726,17 +726,14 @@ test.describe("text style", () => {
     await page.keyboard.type("hello world");
 
     await click(page, "div[data-editor-content] > p", {
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       clickCount: 1,
       delay: 100
     });
     await click(page, "div[data-editor-content] > p", {
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       clickCount: 2,
       delay: 100
     });
     await click(page, "div[data-editor-content] > p", {
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       clickCount: 3,
       delay: 100
     });

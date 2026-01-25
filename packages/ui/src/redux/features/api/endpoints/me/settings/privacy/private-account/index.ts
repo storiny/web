@@ -10,7 +10,6 @@ export type PrivateAccountPayload = PrivateAccountSchema;
 export const { usePrivateAccountMutation: use_private_account_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       privateAccount: builder.mutation<void, PrivateAccountPayload>({
         query: (body) => ({
           url: `/${SEGMENT}`,

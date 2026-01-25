@@ -17,7 +17,6 @@ export const {
   useBlogFaviconSettingsMutation: use_blog_favicon_settings_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     blogFaviconSettings: builder.mutation<
       BlogFaviconSettingsResponse,
       BlogFaviconSettingsPayload

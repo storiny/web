@@ -13,7 +13,6 @@ export interface CreateBlogPayload {
 export const { useCreateBlogMutation: use_create_blog_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       createBlog: builder.mutation<void, CreateBlogPayload>({
         query: (body) => ({
           url: `/${SEGMENT}`,

@@ -14,7 +14,6 @@ export interface CommentVisibilityPayload {
 export const { useCommentVisibilityMutation: use_comment_visibility_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       commentVisibility: builder.mutation<void, CommentVisibilityPayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,

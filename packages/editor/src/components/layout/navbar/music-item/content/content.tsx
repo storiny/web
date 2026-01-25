@@ -28,17 +28,15 @@ const MusicItemContent = (): React.ReactElement => {
     looping
   } = use_audio_player();
   const [open_file_selector] = use_file_picker({
-    /* eslint-disable prefer-snakecase/prefer-snakecase */
     readAs: "ArrayBuffer",
     accept: ["audio/*", "video/*"],
     multiple: false,
     limitFilesConfig: { max: 1, min: 1 },
-    /* eslint-enable prefer-snakecase/prefer-snakecase */
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
     onFilesRejected: () => {
       toast("Unable to import the audio file", "error");
     },
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
     onFilesSuccessfulySelected: ({ plainFiles: plain_files }) => {
       if (plain_files[0]) {
         const file = plain_files[0];
@@ -49,7 +47,7 @@ const MusicItemContent = (): React.ReactElement => {
           load(url, {
             autoplay: true,
             html5: true,
-            // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
             initialVolume: 0,
             format: type,
             onplay: () => {

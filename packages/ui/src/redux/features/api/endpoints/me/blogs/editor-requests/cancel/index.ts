@@ -13,7 +13,6 @@ export const {
   useCancelBlogEditorRequestMutation: use_cancel_blog_editor_request_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     cancelBlogEditorRequest: builder.mutation<
       void,
       CancelBlogEditorRequestPayload

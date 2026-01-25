@@ -12,7 +12,6 @@ export interface ReportEntityPayload extends ReportSchema {
 export const { useReportEntityMutation: use_report_entity_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       reportEntity: builder.mutation<void, ReportEntityPayload>({
         query: (body) => ({
           url: `/${SEGMENT}`,

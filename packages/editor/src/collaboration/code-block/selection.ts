@@ -88,12 +88,10 @@ class CodeBlockRemoteCaretWidget extends WidgetType {
     return widget.color_bg === this.color_bg && widget.type === this.type;
   }
 
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
   updateDOM(): boolean {
     return false;
   }
 
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
   get estimatedHeight(): number {
     return -1;
   }

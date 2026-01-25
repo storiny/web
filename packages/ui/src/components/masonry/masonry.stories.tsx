@@ -29,7 +29,6 @@ const meta: Meta<typeof MasonryImpl> = {
     gutter_width: 24,
     min_cols: 3,
     slot_props: {
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       container: { style: { maxHeight: "450px", overflow: "auto" } }
     },
     render_item: ({ data }) => (

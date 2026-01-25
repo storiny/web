@@ -15,7 +15,6 @@ import StoryCommentsRightSidebar from "./right-sidebar";
 type Props = GetCommentResponse;
 
 const generate_json_ld = (comment: Props): Graph => ({
-  /* eslint-disable prefer-snakecase/prefer-snakecase */
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -59,7 +58,6 @@ const generate_json_ld = (comment: Props): Graph => ({
       }
     }
   ]
-  /* eslint-enable prefer-snakecase/prefer-snakecase */
 });
 
 const JsonLD = (props: Props): React.ReactElement => {

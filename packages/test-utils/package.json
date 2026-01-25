@@ -7,7 +7,7 @@
     "lint": "eslint \"**/*.ts*\""
   },
   "devDependencies": {
-    "@storiny/eslint-config": "^1.1.0",
+    "@storiny/eslint-config": "^1.2.0",
     "@storiny/prettier-config": "^1.1.0",
     "@storiny/tsconfig": "^1.0.0",
     "@storiny/types": "*",

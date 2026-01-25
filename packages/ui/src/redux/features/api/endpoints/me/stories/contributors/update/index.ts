@@ -15,7 +15,6 @@ export interface UpdateContributorPayload {
 export const { useUpdateContributorMutation: use_update_contributor_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       updateContributor: builder.mutation<void, UpdateContributorPayload>({
         query: ({ story_id, user_id, role }) => ({
           url: `/${SEGMENT(story_id, user_id)}`,

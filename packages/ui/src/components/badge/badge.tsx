@@ -123,7 +123,7 @@ const Badge = forward_ref<BadgeProps, "span">((props, ref) => {
             transform: `scale(${
               visible ? 1 : 0
             }) ${translate_x} ${translate_y}`,
-            // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
             transformOrigin: `${transform_origin_x} ${transform_origin_y}`,
             ...style
           } as React.CSSProperties

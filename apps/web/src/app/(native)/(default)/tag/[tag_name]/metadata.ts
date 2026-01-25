@@ -19,7 +19,6 @@ export const generateMetadata = async ({
     const description = `Read stories tagged with #${tag.name} on Storiny.`;
 
     return {
-      /* eslint-disable prefer-snakecase/prefer-snakecase */
       title: `#${tag_name}`,
       description,
       openGraph: {
@@ -42,7 +41,6 @@ export const generateMetadata = async ({
         description,
         images: [`${process.env.NEXT_PUBLIC_OG_SERVER_URL}/tags/${tag.id}`]
       }
-      /* eslint-enable prefer-snakecase/prefer-snakecase */
     };
   } catch (err) {
     const err_code = err?.code;

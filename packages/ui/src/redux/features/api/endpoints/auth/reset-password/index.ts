@@ -12,7 +12,6 @@ export type ResetPasswordPayload = ResetSchema & {
 export const { useResetPasswordMutation: use_reset_password_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       resetPassword: builder.mutation<void, ResetPasswordPayload>({
         query: (body) => ({
           url: `/${SEGMENT}`,

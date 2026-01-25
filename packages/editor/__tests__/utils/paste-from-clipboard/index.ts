@@ -49,7 +49,7 @@ export const paste_from_clipboard = async (
 
       let event_clipboard_data: {
         files: File[];
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
         getData: (type: string) => string;
         types: string[];
       };
@@ -57,14 +57,14 @@ export const paste_from_clipboard = async (
       if (files.length > 0) {
         event_clipboard_data = {
           files,
-          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
           getData: (type) => _clipboard_data[type],
           types: [...Object.keys(_clipboard_data), "Files"]
         };
       } else {
         event_clipboard_data = {
           files,
-          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
           getData: (type) => _clipboard_data[type],
           types: Object.keys(_clipboard_data)
         };

@@ -58,7 +58,7 @@ const meta: Meta<typeof FormSelect> = {
     },
     color: "inverted",
     name: "sample",
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
     style: { maxWidth: "300px" }
   }
 };

@@ -11,12 +11,10 @@ export type GetMutedUsersResponse = User[];
 export const {
   useLazyGetMutedUsersQuery: use_get_muted_users_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getMutedUsers: { select: select_muted_users }
   }
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getMutedUsers: builder.query<
       { has_more: boolean; items: User[]; page: number },
       { page: number }

@@ -10,7 +10,6 @@ export type DisableAccountPayload = DisableAccountSchema;
 export const { useDisableAccountMutation: use_disable_account_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       disableAccount: builder.mutation<void, DisableAccountPayload>({
         query: (body) => ({
           url: `/${SEGMENT}`,

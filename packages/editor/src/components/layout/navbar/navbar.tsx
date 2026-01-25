@@ -76,7 +76,6 @@ const EditorMenubar = ({
     <MenubarMenu
       slot_props={{
         content: {
-          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
           style: { minWidth: "176px" }
         }
       }}

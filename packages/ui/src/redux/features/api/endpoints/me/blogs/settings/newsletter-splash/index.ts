@@ -21,7 +21,6 @@ export const {
     use_blog_newsletter_splash_settings_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     blogNewsletterSplashSettings: builder.mutation<
       BlogNewsletterSplashSettingsResponse,
       BlogNewsletterSplashSettingsPayload

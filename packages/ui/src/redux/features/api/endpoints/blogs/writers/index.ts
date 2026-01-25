@@ -10,7 +10,6 @@ export type GetBlogWritersResponse = User[];
 
 export const get_blog_writers_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getBlogWriters: builder.query<
       { has_more: boolean; items: User[]; page: number },
       {
@@ -37,7 +36,6 @@ export const get_blog_writers_api = api_slice.injectEndpoints({
 export const {
   useLazyGetBlogWritersQuery: use_get_blog_writers_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getBlogWriters: { select: select_blog_writers }
   }
 } = get_blog_writers_api;

@@ -12,7 +12,6 @@ export type BlogVisibilityPayload = {
 export const { useBlogVisibilityMutation: use_blog_visibility_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       blogVisibility: builder.mutation<void, BlogVisibilityPayload>({
         query: ({ blog_id, ...body }) => ({
           url: `/${SEGMENT(blog_id)}`,

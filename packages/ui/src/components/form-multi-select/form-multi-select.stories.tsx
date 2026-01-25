@@ -52,7 +52,7 @@ const meta: Meta<typeof FormMultiSelect> = {
     size: "md",
     color: "inverted",
     name: "sample",
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
     style: { maxWidth: "300px" }
   }
 };

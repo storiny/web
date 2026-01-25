@@ -13,7 +13,6 @@ export interface StoryMetadataPayload extends Partial<StoryMetadataSchema> {
 export const { useStoryMetadataMutation: use_story_metadata_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       storyMetadata: builder.mutation<
         StoryMetadataResponse,
         StoryMetadataPayload

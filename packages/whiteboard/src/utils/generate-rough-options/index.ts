@@ -14,7 +14,6 @@ export const generate_rough_options = (
   object: FabricObject,
   continuous_path = false
 ): Options => {
-  /* eslint-disable prefer-snakecase/prefer-snakecase */
   const options: Options = {
     seed: object.get("seed"),
     stroke: object.stroke as string,
@@ -39,7 +38,6 @@ export const generate_rough_options = (
           : undefined,
     preserveVertices: continuous_path
   };
-  /* eslint-enable prefer-snakecase/prefer-snakecase */
 
   switch (object.get("_type")) {
     case LayerType.DIAMOND:

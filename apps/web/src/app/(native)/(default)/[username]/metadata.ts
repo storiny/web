@@ -22,7 +22,6 @@ export const generateMetadata = async ({
       profile.bio ? ` ${profile.bio}` : ""
     }`;
 
-    /* eslint-disable prefer-snakecase/prefer-snakecase */
     return {
       title: `${profile.name} (@${username})`,
       description,
@@ -53,7 +52,6 @@ export const generateMetadata = async ({
             : [get_cdn_url(profile.avatar_id, ImageSize.W_320)]
       }
     };
-    /* eslint-enable prefer-snakecase/prefer-snakecase */
   } catch (err) {
     const err_code = err?.code;
 

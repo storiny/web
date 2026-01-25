@@ -37,9 +37,8 @@ export const recover_object = (object: any, prop: any): void => {
 
   if (is_pen_object(object)) {
     object.set({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       penWidth: prop.penWidth,
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
       penStyle: prop.penStyle,
       points: prop.points,
       shadow: prop.shadow,
@@ -58,9 +57,8 @@ export const recover_object = (object: any, prop: any): void => {
     // Set arrowheads
     if (is_arrow_object(object)) {
       object.set({
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
         startArrowhead: prop.startArrowhead,
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
         endArrowhead: prop.endArrowhead
       });
     }
@@ -69,7 +67,6 @@ export const recover_object = (object: any, prop: any): void => {
   }
 
   if (is_text_object(object)) {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     object.set({ fontName: prop.fontName });
   }
 

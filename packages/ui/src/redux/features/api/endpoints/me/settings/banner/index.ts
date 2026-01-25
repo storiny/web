@@ -13,7 +13,6 @@ export interface BannerSettingsPayload {
 export const { useBannerSettingsMutation: use_banner_settings_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       bannerSettings: builder.mutation<
         BannerSettingsResponse,
         BannerSettingsPayload

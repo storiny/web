@@ -11,7 +11,6 @@ export type GetStoriesResponse = Story[];
 
 export const get_stories_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getStories: builder.query<
       { has_more: boolean; items: Story[]; page: number },
       {
@@ -55,7 +54,6 @@ export const get_stories_api = api_slice.injectEndpoints({
 export const {
   useLazyGetStoriesQuery: use_get_stories_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getStories: { select: select_stories }
   }
 } = get_stories_api;

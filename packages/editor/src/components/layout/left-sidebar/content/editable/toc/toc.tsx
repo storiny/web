@@ -46,7 +46,6 @@ const EditorToc = ({
             },
             scrollbar: {
               style: {
-                // eslint-disable-next-line prefer-snakecase/prefer-snakecase
                 backgroundColor: "transparent"
               }
             }

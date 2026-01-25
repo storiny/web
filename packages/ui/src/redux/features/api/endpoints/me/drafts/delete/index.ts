@@ -10,7 +10,6 @@ export interface DraftDeletePayload {
 export const { useDeleteDraftMutation: use_delete_draft_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       deleteDraft: builder.mutation<void, DraftDeletePayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,

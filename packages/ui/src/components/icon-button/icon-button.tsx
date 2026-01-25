@@ -113,7 +113,7 @@ const IconButton = forward_ref<IconButtonProps, "button">((props, ref) => {
         : {
             role: "button",
             // Trigger button click when space-bar is pressed
-            // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
             onKeyUp: (event: React.KeyboardEvent<HTMLButtonElement>): void => {
               // Space-bar key
               if (event.key === " " && !disabled) {

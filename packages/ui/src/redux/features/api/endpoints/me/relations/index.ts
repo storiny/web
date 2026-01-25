@@ -13,12 +13,10 @@ export type GetUserRelationsType = "followers" | "following" | "friends";
 export const {
   useLazyGetRelationsQuery: use_get_relations_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getRelations: { select: select_relations }
   }
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getRelations: builder.query<
       { has_more: boolean; items: User[]; page: number },
       {

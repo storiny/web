@@ -10,7 +10,6 @@ export interface StoryDeletePayload {
 export const { useDeleteStoryMutation: use_delete_story_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       deleteStory: builder.mutation<void, StoryDeletePayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,

@@ -11,7 +11,6 @@ import theme_sync from "../theme-sync.txt";
 const LazyFonts = dynamic(() => import("../fonts/lazy"));
 
 export const metadata: Metadata = {
-  /* eslint-disable prefer-snakecase/prefer-snakecase */
   applicationName: "Storiny",
   title: {
     template: "%s — Storiny",
@@ -43,7 +42,6 @@ export const metadata: Metadata = {
       rel: "mask-icon"
     }
   ]
-  /* eslint-enable prefer-snakecase/prefer-snakecase */
 };
 
 const NativeLayout = async ({

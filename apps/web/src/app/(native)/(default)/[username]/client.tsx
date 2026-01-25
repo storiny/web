@@ -210,7 +210,7 @@ const Page = ({
                     `${BREAKPOINTS.up("mobile")} calc(100vw - 72px)`,
                     "100vw"
                   ].join(","),
-                  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
                   srcSet: [
                     `${get_cdn_url(profile.banner_id, ImageSize.W_1920)} 1920w`,
                     `${get_cdn_url(profile.banner_id, ImageSize.W_1440)} 1440w`,

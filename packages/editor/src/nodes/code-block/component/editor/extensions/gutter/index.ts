@@ -11,7 +11,6 @@ export const gutter_extensions: Extension[] = [
   line_numbers(),
   highlight_active_line_gutter(),
   fold_gutter({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     markerDOM: (open) => {
       const marker = document.createElement("span");
       marker.className = "cm-foldMarker";

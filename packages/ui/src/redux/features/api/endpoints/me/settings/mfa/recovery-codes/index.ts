@@ -10,7 +10,6 @@ export type RecoveryCodesResponse = {
 export const { useRecoveryCodesMutation: use_recovery_codes_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       recoveryCodes: builder.mutation<RecoveryCodesResponse, void>({
         query: () => ({
           url: `/${SEGMENT}`,

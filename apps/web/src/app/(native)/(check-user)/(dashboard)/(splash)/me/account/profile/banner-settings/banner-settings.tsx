@@ -105,7 +105,7 @@ const BannerSettings = (): React.ReactElement => {
                 `${BREAKPOINTS.up("mobile")} calc(100vw - 72px)`,
                 "100vw"
               ].join(","),
-              // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
               srcSet: [
                 `${get_cdn_url(user.banner_id, ImageSize.W_1440)} 1440w`,
                 `${get_cdn_url(user.banner_id, ImageSize.W_1200)} 1200w`,

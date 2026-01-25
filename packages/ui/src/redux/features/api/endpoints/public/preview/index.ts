@@ -9,7 +9,6 @@ export type GetStoryPreviewResponse = Story;
 export const { useGetStoryPreviewQuery: use_get_story_preview_query } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       getStoryPreview: builder.query<Story, string>({
         query: (story_id) => `/${SEGMENT(story_id)}`,
         serializeQueryArgs: ({ endpointName, queryArgs }) =>

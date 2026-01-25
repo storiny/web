@@ -9,7 +9,6 @@ export interface AssetDeletePayload {
 export const { useDeleteAssetMutation: use_delete_asset_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       deleteAsset: builder.mutation<void, AssetDeletePayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,

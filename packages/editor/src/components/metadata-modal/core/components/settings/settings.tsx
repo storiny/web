@@ -75,7 +75,6 @@ const SettingsTab = (): React.ReactElement => (
           },
           helper_text: {
             style: {
-              // eslint-disable-next-line prefer-snakecase/prefer-snakecase
               paddingLeft: "24px"
             }
           }

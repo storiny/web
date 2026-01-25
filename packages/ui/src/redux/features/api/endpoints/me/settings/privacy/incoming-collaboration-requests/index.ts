@@ -8,12 +8,10 @@ const SEGMENT = "me/settings/privacy/incoming-collaboration-requests";
 export type IncomingCollaborationRequestsPayload = CollaborationRequestsSchema;
 
 export const {
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
   useIncomingCollaborationRequestsMutation:
     use_incoming_collaboration_requests_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     incomingCollaborationRequests: builder.mutation<
       void,
       IncomingCollaborationRequestsPayload

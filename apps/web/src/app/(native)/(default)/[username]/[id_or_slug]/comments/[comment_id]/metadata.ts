@@ -21,7 +21,6 @@ export const generateMetadata = async ({
     });
 
     return {
-      /* eslint-disable prefer-snakecase/prefer-snakecase */
       title: `${comment_response.user?.name || "User"} on Storiny: "${truncate(
         comment_response.content,
         128
@@ -54,7 +53,6 @@ export const generateMetadata = async ({
           ? [get_cdn_url(comment_response.user.avatar_id, ImageSize.W_320)]
           : undefined
       }
-      /* eslint-enable prefer-snakecase/prefer-snakecase */
     };
   } catch (err) {
     const err_code = err?.code;

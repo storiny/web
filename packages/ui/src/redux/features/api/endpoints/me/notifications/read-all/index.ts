@@ -6,7 +6,6 @@ export const {
   useReadAllNotificationsMutation: use_read_all_notifications_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     readAllNotifications: builder.mutation<void, void>({
       query: () => ({
         url: `/${SEGMENT}`,

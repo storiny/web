@@ -13,7 +13,6 @@ export const {
   useBlogGeneralSettingsMutation: use_blog_general_settings_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     blogGeneralSettings: builder.mutation<void, BlogGeneralSettingsPayload>({
       query: ({ blog_id, ...rest }) => ({
         url: `/${SEGMENT(blog_id)}`,

@@ -10,7 +10,6 @@ export const {
   useResendVerificationEmailMutation: use_resend_verification_email_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     resendVerificationEmail: builder.mutation<
       void,
       ResendVerificationEmailPayload

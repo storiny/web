@@ -1,5 +1,3 @@
-/* eslint-disable prefer-snakecase/prefer-snakecase */
-
 import * as path from "node:path";
 
 import { NextConfig } from "next";

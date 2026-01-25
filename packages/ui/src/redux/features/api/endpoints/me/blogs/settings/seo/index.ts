@@ -11,7 +11,6 @@ export interface BlogSEOSettingsPayload extends BlogSEOSettingsSchema {
 export const { useBlogSEOSettingsMutation: use_blog_seo_settings_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       blogSEOSettings: builder.mutation<void, BlogSEOSettingsPayload>({
         query: ({ blog_id, ...rest }) => ({
           url: `/${SEGMENT(blog_id)}`,

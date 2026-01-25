@@ -24,7 +24,6 @@ const Map = (props: MapProps): React.ReactElement => {
       .setLngLat({ lat, lng })
       .addTo(
         new MapImpl({
-          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
           attributionControl: false,
           container: map_ref.current!,
           style: {
@@ -33,7 +32,7 @@ const Map = (props: MapProps): React.ReactElement => {
               osm: {
                 type: "raster",
                 tiles: ["https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"],
-                // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
                 tileSize: 256
               }
             },

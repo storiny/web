@@ -10,7 +10,6 @@ export type ReadHistoryPayload = AccountHistorySchema;
 export const { useReadHistoryMutation: use_read_history_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       readHistory: builder.mutation<void, ReadHistoryPayload>({
         query: (body) => ({
           url: `/${SEGMENT}`,

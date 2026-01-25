@@ -57,11 +57,9 @@ const check_for_mentions = (text: string): MenuTextMatch | null => {
 
     if (matching_string.length) {
       return {
-        /* eslint-disable prefer-snakecase/prefer-snakecase */
         leadOffset: match.index + maybe_leading_whitespace.length,
         matchingString: matching_string,
         replaceableString: match[2]
-        /* eslint-enable prefer-snakecase/prefer-snakecase */
       };
     }
   }
@@ -164,7 +162,6 @@ const MentionPlugin = (): React.ReactElement | null => {
   const results = use_mention_lookup_service(query_string);
 
   const check_for_slash_trigger_match = use_basic_typeahead_trigger_match("/", {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     minLength: 0
   });
 

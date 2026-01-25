@@ -21,7 +21,7 @@ const meta: Meta<typeof Mercator> = {
       singular: "visitor"
     },
     accessibility_label: "Mercator",
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
     style: { width: 640 }
   },
   tags: ["autodocs"]

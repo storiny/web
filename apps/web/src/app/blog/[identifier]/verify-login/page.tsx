@@ -18,7 +18,7 @@ const Page = async ({
   searchParams: search_params_loadable
 }: {
   params: Promise<{ identifier: string }>;
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
   searchParams: Promise<{ [_key: string]: string | string[] | undefined }>;
 }): Promise<React.ReactElement> => {
   const { identifier } = await params;
@@ -75,7 +75,6 @@ const Page = async ({
 
       // Set the session cookie.
       cookie_store.set({
-        /* eslint-disable prefer-snakecase/prefer-snakecase */
         name: SESSION_COOKIE_ID,
         value: res.cookie_value,
         httpOnly: false, // Needed to read cookie value using JS.
@@ -84,7 +83,6 @@ const Page = async ({
         sameSite: "strict",
         secure: true,
         path: "/"
-        /* eslint-enable prefer-snakecase/prefer-snakecase */
       });
     } catch (e) {
       handle_exception(e);

@@ -12,7 +12,6 @@ export type GetStoryCommentsResponse = Comment[];
 
 export const get_story_comments_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getStoryComments: builder.query<
       { has_more: boolean; items: Comment[]; page: number },
       {
@@ -58,7 +57,6 @@ export const get_story_comments_api = api_slice.injectEndpoints({
 export const {
   useLazyGetStoryCommentsQuery: use_get_story_comments_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getStoryComments: { select: select_story_comments }
   }
 } = get_story_comments_api;

@@ -8,7 +8,6 @@ export const CODE_BLOCK_LIGHT_THEME = (read_only: boolean): Extension =>
     mode: "light",
     read_only,
     styles: [
-      /* eslint-disable prefer-snakecase/prefer-snakecase */
       {
         tag: [t.keyword, t.controlKeyword, t.operatorKeyword, t.moduleKeyword],
         color: "#d20f39"
@@ -47,6 +46,5 @@ export const CODE_BLOCK_LIGHT_THEME = (read_only: boolean): Extension =>
       { tag: [t.strong], fontWeight: "bold" },
       { tag: [t.emphasis], fontStyle: "italic" },
       { tag: [t.strikethrough], textDecoration: "line-through" }
-      /* eslint-enable prefer-snakecase/prefer-snakecase */
     ]
   });

@@ -5765,10 +5765,10 @@
     eslint-plugin-typescript-sort-keys "^2.3.0"
     typescript "^5.2.2"
 
-"@storiny/eslint-config@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@storiny/eslint-config/-/eslint-config-1.1.0.tgz#901cdb1fc0fd6671e09d9bfb14af7bd4f1b685d5"
-  integrity sha512-dbekGIQsxqQd9dRD91asiv+WTsjK8EJpga2lCJxeNGJtTpSQkE/mqIPjOO4WCwvN4gJauMuad44CZ9MhgQKFUg==
+"@storiny/eslint-config@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@storiny/eslint-config/-/eslint-config-1.2.0.tgz#680af0aaa67b798a76003a9a0197300c3796ba9b"
+  integrity sha512-n4Zbf/yMQW97013gMYkqVHgPG2orrwTclh4Gqdu5tyFjWAF/lZrtbcK3uufuf6VBgwOteVtZ4Y+qnGjXPUQqiw==
   dependencies:
     "@typescript-eslint/eslint-plugin" "^5.59.11"
     "@typescript-eslint/parser" "^5.59.11"
@@ -5780,7 +5780,6 @@
     eslint-plugin-jest-dom "^4.0.3"
     eslint-plugin-no-literal-classnames "1.2.0"
     eslint-plugin-prefer-arrow-functions "^3.1.4"
-    eslint-plugin-prefer-snakecase "1.8.4"
     eslint-plugin-react "7.28.0"
     eslint-plugin-simple-import-sort "^10.0.0"
     eslint-plugin-sort-class-members "^1.18.0"

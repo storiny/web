@@ -12,12 +12,10 @@ export type GetExploreWritersResponse = User[];
 export const {
   useLazyGetExploreWritersQuery: use_get_explore_writers_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getExploreWriters: { select: select_explore_writers }
   }
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getExploreWriters: builder.query<
       { has_more: boolean; items: User[]; page: number },
       { category?: StoryCategory | "all"; page: number; query?: string }

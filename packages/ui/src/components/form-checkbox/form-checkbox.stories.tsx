@@ -47,7 +47,6 @@ const meta: Meta<typeof FormCheckbox> = {
     label: "Checkbox label",
     helper_text: "Form checkbox helper text",
     name: "sample",
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     style: { maxWidth: "300px" }
   }
 };

@@ -11,12 +11,10 @@ export type GetHistoryResponse = Story[];
 export const {
   useLazyGetHistoryQuery: use_get_history_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getHistory: { select: select_history }
   }
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getHistory: builder.query<
       { has_more: boolean; items: Story[]; page: number },
       { page: number; query?: string }

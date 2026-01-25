@@ -12,7 +12,6 @@ export interface RemoveBlogWriterPayload {
 export const { useRemoveBlogWriterMutation: use_remove_blog_writer_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       removeBlogWriter: builder.mutation<void, RemoveBlogWriterPayload>({
         query: ({ blog_id, user_id }) => ({
           url: `/${SEGMENT(blog_id, user_id)}`,

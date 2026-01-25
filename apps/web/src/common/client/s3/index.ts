@@ -1,5 +1,3 @@
-/* eslint-disable prefer-snakecase/prefer-snakecase */
-
 import { S3Client } from "@aws-sdk/client-s3";
 
 /**

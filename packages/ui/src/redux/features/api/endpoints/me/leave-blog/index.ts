@@ -10,7 +10,6 @@ export interface LeaveBlogPayload {
 export const { useLeaveBlogMutation: use_leave_blog_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       leaveBlog: builder.mutation<void, LeaveBlogPayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,

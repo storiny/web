@@ -18,7 +18,6 @@ interface Props {
 }
 
 const generate_json_ld = (profile: Props["profile"]): Graph => ({
-  /* eslint-disable prefer-snakecase/prefer-snakecase */
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -64,7 +63,6 @@ const generate_json_ld = (profile: Props["profile"]): Graph => ({
       url: `${process.env.NEXT_PUBLIC_WEB_URL}/${profile.username}`
     }
   ]
-  /* eslint-enable prefer-snakecase/prefer-snakecase */
 });
 
 const JsonLD = ({ profile }: Props): React.ReactElement => {

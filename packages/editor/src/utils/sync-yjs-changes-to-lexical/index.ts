@@ -51,7 +51,7 @@ const sync_event = (binding: Binding, event: YEvent<any>): void => {
 
   if (collab_node instanceof CollabElementNode && event instanceof YTextEvent) {
     // @ts-expect-error We need to access the private property of the class
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
     const { keysChanged, childListChanged, delta } = event;
 
     // Update
@@ -59,7 +59,6 @@ const sync_event = (binding: Binding, event: YEvent<any>): void => {
       collab_node.sync_properties_from_yjs(binding, keysChanged);
     }
 
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     if (childListChanged) {
       collab_node.apply_children_yjs_delta(binding, delta);
       collab_node.sync_children_from_yjs(binding);
@@ -68,7 +67,6 @@ const sync_event = (binding: Binding, event: YEvent<any>): void => {
     collab_node instanceof CollabTextNode &&
     event instanceof YMapEvent
   ) {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     const { keysChanged } = event;
 
     // Update
@@ -79,7 +77,6 @@ const sync_event = (binding: Binding, event: YEvent<any>): void => {
     collab_node instanceof CollabDecoratorNode &&
     event instanceof YXmlEvent
   ) {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     const { attributesChanged } = event;
 
     // Update
@@ -203,12 +200,11 @@ export const sync_yjs_changes_to_lexical = ({
       }
     },
     {
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       onUpdate:
         !provider || read_only
           ? undefined
           : (): void => sync_cursor_positions(binding, provider),
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
       skipTransforms: true,
       tag: is_from_undo_manager ? "historic" : "collaboration"
     }

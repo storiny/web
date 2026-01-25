@@ -10,7 +10,6 @@ export interface AssetFavouritePayload {
 export const { useFavouriteAssetMutation: use_favourite_asset_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       favouriteAsset: builder.mutation<void, AssetFavouritePayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,

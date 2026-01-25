@@ -12,7 +12,6 @@ export interface ReplyEditPayload {
 export const { useEditReplyMutation: use_edit_reply_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       editReply: builder.mutation<void, ReplyEditPayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,

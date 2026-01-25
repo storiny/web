@@ -1,5 +1,3 @@
-/* eslint-disable prefer-snakecase/prefer-snakecase */
-
 import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({

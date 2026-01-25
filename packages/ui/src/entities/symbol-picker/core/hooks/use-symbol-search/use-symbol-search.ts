@@ -6,7 +6,6 @@ import { TSymbol } from "~/entities/symbol-picker";
 import { symbol_query_atom } from "../../atoms";
 import { default as data } from "../../data.json";
 
-/* eslint-disable prefer-snakecase/prefer-snakecase */
 const SymbolFuse = new Fuse<TSymbol>(
   data.symbols.map(({ items }) => items).flat(),
   {
@@ -20,7 +19,6 @@ const SymbolFuse = new Fuse<TSymbol>(
     keys: ["name"]
   }
 );
-/* eslint-enable prefer-snakecase/prefer-snakecase */
 
 /**
  * Returns symbols matching the query input

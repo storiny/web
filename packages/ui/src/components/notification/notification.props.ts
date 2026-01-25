@@ -27,7 +27,6 @@ export interface NotificationProps extends NotificationPrimitive {
     actions?: React.ComponentPropsWithoutRef<"div">;
     decorator?: React.ComponentPropsWithoutRef<"span">;
     primary_button?: Omit<Toast.ToastActionProps, "altText"> & {
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       altText?: Toast.ToastActionProps["altText"];
     };
     secondary_button?: Toast.ToastCloseProps;

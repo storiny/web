@@ -13,7 +13,6 @@ export interface CommentAddPayload {
 export const { useAddCommentMutation: use_add_comment_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       addComment: builder.mutation<void, CommentAddPayload>({
         query: (body) => ({
           url: `/${SEGMENT}`,

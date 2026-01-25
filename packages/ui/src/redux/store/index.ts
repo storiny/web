@@ -51,7 +51,7 @@ export const setup_store = (
             api: prev_state.api
           })
         ),
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
     preloadedState: {
       ...preloaded_state,
       auth: {
@@ -63,7 +63,7 @@ export const setup_store = (
         )
       }
     },
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
     devTools: process.env.NODE_ENV === "development",
     middleware: (get_default_middleware) =>
       get_default_middleware().concat([
@@ -80,17 +80,17 @@ export const setup_store = (
                   "preferences/sync_to_browser",
                   "entities/set_rate_limit"
                 ],
-                // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
                 broadcastChannelOption: {
                   type: "native" // Disable in SSR
                 },
                 predicate: (action) => !/(api|toast)\//.test(action.type),
-                // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
                 prepareState: (state: AppState) => ({
                   ...state,
                   api: undefined
                 }),
-                // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
                 receiveState: (
                   prev_state: AppState,
                   next_state: AppState

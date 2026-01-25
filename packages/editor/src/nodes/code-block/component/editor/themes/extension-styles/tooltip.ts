@@ -1,7 +1,6 @@
 import { ExtensionStyles } from "../base";
 
 export const tooltip_extension_styles: ExtensionStyles = {
-  /* eslint-disable prefer-snakecase/prefer-snakecase */
   "& .cm-tooltip": {
     "& > ul": {
       "& li": {
@@ -34,5 +33,4 @@ export const tooltip_extension_styles: ExtensionStyles = {
     color: "var(--fg-minor)",
     overflow: "hidden"
   }
-  /* eslint-enable prefer-snakecase/prefer-snakecase */
 };

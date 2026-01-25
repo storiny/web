@@ -229,7 +229,7 @@ const StoryMetadataModalImpl = (
       slot_props={{
         tabs: {
           value,
-          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
           onValueChange: (next_value): void => {
             set_value(next_value as StoryMetadataModalSidebarTabsValue);
           }

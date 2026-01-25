@@ -11,7 +11,6 @@ export interface ReplyDeletePayload {
 export const { useDeleteReplyMutation: use_delete_reply_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       deleteReply: builder.mutation<void, ReplyDeletePayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,

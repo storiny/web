@@ -12,7 +12,6 @@ export type RemoveAccountPayload = AccountActionSchema & {
 export const { useRemoveAccountMutation: use_remove_account_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       removeAccount: builder.mutation<void, RemoveAccountPayload>({
         query: (body) => ({
           url: `/${SEGMENT}`,

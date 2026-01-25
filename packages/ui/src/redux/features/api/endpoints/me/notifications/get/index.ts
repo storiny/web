@@ -12,12 +12,10 @@ export type GetNotificationsType = "unread" | "following" | "friends" | "all";
 export const {
   useLazyGetNotificationsQuery: use_get_notifications_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getNotifications: { select: select_notifications }
   }
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getNotifications: builder.query<
       { has_more: boolean; items: Notification[]; page: number },
       { page: number; type: GetNotificationsType }

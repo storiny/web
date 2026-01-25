@@ -265,7 +265,6 @@ const Splash = (props: StoryProps): React.ReactElement => {
       // Use onClick to avoid nesting anchor inside another anchor
       {...(is_mobile
         ? {
-            // eslint-disable-next-line prefer-snakecase/prefer-snakecase
             onClick: () => router.push(story_url)
           }
         : { href: story_url })}
@@ -279,7 +278,7 @@ const Splash = (props: StoryProps): React.ReactElement => {
             className: styles["splash-img"],
             loading: "lazy",
             sizes: ["(min-width: 650px) 320px", "100vw"].join(","),
-            // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
             srcSet: [
               `${get_cdn_url(story.splash_id, ImageSize.W_320)} 320w`,
               `${get_cdn_url(story.splash_id, ImageSize.W_960)} 960w`

@@ -66,7 +66,7 @@ const HEADING: ElementTransformer = {
     const level = Number(node.get_tag().slice(1));
     return "#".repeat(level) + " " + export_children(node);
   },
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
   regExp: /^(#{1,6})\s/,
   replace: create_block_node((match) => {
     const tag = "h" + match[1].length;
@@ -91,7 +91,7 @@ const QUOTE: ElementTransformer = {
 
     return output.join("\n");
   },
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
   regExp: /^>\s/,
   replace: (parent_node, children, _match, is_import) => {
     if (is_import) {
@@ -120,7 +120,7 @@ const HR: ElementTransformer = {
   dependencies: [HorizontalRuleNode],
   export: (node: LexicalNode) =>
     $is_horizontal_rule_node(node) ? "***" : null,
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
   regExp: /^(---|\*\*\*|___)\s?$/,
   replace: (parent_node, _1, _2, is_import) => {
     const line = $create_horizontal_rule_node();
@@ -154,7 +154,7 @@ const CODE_BLOCK: ElementTransformer = {
       "```"
     );
   },
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
   regExp: /^```(\w{1,10})?\s/,
   replace: (parent_node, _, match) => {
     const [, language] = match;

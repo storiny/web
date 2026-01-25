@@ -13,7 +13,6 @@ export interface AvatarSettingsPayload {
 export const { useAvatarSettingsMutation: use_avatar_settings_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       avatarSettings: builder.mutation<
         AvatarSettingsResponse,
         AvatarSettingsPayload

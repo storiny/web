@@ -31,7 +31,6 @@ describe("web_share", () => {
 
     Object.defineProperty(navigator, "clipboard", {
       value: {
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
         writeText: jest.fn().mockImplementationOnce(() => Promise.resolve())
       },
       configurable: true

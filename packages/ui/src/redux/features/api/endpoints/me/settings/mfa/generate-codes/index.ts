@@ -10,7 +10,6 @@ export type GenerateCodesResponse = {
 export const { useGenerateCodesMutation: use_generate_codes_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       generateCodes: builder.mutation<GenerateCodesResponse, void>({
         query: () => ({
           url: `/${SEGMENT}`,

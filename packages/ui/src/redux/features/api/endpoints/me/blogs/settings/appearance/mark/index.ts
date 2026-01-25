@@ -17,7 +17,6 @@ export interface BlogMarkSettingsPayload {
 export const { useBlogMarkSettingsMutation: use_blog_mark_settings_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       blogMarkSettings: builder.mutation<
         BlogMarkSettingsResponse,
         BlogMarkSettingsPayload

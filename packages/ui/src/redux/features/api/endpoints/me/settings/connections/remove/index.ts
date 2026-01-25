@@ -9,7 +9,6 @@ export interface RemoveConnectionPayload {
 export const { useRemoveConnectionMutation: use_remove_connection_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       removeConnection: builder.mutation<void, RemoveConnectionPayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,

@@ -10,7 +10,6 @@ export interface StoryUnpublishPayload {
 export const { useUnpublishStoryMutation: use_unpublish_story_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       unpublishStory: builder.mutation<void, StoryUnpublishPayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,

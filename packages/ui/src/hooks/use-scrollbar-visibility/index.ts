@@ -28,7 +28,7 @@ export const use_scrollbar_visibility = <T extends HTMLElement>(
 
   use_resize_observer<T>({
     ref: container_ref,
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
     onResize: () => requestAnimationFrame(update_visibility),
     box: "border-box"
   });
@@ -38,7 +38,7 @@ export const use_scrollbar_visibility = <T extends HTMLElement>(
       const observer = new MutationObserver(update_visibility);
       observer.observe(container_ref.current, {
         subtree: true,
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
         childList: true
       });
 

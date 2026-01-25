@@ -11,7 +11,6 @@ export interface VerifyMFAPayload {
 export const { useVerfyMfaMutation: use_verify_mfa_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       verfyMfa: builder.mutation<void, VerifyMFAPayload>({
         query: (body) => ({
           url: `/${SEGMENT}`,

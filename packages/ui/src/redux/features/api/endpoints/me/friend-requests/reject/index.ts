@@ -11,7 +11,6 @@ export const {
   useRejectFriendRequestMutation: use_reject_friend_request_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     rejectFriendRequest: builder.mutation<void, RejectFriendRequestPayload>({
       query: (body) => ({
         url: `/${SEGMENT(body.id)}`,

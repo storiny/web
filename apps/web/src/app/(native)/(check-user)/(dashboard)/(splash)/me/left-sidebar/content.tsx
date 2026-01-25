@@ -97,7 +97,6 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
             className: clsx(css["flex"], styles.x, styles.viewport)
           },
           scrollbar: {
-            // eslint-disable-next-line prefer-snakecase/prefer-snakecase
             style: { zIndex: 1, backgroundColor: "transparent" }
           }
         }}

@@ -12,7 +12,6 @@ export interface AssetAltPayload {
 export const { useAssetAltMutation: use_asset_alt_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       assetAlt: builder.mutation<void, AssetAltPayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,

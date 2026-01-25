@@ -33,7 +33,6 @@ export const extend_code_block_theme = ({
   read_only
 }: ExtendCodeBlockThemeOptions): Extension => {
   const theme_options: ExtensionStyles = {
-    /* eslint-disable prefer-snakecase/prefer-snakecase */
     "&": {
       fontSize: "13px",
       backgroundColor: "var(--bg-body)",
@@ -125,7 +124,6 @@ export const extend_code_block_theme = ({
     ...auto_link_extension_styles,
     ...gutter_extension_styles,
     ...tooltip_extension_styles
-    /* eslint-enable prefer-snakecase/prefer-snakecase */
   };
 
   const theme_ext = EditorView.theme(theme_options, {

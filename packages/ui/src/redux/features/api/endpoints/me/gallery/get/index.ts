@@ -11,12 +11,10 @@ export type GetGalleryPhotosResponse = Photos["photos"];
 export const {
   useLazyGetGalleryPhotosQuery: use_get_gallery_photos_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getGalleryPhotos: { select: select_gallery_photos }
   }
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getGalleryPhotos: builder.query<
       { has_more: boolean; items: Photos["photos"]; page: number },
       { page: number; query?: string }

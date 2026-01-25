@@ -40,7 +40,7 @@ const meta: Meta<typeof BlogRightSidebar> = {
     force_mount: true,
     style: {
       width: "310px",
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
       marginRight: "48px"
     }
   },

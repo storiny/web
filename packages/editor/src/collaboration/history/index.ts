@@ -12,6 +12,5 @@ export const create_undo_manager = (
   root: XmlText
 ): UndoManager =>
   new UndoManager(root, {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     trackedOrigins: new Set([binding, null])
   });

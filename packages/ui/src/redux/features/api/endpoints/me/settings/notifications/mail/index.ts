@@ -8,11 +8,9 @@ const SEGMENT = "me/settings/notifications/mail";
 export type MailNotificationSettingsPayload = MailNotificationsSchema;
 
 export const {
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
   useMailNotificationSettingsMutation: use_mail_notification_settings_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     mailNotificationSettings: builder.mutation<
       void,
       MailNotificationSettingsPayload

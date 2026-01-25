@@ -26,11 +26,10 @@ const MultiValueRemove = <
   Group extends GroupBase<Option>
 >({
   children,
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
   innerProps
 }: MultiValueRemoveProps<Option, IsMulti, Group>): React.ReactElement => (
   <div
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     {...innerProps}
     className={clsx(
       css["flex-center"],
@@ -53,11 +52,9 @@ const LoadingIndicator = <
 >(
   props: LoadingIndicatorProps<Option, IsMulti, Group>
 ): React.ReactElement => {
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
   const { innerProps } = props;
   return (
     <Spinner
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       {...({ ...innerProps, size: undefined, color: undefined } as any)}
       size={"sm"}
       style={{ margin: "0 4px 0 12px" }}
@@ -118,11 +115,11 @@ const MultiSelect = React.forwardRef<
         input: (): string => styles.input,
         control: (): string => styles.control,
         placeholder: (): string => styles.placeholder,
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
         multiValue: (): string => styles.value,
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
         valueContainer: (): string => styles["value-container"],
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
         multiValueLabel: (): string =>
           clsx(css["t-body-2"], styles["value-label"]),
         option: (option_props): string =>
@@ -133,9 +130,9 @@ const MultiSelect = React.forwardRef<
           ),
         menu: (): string =>
           clsx(styles.menu, menu_placement === "top" && styles["is-top"]),
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
         noOptionsMessage: (): string => clsx(css["t-body-2"], css["t-minor"]),
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
         loadingMessage: (): string => clsx(css["t-body-2"], css["t-minor"])
       }}
       components={{
@@ -174,11 +171,11 @@ const MultiSelect = React.forwardRef<
         ...select_styles,
         container: (base): React.CSSProperties =>
           ({ ...base, ...style }) as React.CSSProperties,
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
         dropdownIndicator: (): React.CSSProperties => ({
           display: "none"
         }),
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
         clearIndicator: (): React.CSSProperties => ({
           display: "none"
         })

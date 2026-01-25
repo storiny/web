@@ -15,7 +15,6 @@ export interface InviteContributorPayload {
 export const { useInviteContributorMutation: use_invite_contributor_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       inviteContributor: builder.mutation<void, InviteContributorPayload>({
         query: ({ story_id, username, role }) => ({
           url: `/${SEGMENT(story_id)}`,

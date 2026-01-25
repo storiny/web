@@ -11,12 +11,10 @@ export type GetBlogFeedResponse = Story[];
 export const {
   useLazyGetBlogFeedQuery: use_get_blog_feed_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getBlogFeed: { select: select_blog_feed }
   }
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getBlogFeed: builder.query<
       { has_more: boolean; items: Story[]; page: number },
       {

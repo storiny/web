@@ -8,7 +8,6 @@ import css from "~/theme/main.module.scss";
 import styles from "./theme.module.scss";
 
 export const EDITOR_THEME: EditorThemeClasses = {
-  /* eslint-disable prefer-snakecase/prefer-snakecase */
   blockCursor: styles["block-cursor"],
   embedBlock: {
     base: styles["embed-block"],
@@ -41,5 +40,4 @@ export const EDITOR_THEME: EditorThemeClasses = {
     underline: styles["t-underline"],
     underlineStrikethrough: styles["t-underline-strikethrough"]
   }
-  /* eslint-enable prefer-snakecase/prefer-snakecase */
 };

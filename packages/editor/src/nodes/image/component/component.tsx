@@ -293,9 +293,8 @@ const ImageComponent = ({
           }
           slot_props={{
             content: {
-              // eslint-disable-next-line prefer-snakecase/prefer-snakecase
               collisionPadding: { top: 64 }, // Prevent header collision
-              // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
               sideOffset: 12,
               side: "top"
             }
@@ -351,7 +350,7 @@ const ImageComponent = ({
                       image: {
                         loading: "lazy",
                         sizes: get_image_sizes(layout, images.length, index),
-                        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
                         srcSet: [
                           `${get_cdn_url(image.key, ImageSize.W_2440)} 2440w`,
                           `${get_cdn_url(image.key, ImageSize.W_1920)} 1920w`,

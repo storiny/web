@@ -12,12 +12,10 @@ export type GetCommentReliesResponse = Reply[];
 export const {
   useLazyGetCommentRepliesQuery: use_get_comment_replies_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getCommentReplies: { select: select_comment_replies }
   }
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getCommentReplies: builder.query<
       { has_more: boolean; items: Reply[]; page: number },
       { comment_id: string; page: number }

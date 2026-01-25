@@ -13,12 +13,10 @@ export type GetUserEntityType = "followers" | "following" | "friends";
 export const {
   useLazyGetUserEntitiesQuery: use_get_user_entities_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getUserEntities: { select: select_user_entities }
   }
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getUserEntities: builder.query<
       { has_more: boolean; items: User[]; page: number },
       {

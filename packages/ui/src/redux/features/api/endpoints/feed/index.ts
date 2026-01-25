@@ -11,12 +11,10 @@ export type GetHomeFeedResponse = Story[];
 export const {
   useLazyGetHomeFeedQuery: use_get_home_feed_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getHomeFeed: { select: select_home_feed }
   }
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getHomeFeed: builder.query<
       { has_more: boolean; items: Story[]; page: number },
       { page: number; type: "suggested" | "friends-and-following" }

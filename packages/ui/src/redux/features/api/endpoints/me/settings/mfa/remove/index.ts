@@ -10,7 +10,6 @@ export type RemoveMFAPayload = Remove2FASchema;
 export const { useRemoveMfaMutation: use_remove_mfa_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       removeMfa: builder.mutation<void, RemoveMFAPayload>({
         query: (body) => ({
           url: `/${SEGMENT}`,

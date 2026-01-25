@@ -54,7 +54,9 @@
   height: 100%;
 
   &[data-state="ready"] {
-    img, [role="img"], [data-zoom] {
+    img,
+    [role="img"],
+    [data-zoom] {
       cursor: zoom-in;
     }
   }

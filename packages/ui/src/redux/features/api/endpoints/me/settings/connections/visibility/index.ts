@@ -11,11 +11,9 @@ export type ConnectionVisibilitySettingsPayload = {
 };
 
 export const {
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
   useConnectionVisibilityMutation: use_connection_visibility_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     connectionVisibility: builder.mutation<
       void,
       ConnectionVisibilitySettingsPayload

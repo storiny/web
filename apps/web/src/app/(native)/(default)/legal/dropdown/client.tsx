@@ -116,10 +116,9 @@ const DropdownClient = (): React.ReactElement => {
         content: {
           position: "popper",
           style: {
-            // eslint-disable-next-line prefer-snakecase/prefer-snakecase
             marginTop: "8px",
             width: "calc(var(--radix-select-trigger-width) - 24px)",
-            // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
             maxHeight: "calc(var(--radix-popper-available-height) - 24px)"
           }
         },

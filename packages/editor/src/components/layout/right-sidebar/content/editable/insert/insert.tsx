@@ -22,7 +22,6 @@ const Insert = ({ disabled }: { disabled?: boolean }): React.ReactElement => (
     <Spacer orientation={"vertical"} size={2} />
     <ScrollArea
       slot_props={{
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
         viewport: { asChild: true }
       }}
     >

@@ -83,7 +83,7 @@ const EmbedModal = ({
     {
       modal,
       open,
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
       onOpenChange: (next_open: boolean) => {
         form.reset();
         set_open(next_open);

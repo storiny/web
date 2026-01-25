@@ -247,7 +247,7 @@ class ZoomBase extends React.Component<ZoomPropsWithDefaults, ZoomState> {
 
         this.content_change_observer.observe(content_element, {
           attributes: true,
-          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
           childList: true,
           subtree: true
         });
@@ -257,7 +257,6 @@ class ZoomBase extends React.Component<ZoomPropsWithDefaults, ZoomState> {
         this.set_and_track_img
       );
       this.content_not_found_change_observer.observe(content_element, {
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
         childList: true,
         subtree: true
       });

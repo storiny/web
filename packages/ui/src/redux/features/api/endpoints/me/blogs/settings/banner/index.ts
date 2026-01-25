@@ -16,7 +16,6 @@ export const {
   useBlogBannerSettingsMutation: use_blog_banner_settings_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     blogBannerSettings: builder.mutation<
       BlogBannerSettingsResponse,
       BlogBannerSettingsPayload

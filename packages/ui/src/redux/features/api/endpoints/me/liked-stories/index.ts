@@ -10,12 +10,10 @@ export type GetLikedStoriesResponse = Story[];
 export const {
   useLazyGetLikedStoriesQuery: use_get_liked_stories_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getLikedStories: { select: select_liked_stories }
   }
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getLikedStories: get_stories_with_query_and_sort(builder, SEGMENT)
   })
 });

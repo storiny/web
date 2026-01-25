@@ -11,7 +11,6 @@ export const {
   useIncomingBlogRequestsMutation: use_incoming_blog_requests_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     incomingBlogRequests: builder.mutation<void, IncomingBlogRequestsPayload>({
       query: (body) => ({
         url: `/${SEGMENT}`,

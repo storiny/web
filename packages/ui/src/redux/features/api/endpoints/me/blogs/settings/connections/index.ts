@@ -12,7 +12,6 @@ export type BlogConnectionsPayload = BlogConnectionsSchema & {
 export const { useBlogConnectionsMutation: use_blog_connections_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       blogConnections: builder.mutation<void, BlogConnectionsPayload>({
         query: ({ blog_id, ...body }) => ({
           url: `/${SEGMENT(blog_id)}`,

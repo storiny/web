@@ -7,7 +7,6 @@ import styles from "./upload-progress.module.scss";
 
 const UploadProgress = (): React.ReactElement => {
   const { progress, animationDuration: animation_duration } = use_n_progress({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     isAnimating: true
   });
 

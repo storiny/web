@@ -13,7 +13,6 @@ export interface VerifyBlogDomainPayload {
 export const { useVerifyBlogDomainMutation: use_verify_blog_domain_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       verifyBlogDomain: builder.mutation<void, VerifyBlogDomainPayload>({
         query: ({ blog_id, domain }) => ({
           url: `/${SEGMENT(blog_id)}`,

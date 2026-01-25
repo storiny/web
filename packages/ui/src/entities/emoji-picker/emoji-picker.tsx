@@ -95,7 +95,7 @@ const EmojiPicker = (props: EmojiPickerProps): React.ReactElement => {
       slot_props={{
         content: {
           // Move the focus to the search input instead of the close button.
-          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
           onOpenAutoFocus: (event) => event.preventDefault()
         },
         trigger: { "aria-label": "Pick an emoji" }

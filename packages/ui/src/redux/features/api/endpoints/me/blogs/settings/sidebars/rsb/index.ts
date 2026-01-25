@@ -16,7 +16,6 @@ export type BlogRsbSettingsResponse = BlogRightSidebarItem[];
 export const { useBlogRsbSettingsMutation: use_blog_rsb_settings_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       blogRsbSettings: builder.mutation<
         BlogRsbSettingsResponse,
         BlogRsbSettingsPayload

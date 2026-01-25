@@ -11,7 +11,6 @@ export interface RemoveContributorPayload {
 export const { useRemoveContributorMutation: use_remove_contributor_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       removeContributor: builder.mutation<void, RemoveContributorPayload>({
         query: ({ story_id, user_id }) => ({
           url: `/${SEGMENT(story_id, user_id)}`,

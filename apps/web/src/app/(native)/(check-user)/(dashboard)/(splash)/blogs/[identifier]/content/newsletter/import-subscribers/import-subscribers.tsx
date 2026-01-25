@@ -41,7 +41,6 @@ const ImportSubscribers = (): React.ReactElement => {
     getInputProps: get_input_props,
     open
   } = use_dropzone({
-    /* eslint-disable prefer-snakecase/prefer-snakecase */
     maxFiles: 1,
     maxSize: TEN_MB_IN_BYTES,
     multiple: false,
@@ -53,8 +52,7 @@ const ImportSubscribers = (): React.ReactElement => {
       "text/csv": []
     },
     onError: () => toast("Unable to import the CSV file", "error"),
-    /* eslint-enable prefer-snakecase/prefer-snakecase */
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
     onDrop: (accepted_files, file_rejections) => {
       if (file_rejections.length) {
         let error_message = "";
@@ -102,7 +100,6 @@ const ImportSubscribers = (): React.ReactElement => {
 
           const { parse } = await import("papaparse");
           const results = await new Promise<string[]>((resolve, reject) => {
-            /* eslint-disable prefer-snakecase/prefer-snakecase */
             parse(file, {
               worker: true,
               skipEmptyLines: true,
@@ -120,7 +117,6 @@ const ImportSubscribers = (): React.ReactElement => {
                 }
               }
             });
-            /* eslint-enable prefer-snakecase/prefer-snakecase */
           });
 
           if (!results.length) {

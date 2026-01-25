@@ -15,7 +15,6 @@ interface Props {
 }
 
 const generate_json_ld = (tag: Props["tag"]): Graph => ({
-  /* eslint-disable prefer-snakecase/prefer-snakecase */
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -43,7 +42,6 @@ const generate_json_ld = (tag: Props["tag"]): Graph => ({
       url: `${process.env.NEXT_PUBLIC_WEB_URL}/tag/${tag.name}`
     }
   ]
-  /* eslint-enable prefer-snakecase/prefer-snakecase */
 });
 
 const Component = ({ tag }: Props): React.ReactElement => {

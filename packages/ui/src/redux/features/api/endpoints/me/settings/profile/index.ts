@@ -10,7 +10,6 @@ export type ProfileSettingsPayload = AccountGeneralSchema;
 export const { useProfileSettingsMutation: use_profile_settings_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       profileSettings: builder.mutation<void, ProfileSettingsPayload>({
         query: (body) => ({
           url: `/${SEGMENT}`,

@@ -10,7 +10,6 @@ export type ExportDataPayload = ExportDataSchema;
 export const { useExportDataMutation: use_export_data_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       exportData: builder.mutation<void, ExportDataPayload>({
         query: (body) => ({
           url: `/${SEGMENT}`,

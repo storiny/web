@@ -13,7 +13,7 @@ const Page = async ({
   searchParams: search_params_loadable
 }: {
   params: Promise<{ identifier: string }>;
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
   searchParams: Promise<{ [_key: string]: string | string[] | undefined }>;
 }): Promise<React.ReactElement> => {
   const { identifier } = await params;
@@ -25,7 +25,6 @@ const Page = async ({
 
     // Delete the cookie.
     (await cookies()).set({
-      /* eslint-disable prefer-snakecase/prefer-snakecase */
       name: SESSION_COOKIE_ID,
       value: "",
       httpOnly: !is_custom_domain,
@@ -34,7 +33,6 @@ const Page = async ({
       domain: is_custom_domain ? identifier : SESSION_COOKIE_DOMAIN,
       secure: true,
       path: "/"
-      /* eslint-enable prefer-snakecase/prefer-snakecase */
     });
   };
 

@@ -8,7 +8,6 @@ const description =
  * @see https://nextjs.org/docs/app/api-reference/functions/generate-viewport#the-viewport-object
  */
 export const viewport: Viewport = {
-  /* eslint-disable prefer-snakecase/prefer-snakecase */
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -16,7 +15,6 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: light)", color: "#fafafa" },
     { media: "(prefers-color-scheme: dark)", color: "#17191c" }
   ]
-  /* eslint-enable prefer-snakecase/prefer-snakecase */
 };
 
 /**
@@ -24,7 +22,6 @@ export const viewport: Viewport = {
  * @see https://nextjs.org/docs/app/building-your-application/optimizing/metadata
  */
 export const metadata: Metadata = {
-  /* eslint-disable prefer-snakecase/prefer-snakecase */
   metadataBase: new URL(process.env.NEXT_PUBLIC_WEB_URL!),
   description,
   manifest: `${process.env.NEXT_PUBLIC_WEB_URL}/app.webmanifest`,
@@ -133,5 +130,4 @@ export const metadata: Metadata = {
       }
     ]
   }
-  /* eslint-enable prefer-snakecase/prefer-snakecase */
 };

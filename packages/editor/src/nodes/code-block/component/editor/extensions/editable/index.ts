@@ -115,7 +115,6 @@ export const get_editable_extensions = ({
   }
 
   return [
-    /* eslint-disable prefer-snakecase/prefer-snakecase */
     ...collab_extensions,
     draw_selection(),
     drop_cursor(),
@@ -133,6 +132,5 @@ export const get_editable_extensions = ({
       ...completion_keymap,
       ...lint_keymap
     ])
-    /* eslint-enable prefer-snakecase/prefer-snakecase */
   ];
 };

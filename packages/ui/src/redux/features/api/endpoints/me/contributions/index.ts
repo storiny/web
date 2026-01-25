@@ -10,7 +10,6 @@ export type GetContributionsResponse = Story[];
 
 export const get_contributions_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getContributions: builder.query<
       { has_more: boolean; items: Story[]; page: number },
       { page: number; query?: string; sort: "recent" | "old" }
@@ -48,7 +47,6 @@ export const get_contributions_api = api_slice.injectEndpoints({
 export const {
   useLazyGetContributionsQuery: use_get_contributions_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getContributions: { select: select_contributions }
   }
 } = get_contributions_api;

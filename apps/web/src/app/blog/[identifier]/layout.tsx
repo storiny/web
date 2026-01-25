@@ -27,7 +27,6 @@ type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 const generate_json_ld = (
   blog: GetBlogResponse
 ): WithContext<Organization> => ({
-  /* eslint-disable prefer-snakecase/prefer-snakecase */
   "@context": "https://schema.org",
   "@type": "Organization",
   name: blog.name,
@@ -41,7 +40,6 @@ const generate_json_ld = (
         width: 128 as unknown as string
       }
     : undefined
-  /* eslint-enable prefer-snakecase/prefer-snakecase */
 });
 
 /**
@@ -74,7 +72,7 @@ const BlogLayout = async ({
 }: {
   children: React.ReactNode;
   params: Promise<{ identifier: string }>;
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
   searchParams: SearchParams;
 }): Promise<React.ReactElement | undefined> => {
   const { identifier } = await params;

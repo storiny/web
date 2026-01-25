@@ -10,7 +10,6 @@ export type GetCollaborationRequestsResponse = CollaborationRequest[];
 
 export const get_collaboration_requests_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getCollaborationRequests: builder.query<
       { has_more: boolean; items: CollaborationRequest[]; page: number },
       { page: number; type: "received" | "sent" }
@@ -44,7 +43,6 @@ export const get_collaboration_requests_api = api_slice.injectEndpoints({
 export const {
   useLazyGetCollaborationRequestsQuery: use_get_collaboration_requests_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getCollaborationRequests: { select: select_collaboration_requests }
   }
 } = get_collaboration_requests_api;

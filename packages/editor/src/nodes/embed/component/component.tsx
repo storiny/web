@@ -335,9 +335,8 @@ const EmbedComponent = ({
             open={editable && selected && $is_node_selection(selection)}
             slot_props={{
               content: {
-                // eslint-disable-next-line prefer-snakecase/prefer-snakecase
                 collisionPadding: { top: 64 }, // Prevent header collision
-                // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
                 sideOffset: 12,
                 side: "top"
               }

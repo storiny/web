@@ -8,11 +8,9 @@ const SEGMENT = "me/settings/notifications/site";
 export type SiteNotificationSettingsPayload = SiteNotificationsSchema;
 
 export const {
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
   useSiteNotificationSettingsMutation: use_site_notification_settings_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     siteNotificationSettings: builder.mutation<
       void,
       SiteNotificationSettingsPayload

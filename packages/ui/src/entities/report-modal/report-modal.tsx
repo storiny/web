@@ -93,7 +93,6 @@ const ReportModal = (props: ReportModalProps): React.ReactElement => {
             form_slot_props={{
               control: {
                 style: {
-                  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
                   paddingBlock: "12px"
                 }
               }

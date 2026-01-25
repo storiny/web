@@ -16,7 +16,6 @@ export type GetStoryContributorsResponse = {
 
 export const get_story_contributors_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getStoryContributors: builder.query<
       GetStoryContributorsResponse,
       { story_id: string }

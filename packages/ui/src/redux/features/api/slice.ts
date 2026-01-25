@@ -45,7 +45,6 @@ export const get_api_server_url = (): string => {
 };
 
 export const api_slice = create_api({
-  /* eslint-disable prefer-snakecase/prefer-snakecase */
   reducerPath: "api",
   baseQuery: fetch_base_query({
     baseUrl: `${get_api_server_url()}/v${API_VERSION}`,
@@ -74,5 +73,4 @@ export const api_slice = create_api({
     "BlogWriterRequest"
   ],
   endpoints: () => ({})
-  /* eslint-enable prefer-snakecase/prefer-snakecase */
 });

@@ -27,12 +27,10 @@ import { abbreviate_number } from "~/utils/abbreviate-number";
 import styles from "./area-chart.module.scss";
 import { AreaChartDatum, AreaChartProps } from "./area-chart.props";
 
-// eslint-disable-next-line prefer-snakecase/prefer-snakecase
 export const DATE_SCALE_CONFIG = { type: "band", paddingInner: 0.3 } as const;
 export const VALUE_SCALE_CONFIG = { type: "linear" } as const;
 
 const chart_theme = build_chart_theme({
-  /* eslint-disable prefer-snakecase/prefer-snakecase */
   backgroundColor: "var(--bg-body)",
   colors: ["var(--inverted-400)"],
   gridColor: "var(--divider)",
@@ -40,7 +38,6 @@ const chart_theme = build_chart_theme({
   svgLabelBig: { fill: "var(--fg-minor)" },
   svgLabelSmall: { fill: "var(--fg-minor)" },
   tickLength: 6
-  /* eslint-enable prefer-snakecase/prefer-snakecase */
 });
 
 /**

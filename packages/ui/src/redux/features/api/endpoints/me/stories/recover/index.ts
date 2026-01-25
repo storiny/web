@@ -10,7 +10,6 @@ export interface StoryRecoverPayload {
 export const { useRecoverStoryMutation: use_recover_story_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       recoverStory: builder.mutation<void, StoryRecoverPayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,

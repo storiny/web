@@ -12,7 +12,6 @@ export interface InviteBlogEditorPayload {
 export const { useInviteBlogEditorMutation: use_invite_blog_editor_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       inviteBlogEditor: builder.mutation<void, InviteBlogEditorPayload>({
         query: ({ blog_id, username }) => ({
           url: `/${SEGMENT(blog_id)}`,

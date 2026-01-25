@@ -12,7 +12,6 @@ export interface AssetRatingPayload {
 export const { useAssetRatingMutation: use_asset_rating_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       assetRating: builder.mutation<void, AssetRatingPayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,

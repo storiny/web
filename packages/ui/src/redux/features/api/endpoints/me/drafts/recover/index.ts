@@ -10,7 +10,6 @@ export interface DraftRecoverPayload {
 export const { useRecoverDraftMutation: use_recover_draft_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       recoverDraft: builder.mutation<void, DraftRecoverPayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,

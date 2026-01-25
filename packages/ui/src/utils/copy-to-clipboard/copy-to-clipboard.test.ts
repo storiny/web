@@ -11,7 +11,6 @@ describe("copy_to_clipboard", () => {
     Object.defineProperty(global, "navigator", {
       value: {
         clipboard: {
-          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
           writeText: jest.fn().mockImplementationOnce(() => Promise.resolve())
         }
       },

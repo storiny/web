@@ -64,7 +64,7 @@ const Mercator = (props: MercatorProps): React.ReactElement => {
   const { containerRef: container_ref, TooltipInPortal } =
     use_tooltip_in_portal({
       scroll: true,
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
       detectBounds: true
     });
   const {
@@ -123,14 +123,12 @@ const Mercator = (props: MercatorProps): React.ReactElement => {
                           const coords = local_point(event);
 
                           show_tooltip({
-                            /* eslint-disable prefer-snakecase/prefer-snakecase */
                             tooltipData: {
                               name: feature.properties.name,
                               code: feature.properties.code
                             },
                             tooltipTop: coords?.y,
                             tooltipLeft: coords?.x
-                            /* eslint-enable prefer-snakecase/prefer-snakecase */
                           });
                         }}
                         // Move the path to the bottom so that it is drawn last

@@ -13,7 +13,6 @@ export interface GalleryUploadPayload {
 export const { useUploadGalleryMutation: use_upload_gallery_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       uploadGallery: builder.mutation<
         GalleryUploadResponse,
         GalleryUploadPayload

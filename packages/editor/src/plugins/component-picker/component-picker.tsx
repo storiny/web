@@ -254,7 +254,6 @@ const ComponentPickerPlugin = (): React.ReactElement | null => {
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
 
   const check_for_trigger_match = use_basic_typeahead_trigger_match("/", {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     minLength: 0
   });
 

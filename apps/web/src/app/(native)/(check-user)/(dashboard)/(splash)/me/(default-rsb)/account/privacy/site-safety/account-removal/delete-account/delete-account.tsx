@@ -111,7 +111,6 @@ const DeleteAccount = ({
       <DeleteAccountModal deleted={deleted} />
     </Form>,
     {
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       onOpenChange: deleted ? (): void => undefined : undefined,
       fullscreen: is_smaller_than_mobile,
       footer: (

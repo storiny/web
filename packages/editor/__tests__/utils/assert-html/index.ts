@@ -76,7 +76,6 @@ const prettify_html = async (
     await prettier.format(
       output,
       Object.assign(
-        /* eslint-disable prefer-snakecase/prefer-snakecase */
         {
           plugins: ["prettier-plugin-organize-attributes"],
           bracketSameLine: true,
@@ -84,7 +83,6 @@ const prettify_html = async (
           parser: "html"
         },
         { attributeGroups: ["$DEFAULT", "^data-"], attributeSort: "ASC" } as any
-        /* eslint-enable prefer-snakecase/prefer-snakecase */
       )
     )
   ).trim();

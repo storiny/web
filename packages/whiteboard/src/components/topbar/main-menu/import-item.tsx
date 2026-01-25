@@ -14,17 +14,15 @@ const ImportItem = (): React.ReactElement => {
   const canvas = use_canvas();
   const toast = use_toast();
   const [open_file_selector] = use_file_picker({
-    /* eslint-disable prefer-snakecase/prefer-snakecase */
     readAs: "ArrayBuffer",
     accept: FILE_EXTENSIONS.map((ext) => `.${ext}`),
     multiple: false,
     limitFilesConfig: { max: 1, min: 1 },
-    /* eslint-enable prefer-snakecase/prefer-snakecase */
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
     onFilesRejected: () => {
       toast("Unable to import the sketch file", "error");
     },
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
     onFilesSuccessfulySelected: ({ filesContent: files_content }) => {
       if (files_content[0]) {
         try {

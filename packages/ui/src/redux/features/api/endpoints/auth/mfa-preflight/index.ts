@@ -14,7 +14,6 @@ export type MfaPreflightPayload = Omit<LoginSchema, "remember_me">;
 export const { useMfaPreflightMutation: use_mfa_preflight_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       mfaPreflight: builder.mutation<MfaPreflightResponse, MfaPreflightPayload>(
         {
           query: (body) => ({

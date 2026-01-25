@@ -9,18 +9,16 @@ import AuthLayout from "../(native)/(auth)/layout";
 import Client from "./client";
 
 const Page = async ({
-  searchParams: search_params_loadable
+  searchParams
 }: {
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
   searchParams: Promise<{ [_key: string]: string | string[] | undefined }>;
 }): Promise<React.ReactElement> => {
-  const search_params = await search_params_loadable;
+  const to = (await searchParams).to;
   const logout = async (): Promise<void> => {
     "use server";
 
     // Delete the cookie.
     (await cookies()).set({
-      /* eslint-disable prefer-snakecase/prefer-snakecase */
       name: SESSION_COOKIE_ID,
       value: "",
       httpOnly: true,
@@ -29,7 +27,6 @@ const Page = async ({
       domain: SESSION_COOKIE_DOMAIN,
       secure: true,
       path: "/"
-      /* eslint-enable prefer-snakecase/prefer-snakecase */
     });
   };
 
@@ -37,11 +34,7 @@ const Page = async ({
     <AuthLayout>
       <Client
         logout={logout}
-        to={
-          typeof search_params.to === "string"
-            ? decodeURIComponent(search_params.to)
-            : "/login"
-        }
+        to={typeof to === "string" ? decodeURIComponent(to) : "/login"}
       />
     </AuthLayout>
   );

@@ -211,7 +211,7 @@ const StatusModal = ({
     {
       ...modal_props,
       open,
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
       onOpenChange: (next_open) => {
         set_open(next_open);
       },

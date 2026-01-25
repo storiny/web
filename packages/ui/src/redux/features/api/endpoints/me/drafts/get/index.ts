@@ -10,7 +10,6 @@ export type GetDraftsResponse = Story[];
 
 export const get_drafts_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getDrafts: builder.query<
       { has_more: boolean; items: Story[]; page: number },
       {
@@ -54,7 +53,6 @@ export const get_drafts_api = api_slice.injectEndpoints({
 export const {
   useLazyGetDraftsQuery: use_get_drafts_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getDrafts: { select: select_drafts }
   }
 } = get_drafts_api;

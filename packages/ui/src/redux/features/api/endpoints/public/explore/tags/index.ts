@@ -12,12 +12,10 @@ export type GetExploreTagsResponse = Tag[];
 export const {
   useLazyGetExploreTagsQuery: use_get_explore_tags_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getExploreTags: { select: select_explore_tags }
   }
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getExploreTags: builder.query<
       { has_more: boolean; items: Tag[]; page: number },
       { category?: StoryCategory | "all"; page: number; query?: string }

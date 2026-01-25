@@ -8,11 +8,9 @@ const SEGMENT = "me/settings/privacy/incoming-friend-requests";
 export type IncomingFriendRequestsPayload = FriendRequestsSchema;
 
 export const {
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
   useIncomingFriendRequestsMutation: use_incoming_friend_requests_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     incomingFriendRequests: builder.mutation<
       void,
       IncomingFriendRequestsPayload

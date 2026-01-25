@@ -16,7 +16,6 @@ const meta: Meta<typeof Textarea> = {
     color: "inverted",
     slot_props: {
       container: {
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
         style: { maxWidth: "300px" }
       }
     },

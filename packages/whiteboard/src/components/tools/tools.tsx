@@ -135,17 +135,15 @@ const ImageTool = (): React.ReactElement => {
   const canvas = use_canvas();
   const toast = use_toast();
   const [open_file_selector] = use_file_picker({
-    /* eslint-disable prefer-snakecase/prefer-snakecase */
     readAs: "DataURL",
     accept: "image/*",
     multiple: false,
     limitFilesConfig: { max: 1, min: 1 },
-    /* eslint-enable prefer-snakecase/prefer-snakecase */
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
     onFilesRejected: () => {
       toast("Unable to import the image", "error");
     },
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
     onFilesSuccessfulySelected: ({ filesContent: files_content }) => {
       if (files_content[0]) {
         const file = files_content[0];
@@ -279,7 +277,6 @@ const Tools = (): React.ReactElement => {
           className: clsx(styles.x, styles.thumb)
         },
         scrollbar: {
-          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
           style: { backgroundColor: "transparent", border: "none", zIndex: 1 }
         }
       }}

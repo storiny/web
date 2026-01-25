@@ -13,7 +13,6 @@ export const {
   useRemoveBlogSubscriberMutation: use_remove_blog_subscriber_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     removeBlogSubscriber: builder.mutation<void, RemoveBlogSubscriberPayload>({
       query: ({ blog_id, subscriber_id }) => ({
         url: `/${SEGMENT(blog_id, subscriber_id)}`,

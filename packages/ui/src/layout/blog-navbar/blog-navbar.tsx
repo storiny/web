@@ -53,7 +53,7 @@ const BlogNavbar = (props: BlogNavbarProps): React.ReactElement => {
               loading: "eager",
               draggable: false,
               sizes: "100vw",
-              // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
               srcSet: [
                 `${get_cdn_url(blog.banner_id, ImageSize.W_2440)} 2440w`,
                 `${get_cdn_url(blog.banner_id, ImageSize.W_1920)} 1920w`,

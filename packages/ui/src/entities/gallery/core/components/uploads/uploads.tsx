@@ -36,7 +36,6 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
     getInputProps: get_input_props,
     isDragActive: is_drag_active
   } = use_dropzone({
-    /* eslint-disable prefer-snakecase/prefer-snakecase */
     maxFiles: 1,
     maxSize: TEN_MB_IN_BYTES,
     multiple: false,
@@ -49,8 +48,7 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
       "image/webp": []
     },
     onError: () => toast("Unable to import the image file", "error"),
-    /* eslint-enable prefer-snakecase/prefer-snakecase */
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
     onDrop: (accepted_files, file_rejections) => {
       if (file_rejections.length) {
         let error_message = "";

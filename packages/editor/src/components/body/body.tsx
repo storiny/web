@@ -146,8 +146,7 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
       className={clsx(styles.body, read_only && styles["read-only"])}
       data-testid={"editor-container"}
       {...(show_overlay
-        ? /* eslint-disable prefer-snakecase/prefer-snakecase */
-          {
+        ? {
             style: {
               userSelect: "none",
               overflow: "hidden",
@@ -155,8 +154,7 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
               maxHeight: "1px"
             }
           }
-        : /* eslint-enable prefer-snakecase/prefer-snakecase */
-          {})}
+        : {})}
     >
       {read_only && <StoryHeader />}
       <RichTextPlugin

@@ -12,7 +12,6 @@ export interface CommentEditPayload {
 export const { useEditCommentMutation: use_edit_comment_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       editComment: builder.mutation<void, CommentEditPayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,

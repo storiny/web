@@ -11,7 +11,6 @@ export interface BlogFontDeletePayload {
 export const { useDeleteBlogFontMutation: use_delete_blog_font_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       deleteBlogFont: builder.mutation<void, BlogFontDeletePayload>({
         query: ({ variant, blog_id }) => ({
           url: `/${SEGMENT(blog_id, variant)}`,

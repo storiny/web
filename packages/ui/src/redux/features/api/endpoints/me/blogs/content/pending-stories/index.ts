@@ -11,7 +11,6 @@ export type GetBlogPendingStoriesReponse = Story[];
 
 export const get_blog_pending_stories_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getBlogPendingStories: builder.query<
       { has_more: boolean; items: Story[]; page: number },
       {
@@ -54,7 +53,6 @@ export const get_blog_pending_stories_api = api_slice.injectEndpoints({
 export const {
   useLazyGetBlogPendingStoriesQuery: use_get_blog_pending_stories_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getBlogPendingStories: { select: select_blog_pending_stories }
   }
 } = get_blog_pending_stories_api;

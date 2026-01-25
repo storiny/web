@@ -23,7 +23,6 @@ global.ResizeObserver = require("resize-observer-polyfill");
 window.HTMLElement.prototype.scrollIntoView = (): void => undefined;
 
 // Mock `matchMedia`
-/* eslint-disable prefer-snakecase/prefer-snakecase */
 Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: jest.fn().mockImplementation((query) => ({
@@ -37,7 +36,6 @@ Object.defineProperty(window, "matchMedia", {
     dispatchEvent: jest.fn()
   }))
 });
-/* eslint-enable prefer-snakecase/prefer-snakecase */
 
 // Mock `localStorage`
 Storage.prototype.setItem = jest.fn();
@@ -49,7 +47,6 @@ jest.mock("nanoid", () => ({
 }));
 
 // Mock Next.js navigation utilities
-/* eslint-disable prefer-snakecase/prefer-snakecase */
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(() => ({
     push: jest.fn()
@@ -60,7 +57,6 @@ jest.mock("next/navigation", () => ({
   useSelectedLayoutSegment: jest.fn(),
   useSelectedLayoutSegments: jest.fn()
 }));
-/* eslint-enable prefer-snakecase/prefer-snakecase */
 
 // Intersection observer mock
 const mock_intersection_observer = jest.fn();

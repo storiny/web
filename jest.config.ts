@@ -1,5 +1,3 @@
-/* eslint-disable prefer-snakecase/prefer-snakecase */
-
 import type { Config } from "jest";
 
 const config: Config = {

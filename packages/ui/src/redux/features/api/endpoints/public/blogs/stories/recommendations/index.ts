@@ -13,12 +13,10 @@ export const {
   useLazyGetBlogStoryRecommendationsQuery:
     use_get_blog_story_recommendations_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getBlogStoryRecommendations: { select: select_blog_story_recommendations }
   }
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getBlogStoryRecommendations: builder.query<
       { has_more: boolean; items: Story[]; page: number },
       { blog_id: string; page: number; story_id: string }

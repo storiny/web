@@ -36,7 +36,6 @@ export const use_fabric = (): ((
     }
 
     canvas.current = new Canvas(element, {
-      /* eslint-disable prefer-snakecase/prefer-snakecase */
       enableRetinaScaling: true,
       backgroundColor: SWATCH[theme],
       selectionColor: "rgba(46,115,252,0.12)",
@@ -47,7 +46,6 @@ export const use_fabric = (): ((
       moveCursor: CURSORS.move,
       uniformScaling: false, // Uniformly scale X and Y
       preserveObjectStacking: true // Prevents bringing selected objects to the front
-      /* eslint-enable prefer-snakecase/prefer-snakecase */
     });
 
     // Disable context menu

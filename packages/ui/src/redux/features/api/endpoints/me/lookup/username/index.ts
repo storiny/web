@@ -9,7 +9,6 @@ export type LookupUsernameResponse = User[];
 export const { useLazyLookupUsernameQuery: use_lazy_lookup_username_query } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       lookupUsername: builder.query<LookupUsernameResponse, { query: string }>({
         query: ({ query }) => `/${SEGMENT}?query=${encodeURIComponent(query)}`,
         serializeQueryArgs: ({ endpointName, queryArgs }) =>

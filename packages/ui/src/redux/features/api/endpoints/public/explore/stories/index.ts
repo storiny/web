@@ -12,12 +12,10 @@ export type GetExploreStoriesResponse = Story[];
 export const {
   useLazyGetExploreStoriesQuery: use_get_explore_stories_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getExploreStories: { select: select_explore_stories }
   }
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getExploreStories: builder.query<
       { has_more: boolean; items: Story[]; page: number },
       { category?: StoryCategory | "all"; page: number; query?: string }

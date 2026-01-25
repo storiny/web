@@ -146,7 +146,6 @@ const SuspendedLegalLeftSidebarContent = (): React.ReactElement => {
           className: clsx(styles.x, styles.viewport)
         },
         scrollbar: {
-          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
           style: { zIndex: 1, backgroundColor: "transparent" }
         }
       }}

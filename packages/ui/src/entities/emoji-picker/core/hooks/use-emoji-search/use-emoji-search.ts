@@ -6,7 +6,6 @@ import { default as data } from "../../data.json";
 
 const EMOJI_IDS = Object.keys(data.emojis);
 
-/* eslint-disable prefer-snakecase/prefer-snakecase */
 const EmojiFuse = new Fuse<string>(EMOJI_IDS, {
   isCaseSensitive: false,
   includeScore: false,
@@ -16,7 +15,6 @@ const EmojiFuse = new Fuse<string>(EMOJI_IDS, {
   location: 0,
   threshold: 0.6
 });
-/* eslint-enable prefer-snakecase/prefer-snakecase */
 
 /**
  * Returns emojis matching the query input

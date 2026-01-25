@@ -48,7 +48,7 @@ export interface MultiSelectProps
    * Value change callback
    * @param next_values New values
    */
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
   onChange?: (next_values: string[]) => void;
   /**
    * Options for the component.

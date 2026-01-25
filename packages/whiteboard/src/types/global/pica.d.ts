@@ -10,7 +10,7 @@ declare module "image-blob-reduce" {
           out_canvas: HTMLCanvasElement;
         }
       ): Promise<any>;
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
       toBlob(file: File, options: ImageBlobReduceOptions): Promise<Blob>;
     }
 

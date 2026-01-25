@@ -10,7 +10,6 @@ export type AddPasswordPayload = AddPasswordSchema;
 export const { useAddPasswordMutation: use_add_password_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       addPassword: builder.mutation<void, AddPasswordPayload>({
         query: (body) => ({
           url: `/${SEGMENT}`,

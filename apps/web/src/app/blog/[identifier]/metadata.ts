@@ -33,7 +33,6 @@ export const generateMetadata = async ({
     const blog_url = get_blog_url(blog);
 
     return {
-      /* eslint-disable prefer-snakecase/prefer-snakecase */
       title: {
         template: `%s — ${blog.seo_title || blog.name}`,
         default: blog.seo_title || blog.name
@@ -98,7 +97,6 @@ export const generateMetadata = async ({
             : undefined
       },
       archives: `${blog_url}/archive`
-      /* eslint-enable prefer-snakecase/prefer-snakecase */
     };
   } catch (err) {
     const err_code = err?.code;

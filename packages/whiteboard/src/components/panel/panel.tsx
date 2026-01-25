@@ -33,7 +33,6 @@ const ToolsPanel = (): React.ReactElement => {
         viewport: {
           ref,
           style: {
-            // eslint-disable-next-line prefer-snakecase/prefer-snakecase
             paddingRight: visible ? "10px" : 0
           }
         },

@@ -14,7 +14,6 @@ export interface BlogFontUploadPayload {
 export const { useUploadBlogFontMutation: use_upload_blog_font_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       uploadBlogFont: builder.mutation<
         BlogFontUploadReponse,
         BlogFontUploadPayload

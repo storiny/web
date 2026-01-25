@@ -27,7 +27,7 @@ const meta: Meta<typeof Select> = {
         placeholder: "Select a value"
       }
     },
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
     style: { maxWidth: "256px" }
   }
 };

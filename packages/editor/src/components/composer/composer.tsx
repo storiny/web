@@ -21,10 +21,9 @@ const EditorComposer = ({
   read_only?: boolean;
 }): React.ReactElement => {
   const INITIAL_CONFIG: InitialConfigType = {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     editorState: null, // `null` is required here to allow yjs to set the initial state
     namespace: EditorNamespace.MAIN,
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
     onError: dev_console.error,
     nodes: ignore_nodes ? undefined : EDITOR_NODES,
     theme: ignore_theme ? undefined : EDITOR_THEME,

@@ -11,7 +11,6 @@ import { ProgressStateProps } from "./progress-state.props";
 
 const ProgressState = ({ label }: ProgressStateProps): React.ReactElement => {
   const { progress, animationDuration: animation_duration } = use_n_progress({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     isAnimating: true
   });
 

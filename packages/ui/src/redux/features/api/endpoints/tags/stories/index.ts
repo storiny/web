@@ -11,12 +11,10 @@ export type GetTagStoriesResponse = Story[];
 export const {
   useLazyGetTagStoriesQuery: use_get_tag_stories_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getTagStories: { select: select_tag_stories }
   }
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getTagStories: builder.query<
       { has_more: boolean; items: Story[]; page: number },
       { page: number; query?: string; sort: string; tag_name: string }

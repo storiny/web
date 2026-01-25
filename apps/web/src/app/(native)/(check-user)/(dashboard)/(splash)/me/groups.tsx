@@ -192,7 +192,6 @@ const get_dashboard_groups_fuse = async (): Promise<
 > => {
   const Fuse = (await import("fuse.js")).default;
   return new Fuse<Group<DashboardSegment>>(DASHBOARD_GROUPS, {
-    /* eslint-disable prefer-snakecase/prefer-snakecase */
     isCaseSensitive: false,
     includeScore: false,
     shouldSort: true,
@@ -202,7 +201,6 @@ const get_dashboard_groups_fuse = async (): Promise<
     location: 0,
     threshold: 0.3,
     keys: ["items.title"]
-    /* eslint-enable prefer-snakecase/prefer-snakecase */
   });
 };
 

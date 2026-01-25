@@ -51,7 +51,6 @@ const meta: Meta<typeof FormInput> = {
     name: "sample",
     form_slot_props: {
       form_item: {
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
         style: { maxWidth: "300px" }
       }
     }

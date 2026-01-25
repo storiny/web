@@ -83,7 +83,6 @@ export class Client {
     this.doc.on("update", this.on_update);
 
     this.awareness = {
-      /* eslint-disable prefer-snakecase/prefer-snakecase */
       getLocalState(this: Client): UserState | null {
         return this.awareness_state;
       },
@@ -101,7 +100,6 @@ export class Client {
       setLocalState(this: Client, state: UserState): void {
         this.awareness_state = state;
       }
-      /* eslint-enable prefer-snakecase/prefer-snakecase */
     };
   }
 
@@ -109,13 +107,11 @@ export class Client {
    * Awareness object
    */
   public awareness: {
-    /* eslint-disable prefer-snakecase/prefer-snakecase */
     getLocalState: () => UserState | null;
     getStates: () => Map<number, UserState>;
     off(): void;
     on(): void;
     setLocalState: (state: UserState) => void;
-    /* eslint-enable prefer-snakecase/prefer-snakecase */
   };
   /**
    * ID of the client

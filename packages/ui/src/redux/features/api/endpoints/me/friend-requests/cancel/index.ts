@@ -11,7 +11,6 @@ export const {
   useCancelFriendRequestMutation: use_cancel_friend_request_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     cancelFriendRequest: builder.mutation<void, CancelFriendRequestPayload>({
       query: (body) => ({
         url: `/${SEGMENT(body.id)}`,

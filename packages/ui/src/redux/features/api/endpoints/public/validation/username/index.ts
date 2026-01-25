@@ -12,7 +12,6 @@ export const {
   useUsernameValidationMutation: use_username_validation_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     usernameValidation: builder.mutation<void, UsernameValidationPayload>({
       query: (body) => ({
         url: `/${SEGMENT}`,

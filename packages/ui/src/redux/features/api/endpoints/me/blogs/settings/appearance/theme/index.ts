@@ -15,7 +15,6 @@ export const {
   useBlogThemeSettingsMutation: use_blog_theme_settings_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     blogThemeSettings: builder.mutation<void, BlogThemeSettingsPayload>({
       query: ({ blog_id, ...body }) => ({
         url: `/${SEGMENT(blog_id)}`,

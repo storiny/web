@@ -16,7 +16,6 @@ const Form = <TFieldValues extends FieldValues = FieldValues>(
         {...rest}
         noValidate
         {...(on_submit && {
-          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
           onSubmit: provider_props.handleSubmit(on_submit)
         })}
       >

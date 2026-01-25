@@ -8,7 +8,6 @@ const meta: Meta<typeof MultiSelect> = {
   title: "components/multi-select",
   component: MultiSelect,
   args: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     style: { maxWidth: "300px" },
     options: [
       { value: "one", label: "First option" },

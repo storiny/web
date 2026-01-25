@@ -1,7 +1,6 @@
 import { ExtensionStyles } from "../base";
 
 const empty_line_gutter_extension_styles: ExtensionStyles = {
-  /* eslint-disable prefer-snakecase/prefer-snakecase */
   "&.cm-emptyLines": {
     color: "var(--fg-muted)",
     opacity: 0.45,
@@ -9,7 +8,6 @@ const empty_line_gutter_extension_styles: ExtensionStyles = {
     textAlign: "center",
     width: "18px"
   }
-  /* eslint-enable prefer-snakecase/prefer-snakecase */
 };
 
 //
@@ -18,7 +16,6 @@ const FOLD_ICON = `url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy
 const UNFOLD_ICON = `url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTguMzggOC4xNXEtLjIzLS4yMy0uMjMtLjU1IDAtLjMyLjIzLS41NWwzLTNxLjEyLS4xMi4yOC0uMTkuMTctLjA2LjM0LS4wNnQuMzQuMDZxLjE2LjA3LjI4LjE5bDMuMDMgMy4wM3EuMjMuMjIuMjEuNTMtLjAxLjMyLS4yMy41NC0uMi4yLS41My4ydC0uNTUtLjJMMTIgNS42IDkuNDUgOC4xNXEtLjIzLjIzLS41NS4yMS0uMzMtLjAxLS41My0uMjFaTTEyIDIwLjI1cS0uMTcgMC0uMzQtLjA2LS4xNi0uMDctLjI4LS4xOWwtMy0zcS0uMjMtLjIzLS4yMy0uNTUgMC0uMzMuMjMtLjUzLjItLjIyLjUyLS4yMnQuNTUuMjNMMTIgMTguNDZsMi41NS0yLjU3cS4yMy0uMjMuNTUtLjIxLjMzLjAxLjUzLjIzLjIyLjIuMjIuNTN0LS4yMi41NWwtMyAzcS0uMTMuMTMtLjMuMTktLjE1LjA2LS4zMy4wNloiLz48L3N2Zz4")`;
 
 const fold_gutter_extension_styles: ExtensionStyles = {
-  /* eslint-disable prefer-snakecase/prefer-snakecase */
   "&.cm-foldGutter": {
     "& .cm-foldMarker": {
       "&:hover": {
@@ -45,13 +42,11 @@ const fold_gutter_extension_styles: ExtensionStyles = {
     right: "2px",
     zIndex: 1
   }
-  /* eslint-enable prefer-snakecase/prefer-snakecase */
 };
 
 //
 
 const line_number_gutter_extension_styles: ExtensionStyles = {
-  /* eslint-disable prefer-snakecase/prefer-snakecase */
   "& .cm-gutter.cm-lineNumbers": {
     "& .cm-gutterElement": {
       color: "var(--fg-muted)",
@@ -66,11 +61,9 @@ const line_number_gutter_extension_styles: ExtensionStyles = {
       }
     }
   }
-  /* eslint-enable prefer-snakecase/prefer-snakecase */
 };
 
 export const gutter_extension_styles: ExtensionStyles = {
-  /* eslint-disable prefer-snakecase/prefer-snakecase */
   "& .cm-gutter": {
     "& *": {
       fontFamily: "var(--font-code, var(--font-monospace))"
@@ -80,5 +73,4 @@ export const gutter_extension_styles: ExtensionStyles = {
     ...fold_gutter_extension_styles
   },
   ...line_number_gutter_extension_styles
-  /* eslint-enable prefer-snakecase/prefer-snakecase */
 };

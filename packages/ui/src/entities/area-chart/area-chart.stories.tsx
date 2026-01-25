@@ -14,7 +14,7 @@ const meta: Meta<typeof AreaChart> = {
       .map(({ date, close }) => [date, Math.round(close)]),
     accessibility_label: "Sample area chart",
     label: "Label",
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
     style: { width: 640, minHeight: 300 }
   },
   tags: ["autodocs"]

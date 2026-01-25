@@ -181,7 +181,7 @@ export const use_slider = (
       onPointerDown: on_pointer_down,
       onPointerUp: on_pointer_up,
       onKeyDown: on_key_down,
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
       onPointerCancel: on_pointer_up,
       role: "slider",
       "aria-valuemin": min_value,

@@ -13,7 +13,7 @@ const meta: Meta<typeof RightSidebar> = {
   parameters: {
     layout: "fullscreen"
   },
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
   args: { force_mount: true, style: { width: "310px", marginRight: "48px" } },
   tags: ["autodocs"]
 };

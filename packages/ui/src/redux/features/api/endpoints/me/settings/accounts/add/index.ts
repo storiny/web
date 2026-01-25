@@ -14,7 +14,6 @@ export type AddAccountResponse = { url: string };
 export const { useAddAccountMutation: use_add_account_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       addAccount: builder.mutation<AddAccountResponse, AddAccountPayload>({
         query: ({ vendor, ...rest }) => ({
           url: `/${SEGMENT(vendor)}`,

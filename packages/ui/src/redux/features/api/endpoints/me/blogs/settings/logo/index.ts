@@ -15,7 +15,6 @@ export interface BlogLogoSettingsPayload {
 export const { useBlogLogoSettingsMutation: use_blog_logo_settings_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       blogLogoSettings: builder.mutation<
         BlogLogoSettingsResponse,
         BlogLogoSettingsPayload

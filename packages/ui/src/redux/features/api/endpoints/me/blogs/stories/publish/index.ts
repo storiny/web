@@ -16,7 +16,6 @@ export interface BlogStoryPublishPayload {
 export const { usePublishBlogStoryMutation: use_publish_blog_story_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       publishBlogStory: builder.mutation<void, BlogStoryPublishPayload>({
         query: ({ blog_id, story_id, word_count, status }) => ({
           url: `/${SEGMENT(blog_id, story_id)}`,

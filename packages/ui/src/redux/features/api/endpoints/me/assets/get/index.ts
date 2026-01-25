@@ -10,7 +10,6 @@ export type GetUserAssetsResponse = Asset[];
 
 export const get_assets_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getAssets: builder.query<
       { has_more: boolean; items: Asset[]; page: number },
       { page: number }
@@ -42,7 +41,6 @@ export const get_assets_api = api_slice.injectEndpoints({
 export const {
   useLazyGetAssetsQuery: use_get_assets_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getAssets: { select: select_assets }
   }
 } = get_assets_api;

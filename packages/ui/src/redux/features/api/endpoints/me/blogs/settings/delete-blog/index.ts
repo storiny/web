@@ -10,7 +10,6 @@ export type DeleteBlogPayload = BlogDeleteActionSchema & { blog_id: string };
 export const { useDeleteBlogMutation: use_delete_blog_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       deleteBlog: builder.mutation<void, DeleteBlogPayload>({
         query: ({ blog_id, ...rest }) => ({
           url: `/${SEGMENT(blog_id)}`,

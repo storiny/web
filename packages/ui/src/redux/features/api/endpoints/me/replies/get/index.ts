@@ -10,7 +10,6 @@ export type GetRepliesResponse = Reply[];
 
 export const get_replies_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getReplies: builder.query<
       { has_more: boolean; items: Reply[]; page: number },
       {
@@ -52,7 +51,6 @@ export const get_replies_api = api_slice.injectEndpoints({
 export const {
   useLazyGetRepliesQuery: use_get_replies_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getReplies: { select: select_replies }
   }
 } = get_replies_api;

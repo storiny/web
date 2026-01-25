@@ -11,7 +11,6 @@ export const {
   useRejectBlogRequestMutation: use_reject_blog_request_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     rejectBlogRequest: builder.mutation<void, RejectBlogRequestPayload>({
       query: (body) => ({
         url: `/${SEGMENT(body.id)}`,

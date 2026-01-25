@@ -10,7 +10,6 @@ export type UsernameSettingsPayload = UsernameSettingsSchema;
 export const { useUsernameSettingsMutation: use_username_settings_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       usernameSettings: builder.mutation<void, UsernameSettingsPayload>({
         query: (body) => ({
           url: `/${SEGMENT}`,

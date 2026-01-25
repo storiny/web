@@ -11,7 +11,6 @@ export type GetCommentsResponse = Comment[];
 
 export const get_comments_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getComments: builder.query<
       { has_more: boolean; items: Comment[]; page: number },
       { page: number; query?: string; sort: ResponsesSortValue }
@@ -49,7 +48,6 @@ export const get_comments_api = api_slice.injectEndpoints({
 export const {
   useLazyGetCommentsQuery: use_get_comments_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getComments: { select: select_comments }
   }
 } = get_comments_api;

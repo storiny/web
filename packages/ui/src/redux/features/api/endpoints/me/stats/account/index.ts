@@ -15,7 +15,6 @@ export type GetAccountStatsResponse = {
 export const { useGetAccountStatsQuery: use_get_account_stats_query } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       getAccountStats: builder.query<
         GetAccountStatsResponse,
         GetAccountStatsRequest

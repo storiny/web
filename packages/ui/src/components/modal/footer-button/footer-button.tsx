@@ -20,8 +20,7 @@ const ModalFooterButton = React.forwardRef<
       ref={ref}
       size={compact ? "lg" : size}
       {...(compact
-        ? // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-          { style: { ...style, borderRadius: 0, flex: 1 } }
+        ? { style: { ...style, borderRadius: 0, flex: 1 } }
         : { style })}
     />
   </Dialog.Close>

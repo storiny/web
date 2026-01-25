@@ -116,7 +116,6 @@ const DisableAccount = ({
       <DisableAccountModal disabled={disabled} />
     </Form>,
     {
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       onOpenChange: disabled ? (): void => undefined : undefined,
       fullscreen: is_smaller_than_mobile,
       footer: (

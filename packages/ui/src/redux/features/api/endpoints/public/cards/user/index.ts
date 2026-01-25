@@ -10,7 +10,6 @@ export type GetUserCardResponse = User;
 export const { useGetUserCardQuery: use_get_user_card_query } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       getUserCard: builder.query<User, string>({
         query: (identifier) => `/${SEGMENT(identifier)}`,
         serializeQueryArgs: ({ endpointName, queryArgs }) =>

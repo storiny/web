@@ -47,7 +47,6 @@ export const CC_LICENSE_DOC_MAP: Record<
 };
 
 const generate_json_ld = (story: Props["story"]): Graph => ({
-  /* eslint-disable prefer-snakecase/prefer-snakecase */
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -167,7 +166,6 @@ const generate_json_ld = (story: Props["story"]): Graph => ({
         : {})
     }
   ]
-  /* eslint-enable prefer-snakecase/prefer-snakecase */
 });
 
 const JsonLD = ({ story }: Props): React.ReactElement => {

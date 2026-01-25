@@ -313,11 +313,9 @@ export const get_language_support = async (
     //
     case "html":
       return (await import("@codemirror/lang-html")).html({
-        /* eslint-disable prefer-snakecase/prefer-snakecase */
         autoCloseTags: true,
         matchClosingTags: true,
         selfClosingTags: false
-        /* eslint-enable prefer-snakecase/prefer-snakecase */
       });
     //
     case "c":
@@ -393,7 +391,7 @@ export const get_language_support = async (
 
       return sql({
         dialect,
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
         upperCaseKeywords: true
       });
     //

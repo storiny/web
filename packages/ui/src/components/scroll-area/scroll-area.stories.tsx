@@ -23,7 +23,7 @@ export const Default: Story = {
   args: {
     style: {
       border: "1px solid var(--divider)",
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
       borderRadius: "var(--radius-sm)",
       width: "256px",
       height: "224px"

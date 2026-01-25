@@ -45,7 +45,7 @@ export const WithFooter: Story = {
     ...Default.args,
     slot_props: {
       header: { decorator: <RectangleIcon />, children: "Modal title" },
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
       content: { style: { minHeight: "45vh", minWidth: "40vw" } }
     },
     footer: (
@@ -98,7 +98,7 @@ export const ModeTabbed: Story = {
     slot_props: {
       ...WithFooter?.args?.slot_props,
       tabs: { defaultValue: "one" },
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
       content: { style: { minHeight: "45vh", minWidth: "40vw" } },
       body: {
         className: css["t-body-2"],

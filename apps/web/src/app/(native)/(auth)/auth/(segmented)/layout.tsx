@@ -60,7 +60,7 @@ const SegmentedLayout = (
         enter_from_top ? "100%" : "-100%"
       },0) scaleY(0.9)`,
       position: "absolute",
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
       pointerEvents: "none",
       width: (container_ref.current?.offsetWidth || 0) + "px"
     }

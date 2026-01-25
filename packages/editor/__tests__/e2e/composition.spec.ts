@@ -9,7 +9,6 @@ import {
   initialize
 } from "../utils";
 
-// eslint-disable-next-line prefer-snakecase/prefer-snakecase
 test.use({ launchOptions: { slowMo: 50 } });
 
 test.describe("composition", () => {

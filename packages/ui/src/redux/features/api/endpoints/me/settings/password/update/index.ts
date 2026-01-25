@@ -10,7 +10,6 @@ export type UpdatePasswordPayload = UpdatePasswordSchema;
 export const { useUpdatePasswordMutation: use_update_password_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       updatePassword: builder.mutation<void, UpdatePasswordPayload>({
         query: (body) => ({
           url: `/${SEGMENT}`,

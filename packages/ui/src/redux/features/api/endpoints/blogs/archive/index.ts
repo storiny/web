@@ -11,12 +11,10 @@ export type GetBlogArchiveResponse = Story[];
 export const {
   useLazyGetBlogArchiveQuery: use_get_blog_archive_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getBlogArchive: { select: select_blog_archive }
   }
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getBlogArchive: builder.query<
       { has_more: boolean; items: Story[]; page: number },
       { blog_id: string; month?: number; page: number; year?: number }

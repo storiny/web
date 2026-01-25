@@ -10,7 +10,6 @@ export type GetFriendRequestsResponse = FriendRequest[];
 
 export const get_friend_requests_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getFriendRequests: builder.query<
       { has_more: boolean; items: FriendRequest[]; page: number },
       { page: number; query?: string; sort: "recent" | "popular" | "old" }
@@ -48,7 +47,6 @@ export const get_friend_requests_api = api_slice.injectEndpoints({
 export const {
   useLazyGetFriendRequestsQuery: use_get_friend_requests_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getFriendRequests: { select: select_friend_requests }
   }
 } = get_friend_requests_api;

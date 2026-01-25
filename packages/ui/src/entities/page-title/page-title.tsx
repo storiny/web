@@ -41,8 +41,7 @@ const PageTitle = (props: PageTitleProps): React.ReactElement => {
           aria-label={"Navigate to the previous page"}
           {...(back_button_href
             ? { as: NextLink, href: back_button_href }
-            : // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-              { onClick: (): void => router.back() })}
+            : { onClick: (): void => router.back() })}
           {...component_props?.back_button}
           size={"sm"}
           title={"Back"}

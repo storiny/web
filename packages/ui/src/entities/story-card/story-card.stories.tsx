@@ -12,7 +12,6 @@ const meta: Meta<typeof StoryCard> = {
   args: {
     story: MOCK_STORIES[8],
     style: {
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       maxWidth: "300px"
     }
   },

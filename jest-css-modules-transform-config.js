@@ -1,4 +1,3 @@
-/* eslint-disable prefer-snakecase/prefer-snakecase */
 
 const path = require("node:path");
 const additional_resolve_path = path.resolve(

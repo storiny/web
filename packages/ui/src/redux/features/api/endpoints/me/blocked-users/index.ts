@@ -11,12 +11,10 @@ export type GetBlockedUsersResponse = User[];
 export const {
   useLazyGetBlockedUsersQuery: use_get_blocked_users_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getBlockedUsers: { select: select_blocked_users }
   }
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getBlockedUsers: builder.query<
       { has_more: boolean; items: User[]; page: number },
       { page: number }

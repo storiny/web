@@ -92,7 +92,7 @@ const FormNewPasswordInput = React.forwardRef<
     label,
     size = "md",
     defaultValue = "",
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
     onInput,
     ...rest
   } = props;
@@ -102,7 +102,6 @@ const FormNewPasswordInput = React.forwardRef<
   const [suggestion, set_suggestion] = React.useState<string>("");
   const [score, set_score] = React.useState<ZXCVBNScore>(0);
   const {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     formState: { defaultValues }
   } = use_form_context();
 
@@ -144,7 +143,7 @@ const FormNewPasswordInput = React.forwardRef<
 
       await compute_password_strength(next_value);
     },
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
     [compute_password_strength, onInput]
   );
 

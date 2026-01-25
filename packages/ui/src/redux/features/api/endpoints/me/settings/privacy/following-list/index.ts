@@ -10,7 +10,6 @@ export type FollowingListSettingsPayload = FollowingListSchema;
 export const { useFollowingListMutation: use_following_list_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       followingList: builder.mutation<void, FollowingListSettingsPayload>({
         query: (body) => ({
           url: `/${SEGMENT}`,

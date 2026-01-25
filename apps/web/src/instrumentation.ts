@@ -10,5 +10,4 @@ export const register = async (): Promise<void> => {
   }
 };
 
-// eslint-disable-next-line prefer-snakecase/prefer-snakecase
 export const onRequestError = Sentry.captureRequestError;

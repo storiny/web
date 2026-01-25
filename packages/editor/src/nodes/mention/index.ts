@@ -152,7 +152,6 @@ export class MentionNode extends TextNode {
     return { element };
   }
 
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
   override isTextEntity(): true {
     return true;
   }

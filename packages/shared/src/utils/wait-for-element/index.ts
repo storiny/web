@@ -18,7 +18,6 @@ export const wait_for_element = (
     });
 
     observer.observe(document.body, {
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       childList: true,
       subtree: true
     });

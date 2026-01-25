@@ -12,12 +12,10 @@ export type GetStoryRecommendationsResponse = Story[];
 export const {
   useLazyGetStoryRecommendationsQuery: use_get_story_recommendations_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getStoryRecommendations: { select: select_story_recommendations }
   }
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getStoryRecommendations: builder.query<
       { has_more: boolean; items: Story[]; page: number },
       { page: number; story_id: string }

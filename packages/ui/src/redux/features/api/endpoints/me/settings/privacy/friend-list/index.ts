@@ -10,7 +10,6 @@ export type FriendListSettingsPayload = FriendListSchema;
 export const { useFriendListMutation: use_friend_list_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       friendList: builder.mutation<void, FriendListSettingsPayload>({
         query: (body) => ({
           url: `/${SEGMENT}`,

@@ -12,7 +12,6 @@ export type GetOnboardingTagsResponse = {
 export const { useGetOnboardingTagsQuery: use_get_onboarding_tags_query } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       getOnboardingTags: builder.query<GetOnboardingTagsResponse, string>({
         query: (hash) => `/${SEGMENT}?encoded_categories=${hash}`,
         serializeQueryArgs: ({ endpointName, queryArgs }) =>

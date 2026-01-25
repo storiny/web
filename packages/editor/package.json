@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.37.1",
-    "@storiny/eslint-config": "^1.1.0",
+    "@storiny/eslint-config": "^1.2.0",
     "@storiny/prettier-config": "^1.1.0",
     "@storiny/stylelint-config": "*",
     "@storiny/tsconfig": "^1.0.0",

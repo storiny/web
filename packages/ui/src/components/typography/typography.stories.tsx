@@ -181,7 +181,6 @@ export const Nested: Story = {
 
 export const Ellipsis: Story = {
   args: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     style: { maxWidth: "128px" },
     ellipsis: true,
     children: "A long text that will get truncated"

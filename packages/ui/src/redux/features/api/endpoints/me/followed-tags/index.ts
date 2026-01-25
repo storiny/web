@@ -12,12 +12,10 @@ export type GetFollowedTagsResponse = Tag[];
 export const {
   useLazyGetFollowedTagsQuery: use_get_followed_tags_query,
   endpoints: {
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getFollowedTags: { select: select_followed_tags }
   }
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getFollowedTags: builder.query<
       { has_more: boolean; items: Tag[]; page: number },
       { page: number; query?: string; sort: TagsSortValue }

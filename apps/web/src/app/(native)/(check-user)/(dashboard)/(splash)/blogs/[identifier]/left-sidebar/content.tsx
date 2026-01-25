@@ -113,7 +113,6 @@ const SuspendedBlogDashboardLeftSidebarContent = (): React.ReactElement => {
             )
           },
           scrollbar: {
-            // eslint-disable-next-line prefer-snakecase/prefer-snakecase
             style: { zIndex: 1, backgroundColor: "transparent" }
           }
         }}

@@ -205,7 +205,7 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
       slot_props={{
         tabs: {
           value,
-          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
           onValueChange: (next_value): void => {
             set_value(next_value as GallerySidebarTabsValue);
             set_query("");
@@ -219,19 +219,17 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
           }
         },
         content: {
-          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
           onPointerDownOutside: (event): void => {
             event.preventDefault();
           },
-          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
           onInteractOutside: (event): void => {
             event.preventDefault();
           },
           style: {
-            // eslint-disable-next-line prefer-snakecase/prefer-snakecase
             minHeight: "45vh",
             width: "40vw",
-            // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
             minWidth: fullscreen || is_smaller_than_tablet ? "100%" : "640px"
           }
         },
@@ -278,7 +276,6 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
                 slot_props={{
                   container: {
                     style: {
-                      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
                       borderRadius: 0
                     }
                   }

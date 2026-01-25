@@ -14,7 +14,6 @@ export const {
   useBlogPageLayoutSettingsMutation: use_blog_page_layout_settings_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     blogPageLayoutSettings: builder.mutation<
       void,
       BlogPageLayoutSettingsPayload

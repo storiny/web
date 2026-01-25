@@ -19,7 +19,6 @@ export const {
     use_request_blog_domain_verification_code_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     requestBlogDomainVerificationCode: builder.mutation<
       RequestBlogDomainVerificationResponse,
       RequestBlogDomainVerificationRequest

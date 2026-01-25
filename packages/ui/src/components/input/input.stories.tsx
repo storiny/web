@@ -53,7 +53,6 @@ const meta: Meta<typeof Input> = {
     placeholder: "Input placeholder",
     slot_props: {
       container: {
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
         style: { maxWidth: "300px" }
       }
     }

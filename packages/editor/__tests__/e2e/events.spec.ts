@@ -29,23 +29,20 @@ test.describe("events", () => {
 
       const text_node = span.firstChild;
       const single_range_fn =
-        /* eslint-disable prefer-snakecase/prefer-snakecase */
-
         (
-            startContainer: Node,
-            startOffset: number,
-            endContainer: Node,
-            endOffset: number
-          ) =>
-          (): [StaticRange] => [
-            new StaticRange({
-              endContainer,
-              endOffset,
-              startContainer,
-              startOffset
-            })
-            /* eslint-enable prefer-snakecase/prefer-snakecase */
-          ];
+          startContainer: Node,
+          startOffset: number,
+          endContainer: Node,
+          endOffset: number
+        ) =>
+        (): [StaticRange] => [
+          new StaticRange({
+            endContainer,
+            endOffset,
+            startContainer,
+            startOffset
+          })
+        ];
 
       if (!text_node) {
         return;

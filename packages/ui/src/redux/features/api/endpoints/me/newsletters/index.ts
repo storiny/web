@@ -12,7 +12,6 @@ export const {
     use_update_newsletter_subscription_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     updateNewsletterSubscription: builder.mutation<
       void,
       UpdateNewsletterSubscriptionPayload

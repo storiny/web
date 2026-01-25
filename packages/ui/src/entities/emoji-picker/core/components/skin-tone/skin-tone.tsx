@@ -35,7 +35,6 @@ const SkinTone = (): React.ReactElement => {
       }
       slot_props={{
         content: {
-          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
           sideOffset: 8,
           position: "popper",
           style: {

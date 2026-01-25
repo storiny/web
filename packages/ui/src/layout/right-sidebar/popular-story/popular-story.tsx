@@ -37,7 +37,6 @@ const PopularStory = (props: PopularStoryProps): React.ReactElement | null => {
           hex: user.avatar_hex
         }}
         component_props={{
-          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
           primary_text: { style: { minWidth: 0 } }
         }}
         primary_text={

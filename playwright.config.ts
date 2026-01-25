@@ -10,8 +10,7 @@ const IS_CI = CI === "true";
  * @see https://playwright.dev/docs/test-configuration.
  */
 export default define_config({
-  /* eslint-disable prefer-snakecase/prefer-snakecase */
-  forbidOnly: IS_CI,
+    forbidOnly: IS_CI,
   testMatch: "**/*.spec.[jt]s?(x)",
   testDir: "./packages/editor/__tests__/",
   projects: [
@@ -41,5 +40,4 @@ export default define_config({
     reuseExistingServer: true,
     timeout: 120 * 1000,
   },
-  /* eslint-enable prefer-snakecase/prefer-snakecase */
-});
+  });

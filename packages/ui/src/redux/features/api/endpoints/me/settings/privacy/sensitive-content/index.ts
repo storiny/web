@@ -10,7 +10,6 @@ export type SensitiveContentPayload = SensitiveContentSchema;
 export const { useSensitiveContentMutation: use_sensitive_content_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       sensitiveContent: builder.mutation<void, SensitiveContentPayload>({
         query: (body) => ({
           url: `/${SEGMENT}`,

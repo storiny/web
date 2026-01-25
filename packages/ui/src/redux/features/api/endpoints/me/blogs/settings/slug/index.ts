@@ -11,7 +11,6 @@ export interface BlogDomainSettingsPayload extends BlogSlugSettingsSchema {
 export const { useBlogSlugSettingsMutation: use_blog_slug_settings_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       blogSlugSettings: builder.mutation<void, BlogDomainSettingsPayload>({
         query: ({ blog_id, ...rest }) => ({
           url: `/${SEGMENT(blog_id)}`,

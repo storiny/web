@@ -13,7 +13,6 @@ export interface ReplyAddPayload {
 export const { useAddReplyMutation: use_add_reply_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       addReply: builder.mutation<void, ReplyAddPayload>({
         query: (body) => ({
           url: `/${SEGMENT}`,

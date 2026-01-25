@@ -22,7 +22,6 @@ export type GetBlogStoriesStatsResponse = {
 export const { useGetBlogStoriesStatsQuery: use_get_blog_stories_stats_query } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       getBlogStoriesStats: builder.query<
         GetBlogStoriesStatsResponse,
         GetBlogStoriesStatsRequest

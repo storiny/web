@@ -136,7 +136,7 @@ const FontFamilyControl = ({
             zIndex: "calc(var(--z-index-modal) + 2)"
           }
         },
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+
         value: { asChild: true },
         trigger: {
           className: css["full-w"]
@@ -323,7 +323,6 @@ const LetterSpacingControl = ({
   const change_letter_spacing = React.useCallback(
     (next_spacing: number) => {
       if (active_object) {
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
         modify_object(active_object, { charSpacing: next_spacing * 1000 });
       }
     },
@@ -387,7 +386,6 @@ const TextStyleControl = ({
       set_text_align(next_alignment);
 
       if (active_object) {
-        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
         modify_object(active_object, { textAlign: next_alignment });
       }
     },
@@ -431,7 +429,6 @@ const TextStyleControl = ({
 
       if (active_object) {
         modify_object(active_object, {
-          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
           fontStyle: value ? "italic" : "normal"
         });
       }

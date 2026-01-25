@@ -12,7 +12,6 @@ export interface ReplyVisibilityPayload {
 export const { useReplyVisibilityMutation: use_reply_visibility_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       replyVisibility: builder.mutation<void, ReplyVisibilityPayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,

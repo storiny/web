@@ -10,11 +10,9 @@ export interface UnsubscribeNotificationPayload {
 }
 
 export const {
-  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
   useUnsubscribeNotificationMutation: use_unsubscribe_notification_mutation
 } = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     unsubscribeNotification: builder.mutation<
       void,
       UnsubscribeNotificationPayload

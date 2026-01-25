@@ -9,7 +9,6 @@ export interface LeaveStoryRequestPayload {
 export const { useLeaveStoryMutation: use_leave_story_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
-      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       leaveStory: builder.mutation<void, LeaveStoryRequestPayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,
