@@ -57,6 +57,14 @@ The project began as a monolith in this repository and was later split into mult
 
 <br />
 
+# Design files
+
+- Snowflake design system: https://www.figma.com/design/0cENs5ojK3gEPON9GZYN1Y/Snowflake-Design-System
+- Main site: https://www.figma.com/design/GpSLRc3O19ocgtl8sOff5i/Main-Site
+- Dashboard: https://www.figma.com/design/sA8vHzcxqGpFF6HmKmzZ2Z/Dashboard
+
+<br />
+
 # The future of Storiny
 
 After around 4.5 years of development and maintenance, Storiny has now been sunset. Continuing active development is outside my available bandwidth and I want to focus on other projects and commitments.
