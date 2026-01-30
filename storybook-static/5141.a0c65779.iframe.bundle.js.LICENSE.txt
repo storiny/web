@@ -1,0 +1,1 @@
+/*! @license https://github.com/onury/invert-color */
