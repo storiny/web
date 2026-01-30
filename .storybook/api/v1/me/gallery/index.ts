@@ -7,7 +7,7 @@ import {
 import { MOCK_ASSETS } from "@storiny/ui/src/mocks";
 
 const { worker, rest } = window.msw;
-const client = createClient(process.env.PEXELS_API_KEY || "");
+const client = createClient(process.env.PEXELS_API_KEY || "__NO_API_KEY__");
 const originalFetch = window.fetch;
 
 type ApiResponse = Photos | PhotosWithTotalResults | ErrorResponse;
