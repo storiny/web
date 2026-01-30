@@ -1,58 +1,58 @@
-name: deploy-web
-
-on:
-  push:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/deploy-web.yaml'
-      - 'apps/web/**'
-      - 'packages/**'
-      - 'Dockerfile'
-
-jobs:
-  deploy:
-    name: Deploy Website
-    runs-on: ubuntu-latest
-    environment: production
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      # For non-arm based runners
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: arm64
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Import production web environment variables
-        id: import-env
-        shell: bash
-        run: < apps/web/.env.production >> $GITHUB_ENV
-
-      - name: Build, tag, and push web image
-        id: build-web-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          docker build \
-            --platform linux/arm64 \
-            -t $ECR_REGISTRY/storiny_web:latest .
-          docker push $ECR_REGISTRY/storiny_web:latest
-          echo "web-image=$ECR_REGISTRY/storiny_web:latest" >> $GITHUB_OUTPUT
+#name: deploy-web
+#
+#on:
+#  push:
+#    branches:
+#      - main
+#    paths:
+#      - '.github/workflows/deploy-web.yaml'
+#      - 'apps/web/**'
+#      - 'packages/**'
+#      - 'Dockerfile'
+#
+#jobs:
+#  deploy:
+#    name: Deploy Website
+#    runs-on: ubuntu-latest
+#    environment: production
+#
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#
+#      - name: Configure AWS credentials
+#        uses: aws-actions/configure-aws-credentials@v4
+#        with:
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws-region: ${{ secrets.AWS_REGION }}
+#
+#      - name: Login to Amazon ECR
+#        id: login-ecr
+#        uses: aws-actions/amazon-ecr-login@v2
+#
+#      # For non-arm based runners
+#
+#      - name: Set up QEMU
+#        uses: docker/setup-qemu-action@v3
+#        with:
+#          platforms: arm64
+#
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v3
+#
+#      - name: Import production web environment variables
+#        id: import-env
+#        shell: bash
+#        run: < apps/web/.env.production >> $GITHUB_ENV
+#
+#      - name: Build, tag, and push web image
+#        id: build-web-image
+#        env:
+#          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+#        run: |
+#          docker build \
+#            --platform linux/arm64 \
+#            -t $ECR_REGISTRY/storiny_web:latest .
+#          docker push $ECR_REGISTRY/storiny_web:latest
+#          echo "web-image=$ECR_REGISTRY/storiny_web:latest" >> $GITHUB_OUTPUT
