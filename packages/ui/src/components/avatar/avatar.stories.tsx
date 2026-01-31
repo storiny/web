@@ -22,7 +22,7 @@ type Story = StoryObj<typeof Avatar>;
 export const Default: Story = {
   args: {
     alt: "Test avatar",
-    src: "/images/uploads/kevin.png",
+    src: "/web/images/uploads/kevin.png",
     hex: "d3b4ac"
   }
 };

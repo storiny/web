@@ -14,7 +14,7 @@ const meta: Meta<typeof AspectRatio> = {
     children: (
       <img
         alt={"A photograph of Tokyo city captured during night"}
-        src={"/images/uploads/tokyo.jpg"}
+        src={"/web/images/uploads/tokyo.jpg"}
       />
     ),
     object_fit: "cover"

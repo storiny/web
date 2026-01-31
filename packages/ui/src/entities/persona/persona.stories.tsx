@@ -20,7 +20,7 @@ export const Default: Story = {
     secondary_text: "Secondary text",
     avatar: {
       alt: "Test avatar",
-      src: "/images/uploads/louie.png",
+      src: "/web/images/uploads/louie.png",
       hex: "d3b4ac"
     }
   }
@@ -32,17 +32,17 @@ export const MultipleAvatars: Story = {
     avatar: [
       {
         alt: "First test avatar",
-        src: "/images/uploads/louie.png",
+        src: "/web/images/uploads/louie.png",
         hex: "d3b4ac"
       },
       {
         alt: "Second test avatar",
-        src: "/images/uploads/kevin.png",
+        src: "/web/images/uploads/kevin.png",
         hex: "7da110"
       },
       {
         alt: "Third test avatar",
-        src: "/images/uploads/oscar.png",
+        src: "/web/images/uploads/oscar.png",
         hex: "acc5d3"
       }
     ]
