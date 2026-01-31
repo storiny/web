@@ -11,7 +11,7 @@ worker.use(
         ctx.status(301),
         ctx.set(
           "Location",
-          `${process.env.NEXT_PUBLIC_STORYBOOK_URL}/images/uploads/${media_key}`,
+          `https://storiny.github.io/web/images/uploads/${media_key}`,
         ),
       );
     },
