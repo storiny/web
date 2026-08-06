@@ -40,11 +40,38 @@ You own your ideas, and they are never restricted behind a paywall.
 
 <img width="1636" height="858" alt="image" src="https://github.com/user-attachments/assets/96d40a0c-73c2-40ed-ae45-dc563eff17e9" />
 
-***
+---
 
-# Services
+## Tech stack
 
-The project began as a monolith in this repository and was later split into multiple microservices as complexity grew and isolating different tech stacks became necessary.
+- Turborepo orchestrates our multi-package architecture and provides cached builds across the monorepo
+- **Frontend framework**: [Next.js](https://nextjs.org) handles the main SSR/SSG web application routing, API routes, and page generation
+- **State management**: [Jotai](https://jotai.org) manages atomic global state across the interactive components
+- **Collaborative editor**: A heavily customized engine built around [Lexical](https://github.com/facebook/lexical) and [Yjs](https://github.com/yjs/yjs) (CRDTs) for real-time multi-peer story editing
+- **Styling**: SCSS modules and CSS variables power the custom Snowflake design system
+- **Testing**: Playwright for integration and editor tests, Jest for unit tests
+- **RPC for inter-service communication**: gRPC client stub for communication with [`storiny-api`](https://github.com/storiny/api)
+
+---
+
+## Under the hood
+
+This repository houses the entire frontend:
+
+- Applications (`apps/`)
+    - `web`: The Next.js frontend app
+- Packages (`packages/`)
+    - `editor`: A real-time, collaborative rich-text editor built on top of Lexical and Yjs. This package syncs with the `storiny-api` backend service (running `yrs`) via web sockets to enable multi-peer document editing and sync
+    - `ui`: The custom **Snowflake** design system
+    - `whiteboard`: An infinite canvas whiteboard component
+    - `proto`: Shared gRPC IDL files for all micro services
+    - `mail`: Pre-compiled responsive email templates used across the platform
+
+---
+
+## Services
+
+The project began as a monolith in this repository and was later split into multiple microservices as complexity grew:
 
 - [`storiny/web`](https://github.com/storiny/web) *(this repository)*: Contains the source code for the main site, blogs, the Snowflake design system, and gRPC IDL definitions.
 - [`storiny/api`](https://github.com/storiny/api): Contains the source code for REST API endpoints and the real-time collaborative engine.
@@ -55,17 +82,19 @@ The project began as a monolith in this repository and was later split into mult
 - [`storiny/prettier-config`](https://github.com/storiny/prettier-config): Shared Prettier configuration.
 - [`storiny/tsconfig`](https://github.com/storiny/tsconfig): Shared TypeScript configuration.
 
-<br />
+---
 
-# Design files
+## Design files
 
 - Snowflake design system: https://www.figma.com/design/0cENs5ojK3gEPON9GZYN1Y/Snowflake-Design-System
 - Main site: https://www.figma.com/design/GpSLRc3O19ocgtl8sOff5i/Main-Site
 - Dashboard: https://www.figma.com/design/sA8vHzcxqGpFF6HmKmzZ2Z/Dashboard
 
+---
+
 <br />
 
-# The future of Storiny
+## The future of Storiny
 
 After around 4.5 years of development and maintenance, Storiny has now been sunset. Continuing active development is outside my available bandwidth and I want to focus on other projects and commitments.
 
@@ -75,6 +104,6 @@ Since the project didn't take off as intended, it has been open-sourced. I won't
 
 \- [zignis](https://github.com/zignis)
 
-***
+---
 
 <img width="1200" height="630" alt="image" src="https://github.com/user-attachments/assets/dd9998c4-b545-4283-8587-939cc1819243" />
